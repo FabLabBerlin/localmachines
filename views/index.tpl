@@ -1,82 +1,45 @@
 <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Internal machine activation software for Fab Labs">
+    <meta name="author" content="Krisjanis Rijnieks">
 
-<html>
-  	<head>
-    	<title>Beego</title>
-    	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>FabSmith - Signin</title>
 
-		<style type="text/css">
-			body {
-				margin: 0px;
-				font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-				font-size: 14px;
-				line-height: 20px;
-				color: rgb(51, 51, 51);
-				background-color: rgb(255, 255, 255);
-			}
+    <!-- Bootstrap core CSS -->
+    <link href="/static/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 
-			.hero-unit {
-				padding: 60px;
-				margin-bottom: 30px;
-				border-radius: 6px 6px 6px 6px;
-			}
+    <!-- Custom styles for this template -->
+    <link href="/static/css/signin.css" rel="stylesheet">
 
-			.container {
-				width: 940px;
-				margin-right: auto;
-				margin-left: auto;
-			}
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
 
-			.row {
-				margin-left: -20px;
-			}
+  <body>
 
-			h1 {
-				margin: 10px 0px;
-				font-family: inherit;
-				font-weight: bold;
-				text-rendering: optimizelegibility;
-			}
+    <div class="container">
 
-			.hero-unit h1 {
-				margin-bottom: 0px;
-				font-size: 60px;
-				line-height: 1;
-				letter-spacing: -1px;
-				color: inherit;
-			}
+      <form class="form-signin" role="form">
+        <h2 class="form-signin-heading">Please sign in</h2>
+        <input type="email" class="form-control" placeholder="Email address" required autofocus>
+        <input type="password" class="form-control" placeholder="Password" required>
+        <label class="checkbox">
+          <input type="checkbox" value="remember-me"> Remember me
+        </label>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+      </form>
 
-			.description {
-				padding-top: 5px;
-				padding-left: 5px;
-				font-size: 18px;
-				font-weight: 200;
-				line-height: 30px;
-				color: inherit;
-			}
+    </div> <!-- /container -->
 
-			p {
-				margin: 0px 0px 10px;
-			}
-		</style>
-	</head>
 
-  	<body>
-  		<header class="hero-unit" style="background-color:#A9F16C">
-			<div class="container">
-			<div class="row">
-			  <div class="hero-text">
-			    <h1>Welcome to Beego!</h1>
-			    <p class="description">
-			    	Beego is a simple &amp; powerful Go web framework which is inspired by tornado and sinatra.
-			    <br />
-			    	Official website: <a href="http://<<<.Website>>>"><<<.Website>>></a>
-			    <br />
-			    	Contact me: <<<.Email>>>
-			    </p>
-			  </div>
-			</div>
-			</div>
-		</header>
-	</body>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/static/js/ie10-viewport-bug-workaround.js"></script>
+  </body>
 </html>
