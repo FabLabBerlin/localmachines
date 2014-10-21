@@ -1,0 +1,21 @@
+{
+  "name": "fabsmith",
+  "version": "0.0.0",
+  "homepage": "https://github.com/kr15h/fabsmith",
+  "authors": [
+    "Krisjanis Rijnieks <krisjanis.rijnieks@gmail.com>"
+  ],
+  "description": "Internal machine activation software for Fab Labs",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "libs",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "bootstrap": "~3.2.0"
+  }
+}
