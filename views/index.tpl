@@ -68,11 +68,11 @@
 			  <div class="hero-text">
 			    <h1>Welcome to Beego!</h1>
 			    <p class="description">
-			    	Beego is a simple & powerful Go web framework which is inspired by tornado and sinatra.
+			    	Beego is a simple &amp; powerful Go web framework which is inspired by tornado and sinatra.
 			    <br />
-			    	Official website: <a href="http://{{.Website}}">{{.Website}}</a>
+			    	Official website: <a href="http://<<<.Website>>>"><<<.Website>>></a>
 			    <br />
-			    	Contact me: {{.Email}}
+			    	Contact me: <<<.Email>>>
 			    </p>
 			  </div>
 			</div>

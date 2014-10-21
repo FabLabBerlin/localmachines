@@ -1,11 +1,15 @@
 package main
 
 import (
-	_ "github.com/kr15h/fabsmith/routers"
 	"github.com/astaxie/beego"
+	_ "github.com/kr15h/fabsmith/routers"
 )
+
+func init() {
+	beego.TemplateLeft = "<<<"
+	beego.TemplateRight = ">>>"
+}
 
 func main() {
 	beego.Run()
 }
-
