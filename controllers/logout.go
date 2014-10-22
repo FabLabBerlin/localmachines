@@ -9,6 +9,7 @@ type LogoutController struct {
 }
 
 func (this *LogoutController) Logout() {
+	this.DestroySession()
 	response := struct{ Status string }{"ok"}
 	this.Data["json"] = &response
 	this.ServeJson()
