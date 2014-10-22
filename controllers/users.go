@@ -8,21 +8,16 @@ type UsersController struct {
 	beego.Controller
 }
 
-type UsersResponseUser struct {
-	Id    int
-	Name  string
-	Email string
-}
-
-type UsersResponse struct {
-	Users []UsersResponseUser
-}
-
-func (this *UsersController) Get() {
-	response := &UsersResponse{
-		[]UsersResponseUser{
-			UsersResponseUser{1, "John", "john@aber.du"},
-			UsersResponseUser{2, "Mollie", "mollie@alles.gut"}}}
+func (this *UsersController) GetUsers() {
+	type User struct {
+		Id    int
+		Name  string
+		Email string
+	}
+	response := struct{ Users []User }{
+		[]User{
+			User{1, "John", "john@aber.du"},
+			User{2, "Mollie", "mollie@alles.gut"}}}
 	this.Data["json"] = &response
 	this.ServeJson()
 }

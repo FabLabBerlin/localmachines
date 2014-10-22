@@ -6,10 +6,17 @@ import (
 )
 
 func init() {
+	// Route root request
 	beego.Router("/", &controllers.MainController{})
-	beego.Router("/api/login", &controllers.LoginController{})
-	beego.Router("/api/logout", &controllers.LogoutController{}, "*:Any")
-	beego.Router("/api/users", &controllers.UsersController{})
-	beego.Router("/api/machines", &controllers.MachinesController{})
-	beego.Router("/api/activations", &controllers.ActivationsController{})
+
+	// Route single method requests
+	beego.Router("/api/login", &controllers.LoginController{}, "post:Login")
+	beego.Router("/api/logout", &controllers.LogoutController{}, "*:Logout")
+	beego.Router("/api/users", &controllers.UsersController{}, "get:GetUsers")
+	beego.Router("/api/machines", &controllers.MachinesController{}, "get:GetMachines")
+
+	// Route activation requests
+	beego.Router("/api/activations", &controllers.ActivationsController{}, "get:GetActivations")
+	beego.Router("/api/activations", &controllers.ActivationsController{}, "post:CreateActivation")
+	beego.Router("/api/activations", &controllers.ActivationsController{}, "put:UpdateActivation")
 }

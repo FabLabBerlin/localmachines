@@ -8,12 +8,8 @@ type LogoutController struct {
 	beego.Controller
 }
 
-type LogoutResponse struct {
-	Status string
-}
-
-func (this *LogoutController) Any() {
-	response := &LogoutResponse{"ok"}
+func (this *LogoutController) Logout() {
+	response := struct{ Status string }{"ok"}
 	this.Data["json"] = &response
 	this.ServeJson()
 }

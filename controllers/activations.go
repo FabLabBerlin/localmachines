@@ -8,41 +8,28 @@ type ActivationsController struct {
 	beego.Controller
 }
 
-type ActivationsResponsePost struct {
-	Status string
-}
-
-type ActivationsResponseGetItem struct {
-	Id        int
-	MachineId int
-	UserId    int
-}
-
-type ActivationsResponseGet struct {
-	Activations []ActivationsResponseGetItem
-}
-
-type ActivationsResponsePut struct {
-	Status string
-}
-
-func (this *ActivationsController) Post() {
-	response := &ActivationsResponsePost{"ok"}
+func (this *ActivationsController) CreateActivation() {
+	response := struct{ Status string }{"ok"}
 	this.Data["json"] = &response
 	this.ServeJson()
 }
 
-func (this *ActivationsController) Get() {
-	response := &ActivationsResponseGet{
-		[]ActivationsResponseGetItem{
-			ActivationsResponseGetItem{1, 2, 3},
-			ActivationsResponseGetItem{3, 2, 1}}}
+func (this *ActivationsController) GetActivations() {
+	type Item struct {
+		Id        int
+		MachineId int
+		UserId    int
+	}
+	response := struct{ Activations []Item }{
+		[]Item{
+			Item{1, 2, 3},
+			Item{3, 2, 1}}}
 	this.Data["json"] = &response
 	this.ServeJson()
 }
 
-func (this *ActivationsController) Put() {
-	response := &ActivationsResponsePut{"ok"}
+func (this *ActivationsController) UpdateActivation() {
+	response := struct{ Status string }{"ok"}
 	this.Data["json"] = &response
 	this.ServeJson()
 }
