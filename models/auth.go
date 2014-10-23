@@ -11,9 +11,9 @@ func init() {
 }
 
 type Auth struct {
-	UserId   int `orm:"auto"`
-	NfcKey   string
-	Password string
+	UserId   int    `orm:"auto"`
+	NfcKey   string `orm:"size(100)"`
+	Password string `orm:"size(100)"`
 }
 
 func (this *Auth) GetPassword(userId int) string {
