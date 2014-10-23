@@ -45,14 +45,10 @@ func (this *LoginController) isUserValid() bool {
 	username := this.GetString("username")
 	password := this.GetString("password")
 	// Get password from DB
-	// Get user ID by using the User table model
 	userModel := new(models.User)
-	modelUserId := userModel.GetUserId(username)
-	beego.Info("UserId: ", modelUserId)
-	// Get user password by using the Auth table model
-	authModel := new(models.Auth)
-	modelPassword := authModel.GetPassword(modelUserId)
-	beego.Info("Password: ", modelPassword)
+	modelPassword := userModel.GetPasswordForUsername(username)
+	beego.Info(modelPassword)
+	// Check if passwords match
 	if username == username &&
 		password == modelPassword {
 		return true
