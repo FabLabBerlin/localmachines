@@ -6,30 +6,39 @@ import (
 )
 
 func init() {
-	// Register models
 	orm.RegisterModel(new(User))
 }
 
 type User struct {
-	UserId     int `orm:"auto"`
-	FirstName  string
-	LastName   string
-	Username   string
-	Email      string
+	Id         int    `orm:"auto";"pk"`
+	FirstName  string `orm:"size(100)"`
+	LastName   string `orm:"size(100)"`
+	Username   string `orm:"size(100)"`
+	Email      string `orm:"size(100)"`
 	IvoiceAddr int
 	ShipAddr   int
 	ClientId   int
 	B2b        bool
-	Company    string
-	VatUserId  string
+	Company    string `orm:"size(100)"`
+	VatUserId  string `orm:"size(100)"`
 	VatRate    int
 }
 
-func (this *User) GetUserId(userName string) int {
+func (this *User) GetUserIdForUsername(username string) int {
 	o := orm.NewOrm()
-	err := o.Raw("SELECT user_id FROM users WHERE username = ?", userName).QueryRow(this)
+	err := o.Raw("SELECT id FROM user WHERE username = ?", username).QueryRow(this)
 	if err != nil {
 		beego.Error(err)
 	}
-	return this.UserId
+	return this.Id
+}
+
+func (this *User) GetPasswordForUsername(username string) string {
+	o := orm.NewOrm()
+	data := struct{ Password string }{}
+	err := o.Raw("SELECT password FROM auth INNER JOIN user ON auth.user_id = user.id WHERE user.username = ?", username).QueryRow(&data)
+	if err != nil {
+		beego.Error(err)
+	}
+	return data.Password
 }
