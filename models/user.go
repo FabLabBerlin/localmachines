@@ -1,7 +1,6 @@
 package models
 
 import (
-	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 )
 
@@ -22,23 +21,4 @@ type User struct {
 	Company    string `orm:"size(100)"`
 	VatUserId  string `orm:"size(100)"`
 	VatRate    int
-}
-
-func (this *User) GetUserIdForUsername(username string) int {
-	o := orm.NewOrm()
-	err := o.Raw("SELECT id FROM user WHERE username = ?", username).QueryRow(this)
-	if err != nil {
-		beego.Error(err)
-	}
-	return this.Id
-}
-
-func (this *User) GetPasswordForUsername(username string) string {
-	o := orm.NewOrm()
-	data := struct{ Password string }{}
-	err := o.Raw("SELECT password FROM auth INNER JOIN user ON auth.user_id = user.id WHERE user.username = ?", username).QueryRow(&data)
-	if err != nil {
-		beego.Error(err)
-	}
-	return data.Password
 }

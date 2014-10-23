@@ -4,6 +4,7 @@ import (
 	"github.com/astaxie/beego"
 )
 
+// Handles API /activations requests
 type ActivationsController struct {
 	beego.Controller
 }
