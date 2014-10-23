@@ -13,6 +13,11 @@ type Controller struct {
 	beego.Controller
 }
 
+type ErrorResponse struct {
+	Status  string
+	Message string
+}
+
 // Checks if user is logged in before sending out any data
 func (this *Controller) Prepare() {
 	sessUser := this.GetSession("username")
@@ -51,4 +56,15 @@ func (this *Controller) getSessionUserData() *models.User {
 		beego.Error(err)
 	}
 	return userModel
+}
+
+// Get user data by id
+func (this *MachinesController) getUser(userId int) (*models.User, error) {
+	o := orm.NewOrm()
+	userModel := models.User{Id: userId}
+	err := o.Read(&userModel)
+	if err != nil {
+		beego.Error(err)
+	}
+	return &userModel, err
 }
