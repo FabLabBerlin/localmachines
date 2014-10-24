@@ -35,28 +35,25 @@ func (this *MachinesController) GetMachines() {
 			// Use request user_id
 			machines, err := this.getUserMachines(userId)
 			if err != nil {
-				errResponse := ErrorResponse{"error", "No machines available"}
-				this.Data["json"] = &errResponse
-				this.ServeJson()
+				beego.Error("Could not get machines")
+				this.serveStatusResponse("error", "No machines available")
 			}
 			response.Machines = machines
 		} else {
 			// User has no permission to get machine info for another user
-			errResponse := ErrorResponse{"error", "Not authorized"}
-			this.Data["json"] = &errResponse
-			this.ServeJson()
+			beego.Error("User", userId, "not authorized")
+			this.serveStatusResponse("error", "Not authorized")
 		}
 	} else {
 		// Use current session user_id
 		machines, err := this.getUserMachines(this.GetSession("user_id").(int))
 		if err != nil {
-			errResponse := ErrorResponse{"error", "No machines available"}
-			this.Data["json"] = &errResponse
-			this.ServeJson()
+			beego.Error("No machines available for current session user")
+			this.serveStatusResponse("error", "No machines available")
 		}
 		response.Machines = machines
 	}
-	// Respond
+	// Serve JSON with list of machines
 	this.Data["json"] = &response
 	this.ServeJson()
 }

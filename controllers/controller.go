@@ -13,7 +13,7 @@ type Controller struct {
 	beego.Controller
 }
 
-type ErrorResponse struct {
+type StatusResponse struct {
 	Status  string
 	Message string
 }
@@ -29,6 +29,12 @@ func (this *Controller) Prepare() {
 		this.Data["json"] = &response
 		this.ServeJson()
 	}
+}
+
+// Makes use of SimpleResponse struct, responds with simple message JSON
+func (this *Controller) serveStatusResponse(status string, message string) {
+	this.Data["json"] = &StatusResponse{status, message}
+	this.ServeJson() // Exit!
 }
 
 // Checks if request has user_id variable set and returns it

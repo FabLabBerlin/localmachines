@@ -36,9 +36,7 @@ func (this *ActivationsController) GetActivations() {
 		rawActivations, err = this.getActivationsForUserId(reqUserId)
 		if err != nil {
 			beego.Error(err)
-			errResponse := ErrorResponse{"error", "Could not get activations"}
-			this.Data["json"] = &errResponse
-			this.ServeJson() // Exit
+			this.serveStatusResponse("error", "Could not get activations")
 		}
 	} else {
 		// Request does not have user id, attemt to use user id from session
@@ -48,22 +46,19 @@ func (this *ActivationsController) GetActivations() {
 			// Could not find session user id, that means we're out of luck and
 			// something has gone terribly wrong
 			beego.Error("Could not find any user id")
-			this.Data["json"] = &ErrorResponse{"error", "No usable user ID found"}
-			this.ServeJson() // Exit
+			this.serveStatusResponse("error", "No usable user ID found")
 		}
 		// Ok, we have session user ID, use it to get activations
 		rawActivations, err = this.getActivationsForUserId(userId.(int))
 		if err != nil {
 			beego.Error(err)
-			this.Data["json"] = &ErrorResponse{"error", "Could not get activations"}
-			this.ServeJson() // Exit
+			this.serveStatusResponse("error", "Could not get activations")
 		}
 	}
 	// Check how many activations
 	if len(rawActivations) <= 0 {
 		beego.Error("There are no activations")
-		this.Data["json"] = &ErrorResponse{"error", "No activations found"}
-		this.ServeJson() // Exit
+		this.serveStatusResponse("error", "No activations found")
 	}
 	// Now we need to interpret them for public output
 	pubActivations := this.getPublicActivations(rawActivations)
