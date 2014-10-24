@@ -16,7 +16,7 @@ type Activation struct {
 	MachineId        int
 	Active           bool
 	TimeStart        time.Time
-	TimeEnd          time.Time
+	TimeEnd          time.Time `orm:"null"`
 	TimeTotal        int
 	UsedKwh          float32
 	DiscountPercents float32

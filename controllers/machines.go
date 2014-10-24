@@ -25,7 +25,7 @@ type PublicMachine struct {
 func (this *MachinesController) GetMachines() {
 	var response struct{ Machines []PublicMachine }
 	// Cehck if there is user_id in the request variables
-	userId, isSet := this.requestHasUserId()
+	isSet, userId := this.requestHasUserId()
 	if isSet {
 		// Check if admin
 		roles := this.getSessionUserRoles()

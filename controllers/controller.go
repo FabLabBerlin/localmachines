@@ -2,6 +2,7 @@
 package controllers
 
 import (
+	"errors"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/kr15h/fabsmith/models"
@@ -16,6 +17,11 @@ type Controller struct {
 type StatusResponse struct {
 	Status  string
 	Message string
+}
+
+type CreatedResponse struct {
+	Status string
+	Id     int
 }
 
 // Checks if user is logged in before sending out any data
@@ -37,8 +43,14 @@ func (this *Controller) serveStatusResponse(status string, message string) {
 	this.ServeJson() // Exit!
 }
 
+// Serve created response with created element ID
+func (this *Controller) serveCreatedResponse(id int) {
+	this.Data["json"] = &CreatedResponse{"created", id}
+	this.ServeJson()
+}
+
 // Checks if request has user_id variable set and returns it
-func (this *Controller) requestHasUserId() (int, bool) {
+func (this *Controller) requestHasUserId() (bool, int) {
 	beego.Info("Checking for user_id request variable")
 	var isUserIdSet bool = false
 	userId, err := this.GetInt("user_id")
@@ -49,7 +61,22 @@ func (this *Controller) requestHasUserId() (int, bool) {
 		beego.Error(err)
 		beego.Info("Not found")
 	}
-	return int(userId), isUserIdSet
+	return isUserIdSet, int(userId)
+}
+
+// Checks if request variable machine_id is set and returns it
+func (this *Controller) requestHasMachineId() (bool, int) {
+	beego.Info("Checking for machine_id request variable")
+	var isMachineIdSet bool = false
+	machineId, err := this.GetInt("machine_id")
+	if err == nil {
+		beego.Info("Machine ID", machineId)
+		isMachineIdSet = true
+	} else {
+		beego.Error(err)
+		beego.Info("Machine ID not found")
+	}
+	return isMachineIdSet, int(machineId)
 }
 
 // Returns user roles model for the currently logged in user
@@ -80,7 +107,7 @@ func (this *Controller) getSessionUserData() *models.User {
 }
 
 // Get user data by id
-func (this *MachinesController) getUser(userId int) (*models.User, error) {
+func (this *Controller) getUser(userId int) (*models.User, error) {
 	o := orm.NewOrm()
 	userModel := models.User{Id: userId}
 	err := o.Read(&userModel)
@@ -88,4 +115,32 @@ func (this *MachinesController) getUser(userId int) (*models.User, error) {
 		beego.Error(err)
 	}
 	return &userModel, err
+}
+
+// Return true if user is admin
+func (this *Controller) isAdmin() bool {
+	rolesModel := this.getSessionUserRoles()
+	if rolesModel.Admin {
+		return true
+	}
+	return false
+}
+
+// Return true if user is staff
+func (this *Controller) isStaff() bool {
+	rolesModel := this.getSessionUserRoles()
+	if rolesModel.Staff {
+		return true
+	}
+	return false
+}
+
+// Return session user ID and perform relevant checks
+func (this *Controller) getSessionUserId() (int, error) {
+	userId := this.GetSession("user_id")
+	if userId == nil {
+		beego.Error("Could not get session user ID")
+		return int(0), errors.New("Could not get session user ID")
+	}
+	return userId.(int), nil
 }

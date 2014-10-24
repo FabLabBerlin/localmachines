@@ -4,6 +4,7 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/kr15h/fabsmith/models"
+	"time"
 )
 
 // Handles API /activations requests
@@ -19,20 +20,68 @@ type PublicActivation struct {
 
 // Creates an activation for a user
 func (this *ActivationsController) CreateActivation() {
-	response := struct{ Status string }{"ok"}
-	this.Data["json"] = &response
-	this.ServeJson()
+	// Get request machine ID
+	reqHasMachineId, reqMachineId := this.requestHasMachineId()
+	if !reqHasMachineId {
+		// If request machine ID not set
+		// Serve error message
+		this.serveStatusResponse("error", "Missing machine ID")
+	}
+	// Check if we have user ID passed with the request
+	reqHasUserId, reqUserId := this.requestHasUserId()
+	if reqHasUserId {
+		// If we have request user ID
+		// Check if session user is authorized to use it
+		if this.isAdmin() || this.isStaff() {
+			// If session user is admin or staff
+			beego.Info("User is admin or staff")
+			// Create activation with request user ID and request's machine ID
+			id, err := this.createActivation(reqUserId, reqMachineId)
+			if err != nil {
+				this.serveStatusResponse("error", "Could not activate machine")
+			}
+			// Serve created response with activation id
+			this.serveCreatedResponse(id)
+		} else {
+			// If session user IS NOT admin or staff
+			beego.Info("User not admin or staff")
+			// Serve error message
+			this.serveStatusResponse("error", "Not authorized")
+		}
+	} else {
+		// If we DO NOT have request user ID
+		// Use session user ID and machine ID to create activation
+		sessUserId, err := this.getSessionUserId()
+		if err != nil {
+			// If there IS NO session user ID
+			// Serve error message
+			this.serveStatusResponse("error", "Could not get session user ID")
+		}
+		// Attempt to create activation
+		var id int
+		id, err = this.createActivation(sessUserId, reqMachineId)
+		if err == nil {
+			// If successful
+			// Serve success message
+			this.serveCreatedResponse(id)
+		} else {
+			// If could not create activation
+			// Serve error message
+			this.serveStatusResponse("error", "Could not create activation")
+		}
+	}
 }
 
 // Gets current activations for a user
 func (this *ActivationsController) GetActivations() {
 	// Check if request has user_id variable
-	reqUserId, hasUserId := this.requestHasUserId()
+	hasUserId, reqUserId := this.requestHasUserId()
 	var rawActivations []models.Activation
 	var err error
 	if hasUserId {
 		// Request has user id, use that to get activations
 		beego.Info("Request HAS user_id")
+		// TODO: check if session user is authorized to get activations for other
 		rawActivations, err = this.getActivationsForUserId(reqUserId)
 		if err != nil {
 			beego.Error(err)
@@ -98,4 +147,41 @@ func (this *ActivationsController) getPublicActivations(activations []models.Act
 		pubActivations = append(pubActivations, act)
 	}
 	return pubActivations
+}
+
+// Create new activation with user ID and machine ID
+/*
+type Activation struct {
+	Id               int `orm:"auto";"pk"`
+	InvoiceId        int
+	UserId           int
+	MachineId        int
+	Active           bool
+	TimeStart        time.Time
+	TimeEnd          time.Time
+	TimeTotal        int
+	UsedKwh          float32
+	DiscountPercents float32
+	DiscountFixed    float32
+	VatRate          float32
+	CommentRef       string `orm:"size(255)"`
+	Invoiced         bool
+	Changed          bool
+}
+*/
+func (this *ActivationsController) createActivation(userId int, machineId int) (int, error) {
+	o := orm.NewOrm()
+	activationModel := models.Activation{UserId: userId, MachineId: machineId}
+	activationModel.Active = true
+	activationModel.TimeStart = time.Now()
+	beego.Info("Attempt to create activation")
+	id, err := o.Insert(&activationModel)
+	if err != nil {
+		beego.Error(err)
+		beego.Info("Failed to create activation for user ID",
+			userId, "and machine ID", machineId)
+		return int(0), err
+	}
+	beego.Info("Created activation with id", id)
+	return int(id), nil
 }
