@@ -59,15 +59,10 @@ func (this *ActivationsController) CreateActivation() {
 		}
 		// Attempt to create activation
 		err = this.createActivation(sessUserId, reqMachineId)
-		if err == nil {
-			// If successful
-			// Serve success message
-			this.serveSuccessResponse()
-		} else {
-			// If could not create activation
-			// Serve error message
+		if err != nil {
 			this.serveStatusResponse("error", "Could not create activation")
 		}
+		this.serveSuccessResponse()
 	}
 }
 
@@ -174,7 +169,8 @@ func (this *ActivationsController) createActivation(userId int, machineId int) e
 		return err
 	}
 	beego.Info("Created activation")
-	return nil
+	err = this.setMachineUnavailable(machineId)
+	return err
 }
 
 // Get activation_id variable from the request
@@ -227,5 +223,36 @@ func (this *ActivationsController) finalizeActivation(id int) error {
 		return err
 	}
 	beego.Info("Success")
+	err = this.setMachineAvailable(tempModel.MachineId)
+	return err
+}
+
+func (this *ActivationsController) setMachineUnavailable(id int) error {
+	machineModel := new(models.Machine)
+	machineModel.Id = id
+	machineModel.Available = false
+	o := orm.NewOrm()
+	beego.Info("Attempt to set machine with ID", id, "unavailable")
+	num, err := o.Update(machineModel, "Available")
+	if err != nil {
+		beego.Error("Failed:", err)
+		return err
+	}
+	beego.Info("Success, rows affected: ", num)
+	return nil
+}
+
+func (this *ActivationsController) setMachineAvailable(id int) error {
+	machineModel := new(models.Machine)
+	machineModel.Id = id
+	machineModel.Available = true
+	o := orm.NewOrm()
+	beego.Info("Attempt to set machine with ID", id, "available")
+	num, err := o.Update(machineModel, "Available")
+	if err != nil {
+		beego.Error("Failed:", err)
+		return err
+	}
+	beego.Info("Success, rows affected: ", num)
 	return nil
 }
