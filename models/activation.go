@@ -11,7 +11,7 @@ func init() {
 
 type Activation struct {
 	Id               int `orm:"auto";"pk"`
-	InvoiceId        int
+	InvoiceId        int `orm:"null"`
 	UserId           int
 	MachineId        int
 	Active           bool

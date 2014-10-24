@@ -49,6 +49,11 @@ func (this *Controller) serveCreatedResponse(id int) {
 	this.ServeJson()
 }
 
+func (this *Controller) serveSuccessResponse() {
+	this.Data["json"] = &struct{ Status string }{"ok"}
+	this.ServeJson()
+}
+
 // Checks if request has user_id variable set and returns it
 func (this *Controller) requestHasUserId() (bool, int) {
 	beego.Info("Checking for user_id request variable")

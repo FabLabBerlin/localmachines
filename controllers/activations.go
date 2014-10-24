@@ -36,12 +36,12 @@ func (this *ActivationsController) CreateActivation() {
 			// If session user is admin or staff
 			beego.Info("User is admin or staff")
 			// Create activation with request user ID and request's machine ID
-			id, err := this.createActivation(reqUserId, reqMachineId)
+			err := this.createActivation(reqUserId, reqMachineId)
 			if err != nil {
 				this.serveStatusResponse("error", "Could not activate machine")
 			}
 			// Serve created response with activation id
-			this.serveCreatedResponse(id)
+			this.serveSuccessResponse()
 		} else {
 			// If session user IS NOT admin or staff
 			beego.Info("User not admin or staff")
@@ -58,12 +58,11 @@ func (this *ActivationsController) CreateActivation() {
 			this.serveStatusResponse("error", "Could not get session user ID")
 		}
 		// Attempt to create activation
-		var id int
-		id, err = this.createActivation(sessUserId, reqMachineId)
+		err = this.createActivation(sessUserId, reqMachineId)
 		if err == nil {
 			// If successful
 			// Serve success message
-			this.serveCreatedResponse(id)
+			this.serveSuccessResponse()
 		} else {
 			// If could not create activation
 			// Serve error message
@@ -118,9 +117,20 @@ func (this *ActivationsController) GetActivations() {
 // Closes active activation. Nothing is being deleted - the activation end time
 // is being registered and total time calculated
 func (this *ActivationsController) UpdateActivation() {
-	response := struct{ Status string }{"ok"}
-	this.Data["json"] = &response
-	this.ServeJson()
+	// Get activation id
+	activationId, err := this.getRequestActivationId()
+	// If no activation id serve error
+	if err != nil {
+		this.serveStatusResponse("error", "No activation ID")
+	}
+	// Else continue and finalize activation
+	err = this.finalizeActivation(activationId)
+	if err != nil {
+		// If there is an error, serve error message
+		this.serveStatusResponse("error", "Could not finalize activation")
+	}
+	// Else activation finalized serve success json
+	this.serveSuccessResponse()
 }
 
 func (this *ActivationsController) getActivationsForUserId(userId int) ([]models.Activation, error) {
@@ -150,38 +160,72 @@ func (this *ActivationsController) getPublicActivations(activations []models.Act
 }
 
 // Create new activation with user ID and machine ID
-/*
-type Activation struct {
-	Id               int `orm:"auto";"pk"`
-	InvoiceId        int
-	UserId           int
-	MachineId        int
-	Active           bool
-	TimeStart        time.Time
-	TimeEnd          time.Time
-	TimeTotal        int
-	UsedKwh          float32
-	DiscountPercents float32
-	DiscountFixed    float32
-	VatRate          float32
-	CommentRef       string `orm:"size(255)"`
-	Invoiced         bool
-	Changed          bool
-}
-*/
-func (this *ActivationsController) createActivation(userId int, machineId int) (int, error) {
+func (this *ActivationsController) createActivation(userId int, machineId int) error {
 	o := orm.NewOrm()
-	activationModel := models.Activation{UserId: userId, MachineId: machineId}
-	activationModel.Active = true
-	activationModel.TimeStart = time.Now()
+	// Beego model time stuff is bad, use workaround that works
 	beego.Info("Attempt to create activation")
-	id, err := o.Insert(&activationModel)
+	_, err := o.Raw("INSERT INTO activation VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+		nil, nil, userId, machineId, true,
+		time.Now().Format("2006-01-02 15:04:05"),
+		nil, 0, 0, 0, 0, 0, "", false, false).Exec()
 	if err != nil {
-		beego.Error(err)
-		beego.Info("Failed to create activation for user ID",
-			userId, "and machine ID", machineId)
+		beego.Error("Failed to create activation for user ID",
+			userId, "and machine ID", machineId, ":", err)
+		return err
+	}
+	beego.Info("Created activation")
+	return nil
+}
+
+// Get activation_id variable from the request
+func (this *ActivationsController) getRequestActivationId() (int, error) {
+	beego.Info("Attempt to get request activation ID")
+	id, err := this.GetInt("activation_id")
+	if err != nil {
+		beego.Error("Could not get request activation ID:", err)
 		return int(0), err
 	}
-	beego.Info("Created activation with id", id)
+	beego.Info("Got request activation ID:", id)
 	return int(id), nil
+}
+
+// Finalize activation, save end time
+func (this *ActivationsController) finalizeActivation(id int) error {
+	o := orm.NewOrm()
+	activationModel := new(models.Activation)
+	activationModel.Id = id
+	// Get activation start time
+	beego.Info("Attempt to get activation with ID", id)
+	var tempModel struct {
+		TimeStart string
+		MachineId int
+	}
+	err := o.Raw("SELECT time_start, machine_id FROM activation WHERE active = true AND id = ?",
+		id).QueryRow(&tempModel)
+	if err != nil {
+		beego.Error("Could not get activation:", err)
+		return err
+	}
+	beego.Info("Success")
+	// Convert start time into Unix timestamp
+	const timeForm = "2006-01-02 15:04:05"
+	timeStart, _ := time.ParseInLocation(timeForm, tempModel.TimeStart, time.Now().Location())
+	timeNow := time.Now() // time.Now().Format("2006-01-02 15:04:05")
+	totalDuration := timeNow.Sub(timeStart)
+	// Set model vars
+	activationModel.TimeEnd = timeNow
+	activationModel.TimeTotal = int(totalDuration.Seconds())
+	activationModel.Active = false
+	// Update database
+	beego.Info("Attempt to update activation")
+	_, err = o.Raw("UPDATE activation SET active=false, time_end=?, time_total=? WHERE id=?",
+		timeNow.Format("2006-01-02 15:04:05"),
+		totalDuration.Seconds(), id).Exec()
+	//num, err := o.Update(activationModel, "TimeEnd", "TimeTotal", "Active")
+	if err != nil {
+		beego.Error("Failed to update activation", err)
+		return err
+	}
+	beego.Info("Success")
+	return nil
 }
