@@ -61,20 +61,6 @@ func (this *MachinesController) GetMachines() {
 	this.ServeJson()
 }
 
-func (this *MachinesController) requestHasUserId() (int, bool) {
-	beego.Info("Checking for user_id request variable")
-	var isUserIdSet bool = false
-	userId, err := this.GetInt("user_id")
-	if err == nil {
-		beego.Info("Found", userId)
-		isUserIdSet = true
-	} else {
-		beego.Error(err)
-		beego.Info("Not found")
-	}
-	return int(userId), isUserIdSet
-}
-
 func (this *MachinesController) getUserMachines(userId int) ([]PublicMachine, error) {
 	o := orm.NewOrm()
 	var machines []models.Machine

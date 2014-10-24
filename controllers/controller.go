@@ -31,6 +31,21 @@ func (this *Controller) Prepare() {
 	}
 }
 
+// Checks if request has user_id variable set and returns it
+func (this *Controller) requestHasUserId() (int, bool) {
+	beego.Info("Checking for user_id request variable")
+	var isUserIdSet bool = false
+	userId, err := this.GetInt("user_id")
+	if err == nil {
+		beego.Info("Found", userId)
+		isUserIdSet = true
+	} else {
+		beego.Error(err)
+		beego.Info("Not found")
+	}
+	return int(userId), isUserIdSet
+}
+
 // Returns user roles model for the currently logged in user
 func (this *Controller) getSessionUserRoles() models.UserRoles {
 	o := orm.NewOrm()
