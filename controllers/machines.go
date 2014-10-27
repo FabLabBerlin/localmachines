@@ -81,7 +81,7 @@ func (this *MachinesController) getUserMachines(userId int) (interface{}, error)
 		if !machines[i].Available {
 			status = "occupied"
 			// Machine is not available, check if there is an activation with it
-			activation, err := this.getActivation(machines[i].Id)
+			activationInterface, err := this.getActivation(machines[i].Id)
 			if err != nil {
 				// TODO: output unavail message
 				// TODO: status = "unavailable"
@@ -90,7 +90,7 @@ func (this *MachinesController) getUserMachines(userId int) (interface{}, error)
 				//return nil, err
 				occupiedByUserId = 0
 			} else {
-				occupiedByUserId = activation.UserId
+				occupiedByUserId = activationInterface.(models.Activation).UserId
 			}
 		}
 		// Fill public machine struct for output
@@ -109,12 +109,12 @@ func (this *MachinesController) getUserMachines(userId int) (interface{}, error)
 	return pubMachines, nil
 }
 
-func (this *MachinesController) getActivation(machineId int) (*models.Activation, error) {
+func (this *MachinesController) getActivation(machineId int) (interface{}, error) {
 	o := orm.NewOrm()
-	activationModel := new(models.Activation)
+	activationModel := models.Activation{}
 	beego.Trace("Attempt to get activation for machine ID", machineId)
 	err := o.Raw("SELECT * FROM activation WHERE machine_id = ? AND active = 1",
-		machineId).QueryRow(activationModel)
+		machineId).QueryRow(&activationModel)
 	if err != nil {
 		beego.Error(err)
 		return nil, err
