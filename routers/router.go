@@ -18,5 +18,5 @@ func init() {
 	// Route activation requests
 	beego.Router("/api/activations", &controllers.ActivationsController{}, "get:GetActivations")
 	beego.Router("/api/activations", &controllers.ActivationsController{}, "post:CreateActivation")
-	beego.Router("/api/activations", &controllers.ActivationsController{}, "put:UpdateActivation")
+	beego.Router("/api/activations", &controllers.ActivationsController{}, "put:CloseActivation")
 }

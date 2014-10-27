@@ -24,53 +24,44 @@ type PublicMachine struct {
 // Output JSON list with available machines for a user
 func (this *MachinesController) GetMachines() {
 	var response struct{ Machines []PublicMachine }
-	// Cehck if there is user_id in the request variables
-	isSet, userId := this.requestHasUserId()
-	if isSet {
-		// Check if admin
-		roles := this.getSessionUserRoles()
-		// If user role is admin, staff or request user_id matches session user_id
-		if roles.Admin || roles.Staff ||
-			userId == this.GetSession("user_id").(int) {
-			// Use request user_id
-			machines, err := this.getUserMachines(userId)
-			if err != nil {
-				beego.Error("Could not get machines")
-				this.serveStatusResponse("error", "No machines available")
-			}
-			response.Machines = machines
-		} else {
-			// User has no permission to get machine info for another user
-			beego.Error("User", userId, "not authorized")
-			this.serveStatusResponse("error", "Not authorized")
+	reqUserId, err := this.GetInt(REQUEST_FIELD_NAME_USER_ID)
+	var userId int
+	if err != nil {
+		beego.Info("No user ID set, attempt to get session user ID")
+		userId, err = this.getSessionUserId()
+		if err != nil {
+			this.serveErrorResponse("There was an error")
 		}
 	} else {
-		// Use current session user_id
-		machines, err := this.getUserMachines(this.GetSession("user_id").(int))
-		if err != nil {
-			beego.Error("No machines available for current session user")
-			this.serveStatusResponse("error", "No machines available")
+		if !this.isAdmin() && !this.isStaff() {
+			this.serveErrorResponse("You don't have permissions to list other user's machines")
+		} else {
+			userId = int(reqUserId)
 		}
-		response.Machines = machines
 	}
-	// Serve JSON with list of machines
+	machines, err := this.getUserMachines(userId)
+	if err != nil {
+		this.serveErrorResponse("No machines available")
+	}
+	response.Machines = *machines
 	this.Data["json"] = &response
 	this.ServeJson()
 }
 
-func (this *MachinesController) getUserMachines(userId int) ([]PublicMachine, error) {
+func (this *MachinesController) getUserMachines(userId int) (*[]PublicMachine, error) {
+	beego.Trace("Attempt to get machines for user ID:", userId)
+	machines := []models.Machine{}
 	o := orm.NewOrm()
-	var machines []models.Machine
 	num, err := o.Raw("SELECT * FROM machine INNER JOIN permission ON machine.id = permission.machine_id WHERE permission.user_id = ?",
 		userId).QueryRows(&machines)
 	if err != nil {
 		beego.Error(err)
 		return nil, err
 	}
-	beego.Info("Got ", num, "machines")
+	beego.Trace("Got ", num, "machines")
 
 	// Interpret machines as PublicMachine
-	var pubMachines []PublicMachine
+	var pubMachines = []PublicMachine{}
 	for i := range machines {
 		var price float32 = 0.0
 		var priceUnit string = "unit"
@@ -111,18 +102,19 @@ func (this *MachinesController) getUserMachines(userId int) ([]PublicMachine, er
 		// Append to array
 		pubMachines = append(pubMachines, machine)
 	}
-	return pubMachines, nil
+	return &pubMachines, nil
 }
 
 func (this *MachinesController) getActivation(machineId int) (*models.Activation, error) {
 	o := orm.NewOrm()
 	activationModel := new(models.Activation)
-	beego.Info("Attempt to get activation for machine ID", machineId)
+	beego.Trace("Attempt to get activation for machine ID", machineId)
 	err := o.Raw("SELECT * FROM activation WHERE machine_id = ? AND active = 1",
 		machineId).QueryRow(activationModel)
 	if err != nil {
 		beego.Error(err)
 		return nil, err
 	}
+	beego.Trace("Success")
 	return activationModel, nil
 }

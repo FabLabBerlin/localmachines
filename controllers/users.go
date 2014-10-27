@@ -22,54 +22,57 @@ type PublicUser struct {
 
 // Output JSON user list for API /users request
 func (this *UsersController) GetUsers() {
-	var isAdmin bool = false
-	userRoles := this.getSessionUserRoles()
-	if userRoles.Admin || userRoles.Staff {
-		isAdmin = true
-		beego.Info("Admin or staff user detected")
-	} else {
-		beego.Info("Regular user detected")
-	}
 	// Create response
 	var response struct{ Users []PublicUser }
-	if isAdmin {
-		response.Users = this.getAllUsers()
+	var err error
+	if this.isAdmin() || this.isStaff() {
+		response.Users, err = this.getAllUsers()
+		if err != nil {
+			this.serveErrorResponse("Could not get users")
+		}
 	} else {
-		response.Users = this.getSessionUser()
+		response.Users, err = this.getSessionUser()
+		if err != nil {
+			this.serveErrorResponse("Could not get session user")
+		}
 	}
 	this.Data["json"] = &response
 	this.ServeJson()
 }
 
 // If user role is admin or staff, return all users
-func (this *UsersController) getAllUsers() []PublicUser {
+func (this *UsersController) getAllUsers() ([]PublicUser, error) {
+	beego.Trace("Attempt to get all users from DB")
+	users := []models.User{}
 	o := orm.NewOrm()
-	var users []models.User
 	num, err := o.Raw("Select * FROM user").QueryRows(&users)
 	if err != nil {
-		beego.Error(err)
+		beego.Error("Could not get all users:", err)
+		return nil, err
 	} else {
-		beego.Info("Got", num, "users")
+		beego.Trace("Got", num, "users")
 	}
 	// Loop through users and cherry pick values
-	var arrPubUsers []PublicUser
+	arrPubUsers := []PublicUser{}
 	for i := range users {
 		userFullName := fmt.Sprintf("%s %s", users[i].FirstName, users[i].LastName)
 		user := PublicUser{users[i].Id, userFullName, users[i].Email}
 		arrPubUsers = append(arrPubUsers, user)
 	}
-	return arrPubUsers
+	return arrPubUsers, nil
 }
 
 // If user role is NOT admin or staff, return session user
-func (this *UsersController) getSessionUser() []PublicUser {
-	var userModel *models.User
-	userModel = this.getSessionUserData()
+func (this *UsersController) getSessionUser() ([]PublicUser, error) {
+	userModel, err := this.getUser()
+	if err != nil {
+		return nil, err
+	}
 	// Interpret it as PublicUser
-	var pubUser PublicUser
+	pubUser := PublicUser{}
 	pubUser.Id = userModel.Id
 	pubUser.Name = fmt.Sprintf("%s %s", userModel.FirstName, userModel.LastName)
 	pubUser.Email = userModel.Email
 	arr := []PublicUser{pubUser}
-	return arr
+	return arr, nil
 }
