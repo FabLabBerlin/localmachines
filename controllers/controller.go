@@ -99,7 +99,7 @@ func (this *Controller) getSessionUserId() (int, error) {
 
 // Get user data from database by user ID or if it is not given,
 // by session user ID
-func (this *Controller) getUser(userIds ...int) (*models.User, error) {
+func (this *Controller) getUser(userIds ...int) (interface{}, error) {
 	var userId int
 	var err error
 	if len(userIds) == 0 {
@@ -114,9 +114,9 @@ func (this *Controller) getUser(userIds ...int) (*models.User, error) {
 		return nil, errors.New("Invalid argument count")
 	}
 	beego.Trace("Attempt to get user row for user ID", userId)
-	userModel := &models.User{Id: userId}
+	userModel := models.User{Id: userId}
 	o := orm.NewOrm()
-	err = o.Read(userModel)
+	err = o.Read(&userModel)
 	if err != nil {
 		beego.Critical("Could not get user data from DB:", err)
 		return nil, err
