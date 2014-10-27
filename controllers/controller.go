@@ -125,7 +125,7 @@ func (this *Controller) getUser(userIds ...int) (interface{}, error) {
 }
 
 // Returns user roles model for the currently logged in user
-func (this *Controller) getUserRoles(userIds ...int) (*models.UserRoles, error) {
+func (this *Controller) getUserRoles(userIds ...int) (interface{}, error) {
 	var userId int
 	var err error
 	if len(userIds) == 0 {
@@ -140,9 +140,9 @@ func (this *Controller) getUserRoles(userIds ...int) (*models.UserRoles, error) 
 		return nil, err
 	}
 	beego.Trace("Attempt to get user roles for user id", userId)
-	rolesModel := &models.UserRoles{UserId: userId}
+	rolesModel := models.UserRoles{UserId: userId}
 	o := orm.NewOrm()
-	err = o.Read(rolesModel)
+	err = o.Read(&rolesModel)
 	if err != nil {
 		beego.Critical("Could not get roles model from DB:", err)
 		return nil, err
@@ -166,11 +166,12 @@ func (this *Controller) isAdmin(userIds ...int) bool {
 		beego.Critical("Expecting single or no value as input")
 		return false
 	}
-	var rolesModel *models.UserRoles
-	rolesModel, err = this.getUserRoles(userId)
+	var rolesModelInterface interface{}
+	rolesModelInterface, err = this.getUserRoles(userId)
 	if err != nil {
 		return false
 	}
+	rolesModel := rolesModelInterface.(models.UserRoles)
 	if rolesModel.Admin {
 		return true
 	}
@@ -193,11 +194,12 @@ func (this *Controller) isStaff(userIds ...int) bool {
 		beego.Critical("Expecting single or no value as input")
 		return false
 	}
-	var rolesModel *models.UserRoles
-	rolesModel, err = this.getUserRoles(userId)
+	var rolesModelInterface interface{}
+	rolesModelInterface, err = this.getUserRoles(userId)
 	if err != nil {
 		return false
 	}
+	rolesModel := rolesModelInterface.(models.UserRoles)
 	if rolesModel.Staff {
 		return true
 	}
