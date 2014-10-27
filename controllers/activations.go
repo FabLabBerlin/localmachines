@@ -74,19 +74,20 @@ func (this *ActivationsController) GetActivations() {
 		// Use request user ID
 		userId = int(reqUserId)
 	}
-	var rawActivations *[]models.Activation
-	rawActivations, err = this.getActivationsForUserId(userId)
+	var rawActivationsInterface interface{}
+	rawActivationsInterface, err = this.getActivationsForUserId(userId)
 	if err != nil {
 		if beego.AppConfig.String("runmode") == "dev" {
 			panic("Could not get activations")
 		}
 		this.serveErrorResponse("Could not get activations")
 	}
-	if len(*rawActivations) <= 0 {
+	rawActivations := rawActivationsInterface.([]models.Activation)
+	if len(rawActivations) <= 0 {
 		this.serveErrorResponse("No activations found")
 	}
 	// Now we need to interpret raw activation models for public output
-	pubActivations := this.getPublicActivations(rawActivations)
+	pubActivations := this.getPublicActivations(&rawActivations)
 	this.Data["json"] = &pubActivations
 	this.ServeJson()
 }
@@ -109,12 +110,12 @@ func (this *ActivationsController) CloseActivation() {
 }
 
 // Returns activations for user ID specified
-func (this *ActivationsController) getActivationsForUserId(userId int) (*[]models.Activation, error) {
-	activations := new([]models.Activation)
+func (this *ActivationsController) getActivationsForUserId(userId int) (interface{}, error) {
+	activations := []models.Activation{}
 	o := orm.NewOrm()
 	beego.Trace("Attempt to get activations for user ID", userId)
 	num, err := o.Raw("SELECT * FROM activation WHERE user_id = ? AND active = 1",
-		userId).QueryRows(activations)
+		userId).QueryRows(&activations)
 	if err != nil {
 		beego.Error("Could not get activations")
 		return nil, err
