@@ -74,15 +74,14 @@ func (this *ActivationsController) GetActivations() {
 		// Use request user ID
 		userId = int(reqUserId)
 	}
-	var rawActivationsInterface interface{}
-	rawActivationsInterface, err = this.getActivationsForUserId(userId)
+	var rawActivations []models.Activation
+	rawActivations, err = this.getActivationsForUserId(userId)
 	if err != nil {
 		if beego.AppConfig.String("runmode") == "dev" {
 			panic("Could not get activations")
 		}
 		this.serveErrorResponse("Could not get activations")
 	}
-	rawActivations := rawActivationsInterface.([]models.Activation)
 	if len(rawActivations) <= 0 {
 		this.serveErrorResponse("No activations found")
 	}
@@ -110,7 +109,7 @@ func (this *ActivationsController) CloseActivation() {
 }
 
 // Returns activations for user ID specified
-func (this *ActivationsController) getActivationsForUserId(userId int) (interface{}, error) {
+func (this *ActivationsController) getActivationsForUserId(userId int) ([]models.Activation, error) {
 	activations := []models.Activation{}
 	o := orm.NewOrm()
 	beego.Trace("Attempt to get activations for user ID", userId)

@@ -42,17 +42,17 @@ func (this *MachinesController) GetMachines() {
 			userId = int(reqUserId)
 		}
 	}
-	machinesInterface, err := this.getUserMachines(userId)
+	machines, err := this.getUserMachines(userId)
 	if err != nil {
 		// TODO: serve empty array if no machines found, error on real error
 		this.serveErrorResponse("No machines available")
 	}
-	response.Machines = machinesInterface.([]PublicMachine)
+	response.Machines = machines
 	this.Data["json"] = &response
 	this.ServeJson()
 }
 
-func (this *MachinesController) getUserMachines(userId int) (interface{}, error) {
+func (this *MachinesController) getUserMachines(userId int) ([]PublicMachine, error) {
 	beego.Trace("Attempt to get machines for user ID:", userId)
 	machines := []models.Machine{}
 	o := orm.NewOrm()
@@ -81,7 +81,7 @@ func (this *MachinesController) getUserMachines(userId int) (interface{}, error)
 		if !machines[i].Available {
 			status = "occupied"
 			// Machine is not available, check if there is an activation with it
-			activationInterface, err := this.getActivation(machines[i].Id)
+			activation, err := this.getActivation(machines[i].Id)
 			if err != nil {
 				// TODO: output unavail message
 				// TODO: status = "unavailable"
@@ -90,7 +90,7 @@ func (this *MachinesController) getUserMachines(userId int) (interface{}, error)
 				//return nil, err
 				occupiedByUserId = 0
 			} else {
-				occupiedByUserId = activationInterface.(models.Activation).UserId
+				occupiedByUserId = activation.UserId
 			}
 		}
 		// Fill public machine struct for output
@@ -109,7 +109,7 @@ func (this *MachinesController) getUserMachines(userId int) (interface{}, error)
 	return pubMachines, nil
 }
 
-func (this *MachinesController) getActivation(machineId int) (interface{}, error) {
+func (this *MachinesController) getActivation(machineId int) (models.Activation, error) {
 	o := orm.NewOrm()
 	activationModel := models.Activation{}
 	beego.Trace("Attempt to get activation for machine ID", machineId)
@@ -117,7 +117,7 @@ func (this *MachinesController) getActivation(machineId int) (interface{}, error
 		machineId).QueryRow(&activationModel)
 	if err != nil {
 		beego.Error(err)
-		return nil, err
+		return models.Activation{}, err
 	}
 	beego.Trace("Success")
 	return activationModel, nil

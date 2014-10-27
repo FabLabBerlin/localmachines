@@ -70,11 +70,10 @@ func (this *UsersController) getAllUsers() ([]PublicUser, error) {
 
 // If user role is NOT admin or staff, return session user
 func (this *UsersController) getSessionUser() ([]PublicUser, error) {
-	userModelInterface, err := this.getUser()
+	userModel, err := this.getUser()
 	if err != nil {
 		return nil, err
 	}
-	userModel := userModelInterface.(models.User)
 	// Interpret it as PublicUser
 	pubUser := PublicUser{}
 	pubUser.Id = userModel.Id
