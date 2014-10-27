@@ -42,17 +42,17 @@ func (this *MachinesController) GetMachines() {
 			userId = int(reqUserId)
 		}
 	}
-	machines, err := this.getUserMachines(userId)
+	machinesInterface, err := this.getUserMachines(userId)
 	if err != nil {
 		// TODO: serve empty array if no machines found, error on real error
 		this.serveErrorResponse("No machines available")
 	}
-	response.Machines = *machines
+	response.Machines = machinesInterface.([]PublicMachine)
 	this.Data["json"] = &response
 	this.ServeJson()
 }
 
-func (this *MachinesController) getUserMachines(userId int) (*[]PublicMachine, error) {
+func (this *MachinesController) getUserMachines(userId int) (interface{}, error) {
 	beego.Trace("Attempt to get machines for user ID:", userId)
 	machines := []models.Machine{}
 	o := orm.NewOrm()
@@ -106,7 +106,7 @@ func (this *MachinesController) getUserMachines(userId int) (*[]PublicMachine, e
 		// Append to array
 		pubMachines = append(pubMachines, machine)
 	}
-	return &pubMachines, nil
+	return pubMachines, nil
 }
 
 func (this *MachinesController) getActivation(machineId int) (*models.Activation, error) {
