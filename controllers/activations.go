@@ -87,7 +87,7 @@ func (this *ActivationsController) GetActivations() {
 	}
 	// Now we need to interpret raw activation models for public output
 	pubActivations := this.getPublicActivations(rawActivations)
-	this.Data["json"] = pubActivations
+	this.Data["json"] = &pubActivations
 	this.ServeJson()
 }
 
@@ -124,7 +124,7 @@ func (this *ActivationsController) getActivationsForUserId(userId int) (*[]model
 }
 
 // Interprets *[]models.Activation to *[]PublicActivation and returns same size array
-func (this *ActivationsController) getPublicActivations(activations *[]models.Activation) *[]PublicActivation {
+func (this *ActivationsController) getPublicActivations(activations *[]models.Activation) []PublicActivation {
 	pubActivations := []PublicActivation{}
 	for i := range *activations {
 		item := PublicActivation{(*activations)[i].Id,
@@ -132,7 +132,7 @@ func (this *ActivationsController) getPublicActivations(activations *[]models.Ac
 			(*activations)[i].UserId}
 		pubActivations = append(pubActivations, item)
 	}
-	return &pubActivations
+	return pubActivations
 }
 
 // Create new activation with user ID and machine ID.
