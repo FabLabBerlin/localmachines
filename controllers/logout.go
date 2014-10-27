@@ -5,7 +5,12 @@ import (
 )
 
 type LogoutController struct {
-	beego.Controller
+	Controller
+}
+
+// Override this, because we want to be able logout if logged in
+func (this *LogoutController) Prepare() {
+	beego.Info("Skipping login check")
 }
 
 // Logout user, handle API /logout request
@@ -18,7 +23,5 @@ func (this *LogoutController) Logout() {
 		beego.Info("Logged out user", sessUsername)
 	}
 	// Respond
-	response := struct{ Status string }{"ok"}
-	this.Data["json"] = &response
-	this.ServeJson()
+	this.serveOkResponse()
 }

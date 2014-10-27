@@ -6,7 +6,7 @@ import (
 )
 
 func init() {
-	// Route root request
+	// Route root request, serve Angular JS app
 	beego.Router("/", &controllers.MainController{})
 
 	// Route single method requests
