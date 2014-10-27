@@ -28,11 +28,17 @@ func (this *UsersController) GetUsers() {
 	if this.isAdmin() || this.isStaff() {
 		response.Users, err = this.getAllUsers()
 		if err != nil {
+			if beego.AppConfig.String("runmode") == "dev" {
+				panic("Could not get all users")
+			}
 			this.serveErrorResponse("Could not get users")
 		}
 	} else {
 		response.Users, err = this.getSessionUser()
 		if err != nil {
+			if beego.AppConfig.String("runmode") == "dev" {
+				panic("Could not get session user")
+			}
 			this.serveErrorResponse("Could not get session user")
 		}
 	}

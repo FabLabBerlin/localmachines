@@ -30,6 +30,9 @@ func (this *MachinesController) GetMachines() {
 		beego.Info("No user ID set, attempt to get session user ID")
 		userId, err = this.getSessionUserId()
 		if err != nil {
+			if beego.AppConfig.String("runmode") == "dev" {
+				panic("Could not get session user ID")
+			}
 			this.serveErrorResponse("There was an error")
 		}
 	} else {
@@ -41,6 +44,7 @@ func (this *MachinesController) GetMachines() {
 	}
 	machines, err := this.getUserMachines(userId)
 	if err != nil {
+		// TODO: serve empty array if no machines found, error on real error
 		this.serveErrorResponse("No machines available")
 	}
 	response.Machines = *machines

@@ -32,6 +32,9 @@ func (this *ActivationsController) CreateActivation() {
 	if err != nil {
 		userId, err = this.getSessionUserId()
 		if err != nil {
+			if beego.AppConfig.String("runmode") == "dev" {
+				panic("Could not get session user ID")
+			}
 			this.serveErrorResponse("Session error occured")
 		}
 	} else {
@@ -43,6 +46,9 @@ func (this *ActivationsController) CreateActivation() {
 	var id int
 	id, err = this.createActivation(userId, int(reqMachineId))
 	if err != nil {
+		if beego.AppConfig.String("runmode") == "dev" {
+			panic("Could not create activation")
+		}
 		this.serveErrorResponse("Could not create activation")
 	} else {
 		this.serveCreatedResponse(id)
@@ -59,6 +65,9 @@ func (this *ActivationsController) GetActivations() {
 		userId, err = this.getSessionUserId()
 		if err != nil {
 			// Can't get session user id, exit
+			if beego.AppConfig.String("runmode") == "dev" {
+				panic("Could not get session user ID")
+			}
 			this.serveErrorResponse("Could not get activations")
 		}
 	} else {
@@ -68,6 +77,9 @@ func (this *ActivationsController) GetActivations() {
 	var rawActivations *[]models.Activation
 	rawActivations, err = this.getActivationsForUserId(userId)
 	if err != nil {
+		if beego.AppConfig.String("runmode") == "dev" {
+			panic("Could not get activations")
+		}
 		this.serveErrorResponse("Could not get activations")
 	}
 	if len(*rawActivations) <= 0 {
@@ -88,11 +100,15 @@ func (this *ActivationsController) CloseActivation() {
 	}
 	err = this.finalizeActivation(int(reqActivationId))
 	if err != nil {
+		if beego.AppConfig.String("runmode") == "dev" {
+			panic("Could not finalize activation")
+		}
 		this.serveErrorResponse("Could not close activation")
 	}
 	this.serveOkResponse()
 }
 
+// Returns activations for user ID specified
 func (this *ActivationsController) getActivationsForUserId(userId int) (*[]models.Activation, error) {
 	activations := new([]models.Activation)
 	o := orm.NewOrm()
@@ -136,8 +152,7 @@ func (this *ActivationsController) createActivation(userId int, machineId int) (
 	var activationId int64
 	activationId, err = res.LastInsertId()
 	if err != nil {
-		beego.Critical("Last inserted ID not set, something terribly wrong")
-		panic("Failing")
+		return int(0), err
 	}
 	beego.Trace("Activation with ID", activationId, "created")
 	err = this.setMachineUnavailable(machineId)
@@ -180,21 +195,13 @@ func (this *ActivationsController) finalizeActivation(id int) error {
 		totalDuration.Seconds(), id).Exec()
 	if err != nil {
 		beego.Error("Failed to update activation:", err)
-		if beego.AppConfig.String("runmode") == "dev" {
-			panic("Failed to update activation")
-		} else {
-			return err
-		}
+		return err
 	}
 	var rowsAffected int64
 	rowsAffected, err = res.RowsAffected()
 	if err != nil {
 		beego.Critical("Could not get num affected rows")
-		if beego.AppConfig.String("runmode") == "dev" {
-			panic("Could not get num affected rows")
-		} else {
-			return err
-		}
+		return err
 	}
 	beego.Trace("Success, rows affected: ", rowsAffected)
 	err = this.setMachineAvailable(tempModel.MachineId)

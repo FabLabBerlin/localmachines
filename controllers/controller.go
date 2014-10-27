@@ -92,11 +92,7 @@ func (this *Controller) getSessionUserId() (int, error) {
 	userId := this.GetSession(SESSION_FIELD_NAME_USER_ID)
 	if userId == nil {
 		beego.Critical("Could not get session user ID")
-		if beego.AppConfig.String("runmode") == "dev" {
-			panic("Could not get session user ID")
-		} else {
-			return 0, errors.New("Session user ID not set")
-		}
+		return 0, errors.New("Session user ID not set")
 	}
 	return userId.(int), nil
 }
@@ -115,11 +111,7 @@ func (this *Controller) getUser(userIds ...int) (*models.User, error) {
 		userId = userIds[0]
 	} else {
 		beego.Critical("Wrong argument count")
-		if beego.AppConfig.String("runmode") == "dev" {
-			panic("Expected one or none arguments")
-		} else {
-			return nil, errors.New("Invalid argument count")
-		}
+		return nil, errors.New("Invalid argument count")
 	}
 	beego.Trace("Attempt to get user row for user ID", userId)
 	userModel := &models.User{Id: userId}
@@ -127,11 +119,7 @@ func (this *Controller) getUser(userIds ...int) (*models.User, error) {
 	err = o.Read(userModel)
 	if err != nil {
 		beego.Critical("Could not get user data from DB:", err)
-		if beego.AppConfig.String("runmode") == "dev" {
-			panic("Could not get user data from DB")
-		} else {
-			return nil, err
-		}
+		return nil, err
 	}
 	return userModel, nil
 }
@@ -149,11 +137,7 @@ func (this *Controller) getUserRoles(userIds ...int) (*models.UserRoles, error) 
 		userId = userIds[0]
 	} else {
 		beego.Critical("Wrong argument count")
-		if beego.AppConfig.String("runmode") == "dev" {
-			panic("Expected one or none arguments")
-		} else {
-			return nil, err
-		}
+		return nil, err
 	}
 	beego.Trace("Attempt to get user roles for user id", userId)
 	rolesModel := &models.UserRoles{UserId: userId}
@@ -161,11 +145,7 @@ func (this *Controller) getUserRoles(userIds ...int) (*models.UserRoles, error) 
 	err = o.Read(rolesModel)
 	if err != nil {
 		beego.Critical("Could not get roles model from DB:", err)
-		if beego.AppConfig.String("runmode") == "dev" {
-			panic("Could not get roles model from DB")
-		} else {
-			return nil, err
-		}
+		return nil, err
 	}
 	return rolesModel, nil
 }
@@ -184,11 +164,7 @@ func (this *Controller) isAdmin(userIds ...int) bool {
 		userId = userIds[0]
 	} else {
 		beego.Critical("Expecting single or no value as input")
-		if beego.AppConfig.String("runmode") == "dev" {
-			panic("Expecting single or no value as input")
-		} else {
-			return false
-		}
+		return false
 	}
 	var rolesModel *models.UserRoles
 	rolesModel, err = this.getUserRoles(userId)
@@ -215,11 +191,7 @@ func (this *Controller) isStaff(userIds ...int) bool {
 		userId = userIds[0]
 	} else {
 		beego.Critical("Expecting single or no value as input")
-		if beego.AppConfig.String("runmode") == "dev" {
-			panic("Failing")
-		} else {
-			return false
-		}
+		return false
 	}
 	var rolesModel *models.UserRoles
 	rolesModel, err = this.getUserRoles(userId)
