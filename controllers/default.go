@@ -9,8 +9,12 @@ type MainController struct {
 }
 
 func (this *MainController) Get() {
-	//this.Data["Website"] = "beego.me"
-	//this.Data["Email"] = "astaxie@gmail.com"
-	this.TplNames = "index.tpl"
+	if beego.AppConfig.String("runmode") == "dev" {
+		this.Data["AppTitle"] = "Fabsmith Dev"
+	} else {
+		this.Data["AppTitle"] = "Fabsmith"
+	}
+	this.Data["AppDescription"] = "Fabsmith - the fab lab locksmith"
+	this.TplNames = "index.html"
 	this.Render()
 }
