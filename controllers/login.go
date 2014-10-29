@@ -44,7 +44,9 @@ func (this *LoginController) Login() {
 			beego.Info("Failed to authenticate user")
 		}
 	} else {
-		this.serveErrorResponse("Already logged")
+		this.Data["json"] = struct{ Status string }{"logged"}
+		this.ServeJson()
+		//this.serveErrorResponse("Already logged")
 	}
 }
 
@@ -78,6 +80,10 @@ func (this *LoginController) isUserValid() bool {
 	// Get request variables
 	username := this.GetString("username")
 	password := this.GetString("password")
+
+	beego.Trace("POST username:", username)
+	beego.Trace("POST password:", password)
+
 	// Get password from DB
 	storedUserPassword, err := this.getPassword(username)
 	if err != nil {
