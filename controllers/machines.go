@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/kr15h/fabsmith/models"
@@ -11,14 +12,15 @@ type MachinesController struct {
 }
 
 type PublicMachine struct {
-	Id               int
-	Name             string
-	Description      string
-	Price            float32
-	PriceUnit        string
-	PriceCurrency    string
-	Status           string
-	OccupiedByUserId int
+	Id                     int
+	Name                   string
+	Description            string
+	Price                  float32
+	PriceUnit              string
+	PriceCurrency          string
+	Status                 string
+	OccupiedByUserId       int
+	OccupiedByUserFullName string
 }
 
 // Output JSON list with available machines for a user
@@ -78,6 +80,7 @@ func (this *MachinesController) getUserMachines(userId int) ([]PublicMachine, er
 		}
 		var status string = "free"
 		var occupiedByUserId int
+		var occupiedByUsesFullName string
 		if !machines[i].Available {
 			status = "occupied"
 			// Machine is not available, check if there is an activation with it
@@ -91,18 +94,30 @@ func (this *MachinesController) getUserMachines(userId int) ([]PublicMachine, er
 				occupiedByUserId = 0
 			} else {
 				occupiedByUserId = activation.UserId
+				// Get user full name right away
+				var userModel models.User
+				userModel.Id = activation.UserId
+				o := orm.NewOrm()
+				err = o.Read(&userModel)
+				if err != nil {
+					beego.Error("Could not get user responsible for the activation:", err)
+					return []PublicMachine{}, err
+				} else {
+					occupiedByUsesFullName = fmt.Sprintf("%s %s", userModel.FirstName, userModel.LastName)
+				}
 			}
 		}
 		// Fill public machine struct for output
 		machine := PublicMachine{
-			Id:               machines[i].Id,
-			Name:             machines[i].Name,
-			Description:      machines[i].Description,
-			Price:            price,
-			PriceUnit:        priceUnit,
-			PriceCurrency:    "€", // TODO: add price currency table
-			Status:           status,
-			OccupiedByUserId: occupiedByUserId}
+			Id:                     machines[i].Id,
+			Name:                   machines[i].Name,
+			Description:            machines[i].Description,
+			Price:                  price,
+			PriceUnit:              priceUnit,
+			PriceCurrency:          "€", // TODO: add price currency table
+			Status:                 status,
+			OccupiedByUserId:       occupiedByUserId,
+			OccupiedByUserFullName: occupiedByUsesFullName}
 		// Append to array
 		pubMachines = append(pubMachines, machine)
 	}
