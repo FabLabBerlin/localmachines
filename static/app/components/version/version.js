@@ -1,8 +1,8 @@
 'use strict';
 
-angular.module('myApp.version', [
-  'myApp.version.interpolate-filter',
-  'myApp.version.version-directive'
+angular.module('fabsmith.version', [
+  'fabsmith.version.interpolate-filter',
+  'fabsmith.version.version-directive'
 ])
 
 .value('version', '0.1');

@@ -1,0 +1,32 @@
+'use strict';
+
+angular.module('fabsmith.logout', ['ngRoute', 'timer'])
+
+.config(['$routeProvider', function($routeProvider) {
+  $routeProvider.when('/logout', {
+    templateUrl: '/static/app/logout/logout.html',
+    controller: 'LogoutCtrl'
+  });
+}])
+
+.controller('LogoutCtrl', ['$scope', '$http', '$location', function($scope, $http, $location) {
+	$scope.$on('timer-stopped', function (event, data){
+		$scope.logout();
+  });
+
+	// Activate countdown
+	$scope.abortLogout = function() {
+		$scope.$broadcast('timer-clear');
+		$location.path('/machines');
+	};
+
+	$scope.logout = function() {
+		$http.get('/api/logout')
+		.success(function() {
+			$location.path('/');
+		})
+		.error(function() {
+			alert('Failed to log out. Probably server down.');
+		});
+	};
+}]);
