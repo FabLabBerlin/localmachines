@@ -97,15 +97,16 @@ func (this *ActivationsController) CloseActivation() {
 	reqActivationId, err := this.GetInt(REQUEST_FIELD_NAME_ACTIVATION_ID)
 	if err != nil {
 		this.serveErrorResponse("Missing activation ID")
-	}
-	err = this.finalizeActivation(int(reqActivationId))
-	if err != nil {
-		if beego.AppConfig.String("runmode") == "dev" {
-			panic("Could not finalize activation")
+	} else {
+		err = this.finalizeActivation(int(reqActivationId))
+		if err != nil {
+			if beego.AppConfig.String("runmode") == "dev" {
+				panic("Could not finalize activation")
+			}
+			this.serveErrorResponse("Could not close activation")
 		}
-		this.serveErrorResponse("Could not close activation")
+		this.serveOkResponse()
 	}
-	this.serveOkResponse()
 }
 
 // Returns activations for user ID specified
