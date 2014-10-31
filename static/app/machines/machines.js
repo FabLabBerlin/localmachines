@@ -85,7 +85,7 @@ angular.module('fabsmith.machines', ['ngRoute'])
 	})
 	.success(function(data) {
 		if (data.Status === 'error') {
-			alert(data.Message);
+			alert('msg: ' + data.Message);
 		} else if (data.Machines.length <= 0) {
 			alert('There are no machines available for you');
 		} else if (data.Machines.length > 0) {
