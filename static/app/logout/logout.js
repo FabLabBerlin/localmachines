@@ -21,7 +21,13 @@ angular.module('fabsmith.logout', ['ngRoute', 'timer'])
 	};
 
 	$scope.logout = function() {
-		$http.get('/api/logout')
+		$http({
+			method: 'GET',
+			url: '/api/logout',
+			params: {
+				anticache: new Date().getTime()
+			}
+		})
 		.success(function() {
 			$location.path('/');
 		})

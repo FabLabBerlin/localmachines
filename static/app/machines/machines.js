@@ -13,9 +13,14 @@ angular.module('fabsmith.machines', ['ngRoute'])
 
 .controller('ActivationsCtrl', ['$scope', '$http', '$location', function($scope, $http, $location){
 	$scope.activations = [];
-
 	// Get current user activations on load
-	$http.get('/api/activations')
+	$http({
+		method: 'GET',
+		url: '/api/activations',
+		params: {
+			anticache: new Date().getTime()
+		}
+	})
 	.success(function(data) {
 		if (data.length && data[0].Id) {
 			$scope.activations = data;
@@ -33,11 +38,14 @@ angular.module('fabsmith.machines', ['ngRoute'])
 		if (!confirm('Make this machine available to other users')) {
 			return;
 		}
-
 		$http({
-			method:'PUT', 
-			url:'/api/activations', 
-			params: {activation_id: activation.Id}})
+			method: 'PUT', 
+			url: '/api/activations', 
+			params: {
+				activation_id: activation.Id,
+				anticache: new Date().getTime()
+			}
+		})
 		.success(function(data) {
 			if (data.Status === 'ok') {
 				$scope.activations.splice($scope.activations.indexOf(activation), 1);
@@ -66,11 +74,15 @@ angular.module('fabsmith.machines', ['ngRoute'])
 
 .controller('MachinesCtrl', ['$scope', '$http', '$location', function($scope, $http, $location) {
 	$scope.test = 'Machines'
-
 	$scope.machines = [];
-
 	// Load machines
-	$http.get('/api/machines')
+	$http({
+		method: 'GET',
+		url: '/api/machines',
+		params: {
+			anticache: new Date().getTime()
+		}
+	})
 	.success(function(data) {
 		if (data.Status === 'error') {
 			alert(data.Message);
@@ -88,7 +100,14 @@ angular.module('fabsmith.machines', ['ngRoute'])
 
 	// Activate a machine by the currenty logged in user
 	$scope.activate = function(machineId) {
-		$http.post('/api/activations', {machine_id: machineId})
+		$http({
+			method: 'POST',
+			url: '/api/activations',
+			params: {
+				machine_id: machineId,
+				anticache: new Date().getTime()
+			}
+		})
 		.success(function(data) {
 			// Check status
 			if (data.Status === 'error') {
@@ -110,7 +129,13 @@ angular.module('fabsmith.machines', ['ngRoute'])
 	}
 
 	$scope.logout = function() {
-		$http.get('/api/logout')
+		$http({
+			method: 'GET',
+			url: '/api/logout',
+			params: {
+				anticache: new Date().getTime()
+			}
+		})
 		.success(function() {
 			$location.path('/');
 		})

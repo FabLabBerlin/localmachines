@@ -12,13 +12,16 @@ angular.module('fabsmith.login', ['ngRoute'])
 }])
 
 .controller('LoginCtrl', ['$scope', '$http', '$location', function($scope, $http, $location) {
-	$scope.date = new Date();
-
 	$scope.login = function() {
 		// Attempt to login via API
-		$http.post('/api/login', {
-			username: $scope.username,
-			password: md5($scope.password)
+		$http({
+			method: 'POST',
+			url: '/api/login',
+			params: {
+				username: $scope.username,
+				password: md5($scope.password),
+				anticache: new Date().getTime()
+			}
 		})
 		.success(function(data) {
 			if (data.Status === 'error') {
@@ -28,7 +31,7 @@ angular.module('fabsmith.login', ['ngRoute'])
 			}
 		})
 		.error(function() {
-			alert('Fatal error');
+			alert('Failed to log in');
 		});
 	}
 }]);
