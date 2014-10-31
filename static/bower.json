@@ -10,6 +10,7 @@
     "angular-route": "1.2.x",
     "angular-loader": "1.2.x",
     "angular-mocks": "~1.2.x",
+    "angular-cookies": "1.2.x",
     "bootstrap": "3.2.x",
     "angular-timer": "~1.1.7"
   }
