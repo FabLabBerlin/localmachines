@@ -65,6 +65,8 @@ angular.module('fabsmith', [
 
 // Main controller, checks if user logged in
 .controller('MainCtrl', ['$scope', '$http', '$location', function($scope, $http, $location){
+
+	// Check if we are logged in
 	$http.post('/api/login')
 	.success(function(data) {
 		if (data.Status === 'logged') {
