@@ -12,6 +12,9 @@ angular.module('fabsmith.login', ['ngRoute'])
 }])
 
 .controller('LoginCtrl', ['$scope', '$http', '$location', function($scope, $http, $location) {
+	
+	// Local login function - if we do it by entering username and 
+	// password in the browser
 	$scope.login = function() {
 		// Attempt to login via API
 		$http({
@@ -34,6 +37,18 @@ angular.module('fabsmith.login', ['ngRoute'])
 			alert('Failed to log in');
 		});
 	}
+
+	// Make the main controller scope accessible from outside
+	// So we can use our Android app to call login function
+	window.LOGIN_CTRL_SCOPE = $scope;
+
+	// Call this from Android app as LOGIN_CTRL_SCOPE.login("user", "pass");
+	$scope.androidLogin = function(username, password) {
+		$scope.username = username;
+		$scope.password = password;
+		$scope.login();
+	}
+
 }]);
 
 })();
