@@ -2,4 +2,4 @@
 
 # Replace username and password
 
-mysql --user=username --password=password fabsmith < fabsmith.sql
+mysql --user=fabsmith --password=fabsmith fabsmith < fabsmith.sql
