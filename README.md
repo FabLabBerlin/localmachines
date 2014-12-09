@@ -26,6 +26,17 @@ We use Node.js to fully benefit from the AngularJS Seed project. Use the [Node V
 
 ###MySQL
 
+Create a database with the `mysql` tool:
+```
+CREATE DATABASE fabsmith DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
+```
+
+Create a safe MySQL user (replace username and password): 
+```
+GRANT ALL PRIVILEGES ON fabsmith.* To 'fabsmith'@'localhost' IDENTIFIED BY 'fabsmith';
+SET PASSWORD FOR 'fabsmith'@'localhost' =  PASSWORD('fabsmith');
+```
+
 Restore a database from a dump:
 ```
 ./restoredb.sh
