@@ -24,8 +24,29 @@ Once you clone the source from this repository, you have to cd into the `static/
 ###Node.js
 We use Node.js to fully benefit from the AngularJS Seed project. Use the [Node Version Manager](https://github.com/creationix/nvm) to install latest Node.js version. On the Raspberry Pi it will compile it from source and it takes approximately 2 hours.
 
+###MySQL
+
+Restore a database from a dump:
+```
+./restoredb.sh
+```
+
+In future the Beego application should take care of this on it's own.
+
+Dump database:
+```
+./dumpdb.sh
+```
+
+Edit the files `restoredb.sh` and `dumpdb.sh` to add your specific username and password combination.
+
+Create a safe MySQL user: 
+```
+GRANT ALL PRIVILEGES ON fabsmith.* To 'fabsmith'@'localhost' IDENTIFIED BY 'fabsmith';
+```
+
 ##Versioning
-FabSmith will benefit form semantic versioning. Read about it [here](http://semver.org).
+FabSmith will benefit from semantic versioning. Read about it [here](http://semver.org).
 
 ##Hexabus
 
