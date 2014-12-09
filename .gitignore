@@ -1,3 +1,5 @@
 .DS_Store
 fabsmith
 static/lib
+npm-debug.log
+static/npm-debug.log
