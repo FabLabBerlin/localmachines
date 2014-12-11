@@ -18,7 +18,7 @@ func init() {
 
 	// Database init
 	orm.RegisterDriver("mysql", orm.DR_MySQL)
-	orm.RegisterDataBase("default", "mysql", "root:root@/fabsmith?charset=utf8")
+	orm.RegisterDataBase("default", "mysql", "fabsmith:fabsmith@/fabsmith?charset=utf8")
 }
 
 func main() {
