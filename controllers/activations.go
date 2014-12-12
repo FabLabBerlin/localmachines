@@ -161,6 +161,7 @@ func (this *ActivationsController) createActivation(userId int, machineId int) (
 	beego.Trace("Activation with ID", activationId, "created")
 
 	// Turn on the machine with the help of hexaswitch
+	hexaswitch.Install()
 	hexaswitch.On(machineId)
 
 	err = this.setMachineUnavailable(machineId)
