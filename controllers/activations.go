@@ -5,6 +5,7 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/kr15h/fabsmith/models"
+	"github.com/kr15h/fabsmith/plugins/hexaswitch"
 	"time"
 )
 
@@ -51,6 +52,8 @@ func (this *ActivationsController) CreateActivation() {
 		}
 		this.serveErrorResponse("Could not create activation")
 	} else {
+
+		// Serve "Activation Created" response
 		this.serveCreatedResponse(id)
 	}
 }
@@ -156,6 +159,10 @@ func (this *ActivationsController) createActivation(userId int, machineId int) (
 		return int(0), err
 	}
 	beego.Trace("Activation with ID", activationId, "created")
+
+	// Turn on the machine with the help of hexaswitch
+	hexaswitch.On(machineId)
+
 	err = this.setMachineUnavailable(machineId)
 	return int(activationId), err
 }
@@ -205,6 +212,10 @@ func (this *ActivationsController) finalizeActivation(id int) error {
 		return err
 	}
 	beego.Trace("Success, rows affected: ", rowsAffected)
+
+	// Turn off the machine via hexaswitch
+	hexaswitch.Off(tempModel.MachineId)
+
 	err = this.setMachineAvailable(tempModel.MachineId)
 	return err
 }
