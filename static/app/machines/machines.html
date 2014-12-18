@@ -1,42 +1,37 @@
-<div class="container">
-<button class="btn btn-lg btn-danger btn-block" ng-click="logout()">Logout</button>
+<!-- 
+	Dashboard header 
+-->
+<header>
+	<div class="container">
 
-  <!-- Logged user current activations -->
-  <div class="activations" ng-controller="ActivationsCtrl" ng-show="activations.length">
-    <h3>Your activations</h3>
-    <ul class="activations-list">
-      <li class="activations-list-item" ng-repeat="activation in activations">
-        <div class="activation-item bg-warning">
-          <div>Id: {{activation.Id}}</div>
-          <div>MachineId: {{activation.MachineId}}</div>
-          <div>UserId: {{activation.UserId}}</div>
-          <button class="btn btn-lg btn-primary btn-block" ng-click="deactivate(activation)">Deactivate</button>
-        </div>
-      </li>
-    </ul>
+		<div class="row">
+			<div class="col-xs-8 logged-user-label">You are logged in as</div>
+			<div class="col-xs-4 auto-logout-label">Automatic logout in</div>
+		</div> <!-- /row -->
+	
+		<div class="row">
+			<div class="col-xs-8 logged-user-value">Murat Vurucu</div>
+			<div class="col-xs-4 auto-logout-value">0:35</div>
+		</div> <!-- /row -->
+	
+	</div> <!-- /container -->
+</header>
 
-  </div>
+<!-- 
+	Machine list
+-->
+<div class="machines">
+	
+	<fs-machine-item ng-repeat="machine in machines"></fs-machine-item>
 
-  <!-- Machines available to the logged in user -->
-  <div class="machines" ng-controller="MachinesListCtrl">
-    <h3>Your machines</h3>
-    <ul class="machines-list">
-      <li class="machines-list-item" ng-repeat="machine in machines">
-        <!-- Machine item -->
-        <div class="machine-item" ng-class="{'bg-danger': !isFree(machine), 'bg-success': isFree(machine)}">
-          <h4>{{machine.Name}}</h4>
-          <div class="machine-description">{{machine.Description}}</div>
-          <div class="machine-price">Price: {{machine.Price | currency:machine.PriceCurrency}} / {{machine.PriceUnit}}</div>
-          <div class="machine-available">Available: {{isFree(machine) ? 'Yes' : 'No'}}</div>
-          <div class="machine-activated-by" ng-show="machine.Status === 'occupied'">Occupied by {{machine.OccupiedByUserFullName}}</div>
-          <button class="btn btn-lg btn-primary btn-block" 
-            ng-disabled="machine.Status !== 'free'"
-            ng-click="activate(machine.Id)">Activate</button>
-        </div>
-        <div class="clearfix"></div>
-      </li>
-    </ul>
+</div> <!-- /machines -->
 
-  </div>
 
-</div> <!-- /container -->
+<!-- 
+	Footer for logout button
+-->
+<footer class="container">
+
+	<button class="btn btn-danger btn-block" ng-click="logout()">Logout</button>
+
+</footer>

@@ -1,0 +1,16 @@
+<div class="machine" ng-class="{available: machine.available, used: machine.used, occupied: machine.occupied, unavailable: machine.unavailable}">
+	<div class="container">
+		<div class="machine-header">
+			<div class="machine-title pull-left">{{machine.Name}}</div>
+			<div class="machine-info-btn pull-right"><span class="glyphicon glyphicon-info-sign"></span></div>
+			<div class="clearfix"></div>
+			<div class="machine-info-content">{{machine.Description}}</div>
+		</div> <!-- /machine-header -->
+		<div class="machine-body">
+			<fs-machine-body-available ng-show="{{machine.available}}"></fs-machine-body-available>
+			<fs-machine-body-used ng-show="{{machine.used}}"></fs-machine-body-used>
+			<fs-machine-body-occupied ng-show="{{machine.occupied}}"></fs-machine-body-occupied>
+			<fs-machine-body-unavailable ng-show="{{machine.unavailable}}"></fs-machine-body-unavailable>
+		</div> <!-- /machine-body -->
+	</div> <!-- /container -->
+</div> <!-- /machine available -->

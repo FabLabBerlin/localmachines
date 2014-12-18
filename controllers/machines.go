@@ -5,6 +5,7 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/kr15h/fabsmith/models"
+	"time"
 )
 
 type MachinesController struct {
@@ -21,7 +22,17 @@ type PublicMachine struct {
 	Status                 string
 	OccupiedByUserId       int
 	OccupiedByUserFullName string
+	ActivationId           int
+	ActivationStartTime    string
+	CurrentTime            string
+	UnavailableMessage     string
 }
+
+// Status constants
+const MACHINE_STATUS_AVAILABLE = "free"
+const MACHINE_STATUS_OCCUPIED = "occupied"
+const MACHINE_STATUS_USED = "used"
+const MACHINE_STATUS_UNAVAILABLE = "unavailable"
 
 // Output JSON list with available machines for a user
 func (this *MachinesController) GetMachines() {
@@ -69,8 +80,10 @@ func (this *MachinesController) getUserMachines(userId int) ([]PublicMachine, er
 	// Interpret machines as PublicMachine
 	var pubMachines = []PublicMachine{}
 	for i := range machines {
+
 		var price float32 = 0.0
 		var priceUnit string = "unit"
+
 		if machines[i].CalcByEnergy {
 			price = machines[i].CostsPerKwh
 			priceUnit = "KWh"
@@ -78,22 +91,32 @@ func (this *MachinesController) getUserMachines(userId int) ([]PublicMachine, er
 			price = machines[i].CostsPerMin
 			priceUnit = "minute"
 		}
-		var status string = "free"
+
+		var status string = MACHINE_STATUS_AVAILABLE
 		var occupiedByUserId int
 		var occupiedByUsesFullName string
+
+		var activationId int = 0
+		var activationStartTime string = ""
+		var currentTime string = ""
+		var unavailableMessage string = ""
+
 		if !machines[i].Available {
-			status = "occupied"
+			status = MACHINE_STATUS_OCCUPIED
+
 			// Machine is not available, check if there is an activation with it
 			activation, err := this.getActivation(machines[i].Id)
 			if err != nil {
 				// TODO: output unavail message
 				// TODO: status = "unavailable"
 				//occupiedBy = "Unavailable"
-				status = "unavailable"
+				status = MACHINE_STATUS_UNAVAILABLE
 				//return nil, err
 				occupiedByUserId = 0
+				unavailableMessage = machines[i].UnavailMsg
 			} else {
 				occupiedByUserId = activation.UserId
+
 				// Get user full name right away
 				var userModel models.User
 				userModel.Id = activation.UserId
@@ -105,8 +128,36 @@ func (this *MachinesController) getUserMachines(userId int) ([]PublicMachine, er
 				} else {
 					occupiedByUsesFullName = fmt.Sprintf("%s %s", userModel.FirstName, userModel.LastName)
 				}
+
+				// Change status to "USED" if user id is the same as logged user ID
+				if activation.UserId == userId {
+					status = MACHINE_STATUS_USED
+					activationId = activation.Id
+
+					// We need to get raw time as beego does something strange with it
+					// TODO: has to be fixed
+					beego.Trace("Attempt to get start time as string for activation ID ", activation.Id)
+					var tempModel struct {
+						TimeStart string
+					}
+					err = o.Raw("SELECT time_start FROM activation WHERE id = ?",
+						activation.Id).QueryRow(&tempModel)
+					if err != nil {
+						beego.Error("Could not get activation:", err)
+					}
+					beego.Trace("Successfuly got activation start time")
+
+					// Pass that string to our output machine array
+					const timeForm = "2006-01-02 15:04:05"
+					timeStart, _ := time.ParseInLocation(timeForm, tempModel.TimeStart, time.Now().Location())
+					activationStartTime = timeStart.Format(timeForm)
+
+					// Set current time
+					currentTime = time.Now().Format(timeForm)
+				}
 			}
 		}
+
 		// Fill public machine struct for output
 		machine := PublicMachine{
 			Id:                     machines[i].Id,
@@ -117,10 +168,14 @@ func (this *MachinesController) getUserMachines(userId int) ([]PublicMachine, er
 			PriceCurrency:          "€", // TODO: add price currency table
 			Status:                 status,
 			OccupiedByUserId:       occupiedByUserId,
-			OccupiedByUserFullName: occupiedByUsesFullName}
+			OccupiedByUserFullName: occupiedByUsesFullName,
+			ActivationId:           activationId,
+			ActivationStartTime:    activationStartTime,
+			CurrentTime:            currentTime,
+			UnavailableMessage:     unavailableMessage}
 		// Append to array
 		pubMachines = append(pubMachines, machine)
-	}
+	} // for
 	return pubMachines, nil
 }
 
