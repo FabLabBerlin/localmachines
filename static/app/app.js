@@ -112,6 +112,7 @@ app.controller('MainCtrl', ['$scope', '$http', '$location', '$cookieStore', func
 		})
 		.error(function() {
 			alert('Failed to log out. Probably server down.');
+			$location.path('/');
 		});
 	};
 	$scope.$on('timer-stopped', function (event, data){
