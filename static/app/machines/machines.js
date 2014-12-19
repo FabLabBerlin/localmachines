@@ -106,6 +106,9 @@ app.controller('MachinesCtrl', ['$scope', '$http', '$location', '$route', '$cook
 	$scope.deactivate = function(machine) {
 		$scope.resetTimer();
 
+		// Stop activation timer interval
+		clearInterval(machine.activationInterval);
+
 		if (!confirm('Make this machine available to other users')) {
 			return;
 		}
@@ -171,14 +174,16 @@ app.directive('fsMachineBodyUsed', function() {
 		templateUrl: 'static/app/machines/machine-body-used.html',
 		restrict: 'E',
 		controller: ['$scope', function($scope){
+
 			$scope.timeElapsed = $scope.machine.ActivationSecondsElapsed;
-			//$scope.timeElapsed = 0;
-			setInterval(function() {
-				//console.log($scope.timeElapsed);
-				//$scope.timeElapsed = $scope.timeElapsed + 1;
-				$scope.machine.ActivationSecondsElapsed++;
-				$scope.$apply();
-			}, 1000);
+			
+			if ($scope.machine.Status == MACHINE_STATUS_USED) {
+				$scope.machine.activationInterval = setInterval(function() {
+					$scope.machine.ActivationSecondsElapsed++;
+					$scope.$apply();
+				}, 1000);
+			}
+			
 		}]
 	}
 });
