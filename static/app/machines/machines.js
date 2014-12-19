@@ -158,7 +158,28 @@ app.controller('MachinesCtrl', ['$scope', '$http', '$location', '$route', '$cook
 app.directive('fsMachineItem', function() {
 	return {
 		templateUrl: 'static/app/machines/machine-item.html',
-		restrict: 'E'
+		restrict: 'E',
+		controller: ['$scope', '$element', function($scope, $element) {
+			
+			$scope.infoVisible = false;
+
+			if ($scope.infoVisible) {
+				$($element).find('.machine-info-content').first().show();
+			} else {
+				$($element).find('.machine-info-content').first().hide();
+			}
+
+			$scope.toggleInfo = function() {
+				$scope.infoVisible = !$scope.infoVisible;
+
+				if ($scope.infoVisible) {
+					$($element).find('.machine-info-content').first().slideDown();
+				} else {
+					$($element).find('.machine-info-content').first().slideUp();
+				}
+			};
+
+		}]
 	};
 });
 
@@ -183,7 +204,7 @@ app.directive('fsMachineBodyUsed', function() {
 					$scope.$apply();
 				}, 1000);
 			}
-			
+
 		}]
 	}
 });

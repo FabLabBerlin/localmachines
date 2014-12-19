@@ -2,7 +2,14 @@
 	<div class="container">
 		<div class="machine-header">
 			<div class="machine-title pull-left">{{machine.Name}}</div>
-			<div class="machine-info-btn pull-right"><span class="glyphicon glyphicon-info-sign"></span></div>
+			<div class="machine-info-btn pull-right">
+				
+				<a class="machine-info-toggle" ng-click="toggleInfo()">
+					<span class="glyphicon glyphicon-info-sign" ng-class="{hidden: infoVisible}"></span>
+					<span class="glyphicon glyphicon-remove-circle" ng-class="{hidden: !infoVisible}"></span>
+				</a>
+
+			</div>
 			<div class="clearfix"></div>
 			<div class="machine-info-content">{{machine.Description}}</div>
 		</div> <!-- /machine-header -->

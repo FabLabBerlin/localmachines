@@ -152,6 +152,15 @@ header {
   font-family: "OpenSans-Bold",sans-serif;
 }
 
+.machine-info-toggle {
+  color: #4A4A4A;
+  cursor: pointer;
+}
+
+.machine-info-toggle:hover {
+  color: #6A6A6A;
+}
+
 .machine-info-content,
 .machine-unavailable-value {
   font-family: "OpenSans",sans-serif;
