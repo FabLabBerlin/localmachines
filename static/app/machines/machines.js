@@ -2,30 +2,31 @@
 
 'use strict';
 
-angular.module('fabsmith.machines', ['ngRoute'])
+// Constants for machine states
+var MACHINE_STATUS_AVAILABLE = 'free';
+var MACHINE_STATUS_OCCUPIED = 'occupied';
+var MACHINE_STATUS_USED = 'used'; // Used by the current user
+var MACHINE_STATUS_UNAVAILABLE = 'unavailable';
 
-.config(['$routeProvider', function($routeProvider) {
+// Our local app variable for the module
+var app = angular.module('fabsmith.machines', ['ngRoute', 'timer']);
+
+app.config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/machines', {
     templateUrl: '/static/app/machines/machines.html',
     controller: 'MachinesCtrl'
   });
-}])
+}]);
 
-.controller('MachinesListCtrl', ['$scope', '$http', function($scope, $http){
-	$scope.test = 'Machines List'
-}])
+app.controller('MachinesCtrl', ['$scope', '$http', '$location', '$route', function($scope, $http, $location, $route) {
 
-.controller('MachinesItemCtrl', ['$scope', '$http', function($scope, $http){
-	$scope.test = 'Machines Item'
-}])
-
-.controller('MachinesCtrl', ['$scope', '$http', '$location', '$route', function($scope, $http, $location, $route) {
-
-	// Constants
-	var MACHINE_STATUS_AVAILABLE = 'free';
-	var MACHINE_STATUS_OCCUPIED = 'occupied';
-	var MACHINE_STATUS_USED = 'used'; // Used by the current user
-	var MACHINE_STATUS_UNAVAILABLE = 'unavailable';
+	// Configure timer
+	$scope.resetTimer = function() {
+		$scope.$broadcast('timer-clear');
+		$scope.$broadcast('timer-set-countdown', 60);
+		$scope.$broadcast('timer-start');
+	};
+	$scope.resetTimer();
 
 	// Initialize the machines array
 	$scope.machines = [];
@@ -70,6 +71,8 @@ angular.module('fabsmith.machines', ['ngRoute'])
 
 	// Activate a machine by the currenty logged in user
 	$scope.activate = function(machineId) {
+		$scope.resetTimer();
+
 		$http({
 			method: 'POST',
 			url: '/api/activations',
@@ -97,6 +100,8 @@ angular.module('fabsmith.machines', ['ngRoute'])
 	};
 
 	$scope.deactivate = function(machine) {
+		$scope.resetTimer();
+
 		if (!confirm('Make this machine available to other users')) {
 			return;
 		}
@@ -141,53 +146,37 @@ angular.module('fabsmith.machines', ['ngRoute'])
 	$scope.isUnavailable = function(machine) {
 		return machine.Status === MACHINE_STATUS_UNAVAILABLE;
 	}
+}]);
 
-	$scope.logout = function() {
-		$http({
-			method: 'GET',
-			url: '/api/logout',
-			params: {
-				anticache: new Date().getTime()
-			}
-		})
-		.success(function() {
-			$location.path('/');
-		})
-		.error(function() {
-			alert('Failed to log out. Probably server down.');
-		});
-	};
-}])
-
-.directive('fsMachineItem', function() {
+app.directive('fsMachineItem', function() {
 	return {
     templateUrl: 'static/app/machines/machine-item.html',
     restrict: 'E'
   };
-})
+});
 
-.directive('fsMachineBodyAvailable', function() {
+app.directive('fsMachineBodyAvailable', function() {
 	return {
 		templateUrl: 'static/app/machines/machine-body-available.html',
 		restrict: 'E'
 	}
-})
+});
 
-.directive('fsMachineBodyUsed', function() {
+app.directive('fsMachineBodyUsed', function() {
 	return {
 		templateUrl: 'static/app/machines/machine-body-used.html',
 		restrict: 'E'
 	}
-})
+});
 
-.directive('fsMachineBodyOccupied', function() {
+app.directive('fsMachineBodyOccupied', function() {
 	return {
 		templateUrl: 'static/app/machines/machine-body-occupied.html',
 		restrict: 'E'
 	}
-})
+});
 
-.directive('fsMachineBodyUnavailable', function() {
+app.directive('fsMachineBodyUnavailable', function() {
 	return {
 		templateUrl: 'static/app/machines/machine-body-unavailable.html',
 		restrict: 'E'

@@ -76,6 +76,27 @@ angular.module('fabsmith', [
 	.error(function() {
 		alert('Could not communicate with the API');
 	});
+
+	$scope.logout = function() {
+		$http({
+			method: 'GET',
+			url: '/api/logout',
+			params: {
+				anticache: new Date().getTime()
+			}
+		})
+		.success(function() {
+			$location.path('/');
+		})
+		.error(function() {
+			alert('Failed to log out. Probably server down.');
+		});
+	};
+
+	$scope.$on('timer-stopped', function (event, data){
+		$scope.logout();
+  });
+
 }]);
 
 })();

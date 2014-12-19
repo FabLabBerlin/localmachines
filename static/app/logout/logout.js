@@ -10,9 +10,9 @@ angular.module('fabsmith.logout', ['ngRoute', 'timer'])
 }])
 
 .controller('LogoutCtrl', ['$scope', '$http', '$location', function($scope, $http, $location) {
-	$scope.$on('timer-stopped', function (event, data){
-		$scope.logout();
-  });
+	//$scope.$on('timer-stopped', function (event, data){
+		//$scope.logout();
+  //});
 
 	// Activate countdown
 	$scope.abortLogout = function() {
