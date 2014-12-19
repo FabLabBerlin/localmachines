@@ -13,19 +13,18 @@ type MachinesController struct {
 }
 
 type PublicMachine struct {
-	Id                     int
-	Name                   string
-	Description            string
-	Price                  float32
-	PriceUnit              string
-	PriceCurrency          string
-	Status                 string
-	OccupiedByUserId       int
-	OccupiedByUserFullName string
-	ActivationId           int
-	ActivationStartTime    string
-	CurrentTime            string
-	UnavailableMessage     string
+	Id                       int
+	Name                     string
+	Description              string
+	Price                    float32
+	PriceUnit                string
+	PriceCurrency            string
+	Status                   string
+	OccupiedByUserId         int
+	OccupiedByUserFullName   string
+	ActivationId             int
+	ActivationSecondsElapsed int64
+	UnavailableMessage       string
 }
 
 // Status constants
@@ -97,8 +96,7 @@ func (this *MachinesController) getUserMachines(userId int) ([]PublicMachine, er
 		var occupiedByUsesFullName string
 
 		var activationId int = 0
-		var activationStartTime string = ""
-		var currentTime string = ""
+		var activationSecondsElapsed int64 = 0
 		var unavailableMessage string = ""
 
 		if !machines[i].Available {
@@ -150,29 +148,30 @@ func (this *MachinesController) getUserMachines(userId int) ([]PublicMachine, er
 					// Pass that string to our output machine array
 					const timeForm = "2006-01-02 15:04:05"
 					timeStart, _ := time.ParseInLocation(timeForm, tempModel.TimeStart, time.Now().Location())
-					activationStartTime = timeStart.Format(timeForm)
+					//activationStartTime = timeStart.Format(timeForm)
 
 					// Set current time
-					currentTime = time.Now().Format(timeForm)
+					//currentTime = time.Now().Format(timeForm)
+
+					activationSecondsElapsed = int64(time.Now().Sub(timeStart).Seconds())
 				}
 			}
 		}
 
 		// Fill public machine struct for output
 		machine := PublicMachine{
-			Id:                     machines[i].Id,
-			Name:                   machines[i].Name,
-			Description:            machines[i].Description,
-			Price:                  price,
-			PriceUnit:              priceUnit,
-			PriceCurrency:          "€", // TODO: add price currency table
-			Status:                 status,
-			OccupiedByUserId:       occupiedByUserId,
-			OccupiedByUserFullName: occupiedByUsesFullName,
-			ActivationId:           activationId,
-			ActivationStartTime:    activationStartTime,
-			CurrentTime:            currentTime,
-			UnavailableMessage:     unavailableMessage}
+			Id:                       machines[i].Id,
+			Name:                     machines[i].Name,
+			Description:              machines[i].Description,
+			Price:                    price,
+			PriceUnit:                priceUnit,
+			PriceCurrency:            "€", // TODO: add price currency table
+			Status:                   status,
+			OccupiedByUserId:         occupiedByUserId,
+			OccupiedByUserFullName:   occupiedByUsesFullName,
+			ActivationId:             activationId,
+			ActivationSecondsElapsed: activationSecondsElapsed,
+			UnavailableMessage:       unavailableMessage}
 		// Append to array
 		pubMachines = append(pubMachines, machine)
 	} // for

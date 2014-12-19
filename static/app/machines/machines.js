@@ -12,10 +12,10 @@ var MACHINE_STATUS_UNAVAILABLE = 'unavailable';
 var app = angular.module('fabsmith.machines', ['ngRoute', 'timer', 'fabsmithFilters']);
 
 app.config(['$routeProvider', function($routeProvider) {
-  $routeProvider.when('/machines', {
-    templateUrl: '/static/app/machines/machines.html',
-    controller: 'MachinesCtrl'
-  });
+	$routeProvider.when('/machines', {
+		templateUrl: '/static/app/machines/machines.html',
+		controller: 'MachinesCtrl'
+	});
 }]);
 
 app.controller('MachinesCtrl', ['$scope', '$http', '$location', '$route', '$cookieStore', function($scope, $http, $location, $route, $cookieStore) {
@@ -63,6 +63,7 @@ app.controller('MachinesCtrl', ['$scope', '$http', '$location', '$route', '$cook
 		} else if (data.Machines.length <= 0) {
 			alert('There are no machines available for you');
 		} else if (data.Machines.length > 0) {
+			//console.log(data.Machines);
 			$scope.onMachinesLoaded(data.Machines);
 		} else {
 			alert('Error loading machines');
@@ -153,9 +154,9 @@ app.controller('MachinesCtrl', ['$scope', '$http', '$location', '$route', '$cook
 
 app.directive('fsMachineItem', function() {
 	return {
-    templateUrl: 'static/app/machines/machine-item.html',
-    restrict: 'E'
-  };
+		templateUrl: 'static/app/machines/machine-item.html',
+		restrict: 'E'
+	};
 });
 
 app.directive('fsMachineBodyAvailable', function() {
@@ -168,7 +169,17 @@ app.directive('fsMachineBodyAvailable', function() {
 app.directive('fsMachineBodyUsed', function() {
 	return {
 		templateUrl: 'static/app/machines/machine-body-used.html',
-		restrict: 'E'
+		restrict: 'E',
+		controller: ['$scope', function($scope){
+			$scope.timeElapsed = $scope.machine.ActivationSecondsElapsed;
+			//$scope.timeElapsed = 0;
+			setInterval(function() {
+				//console.log($scope.timeElapsed);
+				//$scope.timeElapsed = $scope.timeElapsed + 1;
+				$scope.machine.ActivationSecondsElapsed++;
+				$scope.$apply();
+			}, 1000);
+		}]
 	}
 });
 

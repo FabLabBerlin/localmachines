@@ -2,7 +2,9 @@
 	<div class="col-xs-6">
 		<div class="machine-action-info">
 			<div class="machine-action-label machine-time-label">Usage Time</div>
-			<div class="machine-time-value">11:11</div>
+			<div class="machine-time-value">
+				{{machine.ActivationSecondsElapsed | timeleft}}
+			</div>
 		</div>
 	</div>
 	<div class="col-xs-6">
