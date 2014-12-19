@@ -18,7 +18,10 @@ app.config(['$routeProvider', function($routeProvider) {
   });
 }]);
 
-app.controller('MachinesCtrl', ['$scope', '$http', '$location', '$route', function($scope, $http, $location, $route) {
+app.controller('MachinesCtrl', ['$scope', '$http', '$location', '$route', '$cookieStore', function($scope, $http, $location, $route, $cookieStore) {
+
+	// Show logged user name
+	$scope.userFullName = $cookieStore.get('FirstName') + ' ' + $cookieStore.get('LastName');
 
 	// Configure timer
 	$scope.resetTimer = function() {

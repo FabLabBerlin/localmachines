@@ -2,7 +2,7 @@
 
 'use strict';
 
-angular.module('fabsmith.login', ['ngRoute'])
+angular.module('fabsmith.login', ['ngRoute', 'ngCookies'])
 
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/login', {
@@ -30,6 +30,7 @@ angular.module('fabsmith.login', ['ngRoute'])
 			if (data.Status === 'error') {
 				alert(data.Message);
 			} else if (data.Status === 'logged' || data.Status == 'ok'){
+				$scope.$emit('user-login', data);
 				$location.path('/machines');
 			}
 		})

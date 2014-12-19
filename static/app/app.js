@@ -3,13 +3,13 @@
 'use strict';
 
 // Declare app level module which depends on views, and components
-angular.module('fabsmith', [
+var app = angular.module('fabsmith', [
   'ngRoute',
   'fabsmith.login',
   'fabsmith.machines',
   'fabsmith.logout',
   'fabsmith.version'
-])
+]);
 
 // Default redirect to login view
 /*
@@ -20,7 +20,7 @@ angular.module('fabsmith', [
 
 // This checks whether an user is logged in always before 
 // switching to a new view
-.run(['$rootScope', '$location', '$http', 
+app.run(['$rootScope', '$location', '$http', 
 	function($rootScope, $location, $http) {
 	$rootScope.$on('$locationChangeStart', function(event, newUrl, oldUrl) {
 		var newPath = newUrl.split('#')[1];
@@ -50,10 +50,10 @@ angular.module('fabsmith', [
 			// Route path is /login - let it show up passthru()
 		}
 	});
-}])
+}]);
 
 // Configure http provider to send regular form POST data instead of JSON
-.config(['$httpProvider', function($httpProvider) {
+app.config(['$httpProvider', function($httpProvider) {
 	$httpProvider.defaults.transformRequest = function(data){
 		if (data === undefined) {
 		    return data;
@@ -61,10 +61,10 @@ angular.module('fabsmith', [
 		return $.param(data);
 	}
 	$httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
-}])
+}]);
 
 // Main controller, checks if user logged in
-.controller('MainCtrl', ['$scope', '$http', '$location', function($scope, $http, $location){
+app.controller('MainCtrl', ['$scope', '$http', '$location', '$cookieStore', function($scope, $http, $location, $cookieStore){
 
 	// Check if we are logged in
 	$http.post('/api/login')
@@ -77,7 +77,29 @@ angular.module('fabsmith', [
 		alert('Could not communicate with the API');
 	});
 
+	$scope.putUserData = function(data) {
+		$cookieStore.put('UserId', data.UserId);
+		$cookieStore.put('Username', data.Username);
+		$cookieStore.put('FirstName', data.FirstName);
+		$cookieStore.put('LastName', data.LastName);
+		$cookieStore.put('Email', data.Email);
+	};
+	$scope.$on('user-login', function (event, data){
+		$scope.putUserData(data);
+  });
+
+	$scope.removeUserData = function() {
+		$cookieStore.remove('UserId');
+		$cookieStore.remove('Username');
+		$cookieStore.remove('FirstName');
+		$cookieStore.remove('LastName');
+		$cookieStore.remove('Email');
+	};
+
 	$scope.logout = function() {
+
+		$scope.removeUserData();
+
 		$http({
 			method: 'GET',
 			url: '/api/logout',
@@ -92,7 +114,6 @@ angular.module('fabsmith', [
 			alert('Failed to log out. Probably server down.');
 		});
 	};
-
 	$scope.$on('timer-stopped', function (event, data){
 		$scope.logout();
   });
