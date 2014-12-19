@@ -9,7 +9,7 @@ var MACHINE_STATUS_USED = 'used'; // Used by the current user
 var MACHINE_STATUS_UNAVAILABLE = 'unavailable';
 
 // Our local app variable for the module
-var app = angular.module('fabsmith.machines', ['ngRoute', 'timer']);
+var app = angular.module('fabsmith.machines', ['ngRoute', 'timer', 'fabsmithFilters']);
 
 app.config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/machines', {
@@ -26,7 +26,7 @@ app.controller('MachinesCtrl', ['$scope', '$http', '$location', '$route', '$cook
 	// Configure timer
 	$scope.resetTimer = function() {
 		$scope.$broadcast('timer-clear');
-		$scope.$broadcast('timer-set-countdown', 60);
+		$scope.$broadcast('timer-set-countdown', 120);
 		$scope.$broadcast('timer-start');
 	};
 	$scope.resetTimer();
