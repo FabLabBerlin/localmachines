@@ -162,6 +162,7 @@ function($scope, $http, $location, $route, $cookieStore) {
 				// TODO: dynamicaly switch state of the previously
 				// available item to 'used' using animation
 				machine.used = false;
+				machine.occupied = false;
 				machine.available = true;
 			
 			} else if (data.Status === 'error') {
@@ -262,7 +263,17 @@ app.directive('fsMachineBodyUsed', function() {
 app.directive('fsMachineBodyOccupied', function() {
 	return {
 		templateUrl: 'static/app/machines/machine-body-occupied.html',
-		restrict: 'E'
+		restrict: 'E',
+		controller: ['$scope', '$cookieStore', function($scope, $cookieStore){
+
+			var user = {};
+			user.Admin = $cookieStore.get('Admin');
+			user.Staff = $cookieStore.get('Staff');
+			user.Member = $cookieStore.get('Member');
+			$scope.user = user;
+			$scope.$apply();
+
+		}]
 	}
 });
 

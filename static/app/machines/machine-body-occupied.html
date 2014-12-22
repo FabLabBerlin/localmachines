@@ -6,6 +6,7 @@
 		</div>
 	</div>
 	<div class="col-xs-6">
-		<div class="indicator indicator-occupied">Occupied</div>
+		<div class="indicator indicator-occupied" ng-class="{hidden: user.Admin || user.Staff}">Occupied</div>
+		<button class="btn btn-lg btn-warning btn-block" ng-class="{hidden: !user.Admin && !user.Staff}" ng-click="deactivate(machine)">Stop</button>
 	</div>
 </div> <!-- /row -->

@@ -158,6 +158,7 @@ func (this *MachinesController) getUserMachines(userId int) ([]PublicMachine, er
 		var unavailableMessage string = ""
 
 		if !machines[i].Available {
+
 			status = MACHINE_STATUS_OCCUPIED
 
 			// Machine is not available, check if there is an activation with it
@@ -186,8 +187,11 @@ func (this *MachinesController) getUserMachines(userId int) ([]PublicMachine, er
 				}
 
 				// Change status to "USED" if user id is the same as logged user ID
-				if activation.UserId == userId {
-					status = MACHINE_STATUS_USED
+				if (activation.UserId == userId) || (this.isAdmin() || this.isStaff()) {
+
+					if activation.UserId == userId {
+						status = MACHINE_STATUS_USED
+					}
 					activationId = activation.Id
 
 					// We need to get raw time as beego does something strange with it
@@ -240,12 +244,14 @@ func (this *MachinesController) getActivation(machineId int) (models.Activation,
 	o := orm.NewOrm()
 	activationModel := models.Activation{}
 	beego.Trace("Attempt to get activation for machine ID", machineId)
+
 	err := o.Raw("SELECT * FROM activation WHERE machine_id = ? AND active = 1",
 		machineId).QueryRow(&activationModel)
 	if err != nil {
 		beego.Error(err)
 		return models.Activation{}, err
 	}
+
 	beego.Trace("Success")
 	return activationModel, nil
 }

@@ -118,6 +118,13 @@ li {
   border: 1px solid #D9C22B;
 }
 
+.btn-warning:hover,
+.btn-warning:focus {
+  background: #D9C22B;
+  border: 1px solid #D9C22B;
+  color: #FFF5B3;
+}
+
 /*
  * Dashboard Styling 
  */
