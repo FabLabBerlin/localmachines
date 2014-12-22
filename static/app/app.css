@@ -93,9 +93,23 @@ li {
   border: 1px solid #3998B2;
 }
 
+.btn-primary:hover,
+.btn-primary:focus {
+  background: #3996B8;
+  color: #B3EBFF;
+  border: 1px solid #3998B2;
+}
+
 .btn-danger {
   background: #E85459;
   border: 1px solid #B03135;
+}
+
+.btn-danger:hover,
+.btn-danger:focus {
+  background: #B02F38;
+  border: 1px solid #B02F38;
+  color: #FF999C;
 }
 
 .btn-warning {
