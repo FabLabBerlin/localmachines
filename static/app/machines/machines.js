@@ -104,14 +104,17 @@ app.controller('MachinesCtrl', ['$scope', '$http', '$location', '$route', '$cook
 	};
 
 	$scope.deactivate = function(machine) {
+		
 		$scope.resetTimer();
-
-		// Stop activation timer interval
-		clearInterval(machine.activationInterval);
 
 		if (!confirm('Make this machine available to other users')) {
 			return;
-		}
+		} 
+
+		// Else continue
+		// Stop activation timer interval
+		clearInterval(machine.activationInterval);
+
 		$http({
 			method: 'PUT', 
 			url: '/api/activations', 
@@ -136,6 +139,7 @@ app.controller('MachinesCtrl', ['$scope', '$http', '$location', '$route', '$cook
 		.error(function() {
 			alert('Failed to deactivate');
 		});
+		
 	};
 
 	$scope.isAvailable = function(machine) {
