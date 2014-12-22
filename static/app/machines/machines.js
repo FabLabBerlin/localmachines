@@ -156,21 +156,20 @@ function($scope, $http, $location, $route, $cookieStore) {
 			}
 		})
 		.success(function(data) {
+			
 			if (data.Status === 'ok') {
 
 				// TODO: dynamicaly switch state of the previously
 				// available item to 'used' using animation
-				//console.log(machine);
 				machine.used = false;
 				machine.available = true;
-				//$scope.$apply();
-				//$route.reload();
 			
 			} else if (data.Status === 'error') {
 				alert(data.Message);
 			} else {
 				alert('Error while deactivating');
 			}
+
 		})
 		.error(function() {
 			alert('Failed to deactivate');
