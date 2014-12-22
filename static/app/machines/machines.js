@@ -246,8 +246,6 @@ app.directive('fsMachineBodyUsed', function() {
 		templateUrl: 'static/app/machines/machine-body-used.html',
 		restrict: 'E',
 		controller: ['$scope', function($scope){
-
-			$scope.timeElapsed = $scope.machine.ActivationSecondsElapsed;
 			
 			if ($scope.machine.Status == MACHINE_STATUS_USED) {
 				$scope.machine.activationInterval = setInterval(function() {
@@ -266,12 +264,24 @@ app.directive('fsMachineBodyOccupied', function() {
 		restrict: 'E',
 		controller: ['$scope', '$cookieStore', function($scope, $cookieStore){
 
-			var user = {};
-			user.Admin = $cookieStore.get('Admin');
-			user.Staff = $cookieStore.get('Staff');
-			user.Member = $cookieStore.get('Member');
-			$scope.user = user;
-			$scope.$apply();
+			// As we are using this scope for more than one directive
+			if ($scope.machine.Status == MACHINE_STATUS_OCCUPIED) {
+				
+				var user = {};
+				user.Admin = $cookieStore.get('Admin');
+				user.Staff = $cookieStore.get('Staff');
+				user.Member = $cookieStore.get('Member');
+				$scope.user = user;
+
+				// Activate occupied machine timer if user is admin or staff
+				if (user.Admin || user.Staff) {
+					$scope.machine.activationInterval = setInterval(function() {
+						$scope.machine.ActivationSecondsElapsed++;
+						$scope.$apply();
+					}, 1000);
+				}
+
+			}
 
 		}]
 	}

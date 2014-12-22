@@ -3,6 +3,7 @@
 		<div class="machine-action-info">
 			<div class="machine-action-label machine-occupied-label">Occupied by</div>
 			<div class="machine-occupied-value">{{machine.OccupiedByUserFullName}}</div>
+			<div class="machine-occupied-time-value" ng-class="{hidden: !user.Admin && !user.Staff}">{{machine.ActivationSecondsElapsed | timeleft}}</div>
 		</div>
 	</div>
 	<div class="col-xs-6">
