@@ -21,9 +21,12 @@ var app = angular.module('fabsmith', [
 // This checks whether an user is logged in always before 
 // switching to a new view
 app.run(['$rootScope', '$location', '$http', 
-	function($rootScope, $location, $http) {
+function($rootScope, $location, $http) {
+	
 	$rootScope.$on('$locationChangeStart', function(event, newUrl, oldUrl) {
+		
 		var newPath = newUrl.split('#')[1];
+		
 		if (newPath !== '/login') {
 			$http({
 				method: 'POST',
@@ -49,11 +52,14 @@ app.run(['$rootScope', '$location', '$http',
 		} else {
 			// Route path is /login - let it show up passthru()
 		}
+
 	});
+
 }]);
 
 // Configure http provider to send regular form POST data instead of JSON
 app.config(['$httpProvider', function($httpProvider) {
+
 	$httpProvider.defaults.transformRequest = function(data){
 		if (data === undefined) {
 		    return data;
@@ -61,6 +67,7 @@ app.config(['$httpProvider', function($httpProvider) {
 		return $.param(data);
 	}
 	$httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8';
+
 }]);
 
 // Main controller, checks if user logged in
@@ -78,22 +85,31 @@ app.controller('MainCtrl', ['$scope', '$http', '$location', '$cookieStore', func
 	});
 
 	$scope.putUserData = function(data) {
+
 		$cookieStore.put('UserId', data.UserId);
 		$cookieStore.put('Username', data.Username);
 		$cookieStore.put('FirstName', data.FirstName);
 		$cookieStore.put('LastName', data.LastName);
 		$cookieStore.put('Email', data.Email);
+		$cookieStore.put('Admin', data.Admin);
+		$cookieStore.put('Staff', data.Staff);
+		$cookieStore.put('Member', data.Member);
 	};
 	$scope.$on('user-login', function (event, data){
 		$scope.putUserData(data);
-  });
+	});
 
 	$scope.removeUserData = function() {
+
 		$cookieStore.remove('UserId');
 		$cookieStore.remove('Username');
 		$cookieStore.remove('FirstName');
 		$cookieStore.remove('LastName');
 		$cookieStore.remove('Email');
+		$cookieStore.remove('Admin');
+		$cookieStore.remove('Staff');
+		$cookieStore.remove('Member');
+	
 	};
 
 	$scope.logout = function() {

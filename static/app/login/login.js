@@ -29,7 +29,7 @@ angular.module('fabsmith.login', ['ngRoute', 'ngCookies'])
 		.success(function(data) {
 			if (data.Status === 'error') {
 				alert(data.Message);
-			} else if (data.Status === 'logged' || data.Status == 'ok'){
+			} else if (data.Status === 'logged' || data.Status === 'ok'){
 				$scope.$emit('user-login', data);
 				$location.path('/machines');
 			}

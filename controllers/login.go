@@ -17,6 +17,9 @@ type UserDataResponse struct {
 	FirstName string
 	LastName  string
 	Email     string
+	Admin     bool
+	Staff     bool
+	Member    bool
 }
 
 // Override our custom root controller's Prepare method as it is checking
@@ -148,13 +151,31 @@ func (this *LoginController) serveUserData(userId int, status string) {
 
 	} else {
 
+		// We need to get user roles from database as well
+		userRolesModel := models.UserRoles{
+			UserId: userId,
+			Admin:  false,
+			Staff:  false,
+			Member: false}
+		o := orm.NewOrm()
+		err = o.Read(&userRolesModel)
+
+		if err != nil {
+			beego.Error("Could not get user roles for user ID", userId, ", error:", err)
+			// We can continue here as if we can't get user roles, we have none probably
+		}
+
+		// Fill out response object
 		userDataResponse := UserDataResponse{
 			Status:    status,
 			UserId:    userModel.Id,
 			Username:  userModel.Username,
 			FirstName: userModel.FirstName,
 			LastName:  userModel.LastName,
-			Email:     userModel.Email}
+			Email:     userModel.Email,
+			Admin:     userRolesModel.Admin,
+			Staff:     userRolesModel.Staff,
+			Member:    userRolesModel.Member}
 
 		this.Data["json"] = userDataResponse
 		this.ServeJson()
