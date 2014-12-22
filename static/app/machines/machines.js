@@ -18,7 +18,9 @@ app.config(['$routeProvider', function($routeProvider) {
 	});
 }]);
 
-app.controller('MachinesCtrl', ['$scope', '$http', '$location', '$route', '$cookieStore', function($scope, $http, $location, $route, $cookieStore) {
+app.controller('MachinesCtrl', 
+['$scope', '$http', '$location', '$route', '$cookieStore', 
+function($scope, $http, $location, $route, $cookieStore) {
 
 	// Show logged user name
 	$scope.userFullName = $cookieStore.get('FirstName') + ' ' + $cookieStore.get('LastName');
@@ -45,7 +47,7 @@ app.controller('MachinesCtrl', ['$scope', '$http', '$location', '$route', '$cook
 		}
 
 		$scope.machines = machines;
-		console.log(machines);
+		//console.log(machines);
 	
 	};
 
@@ -75,6 +77,7 @@ app.controller('MachinesCtrl', ['$scope', '$http', '$location', '$route', '$cook
 
 	// Activate a machine by the currenty logged in user
 	$scope.activate = function(machineId) {
+		
 		$scope.resetTimer();
 
 		$http({
@@ -86,21 +89,50 @@ app.controller('MachinesCtrl', ['$scope', '$http', '$location', '$route', '$cook
 			}
 		})
 		.success(function(data) {
+			
 			// Check status
 			if (data.Status === 'error') {
+
 				alert(data.Message);
+			
 			} else if (data.Status === 'created') {
 				
 				// TODO: Animate transition between previously available element to
-				// 'used' one
-				$route.reload();
+				// 'used' one, not sure whether we should use css3 animations or jQuery
+
+				// Find machine by ID
+				for (var machineIter = 0; machineIter < $scope.machines.length; machineIter++) {
+
+					// Machine found condition
+					if ($scope.machines[machineIter].Id === machineId) {
+						
+						// Refresh data of the new activation
+						$scope.machines[machineIter].ActivationSecondsElapsed = 0;
+						$scope.machines[machineIter].OccupiedByUserId = parseInt( $cookieStore.get('UserId') );
+						$scope.machines[machineIter].ActivationId = data.Id;
+						$scope.machines[machineIter].available = false;
+						$scope.machines[machineIter].used = true;
+
+						// Start timer for elapsed time
+						$scope.machines[machineIter].activationInterval = setInterval(function() {
+							$scope.machines[machineIter].ActivationSecondsElapsed++;
+							$scope.$apply();
+						}, 1000);
+
+						// Exit the machine finding for loop
+						break;
+
+					}
+
+				}
 			
 			}
-			//alert(data);
+
 		})
 		.error(function() {
 			alert('Could not activate machine');
 		});
+
 	};
 
 	$scope.deactivate = function(machine) {
@@ -128,7 +160,11 @@ app.controller('MachinesCtrl', ['$scope', '$http', '$location', '$route', '$cook
 
 				// TODO: dynamicaly switch state of the previously
 				// available item to 'used' using animation
-				$route.reload();
+				//console.log(machine);
+				machine.used = false;
+				machine.available = true;
+				//$scope.$apply();
+				//$route.reload();
 			
 			} else if (data.Status === 'error') {
 				alert(data.Message);
@@ -139,7 +175,7 @@ app.controller('MachinesCtrl', ['$scope', '$http', '$location', '$route', '$cook
 		.error(function() {
 			alert('Failed to deactivate');
 		});
-		
+
 	};
 
 	$scope.isAvailable = function(machine) {
@@ -157,6 +193,14 @@ app.controller('MachinesCtrl', ['$scope', '$http', '$location', '$route', '$cook
 	$scope.isUnavailable = function(machine) {
 		return machine.Status === MACHINE_STATUS_UNAVAILABLE;
 	}
+
+	$scope.setAllStates = function(machine, trueOrFalse) {
+		machine.available = trueOrFalse;
+		machine.used = trueOrFalse;
+		machine.occupied = trueOrFalse;
+		machine.unavailable = trueOrFalse;
+	}
+
 }]);
 
 app.directive('fsMachineItem', function() {

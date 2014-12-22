@@ -14,10 +14,10 @@
 			<div class="machine-info-content">{{machine.Description}}</div>
 		</div> <!-- /machine-header -->
 		<div class="machine-body">
-			<fs-machine-body-available ng-show="{{machine.available}}"></fs-machine-body-available>
-			<fs-machine-body-used ng-show="{{machine.used}}"></fs-machine-body-used>
-			<fs-machine-body-occupied ng-show="{{machine.occupied}}"></fs-machine-body-occupied>
-			<fs-machine-body-unavailable ng-show="{{machine.unavailable}}"></fs-machine-body-unavailable>
+			<fs-machine-body-available ng-class="{hidden: !machine.available}"></fs-machine-body-available>
+			<fs-machine-body-used ng-class="{hidden: !machine.used}"></fs-machine-body-used>
+			<fs-machine-body-occupied ng-class="{hidden: !machine.occupied}"></fs-machine-body-occupied>
+			<fs-machine-body-unavailable ng-class="{hidden: !machine.unavailable}"></fs-machine-body-unavailable>
 		</div> <!-- /machine-body -->
 	</div> <!-- /container -->
 </div> <!-- /machine available -->
