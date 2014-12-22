@@ -35,33 +35,48 @@ const MACHINE_STATUS_UNAVAILABLE = "unavailable"
 
 // Output JSON list with available machines for a user
 func (this *MachinesController) GetMachines() {
+
+	// Prepare output array for the machines
 	var response struct{ Machines []PublicMachine }
+
+	// Get request user ID
 	reqUserId, err := this.GetInt(REQUEST_FIELD_NAME_USER_ID)
 	var userId int
+
 	if err != nil {
+
 		beego.Info("No user ID set, attempt to get session user ID")
 		userId, err = this.getSessionUserId()
 		if err != nil {
 			if beego.AppConfig.String("runmode") == "dev" {
 				panic("Could not get session user ID")
 			}
-			this.serveErrorResponse("There was an error")
+			this.serveErrorResponse("Could not get session user ID")
 		}
+
 	} else {
+
 		if !this.isAdmin() && !this.isStaff() {
 			this.serveErrorResponse("You don't have permissions to list other user's machines")
 		} else {
 			userId = int(reqUserId)
 		}
+
 	}
+
+	// Get array of machines for current user
 	machines, err := this.getUserMachines(userId)
 	if err != nil {
-		// TODO: serve empty array if no machines found, error on real error
-		this.serveErrorResponse("No machines available")
+		emptyArray := []PublicMachine{}
+		response.Machines = emptyArray
+		this.Data["json"] = &response
+		this.ServeJson()
+	} else {
+		response.Machines = machines
+		this.Data["json"] = &response
+		this.ServeJson()
 	}
-	response.Machines = machines
-	this.Data["json"] = &response
-	this.ServeJson()
+
 }
 
 func (this *MachinesController) getUserMachines(userId int) ([]PublicMachine, error) {
