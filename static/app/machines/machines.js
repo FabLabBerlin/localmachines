@@ -170,6 +170,9 @@ app.directive('fsMachineItem', function() {
 			}
 
 			$scope.toggleInfo = function() {
+
+				$scope.resetTimer();
+
 				$scope.infoVisible = !$scope.infoVisible;
 
 				if ($scope.infoVisible) {
