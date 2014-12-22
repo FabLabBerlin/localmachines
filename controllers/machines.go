@@ -66,30 +66,73 @@ func (this *MachinesController) GetMachines() {
 
 	// Get array of machines for current user
 	machines, err := this.getUserMachines(userId)
+
 	if err != nil {
+
+		// If error, return empty array
+		if beego.AppConfig.String("runmode") == "dev" {
+			panic(fmt.Sprintf("Error getting machines for user ID: %v", userId))
+		} else {
+			beego.Error(fmt.Sprintf("Error getting machines for user ID: %v", userId))
+		}
+
+		// Create empty machine array for the response and serve
 		emptyArray := []PublicMachine{}
 		response.Machines = emptyArray
 		this.Data["json"] = &response
 		this.ServeJson()
+
 	} else {
+
+		// else respond with array full of machines
 		response.Machines = machines
 		this.Data["json"] = &response
 		this.ServeJson()
+
 	}
 
 }
 
 func (this *MachinesController) getUserMachines(userId int) ([]PublicMachine, error) {
-	beego.Trace("Attempt to get machines for user ID:", userId)
+
+	// Prepare empty array for machines stored in the database
 	machines := []models.Machine{}
-	o := orm.NewOrm()
-	num, err := o.Raw("SELECT * FROM machine INNER JOIN permission ON machine.id = permission.machine_id WHERE permission.user_id = ?",
-		userId).QueryRows(&machines)
-	if err != nil {
-		beego.Error(err)
-		return nil, err
+
+	// Check if we are admin or staff
+	if this.isAdmin() || this.isStaff() {
+
+		// If user is admin or staff, get all machines
+		beego.Trace("Attemt to get all machines")
+
+		// Attempt to get all machines
+		o := orm.NewOrm()
+		num, err := o.Raw("SELECT * FROM machine").QueryRows(&machines)
+
+		if err != nil {
+			beego.Error(err)
+			return nil, err
+		}
+
+		beego.Trace("Got", num, "machines")
+
+	} else {
+
+		// If user is just a member or nothing, get user machines
+		beego.Trace("Attempt to get machines for user ID", userId)
+
+		// Get machines for user ID
+		o := orm.NewOrm()
+		num, err := o.Raw("SELECT * FROM machine INNER JOIN permission ON machine.id = permission.machine_id WHERE permission.user_id = ?",
+			userId).QueryRows(&machines)
+
+		if err != nil {
+			beego.Error(err)
+			return nil, err
+		}
+
+		beego.Trace("Got", num, "machines")
+
 	}
-	beego.Trace("Got ", num, "machines")
 
 	// Interpret machines as PublicMachine
 	var pubMachines = []PublicMachine{}
