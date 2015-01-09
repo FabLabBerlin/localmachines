@@ -7,6 +7,7 @@ var MACHINE_STATUS_AVAILABLE = 'free';
 var MACHINE_STATUS_OCCUPIED = 'occupied';
 var MACHINE_STATUS_USED = 'used'; // Used by the current user
 var MACHINE_STATUS_UNAVAILABLE = 'unavailable';
+var LOGOUT_TIMER_DELAY = 30;
 
 // Our local app variable for the module
 var app = angular.module('fabsmith.machines', ['ngRoute', 'timer', 'fabsmithFilters']);
@@ -28,7 +29,7 @@ function($scope, $http, $location, $route, $cookieStore) {
 	// Configure timer
 	$scope.resetTimer = function() {
 		$scope.$broadcast('timer-clear');
-		$scope.$broadcast('timer-set-countdown', 120);
+		$scope.$broadcast('timer-set-countdown', LOGOUT_TIMER_DELAY);
 		$scope.$broadcast('timer-start');
 	};
 	$scope.resetTimer();
