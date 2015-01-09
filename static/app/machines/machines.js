@@ -140,7 +140,7 @@ function($scope, $http, $location, $route, $cookieStore) {
 		
 		$scope.resetTimer();
 
-		if (!confirm('Make this machine available to other users')) {
+		if (!confirm('Deactivate machine and make it available to other users')) {
 			return;
 		} 
 
