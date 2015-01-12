@@ -91,9 +91,9 @@ func setSwitchState(switchState bool, switchIp string) error {
 	var writePacket hexabus.WritePacket = hexabus.WritePacket{hexabus.FLAG_NONE,
 		1, hexabus.DTYPE_BOOL, switchState}
 
-	switchStateStr := "Off"
+	switchStateStr := "On"
 	if !switchState {
-		switchStateStr = "On"
+		switchStateStr = "Off"
 	}
 	beego.Info("Sending hexaswitch packet", switchStateStr)
 
