@@ -121,6 +121,13 @@ func setSwitchState(switchState bool, switchIp string) error {
 		beego.Error(err)
 	}
 	beego.Trace("Query bytes", bytes)
+	// Query bytes [72 88 48 67 1 0 0 0 0 1 1 1 192 215] // switching on
+	// Query bytes [72 88 48 67 1 0 0 0 0 1 1 0 209 94] // switching off
+	ptype, err := hexabus.PacketType(bytes)
+	if err != nil {
+		return err
+	}
+	beego.Trace("Packet type", ptype)
 
 	// No errors so far, return no-error
 	return nil
