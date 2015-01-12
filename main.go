@@ -9,8 +9,17 @@ import (
 )
 
 func init() {
-	// Set debug level for our app
-	beego.SetLevel(beego.LevelInformational)
+
+	// Set debug level for our app depending on the runmode set
+	if v, err := beego.GetConfig("string", "runmode"); err == nil && v == "dev" {
+
+		// Show all messages while in dev mode
+		beego.SetLevel(beego.LevelDebug)
+	} else {
+
+		// Show only errors when in prod mode
+		beego.SetLevel(beego.LevelError)
+	}
 
 	// Template init, we replace the default template tags
 	// as AngularJS uses the same ones as GoLang
