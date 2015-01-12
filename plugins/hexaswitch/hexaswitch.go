@@ -113,6 +113,15 @@ func setSwitchState(switchState bool, switchIp string) error {
 		return err
 	}
 
+	// Attempt to read the switch in order to get current state
+	var queryPacket hexabus.QueryPacket = hexabus.QueryPacket{hexabus.FLAG_NONE, 1}
+	var bytes []byte
+	bytes, err = queryPacket.Send(switchIp)
+	if err != nil {
+		beego.Error(err)
+	}
+	beego.Trace(bytes)
+
 	// No errors so far, return no-error
 	return nil
 }
