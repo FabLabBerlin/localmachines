@@ -34,6 +34,14 @@ function($scope, $http, $location, $route, $cookieStore) {
 	};
 	$scope.resetTimer();
 
+	$scope.showGlobalLoader = function() {
+		$('#loader-global').removeClass('hidden');
+	};
+
+	$scope.hideGlobalLoader = function() {
+		$('#loader-global').addClass('hidden');
+	};
+
 	// Initialize the machines array
 	$scope.machines = [];
 
@@ -81,6 +89,9 @@ function($scope, $http, $location, $route, $cookieStore) {
 		
 		$scope.resetTimer();
 
+		// Show loader
+		$scope.showGlobalLoader();
+
 		$http({
 			method: 'POST',
 			url: '/api/activations',
@@ -90,7 +101,9 @@ function($scope, $http, $location, $route, $cookieStore) {
 			}
 		})
 		.success(function(data) {
-			
+
+			$scope.hideGlobalLoader();
+
 			// Check status
 			if (data.Status === 'error') {
 
@@ -131,6 +144,7 @@ function($scope, $http, $location, $route, $cookieStore) {
 
 		})
 		.error(function() {
+			$scope.hideGlobalLoader();
 			alert('Could not activate machine');
 		});
 
@@ -148,6 +162,9 @@ function($scope, $http, $location, $route, $cookieStore) {
 		// Stop activation timer interval
 		clearInterval(machine.activationInterval);
 
+		// Show loader
+		$scope.showGlobalLoader();
+
 		$http({
 			method: 'PUT', 
 			url: '/api/activations', 
@@ -158,6 +175,8 @@ function($scope, $http, $location, $route, $cookieStore) {
 		})
 		.success(function(data) {
 			
+			$scope.hideGlobalLoader();
+
 			if (data.Status === 'ok') {
 
 				// TODO: dynamicaly switch state of the previously
@@ -174,6 +193,7 @@ function($scope, $http, $location, $route, $cookieStore) {
 
 		})
 		.error(function() {
+			$scope.hideGlobalLoader();
 			alert('Failed to deactivate');
 		});
 
