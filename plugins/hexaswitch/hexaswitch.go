@@ -1,6 +1,7 @@
 package hexaswitch
 
 import (
+	"errors"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/kr15h/hexabus"
@@ -113,33 +114,54 @@ func setSwitchState(switchState bool, switchIp string) error {
 		return err
 	}
 
-	// Attempt to read the switch in order to get current state
+	// Attempt to read the switch in order to get current state,
+	// to check if the write actually worked
 	var queryPacket hexabus.QueryPacket = hexabus.QueryPacket{hexabus.FLAG_NONE, 1}
 	var bytes []byte
 	bytes, err = queryPacket.Send(switchIp)
 	if err != nil {
 		beego.Error(err)
+		return err
 	}
 	beego.Trace("Query bytes", bytes)
 	// Query bytes [72 88 48 67 1 0 0 0 0 1 1 1 192 215] // switching on
 	// Query bytes [72 88 48 67 1 0 0 0 0 1 1 0 209 94] // switching off
+
+	// Check packet type
 	ptype, err := hexabus.PacketType(bytes)
 	if err != nil {
 		return err
 	}
-	beego.Trace("Packet type", ptype)
+	beego.Trace("Received packet type", ptype)
 
 	if ptype == hexabus.PTYPE_INFO {
+
+		// Info packet is the only acceptable type here
 		beego.Info("Received hexabus info packet")
 		infoPacket := hexabus.InfoPacket{}
+
+		// Decode info packet bytes to get the switch value as data
 		err = infoPacket.Decode(bytes)
 		if err != nil {
 			beego.Error("Failed to decode hexabus info packet", err)
+			return errors.New("Failed to set switch state")
 		}
 
-		// Expecting boolean value
-		switchState := infoPacket.Data
+		// Expecting boolean value as data
+		infoSwitchState := infoPacket.Data
 		beego.Trace("Info pack switch state:", switchState)
+
+		// The received state has to match the state written
+		if switchState != infoSwitchState {
+			beego.Error("Switch states do not match")
+			return errors.New("Failed to set switch state")
+		}
+
+	} else {
+
+		// Wrong packet type, we assume that's an error
+		beego.Error("Wrong packet type - expecting hexabus InfoPacket")
+		return errors.New("Failed to set switch state")
 	}
 
 	// No errors so far, return no-error
