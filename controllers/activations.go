@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"database/sql"
+	"errors"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/kr15h/fabsmith/models"
@@ -157,9 +158,29 @@ func (this *ActivationsController) getPublicActivations(activations *[]models.Ac
 // Return created activation ID.
 func (this *ActivationsController) createActivation(userId int, machineId int) (int, error) {
 
+	o := orm.NewOrm()
+
+	// Check for duplicate activations
+	beego.Info("Checking for duplicate activations")
+	var dupActivations []models.Activation
+	num, err := o.Raw("SELECT id FROM activation WHERE machine_id = ? AND user_id = ? AND active = 1",
+		machineId, userId).QueryRows(&dupActivations)
+	if err != nil {
+		beego.Error(err)
+		return 0, err
+	}
+
+	// Got duplicates, that's bad
+	if num > 0 {
+		beego.Error("Duplicate activations found:", num)
+		return 0, errors.New("Duplicate activations found")
+	}
+
+	beego.Info("No duplicate activations found")
+
 	// Try to turn on the switch first
-	hexaswitch.Install()            // TODO: remove this from here in an elegant way
-	err := hexaswitch.On(machineId) // This will take some time (2s approx)
+	hexaswitch.Install()           // TODO: remove this from here in an elegant way
+	err = hexaswitch.On(machineId) // This will take some time (2s approx)
 	if err != nil {
 
 		// There were some problems with turning on the switch,
@@ -174,7 +195,6 @@ func (this *ActivationsController) createActivation(userId int, machineId int) (
 	// try to fix or use as it should be used.
 
 	beego.Trace("Attempt to create activation")
-	o := orm.NewOrm()
 
 	// TODO: check if the machine is available before we insert
 
