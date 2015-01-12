@@ -129,6 +129,19 @@ func setSwitchState(switchState bool, switchIp string) error {
 	}
 	beego.Trace("Packet type", ptype)
 
+	if ptype == hexabus.PTYPE_INFO {
+		beego.Info("Received hexabus info packet")
+		infoPacket := hexabus.InfoPacket{}
+		err = infoPacket.Decode(bytes)
+		if err != nil {
+			beego.Error("Failed to decode hexabus info packet", err)
+		}
+
+		// Expecting boolean value
+		switchState := infoPacket.Data
+		beego.Trace("Info pack switch state:", switchState)
+	}
+
 	// No errors so far, return no-error
 	return nil
 }
