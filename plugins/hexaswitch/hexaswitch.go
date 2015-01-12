@@ -120,7 +120,7 @@ func setSwitchState(switchState bool, switchIp string) error {
 	if err != nil {
 		beego.Error(err)
 	}
-	beego.Trace(bytes)
+	beego.Trace("Query bytes", bytes)
 
 	// No errors so far, return no-error
 	return nil
