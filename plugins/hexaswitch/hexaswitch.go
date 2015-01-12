@@ -114,6 +114,8 @@ func setSwitchState(switchState bool, switchIp string) error {
 		return err
 	}
 
+	timeBeforeQuery := time.Now()
+
 	// Attempt to read the switch in order to get current state,
 	// to check if the write actually worked
 	var queryPacket hexabus.QueryPacket = hexabus.QueryPacket{hexabus.FLAG_NONE, 1}
@@ -123,6 +125,8 @@ func setSwitchState(switchState bool, switchIp string) error {
 		beego.Error(err)
 		return err
 	}
+	timeAfterQuery := time.Now()
+	beego.Info("Hexabus query took", timeAfterQuery.Sub(timeBeforeQuery).Seconds(), "seconds")
 	beego.Trace("Query bytes", bytes)
 	// Query bytes [72 88 48 67 1 0 0 0 0 1 1 1 192 215] // switching on
 	// Query bytes [72 88 48 67 1 0 0 0 0 1 1 0 209 94] // switching off
