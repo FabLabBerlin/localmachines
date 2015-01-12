@@ -116,6 +116,9 @@ func setSwitchState(switchState bool, switchIp string) error {
 
 	timeBeforeQuery := time.Now()
 
+	// Short timeout before checking current switch status
+	time.Sleep(time.Millisecond * 100)
+
 	// Attempt to read the switch in order to get current state,
 	// to check if the write actually worked
 	var queryPacket hexabus.QueryPacket = hexabus.QueryPacket{hexabus.FLAG_NONE, 1}
