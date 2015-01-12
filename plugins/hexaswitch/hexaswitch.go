@@ -153,7 +153,7 @@ func setSwitchState(switchState bool, switchIp string) error {
 
 		// Expecting boolean value as data
 		infoSwitchState := infoPacket.Data
-		beego.Trace("Info pack switch state:", switchState)
+		beego.Trace("Info pack switch state:", infoSwitchState)
 
 		// The received state has to match the state written
 		if switchState != infoSwitchState {
