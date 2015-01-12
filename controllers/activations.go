@@ -24,37 +24,52 @@ type PublicActivation struct {
 // Creates an activation of a machine for a user. If user not set, session
 // user ID is used instead.
 func (this *ActivationsController) CreateActivation() {
+
+	// Get machine ID to be activated from the request variables
 	reqMachineId, err := this.GetInt(REQUEST_FIELD_NAME_MACHINE_ID)
 	if err != nil {
 		this.serveErrorResponse("Missing machine ID")
 	}
+
+	// Get the user ID for the activation
 	reqUserId, err := this.GetInt(REQUEST_FIELD_NAME_USER_ID)
 	var userId int
 	if err != nil {
+
+		// It there is no user ID in the request, get it from session -
+		// logged in user ID
 		userId, err = this.getSessionUserId()
 		if err != nil {
+
+			// It was impossible to get the user ID, fail now
 			if beego.AppConfig.String("runmode") == "dev" {
 				panic("Could not get session user ID")
 			}
 			this.serveErrorResponse("Session error occured")
 		}
 	} else {
+
+		// There is an user ID in the request, check if we are authorized
+		// to use it (only if we are admin or staff)
 		if !this.isAdmin() && !this.isStaff() {
+
+			// We don't have admin or staff privileges, so fail now
 			this.serveErrorResponse("You do not have permissions to create activations for other users")
 		}
 		userId = int(reqUserId)
 	}
-	var id int
-	id, err = this.createActivation(userId, int(reqMachineId))
+
+	// Create activation and get it's ID
+	var activationId int
+	activationId, err = this.createActivation(userId, int(reqMachineId))
 	if err != nil {
-		if beego.AppConfig.String("runmode") == "dev" {
-			panic("Could not create activation")
-		}
+
+		// Could not create valid activation, fail now
 		this.serveErrorResponse("Could not create activation")
 	} else {
 
-		// Serve "Activation Created" response
-		this.serveCreatedResponse(id)
+		// Activation successfully created, serve "Activation Created" response
+		this.serveCreatedResponse(activationId)
 	}
 }
 
@@ -103,9 +118,8 @@ func (this *ActivationsController) CloseActivation() {
 	} else {
 		err = this.finalizeActivation(int(reqActivationId))
 		if err != nil {
-			if beego.AppConfig.String("runmode") == "dev" {
-				panic("Could not finalize activation")
-			}
+
+			// Could not finalize activation, serve error
 			this.serveErrorResponse("Could not close activation")
 		}
 		this.serveOkResponse()
@@ -142,17 +156,40 @@ func (this *ActivationsController) getPublicActivations(activations *[]models.Ac
 // Create new activation with user ID and machine ID.
 // Return created activation ID.
 func (this *ActivationsController) createActivation(userId int, machineId int) (int, error) {
-	// Beego model time stuff is bad, use workaround that works
+
+	// Try to turn on the switch first
+	hexaswitch.Install()            // TODO: remove this from here in an elegant way
+	err := hexaswitch.On(machineId) // This will take some time (2s approx)
+	if err != nil {
+
+		// There were some problems with turning on the switch,
+		// serve error
+		beego.Error("Failed to turn on switch", err)
+		return 0, err
+	}
+
+	// Beego model time stuff is bad, here we use workaround that works.
+
+	// TODO: explore the beego ORM time management,
+	// try to fix or use as it should be used.
+
 	beego.Trace("Attempt to create activation")
 	o := orm.NewOrm()
+
+	// TODO: check if the machine is available before we insert
+
 	res, err := o.Raw("INSERT INTO activation VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
 		nil, nil, userId, machineId, true,
 		time.Now().Format("2006-01-02 15:04:05"),
 		nil, 0, 0, 0, 0, 0, "", false, false).Exec()
 	if err != nil {
+
+		// Failed to create database record, fail now
 		beego.Error("Failed to insert activation in to DB:", err)
 		return 0, err
 	}
+
+	// Get the ID of the record we just inserted
 	var activationId int64
 	activationId, err = res.LastInsertId()
 	if err != nil {
@@ -160,18 +197,18 @@ func (this *ActivationsController) createActivation(userId int, machineId int) (
 	}
 	beego.Trace("Activation with ID", activationId, "created")
 
-	// Turn on the machine with the help of hexaswitch
-	hexaswitch.Install()
-	hexaswitch.On(machineId)
-
+	// Set the machine unavailable as we just activated it
 	err = this.setMachineUnavailable(machineId)
 	return int(activationId), err
 }
 
-// Finalize activation, save end time
+// Finalize activation, save activation end time
 func (this *ActivationsController) finalizeActivation(id int) error {
+
+	// Here we can use beego ORM models in a safe way
 	activationModel := new(models.Activation)
 	activationModel.Id = id
+
 	// Get activation start time
 	beego.Trace("Attempt to get activation with ID", id)
 	var tempModel struct {
@@ -182,20 +219,35 @@ func (this *ActivationsController) finalizeActivation(id int) error {
 	err := o.Raw("SELECT time_start, machine_id FROM activation WHERE active = true AND id = ?",
 		id).QueryRow(&tempModel)
 	if err != nil {
+
+		// Failed to get activation from the database
 		beego.Error("Could not get activation:", err)
 		return err
 	}
 	beego.Trace("Success")
+
+	// Attempt to turn off the machine
+	hexaswitch.Install()                      // TODO: remove this from here in an elegant way
+	err = hexaswitch.Off(tempModel.MachineId) // This will take some time
+	if err != nil {
+
+		// Failed to communicate with the switch, fail now
+		beego.Error("Failed to turn the switch off", err)
+		return err
+	}
+
 	// Convert start time into Unix timestamp, workaround here as Beego models
 	// do not handle time properly
 	const timeForm = "2006-01-02 15:04:05"
 	timeStart, _ := time.ParseInLocation(timeForm, tempModel.TimeStart, time.Now().Location())
 	timeNow := time.Now() // time.Now().Format("2006-01-02 15:04:05")
 	totalDuration := timeNow.Sub(timeStart)
+
 	// Set model vars
 	activationModel.TimeEnd = timeNow
 	activationModel.TimeTotal = int(totalDuration.Seconds())
 	activationModel.Active = false
+
 	// Update database
 	beego.Trace("Attempt to update activation")
 	var res sql.Result
@@ -203,19 +255,20 @@ func (this *ActivationsController) finalizeActivation(id int) error {
 		timeNow.Format("2006-01-02 15:04:05"),
 		totalDuration.Seconds(), id).Exec()
 	if err != nil {
+
+		// Failed to update database
 		beego.Error("Failed to update activation:", err)
 		return err
 	}
 	var rowsAffected int64
 	rowsAffected, err = res.RowsAffected()
 	if err != nil {
+
+		// Failed to get affected rows from the database
 		beego.Critical("Could not get num affected rows")
 		return err
 	}
 	beego.Trace("Success, rows affected: ", rowsAffected)
-
-	// Turn off the machine via hexaswitch
-	hexaswitch.Off(tempModel.MachineId)
 
 	err = this.setMachineAvailable(tempModel.MachineId)
 	return err

@@ -1,10 +1,10 @@
 package hexaswitch
 
 import (
-	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	"github.com/morriswinkler/hexabus"
+	"github.com/kr15h/hexabus"
+	"time"
 )
 
 var switchAddress string = "[fafa::50:c4ff:fe04:8390]"
@@ -37,45 +37,84 @@ func Install() {
 	}
 }
 
-func On(machineId int) {
+// Turn the switch on, the IP address of the switch is being retrieved
+// from the database
+func On(machineId int) error {
 
+	// Attempt to get switch IP connected to the machine
 	switchIp, err := getSwitchIp(machineId)
-	if err == nil {
-		beego.Trace("Turning ON machine with ID", machineId, "switch IP", switchIp)
-		go setSwitchState(true, switchIp)
-	} else {
-		beego.Error(err)
+	if err != nil {
+		return err
 	}
+
+	// No error, continue using the switch IP got
+	beego.Info("Turning ON machine with ID",
+		machineId, "and switch IP", switchIp)
+
+	// Attempt to turn the switch on
+	err = setSwitchState(true, switchIp)
+	if err != nil {
+		return err
+	}
+
+	// All is fine, clean exit function
+	return nil
 }
 
-func Off(machineId int) {
-	switchIp, err := getSwitchIp(machineId)
+// Turn the switch off, the IP address of the switch is being retrieved
+// from the database
+func Off(machineId int) error {
 
-	if err == nil {
-		beego.Trace("Turning OFF machine with ID", machineId, "switch IP", switchIp)
-		go setSwitchState(false, switchIp)
-	} else {
-		beego.Error(err)
+	// Attempt to get switch IP connected to the machine
+	switchIp, err := getSwitchIp(machineId)
+	if err != nil {
+		return err
 	}
+
+	// No error, use the switch IP
+	beego.Info("Turning OFF machine with ID",
+		machineId, "and switch IP", switchIp)
+
+	// Attempt to turn the switch off
+	err = setSwitchState(false, switchIp)
+	if err != nil {
+		return err
+	}
+
+	// All is fine, return no-error
+	return nil
 }
 
-func setSwitchState(switchState bool, switchIp string) {
+func setSwitchState(switchState bool, switchIp string) error {
 
 	// Create write packet to switch on and off
-	var wPack hexabus.WritePacket = hexabus.WritePacket{hexabus.FLAG_NONE,
+	var writePacket hexabus.WritePacket = hexabus.WritePacket{hexabus.FLAG_NONE,
 		1, hexabus.DTYPE_BOOL, switchState}
 
 	switchStateStr := "Off"
 	if !switchState {
 		switchStateStr = "On"
 	}
-	beego.Trace("Hexaswitch", switchStateStr)
+	beego.Info("Sending hexaswitch packet", switchStateStr)
+
+	// Register time before sending the packet
+	timeBeforeSendingPacket := time.Now()
 
 	// Send packet to switch
-	err := wPack.Send(switchIp)
+	err := writePacket.Send(switchIp)
+
+	// Register time after sending the packet
+	timeResponseReceived := time.Now()
+	beego.Info("Communicating with the switch took",
+		timeResponseReceived.Sub(timeBeforeSendingPacket).Seconds(), "seconds")
+
+	// Check for errors
 	if err != nil {
-		fmt.Println(err)
+		return err
 	}
+
+	// No errors so far, return no-error
+	return nil
 }
 
 func getSwitchIp(machineId int) (string, error) {
