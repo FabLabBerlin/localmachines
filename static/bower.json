@@ -13,6 +13,7 @@
     "angular-cookies": "1.2.x",
     "bootstrap": "3.2.x",
     "angular-timer": "~1.1.7",
-    "modernizr": "~2.8.3"
+    "modernizr": "~2.8.3",
+    "webfontloader": "~1.5.11"
   }
 }
