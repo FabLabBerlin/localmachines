@@ -179,8 +179,8 @@ func (this *ActivationsController) createActivation(userId int, machineId int) (
 	beego.Info("No duplicate activations found")
 
 	// Try to turn on the switch first
-	hexaswitch.Install()           // TODO: remove this from here in an elegant way
-	err = hexaswitch.On(machineId) // This will take some time (2s approx)
+	hexaswitch.Install()                 // TODO: remove this from here in an elegant way
+	err = hexaswitch.SwitchOn(machineId) // This will take some time (2s approx)
 	if err != nil {
 
 		// There were some problems with turning on the switch,
@@ -247,8 +247,8 @@ func (this *ActivationsController) finalizeActivation(id int) error {
 	beego.Trace("Success")
 
 	// Attempt to turn off the machine
-	hexaswitch.Install()                      // TODO: remove this from here in an elegant way
-	err = hexaswitch.Off(tempModel.MachineId) // This will take some time
+	hexaswitch.Install()                            // TODO: remove this from here in an elegant way
+	err = hexaswitch.SwitchOff(tempModel.MachineId) // This will take some time
 	if err != nil {
 
 		// Failed to communicate with the switch, fail now

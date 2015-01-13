@@ -8,8 +8,10 @@ import (
 	"time"
 )
 
-var switchAddress string = "[fafa::50:c4ff:fe04:8390]"
-var tableName string = "hexaswitch"
+const (
+	SWITCH_STATE_ON  = true
+	SWITCH_STATE_OFF = false
+)
 
 func init() {
 
@@ -40,7 +42,7 @@ func Install() {
 
 // Turn the switch on, the IP address of the switch is being retrieved
 // from the database
-func On(machineId int) error {
+func SwitchOn(machineId int) error {
 
 	// Attempt to get switch IP connected to the machine
 	switchIp, err := getSwitchIp(machineId)
@@ -53,7 +55,7 @@ func On(machineId int) error {
 		machineId, "and switch IP", switchIp)
 
 	// Attempt to turn the switch on
-	err = setSwitchState(true, switchIp)
+	err = setSwitchState(SWITCH_STATE_ON, switchIp)
 	if err != nil {
 		return err
 	}
@@ -64,7 +66,7 @@ func On(machineId int) error {
 
 // Turn the switch off, the IP address of the switch is being retrieved
 // from the database
-func Off(machineId int) error {
+func SwitchOff(machineId int) error {
 
 	// Attempt to get switch IP connected to the machine
 	switchIp, err := getSwitchIp(machineId)
@@ -77,7 +79,7 @@ func Off(machineId int) error {
 		machineId, "and switch IP", switchIp)
 
 	// Attempt to turn the switch off
-	err = setSwitchState(false, switchIp)
+	err = setSwitchState(SWITCH_STATE_OFF, switchIp)
 	if err != nil {
 		return err
 	}
@@ -141,33 +143,29 @@ func setSwitchState(switchState bool, switchIp string) error {
 	}
 	beego.Trace("Received packet type", ptype)
 
-	if ptype == hexabus.PTYPE_INFO {
-
-		// Info packet is the only acceptable type here
-		beego.Info("Received hexabus info packet")
-		infoPacket := hexabus.InfoPacket{}
-
-		// Decode info packet bytes to get the switch value as data
-		err = infoPacket.Decode(bytes)
-		if err != nil {
-			beego.Error("Failed to decode hexabus info packet", err)
-			return errors.New("Failed to set switch state")
-		}
-
-		// Expecting boolean value as data
-		infoSwitchState := infoPacket.Data
-		beego.Trace("Info pack switch state:", infoSwitchState)
-
-		// The received state has to match the state written
-		if switchState != infoSwitchState {
-			beego.Error("Switch states do not match")
-			return errors.New("Failed to set switch state")
-		}
-
-	} else {
-
-		// Wrong packet type, we assume that's an error
+	if ptype != hexabus.PTYPE_INFO {
 		beego.Error("Wrong packet type - expecting hexabus InfoPacket")
+		return errors.New("Failed to set switch state")
+	}
+
+	// Info packet is the only acceptable type here
+	beego.Info("Received hexabus info packet")
+	infoPacket := hexabus.InfoPacket{}
+
+	// Decode info packet bytes to get the switch value as data
+	err = infoPacket.Decode(bytes)
+	if err != nil {
+		beego.Error("Failed to decode hexabus info packet", err)
+		return errors.New("Failed to set switch state")
+	}
+
+	// Expecting boolean value as data
+	infoSwitchState := infoPacket.Data
+	beego.Trace("Info pack switch state:", infoSwitchState)
+
+	// The received state has to match the state written
+	if switchState != infoSwitchState {
+		beego.Error("Switch states do not match")
 		return errors.New("Failed to set switch state")
 	}
 
