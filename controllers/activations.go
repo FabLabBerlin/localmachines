@@ -158,11 +158,10 @@ func (this *ActivationsController) getPublicActivations(activations *[]models.Ac
 // Return created activation ID.
 func (this *ActivationsController) createActivation(userId int, machineId int) (int, error) {
 
-	o := orm.NewOrm()
-
 	// Check for duplicate activations
-	beego.Info("Checking for duplicate activations")
+	o := orm.NewOrm()
 	var dupActivations []models.Activation
+	beego.Info("Checking for duplicate activations")
 	num, err := o.Raw("SELECT id FROM activation WHERE machine_id = ? AND user_id = ? AND active = 1",
 		machineId, userId).QueryRows(&dupActivations)
 	if err != nil {
@@ -176,34 +175,20 @@ func (this *ActivationsController) createActivation(userId int, machineId int) (
 		return 0, errors.New("Duplicate activations found")
 	}
 
+	// No duplicates - good
 	beego.Info("No duplicate activations found")
 
-	// Try to turn on the switch first
-	hexaswitch.Install()                 // TODO: remove this from here in an elegant way
-	err = hexaswitch.SwitchOn(machineId) // This will take some time (2s approx)
-	if err != nil {
-
-		// There were some problems with turning on the switch,
-		// serve error
-		beego.Error("Failed to turn on switch", err)
-		return 0, err
-	}
-
 	// Beego model time stuff is bad, here we use workaround that works.
-
 	// TODO: explore the beego ORM time management,
 	// try to fix or use as it should be used.
 
 	beego.Trace("Attempt to create activation")
-
-	// TODO: check if the machine is available before we insert
-
-	res, err := o.Raw("INSERT INTO activation VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+	var res sql.Result
+	res, err = o.Raw("INSERT INTO activation VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
 		nil, nil, userId, machineId, true,
 		time.Now().Format("2006-01-02 15:04:05"),
 		nil, 0, 0, 0, 0, 0, "", false, false).Exec()
 	if err != nil {
-
 		// Failed to create database record, fail now
 		beego.Error("Failed to insert activation in to DB:", err)
 		return 0, err
@@ -213,9 +198,29 @@ func (this *ActivationsController) createActivation(userId int, machineId int) (
 	var activationId int64
 	activationId, err = res.LastInsertId()
 	if err != nil {
+		beego.Error("Failed to get insterted activation ID")
 		return int(0), err
 	}
 	beego.Trace("Activation with ID", activationId, "created")
+
+	// Try to turn on the switch
+	hexaswitch.Install()                 // TODO: remove this from here in an elegant way
+	err = hexaswitch.SwitchOn(machineId) // This will take some time
+	if err != nil {
+
+		tempErr := err
+		beego.Error("Failed to turn on the switch", tempErr)
+
+		// We have to remove (not just stop) the activation if this fails
+		beego.Info("Attempt to remove activation with ID", activationId)
+		_, err = o.Raw("DELETE FROM activation WHERE id=?", activationId).Exec()
+		if err != nil {
+			beego.Error("Failed to remove activation with ID", activationId)
+		}
+		beego.Info("Successfuly removed activation with ID", activationId)
+
+		return 0, tempErr
+	}
 
 	// Set the machine unavailable as we just activated it
 	err = this.setMachineUnavailable(machineId)
