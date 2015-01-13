@@ -2,6 +2,12 @@ body {
   padding-bottom: 40px;
   background-color: #EEEEEE;
   color: #4A4A4A;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
 }
 
 ul, li {
@@ -32,7 +38,7 @@ li {
   margin-bottom: 10px;
 }
 .form-signin .checkbox {
-  font-weight: normal;
+  font-weight: 400;
 }
 .form-signin .form-control {
   position: relative;
@@ -110,7 +116,7 @@ li {
   border-radius: 8px;
   border: 1px solid #B02F38;
   border-radius: 8px;
-  font-family: "OpenSans-Bold",sans-serif;
+  font-weight: 700;
   font-size: 15px;
   color: #FFFFFF;
   line-height: 1;
@@ -118,7 +124,7 @@ li {
 
 .btn-lg {
   height: 70px;
-  font-family: "OpenSans-Bold",sans-serif;
+  font-weight: 700;
   font-size: 22px;
   color: #FFFFFF;
   line-height: 1;
@@ -180,7 +186,6 @@ header {
 
 .logged-user-label,
 .auto-logout-label {
-  font-family: "OpenSans",sans-serif;
   font-size: 10px;
   color: #FFFFFF;
   line-height: 1;
@@ -189,7 +194,7 @@ header {
 
 .logged-user-value, 
 .auto-logout-value {
-  font-family: "OpenSans-Bold",sans-serif;
+  font-weight: 700;
   font-size: 24px;
   color: #FFFFFF;
   line-height: 1;
@@ -212,7 +217,7 @@ header {
   padding-bottom: 15px;
   font-size: 22px;
   line-height: 1;
-  font-family: "OpenSans-Bold",sans-serif;
+  font-weight: 700;
 }
 
 .machine-info-toggle {
@@ -226,7 +231,6 @@ header {
 
 .machine-info-content,
 .machine-unavailable-value {
-  font-family: "OpenSans",sans-serif;
   font-size: 12px;
   line-height: 17px;
 }
@@ -264,32 +268,30 @@ header {
 }
 
 .machine-action-label {
-  font-family: "OpenSans",sans-serif;
   font-size: 9px;
   line-height: 1;
   margin-bottom: 15px;
 }
 
 .machine-price-value {
-  font-family: "OpenSans-Bold",sans-serif;
+  font-weight: 700;
   font-size: 22px;
   line-height: 1;
 }
 
 .machine-price-currency {
-  font-family: "OpenSans",sans-serif;
   font-size: 12px;
   line-height: 1;
 }
 
 .machine-time-value {
-  font-family: "OpenSans-Bold",sans-serif;
+  font-weight: 700;
   font-size: 30px;
   line-height: 1;
 }
 
 .machine-occupied-value {
-  font-family: "OpenSans-Bold",sans-serif;
+  font-weight: 700;
   font-size: 16px;
   line-height: 1;
 }
@@ -305,7 +307,7 @@ header {
   line-height: 70px;
   border-radius: 8px;
   font-size: 22px;
-  font-family: "OpenSans-Bold",sans-serif;
+  font-weight: 700;
 }
 
 .indicator-occupied {
