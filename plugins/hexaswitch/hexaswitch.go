@@ -88,6 +88,64 @@ func SwitchOff(machineId int) error {
 	return nil
 }
 
+// Get current switch state by machine ID
+func GetSwitchState(machineId int) (bool, error) {
+
+	switchIp, err := getSwitchIp(machineId)
+	if err != nil {
+		return false, err
+	}
+
+	return getSwitchState(switchIp)
+}
+
+func getSwitchState(switchIp string) (bool, error) {
+
+	// Attempt to read the switch in order to get current state,
+	// to check if the write actually worked
+	timeBeforeQuery := time.Now()
+	var queryPacket hexabus.QueryPacket = hexabus.QueryPacket{hexabus.FLAG_NONE, 1}
+	var bytes []byte
+	var err error
+	bytes, err = queryPacket.Send(switchIp)
+	if err != nil {
+		beego.Error(err)
+		return false, err
+	}
+	timeAfterQuery := time.Now()
+	beego.Info("Hexabus query took", timeAfterQuery.Sub(timeBeforeQuery).Seconds(), "seconds")
+	beego.Trace("Query bytes", bytes)
+	// Query bytes [72 88 48 67 1 0 0 0 0 1 1 1 192 215] // switching on
+	// Query bytes [72 88 48 67 1 0 0 0 0 1 1 0 209 94] // switching off
+
+	// Check packet type
+	ptype, err := hexabus.PacketType(bytes)
+	if err != nil {
+		return false, err
+	}
+	beego.Trace("Received packet type", ptype)
+
+	if ptype != hexabus.PTYPE_INFO {
+		beego.Error("Wrong packet type - expecting hexabus InfoPacket")
+		return false, errors.New("Failed to set switch state")
+	}
+
+	// Info packet is the only acceptable type here
+	beego.Info("Received hexabus info packet")
+	infoPacket := hexabus.InfoPacket{}
+
+	// Decode info packet bytes to get the switch value as data
+	err = infoPacket.Decode(bytes)
+	if err != nil {
+		beego.Error("Failed to decode hexabus info packet", err)
+		return false, errors.New("Failed to set switch state")
+	}
+
+	var switchState bool
+	switchState = infoPacket.Data.(bool)
+	return switchState, nil
+}
+
 func setSwitchState(switchState bool, switchIp string) error {
 
 	// Create write packet to switch on and off
@@ -116,51 +174,17 @@ func setSwitchState(switchState bool, switchIp string) error {
 		return err
 	}
 
-	timeBeforeQuery := time.Now()
-
 	// Short timeout before checking current switch status
 	time.Sleep(time.Millisecond * 100)
 
-	// Attempt to read the switch in order to get current state,
-	// to check if the write actually worked
-	var queryPacket hexabus.QueryPacket = hexabus.QueryPacket{hexabus.FLAG_NONE, 1}
-	var bytes []byte
-	bytes, err = queryPacket.Send(switchIp)
+	var infoSwitchState bool
+	infoSwitchState, err = getSwitchState(switchIp)
 	if err != nil {
-		beego.Error(err)
+		beego.Error("Failed to get switch state")
 		return err
-	}
-	timeAfterQuery := time.Now()
-	beego.Info("Hexabus query took", timeAfterQuery.Sub(timeBeforeQuery).Seconds(), "seconds")
-	beego.Trace("Query bytes", bytes)
-	// Query bytes [72 88 48 67 1 0 0 0 0 1 1 1 192 215] // switching on
-	// Query bytes [72 88 48 67 1 0 0 0 0 1 1 0 209 94] // switching off
-
-	// Check packet type
-	ptype, err := hexabus.PacketType(bytes)
-	if err != nil {
-		return err
-	}
-	beego.Trace("Received packet type", ptype)
-
-	if ptype != hexabus.PTYPE_INFO {
-		beego.Error("Wrong packet type - expecting hexabus InfoPacket")
-		return errors.New("Failed to set switch state")
-	}
-
-	// Info packet is the only acceptable type here
-	beego.Info("Received hexabus info packet")
-	infoPacket := hexabus.InfoPacket{}
-
-	// Decode info packet bytes to get the switch value as data
-	err = infoPacket.Decode(bytes)
-	if err != nil {
-		beego.Error("Failed to decode hexabus info packet", err)
-		return errors.New("Failed to set switch state")
 	}
 
 	// Expecting boolean value as data
-	infoSwitchState := infoPacket.Data
 	beego.Trace("Info pack switch state:", infoSwitchState)
 
 	// The received state has to match the state written
