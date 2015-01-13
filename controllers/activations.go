@@ -258,7 +258,9 @@ func (this *ActivationsController) finalizeActivation(id int) error {
 
 		// Failed to communicate with the switch, fail now
 		beego.Error("Failed to turn the switch off", err)
-		return err
+		// This should be no reason to not be able to end the activation
+		// One can do it manually if needed
+		//return err
 	}
 
 	// Convert start time into Unix timestamp, workaround here as Beego models
