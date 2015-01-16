@@ -203,7 +203,18 @@ func (this *ActivationsController) createActivation(userId int, machineId int) (
 	}
 	beego.Trace("Activation with ID", activationId, "created")
 
-	// Try to turn on the switch
+	// Check if there is mapping between switch and machine
+	_, err = hexaswitch.GetSwitchIp(machineId)
+	if err != nil {
+		beego.Warning("Machine / switch mapping does not exist")
+		// Nothing bad with not having a mapping
+		// maybe it's a screwdriver - so we keep the activation
+		return int(activationId), nil
+	}
+
+	// TODO: use switch IP for the SwitchOn method
+
+	// Try to turn on the switch as we have the mapping and all
 	hexaswitch.Install()                 // TODO: remove this from here in an elegant way
 	err = hexaswitch.SwitchOn(machineId) // This will take some time
 	if err != nil {

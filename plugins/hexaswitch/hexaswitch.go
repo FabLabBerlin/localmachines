@@ -42,10 +42,11 @@ func Install() {
 
 // Turn the switch on, the IP address of the switch is being retrieved
 // from the database
+// TODO: use switch IP as argument here
 func SwitchOn(machineId int) error {
 
 	// Attempt to get switch IP connected to the machine
-	switchIp, err := getSwitchIp(machineId)
+	switchIp, err := GetSwitchIp(machineId)
 	if err != nil {
 		return err
 	}
@@ -66,10 +67,11 @@ func SwitchOn(machineId int) error {
 
 // Turn the switch off, the IP address of the switch is being retrieved
 // from the database
+// TODO: use switch IP as argument here
 func SwitchOff(machineId int) error {
 
 	// Attempt to get switch IP connected to the machine
-	switchIp, err := getSwitchIp(machineId)
+	switchIp, err := GetSwitchIp(machineId)
 	if err != nil {
 		return err
 	}
@@ -91,12 +93,23 @@ func SwitchOff(machineId int) error {
 // Get current switch state by machine ID
 func GetSwitchState(machineId int) (bool, error) {
 
-	switchIp, err := getSwitchIp(machineId)
+	switchIp, err := GetSwitchIp(machineId)
 	if err != nil {
 		return false, err
 	}
 
 	return getSwitchState(switchIp)
+}
+
+// Get switch IP for machine
+func GetSwitchIp(machineId int) (string, error) {
+	switchModel := HexaSwitch{}
+	o := orm.NewOrm()
+	err := o.Raw("SELECT * FROM hexaswitch WHERE machine_id = ? LIMIT 0, 1", machineId).QueryRow(&switchModel)
+	if err != nil {
+		return "", err
+	}
+	return switchModel.SwitchIp, nil
 }
 
 func getSwitchState(switchIp string) (bool, error) {
@@ -195,14 +208,4 @@ func setSwitchState(switchState bool, switchIp string) error {
 
 	// No errors so far, return no-error
 	return nil
-}
-
-func getSwitchIp(machineId int) (string, error) {
-	switchModel := HexaSwitch{}
-	o := orm.NewOrm()
-	err := o.Raw("SELECT * FROM hexaswitch WHERE machine_id = ? LIMIT 0, 1", machineId).QueryRow(&switchModel)
-	if err != nil {
-		return "", err
-	}
-	return switchModel.SwitchIp, nil
 }
