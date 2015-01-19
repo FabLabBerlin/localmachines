@@ -262,17 +262,14 @@ func (this *ActivationsController) finalizeActivation(id int) error {
 	}
 	beego.Trace("Success")
 
-	// Attempt to turn off the machine
-	hexaswitch.Install()                            // TODO: remove this from here in an elegant way
-	err = hexaswitch.SwitchOff(tempModel.MachineId) // This will take some time
+	// Launch go routine to switch off the machine after some time
+	var deactivateTimeout int64
+	deactivateTimeout, err = beego.AppConfig.Int64("deactivatetimeout")
 	if err != nil {
-
-		// Failed to communicate with the switch, fail now
-		beego.Error("Failed to turn the switch off", err)
-		// This should be no reason to not be able to end the activation
-		// One can do it manually if needed
-		//return err
+		beego.Error("Failed to get deactivate timeout from config:", err)
+		deactivateTimeout = 30
 	}
+	go deactivateMachineAfterTimeout(tempModel.MachineId, deactivateTimeout)
 
 	// Convert start time into Unix timestamp, workaround here as Beego models
 	// do not handle time properly
@@ -340,4 +337,36 @@ func (this *ActivationsController) setMachineAvailable(id int) error {
 	}
 	beego.Trace("Success, rows affected: ", num)
 	return nil
+}
+
+// Deativates a machine after timeout if no activation with the machine ID
+// has been made.
+func deactivateMachineAfterTimeout(machineId int, timeoutSeconds int64) {
+
+	// Timeout
+	time.Sleep(time.Duration(timeoutSeconds) * time.Second)
+
+	// Check if activation with the machine ID exists
+	o := orm.NewOrm()
+	activationModel := models.Activation{Id: 0}
+	beego.Info("Attempt to get an active activation with the machine ID", machineId)
+	err := o.Raw("SELECT id FROM activation WHERE active=true AND machine_id=?",
+		machineId).QueryRow(&activationModel)
+	if err != nil {
+		beego.Error("There was an error while getting activation:", err)
+		// Here we assume that there is no activation
+		// and switch off the machine anyway
+	}
+	beego.Trace("Got activation ID", activationModel.Id)
+	if activationModel.Id > 0 {
+		beego.Info("There is an activation for the machine, keep it on")
+		return
+	}
+
+	// Attempt to switch off the machine
+	hexaswitch.Install()                  // TODO: remove this from here in an elegant way
+	err = hexaswitch.SwitchOff(machineId) // This will take some time
+	if err != nil {
+		beego.Error("Failed to turn the switch off", err)
+	}
 }
