@@ -20,6 +20,8 @@ li {
   margin-bottom: 10px;
 }
 
+.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
+
 .machine-item, 
 .activation-item {
   border-radius: 10px;

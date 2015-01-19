@@ -1,19 +1,19 @@
 <div class="container">
 
-  <form name="loginForm" class="form-signin" role="form" 
-  	novalidate ng-submit="loginForm.$valid && login()">
-    <h2 class="form-signin-heading">Please sign in</h2>
-    <input ng-model="username" type="text" class="form-control" 
-    	placeholder="Username" required autofocus>
-    <input ng-model="password" type="password" class="form-control" 
-    	placeholder="Password" required>
-    <!-- Don't show the Remember me checkbox while it is not working -->
-    <!--
-    <label class="checkbox">
-      <input ng-model="remember" type="checkbox" value="remember-me"> Remember me
-    </label>
-    -->
-    <button class="btn btn-primary btn-block" type="submit">Sign in</button>
-  </form>
+	<form name="loginForm" class="form-signin" role="form" 
+		novalidate ng-submit="loginForm.$valid && login()">
+		<h2 class="form-signin-heading">Please sign in</h2>
+		<input ng-model="username" type="text" class="form-control" 
+			placeholder="Username" required autofocus>
+		<input ng-model="password" type="password" class="form-control" 
+			placeholder="Password" required>
+		<!-- Don't show the Remember me checkbox while it is not working -->
+		<!--
+		<label class="checkbox">
+			<input ng-model="remember" type="checkbox" value="remember-me"> Remember me
+		</label>
+		-->
+		<button class="btn btn-primary btn-block" type="submit">Sign in</button>
+	</form>
 
 </div> <!-- /container -->

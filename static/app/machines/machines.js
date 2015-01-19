@@ -10,7 +10,9 @@ var MACHINE_STATUS_UNAVAILABLE = 'unavailable';
 var LOGOUT_TIMER_DELAY = 30;
 
 // Our local app variable for the module
-var app = angular.module('fabsmith.machines', ['ngRoute', 'timer', 'fabsmithFilters']);
+
+var app = angular.module('fabsmith.machines', 
+	['ngRoute', 'timer', 'fabsmithFilters', 'ui.bootstrap.modal']);
 
 app.config(['$routeProvider', function($routeProvider) {
 	$routeProvider.when('/machines', {
@@ -20,8 +22,8 @@ app.config(['$routeProvider', function($routeProvider) {
 }]);
 
 app.controller('MachinesCtrl', 
-['$scope', '$http', '$location', '$route', '$cookieStore', 
-function($scope, $http, $location, $route, $cookieStore) {
+['$scope', '$http', '$location', '$route', '$cookieStore', '$modal', 
+function($scope, $http, $location, $route, $cookieStore, $modal) {
 
 	// Show logged user name
 	$scope.userFullName = $cookieStore.get('FirstName') + ' ' + $cookieStore.get('LastName');
@@ -154,11 +156,25 @@ function($scope, $http, $location, $route, $cookieStore) {
 		
 		$scope.resetTimer();
 
+		/*
 		if (!confirm('Deactivate machine and make it available to other users')) {
 			return;
 		} 
+		*/
+		
+		var modal = $scope.openDeactivateModal();
+		modal.result.then(function() {
+			// On close (Deactivate and Log Out)
+			$scope.deactivateAndLogOut(machine);
+		}, function () {
+			// On cancel (Cancel)
+			console.log('Return to normal');
+		});
 
-		// Else continue
+	};
+
+	$scope.deactivateAndLogOut = function(machine) {
+
 		// Stop activation timer interval
 		clearInterval(machine.activationInterval);
 
@@ -184,6 +200,9 @@ function($scope, $http, $location, $route, $cookieStore) {
 				machine.used = false;
 				machine.occupied = false;
 				machine.available = true;
+
+				// Logout
+				$scope.$emit('logout');
 			
 			} else if (data.Status === 'error') {
 				alert(data.Message);
@@ -197,7 +216,9 @@ function($scope, $http, $location, $route, $cookieStore) {
 			alert('Failed to deactivate');
 		});
 
-	};
+		
+
+	}
 
 	$scope.isAvailable = function(machine) {
 		return machine.Status === MACHINE_STATUS_AVAILABLE;
@@ -222,7 +243,24 @@ function($scope, $http, $location, $route, $cookieStore) {
 		machine.unavailable = trueOrFalse;
 	}
 
+	$scope.openDeactivateModal = function() {
+
+		console.log('show modal');
+
+		var modalInstance = $modal.open({
+			backdrop: false,
+			templateUrl: 'static/app/machines/deactivate-modal.html',
+			windowTemplateUrl: 'static/app/bower_components/angular-ui-bootstrap/template/modal/window.html',
+			controller: 'DeactivateModalCtrl'
+    	});
+
+    	return modalInstance;
+
+	} // showModal
+
 }]);
+
+app.controller('DeactivateModalCtrl', [])
 
 app.directive('fsMachineItem', function() {
 	return {
@@ -315,4 +353,18 @@ app.directive('fsMachineBodyUnavailable', function() {
 	}
 });
 
-})();
+app.controller('DeactivateModalCtrl', function ($scope, $modalInstance) {
+
+  $scope.logOutAndDeactivate = function () {
+  	console.log('Log out and deactivate');
+    $modalInstance.close('eh');
+  };
+
+  $scope.cancel = function () {
+  	console.log('cancel');
+    $modalInstance.dismiss('cancel');
+  };
+
+});
+
+})(); // closure
