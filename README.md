@@ -7,6 +7,7 @@ Internal machine activation software for Fab Labs. Build with [BeeGo](http://bee
   - [AngularJS](#angularjs)
   - [Node.js](#nodejs)
 - [Versioning](#versioning)
+- [Runmode](#runmode)
 - [Hexabus](#hexabus)
   - [Requirements](#requirements)
 
@@ -116,6 +117,16 @@ Create a safe MySQL user:
 ```
 GRANT ALL PRIVILEGES ON fabsmith.* To 'fabsmith'@'localhost' IDENTIFIED BY 'fabsmith';
 ```
+
+##Runmode
+Set the `BEEGO_RUNMODE` environment variable in `/etc/environment`:  
+```
+BEEGO_RUNMODE=prod
+```  
+
+Available options are `dev`, `test` and `prod`. For each of them there is a possiblity to set unique settings in the `conf/app.conf` file.
+
+Fabsmith will not be able to run without being able to get the runmode from the environment variable.
 
 ##Versioning
 FabSmith will benefit from semantic versioning. Read about it [here](http://semver.org).
