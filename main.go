@@ -10,13 +10,6 @@ import (
 
 func init() {
 
-	// Set debug level for our app depending on the runmode set
-	if beego.AppConfig.String("runmode") == "prod" {
-		beego.SetLevel(beego.LevelError)
-	} else {
-		beego.SetLevel(beego.LevelInformational)
-	}
-
 	// Template init, we replace the default template tags
 	// as AngularJS uses the same ones as GoLang
 	beego.TemplateLeft = "<<<"
