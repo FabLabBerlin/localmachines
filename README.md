@@ -12,7 +12,9 @@ Internal machine activation software for Fab Labs. Build with [BeeGo](http://bee
   - [Requirements](#requirements)
 
 ##Quick start
-This solution is supposed to be run on a computer like the Raspberry Pi to benefit from it's GPIO pins - it's where the external hardware has to be connected in order to get full support of FabSmith's features.
+Current version of this software is being tested on a Raspberry Pi, Raspbian and this README should be compatible with other Linux systems.
+
+For Hexabus part now there is working solution that requires the use of `radvd`. The next step would be to understand how to make it work on Mac OS X with `rtadvd`. 
 
 ###Install GoLang
 You will need to compile GoLang from source on the Raspberry Pi. Takes about 2 hours. 
