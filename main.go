@@ -11,16 +11,10 @@ import (
 func init() {
 
 	// Set debug level for our app depending on the runmode set
-	if beego.AppConfig.String("runmode") == "dev" {
-
-		// Show all messages while in dev mode
-		beego.SetLevel(beego.LevelDebug)
-
-	} else {
-
-		// Show only errors when in prod mode
+	if beego.AppConfig.String("runmode") == "prod" {
 		beego.SetLevel(beego.LevelError)
-
+	} else {
+		beego.SetLevel(beego.LevelInformational)
 	}
 
 	// Template init, we replace the default template tags
