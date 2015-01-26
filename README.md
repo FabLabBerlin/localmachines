@@ -3,6 +3,7 @@ Internal machine activation software for Fab Labs. Build with [BeeGo](http://bee
 
 ##Table of contents
 - [Quick start](#quick-start)
+  - [Compiling and Installing Go](#compiling-and-installing-go)
   - [Beego](#beego)
   - [AngularJS](#angularjs)
   - [Node.js](#nodejs)
@@ -16,7 +17,7 @@ Current version of this software is being tested on a Raspberry Pi, Raspbian and
 
 For Hexabus part now there is working solution that requires the use of `radvd`. The next step would be to understand how to make it work on Mac OS X with `rtadvd`. 
 
-###Install GoLang
+###Compiling and Installing Go
 You will need to compile GoLang from source on the Raspberry Pi. Takes about 2 hours. 
 
  1. Memory split. You should give more for the CPU of the Pi. Open `sudo raspi-config`, go to **Advanced Settings**, select **Memory Split** and enter **128**. On a 512M Raspberry Pi 128M will be given to the GPU and the rest to CPU. This should be enough.
