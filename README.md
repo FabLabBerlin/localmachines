@@ -23,6 +23,13 @@ Make sure you have [Bower](http://bower.io), run `bower install` from within the
 
 Edit `conf/app.conf` to set your MySQL database settings. Yes, you need a MySQL database up and running as well.
 
+Compile FabSmith with `bee run` from the `github.com/kr15h/fabsmith` direcotry. It will compile and run the project. To use just the binary afterwards, use the following:  
+```
+sudo BEEGO_RUNMODE=prod ./fabsmith
+```
+
+This also presents a neat way of setting the `BEEGO_RUNMODE` environment variable just before launching the application. Available values are `dev` (default), `test` and `prod`.
+
 Current version of this software is being tested on a Raspberry Pi, Raspbian and this README should be compatible with other Linux systems.
 
 For Hexabus part now there is working solution that requires the use of `radvd`. The next step would be to understand how to make it work on Mac OS X with `rtadvd`. 
@@ -136,16 +143,6 @@ Create a safe MySQL user:
 ```
 GRANT ALL PRIVILEGES ON fabsmith.* To 'fabsmith'@'localhost' IDENTIFIED BY 'fabsmith';
 ```
-
-##Runmode
-Set the `BEEGO_RUNMODE` environment variable in `/etc/environment`:  
-```
-BEEGO_RUNMODE=prod
-```  
-
-Available options are `dev`, `test` and `prod`. For each of them there is a possiblity to set unique settings in the `conf/app.conf` file.
-
-Fabsmith will not be able to run without being able to get the runmode from the environment variable.
 
 ##Versioning
 FabSmith will benefit from semantic versioning. Read about it [here](http://semver.org).
