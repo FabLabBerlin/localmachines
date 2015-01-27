@@ -6,6 +6,7 @@ import (
 	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/kr15h/fabsmith/routers"
+	"os"
 )
 
 func init() {
@@ -14,6 +15,10 @@ func init() {
 	// as AngularJS uses the same ones as GoLang
 	beego.TemplateLeft = "<<<"
 	beego.TemplateRight = ">>>"
+
+	// Print BEEGO_RUNMODE environment variable
+	beego.Trace("BEEGO_RUNMODE:", os.Getenv("BEEGO_RUNMODE"))
+	beego.Trace("beego.RunMode:", beego.RunMode)
 
 	// Get MySQL database variables from config file
 	mysqlUser := beego.AppConfig.String("mysqluser")
