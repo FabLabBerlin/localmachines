@@ -294,15 +294,6 @@ func (this *ActivationsController) finalizeActivation(id int) error {
 	}
 	beego.Trace("Success")
 
-	// Launch go routine to switch off the machine after some time
-	var deactivateTimeout int64
-	deactivateTimeout, err = beego.AppConfig.Int64("deactivatetimeout")
-	if err != nil {
-		beego.Error("Failed to get deactivate timeout from config:", err)
-		deactivateTimeout = 30
-	}
-	go deactivateMachineAfterTimeout(tempModel.MachineId, deactivateTimeout)
-
 	// Convert start time into Unix timestamp, workaround here as Beego models
 	// do not handle time properly
 	const timeForm = "2006-01-02 15:04:05"
@@ -338,6 +329,16 @@ func (this *ActivationsController) finalizeActivation(id int) error {
 	beego.Trace("Success, rows affected: ", rowsAffected)
 
 	err = this.setMachineAvailable(tempModel.MachineId)
+
+	// Launch go routine to switch off the machine after some time
+	var deactivateTimeout int64
+	deactivateTimeout, err = beego.AppConfig.Int64("deactivatetimeout")
+	if err != nil {
+		beego.Error("Failed to get deactivate timeout from config:", err)
+		deactivateTimeout = 30
+	}
+	go deactivateMachineAfterTimeout(tempModel.MachineId, deactivateTimeout)
+
 	return err
 }
 
