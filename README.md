@@ -13,6 +13,16 @@ Internal machine activation software for Fab Labs. Build with [BeeGo](http://bee
   - [Requirements](#requirements)
 
 ##Quick start
+If you have [GoLang](https://golang.org), [Bee](https://github.com/beego/bee) and [Beego](http://beego.me), use the follwing to clone the repo:  
+```
+go get github.com/kr15h/fabsmith
+```
+You can find the project in `$GOPATH/src/github.com/kr15h/fabsmith` once cloned.
+
+Make sure you have [Bower](http://bower.io), run `bower install` to install all the front-end dependencies.
+
+Edit `conf/app.conf` to set your MySQL database settings. Yes, you need a MySQL database up and running as well.
+
 Current version of this software is being tested on a Raspberry Pi, Raspbian and this README should be compatible with other Linux systems.
 
 For Hexabus part now there is working solution that requires the use of `radvd`. The next step would be to understand how to make it work on Mac OS X with `rtadvd`. 
