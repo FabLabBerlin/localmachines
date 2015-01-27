@@ -107,7 +107,7 @@ sudo apt-get update
 sudo apt-get install mysql-server mysql-client
 ```
 
-Create a database with the `mysql` tool:
+Create a database with the `mysql` tool (`mysql -u root -p`):
 ```
 CREATE DATABASE fabsmith DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
 ```
