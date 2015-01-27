@@ -19,7 +19,7 @@ go get github.com/kr15h/fabsmith
 ```
 You can find the project in `$GOPATH/src/github.com/kr15h/fabsmith` once cloned.
 
-Make sure you have [Bower](http://bower.io), run `bower install` to install all the front-end dependencies.
+Make sure you have [Bower](http://bower.io), run `bower install` from within the `static/` directory to install all the front-end dependencies.
 
 Edit `conf/app.conf` to set your MySQL database settings. Yes, you need a MySQL database up and running as well.
 
