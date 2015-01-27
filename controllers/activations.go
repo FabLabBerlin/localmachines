@@ -203,6 +203,25 @@ func (this *ActivationsController) createActivation(userId int, machineId int) (
 	}
 	beego.Trace("Activation with ID", activationId, "created")
 
+	// Set the machine or item unavailable as we just activated it
+	err = this.setMachineUnavailable(machineId)
+	if err != nil {
+
+		beego.Error("Failed to set machine unavailable, machine ID", machineId)
+
+		// Clear the activation initiated earlier
+		beego.Info("Attempt to clear activation", activationId)
+		err = this.clearActivation(activationId)
+		if err != nil {
+			// This should never happen
+			beego.Error("Failed to clear activation", activationId)
+			return 0, errors.New("Failed to clear activation")
+		}
+
+		beego.Error("Failed to set machine unavailable, machine ID", machineId)
+		return 0, errors.New("Failed to set machine unavailable")
+	}
+
 	// Check if there is mapping between switch and machine
 	_, err = hexaswitch.GetSwitchIp(machineId)
 	if err != nil {
@@ -222,9 +241,8 @@ func (this *ActivationsController) createActivation(userId int, machineId int) (
 		tempErr := err
 		beego.Error("Failed to turn on the switch", tempErr)
 
-		// We have to remove (not just stop) the activation if this fails
 		beego.Info("Attempt to remove activation with ID", activationId)
-		_, err = o.Raw("DELETE FROM activation WHERE id=?", activationId).Exec()
+		err = this.clearActivation(activationId)
 		if err != nil {
 			beego.Error("Failed to remove activation with ID", activationId)
 		}
@@ -233,9 +251,19 @@ func (this *ActivationsController) createActivation(userId int, machineId int) (
 		return 0, tempErr
 	}
 
-	// Set the machine unavailable as we just activated it
-	err = this.setMachineUnavailable(machineId)
 	return int(activationId), err
+}
+
+// Removes activation in case something else related to that is wrong
+func (this *ActivationsController) clearActivation(activationId int64) error {
+
+	o := orm.NewOrm()
+	_, err := o.Raw("DELETE FROM activation WHERE id=?", activationId).Exec()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // Finalize activation, save activation end time
