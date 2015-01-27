@@ -22,7 +22,7 @@ You will need to compile GoLang from source on the Raspberry Pi. Takes about 2 h
 
  1. Memory split. You should give more for the CPU of the Pi. Open `sudo raspi-config`, go to **Advanced Settings**, select **Memory Split** and enter **128**. On a 512M Raspberry Pi 128M will be given to the GPU and the rest to CPU. This should be enough.
  
- 2. Swap space. It's good to have some extra space. Do this:  
+ 2. Swap space. Do this if you have less than 512MB of RAM. Raspberry Pi Model B or B+ is recomended - it has 512 MB of RAM and if you assign only 64MB to the GPU, the rest should be enough to compile Go. Do the following to create some swap space:  
  ```
  % sudo dd if=/dev/zero of=/import/nas/swap bs=1024 count=1048576
 1048576+0 records in
