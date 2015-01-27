@@ -101,6 +101,12 @@ We use Node.js to fully benefit from the AngularJS Seed project. Use the [Node V
 
 ###MySQL
 
+Install on Linux:  
+```
+sudo apt-get update
+sudo apt-get install mysql-server mysql-client
+```
+
 Create a database with the `mysql` tool:
 ```
 CREATE DATABASE fabsmith DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
