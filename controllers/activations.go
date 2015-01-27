@@ -209,6 +209,8 @@ func (this *ActivationsController) createActivation(userId int, machineId int) (
 
 		beego.Error("Failed to set machine unavailable, machine ID", machineId)
 
+		_ = this.setMachineAvailable(machineId)
+
 		// Clear the activation initiated earlier
 		beego.Info("Attempt to clear activation", activationId)
 		err = this.clearActivation(activationId)
@@ -218,7 +220,6 @@ func (this *ActivationsController) createActivation(userId int, machineId int) (
 			return 0, errors.New("Failed to clear activation")
 		}
 
-		beego.Error("Failed to set machine unavailable, machine ID", machineId)
 		return 0, errors.New("Failed to set machine unavailable")
 	}
 
@@ -226,6 +227,8 @@ func (this *ActivationsController) createActivation(userId int, machineId int) (
 	_, err = hexaswitch.GetSwitchIp(machineId)
 	if err != nil {
 		beego.Warning("Machine / switch mapping does not exist")
+
+		_ = this.setMachineAvailable(machineId)
 
 		// Clear the activation initiated earlier
 		beego.Info("Attempt to clear activation", activationId)
@@ -249,6 +252,8 @@ func (this *ActivationsController) createActivation(userId int, machineId int) (
 
 		tempErr := err
 		beego.Error("Failed to turn on the switch", tempErr)
+
+		_ = this.setMachineAvailable(machineId)
 
 		beego.Info("Attempt to remove activation with ID", activationId)
 		err = this.clearActivation(activationId)
