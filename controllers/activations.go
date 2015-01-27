@@ -228,16 +228,6 @@ func (this *ActivationsController) createActivation(userId int, machineId int) (
 	if err != nil {
 		beego.Warning("Machine / switch mapping does not exist")
 
-		_ = this.setMachineAvailable(machineId)
-
-		// Clear the activation initiated earlier
-		beego.Info("Attempt to clear activation", activationId)
-		err = this.clearActivation(activationId)
-		if err != nil {
-			beego.Error("Failed to clear activation", activationId)
-			return 0, errors.New("Failed to clear activation")
-		}
-
 		// Nothing bad with not having a mapping
 		// maybe it's a screwdriver - so we keep the activation
 		return int(activationId), nil
