@@ -3,6 +3,7 @@ Internal machine activation software for Fab Labs. Build with [BeeGo](http://bee
 
 ##Table of contents
 - [Quick start](#quick-start)
+  - [Configuration](#configuration)
   - [Compiling and Installing Go](#compiling-and-installing-go)
   - [Beego](#beego)
   - [AngularJS](#angularjs)
@@ -11,6 +12,7 @@ Internal machine activation software for Fab Labs. Build with [BeeGo](http://bee
 - [Runmode](#runmode)
 - [Hexabus](#hexabus)
   - [Requirements](#requirements)
+  - [Hexabus IPv6 Network Setup](#hexabus-ipv6-network-setup)
 
 ##Quick start
 If you have [GoLang](https://golang.org), [Bee](https://github.com/beego/bee) and [Beego](http://beego.me), use the follwing to clone the repo:  
@@ -21,18 +23,36 @@ You can find the project in `$GOPATH/src/github.com/kr15h/fabsmith` once cloned.
 
 Make sure you have [Bower](http://bower.io), run `bower install` from within the `static/` directory to install all the front-end dependencies.
 
-Edit `conf/app.conf` to set your MySQL database settings. Yes, you need a MySQL database up and running as well.
-
-Compile FabSmith with `bee run` from the `github.com/kr15h/fabsmith` direcotry. It will compile and run the project. To use just the binary afterwards, use the following:  
-```
-sudo BEEGO_RUNMODE=prod ./fabsmith
-```
-
-This also presents a neat way of setting the `BEEGO_RUNMODE` environment variable just before launching the application. Available values are `dev` (default), `test` and `prod`.
-
 Current version of this software is being tested on a Raspberry Pi, Raspbian and this README should be compatible with other Linux systems.
 
 For Hexabus part now there is working solution that requires the use of `radvd`. The next step would be to understand how to make it work on Mac OS X with `rtadvd`. 
+
+### Configuration
+Custom application configuration like port number, runmode and mysql settings are configured via environment variables. Main application configuration is stored in `conf/app.conf`.
+
+A list of available config environment variables:  
+`FABSMITH_MYSQL_USER`  
+`FABSMITH_MYSQL_PASS`  
+`FABSMITH_MYSQL_DB`  
+`FABSMITH_HTTP_PORT` (optional, default `8080`)  
+`FABSMITH_RUNMODE` (optional, `dev` (default), `test` or `prod`)  
+`FABSMITH_MYSQL_HOST` (optional, default `localhost`)  
+`FABSMITH_MYSQL_PORT` (optional, default `3306`)
+
+Compile FabSmith with `bee run` from the `github.com/kr15h/fabsmith` direcotry. It will compile and run the project. To use just the binary afterwards, use the following:  
+```
+sudo ./fabsmith
+```
+
+You can pass environment variables directly:
+```
+sudo FABSMITH_RUNMODE="prod" \
+FABSMITH_HTTP_PORT="80" \
+FABSMITH_MYSQL_USER="youruser" \
+FABSMITH_MYSQL_PASS="yourpass" \
+FABSMITH_MYSQL_DB="fabsmith" \
+./fabsmith
+```
 
 ###Compiling and Installing Go
 You will need to compile GoLang from source on the Raspberry Pi. Takes about 2 hours. 
