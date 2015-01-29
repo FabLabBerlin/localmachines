@@ -152,28 +152,21 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 
 	};
 
-	$scope.deactivate = function(machine) {
+	$scope.deactivatePrompt = function(machine) {
 		
 		$scope.resetTimer();
-
-		/*
-		if (!confirm('Deactivate machine and make it available to other users')) {
-			return;
-		} 
-		*/
 		
 		var modal = $scope.openDeactivateModal();
 		modal.result.then(function() {
-			// On close (Deactivate and Log Out)
-			$scope.deactivateAndLogOut(machine);
+			$scope.resetTimer();
+			$scope.deactivate(machine);
 		}, function () {
-			// On cancel (Cancel)
+			$scope.resetTimer();
 			console.log('Return to normal');
 		});
-
 	};
 
-	$scope.deactivateAndLogOut = function(machine) {
+	$scope.deactivate = function(machine) {
 
 		// Stop activation timer interval
 		clearInterval(machine.activationInterval);
@@ -200,9 +193,6 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 				machine.used = false;
 				machine.occupied = false;
 				machine.available = true;
-
-				// Logout
-				$scope.$emit('logout');
 			
 			} else if (data.Status === 'error') {
 				alert(data.Message);
@@ -215,9 +205,6 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 			$scope.hideGlobalLoader();
 			alert('Failed to deactivate');
 		});
-
-		
-
 	}
 
 	$scope.isAvailable = function(machine) {
@@ -249,7 +236,7 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 
 		var modalInstance = $modal.open({
 			backdrop: false,
-			templateUrl: 'static/app/machines/deactivate-modal.html',
+			templateUrl: 'static/app/machines/deactivate-modal.html?v1',
 			windowTemplateUrl: 'static/app/bower_components/angular-ui-bootstrap/template/modal/window.html',
 			controller: 'DeactivateModalCtrl'
     	});
@@ -355,7 +342,7 @@ app.directive('fsMachineBodyUnavailable', function() {
 
 app.controller('DeactivateModalCtrl', function ($scope, $modalInstance) {
 
-  $scope.logOutAndDeactivate = function () {
+  $scope.proceed = function () {
   	console.log('Log out and deactivate');
     $modalInstance.close('eh');
   };
