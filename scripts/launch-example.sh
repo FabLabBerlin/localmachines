@@ -15,4 +15,4 @@ FABSMITH_HTTP_PORT="80" \
 FABSMITH_MYSQL_USER="youruser" \
 FABSMITH_MYSQL_PASS="yourpass" \
 FABSMITH_MYSQL_DB="fabsmith" \
-../fabsmith
+/full/path/to/fabsmith
