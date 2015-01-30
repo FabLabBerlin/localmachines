@@ -3,3 +3,4 @@ fabsmith
 static/lib
 npm-debug.log
 static/npm-debug.log
+conf/app.conf
