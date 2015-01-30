@@ -7,23 +7,13 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/kr15h/fabsmith/routers"
 	"os"
-	"strconv"
 )
 
 func main() {
-	configServer()
 	configTemplate()
 	configRunmode()
 	configDatabase()
-
 	beego.Run()
-}
-
-func configServer() {
-	port, err := strconv.Atoi(os.Getenv("FABSMITH_HTTP_PORT"))
-	if err == nil {
-		beego.HttpPort = port
-	}
 }
 
 func configTemplate() {
@@ -50,29 +40,29 @@ func configRunmode() {
 func configDatabase() {
 
 	// Get MySQL config from environment variables
-	mysqlUser := os.Getenv("FABSMITH_MYSQL_USER")
+	mysqlUser := beego.AppConfig.String("mysqluser")
 	if mysqlUser == "" {
-		panic("Please set FABSMITH_MYSQL_USER environment variable")
+		panic("Please set mysqluser in app.conf")
 	}
 
-	mysqlPass := os.Getenv("FABSMITH_MYSQL_PASS")
+	mysqlPass := beego.AppConfig.String("mysqlpass")
 	if mysqlPass == "" {
-		panic("Please set FABSMITH_MYSQL_PASS environment variable")
+		panic("Please set mysqlpass in app.conf")
 	}
 
-	mysqlHost := os.Getenv("FABSMITH_MYSQL_HOST")
+	mysqlHost := beego.AppConfig.String("mysqlhost")
 	if mysqlHost == "" {
 		mysqlHost = "localhost"
 	}
 
-	mysqlPort := os.Getenv("FABSMITH_MYSQL_PORT")
+	mysqlPort := beego.AppConfig.String("mysqlport")
 	if mysqlPort == "" {
 		mysqlPort = "3306"
 	}
 
-	mysqlDb := os.Getenv("FABSMITH_MYSQL_DB")
+	mysqlDb := beego.AppConfig.String("mysqldb")
 	if mysqlDb == "" {
-		panic("Please set FABSMITH_MYSQL_DB environment variable")
+		panic("Please set mysqldb in app.conf")
 	}
 
 	// Build MySQL connection string out of the config variables
