@@ -2,7 +2,7 @@
 Internal machine activation software for Fab Labs. Build with [BeeGo](http://beego.me) framework for [GoLang](https://golang.org) and [Angular.js](https://angularjs.org).
 
 ##Table of contents
-- [Quick start](#quick-start)
+- [Quick-start](#quick-start)
   - [Configuration](#configuration)
   - [Compiling and Installing Go](#compiling-and-installing-go)
   - [Beego](#beego)
@@ -14,7 +14,7 @@ Internal machine activation software for Fab Labs. Build with [BeeGo](http://bee
   - [Requirements](#requirements)
   - [Hexabus IPv6 Network Setup](#hexabus-ipv6-network-setup)
 
-##Quick start
+##Quick-start
 If you have [GoLang](https://golang.org), [Bee](https://github.com/beego/bee) and [Beego](http://beego.me), use the follwing to clone the repo:  
 ```
 go get github.com/kr15h/fabsmith
@@ -28,31 +28,22 @@ Current version of this software is being tested on a Raspberry Pi, Raspbian and
 For Hexabus part now there is working solution that requires the use of `radvd`. The next step would be to understand how to make it work on Mac OS X with `rtadvd`. 
 
 ### Configuration
-Custom application configuration like port number, runmode and mysql settings are configured via environment variables. Main application configuration is stored in `conf/app.conf`.
-
-A list of available config environment variables:  
-`FABSMITH_MYSQL_USER`  
-`FABSMITH_MYSQL_PASS`  
-`FABSMITH_MYSQL_DB`  
-`FABSMITH_HTTP_PORT` (optional, default `8080`)  
-`FABSMITH_RUNMODE` (optional, `dev` (default), `test` or `prod`)  
-`FABSMITH_MYSQL_HOST` (optional, default `localhost`)  
-`FABSMITH_MYSQL_PORT` (optional, default `3306`)
+You have to make a copy of the `conf/app.example.conf` file to be able to run Fabsmith:  
+```
+cp conf/app.example.conf conf/app.conf
+```
 
 Compile FabSmith with `bee run` from the `github.com/kr15h/fabsmith` direcotry. It will compile and run the project. To use just the binary afterwards, use the following:  
 ```
 sudo ./fabsmith
 ```
 
-You can pass environment variables directly:
+You can set the runmode via environment variables `FABSMITH_RUNMODE` or `BEEGO_RUNMODE` to alter the runmode. You can pass environment variables directly on launching the program:  
 ```
-sudo FABSMITH_RUNMODE="prod" \
-FABSMITH_HTTP_PORT="80" \
-FABSMITH_MYSQL_USER="youruser" \
-FABSMITH_MYSQL_PASS="yourpass" \
-FABSMITH_MYSQL_DB="fabsmith" \
-./fabsmith
+sudo FABSMITH_RUNMODE="prod" ./fabsmith
 ```
+
+The default runmode is `dev`.
 
 ###Compiling and Installing Go
 You will need to compile GoLang from source on the Raspberry Pi. Takes about 2 hours. 
@@ -147,14 +138,14 @@ SET PASSWORD FOR 'fabsmith'@'localhost' =  PASSWORD('fabsmith');
 
 Restore a database from a dump:
 ```
-./restoredb.sh
+./scripts/restoredb.sh
 ```
 
 In future the Beego application should take care of this on it's own.
 
 Dump database:
 ```
-./dumpdb.sh
+./scripts/dumpdb.sh
 ```
 
 Edit the files `restoredb.sh` and `dumpdb.sh` to add your specific username and password combination.
