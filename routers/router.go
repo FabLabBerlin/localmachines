@@ -9,6 +9,9 @@ func init() {
 	// Route root request, serve Angular JS app
 	beego.Router("/", &controllers.MainController{})
 
+	// Route back office request
+	beego.Router("/backoffice", &controllers.BackOfficeMainController{})
+
 	// Route single method requests
 	beego.Router("/api/login", &controllers.LoginController{}, "post:Login")
 	beego.Router("/api/logout", &controllers.LogoutController{}, "*:Logout")
