@@ -30,6 +30,10 @@
 			<p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
 	<![endif]-->
 
+	<div ng-controller="MainMenuCtrl">
+		<main-menu></main-menu>
+	</div>
+
 	<div ng-view></div>
 
 	<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
@@ -43,7 +47,14 @@
 	<script src="/static/app/bower_components/angular-cookies/angular-cookies.min.js"></script>
 
 	<!-- Fabsmith Back Office code -->
-	<script src="/static/app/backoffice/main.js"></script>
+	<script src="/static/app/backoffice/backoffice.js"></script>
+	<script src="/static/app/backoffice/mainmenu/mainmenu.js"></script>
+	<script src="/static/app/backoffice/login/login.js"></script>
+	<script src="/static/app/backoffice/dashboard/dashboard.js"></script>
+
+	<script src="/static/app/components/version/version.js"></script>
+	<script src="/static/app/components/version/version-directive.js"></script>
+	<script src="/static/app/components/version/interpolate-filter.js"></script>
 	
 </body>
 </html>

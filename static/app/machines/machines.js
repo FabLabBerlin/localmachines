@@ -247,8 +247,6 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 
 }]);
 
-app.controller('DeactivateModalCtrl', [])
-
 app.directive('fsMachineItem', function() {
 	return {
 		templateUrl: 'static/app/machines/machine-item.html',
