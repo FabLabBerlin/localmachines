@@ -1,0 +1,327 @@
+body {
+  padding-bottom: 40px;
+  background-color: #EEEEEE;
+  color: #4A4A4A;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: normal;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: bold;
+}
+
+ul, li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+li {
+  margin-bottom: 10px;
+}
+
+.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
+
+.machine-item, 
+.activation-item {
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.form-signin,
+.app-meta {
+  max-width: 330px;
+  padding: 15px;
+  margin: 0 auto;
+  margin-top: 40px;
+}
+.form-signin .form-signin-heading,
+.form-signin .checkbox {
+  margin-bottom: 10px;
+}
+.form-signin .checkbox {
+  font-weight: normal;
+}
+.form-signin .form-control {
+  position: relative;
+  height: auto;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  padding: 10px;
+  font-size: 16px;
+}
+.form-signin .form-control:focus {
+  z-index: 2;
+}
+.form-signin input[type="text"] {
+  margin-bottom: 5px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.form-signin input[type="password"] {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.form-signin .ng-dirty.ng-valid {
+  border: 1px solid #66dd55;
+}
+
+.app-meta {
+  margin-top: 10px;
+  color: #999999;
+}
+
+/* 
+ * Loading
+ */
+
+#loader-global {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 9999;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+#loader-global .spinner {
+  background: #090909;
+  display: table-cell;
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: -25px;
+  margin-top: -25px;
+  border-radius: 25px;
+}
+
+#loader-global .spinner img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-left: -12px;
+  margin-top: -12px;
+}
+
+/*
+ * Bootstrap overrides
+ */
+
+.btn {
+  height: 50px;
+  border-radius: 8px;
+  border: 1px solid #B02F38;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 15px;
+  color: #FFFFFF;
+  line-height: 1;
+}
+
+.btn-lg {
+  height: 70px;
+  font-weight: bold;
+  font-size: 22px;
+  color: #FFFFFF;
+  line-height: 1;
+}
+
+.btn-primary,
+.touch .btn-primary:hover,
+.touch .btn-primary:focus {
+  background: #61C5EA;
+  border: 1px solid #3998B2;
+}
+
+.no-touch .btn-primary:hover,
+.no-touch .btn-primary:focus {
+  background: #3996B8;
+  color: #B3EBFF;
+  border: 1px solid #3998B2;
+}
+
+.btn-danger,
+.touch .btn-danger:hover,
+.touch .btn-danger:focus {
+  background: #E85459;
+  border: 1px solid #B03135;
+}
+
+.no-touch .btn-danger:hover,
+.no-touch .btn-danger:focus {
+  background: #B02F38;
+  border: 1px solid #B02F38;
+  color: #FF999C;
+}
+
+.btn-warning,
+.touch .btn-warning:hover,
+.touch .btn-warning:focus {
+  background: #FAE451;
+  border: 1px solid #D9C22B;
+}
+
+.no-touch .btn-warning:hover,
+.no-touch .btn-warning:focus {
+  background: #D9C22B;
+  border: 1px solid #D9C22B;
+  color: #FFF5B3;
+}
+
+/*
+ * Dashboard Styling 
+ */
+
+header {
+  background: #4A4A4A;
+  border-bottom: 2px solid #000000;
+  color: #ffffff;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.logged-user-label,
+.auto-logout-label {
+  font-size: 10px;
+  color: #FFFFFF;
+  line-height: 1;
+  padding-bottom: 10px;
+}
+
+.logged-user-value, 
+.auto-logout-value {
+  font-weight: bold;
+  font-size: 24px;
+  color: #FFFFFF;
+  line-height: 1;
+}
+
+.auto-logout-label,
+.auto-logout-value {
+  text-align: right;
+}
+
+.machine {
+  background-image: linear-gradient(180deg, #EEEEEE 0%, #FFFFFF 100%);
+  border-bottom: 2px solid #E6E6E6;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.machine-header {
+  border-bottom: 1px solid #E6E6E6;
+  padding-bottom: 15px;
+  font-size: 22px;
+  line-height: 1;
+  font-weight: bold;
+}
+
+.machine-info-toggle {
+  color: #4A4A4A;
+  cursor: pointer;
+}
+
+.machine-info-toggle:hover {
+  color: #6A6A6A;
+}
+
+.machine-info-content,
+.machine-unavailable-value {
+  font-size: 12px;
+  line-height: 17px;
+}
+
+.machine-body {
+  border-top: 1px solid #FFFFFF;
+  padding-top: 15px;
+}
+
+.machine-info-content {
+  padding-top: 15px;
+}
+
+.machine-action-info {
+  border-left-width: 3px;
+  border-left-style: solid;
+  min-height: 70px;
+  padding-left: 15px;
+}
+
+.machine.available .machine-action-info{
+  border-left-color: #61C5EA;
+}
+
+.machine.used .machine-action-info {
+  border-left-color: #E85459;
+}
+
+.machine.occupied .machine-action-info {
+  border-left-color: #FAE451;
+}
+
+.machine.unavailable .machine-action-info {
+  border-left-color: #A6A6A6;
+}
+
+.machine-action-label {
+  font-size: 9px;
+  line-height: 1;
+  margin-bottom: 15px;
+}
+
+.machine-price-value {
+  font-weight: bold;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.machine-price-currency {
+  font-size: 12px;
+  line-height: 1;
+}
+
+.machine-time-value {
+  font-weight: bold;
+  font-size: 30px;
+  line-height: 1;
+}
+
+.machine-occupied-value {
+  font-weight: bold;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.machine-occupied-time-value {
+  margin-top: 5px;
+}
+
+.indicator {
+  width: 100%;
+  height: 70px;
+  text-align: center;
+  line-height: 70px;
+  border-radius: 8px;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.indicator-occupied {
+  border: 1px solid #FAE451;
+  color: #FAE451;
+}
+
+.indicator-unavailable {
+  border: 1px solid #A6A6A6;
+  color: #A6A6A6;
+}
+
+footer {
+  margin-top: 40px;
+}

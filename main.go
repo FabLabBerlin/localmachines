@@ -22,6 +22,8 @@ func configTemplate() {
 	// as AngularJS uses the same ones as GoLang
 	beego.TemplateLeft = "<<<"
 	beego.TemplateRight = ">>>"
+
+	beego.SetStaticPath("/static", "static")
 }
 
 func configRunmode() {

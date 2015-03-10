@@ -6,7 +6,7 @@ angular.module('fabsmith.login', ['ngRoute', 'ngCookies'])
 
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/login', {
-    templateUrl: '/static/app/login/login.html',
+    templateUrl: '/static/dev/machineinterface/login/login.html',
     controller: 'LoginCtrl'
   });
 }])
