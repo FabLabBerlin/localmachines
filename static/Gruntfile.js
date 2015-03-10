@@ -4,6 +4,17 @@ module.exports = function (grunt) {
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
 		
+		jshint: {
+			options: {
+				jshintrc: '.jshintrc'
+			},
+			all: [
+				'Gruntfile.js',
+				'dev/**/*.js', 
+				'!dev/**/md5.js'
+			]
+		}, // jshint
+
 		less: {
 			dev: {
 				files: {
@@ -18,18 +29,18 @@ module.exports = function (grunt) {
 		}, // less
 
 		watch: {
-			css: {
-				files: [
-					'dev/**/*.less'
-				],
-				tasks: ['less:dev'],
-				options: {
-					livereload: true,
-					atBegin: true
-				}
+			js: {
+				files: ['dev/**/*.js'],
+				tasks: ['jshint'],
+				options: {livereload: true, atBegin: true}
 			},
+			css: {
+				files: ['dev/**/*.less'], 
+				tasks: ['less:dev'],
+				options: {livereload: true, atBegin: true}
+			}
 		} // watch
-		
+
 	});
 
 	// Load tasks
@@ -45,6 +56,6 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-copy');
 
 	// Register tasks
-	grunt.registerTask('default', ['less']);
+	grunt.registerTask('default', ['jshint', 'less:dev']);
 	grunt.registerTask('dev', ['watch']);  
 };

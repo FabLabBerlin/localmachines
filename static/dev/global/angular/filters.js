@@ -26,7 +26,7 @@ angular.module('fabsmithFilters', []).filter('timeleft', function() {
   		timeStr += minutesStr + ':';
   	}
 
-  	var secondsStr = ''
+  	var secondsStr = '';
   	if (seconds <= 9) {
   		secondsStr = '0';
   	}

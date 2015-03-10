@@ -15,7 +15,7 @@ app.directive('mainMenu', function() {
 		controller: ['$scope', function($scope){
 			//
 		}]
-	}
+	};
 });
 
 })(); // closure

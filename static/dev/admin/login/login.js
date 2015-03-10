@@ -34,7 +34,8 @@ app.controller('LoginCtrl', ['$scope', '$http', '$location', function($scope, $h
 		.error(function() {
 			alert('Failed to log in');
 		});
-	}
+	};
+	
 }]); // app.controller
 
 })(); // closure

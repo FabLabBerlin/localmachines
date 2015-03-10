@@ -37,7 +37,7 @@ angular.module('fabsmith.login', ['ngRoute', 'ngCookies'])
 		.error(function() {
 			alert('Failed to log in');
 		});
-	}
+	};
 
 	// Make the main controller scope accessible from outside
 	// So we can use our Android app to call login function
@@ -48,7 +48,7 @@ angular.module('fabsmith.login', ['ngRoute', 'ngCookies'])
 		$scope.username = username;
 		$scope.password = password;
 		$scope.login();
-	}
+	};
 
 }]);
 

@@ -83,8 +83,13 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 		}
 	})
 	.error(function() {
-		alert('Error loading machines')
+		alert('Error loading machines');
 	});
+
+	$scope.updateElapsedTime = function(machineIter) {
+		$scope.machines[machineIter].ActivationSecondsElapsed++;
+		$scope.$apply();
+	};
 
 	// Activate a machine by the currenty logged in user
 	$scope.activate = function(machineId) {
@@ -130,10 +135,8 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 						$scope.machines[machineIter].used = true;
 
 						// Start timer for elapsed time
-						$scope.machines[machineIter].activationInterval = setInterval(function() {
-							$scope.machines[machineIter].ActivationSecondsElapsed++;
-							$scope.$apply();
-						}, 1000);
+						$scope.machines[machineIter].activationInterval = 
+							setInterval($scope.updateElapsedTime, 1000, machineIter);
 
 						// Exit the machine finding for loop
 						break;
@@ -205,30 +208,30 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 			$scope.hideGlobalLoader();
 			alert('Failed to deactivate');
 		});
-	}
+	};
 
 	$scope.isAvailable = function(machine) {
 		return machine.Status === MACHINE_STATUS_AVAILABLE;
-	}
+	};
 
 	$scope.isOccupied = function(machine) {
 		return machine.Status === MACHINE_STATUS_OCCUPIED;
-	}
+	};
 
 	$scope.isUsed = function(machine) {
 		return machine.Status === MACHINE_STATUS_USED;
-	}
+	};
 
 	$scope.isUnavailable = function(machine) {
 		return machine.Status === MACHINE_STATUS_UNAVAILABLE;
-	}
+	};
 
 	$scope.setAllStates = function(machine, trueOrFalse) {
 		machine.available = trueOrFalse;
 		machine.used = trueOrFalse;
 		machine.occupied = trueOrFalse;
 		machine.unavailable = trueOrFalse;
-	}
+	};
 
 	$scope.openDeactivateModal = function() {
 
@@ -243,7 +246,7 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 
     	return modalInstance;
 
-	} // showModal
+	}; // showModal
 
 }]);
 
@@ -282,7 +285,7 @@ app.directive('fsMachineBodyAvailable', function() {
 	return {
 		templateUrl: 'static/dev/machines/machines/machine-body-available.html',
 		restrict: 'E'
-	}
+	};
 });
 
 app.directive('fsMachineBodyUsed', function() {
@@ -291,7 +294,7 @@ app.directive('fsMachineBodyUsed', function() {
 		restrict: 'E',
 		controller: ['$scope', function($scope){
 			
-			if ($scope.machine.Status == MACHINE_STATUS_USED) {
+			if ($scope.machine.Status === MACHINE_STATUS_USED) {
 				$scope.machine.activationInterval = setInterval(function() {
 					$scope.machine.ActivationSecondsElapsed++;
 					$scope.$apply();
@@ -299,7 +302,7 @@ app.directive('fsMachineBodyUsed', function() {
 			}
 
 		}]
-	}
+	};
 });
 
 app.directive('fsMachineBodyOccupied', function() {
@@ -309,7 +312,7 @@ app.directive('fsMachineBodyOccupied', function() {
 		controller: ['$scope', '$cookieStore', function($scope, $cookieStore){
 
 			// As we are using this scope for more than one directive
-			if ($scope.machine.Status == MACHINE_STATUS_OCCUPIED) {
+			if ($scope.machine.Status === MACHINE_STATUS_OCCUPIED) {
 				
 				var user = {};
 				user.Admin = $cookieStore.get('Admin');
@@ -328,14 +331,14 @@ app.directive('fsMachineBodyOccupied', function() {
 			}
 
 		}]
-	}
+	};
 });
 
 app.directive('fsMachineBodyUnavailable', function() {
 	return {
 		templateUrl: 'static/dev/machines/machines/machine-body-unavailable.html',
 		restrict: 'E'
-	}
+	};
 });
 
 app.controller('DeactivateModalCtrl', function ($scope, $modalInstance) {

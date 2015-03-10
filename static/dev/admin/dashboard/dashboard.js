@@ -11,10 +11,4 @@ app.config(['$routeProvider', function($routeProvider) {
   });
 }]); // app.config
 
-app.controller('DashboardCtrl', ['$scope', '$http', '$location', function($scope, $http, $location) {
-
-	// DashboardCtrl logic
-
-}]); // app.controller
-
 })(); // closure
