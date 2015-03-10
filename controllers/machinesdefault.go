@@ -4,11 +4,11 @@ import (
 	"github.com/astaxie/beego"
 )
 
-type MainController struct {
+type MachinesMainController struct {
 	beego.Controller
 }
 
-func (this *MainController) Get() {
+func (this *MachinesMainController) Get() {
 	if beego.AppConfig.String("runmode") == "dev" {
 		this.Data["AppTitle"] = "Fabsmith Machine Interface Dev"
 	} else {
@@ -16,6 +16,6 @@ func (this *MainController) Get() {
 	}
 
 	this.Data["AppDescription"] = "Authenticate and activate your machines."
-	this.TplNames = "machineinterface.html"
+	this.TplNames = "machines.html"
 	this.Render()
 }
