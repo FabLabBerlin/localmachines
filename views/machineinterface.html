@@ -13,9 +13,12 @@
 
 	<!-- Bootstrap core CSS -->
 	<link href="/static/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+	
+	<!-- Global and interface specific CSS includes -->
+	<link rel="stylesheet" href="/static/dev/global/global.css">
 	<link rel="stylesheet" href="/static/dev/machineinterface/machineinterface.css">
 
-	<!-- Load Modernizr before everything else -->
+	<!-- Load Modernizr javaScript before everything else -->
 	<script src="/static/bower_components/modernizr/modernizr.js"></script>
 
 	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -32,20 +35,17 @@
 
 	<div ng-view></div>
 
+	<!-- Loader -->
 	<div id="loader-global" class="hidden">
-
 		<div class="spinner">
 			<img src="/static/dev/global/img/loader.gif" alt="Loading...">
 		</div>
-
 	</div>
 
 	<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
 	<script src="/static/dev/global/js/ie10-viewport-bug-workaround.js"></script>
 
-	<!-- In production use:
-	<script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
-	-->
+	<!-- Angular application JavaScript dependencies -->
 	<script src="/static/dev/global/js/md5.js"></script>
 	<script src="/static/bower_components/jquery/dist/jquery.js"></script>
 	<script src="/static/bower_components/angular/angular.js"></script>
@@ -55,14 +55,15 @@
 	<script src="/static/bower_components/angular-ui-bootstrap/src/modal/modal.js"></script>
 	<script src="/static/bower_components/angular-ui-bootstrap/src/transition/transition.js"></script>
 	
+	<!-- Application code JavaScript includes -->
 	<script src="/static/dev/machineinterface/machineinterface.js"></script>
 	<script src="/static/dev/machineinterface/login/login.js"></script>
 	<script src="/static/dev/machineinterface/machines/machines.js"></script>
 	<script src="/static/dev/machineinterface/logout/logout.js"></script>
-	<script src="/static/dev/global/components/version/version.js"></script>
-	<script src="/static/dev/global/components/version/version-directive.js"></script>
-	<script src="/static/dev/global/components/version/interpolate-filter.js"></script>
-	<script src="/static/dev/global/filters.js"></script>
+	<script src="/static/dev/global/angular/components/version/version.js"></script>
+	<script src="/static/dev/global/angular/components/version/version-directive.js"></script>
+	<script src="/static/dev/global/angular/components/version/interpolate-filter.js"></script>
+	<script src="/static/dev/global/angular/filters.js"></script>
 
 	<!-- Load nice fonts -->
 	<script src="/static/bower_components/webfontloader/webfontloader.js"></script>
