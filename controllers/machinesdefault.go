@@ -10,7 +10,7 @@ type MachinesMainController struct {
 
 // Set runmode specific template variables and serve machines template
 func (this *MachinesMainController) Get() {
-	if beego.AppConfig.String("runmode") == "dev" {
+	if beego.RunMode == "dev" {
 		this.Data["AppTitle"] = "Fabsmith Machine Interface Dev"
 		this.TplNames = "dev/machines/index.html"
 	} else {

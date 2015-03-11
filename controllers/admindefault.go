@@ -10,7 +10,7 @@ type AdminMainController struct {
 
 // Set runmode specific template variables and serve admin template
 func (this *AdminMainController) Get() {
-	if beego.AppConfig.String("runmode") == "dev" {
+	if beego.RunMode == "dev" {
 		this.Data["AppTitle"] = "Fabsmith Back Office Dev"
 		this.TplNames = "dev/admin/index.html"
 	} else {

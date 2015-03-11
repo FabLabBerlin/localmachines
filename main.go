@@ -10,8 +10,8 @@ import (
 )
 
 func main() {
-	configTemplate()
 	configRunmode()
+	configTemplate()
 	configDatabase()
 	beego.Run()
 }
@@ -32,7 +32,7 @@ func configTemplate() {
 	// Define view specific static file paths as we have dev and prod
 	// runmodes for each of the interfaces. One static path per view.
 	// This has to be done before we run beego.
-	if beego.AppConfig.String("runmode") == "dev" {
+	if beego.RunMode == "dev" {
 		beego.SetStaticPath("/machines-view", "views/dev/machines")
 		beego.SetStaticPath("/admin-view", "views/dev/admin")
 	} else { // prod and any other runmode
