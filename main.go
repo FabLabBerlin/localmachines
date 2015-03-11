@@ -24,6 +24,7 @@ func configTemplate() {
 	beego.TemplateRight = ">>>"
 
 	beego.SetStaticPath("/static", "static")
+	beego.ViewsPath = "static"
 }
 
 func configRunmode() {
