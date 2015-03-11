@@ -4,7 +4,7 @@ angular.module('fabsmith.logout', ['ngRoute', 'timer'])
 
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/logout', {
-    templateUrl: '/static/dev/machines/logout/logout.html',
+    templateUrl: '/machines-view/logout/logout.html',
     controller: 'LogoutCtrl'
   });
 }])

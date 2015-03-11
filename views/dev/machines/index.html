@@ -11,14 +11,12 @@
 	<meta name="author" content="Krisjanis Rijnieks">
 	<title><<<.AppTitle>>></title>
 
-	<!-- Bootstrap core CSS -->
+	<!-- CSS Style -->
 	<link href="/views/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-	
-	<!-- Global and interface specific CSS includes -->
 	<link rel="stylesheet" href="/views/dev/global/global.css">
 	<link rel="stylesheet" href="/views/dev/machines/main.css">
 
-	<!-- Load Modernizr javaScript before everything else -->
+	<!-- Load Modernizr before any other JavaScript -->
 	<script src="/views/bower_components/modernizr/modernizr.js"></script>
 
 	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -30,7 +28,7 @@
 <body ng-controller="MainCtrl">
 
 	<!--[if lt IE 7]>
-			<p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+		<p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
 	<![endif]-->
 
 	<div ng-view></div>
@@ -45,7 +43,7 @@
 	<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
 	<script src="/views/dev/global/js/ie10-viewport-bug-workaround.js"></script>
 
-	<!-- Angular application JavaScript dependencies -->
+	<!-- Dependencies-->
 	<script src="/views/dev/global/js/md5.js"></script>
 	<script src="/views/bower_components/jquery/dist/jquery.js"></script>
 	<script src="/views/bower_components/angular/angular.js"></script>
@@ -55,7 +53,7 @@
 	<script src="/views/bower_components/angular-ui-bootstrap/src/modal/modal.js"></script>
 	<script src="/views/bower_components/angular-ui-bootstrap/src/transition/transition.js"></script>
 	
-	<!-- Application code JavaScript includes -->
+	<!-- Application -->
 	<script src="/views/dev/machines/main.js"></script>
 	<script src="/views/dev/machines/login/login.js"></script>
 	<script src="/views/dev/machines/machines/machines.js"></script>
@@ -65,7 +63,7 @@
 	<script src="/views/dev/global/angular/components/version/interpolate-filter.js"></script>
 	<script src="/views/dev/global/angular/filters.js"></script>
 
-	<!-- Load nice fonts -->
+	<!-- Load nice fonts: will be removed to improve performance -->
 	<script src="/views/bower_components/webfontloader/webfontloader.js"></script>
 	<script>
 		WebFont.load({

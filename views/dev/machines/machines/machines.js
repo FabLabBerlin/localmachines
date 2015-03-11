@@ -16,7 +16,7 @@ var app = angular.module('fabsmith.machines',
 
 app.config(['$routeProvider', function($routeProvider) {
 	$routeProvider.when('/machines', {
-		templateUrl: '/static/dev/machines/machines/machines.html',
+		templateUrl: '/machines-view/machines/machines.html',
 		controller: 'MachinesCtrl'
 	});
 }]);
@@ -239,8 +239,8 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 
 		var modalInstance = $modal.open({
 			backdrop: false,
-			templateUrl: 'static/dev/machines/machines/deactivate-modal.html?v1',
-			windowTemplateUrl: 'static/bower_components/angular-ui-bootstrap/template/modal/window.html',
+			templateUrl: '/machines-view/machines/deactivate-modal.html?v1',
+			windowTemplateUrl: '/views/bower_components/angular-ui-bootstrap/template/modal/window.html',
 			controller: 'DeactivateModalCtrl'
     	});
 
@@ -252,7 +252,7 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 
 app.directive('fsMachineItem', function() {
 	return {
-		templateUrl: 'static/dev/machines/machines/machine-item.html',
+		templateUrl: '/machines-view/machines/machine-item.html',
 		restrict: 'E',
 		controller: ['$scope', '$element', function($scope, $element) {
 			
@@ -283,14 +283,14 @@ app.directive('fsMachineItem', function() {
 
 app.directive('fsMachineBodyAvailable', function() {
 	return {
-		templateUrl: 'static/dev/machines/machines/machine-body-available.html',
+		templateUrl: '/machines-view/machines/machine-body-available.html',
 		restrict: 'E'
 	};
 });
 
 app.directive('fsMachineBodyUsed', function() {
 	return {
-		templateUrl: 'static/dev/machines/machines/machine-body-used.html',
+		templateUrl: '/machines-view/machines/machine-body-used.html',
 		restrict: 'E',
 		controller: ['$scope', function($scope){
 			
@@ -307,7 +307,7 @@ app.directive('fsMachineBodyUsed', function() {
 
 app.directive('fsMachineBodyOccupied', function() {
 	return {
-		templateUrl: 'static/dev/machines/machines/machine-body-occupied.html',
+		templateUrl: '/machines-view/machines/machine-body-occupied.html',
 		restrict: 'E',
 		controller: ['$scope', '$cookieStore', function($scope, $cookieStore){
 
@@ -336,7 +336,7 @@ app.directive('fsMachineBodyOccupied', function() {
 
 app.directive('fsMachineBodyUnavailable', function() {
 	return {
-		templateUrl: 'static/dev/machines/machines/machine-body-unavailable.html',
+		templateUrl: '/machines-view/machines/machine-body-unavailable.html',
 		restrict: 'E'
 	};
 });

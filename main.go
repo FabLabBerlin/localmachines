@@ -28,6 +28,17 @@ func configTemplate() {
 	// environment organized and consistent
 	beego.SetStaticPath("/views", "views")
 	beego.ViewsPath = "views"
+
+	// Define view specific static file paths as we have dev and prod
+	// runmodes for each of the interfaces. One static path per view.
+	// This has to be done before we run beego.
+	if beego.AppConfig.String("runmode") == "dev" {
+		beego.SetStaticPath("/machines-view", "views/dev/machines")
+		beego.SetStaticPath("/admin-view", "views/dev/admin")
+	} else { // prod and any other runmode
+		beego.SetStaticPath("/machines-view", "views/prod/machines")
+		beego.SetStaticPath("/admin-view", "views/prod/admin")
+	}
 }
 
 func configRunmode() {
