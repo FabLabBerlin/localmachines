@@ -6,7 +6,7 @@ var app = angular.module('fabsmith.backoffice.login', ['ngRoute', 'ngCookies']);
 
 app.config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/login', {
-    templateUrl: '/admin-view/login/login.html',
+    templateUrl: '/admin-view/modules/login/login.html',
     controller: 'LoginCtrl'
   });
 }]); // app.config

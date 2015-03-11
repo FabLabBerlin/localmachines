@@ -12,14 +12,14 @@
 	<title><<<.AppTitle>>></title>
 
 	<!-- CSS Style -->
-	<!-- build:css /machines-view/css/app.min.css -->
+	<!-- build:css /machines-view/assets/css/app.min.css -->
 	<link href="/views/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-	<link rel="stylesheet" href="/views/dev/global/global.css">
-	<link rel="stylesheet" href="/views/dev/machines/main.css">
+	<link rel="stylesheet" href="/views/dev/global/assets/css/global.css">
+	<link rel="stylesheet" href="/views/dev/machines/assets/css/main.css">
 	<!-- /build -->
 
 	<!-- Load Modernizr before any other JavaScript -->
-	<!-- build:js /machines-view/modernizr.min.js -->
+	<!-- build:js /machines-view/assets/js/modernizr.min.js -->
 	<script src="/views/bower_components/modernizr/modernizr.js"></script>
 	<!-- /build -->
 
@@ -40,19 +40,19 @@
 	<!-- Loader -->
 	<div id="loader-global" class="hidden">
 		<div class="spinner">
-			<!-- build:[src] /machines-view/img/ -->
-			<img src="/views/dev/global/img/loader.gif" alt="Loading...">
+			<!-- build:[src] /machines-view/assets/img/ -->
+			<img src="/views/dev/global/assets/img/loader.gif" alt="Loading...">
 			<!-- /build -->
 		</div>
 	</div>
 
-	<!-- build:js /machines-view/app.min.js -->
+	<!-- build:js /machines-view/assets/js/app.min.js -->
 
 	<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-	<script src="/views/dev/global/js/ie10-viewport-bug-workaround.js"></script>
+	<script src="/views/dev/global/assets/js/ie10-viewport-bug-workaround.js"></script>
 
 	<!-- Dependencies-->
-	<script src="/views/dev/global/js/md5.js"></script>
+	<script src="/views/dev/global/assets/js/md5.js"></script>
 	<script src="/views/bower_components/jquery/dist/jquery.js"></script>
 	<script src="/views/bower_components/angular/angular.js"></script>
 	<script src="/views/bower_components/angular-route/angular-route.js"></script>
@@ -63,9 +63,9 @@
 	
 	<!-- Application -->
 	<script src="/views/dev/machines/main.js"></script>
-	<script src="/views/dev/machines/login/login.js"></script>
-	<script src="/views/dev/machines/machines/machines.js"></script>
-	<script src="/views/dev/machines/logout/logout.js"></script>
+	<script src="/views/dev/machines/modules/login/login.js"></script>
+	<script src="/views/dev/machines/modules/machines/machines.js"></script>
+	<script src="/views/dev/machines/modules/logout/logout.js"></script>
 	<script src="/views/dev/global/angular/components/version/version.js"></script>
 	<script src="/views/dev/global/angular/components/version/version-directive.js"></script>
 	<script src="/views/dev/global/angular/components/version/interpolate-filter.js"></script>

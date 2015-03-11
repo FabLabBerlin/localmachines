@@ -10,7 +10,7 @@ app.controller('MainMenuCtrl', ['$scope', '$http', '$location', function($scope,
 
 app.directive('mainMenu', function() {
 	return {
-		templateUrl: '/admin-view/mainmenu/mainmenu.html',
+		templateUrl: '/admin-view/modules/mainmenu/mainmenu.html',
 		restrict: 'E',
 		controller: ['$scope', function($scope){
 			//

@@ -6,7 +6,7 @@ var app = angular.module('fabsmith.backoffice.dashboard', ['ngRoute', 'ngCookies
 
 app.config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/dashboard', {
-    templateUrl: '/admin-view/dashboard/dashboard.html',
+    templateUrl: '/admin-view/modules/dashboard/dashboard.html',
     controller: 'DashboardCtrl'
   });
 }]); // app.config

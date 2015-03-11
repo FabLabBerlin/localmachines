@@ -16,7 +16,7 @@ var app = angular.module('fabsmith.machines',
 
 app.config(['$routeProvider', function($routeProvider) {
 	$routeProvider.when('/machines', {
-		templateUrl: '/machines-view/machines/machines.html',
+		templateUrl: '/machines-view/modules/machines/machines.html',
 		controller: 'MachinesCtrl'
 	});
 }]);
@@ -233,13 +233,15 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 		machine.unavailable = trueOrFalse;
 	};
 
+	// TODO: Remove the angular-ui-bootstrap dependency ans substitute with 
+	//       plain Bootstrap HTML. Current solution causes path problems.
 	$scope.openDeactivateModal = function() {
 
 		console.log('show modal');
 
 		var modalInstance = $modal.open({
 			backdrop: false,
-			templateUrl: '/machines-view/machines/deactivate-modal.html?v1',
+			templateUrl: '/machines-view/modules/machines/deactivate-modal.html?v1',
 			windowTemplateUrl: '/views/bower_components/angular-ui-bootstrap/template/modal/window.html',
 			controller: 'DeactivateModalCtrl'
     	});
@@ -252,7 +254,7 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 
 app.directive('fsMachineItem', function() {
 	return {
-		templateUrl: '/machines-view/machines/machine-item.html',
+		templateUrl: '/machines-view/modules/machines/machine-item.html',
 		restrict: 'E',
 		controller: ['$scope', '$element', function($scope, $element) {
 			
@@ -283,14 +285,14 @@ app.directive('fsMachineItem', function() {
 
 app.directive('fsMachineBodyAvailable', function() {
 	return {
-		templateUrl: '/machines-view/machines/machine-body-available.html',
+		templateUrl: '/machines-view/modules/machines/machine-body-available.html',
 		restrict: 'E'
 	};
 });
 
 app.directive('fsMachineBodyUsed', function() {
 	return {
-		templateUrl: '/machines-view/machines/machine-body-used.html',
+		templateUrl: '/machines-view/modules/machines/machine-body-used.html',
 		restrict: 'E',
 		controller: ['$scope', function($scope){
 			
@@ -307,7 +309,7 @@ app.directive('fsMachineBodyUsed', function() {
 
 app.directive('fsMachineBodyOccupied', function() {
 	return {
-		templateUrl: '/machines-view/machines/machine-body-occupied.html',
+		templateUrl: '/machines-view/modules/machines/machine-body-occupied.html',
 		restrict: 'E',
 		controller: ['$scope', '$cookieStore', function($scope, $cookieStore){
 
@@ -336,7 +338,7 @@ app.directive('fsMachineBodyOccupied', function() {
 
 app.directive('fsMachineBodyUnavailable', function() {
 	return {
-		templateUrl: '/machines-view/machines/machine-body-unavailable.html',
+		templateUrl: '/machines-view/modules/machines/machine-body-unavailable.html',
 		restrict: 'E'
 	};
 });

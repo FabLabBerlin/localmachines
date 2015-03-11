@@ -18,9 +18,9 @@ module.exports = function (grunt) {
 		less: {
 			dev: {
 				files: {
-					'dev/global/global.css': ['dev/global/global.less'], 
-					'dev/machines/main.css': ['dev/machines/main.less'],
-					'dev/admin/main.css': ['dev/admin/main.less']
+					'dev/global/assets/css/global.css': ['dev/global/assets/less/global.less'], 
+					'dev/machines/assets/css/main.css': ['dev/machines/assets/less/main.less'],
+					'dev/admin/assets/css/main.css': ['dev/admin/assets/less/main.less']
 				},
 				options: {
 					compress: false
@@ -32,15 +32,15 @@ module.exports = function (grunt) {
 					// Here it would be possible to create a custom bootstrap 
 					// compile script that compiles only the bootstrap components
 					// we actually need
-					'prod/machines/css/app.min.css': [
+					'prod/machines/assets/css/app.min.css': [
 						'bower_components/bootstrap/less/bootstrap.less',
-						'dev/global/global.less',
-						'dev/machines/main.less'
+						'dev/global/assets/less/global.less',
+						'dev/machines/assets/less/main.less'
 					],
-					'prod/admin/css/app.min.css': [
+					'prod/admin/assets/css/app.min.css': [
 						'bower_components/bootstrap/less/bootstrap.less',
-						'dev/global/global.less',
-						'dev/admin/main.less'
+						'dev/global/assets/less/global.less',
+						'dev/admin/assets/less/main.less'
 					]
 				},
 				options: {
@@ -54,8 +54,8 @@ module.exports = function (grunt) {
 			prod: {
 				files: {
 					'tmp/dependencies.js': [
-						'dev/global/js/ie10-viewport-bug-workaround.js',
-						'dev/global/js/md5.js',
+						'dev/global/assets/js/ie10-viewport-bug-workaround.js',
+						'dev/global/assets/js/md5.js',
 						'bower_components/jquery/dist/jquery.js',
 						'bower_components/angular/angular.js',
 						'bower_components/angular-route/angular-route.js',
@@ -72,16 +72,16 @@ module.exports = function (grunt) {
 					'tmp/machines-app.js': [
 						'tmp/dependencies.js',
 						'dev/machines/main.js',
-						'dev/machines/login/login.js',
-						'dev/machines/machines/machines.js',
-						'dev/machines/logout/logout.js'
+						'dev/machines/modules/login/login.js',
+						'dev/machines/modules/machines/machines.js',
+						'dev/machines/modules/logout/logout.js'
 					],
 					'tmp/admin-app.js': [
 						'tmp/dependencies.js',
 						'dev/admin/main.js',
-						'dev/admin/mainmenu/mainmenu.js',
-						'dev/admin/login/login.js',
-						'dev/admin/dashboard/dashboard.js'
+						'dev/admin/modules/mainmenu/mainmenu.js',
+						'dev/admin/modules/login/login.js',
+						'dev/admin/modules/dashboard/dashboard.js'
 					]
 				}
 			}
@@ -90,10 +90,10 @@ module.exports = function (grunt) {
 		uglify: {
 			prod: {
 				files: {
-					'prod/machines/modernizr.min.js': 'bower_components/modernizr/modernizr.js',
-					'prod/admin/modernizr.min.js': 'bower_components/modernizr/modernizr.js',
-					'prod/machines/app.min.js': 'tmp/machines-app.js',
-					'prod/admin/app.min.js': 'tmp/admin-app.js'
+					'prod/machines/assets/js/modernizr.min.js': 'bower_components/modernizr/modernizr.js',
+					'prod/admin/assets/js/modernizr.min.js': 'bower_components/modernizr/modernizr.js',
+					'prod/machines/assets/js/app.min.js': 'tmp/machines-app.js',
+					'prod/admin/assets/js/app.min.js': 'tmp/admin-app.js'
 				}
 			}
 		}, // uglify
@@ -117,34 +117,35 @@ module.exports = function (grunt) {
 				// Copy machines files
 				{
 					src: 'bower_components/bootstrap/fonts/*',
-					dest: 'prod/machines/fonts/',
+					dest: 'prod/machines/assets/fonts/',
 					expand: true,
 					flatten: true
 				}, {
-					src: 'dev/machines/login/login.html',
-					dest: 'prod/machines/login/',
+					src: 'dev/machines/modules/login/login.html',
+					dest: 'prod/machines/modules/login/',
 					expand: true,
 					flatten: true
 				}, {
-					src: 'dev/machines/logout/logout.html',
-					dest: 'prod/machines/logout/',
+					src: 'dev/machines/modules/logout/logout.html',
+					dest: 'prod/machines/modules/logout/',
 					expand: true,
 					flatten: true
 				}, {
 					src: [
-						'dev/machines/machines/machines.html',
-						'dev/machines/machines/machine-body-available.html',
-						'dev/machines/machines/machine-body-occupied.html',
-						'dev/machines/machines/machine-body-unavailable.html',
-						'dev/machines/machines/machine-body-used.html',
-						'dev/machines/machines/machine-item.html',
+						'dev/machines/modules/machines/machines.html',
+						'dev/machines/modules/machines/machine-body-available.html',
+						'dev/machines/modules/machines/machine-body-occupied.html',
+						'dev/machines/modules/machines/machine-body-unavailable.html',
+						'dev/machines/modules/machines/machine-body-used.html',
+						'dev/machines/modules/machines/machine-item.html',
+						'dev/machines/modules/machines/deactivate-modal.html'
 					],
-					dest: 'prod/machines/machines/',
+					dest: 'prod/machines/modules/machines/',
 					expand: true,
 					flatten: true
 				}, {
-					src: 'dev/global/img/*',
-					dest: 'prod/machines/img/',
+					src: 'dev/global/assets/img/*',
+					dest: 'prod/machines/assets/img/',
 					filter: 'isFile',
 					expand: true,
 					flatten: true
@@ -153,27 +154,27 @@ module.exports = function (grunt) {
 				// Copy admin files
 				{
 					src: 'bower_components/bootstrap/fonts/*',
-					dest: 'prod/admin/fonts/',
+					dest: 'prod/admin/assets/fonts/',
 					expand: true,
 					flatten: true
 				}, {
-					src: 'dev/admin/dashboard/dashboard.html', 
-					dest: 'prod/admin/dashboard/',
+					src: 'dev/admin/modules/dashboard/dashboard.html', 
+					dest: 'prod/admin/modules/dashboard/',
 					expand: true,
 					flatten: true
 				}, {
-					src: 'dev/admin/login/login.html', 
-					dest: 'prod/admin/login/',
+					src: 'dev/admin/modules/login/login.html', 
+					dest: 'prod/admin/modules/login/',
 					expand: true,
 					flatten: true
 				}, {
-					src: 'dev/admin/mainmenu/mainmenu.html', 
-					dest: 'prod/admin/mainmenu/',
+					src: 'dev/admin/modules/mainmenu/mainmenu.html', 
+					dest: 'prod/admin/modules/mainmenu/',
 					expand: true,
 					flatten: true
 				}, {
-					src: 'dev/global/img/*',
-					dest: 'prod/admin/img/',
+					src: 'dev/global/assets/img/*',
+					dest: 'prod/admin/assets/img/',
 					filter: 'isFile',
 					expand: true,
 					flatten: true
