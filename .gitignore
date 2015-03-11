@@ -2,3 +2,4 @@
 fabsmith
 npm-debug.log
 conf/app.conf
+views/prod/*
