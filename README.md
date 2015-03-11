@@ -13,6 +13,7 @@ Internal machine activation software for Fab Labs. Build with [BeeGo](http://bee
 - [Hexabus](#hexabus)
   - [Requirements](#requirements)
   - [Hexabus IPv6 Network Setup](#hexabus-ipv6-network-setup)
+- [Development](#development)
 
 ##Quick-start
 If you have [GoLang](https://golang.org), [Bee](https://github.com/beego/bee) and [Beego](http://beego.me), use the follwing to clone the repo:  
@@ -244,3 +245,14 @@ ping6 fafa::50:c4ff:fe04:8390
 As you see we don't use the `-Iusb0` part anymore.
 
 11. We are set at this point - associate the Hexabus device IPv6 addresses with the machines in the FabSmith database.
+
+
+## Development
+
+The development environment is a constant work in progress and does not implement a decent test-driven development workflow yet.  
+
+The Angular JS applications that can be found in the `views/` directory are integrated with a custom [Grunt](http://gruntjs.com) workflow. While developing use the `grunt dev` task - it will constantly check for changes in your JavaScript and [Less](http://lesscss.org) files, compile CSS from Less and check JavaScript for erros with the help of [JSHint](http://jshint.com). You can use a [LiveReload](http://feedback.livereload.com/knowledgebase/articles/86242-how-do-i-install-and-use-the-browser-extensions-) browser extension to reload views each time a change is detected.
+
+When ready to move the system to `prod` runmode, run `grunt prod` to compile the production mode of the Angular JS applications.
+
+More info about the development workflow will be added to Wiki.
