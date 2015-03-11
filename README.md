@@ -43,7 +43,7 @@ You can set the runmode via environment variables `FABSMITH_RUNMODE` or `BEEGO_R
 sudo FABSMITH_RUNMODE="prod" ./fabsmith
 ```
 
-The default runmode is `dev`.
+The `FABSMITH_RUNMODE` environment variable overrides the config runmode. The default runmode is `dev`.
 
 ###Compiling and Installing Go
 You will need to compile GoLang from source on the Raspberry Pi. Takes about 2 hours. 
