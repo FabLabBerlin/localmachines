@@ -23,8 +23,11 @@ func configTemplate() {
 	beego.TemplateLeft = "<<<"
 	beego.TemplateRight = ">>>"
 
-	beego.SetStaticPath("/static", "static")
-	beego.ViewsPath = "static"
+	// Keep the template files and views under the same path in order to 
+	// be able to keep JavaScript applicaitons and its related development
+	// environment organized and consistent
+	beego.SetStaticPath("/views", "views")
+	beego.ViewsPath = "views"
 }
 
 func configRunmode() {
