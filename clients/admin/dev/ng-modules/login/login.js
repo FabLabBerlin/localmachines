@@ -17,9 +17,9 @@ app.controller('LoginCtrl', ['$scope', '$http', '$location', function($scope, $h
 		$http({
 			method: 'POST',
 			url: '/api/login',
-			params: {
+			data: {
 				username: $scope.username,
-				password: md5($scope.password),
+				password: $scope.password,
 				anticache: new Date().getTime()
 			}
 		})

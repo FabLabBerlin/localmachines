@@ -11,5 +11,6 @@ func init() {
 type Auth struct {
 	UserId   int    `orm:"auto"`
 	NfcKey   string `orm:"size(100)"`
-	Password string `orm:"size(100)"`
+	Hash     string `orm:"size(300)"`
+	Salt     string `orm:"size(100)"`
 }
