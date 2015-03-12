@@ -1,9 +1,19 @@
 package controllers
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/kr15h/fabsmith/models"
+	"golang.org/x/crypto/scrypt"
+	"io"
+)
+
+// cf. http://stackoverflow.com/a/23039768/485185
+const (
+    PW_SALT_BYTES = 32
+    PW_HASH_BYTES = 64
 )
 
 type LoginController struct {
@@ -84,17 +94,41 @@ func (this *LoginController) getUserId(username string) (int, error) {
 	return userModel.Id, nil
 }
 
-func (this *LoginController) getPassword(username string) (string, error) {
-	beego.Info("Attempt to get password from auth table for username", username)
+func (this *LoginController) isPasswordValid(username, password string) (bool, error) {
 	authModel := models.Auth{}
 	o := orm.NewOrm()
-	err := o.Raw("SELECT password FROM auth INNER JOIN user ON auth.user_id = user.id WHERE user.username = ?",
+	err := o.Raw("SELECT hash, salt FROM auth INNER JOIN user ON auth.user_id = user.id WHERE user.username = ?",
 		username).QueryRow(&authModel)
 	if err != nil {
 		beego.Error("Could not read into AuthModel:", err)
-		return "", err
+		return false, err
 	}
-	return authModel.Password, nil
+	authModelSalt, err := hex.DecodeString(authModel.Salt)
+	if err != nil {
+		beego.Error("Could not decode authModel.Salt:", err)
+		return false, err
+	}
+	hash, err := this.hash(password, authModelSalt)
+	if err != nil {
+		beego.Error("Could not calculate hash:")
+		return false, err
+	}
+	beego.Info("calculated hash:", hex.EncodeToString(hash))
+	return hex.EncodeToString(hash) == authModel.Hash, err
+}
+
+func (this *LoginController) hash(password string, salt []byte) ([]byte, error) {
+    hash, err := scrypt.Key([]byte(password), salt, 1<<14, 8, 1, PW_HASH_BYTES)
+    if err != nil {
+        return []byte{}, err
+    }
+	return hash, nil
+}
+
+func (this *LoginController) createSalt() ([]byte, error) {
+	salt := make([]byte, PW_SALT_BYTES)
+	_, err := io.ReadFull(rand.Reader, salt)
+	return salt, err
 }
 
 func (this *LoginController) getUserData(userId int) (*models.User, error) {
@@ -127,17 +161,8 @@ func (this *LoginController) isUserValid() bool {
 	beego.Trace("POST username:", username)
 	beego.Trace("POST password:", password)
 
-	// Get password from DB
-	storedUserPassword, err := this.getPassword(username)
-	if err != nil {
-		beego.Error("Could not get password for user", username)
-		return false
-	}
-	// Check if passwords match
-	if password == storedUserPassword {
-		return true
-	}
-	return false
+	valid, err := this.isPasswordValid(username, password)
+	return valid && err == nil
 }
 
 // Serves user data on successful login or when user is already logged in

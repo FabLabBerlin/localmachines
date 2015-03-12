@@ -22,3 +22,4 @@ type User struct {
 	VatUserId   string `orm:"size(100)"`
 	VatRate     int
 }
+
