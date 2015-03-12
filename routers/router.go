@@ -7,12 +7,8 @@ import (
 
 func init() {
 	
-	// Set machine interface as the main one
-	beego.Router("/", &controllers.MachinesMainController{})
-	beego.Router("/machines", &controllers.MachinesMainController{})
-
-	// Allow to access admin
-	beego.Router("/admin", &controllers.AdminMainController{})
+	// Set main redirect in the MainController
+	beego.Router("/", &controllers.MainController{})
 
 	// Route API requests
 	beego.Router("/api/login", &controllers.LoginController{}, "post:Login")

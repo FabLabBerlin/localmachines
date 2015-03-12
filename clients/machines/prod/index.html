@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html lang="en" ng-app="fabsmith" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html lang="en" ng-app="fabsmith" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html lang="en" ng-app="fabsmith" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en" ng-app="fabsmith" class="no-js"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+	<meta name="description" content="Access machines">
+	<meta name="author" content="Krisjanis Rijnieks">
+	<title>Machines</title>
+
+	<!-- CSS Style -->
+	<link rel="stylesheet" href="assets/css/app.min.css">
+
+	<!-- Load Modernizr before any other JavaScript -->
+	<script src="assets/js/modernizr.min.js"></script>
+
+	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<!--[if lt IE 9]>
+		<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+		<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+	<![endif]-->
+</head>
+<body ng-controller="MainCtrl">
+
+	<!--[if lt IE 7]>
+		<p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+	<![endif]-->
+
+	<div ng-view></div>
+
+	<!-- Loader -->
+	<div id="loader-global" class="hidden">
+		<div class="spinner">
+			<img src="assets/img/loader.gif" alt="Loading...">
+		</div>
+	</div>
+
+	<script src="assets/js/app.min.js"></script>
+
+	<script>
+		WebFont.load({
+			google: {
+				families: ['Open Sans', 'Open Sans:bold']
+			}
+		});
+	</script>
+</body>
+</html>

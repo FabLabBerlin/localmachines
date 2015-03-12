@@ -11,33 +11,23 @@ import (
 
 func main() {
 	configRunmode()
-	configTemplate()
+	configClients()
 	configDatabase()
 	beego.Run()
 }
 
-func configTemplate() {
+func configClients() {
 
-	// Template init, we replace the default template tags
-	// as AngularJS uses the same ones as GoLang
-	beego.TemplateLeft = "<<<"
-	beego.TemplateRight = ">>>"
+	// Allow access index.html file
+	beego.DirectoryIndex = true
 
-	// Keep the template files and views under the same path in order to 
-	// be able to keep JavaScript applicaitons and its related development
-	// environment organized and consistent
-	beego.SetStaticPath("/views", "views")
-	beego.ViewsPath = "views"
-
-	// Define view specific static file paths as we have dev and prod
-	// runmodes for each of the interfaces. One static path per view.
-	// This has to be done before we run beego.
+	// Serve self-contained Angular JS applications depending on runmode
 	if beego.RunMode == "dev" {
-		beego.SetStaticPath("/machines-view", "views/dev/machines")
-		beego.SetStaticPath("/admin-view", "views/dev/admin")
+		beego.SetStaticPath("/machines", "clients/machines/dev")
+		beego.SetStaticPath("/admin", "clients/admin/dev")
 	} else { // prod and any other runmode
-		beego.SetStaticPath("/machines-view", "views/prod/machines")
-		beego.SetStaticPath("/admin-view", "views/prod/admin")
+		beego.SetStaticPath("/machines", "clients/machines/prod")
+		beego.SetStaticPath("/admin", "clients/admin/prod")
 	}
 }
 

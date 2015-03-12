@@ -1,0 +1,40 @@
+<!-- 
+	Dashboard header 
+-->
+<header>
+	<div class="container">
+
+		<div class="row">
+			<div class="col-xs-8 logged-user-label">Logged in as</div>
+			<div class="col-xs-4 auto-logout-label">Logout in</div>
+		</div> <!-- /row -->
+	
+		<div class="row">
+			<div class="col-xs-8 logged-user-value" ng-bind="userFullName"></div>
+			<div class="col-xs-4 auto-logout-value">
+				<timer interval="1000" countdown="30">{{countdown+1 | timeleft}}</timer>
+			</div>
+		</div> <!-- /row -->
+	
+	</div> <!-- /container -->
+</header>
+
+<!-- 
+	Machine list
+-->
+<div class="machines">
+	
+	<fs-machine-item ng-repeat="machine in machines"></fs-machine-item>
+
+</div> <!-- /machines -->
+
+
+
+<!-- 
+	Footer for logout button
+-->
+<footer class="container">
+
+	<button class="btn btn-danger btn-block" ng-click="logout()">Logout</button>
+
+</footer>
