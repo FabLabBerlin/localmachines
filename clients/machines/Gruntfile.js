@@ -10,8 +10,7 @@ module.exports = function (grunt) {
 			},
 			all: [
 				'Gruntfile.js',
-				'dev/**/*.js', 
-				'!dev/**/md5.js',
+				'dev/**/*.js',
 				'!dev/bower_components/**'
 			]
 		}, // jshint
@@ -48,7 +47,6 @@ module.exports = function (grunt) {
 				files: {
 					'tmp/dependencies.js': [
 						'dev/assets/js/ie10-viewport-bug-workaround.js',
-						'dev/assets/js/md5.js',
 						'dev/bower_components/jquery/dist/jquery.js',
 						'dev/bower_components/angular/angular.js',
 						'dev/bower_components/angular-route/angular-route.js',
