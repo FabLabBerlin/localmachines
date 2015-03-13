@@ -14,6 +14,7 @@ Internal machine activation software for Fab Labs. Build with [BeeGo](http://bee
   - [Requirements](#requirements)
   - [Hexabus IPv6 Network Setup](#hexabus-ipv6-network-setup)
 - [Development](#development)
+- [API Documentation](#api-documentation)
 
 ##Quick-start
 If you have [GoLang](https://golang.org), [Bee](https://github.com/beego/bee) and [Beego](http://beego.me), use the follwing to clone the repo:  
@@ -256,3 +257,33 @@ The Angular JS applications that can be found in the `views/` directory are inte
 When ready to move the system to `prod` runmode, run `grunt prod` to compile the production mode of the Angular JS applications.
 
 More info about the development workflow will be added to Wiki.
+
+## API Documentation
+
+We use [Automated API Document](http://beego.me/docs/advantage/docs.md) feature of the Beego framework. It makes use of Beego router namespaces and documentation comments in the router and controller files.
+
+To view the documetntation, compile and run with the following command:
+
+```
+bee run watchall true -downdoc=true -gendoc=true
+```
+
+It seems that it works also with plain:
+
+```
+bee run
+```
+
+Then access API documentation via: 
+
+```
+http://localhost:8080/swagger
+```
+
+The port number and host is the same you have set in your `config/app.conf` file.
+
+After you have done some changes to the code, run the following to update API documentation: 
+
+```
+bee generate docs
+```
