@@ -6,6 +6,7 @@ import (
 	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/kr15h/fabsmith/routers"
+	_ "github.com/kr15h/fabsmith/docs"
 	"os"
 )
 
@@ -13,6 +14,13 @@ func main() {
 	configRunmode()
 	configClients()
 	configDatabase()
+
+	// Confic automatic API docs
+	if beego.RunMode == "dev" {
+		beego.DirectoryIndex = true
+		beego.StaticDir["/swagger"] = "swagger"
+	}
+	
 	beego.Run()
 }
 

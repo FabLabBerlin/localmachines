@@ -1,3 +1,7 @@
+// @APIVersion 0.1.0
+// @Title Fabsmith API
+// @Description Makerspace machine management
+// @Contact krisjanis.rijnieks@gmail.com
 package routers
 
 import (
@@ -19,4 +23,18 @@ func init() {
 	beego.Router("/api/activations", &controllers.ActivationsController{}, "get:GetActivations")
 	beego.Router("/api/activations", &controllers.ActivationsController{}, "post:CreateActivation")
 	beego.Router("/api/activations", &controllers.ActivationsController{}, "put:CloseActivation")
+
+	ns := beego.NewNamespace("/v1",
+		beego.NSNamespace("/object",
+			beego.NSInclude(
+				&controllers.TestObjectController{},
+			),
+		),
+		beego.NSNamespace("/user",
+			beego.NSInclude(
+				&controllers.TestUserController{},
+			),
+		),
+	)
+	beego.AddNamespace(ns)
 }
