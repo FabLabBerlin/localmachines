@@ -40,55 +40,53 @@ func (this *MachinesController) GetMachines() {
 	var response struct{ Machines []PublicMachine }
 
 	// Get request user ID
-	reqUserId, err := this.GetInt(REQUEST_FIELD_NAME_USER_ID)
-	var userId int
-
+	var reqUserId int = 0
+	var err error
+	reqUserId, err = this.GetInt(REQUEST_FIELD_NAME_USER_ID)
 	if err != nil {
+		beego.Error("Could not get request user ID")
+	}
 
-		beego.Info("No user ID set, attempt to get session user ID")
-		userId, err = this.getSessionUserId()
-		if err != nil {
-			if beego.AppConfig.String("runmode") == "dev" {
-				panic("Could not get session user ID")
-			}
-			this.serveErrorResponse("Could not get session user ID")
-		}
+	// Get session user ID
+	var sessionUserId int = 0
+	sessionUserId, err = this.getSessionUserId()
+	if err != nil {
+		beego.Error("Could not get session user ID")
+		this.serveErrorResponse("Could not get session user ID")
+	}
 
+	// If not Admin or Staff, cant get machines of another user
+	// and that means if sessionUserId does not match with reqUserId
+	// we throw an error
+	var machinesUserId int
+	if sessionUserId != reqUserId && !this.isAdmin() && !this.isStaff() {
+		
+		// Just return machines of the current user
+		machinesUserId = sessionUserId
 	} else {
 
-		if !this.isAdmin() && !this.isStaff() {
-			this.serveErrorResponse("You don't have permissions to list other user's machines")
-		} else {
-			userId = int(reqUserId)
-		}
-
+		// Request made by admin or staff, 
+		// allow to get machines of another user
+		machinesUserId = reqUserId
 	}
 
 	// Get array of machines for current user
-	machines, err := this.getUserMachines(userId)
+	machines, err := this.getUserMachines(machinesUserId)
 
 	if err != nil {
-
-		// If error, return empty array
-		if beego.AppConfig.String("runmode") == "dev" {
-			panic(fmt.Sprintf("Error getting machines for user ID: %v", userId))
-		} else {
-			beego.Error(fmt.Sprintf("Error getting machines for user ID: %v", userId))
-		}
+		beego.Error(fmt.Sprintf("Error getting machines for user ID: %v", machinesUserId))
 
 		// Create empty machine array for the response and serve
 		emptyArray := []PublicMachine{}
 		response.Machines = emptyArray
 		this.Data["json"] = &response
 		this.ServeJson()
-
 	} else {
 
 		// else respond with array full of machines
 		response.Machines = machines
 		this.Data["json"] = &response
 		this.ServeJson()
-
 	}
 
 }
