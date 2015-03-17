@@ -65,7 +65,8 @@ module.exports = function (grunt) {
 						'dev/ng-main.js',
 						'dev/ng-modules/dashboard/dashboard.js',
 						'dev/ng-modules/login/login.js',
-						'dev/ng-modules/mainmenu/mainmenu.js'
+						'dev/ng-modules/mainmenu/mainmenu.js',
+						'dev/ng-modules/user/user.js'
 					]
 				}
 			}
