@@ -8,7 +8,7 @@ Edit this file to affect css styling and use Grunt tasks to compile it.
 */
 body {
   padding-bottom: 40px;
-  background-color: #eeeeee;
+  background-color: #ffffff;
   color: #4a4a4a;
   font-family: 'Open Sans', sans-serif;
   font-weight: normal;
@@ -170,6 +170,21 @@ li {
   border: 1px solid #D9C22B;
   color: #FFF5B3;
 }
+nav.navbar {
+  background-color: #595959;
+  border-bottom: 2px solid black;
+  height: 71px;
+  padding-top: 10px;
+}
+nav.navbar .navbar-brand {
+  color: white;
+}
+nav.navbar .navbar-brand:hover {
+  color: #333333;
+}
+nav.navbar .navbar-nav > li > a {
+  color: white;
+}
 /*
  * Dashboard Styling 
  */
@@ -197,6 +212,9 @@ header {
 .auto-logout-label,
 .auto-logout-value {
   text-align: right;
+}
+#adm-dashboard {
+  background: #ffffff;
 }
 .machine {
   background-image: linear-gradient(180deg, #eeeeee 0%, #ffffff 100%);

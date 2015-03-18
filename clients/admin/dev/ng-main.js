@@ -8,6 +8,7 @@ var app = angular.module('fabsmith', [
   'fabsmith.backoffice.login',
   'fabsmith.backoffice.dashboard',
   'fabsmith.backoffice.mainmenu',
+  'fabsmith.backoffice.user',
   'fabsmith.version'
 ]);
 

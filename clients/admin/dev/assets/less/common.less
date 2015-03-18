@@ -8,7 +8,7 @@ colors.
 Edit this file to affect css styling and use Grunt tasks to compile it.
 */
 
-@bg-color-default: #eeeeee;
+@bg-color-default: white;
 @text-color-default: #4a4a4a;
 
 body {
@@ -187,6 +187,25 @@ li {
   color: #FFF5B3;
 }
 
+nav.navbar {
+  background-color: #595959;
+  border-bottom: 2px solid black;
+  height: 71px;
+  padding-top: 10px;
+}
+
+nav.navbar .navbar-brand {
+  color: white;
+}
+
+nav.navbar .navbar-brand:hover {
+  color: #333333;
+}
+
+nav.navbar .navbar-nav > li > a {
+  color: white;
+}
+
 /*
  * Dashboard Styling 
  */
@@ -218,6 +237,10 @@ header {
 .auto-logout-label,
 .auto-logout-value {
   text-align: right;
+}
+
+#adm-dashboard {
+  background: white
 }
 
 .machine {
