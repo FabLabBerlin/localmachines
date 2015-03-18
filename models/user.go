@@ -96,6 +96,19 @@ func GetUser(userId int) (*User, error) {
 	}
 }
 
+// Returns an array with all users in the system
+func GetAllUsers() ([]*User, error) {
+	o := orm.NewOrm()
+	var users []*User
+	num, err := o.QueryTable("user").All(&users)
+	if err != nil {
+		beego.Error("Failed to get all users")
+		return users, errors.New("Failed to get all users")
+	}
+	beego.Trace("Got num users: ", num)
+	return users, nil
+}
+
 // Loads user roles from database into UserRoles struct
 func GetUserRoles(userId int) (*UserRoles, error) {
 	userRoles := UserRoles{UserId: userId}

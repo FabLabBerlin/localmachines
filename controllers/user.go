@@ -114,3 +114,37 @@ func (this *UserController) Get() {
 	}
 	this.ServeJson()
 }
+
+// @Title GetAll
+// @Description Get all users
+// @Success 200 {object} models.User
+// @Failure	403	Failed to get all users
+// @router / [get]
+func (this *UserController) GetAll() {
+
+	// Check if logged in 
+	uid := this.GetSession(SESSION_FIELD_NAME_USER_ID)
+	if uid == nil {
+		beego.Info("Attempt to get all users while not logged in")
+		this.CustomAbort(401, "Not logged in")
+	}
+
+	// Check if user is admin or staff
+	userRoles, err := models.GetUserRoles(uid.(int))
+	if err != nil {
+		beego.Error("Failed to get user roles")
+		this.CustomAbort(403, "Failed to get user roles")
+	}
+
+	if !userRoles.Admin && !userRoles.Staff {
+		beego.Error("Not authorized to get all users")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	users, err := models.GetAllUsers()
+	if err != nil {
+		this.CustomAbort(403, "Failed to get all users")
+	}
+	this.Data["json"] = users
+	this.ServeJson()
+}

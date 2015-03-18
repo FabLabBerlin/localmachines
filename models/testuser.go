@@ -45,9 +45,11 @@ func GetUser(uid string) (u *TestUser, err error) {
 }
 */
 
+/*
 func GetAllUsers() map[string]*TestUser {
 	return TestUserList
 }
+*/
 
 func UpdateUser(uid string, uu *TestUser) (a *TestUser, err error) {
 	if u, ok := TestUserList[uid]; ok {

@@ -25,16 +25,6 @@ func (u *TestUserController) Post() {
 	u.ServeJson()
 }
 
-// @Title Get
-// @Description get all Users
-// @Success 200 {object} models.TestUser
-// @router / [get]
-func (u *TestUserController) GetAll() {
-	users := models.GetAllUsers()
-	u.Data["json"] = users
-	u.ServeJson()
-}
-
 /*
 // @Title Get
 // @Description get user by uid
