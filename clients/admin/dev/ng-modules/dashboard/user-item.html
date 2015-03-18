@@ -1,12 +1,12 @@
 <div class="row">
-	<div class="col-xs-1">
+	<div class="col-xs-2">
 		{{user.Id}}
 	</div>
-	<div class="col-xs-3">
+	<div class="col-xs-4">
 		{{user.Email}}
 	</div>
-	<div class="col-xs-3">
-		{{user.Name}}
+	<div class="col-xs-4">
+		{{user.FirstName}} {{user.LastName}}
 	</div>
 	<div class="col-xs-2">
 		<button class="btn btn-primary btn-block" ng-click="editUser(user.Id)">Edit User</button>

@@ -16,7 +16,7 @@ app.controller('LoginCtrl', ['$scope', '$http', '$location', function($scope, $h
 	$scope.login = function() {
 		$http({
 			method: 'POST',
-			url: '/api/login',
+			url: '/api/user/login',
 			data: {
 				username: $scope.username,
 				password: $scope.password,
@@ -24,12 +24,27 @@ app.controller('LoginCtrl', ['$scope', '$http', '$location', function($scope, $h
 			}
 		})
 		.success(function(data) {
-			if (data.Status === 'error') {
-				alert(data.Message);
-			} else if (data.Status === 'logged' || data.Status === 'ok'){
-				$scope.$emit('user-login', data);
-				$location.path('/dashboard');
-			}
+
+			if (data.UserId) {
+				console.log('User ID: ' + data.UserId);
+
+				// Get user data
+				$http({
+					method: 'GET',
+					url: '/api/user/' + data.UserId
+				})
+				.success(function(data){
+					console.log('Got user data');
+					$scope.$emit('user-login', data);
+					$location.path('/dashboard');
+				})
+				.error(function(data, status){
+					console.log('Status: ' + status);
+					console.log('Data' + data);
+					alert('Could not get user data');
+				});
+				
+			} // if data.UserId
 		})
 		.error(function() {
 			alert('Failed to log in');

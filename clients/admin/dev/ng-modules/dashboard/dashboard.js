@@ -5,36 +5,32 @@
 var app = angular.module('fabsmith.backoffice.dashboard', ['ngRoute', 'ngCookies']);
 
 app.config(['$routeProvider', function($routeProvider) {
-  $routeProvider.when('/dashboard', {
+ $routeProvider.when('/dashboard', {
     templateUrl: 'ng-modules/dashboard/dashboard.html',
     controller: 'DashboardCtrl'
   });
 }]); // app.config
 
 app.controller('DashboardCtrl', ['$scope', '$http', function($scope, $http) {
-	$scope.testVar = 'This is a test variable';
-
 	$scope.users = [];
 
-	// Get current user machines
+	// Get all users
 	$http({
 		method: 'GET',
-		url: '/api/users',
+		url: '/api/user',
 		params: {
 			anticache: new Date().getTime()
 		}
 	})
 	.success(function(data) {
-		if (data.Status === 'error') {
-			alert('msg: ' + data.Users);
-		} else if (data.Users.length > 0) {
-			$scope.users = data.Users;
-		} else {
-			alert('Error loading users');
-		}
+		console.log('Got all users');
+		console.log(data);
+		$scope.users = data;
 	})
-	.error(function() {
-		alert('Error loading users');
+	.error(function(data, status) {
+		console.log('Could not get users');
+		console.log('Data: ' + data);
+		console.log('Status code: ' + status);
 	});
 
 	$scope.addUser = function() {
