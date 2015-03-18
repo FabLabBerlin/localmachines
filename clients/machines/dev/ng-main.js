@@ -5,6 +5,7 @@
 // Declare app level module which depends on views, and components
 var app = angular.module('fabsmith', [
   'ngRoute',
+  'ngCookies',
   'fabsmith.login',
   'fabsmith.machines',
   'fabsmith.logout',
@@ -21,18 +22,23 @@ var app = angular.module('fabsmith', [
 // This checks whether an user is logged in always before 
 // switching to a new view
 app.run(['$rootScope', '$location', '$http', 
-function($rootScope, $location, $http) {
-	
+	function($rootScope, $location, $http) {
+
+	// On each location change
 	$rootScope.$on('$locationChangeStart', function(event, newUrl, oldUrl) {
-		
+
+		// Get requested angular path
 		var newPath = newUrl.split('#')[1];
 		
+		// If it is not login (main) view, 
+		// check if the user is logged in
+		// TODO: figure out a way that does not need a request
 		if (newPath !== '/login') {
 			$http({
 				method: 'POST',
-				url: '/api/login',
+				url: '/api/user/login',
 				params: {
-					username: 'blank',
+					username: 'blank', // TODO: randomize?
 					password: 'blank',
 					anticache: new Date().getTime()
 				}
@@ -42,19 +48,20 @@ function($rootScope, $location, $http) {
 					event.preventDefault();
 					$location.path('/login');
 				} else {
-					// User is logged - show requested route (passthru)
+					if (newPath) {
+						$location.path(newPath);
+					} else {
+						$location.path('/machines');
+					}
 				}
 			})
 			.error(function() {
 				event.preventDefault();
 				$location.path('/login');
 			});
-		} else {
-			// Route path is /login - let it show up passthru()
 		}
 
 	});
-
 }]);
 
 // Configure http provider to send regular form POST data instead of JSON
@@ -71,54 +78,37 @@ app.config(['$httpProvider', function($httpProvider) {
 }]);
 
 // Main controller, checks if user logged in
-app.controller('MainCtrl', ['$scope', '$http', '$location', '$cookieStore', function($scope, $http, $location, $cookieStore){
+app.controller('MainCtrl', ['$scope', '$http', '$location', '$cookieStore', '$cookies', 
+	function($scope, $http, $location, $cookieStore, $cookies){
 
-	// Check if we are logged in
-	$http.post('/api/login')
-	.success(function(data) {
-		if (data.Status === 'logged') {
-			$location.path('/machines');
-		}
-	})
-	.error(function() {
-		alert('Could not communicate with the API');
-	});
-
+	// Store user data on user login
 	$scope.putUserData = function(data) {
-
-		$cookieStore.put('UserId', data.UserId);
-		$cookieStore.put('Username', data.Username);
-		$cookieStore.put('FirstName', data.FirstName);
-		$cookieStore.put('LastName', data.LastName);
-		$cookieStore.put('Email', data.Email);
-		$cookieStore.put('Admin', data.Admin);
-		$cookieStore.put('Staff', data.Staff);
-		$cookieStore.put('Member', data.Member);
+		for (var key in data) {
+			if (data.hasOwnProperty(key)) {
+				$cookieStore.put(key, data[key]);
+			}
+		}
 	};
 	$scope.$on('user-login', function (event, data){
 		$scope.putUserData(data);
 	});
 
+	// Clear user data on user logout
 	$scope.removeUserData = function() {
-
-		$cookieStore.remove('UserId');
-		$cookieStore.remove('Username');
-		$cookieStore.remove('FirstName');
-		$cookieStore.remove('LastName');
-		$cookieStore.remove('Email');
-		$cookieStore.remove('Admin');
-		$cookieStore.remove('Staff');
-		$cookieStore.remove('Member');
-	
+		for (var key in $cookies) {
+			if ($cookies.hasOwnProperty(key)) {
+				$cookieStore.remove(key);
+			}
+		}
 	};
 
+	// Log out on logout event
 	$scope.logout = function() {
-
 		$scope.removeUserData();
 
 		$http({
 			method: 'GET',
-			url: '/api/logout',
+			url: '/api/user/logout',
 			params: {
 				anticache: new Date().getTime()
 			}

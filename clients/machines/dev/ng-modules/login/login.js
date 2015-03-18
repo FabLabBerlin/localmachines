@@ -19,22 +19,37 @@ angular.module('fabsmith.login', ['ngRoute', 'ngCookies'])
 		// Attempt to login via API
 		$http({
 			method: 'POST',
-			url: '/api/login',
+			url: '/api/user/login',
 			data: {
 				username: $scope.username,
 				password: $scope.password,
 				anticache: new Date().getTime()
 			}
 		})
-		.success(function(data) {
-			if (data.Status === 'error') {
-				alert(data.Message);
-			} else if (data.Status === 'logged' || data.Status === 'ok'){
-				$scope.$emit('user-login', data);
-				$location.path('/machines');
-			}
+		.success(function(data, status) {
+			if (data.UserId) {
+				console.log('User ID: ' + data.UserId);
+
+				// Get user data
+				$http({
+					method: 'GET',
+					url: '/api/user/' + data.UserId
+				})
+				.success(function(data){
+					console.log('Got user data');
+					$scope.$emit('user-login', data);
+					$location.path('/machines');
+				})
+				.error(function(data, status){
+					console.log('Status: ' + status);
+					console.log('Data' + data);
+					alert('Could not get user data');
+				});
+				
+			} // if data.UserId
 		})
-		.error(function() {
+		.error(function(data, status) {
+			console.log('fail code: ' + status);
 			alert('Failed to log in');
 		});
 	};

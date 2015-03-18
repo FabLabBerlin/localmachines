@@ -36,12 +36,14 @@ func AddUser(u TestUser) string {
 	return u.Id
 }
 
+/*
 func GetUser(uid string) (u *TestUser, err error) {
 	if u, ok := TestUserList[uid]; ok {
 		return u, nil
 	}
 	return nil, errors.New("User not exists")
 }
+*/
 
 func GetAllUsers() map[string]*TestUser {
 	return TestUserList

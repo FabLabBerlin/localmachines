@@ -15,6 +15,7 @@ const SESSION_FIELD_NAME_USERNAME string = "username"
 // Field names for request variables
 const REQUEST_FIELD_NAME_USER_ID string = "user_id"
 const REQUEST_FIELD_NAME_USERNAME string = "username"
+const REQUEST_FIELD_NAME_PASSWORD string = "password"
 const REQUEST_FIELD_NAME_MACHINE_ID string = "machine_id"
 const REQUEST_FIELD_NAME_ACTIVATION_ID string = "activation_id"
 

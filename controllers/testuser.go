@@ -35,6 +35,7 @@ func (u *TestUserController) GetAll() {
 	u.ServeJson()
 }
 
+/*
 // @Title Get
 // @Description get user by uid
 // @Param	uid		path 	string	true		"The key for staticblock"
@@ -53,6 +54,7 @@ func (u *TestUserController) Get() {
 	}
 	u.ServeJson()
 }
+*/
 
 // @Title update
 // @Description update the user
@@ -86,33 +88,6 @@ func (u *TestUserController) Delete() {
 	uid := u.GetString(":uid")
 	models.DeleteUser(uid)
 	u.Data["json"] = "delete success!"
-	u.ServeJson()
-}
-
-// @Title login
-// @Description Logs user into the system
-// @Param	username		query 	string	true		"The username for login"
-// @Param	password		query 	string	true		"The password for login"
-// @Success 200 {string} lonin success
-// @Failure 403 user not exist
-// @router /login [get]
-func (u *TestUserController) Login() {
-	username := u.GetString("username")
-	password := u.GetString("password")
-	if models.Login(username, password) {
-		u.Data["json"] = "login success"
-	} else {
-		u.Data["json"] = "user not exist"
-	}
-	u.ServeJson()
-}
-
-// @Title logout
-// @Description Logs out current logged in user session
-// @Success 200 {string} logout success
-// @router /logout [get]
-func (u *TestUserController) Logout() {
-	u.Data["json"] = "logout success"
 	u.ServeJson()
 }
 
