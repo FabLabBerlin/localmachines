@@ -148,3 +148,14 @@ func (this *UserController) GetAll() {
 	this.Data["json"] = users
 	this.ServeJson()
 }
+
+// @Title GetUserMachines
+// @Description Get user machines
+// @Param	uid		path 	int	true		"User ID"
+// @Success 200 {object} models.Machine
+// @Failure	403	Failed to get user machines
+// @Failure	401	Not authorized
+// @router /:uid/machines [get]
+func (this *UserController) GetUserMachines() {
+
+} 
