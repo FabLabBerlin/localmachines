@@ -86,7 +86,7 @@ func (this *Controller) serveOkResponse() {
 func (this *Controller) Prepare() {
 	sessUser := this.GetSession(SESSION_FIELD_NAME_USER_ID)
 	if sessUser == nil {
-		this.serveErrorResponse("Not logged in")
+		this.CustomAbort(401, "Not logged in")
 	}
 }
 
