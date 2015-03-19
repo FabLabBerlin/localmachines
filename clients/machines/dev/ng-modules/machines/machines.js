@@ -65,25 +65,28 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 	// Get current user machines
 	$http({
 		method: 'GET',
-		url: '/api/machines',
+		url: '/api/user/' + $cookieStore.get('Id') + '/machines',
 		params: {
 			anticache: new Date().getTime()
 		}
 	})
 	.success(function(data) {
-		if (data.Status === 'error') {
-			alert('msg: ' + data.Message);
-		} else if (data.Machines.length <= 0) {
+		console.log(data);
+		if (data.length <= 0) {
 			alert('There are no machines available for you');
-		} else if (data.Machines.length > 0) {
+		} else if (data.length > 0) {
 			//console.log(data.Machines);
-			$scope.onMachinesLoaded(data.Machines);
+			$scope.onMachinesLoaded(data);
 		} else {
 			alert('Error loading machines');
 		}
 	})
-	.error(function() {
-		alert('Error loading machines');
+	.error(function(data, status) {
+		if (status === 401) {
+			alert('Not authorized');
+		} else {
+			alert('Error loading machines');
+		}
 	});
 
 	$scope.updateElapsedTime = function(machineIter) {
@@ -210,6 +213,7 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 		});
 	};
 
+	// TODO: use the activation api calls to handle the following
 	$scope.isAvailable = function(machine) {
 		return machine.Status === MACHINE_STATUS_AVAILABLE;
 	};
