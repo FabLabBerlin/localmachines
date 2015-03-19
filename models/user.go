@@ -45,8 +45,13 @@ type UserRoles struct {
 	Member bool `orm:"size(100)"`
 }
 
+type Permission struct {
+	UserId    int `orm:"auto"`
+	MachineId int
+}
+
 func init() {
-	orm.RegisterModel(new(User), new(Auth), new(UserRoles))
+	orm.RegisterModel(new(User), new(Auth), new(UserRoles), new(Permission))
 }
 
 // Authenticate username and password, return user ID on success
@@ -105,7 +110,7 @@ func GetAllUsers() ([]*User, error) {
 		beego.Error("Failed to get all users")
 		return users, errors.New("Failed to get all users")
 	}
-	beego.Trace("Got num users: ", num)
+	beego.Trace("Got num users:", num)
 	return users, nil
 }
 
@@ -120,6 +125,18 @@ func GetUserRoles(userId int) (*UserRoles, error) {
 	} else {
 		return &userRoles, nil
 	}
+}
+
+// Returns which machines user is enabled to use
+func GetUserPermissions(userId int) ([]*Permission, error) {
+	var permissions []*Permission
+	o := orm.NewOrm()
+	num, err := o.QueryTable("permission").Filter("user_id", userId).All(&permissions)
+	if err != nil {
+		return nil, err
+	}
+	beego.Trace("Got num permissions:", num)
+	return permissions, nil
 }
 
 // Generate scrypt hash

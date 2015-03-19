@@ -158,4 +158,83 @@ func (this *UserController) GetAll() {
 // @router /:uid/machines [get]
 func (this *UserController) GetUserMachines() {
 
+	// Check if logged in 
+	suid := this.GetSession(SESSION_FIELD_NAME_USER_ID)
+	if suid == nil {
+		beego.Info("Not logged in")
+		this.CustomAbort(401, "Not logged in")
+	}
+
+	// Get requested user ID
+	var err error
+	var ruid int
+	ruid, err = this.GetInt(":uid")
+	if err != nil {
+		beego.Error("Failed to get :uid")
+		this.CustomAbort(403, "Failed to get :uid")
+	}
+
+	// We need the user roles in order to understand
+	// whether we are allowed to access other user machines
+	var sessionUserRoles *models.UserRoles
+	sessionUserRoles, err = models.GetUserRoles(suid.(int))
+	if err != nil {
+		beego.Error("Failed to get session user roles")
+		this.CustomAbort(403, "Failed to get session user roles")
+	}
+	if (suid.(int) != ruid) {
+		if !sessionUserRoles.Admin && !sessionUserRoles.Staff {
+			
+			// The currently logged in user is not allowed to access
+			// other user machines
+			beego.Error("Not authorized")
+			this.CustomAbort(401, "Not authorized")
+		}
+	} 
+	
+	// Get requested user roles
+	var requestedUserRoles *models.UserRoles
+	if suid.(int) == ruid {
+		requestedUserRoles = sessionUserRoles
+	} else {
+		requestedUserRoles, err = models.GetUserRoles(ruid)
+		if err != nil {
+			beego.Error("Failed to get requested user roles")
+			this.CustomAbort(403, "Failed to get user machines")
+		}
+	}
+
+	// Get the machines!
+	var machines []*models.Machine
+	if !requestedUserRoles.Admin && !requestedUserRoles.Staff {
+
+		// If the requested user roles is not admin and staff
+		// we need to get machine permissions first and then the machines
+		var permissions []*models.Permission
+		permissions, err = models.GetUserPermissions(ruid)
+		if err != nil {
+			beego.Error("Failed to get user machine permissions")
+			this.CustomAbort(403, "Failed to get user machines")
+		}
+		for _, permission := range permissions {
+			machine, err := models.GetMachine(permission.MachineId)
+			if err != nil {
+				beego.Error("Failed to get machine ID", permission.MachineId)
+				this.CustomAbort(403, "Failed to get user machines")
+			}
+			machines = append(machines, machine)
+		}
+	} else {
+
+		// The requested user is also an admin, list all machines
+		machines, err = models.GetAllMachines()
+		if err != nil {
+			beego.Error("Failed to get all machines")
+			this.CustomAbort(403, "Failed to get all machines")
+		}
+	}
+
+	// Serve machines
+	this.Data["json"] = machines
+	this.ServeJson()
 } 
