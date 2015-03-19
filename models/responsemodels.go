@@ -21,3 +21,10 @@ type LoginResponse struct {
 	Status 	string
 	UserId  int
 }
+
+// Used to return activation ID after it has been created
+// {"Status":"ok", "ActivationId":39}
+type ActivationCreateResponse struct {
+	Status string
+	ActivationId int
+}

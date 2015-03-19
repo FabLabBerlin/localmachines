@@ -35,6 +35,11 @@ func init() {
 				&controllers.MachineController{},
 			),
 		),
+		beego.NSNamespace("/activation", 
+			beego.NSInclude(
+				&controllers.ActivationController{},
+			),
+		),
 	)
 	beego.AddNamespace(ns)
 }
