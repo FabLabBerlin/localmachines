@@ -30,6 +30,11 @@ func init() {
 				&controllers.UserController{},
 			),
 		),
+		beego.NSNamespace("/machine", 
+			beego.NSInclude(
+				&controllers.MachineController{},
+			),
+		),
 	)
 	beego.AddNamespace(ns)
 }
