@@ -99,6 +99,46 @@ func CreateActivation(machineId, userId int) (int, error) {
 	return int(activationId), nil
 }
 
+func CloseActivation(activationId int64) error {
+	
+	// Get activation start time and machine id
+	var tempModel struct {
+		TimeStart string
+		MachineId int
+	}
+	o := orm.NewOrm()
+	err := o.Raw("SELECT time_start, machine_id FROM activation WHERE active = true AND id = ?",
+		activationId).QueryRow(&tempModel)
+	if err != nil {
+		beego.Error("Could not get activation:", err)
+		return err
+	}
+
+	// Calculate activation duration
+	const timeForm = "2006-01-02 15:04:05"
+	timeStart, _ := time.ParseInLocation(timeForm, tempModel.TimeStart, time.Now().Location())
+	timeNow := time.Now() // time.Now().Format("2006-01-02 15:04:05")
+	totalDuration := timeNow.Sub(timeStart)
+
+	// Update activation
+	_, err = o.Raw("UPDATE activation SET active=false, time_end=?, time_total=? WHERE id=?",
+		timeNow.Format("2006-01-02 15:04:05"),
+		totalDuration.Seconds(), activationId).Exec()
+	if err != nil {
+		beego.Error("Failed to update activation:", err)
+		return err
+	}
+
+	// Make the machine available
+	_, err = o.QueryTable("machine").Filter("Id", tempModel.MachineId).
+		Update(orm.Params{"available": true,})
+	if err != nil {
+		beego.Error("Failed to available machine")
+		return err
+	}
+	return nil
+}
+
 func DeleteActivation(activationId int) error {
 
 	// Set machine of the activation available
@@ -128,4 +168,17 @@ func DeleteActivation(activationId int) error {
 		return err
 	}
 	return nil
+}
+
+func GetActivationMachineId(activationId int64) (int64, error) {
+	activationModel := Activation{}
+	o := orm.NewOrm()
+	err := o.QueryTable("activation").
+		Filter("id", activationId).
+		One(&activationModel, "MachineId")
+	if err != nil {
+		beego.Error("Could not get activation")
+		return 0, err
+	}
+	return int64(activationModel.MachineId), nil
 }
