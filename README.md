@@ -23,7 +23,25 @@ go get github.com/kr15h/fabsmith
 ```
 You can find the project in `$GOPATH/src/github.com/kr15h/fabsmith` once cloned.
 
-Make sure you have [Bower](http://bower.io), run `bower install` from within the `static/` directory to install all the front-end dependencies.
+There is a clean separation between the Fabsmith core engine written in GoLang and the clients that operate with the REST API of the core. Clients are HTML-based and reside under the `/clients` directory.
+
+Each of the clients is a separate Angular JS application with a [Grunt](http://gruntjs.com)-based workflow. You need to run the following commands from within each client directory separately:
+
+```
+cd clients/machines
+npm install
+bower install
+```
+
+Make sure that you have Bower installed - if not, follow the instructions on [Bower](http://bower.io) website.
+
+###Grunt Tasks
+For each of the client applications there are 2 Grunt tasks:
+
+ 1. `grunt dev`
+ 2. `grunt prod`
+ 
+Use `grunt dev` while developing - it will compile LESS into CSS and check JavaScript errors. When ready to go into production mode, run `grunt prod` - it will compile LESS, concatinate and compress all the JavaScript files, put it all in the `/prod` sub-directory of the client. The client will be served from there whenever Fabsmith will be launched in `prod` mode.
 
 Current version of this software is being tested on a Raspberry Pi, Raspbian and this README should be compatible with other Linux systems.
 
