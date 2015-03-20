@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/kr15h/fabsmith/models"
 	"github.com/astaxie/beego"
+	"github.com/kr15h/fabsmith/plugins/hexaswitch"
 )
 
 type ActivationsController struct {
@@ -37,13 +38,52 @@ func (this *ActivationsController) GetActive() {
 
 // @Title Create
 // @Description Create new activation
-// @Param	body		body 	models.Activation	true		"Activation body"
+// @Param	mid		query 	int	true		"Machine ID"
 // @Success 201 {object} models.ActivationCreateResponse
 // @Failure	403	Failed to create activation
 // @Failure 401 Not authorized
 // @router / [post]
 func (this *ActivationsController) Create() {
+	var machineId int
+	var err error
+	machineId, err = this.GetInt("mid")
+	userId := this.GetSession(SESSION_FIELD_NAME_USER_ID).(int)
+	
+	var activationId int
+	activationId, err = models.CreateActivation(machineId, userId)
+	if err != nil {
+		beego.Error("Failed to create activation")
+		this.CustomAbort(403, "Failed to create activation")
+	}
 
+	// Check if there is mapping between switch and machine
+	var switchMappingExists bool
+	_, err = hexaswitch.GetSwitchIp(machineId)
+	if err != nil {
+		beego.Warning("Machine / switch mapping does not exist")
+		switchMappingExists = false
+	} else {
+		switchMappingExists = true
+	}
+
+	if switchMappingExists {
+		hexaswitch.Install() // TODO: remove this from here in an elegant way
+		// TODO: use switch IP for the SwitchOn method
+		err = hexaswitch.SwitchOn(machineId)
+		if err != nil {
+			beego.Error("Failed to turn on the switch")
+			err = models.DeleteActivation(activationId)
+			if err != nil {
+				beego.Error("Failed to delete activation")
+			}
+			this.CustomAbort(403, "Failed to create activation")
+		}
+	}
+
+	response := models.ActivationCreateResponse{}
+	response.ActivationId = activationId
+	this.Data["json"] = response
+	this.ServeJson()
 }
 
 // @Title Close
