@@ -276,3 +276,49 @@ func (this *UsersController) GetUserName() {
 	this.Data["json"] = response
 	this.ServeJson()
 }
+
+// @Title GetUserRoles
+// @Description Get user roles
+// @Param	uid		path 	int	true		"User ID"
+// @Success 200 {object} models.UserRoles
+// @Failure	403	Failed to get user roles
+// @Failure	401	Not authorized
+// @router /:uid/roles [get]
+func (this *UsersController) GetUserRoles() {
+	
+	var sessionRoles *models.UserRoles
+	var userRoles * models.UserRoles
+	var err error
+
+	// Check if logged in 
+	suid := this.GetSession(SESSION_FIELD_NAME_USER_ID)
+	if suid == nil {
+		beego.Info("Not logged in")
+		this.CustomAbort(401, "Not logged in")
+	}
+
+	// Don't give the roles to someone not admin
+	sessionRoles, err = models.GetUserRoles(suid.(int))
+	if err != nil {
+		beego.Error("Failed to get session user roles")
+		this.CustomAbort(403, "Failed tp get user roles")
+	}
+
+	var uid int
+	uid, err = this.GetInt(":uid")
+	if err != nil {
+		beego.Error("Failed to get :uid")
+		this.CustomAbort(403, "Failed to get user roles")
+	}
+
+	if !sessionRoles.Admin && !sessionRoles.Staff {
+		if uid != suid.(int) {
+			beego.Error("Unauthorized attempt to get user roles")
+			this.CustomAbort(401, "Not authorized")
+		}
+	}	
+
+	userRoles, err = models.GetUserRoles(uid)
+	this.Data["json"] = userRoles
+	this.ServeJson()
+}
