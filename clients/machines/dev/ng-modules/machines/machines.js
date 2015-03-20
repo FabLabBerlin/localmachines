@@ -65,7 +65,7 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 	// Get current user machines
 	$http({
 		method: 'GET',
-		url: '/api/user/' + $cookieStore.get('Id') + '/machines',
+		url: '/api/users/' + $cookieStore.get('Id') + '/machines',
 		params: {
 			anticache: new Date().getTime()
 		}

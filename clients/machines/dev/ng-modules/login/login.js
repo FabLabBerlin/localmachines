@@ -19,7 +19,7 @@ angular.module('fabsmith.login', ['ngRoute', 'ngCookies'])
 		// Attempt to login via API
 		$http({
 			method: 'POST',
-			url: '/api/user/login',
+			url: '/api/users/login',
 			data: {
 				username: $scope.username,
 				password: $scope.password,
@@ -33,7 +33,7 @@ angular.module('fabsmith.login', ['ngRoute', 'ngCookies'])
 				// Get user data
 				$http({
 					method: 'GET',
-					url: '/api/user/' + data.UserId
+					url: '/api/users/' + data.UserId
 				})
 				.success(function(data){
 					console.log('Got user data');
