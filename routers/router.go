@@ -35,9 +35,9 @@ func init() {
 				&controllers.MachinesController{},
 			),
 		),
-		beego.NSNamespace("/activation", 
+		beego.NSNamespace("/activations", 
 			beego.NSInclude(
-				&controllers.ActivationController{},
+				&controllers.ActivationsController{},
 			),
 		),
 	)
