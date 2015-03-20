@@ -21,7 +21,7 @@ type ActivationsController struct {
 type PublicActivation struct {
 	Id        int
 	MachineId int
-	UserId    int
+	UserId    int64
 }
 
 // Creates an activation of a machine for a user. If user not set, session
@@ -36,7 +36,7 @@ func (this *ActivationsController) CreateActivation() {
 
 	// Get the user ID for the activation
 	reqUserId, err := this.GetInt(REQUEST_FIELD_NAME_USER_ID)
-	var userId int
+	var userId int64
 	if err != nil {
 
 		// It there is no user ID in the request, get it from session -
@@ -59,7 +59,7 @@ func (this *ActivationsController) CreateActivation() {
 			// We don't have admin or staff privileges, so fail now
 			this.serveErrorResponse("You do not have permissions to create activations for other users")
 		}
-		userId = int(reqUserId)
+		userId = int64(reqUserId)
 	}
 
 	// Create activation and get it's ID
@@ -80,7 +80,7 @@ func (this *ActivationsController) CreateActivation() {
 // user ID
 func (this *ActivationsController) GetActivations() {
 	reqUserId, err := this.GetInt(REQUEST_FIELD_NAME_USER_ID)
-	var userId int
+	var userId int64
 	if err != nil {
 		// User ID not set, attempt to use session user ID
 		userId, err = this.getSessionUserId()
@@ -93,7 +93,7 @@ func (this *ActivationsController) GetActivations() {
 		}
 	} else {
 		// Use request user ID
-		userId = int(reqUserId)
+		userId = int64(reqUserId)
 	}
 	var rawActivations []models.Activation
 	rawActivations, err = this.getActivationsForUserId(userId)
@@ -130,7 +130,7 @@ func (this *ActivationsController) CloseActivation() {
 }
 
 // Returns activations for user ID specified
-func (this *ActivationsController) getActivationsForUserId(userId int) ([]models.Activation, error) {
+func (this *ActivationsController) getActivationsForUserId(userId int64) ([]models.Activation, error) {
 	activations := []models.Activation{}
 	o := orm.NewOrm()
 	beego.Trace("Attempt to get activations for user ID", userId)
@@ -158,7 +158,7 @@ func (this *ActivationsController) getPublicActivations(activations *[]models.Ac
 
 // Create new activation with user ID and machine ID.
 // Return created activation ID.
-func (this *ActivationsController) createActivation(userId int, machineId int) (int, error) {
+func (this *ActivationsController) createActivation(userId int64, machineId int) (int, error) {
 
 	// Check for duplicate activations
 	o := orm.NewOrm()

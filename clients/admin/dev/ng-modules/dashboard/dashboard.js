@@ -34,7 +34,25 @@ app.controller('DashboardCtrl', ['$scope', '$http', function($scope, $http) {
 	});
 
 	$scope.addUser = function() {
-		alert('Add User!');
+		console.log('Add User!');
+		var email = prompt('Please enter E-Mail for new user:');
+		if (email) {
+			$http({
+				method: 'POST',
+				url: '/api/users',
+				data: {
+					email: email,
+					anticache: new Date().getTime()
+				}
+			})
+			.success(function(data) {
+				alert('New user created!');
+				window.location.reload(true);
+			})
+			.error(function() {
+				alert('Failed to log in');
+			});
+		}
 	};
 }]); // app.controller
 

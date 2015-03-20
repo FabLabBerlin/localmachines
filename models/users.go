@@ -17,7 +17,7 @@ const (
 )
 
 type User struct {
-	Id          int    `orm:"auto";"pk"`
+	Id          int64  `orm:"auto";"pk"`
 	FirstName   string `orm:"size(100)"`
 	LastName    string `orm:"size(100)"`
 	Username    string `orm:"size(100)"`
@@ -39,10 +39,10 @@ type Auth struct {
 }
 
 type UserRoles struct {
-	UserId int  `orm:"auto"`
-	Admin  bool `orm:"size(100)"`
-	Staff  bool `orm:"size(100)"`
-	Member bool `orm:"size(100)"`
+	UserId int64 `orm:"auto"`
+	Admin  bool  `orm:"size(100)"`
+	Staff  bool  `orm:"size(100)"`
+	Member bool  `orm:"size(100)"`
 }
 
 type Permission struct {
@@ -55,7 +55,7 @@ func init() {
 }
 
 // Authenticate username and password, return user ID on success
-func AuthenticateUser(username, password string) (int, error) {
+func AuthenticateUser(username, password string) (int64, error) {
 	authModel := Auth{}
 	o := orm.NewOrm()
 	err := o.Raw("SELECT hash, salt FROM auth INNER JOIN user ON auth.user_id = user.id WHERE user.username = ?",
@@ -89,7 +89,7 @@ func AuthenticateUser(username, password string) (int, error) {
 }
 
 // Loads user data from database into User struct
-func GetUser(userId int) (*User, error) {
+func GetUser(userId int64) (*User, error) {
 	user := User{Id: userId}
 	o := orm.NewOrm()
 	err := o.Read(&user)
@@ -115,7 +115,7 @@ func GetAllUsers() ([]*User, error) {
 }
 
 // Loads user roles from database into UserRoles struct
-func GetUserRoles(userId int) (*UserRoles, error) {
+func GetUserRoles(userId int64) (*UserRoles, error) {
 	userRoles := UserRoles{UserId: userId}
 	o := orm.NewOrm()
 	err := o.Read(&userRoles)
@@ -128,7 +128,7 @@ func GetUserRoles(userId int) (*UserRoles, error) {
 }
 
 // Returns which machines user is enabled to use
-func GetUserPermissions(userId int) ([]*Permission, error) {
+func GetUserPermissions(userId int64) ([]*Permission, error) {
 	var permissions []*Permission
 	o := orm.NewOrm()
 	num, err := o.QueryTable("permission").Filter("user_id", userId).All(&permissions)
