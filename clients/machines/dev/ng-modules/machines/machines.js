@@ -47,19 +47,20 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 	// Initialize the machines array
 	$scope.machines = [];
 
-	$scope.onMachinesLoaded = function(machines) {
-
-		// Add extra vars to machines
-		for (var machinesIter = 0; machinesIter < machines.length; machinesIter++) {
-			machines[machinesIter].available = $scope.isAvailable(machines[machinesIter]);
-			machines[machinesIter].used = $scope.isUsed(machines[machinesIter]);
-			machines[machinesIter].occupied = $scope.isOccupied(machines[machinesIter]);
-			machines[machinesIter].unavailable = $scope.isUnavailable(machines[machinesIter]);
-		}
-
-		$scope.machines = machines;
-		//console.log(machines);
-	
+	$scope.getOccupierName = function(machine, userId) {
+		$http({
+			method: 'GET',
+			url: '/api/users/' + userId + '/fullname',
+			params: {
+				anticache: new Date().getTime()
+			}
+		})
+		.success(function(data){
+			machine.occupier = data.FullName;
+		})
+		.error(function(){
+			alert('Failed to get occupier name');
+		});
 	};
 
 	// Get current user machines
@@ -70,13 +71,67 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 			anticache: new Date().getTime()
 		}
 	})
-	.success(function(data) {
-		console.log(data);
-		if (data.length <= 0) {
+	.success(function(machines) {
+		console.log(machines);
+		if (machines.length <= 0) {
 			alert('There are no machines available for you');
-		} else if (data.length > 0) {
-			//console.log(data.Machines);
-			$scope.onMachinesLoaded(data);
+		} else if (machines.length > 0) {
+
+		// Got machines
+		// Get activations
+		$http({
+			method: 'GET',
+			url: '/api/activations/active',
+			params: {
+				anticache: new Date().getTime()
+			}
+		})
+		.success(function(activations){
+			
+			// Got activations
+			// Add status vars to machines
+			for (var machinesIter = 0; machinesIter < machines.length; machinesIter++) {
+				
+				// TODO: figure out simpler way for indicating machine status
+				machines[machinesIter].available = false;
+				machines[machinesIter].used = false;
+				machines[machinesIter].occupied = false;
+				machines[machinesIter].unavailable = true;
+
+				if (machines[machinesIter].Available) {
+					machines[machinesIter].available = true;
+					machines[machinesIter].unavailable = false;
+				} else {
+					
+					// If machine is not available it means that
+					// it is either occupied by someone else, unavailable or used by the user logged
+					for (var activationsIter = 0; activationsIter < activations.length; activationsIter++) {
+						if (activations[activationsIter].MachineId === machines[machinesIter].Id) {
+							if ($cookieStore.get('Id') === activations[activationsIter].UserId) {
+
+								// Machine is being used by logged user
+								machines[machinesIter].used = true;
+								machines[machinesIter].unavailable = false;
+							} else {
+
+								// Machine is being used by someone else
+								machines[machinesIter].occupied = true;
+								machines[machinesIter].unavailable = false;
+
+								// Get user name
+								$scope.getOccupierName(machines[machinesIter], activations[activationsIter].UserId);
+							}
+
+						}
+					} // for activations
+				} // if machine available else
+			} // for machines
+
+			$scope.machines = machines;
+		})
+		.error(function(data, status){
+			alert('Failed to load active activations');
+		});
 		} else {
 			alert('Error loading machines');
 		}
