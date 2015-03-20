@@ -30,9 +30,9 @@ func init() {
 				&controllers.UsersController{},
 			),
 		),
-		beego.NSNamespace("/machine", 
+		beego.NSNamespace("/machines", 
 			beego.NSInclude(
-				&controllers.MachineController{},
+				&controllers.MachinesController{},
 			),
 		),
 		beego.NSNamespace("/activation", 
