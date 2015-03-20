@@ -1,8 +1,10 @@
 package models
 
 import (
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"time"
+	"errors"
 )
 
 func init() {
@@ -25,4 +27,16 @@ type Activation struct {
 	CommentRef       string `orm:"size(255)"`
 	Invoiced         bool
 	Changed          bool
+}
+
+func GetActiveActivations() ([]*Activation, error){
+	var activations []*Activation
+	o := orm.NewOrm()
+	num, err := o.QueryTable("activation").
+		Filter("active", true).All(&activations)
+	if err != nil {
+		return nil, errors.New("Failed to get active activations")
+	}
+	beego.Trace("Got num activations:", num)
+	return activations, nil
 }

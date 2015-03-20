@@ -1,5 +1,10 @@
 package controllers
 
+import (
+	"github.com/kr15h/fabsmith/models"
+	"github.com/astaxie/beego"
+)
+
 type ActivationsController struct {
 	Controller
 }
@@ -18,10 +23,16 @@ func (this *ActivationsController) Get() {
 // @Title GetAll
 // @Description Get all active activations
 // @Success 200 {object} models.Activation
-// @Failure	403	Failed to get all users
-// @router / [get]
+// @Failure	403	Failed to get active activations
+// @router /active [get]
 func (this *ActivationsController) GetActive() {
-
+	activations, err := models.GetActiveActivations()
+	if err != nil {
+		beego.Error("Failed to get active activations")
+		this.CustomAbort(403, "Failed to get active activations")
+	}
+	this.Data["json"] = activations
+	this.ServeJson()
 }
 
 // @Title Create
