@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/kr15h/fabsmith/models"
+	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego"
 )
 
@@ -23,7 +24,7 @@ func (this *UsersController) Prepare() {
 // @Failure 401 Failed to authenticate
 // @router /login [post]
 func (this *UsersController) Login() {
-	var userId int
+	var userId int64
 	var err error
 	sessUsername := this.GetSession(SESSION_FIELD_NAME_USERNAME)
 	if sessUsername == nil {
@@ -38,7 +39,7 @@ func (this *UsersController) Login() {
 			this.Data["json"] = models.LoginResponse{"ok", userId}
 		}
 	} else {
-		userId = this.GetSession(SESSION_FIELD_NAME_USER_ID).(int)
+		userId = this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
 		this.Data["json"] = models.LoginResponse{"logged", userId}
 	}
 	this.ServeJson()
@@ -76,7 +77,7 @@ func (this *UsersController) GetAll() {
 	}
 
 	// Check if user is admin or staff
-	userRoles, err := models.GetUserRoles(uid.(int))
+	userRoles, err := models.GetUserRoles(uid.(int64))
 	if err != nil {
 		beego.Error("Failed to get user roles")
 		this.CustomAbort(403, "Failed to get user roles")
@@ -95,6 +96,42 @@ func (this *UsersController) GetAll() {
 	this.ServeJson()
 }
 
+// @Title Post
+// @Description create user
+// @Param	email		query 	string	true		"The new user's E-Mail"
+// @Success 201 {object} models.User
+// @Failure	401	Unauthorized
+// @Failure 500 Internal Server Error
+// @router / [post]
+func (this *UsersController) Post() {
+	email := this.GetString("email")
+	var err error
+
+	beego.Info("email:", email)
+
+	uid := this.GetSession(SESSION_FIELD_NAME_USER_ID)
+	beego.Info("uid:", uid)
+	// Check if user is admin or staff
+	userRoles, err := models.GetUserRoles(uid.(int64))
+	if !userRoles.Admin && !userRoles.Staff {
+		beego.Error("Not authorized to create user")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	o := orm.NewOrm()
+	user := models.User{Email: email}
+	id, err := o.Insert(&user)
+	if err == nil {
+		user.Id = id
+		user.Email = email
+		this.Data["json"] = user
+		this.ServeJson()
+	} else {
+		beego.Error("Cannot create user: ", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+}
+
 // @Title Get
 // @Description get user by uid
 // @Param	uid		path 	int	true		"User ID"
@@ -105,7 +142,7 @@ func (this *UsersController) GetAll() {
 func (this *UsersController) Get() {
 	var err error
 	var user *models.User
-	uid, err := this.GetInt(":uid")
+	uid, err := this.GetInt64(":uid")
 	if err != nil {
 		beego.Error("Failed to get :uid")
 		this.CustomAbort(403, "Failed to get :uid")
@@ -128,7 +165,7 @@ func (this *UsersController) Get() {
 		// Requested user ID and stored session ID does not match,
 		// meaning that the logged user is trying to access other user data.
 		// Don't allow to get data of another user unless session user is admin or staff.
-		userRoles, err := models.GetUserRoles(sid.(int))
+		userRoles, err := models.GetUserRoles(sid.(int64))
 		if err != nil {
 			beego.Error("Failed to get user roles")
 			this.CustomAbort(403, "Failed to get user roles")
@@ -168,8 +205,8 @@ func (this *UsersController) GetUserMachines() {
 
 	// Get requested user ID
 	var err error
-	var ruid int
-	ruid, err = this.GetInt(":uid")
+	var ruid int64
+	ruid, err = this.GetInt64(":uid")
 	if err != nil {
 		beego.Error("Failed to get :uid")
 		this.CustomAbort(403, "Failed to get :uid")
@@ -178,12 +215,12 @@ func (this *UsersController) GetUserMachines() {
 	// We need the user roles in order to understand
 	// whether we are allowed to access other user machines
 	var sessionUserRoles *models.UserRoles
-	sessionUserRoles, err = models.GetUserRoles(suid.(int))
+	sessionUserRoles, err = models.GetUserRoles(suid.(int64))
 	if err != nil {
 		beego.Error("Failed to get session user roles")
 		this.CustomAbort(403, "Failed to get session user roles")
 	}
-	if (suid.(int) != ruid) {
+	if (suid.(int64) != ruid) {
 		if !sessionUserRoles.Admin && !sessionUserRoles.Staff {
 			
 			// The currently logged in user is not allowed to access
@@ -195,7 +232,7 @@ func (this *UsersController) GetUserMachines() {
 	
 	// Get requested user roles
 	var requestedUserRoles *models.UserRoles
-	if suid.(int) == ruid {
+	if suid.(int64) == ruid {
 		requestedUserRoles = sessionUserRoles
 	} else {
 		requestedUserRoles, err = models.GetUserRoles(ruid)
@@ -258,8 +295,8 @@ func (this *UsersController) GetUserName() {
 
 	// Get the user name data
 	var err error
-	var uid int
-	uid, err = this.GetInt(":uid")
+	var uid int64
+	uid, err = this.GetInt64(":uid")
 	if err != nil {
 		beego.Error("Failed to get :uid")
 		this.CustomAbort(403, "Failed to get user name")
@@ -299,21 +336,21 @@ func (this *UsersController) GetUserRoles() {
 	}
 
 	// Don't give the roles to someone not admin
-	sessionRoles, err = models.GetUserRoles(suid.(int))
+	sessionRoles, err = models.GetUserRoles(suid.(int64))
 	if err != nil {
 		beego.Error("Failed to get session user roles")
 		this.CustomAbort(403, "Failed tp get user roles")
 	}
 
-	var uid int
-	uid, err = this.GetInt(":uid")
+	var uid int64
+	uid, err = this.GetInt64(":uid")
 	if err != nil {
 		beego.Error("Failed to get :uid")
 		this.CustomAbort(403, "Failed to get user roles")
 	}
 
 	if !sessionRoles.Admin && !sessionRoles.Staff {
-		if uid != suid.(int) {
+		if uid != suid.(int64) {
 			beego.Error("Unauthorized attempt to get user roles")
 			this.CustomAbort(401, "Not authorized")
 		}

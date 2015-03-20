@@ -14,7 +14,7 @@ func init() {
 type Activation struct {
 	Id               int `orm:"auto";"pk"`
 	InvoiceId        int `orm:"null"`
-	UserId           int
+	UserId           int64
 	MachineId        int
 	Active           bool
 	TimeStart        time.Time

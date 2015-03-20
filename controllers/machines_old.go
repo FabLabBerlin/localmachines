@@ -22,7 +22,7 @@ type PublicMachine struct {
 	PriceUnit                string
 	PriceCurrency            string
 	Status                   string
-	OccupiedByUserId         int
+	OccupiedByUserId         int64
 	OccupiedByUserFullName   string
 	ActivationId             int
 	ActivationSecondsElapsed int64
@@ -42,15 +42,15 @@ func (this *MachinesController) GetMachines() {
 	var response struct{ Machines []PublicMachine }
 
 	// Get request user ID
-	var reqUserId int = 0
+	var reqUserId int64 = 0
 	var err error
-	reqUserId, err = this.GetInt(REQUEST_FIELD_NAME_USER_ID)
+	reqUserId, err = this.GetInt64(REQUEST_FIELD_NAME_USER_ID)
 	if err != nil {
 		beego.Error("Could not get request user ID")
 	}
 
 	// Get session user ID
-	var sessionUserId int = 0
+	var sessionUserId int64 = 0
 	sessionUserId, err = this.getSessionUserId()
 	if err != nil {
 		beego.Error("Could not get session user ID")
@@ -60,7 +60,7 @@ func (this *MachinesController) GetMachines() {
 	// If not Admin or Staff, cant get machines of another user
 	// and that means if sessionUserId does not match with reqUserId
 	// we throw an error
-	var machinesUserId int
+	var machinesUserId int64
 	if sessionUserId != reqUserId && !this.isAdmin() && !this.isStaff() {
 		
 		// Just return machines of the current user
@@ -93,7 +93,7 @@ func (this *MachinesController) GetMachines() {
 
 }
 
-func (this *MachinesController) getUserMachines(userId int) ([]PublicMachine, error) {
+func (this *MachinesController) getUserMachines(userId int64) ([]PublicMachine, error) {
 
 	// Prepare empty array for machines stored in the database
 	machines := []models.Machine{}
@@ -150,7 +150,7 @@ func (this *MachinesController) getUserMachines(userId int) ([]PublicMachine, er
 		}
 
 		var status string = MACHINE_STATUS_AVAILABLE
-		var occupiedByUserId int
+		var occupiedByUserId int64
 		var occupiedByUsesFullName string
 
 		var activationId int = 0

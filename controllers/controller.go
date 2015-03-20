@@ -91,19 +91,19 @@ func (this *Controller) Prepare() {
 }
 
 // Return user ID
-func (this *Controller) getSessionUserId() (int, error) {
+func (this *Controller) getSessionUserId() (int64, error) {
 	userId := this.GetSession(SESSION_FIELD_NAME_USER_ID)
 	if userId == nil {
 		beego.Critical("Could not get session user ID")
 		return 0, errors.New("Session user ID not set")
 	}
-	return userId.(int), nil
+	return userId.(int64), nil
 }
 
 // Get user data from database by user ID or if it is not given,
 // by session user ID
-func (this *Controller) getUser(userIds ...int) (models.User, error) {
-	var userId int
+func (this *Controller) getUser(userIds ...int64) (models.User, error) {
+	var userId int64
 	var err error
 	if len(userIds) == 0 {
 		userId, err = this.getSessionUserId()
@@ -128,8 +128,8 @@ func (this *Controller) getUser(userIds ...int) (models.User, error) {
 }
 
 // Returns user roles model for the currently logged in user
-func (this *Controller) getUserRoles(userIds ...int) (models.UserRoles, error) {
-	var userId int
+func (this *Controller) getUserRoles(userIds ...int64) (models.UserRoles, error) {
+	var userId int64
 	var err error
 	if len(userIds) == 0 {
 		userId, err = this.getSessionUserId()
@@ -155,8 +155,8 @@ func (this *Controller) getUserRoles(userIds ...int) (models.UserRoles, error) {
 
 // Return true if user is admin, if no args are passed, uses session user ID,
 // if single user ID is passed, checks the passed one. Fails otherwise.
-func (this *Controller) isAdmin(userIds ...int) bool {
-	var userId int
+func (this *Controller) isAdmin(userIds ...int64) bool {
+	var userId int64
 	var err error
 	if len(userIds) == 0 {
 		userId, err = this.getSessionUserId()
@@ -182,8 +182,8 @@ func (this *Controller) isAdmin(userIds ...int) bool {
 
 // Return true if user is staff, if no args are passed, uses session user ID,
 // if single user ID is passed, checks the passed one. Fails otherwise.
-func (this *Controller) isStaff(userIds ...int) bool {
-	var userId int
+func (this *Controller) isStaff(userIds ...int64) bool {
+	var userId int64
 	var err error
 	if len(userIds) == 0 {
 		userId, err = this.getSessionUserId()

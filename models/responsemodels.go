@@ -19,7 +19,7 @@ type ErrorResponse struct {
 // {"Status":"logged", 	"UserId":2}
 type LoginResponse struct {
 	Status 	string
-	UserId  int
+	UserId  int64
 }
 
 // Used to return activation ID after it has been created
@@ -32,7 +32,7 @@ type ActivationCreateResponse struct {
 // Used to return only the full name of an user
 // {"UserId": 2, "FirstName": "Milov", "LastName": "Milovič"}
 type UserNameResponse struct {
-	UserId    int
+	UserId    int64
 	FirstName string
 	LastName  string
 }
