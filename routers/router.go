@@ -25,9 +25,9 @@ func init() {
 	beego.Router("/api/activations", &controllers.ActivationsController{}, "put:CloseActivation")
 
 	ns := beego.NewNamespace("/api",
-		beego.NSNamespace("/user",
+		beego.NSNamespace("/users",
 			beego.NSInclude(
-				&controllers.UserController{},
+				&controllers.UsersController{},
 			),
 		),
 		beego.NSNamespace("/machine", 
