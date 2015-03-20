@@ -50,13 +50,13 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 	$scope.getOccupierName = function(machine, userId) {
 		$http({
 			method: 'GET',
-			url: '/api/users/' + userId + '/fullname',
+			url: '/api/users/' + userId + '/name',
 			params: {
 				anticache: new Date().getTime()
 			}
 		})
 		.success(function(data){
-			machine.occupier = data.FullName;
+			machine.occupier = data.FirstName + ' ' + data.LastName;
 		})
 		.error(function(){
 			alert('Failed to get occupier name');
