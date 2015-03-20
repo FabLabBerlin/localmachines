@@ -24,9 +24,6 @@ func init() {
 	if err != nil {
 		beego.Error(err)
 	}
-	if beego.GlobalDocApi == nil {
-		beego.GlobalDocApi = make(map[string]interface{})
-	}
 	beego.GlobalDocApi["Root"] = rootapi
 	for k, v := range apilist {
 		for i, a := range v.Apis {

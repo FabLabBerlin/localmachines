@@ -110,6 +110,7 @@ func (this *UsersController) Get() {
 		beego.Error("Failed to get :uid")
 		this.CustomAbort(403, "Failed to get :uid")
 	}
+
 	sid := this.GetSession(SESSION_FIELD_NAME_USER_ID)
 	if uid == sid {
 
@@ -127,7 +128,7 @@ func (this *UsersController) Get() {
 		// Requested user ID and stored session ID does not match,
 		// meaning that the logged user is trying to access other user data.
 		// Don't allow to get data of another user unless session user is admin or staff.
-		userRoles, err := models.GetUserRoles(uid)
+		userRoles, err := models.GetUserRoles(sid.(int))
 		if err != nil {
 			beego.Error("Failed to get user roles")
 			this.CustomAbort(403, "Failed to get user roles")
