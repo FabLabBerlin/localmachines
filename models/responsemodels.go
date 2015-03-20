@@ -28,3 +28,11 @@ type ActivationCreateResponse struct {
 	Status string
 	ActivationId int
 }
+
+// Used to return only the full name of an user
+// {"UserId": 2, "FirstName": "Milov", "LastName": "Milovič"}
+type UserNameResponse struct {
+	UserId    int
+	FirstName string
+	LastName  string
+}

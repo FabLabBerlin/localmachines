@@ -238,3 +238,41 @@ func (this *UsersController) GetUserMachines() {
 	this.Data["json"] = machines
 	this.ServeJson()
 } 
+
+// @Title GetUserName
+// @Description Get user name data only
+// @Param	uid		path 	int	true		"User ID"
+// @Success 200 {object} models.UserNameResponse
+// @Failure	403	Failed to get user name
+// @Failure	401	Not loggen
+// @router /:uid/name [get]
+func (this *UsersController) GetUserName() {
+	
+	// Check if logged in 
+	suid := this.GetSession(SESSION_FIELD_NAME_USER_ID)
+	if suid == nil {
+		beego.Info("Not logged in")
+		this.CustomAbort(401, "Not logged in")
+	}
+
+	// Get the user name data
+	var err error
+	var uid int
+	uid, err = this.GetInt(":uid")
+	if err != nil {
+		beego.Error("Failed to get :uid")
+		this.CustomAbort(403, "Failed to get user name")
+	}
+	var user *models.User
+	user, err = models.GetUser(uid)
+	if err != nil {
+		beego.Error("Failed not get user name")
+		this.CustomAbort(403, "Failed not get user name")
+	}
+	response := models.UserNameResponse{}
+	response.UserId = user.Id
+	response.FirstName = user.FirstName
+	response.LastName = user.LastName
+	this.Data["json"] = response
+	this.ServeJson()
+}
