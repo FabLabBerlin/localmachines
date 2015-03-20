@@ -50,6 +50,8 @@ func (this *ActivationsController) Create() {
 	var err error
 	machineId, err = this.GetInt("mid")
 	userId := this.GetSession(SESSION_FIELD_NAME_USER_ID).(int)
+
+	//TODO: check if user has permissions to create activation for the machine
 	
 	var activationId int
 	activationId, err = models.CreateActivation(machineId, userId)
