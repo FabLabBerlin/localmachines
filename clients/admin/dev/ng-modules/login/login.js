@@ -16,7 +16,7 @@ app.controller('LoginCtrl', ['$scope', '$http', '$location', function($scope, $h
 	$scope.login = function() {
 		$http({
 			method: 'POST',
-			url: '/api/user/login',
+			url: '/api/users/login',
 			data: {
 				username: $scope.username,
 				password: $scope.password,
@@ -31,7 +31,7 @@ app.controller('LoginCtrl', ['$scope', '$http', '$location', function($scope, $h
 				// Get user data
 				$http({
 					method: 'GET',
-					url: '/api/user/' + data.UserId
+					url: '/api/users/' + data.UserId
 				})
 				.success(function(data){
 					console.log('Got user data');

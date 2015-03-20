@@ -25,7 +25,7 @@ app.run(['$rootScope', '$location', '$http', function($rootScope, $location, $ht
 		if (newPath !== '/login') {
 			$http({
 				method: 'POST',
-				url: '/api/user/login',
+				url: '/api/users/login',
 				params: {
 					username: 'blank', // TODO: randomize?
 					password: 'blank',
@@ -96,7 +96,7 @@ app.controller('MainCtrl', ['$scope', '$http', '$location', '$cookieStore', '$co
 
 		$http({
 			method: 'GET',
-			url: '/api/user/logout',
+			url: '/api/users/logout',
 			params: {
 				anticache: new Date().getTime()
 			}

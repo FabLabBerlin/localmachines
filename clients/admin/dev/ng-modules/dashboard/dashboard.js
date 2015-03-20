@@ -17,7 +17,7 @@ app.controller('DashboardCtrl', ['$scope', '$http', function($scope, $http) {
 	// Get all users
 	$http({
 		method: 'GET',
-		url: '/api/user',
+		url: '/api/users',
 		params: {
 			anticache: new Date().getTime()
 		}
