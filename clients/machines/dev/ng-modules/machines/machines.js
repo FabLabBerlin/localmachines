@@ -151,60 +151,41 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 
 	// Activate a machine by the currenty logged in user
 	$scope.activate = function(machineId) {
-		
+		console.log('Activate ' + machineId);
 		$scope.resetTimer();
-
-		// Show loader
 		$scope.showGlobalLoader();
-
 		$http({
 			method: 'POST',
 			url: '/api/activations',
 			params: {
-				machine_id: machineId,
+				mid: machineId,
 				anticache: new Date().getTime()
 			}
 		})
 		.success(function(data) {
-
 			$scope.hideGlobalLoader();
 
-			// Check status
-			if (data.Status === 'error') {
+			// Find machine by ID
+			for (var machineIter = 0; machineIter < $scope.machines.length; machineIter++) {
 
-				alert(data.Message);
-			
-			} else if (data.Status === 'created') {
-				
-				// TODO: Animate transition between previously available element to
-				// 'used' one, not sure whether we should use css3 animations or jQuery
-
-				// Find machine by ID
-				for (var machineIter = 0; machineIter < $scope.machines.length; machineIter++) {
-
-					// Machine found condition
-					if ($scope.machines[machineIter].Id === machineId) {
-						
-						// Refresh data of the new activation
-						$scope.machines[machineIter].ActivationSecondsElapsed = 0;
-						$scope.machines[machineIter].OccupiedByUserId = parseInt( $cookieStore.get('UserId') );
-						$scope.machines[machineIter].ActivationId = data.Id;
-						$scope.machines[machineIter].available = false;
-						$scope.machines[machineIter].used = true;
-
-						// Start timer for elapsed time
-						$scope.machines[machineIter].activationInterval = 
-							setInterval($scope.updateElapsedTime, 1000, machineIter);
-
-						// Exit the machine finding for loop
-						break;
-
-					}
-
+				// Machine found condition
+				if ($scope.machines[machineIter].Id === machineId) {
+					
+					// Refresh data of the new activation
+					$scope.machines[machineIter].ActivationSecondsElapsed = 0;
+					$scope.machines[machineIter].OccupiedByUserId = parseInt( $cookieStore.get('Id') );
+					$scope.machines[machineIter].ActivationId = data.ActivationId;
+					$scope.machines[machineIter].available = false;
+					$scope.machines[machineIter].used = true;
+	
+					// Start timer for elapsed time
+					$scope.machines[machineIter].activationInterval = 
+						setInterval($scope.updateElapsedTime, 1000, machineIter);
+	
+					// Exit the machine finding for loop
+					break;
 				}
-			
 			}
-
 		})
 		.error(function() {
 			$scope.hideGlobalLoader();
@@ -237,30 +218,16 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 
 		$http({
 			method: 'PUT', 
-			url: '/api/activations', 
+			url: '/api/activations/' + machine.ActivationId, 
 			params: {
-				activation_id: machine.ActivationId,
 				anticache: new Date().getTime()
 			}
 		})
 		.success(function(data) {
-			
 			$scope.hideGlobalLoader();
-
-			if (data.Status === 'ok') {
-
-				// TODO: dynamicaly switch state of the previously
-				// available item to 'used' using animation
-				machine.used = false;
-				machine.occupied = false;
-				machine.available = true;
-			
-			} else if (data.Status === 'error') {
-				alert(data.Message);
-			} else {
-				alert('Error while deactivating');
-			}
-
+			machine.used = false;
+			machine.occupied = false;
+			machine.available = true;
 		})
 		.error(function() {
 			$scope.hideGlobalLoader();
