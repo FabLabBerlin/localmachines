@@ -10,7 +10,7 @@ app.config(['$routeProvider', function($routeProvider) {
 	});
 }]); // app.config
 
-app.controller('UserCtrl', ['$scope', '$routeParams', '$http', function($scope, $routeParams, $http) {
+app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', function($scope, $routeParams, $http, $location) {
 	$scope.user = {
 		Id: $routeParams.userId
 	};
@@ -70,6 +70,31 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', function($scope, 
 		console.log('Data: ' + data);
 		console.log('Status code: ' + status);
 	});
+
+	$scope.cancel = function() {
+		if (confirm('All changes will be discarded, click ok to continue.')) {
+			$location.path('/dashboard');
+		}
+	};
+
+	$scope.deleteUser = function() {
+		var email = prompt("Do you really want to delete this user? Please enter user's E-Mail address to continue");
+		if (email === $scope.user.Email) {
+			$http({
+				method: 'DELETE',
+				url: '/api/users/' + $scope.user.Id
+			})
+			.success(function(data) {
+				toastr.info('User deleted');
+				$location.path('/dashboard');
+			})
+			.error(function() {
+				toastr.error('Error while trying to delete user');
+			});
+		} else {
+			toastr.warning('Delete User canceled.');
+		}
+	};
 }]); // app.controller
 
 })(); // closure
