@@ -126,10 +126,15 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 								activationElapsedTime = Math.round(activationElapsedTime / 1000);
 								machines[machinesIter].ActivationSecondsElapsed = activationElapsedTime;
 
+								// Assign other activation related data to the machine object
+								machines[machinesIter].OccupiedByUserId = activation.UserId;
+								machines[machinesIter].ActivationId = activation.Id;
+
 								// What we also need is to start the counter interval
 								// Start timer for elapsed time
 								machines[machinesIter].activationInterval = 
 									setInterval($scope.updateElapsedTime, 1000, machinesIter);
+
 
 							} else {
 
