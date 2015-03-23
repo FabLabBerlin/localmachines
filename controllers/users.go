@@ -187,6 +187,31 @@ func (this *UsersController) Get() {
 	this.ServeJson()
 }
 
+// @Title Get
+// @Description delete user with uid
+// @Param	uid		path 	int	true		"User ID"
+// @Success 200
+// @Failure	403	Variable message
+// @Failure	401	Unauthorized
+// @router /:uid [delete]
+func (this *UsersController) Delete() {
+	if (!this.IsAdmin) {
+		beego.Error("Unauthorized attempt to delete user")
+		this.CustomAbort(401, "Unauthorized")
+	}
+
+	uid, err := this.GetInt64(":uid")
+	if err != nil {
+		beego.Error("Failed to get :uid")
+		this.CustomAbort(403, "Failed to get :uid")
+	}
+
+	if err := models.DeleteUser(uid); err != nil {
+		beego.Error("Failed to delete user")
+		this.CustomAbort(403, "Failed to delete :uid")	
+	}
+}
+
 // @Title GetUserMachines
 // @Description Get user machines
 // @Param	uid		path 	int	true		"User ID"

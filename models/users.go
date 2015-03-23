@@ -88,6 +88,12 @@ func AuthenticateUser(username, password string) (int64, error) {
 	}
 }
 
+func DeleteUser(userId int64) (error) {
+	o := orm.NewOrm()
+	_, err := o.Delete(&User{Id: userId})
+	return err
+}
+
 // Loads user data from database into User struct
 func GetUser(userId int64) (*User, error) {
 	user := User{Id: userId}

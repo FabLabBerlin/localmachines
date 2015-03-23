@@ -19,7 +19,8 @@
 	"globals": {
 		"angular": false,
 		"md5": false, 
-		"alert": false, 
+		"alert": false,
+		"confirm": false,
 		"inject": false,
 		"prompt": false,
 		"toastr": false
