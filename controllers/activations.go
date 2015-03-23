@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"github.com/kr15h/fabsmith/models"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"github.com/kr15h/fabsmith/models"
 	"github.com/kr15h/fabsmith/plugins/hexaswitch"
 	"time"
 )
@@ -46,14 +46,32 @@ func (this *ActivationsController) GetActive() {
 // @Failure 401 Not authorized
 // @router / [post]
 func (this *ActivationsController) Create() {
-	var machineId int
+	var machineId int64
 	var err error
-	machineId, err = this.GetInt("mid")
-	userId := this.GetSession(SESSION_FIELD_NAME_USER_ID).(int)
+	machineId, err = this.GetInt64("mid")
+	userId := this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
 
-	//TODO: check if user has permissions to create activation for the machine
-	
-	var activationId int
+	// Check if user has permissions to create activation for the machine.
+	var userPermissions []*models.Permission
+	userPermissions, err = models.GetUserPermissions(userId)
+	if err != nil {
+		beego.Error("Could not get user permissions")
+		this.CustomAbort(403, "Forbidden")
+	}
+	var userPermitted = false
+	for _, permission := range userPermissions {
+		if int64(permission.MachineId) == machineId {
+			userPermitted = true
+			break
+		}
+	}
+	if !userPermitted {
+		beego.Error("User has no permission to activate the machine")
+		this.CustomAbort(401, "Unauthorized")
+	}
+
+	// Continue with creating activation
+	var activationId int64
 	activationId, err = models.CreateActivation(machineId, userId)
 	if err != nil {
 		beego.Error("Failed to create activation")
@@ -62,7 +80,7 @@ func (this *ActivationsController) Create() {
 
 	// Check if there is mapping between switch and machine
 	var switchMappingExists bool
-	_, err = hexaswitch.GetSwitchIp(machineId)
+	_, err = hexaswitch.GetSwitchIp(int(machineId))
 	if err != nil {
 		beego.Warning("Machine / switch mapping does not exist")
 		switchMappingExists = false
@@ -73,7 +91,7 @@ func (this *ActivationsController) Create() {
 	if switchMappingExists {
 		hexaswitch.Install() // TODO: remove this from here in an elegant way
 		// TODO: use switch IP for the SwitchOn method
-		err = hexaswitch.SwitchOn(machineId)
+		err = hexaswitch.SwitchOn(int(machineId))
 		if err != nil {
 			beego.Error("Failed to turn on the switch")
 			err = models.DeleteActivation(activationId)
@@ -157,7 +175,7 @@ func deactivateMachineAfterTimeout(machineId int64, timeoutSeconds int64) {
 	}
 
 	// Attempt to switch off the machine
-	hexaswitch.Install()                  // TODO: remove this from here in an elegant way
+	hexaswitch.Install()                       // TODO: remove this from here in an elegant way
 	err = hexaswitch.SwitchOff(int(machineId)) // This will take some time
 	if err != nil {
 		beego.Error("Failed to turn the switch off", err)

@@ -1,11 +1,11 @@
 package models
 
 import (
+	"database/sql"
+	"errors"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"time"
-	"errors"
-	"database/sql"
 )
 
 func init() {
@@ -30,7 +30,7 @@ type Activation struct {
 	Changed          bool
 }
 
-func GetActiveActivations() ([]*Activation, error){
+func GetActiveActivations() ([]*Activation, error) {
 	var activations []*Activation
 	o := orm.NewOrm()
 	num, err := o.QueryTable("activation").
@@ -43,7 +43,7 @@ func GetActiveActivations() ([]*Activation, error){
 }
 
 // Creates activation and returns activation ID
-func CreateActivation(machineId, userId int) (int, error) {
+func CreateActivation(machineId, userId int64) (int64, error) {
 
 	// Check if machine with machineId exists
 	o := orm.NewOrm()
@@ -91,16 +91,16 @@ func CreateActivation(machineId, userId int) (int, error) {
 	// Update machine as unavailable
 	_, err = o.QueryTable("machine").
 		Filter("Id", machineId).
-		Update(orm.Params{"available": false,})
+		Update(orm.Params{"available": false})
 	if err != nil {
 		beego.Error("Failed to update activated machine")
 	}
 
-	return int(activationId), nil
+	return activationId, nil
 }
 
 func CloseActivation(activationId int64) error {
-	
+
 	// Get activation start time and machine id
 	var tempModel struct {
 		TimeStart string
@@ -131,7 +131,7 @@ func CloseActivation(activationId int64) error {
 
 	// Make the machine available
 	_, err = o.QueryTable("machine").Filter("Id", tempModel.MachineId).
-		Update(orm.Params{"available": true,})
+		Update(orm.Params{"available": true})
 	if err != nil {
 		beego.Error("Failed to available machine")
 		return err
@@ -139,7 +139,7 @@ func CloseActivation(activationId int64) error {
 	return nil
 }
 
-func DeleteActivation(activationId int) error {
+func DeleteActivation(activationId int64) error {
 
 	// Set machine of the activation available
 	var err error
@@ -154,7 +154,7 @@ func DeleteActivation(activationId int) error {
 	}
 	_, err = o.QueryTable("machine").
 		Filter("Id", activation.MachineId).
-		Update(orm.Params{"available": true,})
+		Update(orm.Params{"available": true})
 	if err != nil {
 		beego.Error("Failed to update machine as available")
 		return err

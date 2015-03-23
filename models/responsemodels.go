@@ -4,13 +4,13 @@ package models
 // This is being returned when client awaits a JSON message like
 // {"Status":"ok"}
 type StatusResponse struct {
-	Status 	string
+	Status string
 }
 
 // Used to return
 // {"Status":"error", "Message":"Error message, what went wrong"}
 type ErrorResponse struct {
-	Status 	string
+	Status  string
 	Message string
 }
 
@@ -18,14 +18,14 @@ type ErrorResponse struct {
 // {"Status":"ok", 		"UserId":2}
 // {"Status":"logged", 	"UserId":2}
 type LoginResponse struct {
-	Status 	string
-	UserId  int64
+	Status string
+	UserId int64
 }
 
 // Used to return activation ID after it has been created
 // {"Status":"ok", "ActivationId":39}
 type ActivationCreateResponse struct {
-	ActivationId int
+	ActivationId int64
 }
 
 // Used to return only the full name of an user
