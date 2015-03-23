@@ -88,6 +88,8 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 		})
 		.success(function(activations){
 			
+			console.log(activations);
+
 			// Got activations
 			// Add status vars to machines
 			for (var machinesIter = 0; machinesIter < machines.length; machinesIter++) {
@@ -106,12 +108,29 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 					// If machine is not available it means that
 					// it is either occupied by someone else, unavailable or used by the user logged
 					for (var activationsIter = 0; activationsIter < activations.length; activationsIter++) {
+
+						var activation = activations[activationsIter];
+						
 						if (activations[activationsIter].MachineId === machines[machinesIter].Id) {
 							if ($cookieStore.get('Id') === activations[activationsIter].UserId) {
 
 								// Machine is being used by logged user
 								machines[machinesIter].used = true;
 								machines[machinesIter].unavailable = false;
+
+								// We need to calculate elapsed activation seconds
+								// from the saved activation GMT time
+								var activationStartTime = Date.parse(activation.TimeStart);
+								var timeNow = Date.now();
+								var activationElapsedTime = timeNow - activationStartTime;
+								activationElapsedTime = Math.round(activationElapsedTime / 1000);
+								machines[machinesIter].ActivationSecondsElapsed = activationElapsedTime;
+
+								// What we also need is to start the counter interval
+								// Start timer for elapsed time
+								machines[machinesIter].activationInterval = 
+									setInterval($scope.updateElapsedTime, 1000, machinesIter);
+
 							} else {
 
 								// Machine is being used by someone else
