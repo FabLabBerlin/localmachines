@@ -32,6 +32,7 @@ module.exports = function (grunt) {
 					// we actually need
 					'prod/assets/css/app.min.css': [
 						'dev/bower_components/bootstrap/less/bootstrap.less',
+						'dev/bower_components/toastr/toastr.less',
 						'dev/assets/less/main.less'
 					]
 				},
@@ -54,6 +55,7 @@ module.exports = function (grunt) {
 						'dev/bower_components/angular-cookies/angular-cookies.min.js',
 						'dev/bower_components/angular-ui-bootstrap/src/modal/modal.js',
 						'dev/bower_components/angular-ui-bootstrap/src/transition/transition.js',
+						'dev/bower_components/toastr/toastr.js',
 						'dev/ng-components/version/version.js',
 						'dev/ng-components/version/version-directive.js',
 						'dev/ng-components/version/interpolate-filter.js',

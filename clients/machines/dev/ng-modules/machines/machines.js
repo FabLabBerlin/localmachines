@@ -158,7 +158,7 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 			machine.occupier = data.FirstName + ' ' + data.LastName;
 		})
 		.error(function(){
-			alert('Failed to get occupier name');
+			toastr.error('Failed to get occupier name');
 		});
 	};
 
@@ -215,7 +215,7 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 		})
 		.error(function() {
 			$scope.hideGlobalLoader();
-			alert('Could not activate machine');
+			toastr.error('Could not activate machine');
 		});
 
 	};
@@ -257,7 +257,7 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 		})
 		.error(function() {
 			$scope.hideGlobalLoader();
-			alert('Failed to deactivate');
+			toastr.error('Failed to deactivate');
 		});
 	};
 

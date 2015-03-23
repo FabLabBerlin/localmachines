@@ -117,7 +117,7 @@ app.controller('MainCtrl', ['$scope', '$http', '$location', '$cookieStore', '$co
 			$location.path('/');
 		})
 		.error(function() {
-			alert('Failed to log out. Probably server down.');
+			toastr.error('Failed to log out. Probably server down.');
 			$location.path('/');
 		});
 

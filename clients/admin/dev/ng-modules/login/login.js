@@ -41,13 +41,13 @@ app.controller('LoginCtrl', ['$scope', '$http', '$location', function($scope, $h
 				.error(function(data, status){
 					console.log('Status: ' + status);
 					console.log('Data' + data);
-					alert('Could not get user data');
+					toastr.error('Could not get user data');
 				});
 				
 			} // if data.UserId
 		})
 		.error(function() {
-			alert('Failed to log in');
+			toastr.error('Failed to log in');
 		});
 	};
 	
