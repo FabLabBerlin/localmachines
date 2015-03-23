@@ -28,7 +28,6 @@ angular.module('fabsmith.login', ['ngRoute', 'ngCookies'])
 		})
 		.success(function(data, status) {
 			if (data.UserId) {
-				console.log('User ID: ' + data.UserId);
 
 				// Get user data
 				$http({
@@ -39,23 +38,17 @@ angular.module('fabsmith.login', ['ngRoute', 'ngCookies'])
 					$scope.onUserDataLoaded(userData);
 				})
 				.error(function(data, status){
-					console.log('Status: ' + status);
-					console.log('Data' + data);
 					toastr.error('Could not get user data');
 				});
 				
 			} // if data.UserId
 		})
 		.error(function(data, status) {
-			console.log('fail code: ' + status);
 			toastr.error('Failed to log in');
 		});
 	};
 
 	$scope.onUserDataLoaded = function(userData){
-		console.log('Got user data');
-		console.log(userData);
-
 		// Get user roles
 		$http({
 			method: 'GET',
@@ -73,14 +66,7 @@ angular.module('fabsmith.login', ['ngRoute', 'ngCookies'])
 	};
 
 	$scope.onUserRolesLoaded = function(userRoles, userData){
-		console.log('Got user roles');
-		console.log(userRoles);
-
-		// Merge user data with the roles
 		userData = _.merge(userData, userRoles); 
-		console.log('Merged user data');
-		console.log(userData);
-
 		$scope.$emit('user-login', userData);
 		$location.path('/machines');
 	};
