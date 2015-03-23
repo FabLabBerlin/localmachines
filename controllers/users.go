@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"github.com/kr15h/fabsmith/models"
-	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/orm"
+	"github.com/kr15h/fabsmith/models"
 )
 
 type UsersController struct {
@@ -69,7 +69,7 @@ func (this *UsersController) Logout() {
 // @router / [get]
 func (this *UsersController) GetAll() {
 
-	// Check if logged in 
+	// Check if logged in
 	uid := this.GetSession(SESSION_FIELD_NAME_USER_ID)
 	if uid == nil {
 		beego.Info("Attempt to get all users while not logged in")
@@ -195,7 +195,7 @@ func (this *UsersController) Get() {
 // @Failure	401	Unauthorized
 // @router /:uid [delete]
 func (this *UsersController) Delete() {
-	if (!this.IsAdmin) {
+	if !this.IsAdmin() && !this.IsStaff() {
 		beego.Error("Unauthorized attempt to delete user")
 		this.CustomAbort(401, "Unauthorized")
 	}
@@ -208,7 +208,7 @@ func (this *UsersController) Delete() {
 
 	if err := models.DeleteUser(uid); err != nil {
 		beego.Error("Failed to delete user")
-		this.CustomAbort(403, "Failed to delete :uid")	
+		this.CustomAbort(403, "Failed to delete :uid")
 	}
 }
 
@@ -221,7 +221,7 @@ func (this *UsersController) Delete() {
 // @router /:uid/machines [get]
 func (this *UsersController) GetUserMachines() {
 
-	// Check if logged in 
+	// Check if logged in
 	suid := this.GetSession(SESSION_FIELD_NAME_USER_ID)
 	if suid == nil {
 		beego.Info("Not logged in")
@@ -245,16 +245,16 @@ func (this *UsersController) GetUserMachines() {
 		beego.Error("Failed to get session user roles")
 		this.CustomAbort(403, "Failed to get session user roles")
 	}
-	if (suid.(int64) != ruid) {
+	if suid.(int64) != ruid {
 		if !sessionUserRoles.Admin && !sessionUserRoles.Staff {
-			
+
 			// The currently logged in user is not allowed to access
 			// other user machines
 			beego.Error("Not authorized")
 			this.CustomAbort(401, "Not authorized")
 		}
-	} 
-	
+	}
+
 	// Get requested user roles
 	var requestedUserRoles *models.UserRoles
 	if suid.(int64) == ruid {
@@ -300,7 +300,7 @@ func (this *UsersController) GetUserMachines() {
 	// Serve machines
 	this.Data["json"] = machines
 	this.ServeJson()
-} 
+}
 
 // @Title GetUserName
 // @Description Get user name data only
@@ -310,8 +310,8 @@ func (this *UsersController) GetUserMachines() {
 // @Failure	401	Not loggen
 // @router /:uid/name [get]
 func (this *UsersController) GetUserName() {
-	
-	// Check if logged in 
+
+	// Check if logged in
 	suid := this.GetSession(SESSION_FIELD_NAME_USER_ID)
 	if suid == nil {
 		beego.Info("Not logged in")
@@ -348,12 +348,12 @@ func (this *UsersController) GetUserName() {
 // @Failure	401	Not authorized
 // @router /:uid/roles [get]
 func (this *UsersController) GetUserRoles() {
-	
+
 	var sessionRoles *models.UserRoles
-	var userRoles * models.UserRoles
+	var userRoles *models.UserRoles
 	var err error
 
-	// Check if logged in 
+	// Check if logged in
 	suid := this.GetSession(SESSION_FIELD_NAME_USER_ID)
 	if suid == nil {
 		beego.Info("Not logged in")
@@ -379,7 +379,7 @@ func (this *UsersController) GetUserRoles() {
 			beego.Error("Unauthorized attempt to get user roles")
 			this.CustomAbort(401, "Not authorized")
 		}
-	}	
+	}
 
 	userRoles, err = models.GetUserRoles(uid)
 	this.Data["json"] = userRoles
