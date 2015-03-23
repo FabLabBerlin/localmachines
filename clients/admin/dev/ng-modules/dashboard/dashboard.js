@@ -11,7 +11,7 @@ app.config(['$routeProvider', function($routeProvider) {
   });
 }]); // app.config
 
-app.controller('DashboardCtrl', ['$scope', '$http', function($scope, $http) {
+app.controller('DashboardCtrl', ['$scope', '$http', '$location', function($scope, $http, $location) {
 	$scope.users = [];
 
 	// Get all users
@@ -34,7 +34,6 @@ app.controller('DashboardCtrl', ['$scope', '$http', function($scope, $http) {
 	});
 
 	$scope.addUser = function() {
-		console.log('Add User!');
 		var email = prompt('Please enter E-Mail for new user:');
 		if (email) {
 			$http({
@@ -46,11 +45,11 @@ app.controller('DashboardCtrl', ['$scope', '$http', function($scope, $http) {
 				}
 			})
 			.success(function(data) {
-				alert('New user created!');
-				window.location.reload(true);
+				toastr.info('New user created');
+				$location.path('/users/' + data.Id);
 			})
 			.error(function() {
-				alert('Failed to log in');
+				toastr.error('Error while trying to create new user');
 			});
 		}
 	};

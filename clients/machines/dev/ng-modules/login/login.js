@@ -43,14 +43,14 @@ angular.module('fabsmith.login', ['ngRoute', 'ngCookies'])
 				.error(function(data, status){
 					console.log('Status: ' + status);
 					console.log('Data' + data);
-					alert('Could not get user data');
+					toastr.error('Could not get user data');
 				});
 				
 			} // if data.UserId
 		})
 		.error(function(data, status) {
 			console.log('fail code: ' + status);
-			alert('Failed to log in');
+			toastr.error('Failed to log in');
 		});
 	};
 

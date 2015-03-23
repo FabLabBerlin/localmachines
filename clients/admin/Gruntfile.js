@@ -32,6 +32,7 @@ module.exports = function (grunt) {
 					// we actually need
 					'prod/assets/css/app.min.css': [
 						'dev/bower_components/bootstrap/less/bootstrap.less',
+						'dev/bower_components/toastr/toastr.less',
 						'dev/assets/less/main.less'
 					]
 				},
@@ -54,6 +55,7 @@ module.exports = function (grunt) {
 						'dev/bower_components/angular-cookies/angular-cookies.min.js',
 						'dev/bower_components/angular-ui-bootstrap/src/modal/modal.js',
 						'dev/bower_components/angular-ui-bootstrap/src/transition/transition.js',
+						'dev/bower_components/toastr/toastr.js',
 						'dev/ng-components/version/version.js',
 						'dev/ng-components/version/version-directive.js',
 						'dev/ng-components/version/interpolate-filter.js',
@@ -108,6 +110,11 @@ module.exports = function (grunt) {
 					expand: true,
 					flatten: true
 				}, {
+					src: 'dev/ng-modules/dashboard/user-item.html', 
+					dest: 'prod/ng-modules/dashboard/',
+					expand: true,
+					flatten: true
+				}, {
 					src: 'dev/ng-modules/login/login.html', 
 					dest: 'prod/ng-modules/login/',
 					expand: true,
@@ -115,6 +122,11 @@ module.exports = function (grunt) {
 				}, {
 					src: 'dev/ng-modules/mainmenu/mainmenu.html', 
 					dest: 'prod/ng-modules/mainmenu/',
+					expand: true,
+					flatten: true
+				}, {
+					src: 'dev/ng-modules/user/user.html', 
+					dest: 'prod/ng-modules/user/',
 					expand: true,
 					flatten: true
 				}, {

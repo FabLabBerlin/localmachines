@@ -32,7 +32,7 @@ angular.module('fabsmith.logout', ['ngRoute', 'timer'])
 			$location.path('/');
 		})
 		.error(function() {
-			alert('Failed to log out. Probably server down.');
+			toastr.error('Failed to log out. Probably server down.');
 		});
 	};
 }]);
