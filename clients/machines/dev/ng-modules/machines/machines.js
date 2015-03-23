@@ -97,19 +97,16 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 				// it is either occupied by someone else, unavailable or used by the user logged
 				for (var activationsIter = 0; activationsIter < activations.length; activationsIter++) {
 					if (activations[activationsIter].MachineId === machines[machinesIter].Id) {
+						
+						var activationStartTime;
+						var timeNow;
+						var activationElapsedTime;
+
 						if ($cookieStore.get('Id') === activations[activationsIter].UserId) {
 
 							// Machine is being used by logged user
 							machines[machinesIter].used = true;
 							machines[machinesIter].unavailable = false;
-
-							// We need to calculate elapsed activation seconds
-							// from the saved activation GMT time
-							var activationStartTime = Date.parse(activations[activationsIter].TimeStart);
-							var timeNow = Date.now();
-							var activationElapsedTime = timeNow - activationStartTime;
-							activationElapsedTime = Math.round(activationElapsedTime / 1000);
-							machines[machinesIter].ActivationSecondsElapsed = activationElapsedTime;
 
 							// Assign other activation related data to the machine object
 							machines[machinesIter].OccupiedByUserId = activations[activationsIter].UserId;
@@ -117,15 +114,28 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 
 							// What we also need is to start the counter interval
 							// Start timer for elapsed time
+							machines[machinesIter].ActivationSecondsElapsed = 
+									$scope.getActivationElapsedSeconds(activations[activationsIter]);
 							machines[machinesIter].activationInterval = 
 								setInterval($scope.updateElapsedTime, 1000, machinesIter);
-
 
 						} else {
 
 							// Machine is being used by someone else
 							machines[machinesIter].occupied = true;
 							machines[machinesIter].unavailable = false;
+							machines[machinesIter].OccupiedByUserId = activations[activationsIter].UserId;
+							machines[machinesIter].ActivationId = activations[activationsIter].Id;
+							
+							// But, if logged as admin, we can also set the activation ID
+							// and elapsed time
+							var isPlainUser = !$cookieStore.get('Admin') && !$cookieStore.get('Staff');
+							if ( !isPlainUser ) {
+								machines[machinesIter].ActivationSecondsElapsed = 
+									$scope.getActivationElapsedSeconds(activations[activationsIter]);
+								machines[machinesIter].activationInterval = 
+									setInterval($scope.updateElapsedTime, 1000, machinesIter);
+							}
 
 							// Get user name
 							$scope.getOccupierName(machines[machinesIter], activations[activationsIter].UserId);
@@ -138,6 +148,14 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 		$scope.machines = machines;
 	};
 
+	$scope.getActivationElapsedSeconds = function(activation){
+		var activationStartTime = Date.parse(activation.TimeStart);
+		var timeNow = Date.now();
+		var activationElapsedTime = timeNow - activationStartTime;
+		activationElapsedTime = Math.round(activationElapsedTime / 1000);
+		return activationElapsedTime;
+	};
+
 	// Configure timer
 	$scope.resetTimer = function() {
 		$scope.$broadcast('timer-clear');
@@ -147,6 +165,9 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 	$scope.resetTimer();
 
 	$scope.getOccupierName = function(machine, userId) {
+		console.log('Get occupier name');
+		console.log(machine);
+		console.log(userId);
 		$http({
 			method: 'GET',
 			url: '/api/users/' + userId + '/name',
@@ -155,6 +176,8 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 			}
 		})
 		.success(function(data){
+			console.log('Got occupier name');
+			console.log(data);
 			machine.occupier = data.FirstName + ' ' + data.LastName;
 		})
 		.error(function(){
@@ -366,8 +389,10 @@ app.directive('fsMachineBodyOccupied', function() {
 		controller: ['$scope', '$cookieStore', function($scope, $cookieStore){
 
 			// As we are using this scope for more than one directive
-			if ($scope.machine.Status === MACHINE_STATUS_OCCUPIED) {
+			if ($scope.machine.occupied) {
 				
+				console.log('Machine occupied, set up user');
+
 				var user = {};
 				user.Admin = $cookieStore.get('Admin');
 				user.Staff = $cookieStore.get('Staff');

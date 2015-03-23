@@ -35,10 +35,8 @@ angular.module('fabsmith.login', ['ngRoute', 'ngCookies'])
 					method: 'GET',
 					url: '/api/users/' + data.UserId
 				})
-				.success(function(data){
-					console.log('Got user data');
-					$scope.$emit('user-login', data);
-					$location.path('/machines');
+				.success(function(userData){
+					$scope.onUserDataLoaded(userData);
 				})
 				.error(function(data, status){
 					console.log('Status: ' + status);
@@ -52,6 +50,39 @@ angular.module('fabsmith.login', ['ngRoute', 'ngCookies'])
 			console.log('fail code: ' + status);
 			toastr.error('Failed to log in');
 		});
+	};
+
+	$scope.onUserDataLoaded = function(userData){
+		console.log('Got user data');
+		console.log(userData);
+
+		// Get user roles
+		$http({
+			method: 'GET',
+			url: '/api/users/' + userData.Id + '/roles',
+			data: {
+				anticache: new Date().getTime()
+			}
+		})
+		.success(function(userRoles){
+			$scope.onUserRolesLoaded(userRoles, userData);
+		})
+		.error(function(data, status){
+			alert('Could not load user roles');
+		});
+	};
+
+	$scope.onUserRolesLoaded = function(userRoles, userData){
+		console.log('Got user roles');
+		console.log(userRoles);
+
+		// Merge user data with the roles
+		userData = _.merge(userData, userRoles); 
+		console.log('Merged user data');
+		console.log(userData);
+
+		$scope.$emit('user-login', userData);
+		$location.path('/machines');
 	};
 
 	// Make the main controller scope accessible from outside

@@ -21,6 +21,7 @@
 		"md5": false, 
 		"alert": false, 
 		"inject": false,
-		"toastr": false
+		"toastr": false,
+		"_": false
 	}
 }
