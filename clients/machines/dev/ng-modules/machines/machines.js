@@ -48,9 +48,6 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 	});
 
 	$scope.onMachinesLoaded = function(machines){
-
-		console.log(machines);
-
 		if (machines.length <= 0) {
 			alert('There are no machines available for you');
 		} else if (machines.length > 0) {
@@ -76,7 +73,6 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 	};
 
 	$scope.onActivationsLoaded = function(activations, machines){
-		console.log(activations);
 
 		// Got activations
 		// Add status vars to machines
@@ -165,9 +161,6 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 	$scope.resetTimer();
 
 	$scope.getOccupierName = function(machine, userId) {
-		console.log('Get occupier name');
-		console.log(machine);
-		console.log(userId);
 		$http({
 			method: 'GET',
 			url: '/api/users/' + userId + '/name',
@@ -176,8 +169,6 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 			}
 		})
 		.success(function(data){
-			console.log('Got occupier name');
-			console.log(data);
 			machine.occupier = data.FirstName + ' ' + data.LastName;
 		})
 		.error(function(){
@@ -200,7 +191,6 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 
 	// Activate a machine by the currenty logged in user
 	$scope.activate = function(machineId) {
-		console.log('Activate ' + machineId);
 		$scope.resetTimer();
 		$scope.showGlobalLoader();
 		$http({
@@ -253,7 +243,6 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 			$scope.deactivate(machine);
 		}, function () {
 			$scope.resetTimer();
-			console.log('Return to normal');
 		});
 	};
 
@@ -311,9 +300,6 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 	// TODO: Remove the angular-ui-bootstrap dependency ans substitute with 
 	//       plain Bootstrap HTML. Current solution causes path problems.
 	$scope.openDeactivateModal = function() {
-
-		console.log('show modal');
-
 		var modalInstance = $modal.open({
 			backdrop: false,
 			templateUrl: 'ng-modules/machines/deactivate-modal.html?v1',
@@ -390,9 +376,6 @@ app.directive('fsMachineBodyOccupied', function() {
 
 			// As we are using this scope for more than one directive
 			if ($scope.machine.occupied) {
-				
-				console.log('Machine occupied, set up user');
-
 				var user = {};
 				user.Admin = $cookieStore.get('Admin');
 				user.Staff = $cookieStore.get('Staff');
@@ -423,12 +406,10 @@ app.directive('fsMachineBodyUnavailable', function() {
 app.controller('DeactivateModalCtrl', function ($scope, $modalInstance) {
 
   $scope.proceed = function () {
-  	console.log('Log out and deactivate');
     $modalInstance.close('eh');
   };
 
   $scope.cancel = function () {
-  	console.log('cancel');
     $modalInstance.dismiss('cancel');
   };
 
