@@ -2,9 +2,7 @@
 package controllers
 
 import (
-	"errors"
 	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/orm"
 	"github.com/kr15h/fabsmith/models"
 )
 
@@ -37,50 +35,6 @@ func NewErrorResponse() *ErrorResponse {
 	return &ErrorResponse{Status: "error"}
 }
 
-// Makes use of ErrorResponse struct, responds with simple error message JSON
-func (this *Controller) serveErrorResponse(errorMessage string) {
-	errorResponse := NewErrorResponse()
-	errorResponse.Message = errorMessage
-	this.Data["json"] = errorResponse
-	this.ServeJson()
-}
-
-// Struct for simple "created" response: {"status":"created", "id":"created_id"}
-type CreatedResponse struct {
-	Status string
-	Id     int
-}
-
-// Creates new CreatedResponse object with Status:"created" already set
-func NewCreatedResponse() *CreatedResponse {
-	return &CreatedResponse{Status: "created"}
-}
-
-// Serve created response with created element ID
-func (this *Controller) serveCreatedResponse(createdId int) {
-	createdResponse := NewCreatedResponse()
-	createdResponse.Id = createdId
-	this.Data["json"] = createdResponse
-	this.ServeJson()
-}
-
-// Struct for simple "ok" JSON response {"status":"ok"}
-type OkResponse struct {
-	Status string
-}
-
-// Returns sible OkResponse instance with Status:"ok" set
-func NewOkResponse() *OkResponse {
-	return &OkResponse{Status: "ok"}
-}
-
-// Serves JSON OK message {"status":"ok"}
-func (this *Controller) serveOkResponse() {
-	okResponse := NewOkResponse()
-	this.Data["json"] = okResponse
-	this.ServeJson()
-}
-
 // Checks if user is logged in before sending out any data, responds with
 // "Not logged in" error if user not logged in
 func (this *Controller) Prepare() {
@@ -90,46 +44,9 @@ func (this *Controller) Prepare() {
 	}
 }
 
-// Return user ID
-func (this *Controller) getSessionUserId() (int64, error) {
-	userId := this.GetSession(SESSION_FIELD_NAME_USER_ID)
-	if userId == nil {
-		beego.Critical("Could not get session user ID")
-		return 0, errors.New("Session user ID not set")
-	}
-	return userId.(int64), nil
-}
-
-// Get user data from database by user ID or if it is not given,
-// by session user ID
-func (this *Controller) getUser(userIds ...int64) (models.User, error) {
-	var userId int64
-	var err error
-	if len(userIds) == 0 {
-		userId, err = this.getSessionUserId()
-		if err != nil {
-			return models.User{}, err
-		}
-	} else if len(userIds) == 1 {
-		userId = userIds[0]
-	} else {
-		beego.Critical("Wrong argument count")
-		return models.User{}, errors.New("Invalid argument count")
-	}
-	beego.Trace("Attempt to get user row for user ID", userId)
-	userModel := models.User{Id: userId}
-	o := orm.NewOrm()
-	err = o.Read(&userModel)
-	if err != nil {
-		beego.Critical("Could not get user data from DB:", err)
-		return models.User{}, err
-	}
-	return userModel, nil
-}
-
 // Return true if user is admin, if no args are passed, uses session user ID,
 // if single user ID is passed, checks the passed one. Fails otherwise.
-func (this *Controller) isAdmin(userIds ...int64) bool {
+func (this *Controller) IsAdmin(userIds ...int64) bool {
 	var userId int64
 	var err error
 	if len(userIds) == 0 {
@@ -153,7 +70,7 @@ func (this *Controller) isAdmin(userIds ...int64) bool {
 
 // Return true if user is staff, if no args are passed, uses session user ID,
 // if single user ID is passed, checks the passed one. Fails otherwise.
-func (this *Controller) isStaff(userIds ...int64) bool {
+func (this *Controller) IsStaff(userIds ...int64) bool {
 	var userId int64
 	var err error
 	if len(userIds) == 0 {
