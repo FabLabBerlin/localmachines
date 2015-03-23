@@ -25,8 +25,118 @@ app.controller('MachinesCtrl',
 ['$scope', '$http', '$location', '$route', '$cookieStore', '$modal', 
 function($scope, $http, $location, $route, $cookieStore, $modal) {
 
-	// Show logged user name
 	$scope.userFullName = $cookieStore.get('FirstName') + ' ' + $cookieStore.get('LastName');
+	$scope.machines = [];
+
+	// Attempt to get logged user machines
+	$http({
+		method: 'GET',
+		url: '/api/users/' + $cookieStore.get('Id') + '/machines',
+		params: {
+			anticache: new Date().getTime()
+		}
+	})
+	.success(function(machines){
+		$scope.onMachinesLoaded(machines);
+	})
+	.error(function(data, status) {
+		if (status === 401) {
+			alert('Not authorized');
+		} else {
+			alert('Error loading machines');
+		}
+	});
+
+	$scope.onMachinesLoaded = function(machines){
+
+		console.log(machines);
+
+		if (machines.length <= 0) {
+			alert('There are no machines available for you');
+		} else if (machines.length > 0) {
+
+			// Machine data alone is not enough - we need to get active activations
+			// to be able to tell who is using what machine
+			$http({
+				method: 'GET',
+				url: '/api/activations/active',
+				params: {
+					anticache: new Date().getTime()
+				}
+			})
+			.success(function(activations){
+				$scope.onActivationsLoaded(activations, machines);
+			})
+			.error(function(data, status){
+				alert('Failed to load active activations');
+			});
+		} else {
+			alert('Error loading machines');
+		}
+	};
+
+	$scope.onActivationsLoaded = function(activations, machines){
+		console.log(activations);
+
+		// Got activations
+		// Add status vars to machines
+		for (var machinesIter = 0; machinesIter < machines.length; machinesIter++) {
+			
+			// TODO: figure out simpler way for indicating machine status
+			machines[machinesIter].available = false;
+			machines[machinesIter].used = false;
+			machines[machinesIter].occupied = false;
+			machines[machinesIter].unavailable = true;
+
+			if (machines[machinesIter].Available) {
+				machines[machinesIter].available = true;
+				machines[machinesIter].unavailable = false;
+			} else {
+				
+				// If machine is not available it means that
+				// it is either occupied by someone else, unavailable or used by the user logged
+				for (var activationsIter = 0; activationsIter < activations.length; activationsIter++) {
+					if (activations[activationsIter].MachineId === machines[machinesIter].Id) {
+						if ($cookieStore.get('Id') === activations[activationsIter].UserId) {
+
+							// Machine is being used by logged user
+							machines[machinesIter].used = true;
+							machines[machinesIter].unavailable = false;
+
+							// We need to calculate elapsed activation seconds
+							// from the saved activation GMT time
+							var activationStartTime = Date.parse(activations[activationsIter].TimeStart);
+							var timeNow = Date.now();
+							var activationElapsedTime = timeNow - activationStartTime;
+							activationElapsedTime = Math.round(activationElapsedTime / 1000);
+							machines[machinesIter].ActivationSecondsElapsed = activationElapsedTime;
+
+							// Assign other activation related data to the machine object
+							machines[machinesIter].OccupiedByUserId = activations[activationsIter].UserId;
+							machines[machinesIter].ActivationId = activations[activationsIter].Id;
+
+							// What we also need is to start the counter interval
+							// Start timer for elapsed time
+							machines[machinesIter].activationInterval = 
+								setInterval($scope.updateElapsedTime, 1000, machinesIter);
+
+
+						} else {
+
+							// Machine is being used by someone else
+							machines[machinesIter].occupied = true;
+							machines[machinesIter].unavailable = false;
+
+							// Get user name
+							$scope.getOccupierName(machines[machinesIter], activations[activationsIter].UserId);
+						}
+					}
+				} // for activations
+			} // if machine available else
+		} // for machines
+
+		$scope.machines = machines;
+	};
 
 	// Configure timer
 	$scope.resetTimer = function() {
@@ -35,17 +145,6 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 		$scope.$broadcast('timer-start');
 	};
 	$scope.resetTimer();
-
-	$scope.showGlobalLoader = function() {
-		$('#loader-global').removeClass('hidden');
-	};
-
-	$scope.hideGlobalLoader = function() {
-		$('#loader-global').addClass('hidden');
-	};
-
-	// Initialize the machines array
-	$scope.machines = [];
 
 	$scope.getOccupierName = function(machine, userId) {
 		$http({
@@ -63,110 +162,13 @@ function($scope, $http, $location, $route, $cookieStore, $modal) {
 		});
 	};
 
-	// Get current user machines
-	$http({
-		method: 'GET',
-		url: '/api/users/' + $cookieStore.get('Id') + '/machines',
-		params: {
-			anticache: new Date().getTime()
-		}
-	})
-	.success(function(machines) {
-		console.log(machines);
-		if (machines.length <= 0) {
-			alert('There are no machines available for you');
-		} else if (machines.length > 0) {
+	$scope.showGlobalLoader = function() {
+		$('#loader-global').removeClass('hidden');
+	};
 
-		// Got machines
-		// Get activations
-		$http({
-			method: 'GET',
-			url: '/api/activations/active',
-			params: {
-				anticache: new Date().getTime()
-			}
-		})
-		.success(function(activations){
-			
-			console.log(activations);
-
-			// Got activations
-			// Add status vars to machines
-			for (var machinesIter = 0; machinesIter < machines.length; machinesIter++) {
-				
-				// TODO: figure out simpler way for indicating machine status
-				machines[machinesIter].available = false;
-				machines[machinesIter].used = false;
-				machines[machinesIter].occupied = false;
-				machines[machinesIter].unavailable = true;
-
-				if (machines[machinesIter].Available) {
-					machines[machinesIter].available = true;
-					machines[machinesIter].unavailable = false;
-				} else {
-					
-					// If machine is not available it means that
-					// it is either occupied by someone else, unavailable or used by the user logged
-					for (var activationsIter = 0; activationsIter < activations.length; activationsIter++) {
-
-						var activation = activations[activationsIter];
-						
-						if (activations[activationsIter].MachineId === machines[machinesIter].Id) {
-							if ($cookieStore.get('Id') === activations[activationsIter].UserId) {
-
-								// Machine is being used by logged user
-								machines[machinesIter].used = true;
-								machines[machinesIter].unavailable = false;
-
-								// We need to calculate elapsed activation seconds
-								// from the saved activation GMT time
-								var activationStartTime = Date.parse(activation.TimeStart);
-								var timeNow = Date.now();
-								var activationElapsedTime = timeNow - activationStartTime;
-								activationElapsedTime = Math.round(activationElapsedTime / 1000);
-								machines[machinesIter].ActivationSecondsElapsed = activationElapsedTime;
-
-								// Assign other activation related data to the machine object
-								machines[machinesIter].OccupiedByUserId = activation.UserId;
-								machines[machinesIter].ActivationId = activation.Id;
-
-								// What we also need is to start the counter interval
-								// Start timer for elapsed time
-								machines[machinesIter].activationInterval = 
-									setInterval($scope.updateElapsedTime, 1000, machinesIter);
-
-
-							} else {
-
-								// Machine is being used by someone else
-								machines[machinesIter].occupied = true;
-								machines[machinesIter].unavailable = false;
-
-								// Get user name
-								$scope.getOccupierName(machines[machinesIter], activations[activationsIter].UserId);
-							}
-
-						}
-					} // for activations
-				} // if machine available else
-			} // for machines
-
-			$scope.machines = machines;
-		})
-		.error(function(data, status){
-			alert('Failed to load active activations');
-		});
-		} else {
-			alert('Error loading machines');
-		}
-	})
-	.error(function(data, status) {
-		if (status === 401) {
-			alert('Not authorized');
-		} else {
-			alert('Error loading machines');
-		}
-	});
+	$scope.hideGlobalLoader = function() {
+		$('#loader-global').addClass('hidden');
+	};
 
 	$scope.updateElapsedTime = function(machineIter) {
 		$scope.machines[machineIter].ActivationSecondsElapsed++;
