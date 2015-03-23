@@ -127,54 +127,25 @@ func (this *Controller) getUser(userIds ...int64) (models.User, error) {
 	return userModel, nil
 }
 
-// Returns user roles model for the currently logged in user
-func (this *Controller) getUserRoles(userIds ...int64) (models.UserRoles, error) {
-	var userId int64
-	var err error
-	if len(userIds) == 0 {
-		userId, err = this.getSessionUserId()
-		if err != nil {
-			return models.UserRoles{}, err
-		}
-	} else if len(userIds) == 1 {
-		userId = userIds[0]
-	} else {
-		beego.Critical("Wrong argument count")
-		return models.UserRoles{}, err
-	}
-	beego.Trace("Attempt to get user roles for user id", userId)
-	rolesModel := models.UserRoles{UserId: userId}
-	o := orm.NewOrm()
-	err = o.Read(&rolesModel)
-	if err != nil {
-		beego.Critical("Could not get roles model from DB:", err)
-		return models.UserRoles{}, err
-	}
-	return rolesModel, nil
-}
-
 // Return true if user is admin, if no args are passed, uses session user ID,
 // if single user ID is passed, checks the passed one. Fails otherwise.
 func (this *Controller) isAdmin(userIds ...int64) bool {
 	var userId int64
 	var err error
 	if len(userIds) == 0 {
-		userId, err = this.getSessionUserId()
-		if err != nil {
-			return false
-		}
+		userId = this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
 	} else if len(userIds) == 1 {
 		userId = userIds[0]
 	} else {
-		beego.Critical("Expecting single or no value as input")
+		beego.Error("Expecting single or no value as input")
 		return false
 	}
-	var rolesModel models.UserRoles
-	rolesModel, err = this.getUserRoles(userId)
+	var roles *models.UserRoles
+	roles, err = models.GetUserRoles(userId)
 	if err != nil {
 		return false
 	}
-	if rolesModel.Admin {
+	if roles.Admin {
 		return true
 	}
 	return false
@@ -186,22 +157,19 @@ func (this *Controller) isStaff(userIds ...int64) bool {
 	var userId int64
 	var err error
 	if len(userIds) == 0 {
-		userId, err = this.getSessionUserId()
-		if err != nil {
-			return false
-		}
+		userId = this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
 	} else if len(userIds) == 1 {
 		userId = userIds[0]
 	} else {
-		beego.Critical("Expecting single or no value as input")
+		beego.Error("Expecting single or no value as input")
 		return false
 	}
-	var rolesModel models.UserRoles
-	rolesModel, err = this.getUserRoles(userId)
+	var roles *models.UserRoles
+	roles, err = models.GetUserRoles(userId)
 	if err != nil {
 		return false
 	}
-	if rolesModel.Staff {
+	if roles.Staff {
 		return true
 	}
 	return false
