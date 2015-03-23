@@ -16,6 +16,7 @@
     "modernizr": "~2.8.3",
     "webfontloader": "~1.5.11",
     "angular-bootstrap": "~0.12.0",
-    "angular-ui-bootstrap": "~0.12.0"
+    "angular-ui-bootstrap": "~0.12.0",
+    "lodash": "~3.5.0"
   }
 }
