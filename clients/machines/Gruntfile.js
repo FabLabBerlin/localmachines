@@ -32,6 +32,7 @@ module.exports = function (grunt) {
 					// we actually need
 					'prod/assets/css/app.min.css': [
 						'dev/bower_components/bootstrap/less/bootstrap.less',
+						'dev/bower_components/font-awesome/less/font-awesome.less',
 						'dev/bower_components/toastr/toastr.less',
 						'dev/assets/less/main.less'
 					]
@@ -101,6 +102,11 @@ module.exports = function (grunt) {
 				// Copy machines files
 				{
 					src: 'dev/bower_components/bootstrap/fonts/*',
+					dest: 'prod/assets/fonts/',
+					expand: true,
+					flatten: true
+				}, {
+					src: 'dev/bower_components/font-awesome/fonts/*',
 					dest: 'prod/assets/fonts/',
 					expand: true,
 					flatten: true
