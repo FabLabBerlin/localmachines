@@ -17,6 +17,7 @@
     "toastr": "*",
     "webfontloader": "~1.5.11",
     "angular-bootstrap": "~0.12.0",
-    "angular-ui-bootstrap": "~0.12.0"
+    "angular-ui-bootstrap": "~0.12.0",
+    "font-awesome": "~4.3.0"
   }
 }
