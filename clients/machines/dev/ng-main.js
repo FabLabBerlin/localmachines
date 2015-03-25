@@ -79,7 +79,10 @@ app.config(['$httpProvider', function($httpProvider) {
 
 // Main controller, checks if user logged in
 app.controller('MainCtrl', ['$scope', '$http', '$location', '$cookieStore', '$cookies', 
-    function($scope, $http, $location, $cookieStore, $cookies){
+function($scope, $http, $location, $cookieStore, $cookies){
+
+    // Confixure VEX dialog theme
+    vex.defaultOptions.className = 'vex-theme-plain';
 
     // Store user data on user login
     $scope.putUserData = function(data) {
