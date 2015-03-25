@@ -22,6 +22,7 @@
 		"alert": false, 
 		"inject": false,
 		"toastr": false,
-		"_": false
+		"_": false,
+		"vex": false
 	}
 }
