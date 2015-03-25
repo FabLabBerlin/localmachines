@@ -23,6 +23,7 @@
 		"confirm": false,
 		"inject": false,
 		"prompt": false,
-		"toastr": false
+		"toastr": false,
+		"vex": false
 	}
 }
