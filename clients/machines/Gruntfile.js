@@ -34,6 +34,8 @@ module.exports = function (grunt) {
 						'dev/bower_components/bootstrap/less/bootstrap.less',
 						'dev/bower_components/font-awesome/less/font-awesome.less',
 						'dev/bower_components/toastr/toastr.less',
+						'dev/bower_components/vex/css/vex.css',
+						'dev/bower_components/vex/css/vex-theme-plain.css',
 						'dev/assets/less/main.less'
 					]
 				},
@@ -51,6 +53,7 @@ module.exports = function (grunt) {
 						'dev/assets/js/ie10-viewport-bug-workaround.js',
 						'dev/bower_components/jquery/dist/jquery.js',
 						'dev/bower_components/lodash/lodash.js',
+						'dev/bower_components/vex/js/vex.combined.min.js',
 						'dev/bower_components/angular/angular.js',
 						'dev/bower_components/angular-route/angular-route.js',
 						'dev/bower_components/angular-timer/dist/angular-timer.min.js',
