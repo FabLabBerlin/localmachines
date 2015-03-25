@@ -67,7 +67,18 @@ app.config(['$httpProvider', function($httpProvider) {
 
 // Main controller, checks if user logged in
 app.controller('MainCtrl', ['$scope', '$http', '$location', '$cookieStore', '$cookies', 
-	function($scope, $http, $location, $cookieStore, $cookies){
+function($scope, $http, $location, $cookieStore, $cookies){
+
+	// Configure vex theme
+	vex.defaultOptions.className = 'vex-theme-plain';
+
+	// Test vex
+	vex.dialog.confirm({
+  		message: 'Are you absolutely sure you want to destroy the alien planet?',
+  		callback: function(value) {
+    		return console.log(value ? 'Successfully destroyed the planet.' : 'Chicken.');
+  		}
+	});
 
 	// Store user data on user login
 	$scope.putUserData = function(data) {
