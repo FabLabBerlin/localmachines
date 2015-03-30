@@ -1,7 +1,7 @@
 (function(){
 
 'use strict';
-var app = angular.module('fabsmith.backoffice.user', ['ngRoute', 'ngCookies']);
+var app = angular.module('fabsmith.admin.user', ['ngRoute', 'ngCookies']);
 
 app.config(['$routeProvider', function($routeProvider) {
 	$routeProvider.when('/users/:userId', {
