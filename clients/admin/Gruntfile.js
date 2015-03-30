@@ -81,7 +81,8 @@ module.exports = function (grunt) {
 						'dev/ng-modules/mainmenu/mainmenu.js',
 						'dev/ng-modules/user/user.js',
 						'dev/ng-modules/activations/activations.js',
-						'dev/ng-modules/machines/machines.js'
+						'dev/ng-modules/machines/machines.js',
+						'dev/ng-modules/memberships/memberships.js'
 					]
 				}
 			}
@@ -155,6 +156,11 @@ module.exports = function (grunt) {
 				}, {
 					src: 'dev/ng-modules/machines/machines.html', 
 					dest: 'prod/ng-modules/machines/',
+					expand: true,
+					flatten: true
+				}, {
+					src: 'dev/ng-modules/memberships/memberships.html', 
+					dest: 'prod/ng-modules/memberships/',
 					expand: true,
 					flatten: true
 				}, {
