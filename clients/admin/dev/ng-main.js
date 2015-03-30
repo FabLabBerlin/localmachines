@@ -7,7 +7,7 @@ var app = angular.module('fabsmith', [
   'ngRoute',
   'fabsmith.admin.login',
   'fabsmith.admin.dashboard',
-  'fabsmith.backoffice.mainmenu',
+  'fabsmith.admin.mainmenu',
   'fabsmith.backoffice.user',
   'fabsmith.admin.activations',
   'fabsmith.admin.machines',
