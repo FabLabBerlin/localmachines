@@ -313,3 +313,22 @@ header {
 footer {
   margin-top: 40px;
 }
+.twitter-typeahead {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+}
+.tt-dropdown-menu {
+  background: #eeeeee;
+}
+.tt-suggestion {
+  color: #4a4a4a;
+}
+.tt-highlight {
+  font-weight: bold;
+  color: #000000;
+}
+.tt-cursor {
+  background: #ffffff;
+}
