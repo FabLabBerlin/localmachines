@@ -12,6 +12,7 @@ var app = angular.module('fabsmith', [
   'fabsmith.admin.activations',
   'fabsmith.admin.machines',
   'fabsmith.admin.memberships',
+  'fabsmith.admin.bookings',
   'fabsmith.version'
 ]);
 
