@@ -80,7 +80,8 @@ module.exports = function (grunt) {
 						'dev/ng-modules/login/login.js',
 						'dev/ng-modules/mainmenu/mainmenu.js',
 						'dev/ng-modules/user/user.js',
-						'dev/ng-modules/activations/activations.js'
+						'dev/ng-modules/activations/activations.js',
+						'dev/ng-modules/machines/machines.js'
 					]
 				}
 			}
@@ -149,6 +150,11 @@ module.exports = function (grunt) {
 				}, {
 					src: 'dev/ng-modules/activations/activations.html', 
 					dest: 'prod/ng-modules/activations/',
+					expand: true,
+					flatten: true
+				}, {
+					src: 'dev/ng-modules/machines/machines.html', 
+					dest: 'prod/ng-modules/machines/',
 					expand: true,
 					flatten: true
 				}, {
