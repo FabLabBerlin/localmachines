@@ -2,7 +2,7 @@
 
 'use strict';
 
-var app = angular.module('fabsmith.backoffice.login', ['ngRoute', 'ngCookies']);
+var app = angular.module('fabsmith.admin.login', ['ngRoute', 'ngCookies']);
 
 app.config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/login', {
