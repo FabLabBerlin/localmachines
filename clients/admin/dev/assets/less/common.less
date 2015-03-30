@@ -10,6 +10,7 @@ Edit this file to affect css styling and use Grunt tasks to compile it.
 
 @bg-color-default: white;
 @text-color-default: #4a4a4a;
+@navbar-background-color: #595959;
 
 body {
   padding-bottom: 40px;
@@ -188,7 +189,7 @@ li {
 }
 
 nav.navbar {
-  background-color: #595959;
+  background-color: @navbar-background-color;
   border-bottom: 2px solid black;
   height: 71px;
   padding-top: 10px;
@@ -204,6 +205,12 @@ nav.navbar .navbar-brand:hover {
 
 nav.navbar .navbar-nav > li > a {
   color: white;
+}
+
+.navbar-collapse {
+  position: relative;
+  z-index: 999;
+  background: @navbar-background-color;
 }
 
 /*

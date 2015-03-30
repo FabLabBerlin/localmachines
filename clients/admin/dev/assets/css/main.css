@@ -185,6 +185,11 @@ nav.navbar .navbar-brand:hover {
 nav.navbar .navbar-nav > li > a {
   color: white;
 }
+.navbar-collapse {
+  position: relative;
+  z-index: 999;
+  background: #595959;
+}
 /*
  * Dashboard Styling 
  */

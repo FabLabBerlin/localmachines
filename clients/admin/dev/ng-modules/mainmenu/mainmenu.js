@@ -12,8 +12,11 @@ app.directive('mainMenu', function() {
 	return {
 		templateUrl: 'ng-modules/mainmenu/mainmenu.html',
 		restrict: 'E',
-		controller: ['$scope', function($scope){
-			//
+		controller: ['$scope', '$element', function($scope, $element){
+			var links = $($element).find('a');
+			links.click(function(){
+				$($element).find('.navbar-collapse').collapse('hide');
+			});
 		}]
 	};
 });
