@@ -2,7 +2,7 @@
 
 'use strict';
 
-var app = angular.module('fabsmith.backoffice.mainmenu', ['ngRoute', 'ngCookies']);
+var app = angular.module('fabsmith.admin.mainmenu', ['ngRoute', 'ngCookies']);
 
 app.controller('MainMenuCtrl', ['$scope', '$http', '$location', function($scope, $http, $location) {
 	//
