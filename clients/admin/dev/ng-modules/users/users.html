@@ -1,0 +1,28 @@
+<div class="container-fluid">
+
+    <h1>Users</h1>
+
+    <table class="table table-striped table-hover table-bordered">
+        <thead class="ng-scope">
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th><span class="fa fa-edit text-primary"></span></th>
+            </tr>
+        </thead>
+        <tbody class="ng-scope">
+            <tr ng-repeat="user in users">
+                <td>{{user.FirstName}}</td>
+                <td>{{user.LastName}}</td>
+                <td>{{user.Username}}</td>
+                <td>{{user.Email}}</td>
+                <td><span class="fa fa-edit text-primary"></span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <button class="btn btn-primary pull-right" ng-click="addUser()"><span class="fa fa-plus"></span>&nbsp;Add User</button>
+
+</div> <!-- /container -->
