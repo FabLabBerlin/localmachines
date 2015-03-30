@@ -8,7 +8,7 @@ var app = angular.module('fabsmith', [
   'fabsmith.admin.login',
   'fabsmith.admin.dashboard',
   'fabsmith.admin.mainmenu',
-  'fabsmith.backoffice.user',
+  'fabsmith.admin.user',
   'fabsmith.admin.activations',
   'fabsmith.admin.machines',
   'fabsmith.admin.memberships',
