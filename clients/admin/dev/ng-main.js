@@ -10,6 +10,7 @@ var app = angular.module('fabsmith', [
   'fabsmith.backoffice.mainmenu',
   'fabsmith.backoffice.user',
   'fabsmith.admin.activations',
+  'fabsmith.admin.machines',
   'fabsmith.version'
 ]);
 
