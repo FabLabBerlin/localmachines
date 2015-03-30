@@ -13,6 +13,8 @@
             </tr>
         </thead>
         <tbody class="ng-scope">
+            <!-- For some reason directives with tr elements inside 
+                 do not work well in this (table) context.-->
             <tr ng-repeat="user in users">
                 <td>{{user.FirstName}}</td>
                 <td>{{user.LastName}}</td>
