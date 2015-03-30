@@ -84,7 +84,8 @@ module.exports = function (grunt) {
 						'dev/ng-modules/machines/machines.js',
 						'dev/ng-modules/memberships/memberships.js',
 						'dev/ng-modules/bookings/bookings.js',
-						'dev/ng-modules/invoices/invoices.js'
+						'dev/ng-modules/invoices/invoices.js',
+						'dev/ng-modules/users/users.js'
 					]
 				}
 			}
@@ -173,6 +174,11 @@ module.exports = function (grunt) {
 				}, {
 					src: 'dev/ng-modules/invoices/invoices.html', 
 					dest: 'prod/ng-modules/invoices/',
+					expand: true,
+					flatten: true
+				}, {
+					src: 'dev/ng-modules/users/users.html', 
+					dest: 'prod/ng-modules/users/',
 					expand: true,
 					flatten: true
 				}, {
