@@ -14,6 +14,7 @@ var app = angular.module('fabsmith', [
   'fabsmith.admin.memberships',
   'fabsmith.admin.bookings',
   'fabsmith.admin.invoices',
+  'fabsmith.admin.users',
   'fabsmith.version'
 ]);
 
@@ -73,6 +74,9 @@ app.config(['$httpProvider', function($httpProvider) {
 // Main controller, checks if user logged in
 app.controller('MainCtrl', ['$scope', '$http', '$location', '$cookieStore', '$cookies', 
  function($scope, $http, $location, $cookieStore, $cookies){
+
+ 	// Configure toastr default location
+ 	toastr.options.positionClass = 'toast-bottom-right';
 
 	// Configure vex theme
 	vex.defaultOptions.className = 'vex-theme-plain';
