@@ -5,7 +5,7 @@
 // Declare app level module which depends on views, and components
 var app = angular.module('fabsmith', [
   'ngRoute',
-  'fabsmith.backoffice.login',
+  'fabsmith.admin.login',
   'fabsmith.admin.dashboard',
   'fabsmith.backoffice.mainmenu',
   'fabsmith.backoffice.user',
