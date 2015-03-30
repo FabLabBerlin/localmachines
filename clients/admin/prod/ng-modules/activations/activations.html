@@ -1,53 +1,56 @@
-<div id="admin-activations" class="container">
+<div id="admin-activations" class="container-fluid">
 
     <h1>Activations</h1>
 
-    <table class="table">
-        <tr>
-            <th>Machine</th>
-            <th>Start Time</th>
-            <th>End Time</th>
-            <th>User</th>
-            <th>&nbsp;</th>
-        </tr>
-        <tr>
-            <td>&nbsp;</td>
-            <td>
-                <!-- Start date range picker -->
-                <input type="text" class="form-control datepicker">
-            </td>
-            <td>
-                <!-- End date range picker -->
-                <input type="text" class="form-control datepicker">
-            </td>
-            <td>
-                <!-- Autocomplete input -->
-                <input type="text" size="15" class="form-control typeahead" placeholder="User">
-            </td>
-            <td>&nbsp;</td>
-        </tr>
-        <tr>
-            <td>Laser Cutter</td>
-            <td>2015-03-20 12:45</td>
-            <td>2015-03-20 14:00</td>
-            <td>Igor Stiprais (igorek)</td>
-            <td><span class="fa fa-close text-danger"></span></td>
-        </tr>
-        <tr>
-            <td>3D Printer</td>
-            <td>2015-02-20 12:45</td>
-            <td>2015-02-21 06:15</td>
-            <td>Zima Dolgaja (dolgusha)</td>
-            <td><span class="fa fa-close text-danger"></span></td>
-        </tr>
-        <tr>
-            <td>CNC Machine</td>
-            <td>2015-02-15 09:00</td>
-            <td>2015-02-15 11:15</td>
-            <td>Konrad Strom (strombear)</td>
-            <td><span class="fa fa-close text-danger"></span></td>
-        </tr>
-
+    <table class="table table-striped table-hover table-bordered">
+        <thead>
+            <tr>
+                <th>Machine</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>User</th>
+                <th>&nbsp;</th>
+            </tr>
+            <tr>
+                <th>&nbsp;</th>
+                <th>
+                    <!-- Start date range picker -->
+                    <input type="text" class="form-control datepicker">
+                </th>
+                <th>
+                    <!-- End date range picker -->
+                    <input type="text" class="form-control datepicker">
+                </th>
+                <th>
+                    <!-- Autocomplete input -->
+                    <input type="text" size="15" class="form-control typeahead" placeholder="User">
+                </th>
+                <th>&nbsp;</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Laser Cutter</td>
+                <td>2015-03-20 12:45</td>
+                <td>2015-03-20 14:00</td>
+                <td>Igor Stiprais (igorek)</td>
+                <td><span class="fa fa-close text-danger"></span></td>
+            </tr>
+            <tr>
+                <td>3D Printer</td>
+                <td>2015-02-20 12:45</td>
+                <td>2015-02-21 06:15</td>
+                <td>Zima Dolgaja (dolgusha)</td>
+                <td><span class="fa fa-close text-danger"></span></td>
+            </tr>
+            <tr>
+                <td>CNC Machine</td>
+                <td>2015-02-15 09:00</td>
+                <td>2015-02-15 11:15</td>
+                <td>Konrad Strom (strombear)</td>
+                <td><span class="fa fa-close text-danger"></span></td>
+            </tr>
+        </tbody>
     </table>
 
 </div> <!-- /container -->
