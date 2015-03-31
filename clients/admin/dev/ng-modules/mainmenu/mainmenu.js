@@ -15,7 +15,14 @@ app.directive('mainMenu', function() {
 		controller: ['$scope', '$element', function($scope, $element){
 			var links = $($element).find('a');
 			links.click(function(){
-				$($element).find('.navbar-collapse').collapse('hide');
+
+				// The float CSS parameter is changed to 'none' whenever the
+				// window width is below Bootstrap grid breakpoint (768px)
+				var navfloat = $('.navbar-header').css('float');
+				if (navfloat === 'none') {
+					console.log('collapse menu');
+					$($element).find('.navbar-collapse').collapse('hide');
+				}				
 			});
 		}]
 	};

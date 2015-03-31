@@ -191,8 +191,6 @@ li {
 nav.navbar {
   background-color: @navbar-background-color;
   border-bottom: 2px solid black;
-  height: 71px;
-  padding-top: 10px;
 }
 
 nav.navbar .navbar-brand {
@@ -203,13 +201,22 @@ nav.navbar .navbar-brand:hover {
   color: #333333;
 }
 
+nav.navbar .navbar-brand {
+  padding-left: 15px;
+  padding-top: 10px;
+}
+
+nav.navbar .navbar-nav > li {
+  margin: 0;
+}
+
 nav.navbar .navbar-nav > li > a {
   color: white;
 }
 
 .navbar-collapse {
-  position: relative;
-  z-index: 999;
+  --position: relative;
+  --z-index: 999;
   background: @navbar-background-color;
 }
 
