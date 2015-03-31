@@ -20,7 +20,6 @@ app.directive('mainMenu', function() {
 				// window width is below Bootstrap grid breakpoint (768px)
 				var navfloat = $('.navbar-header').css('float');
 				if (navfloat === 'none') {
-					console.log('collapse menu');
 					$($element).find('.navbar-collapse').collapse('hide');
 				}				
 			});
