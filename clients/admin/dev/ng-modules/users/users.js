@@ -52,6 +52,9 @@ app.controller('UsersCtrl', ['$scope', '$http', '$location',
         }
     };
 
+    $scope.editUser = function(userId) {
+        $location.path('/users/' + userId);
+    };
 }]); // app.controller
 
 app.directive('userListItem', ['$location', function($location) {
@@ -59,9 +62,7 @@ app.directive('userListItem', ['$location', function($location) {
         templateUrl: 'ng-modules/users/user-list-item.html',
         restrict: 'E',
         controller: ['$scope', '$element', function($scope, $element) {
-            $scope.editUser = function(userId) {
-                $location.path('/users/' + userId);
-            };
+
         }]
     };
 }]);

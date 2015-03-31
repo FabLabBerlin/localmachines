@@ -219,7 +219,10 @@ header {
   text-align: right;
 }
 #adm-dashboard {
-  background: #ffffff;
+  background: white;
+}
+.adm-edit-entry {
+  cursor: pointer;
 }
 .machine {
   background-image: linear-gradient(180deg, #eeeeee 0%, #ffffff 100%);

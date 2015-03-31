@@ -73,7 +73,7 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', func
 
 	$scope.cancel = function() {
 		if (confirm('All changes will be discarded, click ok to continue.')) {
-			$location.path('/dashboard');
+			$location.path('/users');
 		}
 	};
 
@@ -86,7 +86,7 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', func
 			})
 			.success(function(data) {
 				toastr.info('User deleted');
-				$location.path('/dashboard');
+				$location.path('/users');
 			})
 			.error(function() {
 				toastr.error('Error while trying to delete user');
