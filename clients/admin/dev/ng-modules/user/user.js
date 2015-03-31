@@ -95,6 +95,29 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', func
 			toastr.warning('Delete User canceled.');
 		}
 	};
+
+	$scope.saveUser = function() {
+		console.log('user model:', $scope.user);
+		$http({
+			method: 'PUT',
+			url: '/api/users/' + $scope.user.Id,
+			headers: {'Content-Type': 'application/json' },
+			data: {
+				User: $scope.user,
+				UserRoles: $scope.userRoles
+			},
+			transformRequest: function(data) {
+				console.log('data to send:', data);
+				return JSON.stringify(data);
+			}
+		})
+		.success(function() {
+			toastr.info('Changes saved.');
+		})
+		.error(function() {
+			toastr.error('Error while trying to save changes');
+		});
+	};
 }]); // app.controller
 
 })(); // closure

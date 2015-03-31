@@ -6,13 +6,13 @@
 			<div class="row">
 				<label>
 					First Name
-					<input type="text" class="form-control" placeholder="Enter first name" value={{user.FirstName}}>
+					<input type="text" class="form-control" placeholder="Enter first name" ng-model="user.FirstName">
 				</label>
 			</div>
 			<div class="row">
 				<label>
 					E-Mail
-					<input type="text" class="form-control" placeholder="Enter E-Mail" value={{user.Email}}>
+					<input type="text" class="form-control" placeholder="Enter E-Mail" ng-model="user.Email">
 				</label>
 			</div>
 			<div class="row">
@@ -56,13 +56,13 @@
 			<div class="row">
 				<label>
 					Last Name
-					<input type="text" class="form-control" placeholder="Enter last name" value={{user.LastName}}>
+					<input type="text" class="form-control" placeholder="Enter last name" ng-model="user.LastName">
 				</label>
 			</div>
 			<div class="row">
 				<label>
 					Repeat E-Mail
-					<input type="text" class="form-control" placeholder="Enter E-Mail" value={{user.Email}}>
+					<input type="text" class="form-control" placeholder="Enter E-Mail" ng-model="user.Email">
 				</label>
 			</div>
 			<div class="row">
@@ -78,7 +78,7 @@
 			<div class="row">
 				<label>
 					Username
-					<input type="text" class="form-control" placeholder="Enter Username" value={{user.Username}}>
+					<input type="text" class="form-control" placeholder="Enter Username" ng-model="user.Username">
 				</label>
 			</div>
 			<div class="row">
@@ -125,7 +125,7 @@
 			<button class="btn btn-sm btn-warning btn-block" ng-click="cancel()">Cancel</button>
 		</div>
 		<div class="col-xs-3">
-			<button class="btn btn-sm btn-success btn-block">Submit</button>
+			<button class="btn btn-sm btn-success btn-block" ng-click="saveUser()">Save User</button>
 		</div>
 	</div>
 

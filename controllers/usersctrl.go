@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/kr15h/fabsmith/models"
@@ -187,7 +188,7 @@ func (this *UsersController) Get() {
 	this.ServeJson()
 }
 
-// @Title Get
+// @Title Delete
 // @Description delete user with uid
 // @Param	uid		path 	int	true		"User ID"
 // @Success 200
@@ -195,7 +196,8 @@ func (this *UsersController) Get() {
 // @Failure	401	Unauthorized
 // @router /:uid [delete]
 func (this *UsersController) Delete() {
-	if !this.IsAdmin() && !this.IsStaff() {
+	sid := this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
+	if (!this.IsAdmin(sid) && !this.IsStaff(sid)) {
 		beego.Error("Unauthorized attempt to delete user")
 		this.CustomAbort(401, "Unauthorized")
 	}
@@ -210,6 +212,45 @@ func (this *UsersController) Delete() {
 		beego.Error("Failed to delete user")
 		this.CustomAbort(403, "Failed to delete :uid")
 	}
+}
+
+type UserPutRequest struct {
+	User      models.User
+	UserRoles models.UserRoles
+}
+
+// @Title Put
+// @Description Update user with uid
+// @Param	uid		path 	int	true		"User ID"
+// @Success	200
+// @Failure	400	Variable message
+// @Failure	401	Unauthorized
+// @Failure	403	Variable message
+// @router /:uid [put]
+func (this *UsersController) Put() {
+	sid := this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
+	if !this.IsAdmin(sid) && !this.IsStaff(sid) {
+		beego.Error("Unauthorized attempt to delete user")
+		this.CustomAbort(401, "Unauthorized")
+	}
+
+	dec := json.NewDecoder(this.Ctx.Request.Body)
+	req := UserPutRequest{}
+	if err := dec.Decode(&req); err == nil {
+		beego.Info("req: ", req)
+	} else {
+		beego.Error("Failed to decode json")
+		this.CustomAbort(400, "Failed to decode json")
+	}
+	o := orm.NewOrm()
+	if _, err := o.Update(&req.User); err != nil {
+		beego.Error("Failed to update user")
+		this.CustomAbort(400, "Failed to update user")
+	}
+	/*if _, err := o.Update(&req.UserRoles); err != nil {
+		beego.Error("Failed to update user roles", err)
+		this.CustomAbort(400, "Failed to update user roles")
+	}*/
 }
 
 // @Title GetUserMachines
@@ -381,7 +422,11 @@ func (this *UsersController) GetUserRoles() {
 		}
 	}
 
-	userRoles, err = models.GetUserRoles(uid)
-	this.Data["json"] = userRoles
-	this.ServeJson()
+	if userRoles, err = models.GetUserRoles(uid); err == nil {
+		this.Data["json"] = userRoles
+		this.ServeJson()
+	} else {
+		beego.Error("Unable to retrieve user roles")
+		this.CustomAbort(500, "Internal Server Error")
+	}
 }
