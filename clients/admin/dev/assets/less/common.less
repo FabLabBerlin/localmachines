@@ -12,6 +12,10 @@ Edit this file to affect css styling and use Grunt tasks to compile it.
 @text-color-default: #4a4a4a;
 @navbar-background-color: #595959;
 
+@color-neutral: #A6A6A6;
+@color-primary: #A3CC52;
+@color-danger: #E66767;
+
 body {
   padding-bottom: 40px;
   background-color: @bg-color-default;
@@ -123,70 +127,46 @@ li {
   margin-top: -12px;
 }
 
-/*
- * Bootstrap overrides
- */
+/* Bootstrap overrides */
 
 .btn {
-  height: 50px;
-  border-radius: 8px;
-  border: 1px solid #B02F38;
-  border-radius: 8px;
-  font-weight: bold;
-  font-size: 15px;
-  color: #FFFFFF;
+  border-radius: 0;
+  border: none;
+}
+
+.btn-primary { background: @color-primary; }
+.btn-primary:hover { background: darken(@color-primary, 10%); }
+
+.btn-danger { background: @color-danger; }
+.btn-danger:hover { background: darken(@color-danger, 10%); }
+
+/* Add icon button missing in Bootstrap */
+
+.btn-ico, 
+.btn-ico:hover, 
+.btn-ico:active, 
+.btn-ico:focus, 
+.btn-ico:visited {
+  background: transparent;
+  /* Remove the default Bootstrap glow on button click */
+  outline:none !important;
+  box-shadow:none !important;
+}
+
+.btn-ico {
+  padding: 0;
+  font-size: 20px;
   line-height: 1;
 }
 
-.btn-lg {
-  height: 70px;
-  font-weight: bold;
-  font-size: 22px;
-  color: #FFFFFF;
-  line-height: 1;
-}
+.btn-ico { color: @color-neutral }
+.btn-ico:hover { color: darken(@color-neutral, 10%) }
 
-.btn-primary,
-.touch .btn-primary:hover,
-.touch .btn-primary:focus {
-  background: #61C5EA;
-  border: 1px solid #3998B2;
-}
+.btn-ico.btn-primary { color: @color-primary }
+.btn-ico.btn-primary:hover { color: darken(@color-primary, 10%) }
 
-.no-touch .btn-primary:hover,
-.no-touch .btn-primary:focus {
-  background: #3996B8;
-  color: #B3EBFF;
-  border: 1px solid #3998B2;
-}
-
-.btn-danger,
-.touch .btn-danger:hover,
-.touch .btn-danger:focus {
-  background: #E85459;
-  border: 1px solid #B03135;
-}
-
-.no-touch .btn-danger:hover,
-.no-touch .btn-danger:focus {
-  background: #B02F38;
-  border: 1px solid #B02F38;
-  color: #FF999C;
-}
-
-.btn-warning,
-.touch .btn-warning:hover,
-.touch .btn-warning:focus {
-  background: #FAE451;
-  border: 1px solid #D9C22B;
-}
-
-.no-touch .btn-warning:hover,
-.no-touch .btn-warning:focus {
-  background: #D9C22B;
-  border: 1px solid #D9C22B;
-  color: #FFF5B3;
-}
+.btn-ico.btn-danger { color: @color-danger }
+.btn-ico.btn-danger:hover { color: darken(@color-danger, 10%) }
 
 nav.navbar {
   background-color: @navbar-background-color;

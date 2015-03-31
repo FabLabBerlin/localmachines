@@ -115,60 +115,56 @@ li {
   margin-left: -12px;
   margin-top: -12px;
 }
-/*
- * Bootstrap overrides
- */
+/* Bootstrap overrides */
 .btn {
-  height: 50px;
-  border: 1px solid #B02F38;
-  border-radius: 8px;
-  font-weight: bold;
-  font-size: 15px;
-  color: #FFFFFF;
+  border-radius: 0;
+  border: none;
+}
+.btn-primary {
+  background: #a3cc52;
+}
+.btn-primary:hover {
+  background: #8ab536;
+}
+.btn-danger {
+  background: #e66767;
+}
+.btn-danger:hover {
+  background: #df3b3b;
+}
+/* Add icon button missing in Bootstrap */
+.btn-ico,
+.btn-ico:hover,
+.btn-ico:active,
+.btn-ico:focus,
+.btn-ico:visited {
+  background: transparent;
+  /* Remove the default Bootstrap glow on button click */
+  outline: none !important;
+  box-shadow: none !important;
+}
+.btn-ico {
+  padding: 0;
+  font-size: 20px;
   line-height: 1;
 }
-.btn-lg {
-  height: 70px;
-  font-weight: bold;
-  font-size: 22px;
-  color: #FFFFFF;
-  line-height: 1;
+.btn-ico {
+  color: #a6a6a6;
 }
-.btn-primary,
-.touch .btn-primary:hover,
-.touch .btn-primary:focus {
-  background: #61C5EA;
-  border: 1px solid #3998B2;
+.btn-ico:hover {
+  color: #8d8d8d;
 }
-.no-touch .btn-primary:hover,
-.no-touch .btn-primary:focus {
-  background: #3996B8;
-  color: #B3EBFF;
-  border: 1px solid #3998B2;
+.btn-ico.btn-primary {
+  color: #a3cc52;
 }
-.btn-danger,
-.touch .btn-danger:hover,
-.touch .btn-danger:focus {
-  background: #E85459;
-  border: 1px solid #B03135;
+.btn-ico.btn-primary:hover {
+  color: #8ab536;
 }
-.no-touch .btn-danger:hover,
-.no-touch .btn-danger:focus {
-  background: #B02F38;
-  border: 1px solid #B02F38;
-  color: #FF999C;
+.btn-ico.btn-danger {
+  color: #e66767;
 }
-.btn-warning,
-.touch .btn-warning:hover,
-.touch .btn-warning:focus {
-  background: #FAE451;
-  border: 1px solid #D9C22B;
-}
-.no-touch .btn-warning:hover,
-.no-touch .btn-warning:focus {
-  background: #D9C22B;
-  border: 1px solid #D9C22B;
-  color: #FFF5B3;
+.btn-ico.btn-danger:hover {
+  color: #df3b3b;
 }
 nav.navbar {
   background-color: #595959;
