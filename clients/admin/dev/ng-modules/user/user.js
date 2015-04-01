@@ -11,6 +11,9 @@ app.config(['$routeProvider', function($routeProvider) {
 }]); // app.config
 
 app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', function($scope, $routeParams, $http, $location) {
+	
+	$('.datepicker').pickadate();
+
 	$scope.user = {
 		Id: $routeParams.userId
 	};

@@ -117,11 +117,102 @@
 
   </div> <!-- /.row -->
 
+
+  <h2>User Memberships</h2>
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th>Membership Name</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th style="min-width:60px">&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Single Day Basic</td>
+        <td>2015-02-01</td>
+        <td>2015-02-02</td>
+        <td>
+          <div class="pull-right">
+            <button type="button" class="btn btn-primary btn-ico">
+              <i class="fa fa-edit"></i>
+            </button>
+            <button type="button" class="btn btn-danger btn-ico">
+              <i class="fa fa-close"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>Single Month Basic</td>
+        <td>2015-03-01</td>
+        <td>2015-03-31</td>
+        <td>
+          <div class="pull-right">
+            <button type="button" class="btn btn-primary btn-ico">
+              <i class="fa fa-edit"></i>
+            </button>
+            <button type="button" class="btn btn-danger btn-ico">
+              <i class="fa fa-close"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="row">
+    <div class="col-sm-3">
+      <div class="form-group">
+        <select class="form-control" id="user-select-membership" placeholder="Membership">
+          <!-- These have to be loaded via API -->
+          <option value="" selected disabled>Select Membership</option>
+          <option>Single Day Basic</option>
+          <option>Single Month Basic</option>
+          <option>6 Month Basic</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="col-sm-3">
+      <div class="form-group">
+        <div class="input-group">
+          <input class="form-control datepicker" placeholder="Start Date">
+          <div class="input-group-addon">
+            <i class="fa fa-calendar"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-3">
+      <div class="form-group">
+        <div class="input-group">
+          <input class="form-control datepicker" placeholder="End Date">
+          <div class="input-group-addon">
+            <i class="fa fa-calendar"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-3">
+      <button class="btn btn-primary btn-block" id="user-add-membership-btn">
+        <i class="fa fa-plus"></i>&nbsp;Add Membership
+      </button>
+    </div>
+  </div>
+
   <hr>
 
   <div class="pull-right">
-    <button class="btn btn-danger" ng-click="deleteUser()">Delete</button>
-    <button class="btn btn-primary" ng-click="saveUser()">Save User</button>
+    <button class="btn btn-danger btn-lg" ng-click="deleteUser()">
+      <i class="fa fa-trash-o"></i>&nbsp;Delete
+    </button>
+    <button class="btn btn-primary btn-lg" ng-click="saveUser()">
+      <i class="fa fa-save"></i>&nbsp;Save
+    </button>
   </div>
 
 </div> <!-- /container -->

@@ -39,6 +39,9 @@ li {
 .checkbox-inline label {
   font-weight: normal;
 }
+.input-group {
+  display: inline-table;
+}
 .machine-item,
 .activation-item {
   border-radius: 10px;
