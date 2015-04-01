@@ -36,6 +36,9 @@ li {
 .panel-title a {
   cursor: pointer;
 }
+.checkbox-inline label {
+  font-weight: normal;
+}
 .machine-item,
 .activation-item {
   border-radius: 10px;

@@ -1,132 +1,127 @@
-<div class="container">
+<div class="container-fluid">
 
-	<h1>User {{user.Username || user.Id}}</h1>
-	<div class="row">
-		<div class="col-md-3">
-			<div class="row">
-				<label>
-					First Name
-					<input type="text" class="form-control" placeholder="Enter first name" ng-model="user.FirstName">
-				</label>
-			</div>
-			<div class="row">
-				<label>
-					E-Mail
-					<input type="text" class="form-control" placeholder="Enter E-Mail" ng-model="user.Email">
-				</label>
-			</div>
-			<div class="row">
-				<h5>Roles</h5>
-				<div class="row">
-					<div class="col-xs-5">
-						<label>
-							<input type="checkbox" name="role" ng-model="userRoles.Admin">
-							Admin
-						</label>
-					</div>
-					<div class="col-xs-7">
-						Access/edit everything
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-xs-5">
-						<label>
-							<input type="checkbox" name="role" ng-model="userRoles.Staff">
-							Staff
-						</label>
-					</div>
-					<div class="col-xs-7">
-						Add/edit users
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-xs-5">
-						<label>
-							<input type="checkbox" name="role" ng-checked="userRoles.Member">
-							Member
-						</label>
-					</div>
-					<div class="col-xs-7">
-						No access to Back Office
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="col-md-3">
-			<div class="row">
-				<label>
-					Last Name
-					<input type="text" class="form-control" placeholder="Enter last name" ng-model="user.LastName">
-				</label>
-			</div>
-			<div class="row">
-				<label>
-					Repeat E-Mail
-					<input type="text" class="form-control" placeholder="Enter E-Mail" ng-model="user.Email">
-				</label>
-			</div>
-			<div class="row">
-				<h5>Machine Permissions</h5>
-				<div ng-repeat="userMachine in userMachines">
-					<label title="{{userMachine.Description}}">
-						<input checked type="checkbox"> {{userMachine.Name}}
-					</label>
-				</div>
-			</div>
-		</div>
-		<div class="col-md-6">
-			<div class="row">
-				<label>
-					Username
-					<input type="text" class="form-control" placeholder="Enter Username" ng-model="user.Username">
-				</label>
-			</div>
-			<div class="row">
-				<h5>User Status</h5>
-				Not registered
-			</div>
-			<div class="row">
-				<h5>User Rules</h5>
-				<table>
-					<thead>
-						<tr>
-							<th>Rule Name</th>
-							<th>Start Date</th>
-							<th>End Date</th>
-							<th>Options</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>Single Day Basic</td>
-							<td>2015-03-01</td>
-							<td>2015-03-02</td>
-							<td>Remove</td>
-						</tr>
-						<tr>
-							<td>Single Month Basic</td>
-							<td>2015-03-02</td>
-							<td>2015-04-02</td>
-							<td>Remove</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</div>
-	</div>
-	<hr>
-	<div class="row">
-		<div class="col-xs-3">
-		</div>
-		<div class="col-xs-3">
-			<button class="btn btn-sm btn-danger btn-block" ng-click="deleteUser()">Delete User</button>
-		</div>
-		<div class="col-xs-3">
-			<button class="btn btn-sm btn-warning btn-block" ng-click="cancel()">Cancel</button>
-		</div>
-		<div class="col-xs-3">
-			<button class="btn btn-sm btn-success btn-block" ng-click="saveUser()">Save User</button>
-		</div>
-	</div>
+  <h1>Edit User {{user.Username || user.Id}}</h1>
+
+  <hr>
+  
+  <div class="row">
+
+    <div class="col-sm-3">
+      <div class="form-group">
+        <label for="user-first-name">First Name</label>
+        <input id="user-first-name" type="text" class="form-control" 
+               placeholder="Enter first name" ng-model="user.FirstName">
+      </div>
+    </div>
+
+    <div class="col-sm-3">
+      <div class="form-group">
+        <label for="user-last-name">Last Name</label>
+        <input id="user-last-name" type="text" class="form-control" 
+               placeholder="Enter last name" ng-model="user.LastName">
+      </div>
+    </div>
+
+    <div class="col-sm-3">
+      <div class="form-group">
+        <label for="user-username">Username</label>
+        <input id="user-username" type="text" class="form-control" 
+               placeholder="Enter Username" ng-model="user.Username">
+      </div>
+    </div>
+
+    <div class="col-sm-3">
+      <div class="form-group">
+        <label for="user-email">E-Mail</label>
+        <input id="user-email" type="text" class="form-control"
+               placeholder="Enter E-Mail" ng-model="user.Email">
+      </div>
+    </div>
+
+  </div> <!-- /.row -->
+
+  <div class="row">
+
+    <div class="col-sm-3">
+      <div class="form-group">
+        <label>User Status</label>
+        <div><span class="fa fa-ban"></span> Not verified</div>
+      </div>
+    </div>
+
+    <div class="col-sm-3 hidden-xs">
+      <label>&nbsp;</label>
+      <div class="tip">Click on the icon to ban/unban user</div>
+    </div>
+
+  </div> <!-- /.row -->
+
+  <div class="row">
+
+  <!-- Roles -->
+    <div class="col-sm-6">
+      <div class="row">
+        <div class="col-sm-12">
+          <h2>Roles</h2>
+        </div>
+        <div class="col-sm-6">
+          <div class="radio">
+            <label>
+              <input type="radio" name="user-role" value="admin">
+              Admin
+            </label>
+          </div>
+          <div class="radio">
+            <label>
+              <input type="radio" name="user-role" value="staff">
+              Staff
+            </label>
+          </div>
+          <div class="radio">
+            <label>
+              <input type="radio" name="user-role" value="member" checked>
+              Member
+            </label>
+          </div>
+        </div>
+        <div class="col-sm-6 hidden-xs">
+          <div class="tip">Admin: Do everything<br>
+                           Staff: Limited access<br>
+                           Member: Activate machines
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Machine Permissions -->
+    <div class="col-sm-6">
+      <div class="row">
+        
+        <div class="col-sm-12">
+          <h2>Machine Permissions</h2>
+        </div>
+
+        <!-- Machine iterator -->
+        <div class="col-sm-6" ng-repeat="userMachine in userMachines">
+          <div class="checkbox-inline">
+            <label title="{{userMachine.Description}}">
+              <input type="checkbox" name="machine-permissions" 
+                     value="{{userMachine.Id}}" checked> 
+              {{userMachine.Name}}
+            </label>
+          </div>
+        </div>
+        
+      </div> <!-- /.row -->
+    </div>
+
+  </div> <!-- /.row -->
+
+  <hr>
+
+  <div class="pull-right">
+    <button class="btn btn-danger" ng-click="deleteUser()">Delete</button>
+    <button class="btn btn-primary" ng-click="saveUser()">Save User</button>
+  </div>
 
 </div> <!-- /container -->
