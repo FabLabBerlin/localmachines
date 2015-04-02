@@ -197,7 +197,7 @@ func (this *UsersController) Get() {
 // @router /:uid [delete]
 func (this *UsersController) Delete() {
 	sid := this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
-	if (!this.IsAdmin(sid) && !this.IsStaff(sid)) {
+	if !this.IsAdmin(sid) && !this.IsStaff(sid) {
 		beego.Error("Unauthorized attempt to delete user")
 		this.CustomAbort(401, "Unauthorized")
 	}
@@ -429,4 +429,55 @@ func (this *UsersController) GetUserRoles() {
 		beego.Error("Unable to retrieve user roles")
 		this.CustomAbort(500, "Internal Server Error")
 	}
+}
+
+// @Title CreateUserPermission
+// @Description Create a permission for a user to allow him/her to use a machine
+// @Param	uid		path 	int	true		"User ID"
+// @Param	mid		query 	int	true		"Machine ID"
+// @Success 200 string ok
+// @Failure	403	Failed to create permission
+// @Failure	401	Not authorized
+// @router /:uid/permissions [post]
+func (this *UsersController) CreateUserPermission() {
+
+	// Check if logged in
+	suid := this.GetSession(SESSION_FIELD_NAME_USER_ID)
+	if suid == nil {
+		beego.Info("Not logged in")
+		this.CustomAbort(401, "Not logged in")
+	}
+
+	// Only admin or staff should be able to do it
+	if !this.IsAdmin() && !this.IsStaff() {
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	// Get user ID for the machine permission to be made
+	var err error
+	var userId int64
+	userId, err = this.GetInt64(":uid")
+	if err != nil {
+		beego.Error("Failed to get requested user ID")
+		this.CustomAbort(403, "Failed to create permission")
+	}
+
+	// Get machine ID for the permission being made
+	var machineId int64
+	machineId, err = this.GetInt64("mid")
+	if err != nil {
+		beego.Error("Failed to get queried machine ID")
+		this.CustomAbort(403, "Failed to create permission")
+	}
+
+	// Create a new user permission record in the database
+	err = models.CreateUserPermission(userId, machineId)
+	if err != nil {
+		beego.Error("Failed to create machine user permission", err)
+		this.CustomAbort(403, "Failed to create user machine permission")
+	}
+
+	// We are done!
+	this.Data["json"] = "ok"
+	this.ServeJson()
 }

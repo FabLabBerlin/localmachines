@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/orm"
 	"github.com/kr15h/fabsmith/models"
 )
 
@@ -18,6 +17,22 @@ type MachinesController struct {
 // @router / [get]
 func (this *MachinesController) GetAll() {
 
+	// This is admin and staff only
+	if !this.IsAdmin() && !this.IsStaff() {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	var machines []*models.Machine
+	var err error
+	machines, err = models.GetAllMachines()
+	if err != nil {
+		beego.Error("Failed to get all machines", err)
+		this.CustomAbort(403, "Failed to get all machines")
+	}
+
+	this.Data["json"] = machines
+	this.ServeJson()
 }
 
 // @Title Get
@@ -29,6 +44,53 @@ func (this *MachinesController) GetAll() {
 // @router /:mid [get]
 func (this *MachinesController) Get() {
 
+	var machineId int64
+	var err error
+	machineId, err = this.GetInt64(":mid")
+	if err != nil {
+		beego.Error("Failed to get :mid variable")
+		this.CustomAbort(403, "Failed to get machine")
+	}
+
+	if !this.IsAdmin() && !this.IsStaff() {
+
+		// Get user permissions to see whether user is allowed to access machine
+		sessUserId, ok := this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
+		if !ok {
+			beego.Error("Failed to get session user ID")
+			this.CustomAbort(403, "Failed to get machine")
+		}
+
+		var permissions []*models.Permission
+		permissions, err = models.GetUserPermissions(sessUserId)
+		if err != nil {
+			beego.Error("Failed to get machine permissions", err)
+			this.CustomAbort(401, "Not authorized")
+		}
+
+		permissionFound := false
+		for _, value := range permissions {
+			if value.MachineId == machineId {
+				permissionFound = true
+				break
+			}
+		}
+
+		if !permissionFound {
+			beego.Error("User not authorized to view this machine")
+			this.CustomAbort(401, "Not authorized")
+		}
+	}
+
+	var machine *models.Machine
+	machine, err = models.GetMachine(machineId)
+	if err != nil {
+		beego.Error("Failed to get machine", err)
+		this.CustomAbort(403, "Failed to get machine")
+	}
+
+	this.Data["json"] = machine
+	this.ServeJson()
 }
 
 // @Title Create
@@ -54,15 +116,14 @@ func (this *MachinesController) Create() {
 	}
 
 	// All clear - create machine in the database
-	o := orm.NewOrm()
-	machine := models.Machine{Name: machineName, Available: true}
-	id, err := o.Insert(&machine)
-	if err == nil {
-		response := models.MachineCreatedResponse{MachineId: id}
-		this.Data["json"] = response
-		this.ServeJson()
-	} else {
-		beego.Error("Cannot create user: ", err)
+	var machineId int64
+	machineId, err = models.CreateMachine(machineName)
+	if err != nil {
+		beego.Error("Failed to create machine", err)
 		this.CustomAbort(403, "Failed to create machine")
 	}
+
+	// Success - we even got an ID!!!
+	this.Data["json"] = &models.MachineCreatedResponse{MachineId: machineId}
+	this.ServeJson()
 }

@@ -3,17 +3,17 @@ package models
 import (
 	"crypto/rand"
 	"encoding/hex"
+	"errors"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"golang.org/x/crypto/scrypt"
 	"io"
-	"errors"
 )
 
 // cf. http://stackoverflow.com/a/23039768/485185
 const (
-    PW_SALT_BYTES = 32
-    PW_HASH_BYTES = 64
+	PW_SALT_BYTES = 32
+	PW_HASH_BYTES = 64
 )
 
 type User struct {
@@ -32,10 +32,10 @@ type User struct {
 }
 
 type Auth struct {
-	UserId   int    `orm:"auto"`
-	NfcKey   string `orm:"size(100)"`
-	Hash     string `orm:"size(300)"`
-	Salt     string `orm:"size(100)"`
+	UserId int    `orm:"auto"`
+	NfcKey string `orm:"size(100)"`
+	Hash   string `orm:"size(300)"`
+	Salt   string `orm:"size(100)"`
 }
 
 type UserRoles struct {
@@ -46,8 +46,8 @@ type UserRoles struct {
 }
 
 type Permission struct {
-	UserId    int `orm:"auto"`
-	MachineId int
+	UserId    int64 `orm:"pk"`
+	MachineId int64
 }
 
 func init() {
@@ -88,7 +88,7 @@ func AuthenticateUser(username, password string) (int64, error) {
 	}
 }
 
-func DeleteUser(userId int64) (error) {
+func DeleteUser(userId int64) error {
 	o := orm.NewOrm()
 	_, err := o.Delete(&User{Id: userId})
 	return err
@@ -145,12 +145,23 @@ func GetUserPermissions(userId int64) ([]*Permission, error) {
 	return permissions, nil
 }
 
+func CreateUserPermission(userId, machineId int64) error {
+	beego.Trace(userId, machineId)
+	permission := Permission{}
+	permission.UserId = userId
+	permission.MachineId = machineId
+	beego.Trace(permission)
+	o := orm.NewOrm()
+	_, err := o.Insert(&permission)
+	return err
+}
+
 // Generate scrypt hash
 func hash(password string, salt []byte) ([]byte, error) {
-    hash, err := scrypt.Key([]byte(password), salt, 1<<14, 8, 1, PW_HASH_BYTES)
-    if err != nil {
-        return []byte{}, err
-    }
+	hash, err := scrypt.Key([]byte(password), salt, 1<<14, 8, 1, PW_HASH_BYTES)
+	if err != nil {
+		return []byte{}, err
+	}
 	return hash, nil
 }
 
@@ -160,4 +171,3 @@ func createSalt() ([]byte, error) {
 	_, err := io.ReadFull(rand.Reader, salt)
 	return salt, err
 }
-

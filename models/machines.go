@@ -12,7 +12,7 @@ func init() {
 }
 
 type Machine struct {
-	Id           int    `orm:"auto";"pk"`
+	Id           int64  `orm:"auto";"pk"`
 	Name         string `orm:"size(255)"`
 	Description  string `orm:"type(text)"`
 	Available    bool
@@ -24,12 +24,13 @@ type Machine struct {
 	CostsPerMin  float32
 }
 
-func GetMachine(machineId int) (*Machine, error) {
+func GetMachine(machineId int64) (*Machine, error) {
+	beego.Trace(machineId)
 	machine := Machine{Id: machineId}
 	o := orm.NewOrm()
 	err := o.Read(&machine)
 	if err != nil {
-		return nil, errors.New("Failed to get machine")
+		return nil, err
 	}
 	return &machine, nil
 }
@@ -43,4 +44,15 @@ func GetAllMachines() ([]*Machine, error) {
 	}
 	beego.Trace("Got num machines:", num)
 	return machines, nil
+}
+
+func CreateMachine(machineName string) (int64, error) {
+	o := orm.NewOrm()
+	machine := Machine{Name: machineName, Available: true}
+	id, err := o.Insert(&machine)
+	if err == nil {
+		return id, nil
+	} else {
+		return 0, err
+	}
 }
