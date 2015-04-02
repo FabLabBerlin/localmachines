@@ -1,10 +1,10 @@
 package models
 
 import (
+	"errors"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"time"
-	"errors"
 )
 
 func init() {

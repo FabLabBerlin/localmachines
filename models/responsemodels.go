@@ -24,9 +24,15 @@ type LoginResponse struct {
 }
 
 // Used to return activation ID after it has been created
-// {"Status":"ok", "ActivationId":39}
+// {"ActivationId":39}
 type ActivationCreateResponse struct {
 	ActivationId int64
+}
+
+// Used to return machine ID after a machine has been created
+// {"MachineId":101}
+type MachineCreatedResponse struct {
+	MachineId int64
 }
 
 // Used to return only the full name of an user
