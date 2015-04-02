@@ -104,19 +104,14 @@ func (this *MachinesController) Create() {
 	machineName := this.GetString("mname")
 	beego.Trace(machineName)
 
-	var err error
-
-	uid := this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
-
-	// Check if user is admin or staff
-	userRoles, err := models.GetUserRoles(uid)
-	if !userRoles.Admin && !userRoles.Staff {
+	if !this.IsAdmin() && !this.IsStaff() {
 		beego.Error("Not authorized to create machine")
 		this.CustomAbort(401, "Not authorized")
 	}
 
 	// All clear - create machine in the database
 	var machineId int64
+	var err error
 	machineId, err = models.CreateMachine(machineName)
 	if err != nil {
 		beego.Error("Failed to create machine", err)
