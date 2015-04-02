@@ -1,0 +1,110 @@
+<div id="admin-activations" class="container-fluid">
+
+  <h1>Edit Machine</h1>
+
+  <hr>
+
+  <div class="row">
+
+    <div class="col-sm-3">
+      <div class="form-group">
+        <label for="machine-name">Machine Name</label>
+        <input type="text" id="machine-name" class="form-control"
+               placeholder="Enter machine name" ng-model="machine.name">
+      </div>
+    </div>
+
+    <div class="col-sm-3">
+      <div class="form-group">
+        <label for="machine-shortname">Shortname</label>
+        <input type="text" id="machine-shortname" class="form-control"
+               placeholder="Enter shortname" ng-model="machine.shortname">
+      </div>
+    </div>
+    
+    <div class="col-sm-3">
+      <div class="form-group">
+        <label for="machine-shortname">Price</label>
+        <div class="input-group">
+          <input type="text" id="machine-shortname" class="form-control"
+                 placeholder="Enter price" ng-model="machine.shortname">
+          <div class="input-group-addon">
+            <i class="fa fa-euro"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-sm-3">
+      <div class="form-group">
+        <label for="machine-price-unit">Price Unit</label>
+        <select class="form-control" id="machine-price-unit">
+          <option value="" selected disabled>Select unit</option>
+          <!-- These have to be loaded via API -->
+          <option>minute</option>
+          <option>hour</option>
+          <option>day</option>
+        </select>
+      </div>
+    </div>
+  
+  </div><!-- /.row -->
+
+  <div class="row">
+    
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="machine-description">Machine Description</label>
+        <textarea id="machine-description" class="form-control" rows="5"
+                  placeholder="Enter machine description"></textarea>
+      </div>
+    </div>
+
+    <div class="col-sm-6">
+      <label>Image</label>
+      <div class="row"> 
+        <div class="col-sm-6">
+          <div class="form-group">
+            <img src="assets/img/img-3d-printer.svg" alt="Machine image" 
+                 class="img-responsive img-thumbnail" style="width: 100% \9;">
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="form-group">
+            <button class="btn btn-primary btn-block">
+              <i class="fa fa-file-image-o"></i>&nbsp;Replace
+            </button>
+          </div>
+          <p>Supported types: svg</p>
+          <p>Name: img-3d-printer.svg<br>Size: 1.9K</p>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="col-sm-3">
+
+      
+    </div>
+
+    <div class="col-sm-3"></div>
+
+  </div><!-- /.row -->
+
+  <hr>
+
+  <div class="pull-right">
+
+    <button class="btn btn-danger btn-lg"
+            ng-click="deleteMachinePrompt">
+      <i class="fa fa-trash-o"></i>&nbsp;Delete
+    </button>
+
+    <button class="btn btn-primary btn-lg"
+            ng-click="saveMachine()">
+      <i class="fa fa-save"></i>&nbsp;Save
+    </button>
+
+  </div>
+
+</div> <!-- /container -->
