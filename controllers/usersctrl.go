@@ -101,7 +101,7 @@ func (this *UsersController) Post() {
 	email := this.GetString("email")
 
 	sid := this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
-	if (!this.IsAdmin(sid) && !this.IsStaff(sid)) {
+	if !this.IsAdmin(sid) && !this.IsStaff(sid) {
 		beego.Error("Unauthorized attempt to delete user")
 		this.CustomAbort(401, "Unauthorized")
 	}
@@ -196,7 +196,7 @@ func (this *UsersController) Get() {
 // @router /:uid [delete]
 func (this *UsersController) Delete() {
 	sid := this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
-	if (!this.IsAdmin(sid) && !this.IsStaff(sid)) {
+	if !this.IsAdmin(sid) && !this.IsStaff(sid) {
 		beego.Error("Unauthorized attempt to delete user")
 		this.CustomAbort(401, "Unauthorized")
 	}
@@ -214,7 +214,7 @@ func (this *UsersController) Delete() {
 }
 
 type UserPutRequest struct {
-	User      models.User
+	User models.User
 }
 
 // @Title Put
@@ -324,6 +324,57 @@ func (this *UsersController) GetUserMachines() {
 	this.ServeJson()
 }
 
+// @Title GetUserMemberships
+// @Description Get user memberships
+// @Param	uid		path 	int	true		"User ID"
+// @Success 200 {object} []models.UserMembership
+// @Failure	403	Failed to get user memberships
+// @Failure	401	Not authorized
+// @router /:uid/memberships [get]
+func (this *UsersController) GetUserMemberships() {
+
+	// Check if logged in
+	suid := this.GetSession(SESSION_FIELD_NAME_USER_ID)
+	if suid == nil {
+		beego.Info("Not logged in")
+		this.CustomAbort(401, "Not logged in")
+	}
+
+	// Get requested user ID
+	var err error
+	var ruid int64
+	ruid, err = this.GetInt64(":uid")
+	if err != nil {
+		beego.Error("Failed to get :uid")
+		this.CustomAbort(403, "Failed to get :uid")
+	}
+
+	// We need the user roles in order to understand
+	// whether we are allowed to access other user machines
+
+	if suid.(int64) != ruid {
+		if !this.IsAdmin() && !this.IsStaff() {
+
+			// The currently logged in user is not allowed to access
+			// other user machines
+			beego.Error("Not authorized")
+			this.CustomAbort(401, "Not authorized")
+		}
+	}
+
+	// If the requested user roles is not admin and staff
+	// we need to get machine permissions first and then the machines
+	ums, err := models.GetUserMemberships(ruid)
+	if err != nil {
+		beego.Error("Failed to get user machine permissions")
+		this.CustomAbort(403, "Failed to get user machines")
+	}
+
+	// Serve machines
+	this.Data["json"] = ums
+	this.ServeJson()
+}
+
 // @Title GetUserName
 // @Description Get user name data only
 // @Param	uid		path 	int	true		"User ID"
@@ -361,4 +412,3 @@ func (this *UsersController) GetUserName() {
 	this.Data["json"] = response
 	this.ServeJson()
 }
-

@@ -25,7 +25,7 @@ type UserMembership struct {
 }
 
 func init() {
-	orm.RegisterModel((new(Membership)))
+	orm.RegisterModel((new(Membership)), new(UserMembership))
 }
 
 func GetAllMemberships() (memberships []*Membership, err error) {
@@ -36,5 +36,16 @@ func GetAllMemberships() (memberships []*Membership, err error) {
 		return nil, errors.New("Failed to get all memberships")
 	}
 	beego.Trace("Got num memberships:", num)
+	return
+}
+
+func GetUserMemberships(userId int64) (ums []*UserMembership, err error) {
+	o := orm.NewOrm()
+	num, err := o.QueryTable("user_membership").Filter("user_id", userId).All(&ums)
+	if err != nil {
+		beego.Error("Failed to get user memberships")
+		return nil, errors.New("Failed to get user memberships")
+	}
+	beego.Trace("Got num user memberships:", num)
 	return
 }

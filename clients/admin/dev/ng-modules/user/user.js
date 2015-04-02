@@ -18,6 +18,7 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', func
 		Id: $routeParams.userId
 	};
 	$scope.userMachines = [];
+	$scope.userMemberships = [];
 
 	$http({
 		method: 'GET',
@@ -51,6 +52,46 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', func
 	})
 	.error(function(data, status) {
 		console.log('Could not get user machines');
+		console.log('Data: ' + data);
+		console.log('Status code: ' + status);
+	});
+
+	function formatDate(d) {
+		console.log('formatDate: d: ', d);
+		var mm = (d.getMonth() + 1);
+		if (mm < 10) {
+			mm = '0' + mm;
+		}
+		var dd = d.getDate();
+		if (dd < 10) {
+			dd = '0' + dd;
+		}
+		return d.getFullYear() + '-' + mm + '-' + dd;
+	}
+
+	$http({
+		method: 'GET',
+		url: '/api/users/' + $scope.user.Id + '/memberships',
+		params: {
+			anticache: new Date().getTime()
+		}
+	})
+	.success(function(data) {
+		console.log('Got user memberships');
+		console.log(data);
+		$scope.userMemberships = _.map(data, function(userMembership) {
+			userMembership.StartDate = new Date(Date.parse(userMembership.StartDate));
+			_.merge(userMembership, {
+				EndDate: new Date(userMembership.StartDate)
+			});
+			userMembership.EndDate.setDate(userMembership.StartDate.getDate() + 180); 
+			userMembership.StartDate = formatDate(userMembership.StartDate);
+			userMembership.EndDate = formatDate(userMembership.EndDate);
+			return userMembership;
+		});
+	})
+	.error(function(data, status) {
+		console.log('Could not get user memberships');
 		console.log('Data: ' + data);
 		console.log('Status code: ' + status);
 	});
