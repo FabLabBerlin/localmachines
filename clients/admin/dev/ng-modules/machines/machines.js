@@ -50,8 +50,20 @@ app.controller('MachinesCtrl', ['$scope', '$http', '$location',
   };
 
   $scope.addMachine = function(machineName) {
-    var createdMachineId = 1;
-    $scope.editMachine(createdMachineId);
+    $http({
+      method: 'POST',
+      url: '/api/machines',
+      params: {
+        mname: machineName,
+        anticache: new Date().getTime()
+      }
+    })
+    .success(function(data) {
+      $scope.editMachine(data.MachineId);
+    })
+    .error(function() {
+      toastr.error('Failed to create machine');
+    });
   };
 
   $scope.editMachine = function(machineId) {
