@@ -14,6 +14,25 @@ app.config(['$routeProvider', function($routeProvider) {
 app.controller('MachinesCtrl', ['$scope', '$http', '$location', 
  function($scope, $http, $location) {
 
+  $scope.machines = [
+    {
+      Id: 1, 
+      Name: 'Laser Cutter',
+      Price: 10,
+      PriceUnit: 'minute'
+    }, {
+      Id: 2, 
+      Name: '3D Priter',
+      Price: 10,
+      PriceUnit: 'minute'
+    }, {
+      Id: 3, 
+      Name: 'CNC Mill',
+      Price: 10,
+      PriceUnit: 'hour'
+    }
+  ];
+
   $scope.addMachinePrompt = function() {
     vex.dialog.prompt({
       message: 'Enter machine name',
@@ -23,11 +42,21 @@ app.controller('MachinesCtrl', ['$scope', '$http', '$location',
   };
 
   $scope.machinePromptCallback = function(value) {
-    if (value) {
-      toastr.success('Creating machine');
+    if (value) {    
+      $scope.addMachine(value);
     } else if (value !== false) {
       toastr.error('No machine name');
     }
+  };
+
+  $scope.addMachine = function(machineName) {
+    var createdMachineId = 1;
+    $scope.editMachine(createdMachineId);
+  };
+
+  $scope.editMachine = function(machineId) {
+    $location.path('/machine/' + machineId);
+    $scope.$apply();
   };
 
 }]); // app.controller

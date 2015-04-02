@@ -14,36 +14,19 @@
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td>Laser Cutter</td>
-        <td>1.00</td>
-        <td>Minute</td>
+
+      <tr ng-repeat="machine in machines">
+        <td>{{machine.Name}}</td>
+        <td>{{machine.Price | currency:''}}</td>
+        <td>{{machine.PriceUnit}}</td>
         <td>
-          <button type="button" class="btn btn-primary btn-ico pull-right">
+          <button type="button" class="btn btn-primary btn-ico pull-right"
+                  ng-click="editMachine(machine.Id)">
             <i class="fa fa-edit"></i>
           </button>
         </td>
       </tr>
-      <tr>
-        <td>Laydrop 3D Printer</td>
-        <td>15.00</td>
-        <td>Hour</td>
-        <td>
-          <button type="button" class="btn btn-primary btn-ico pull-right">
-            <i class="fa fa-edit"></i>
-          </button>
-        </td>
-      </tr>
-      <tr>
-        <td>CNC Mill</td>
-        <td>20.00</td>
-        <td>Hour</td>
-        <td>
-          <button type="button" class="btn btn-primary btn-ico pull-right">
-            <i class="fa fa-edit"></i>
-          </button>
-        </td>
-      </tr>
+
     </tbody>
   </table>
 
