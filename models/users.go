@@ -16,6 +16,12 @@ const (
     PW_HASH_BYTES = 64
 )
 
+const (
+	ADMIN = "admin"
+	STAFF = "staff"
+	MEMBER = "member"
+)
+
 type User struct {
 	Id          int64  `orm:"auto";"pk"`
 	FirstName   string `orm:"size(100)"`
@@ -29,6 +35,7 @@ type User struct {
 	Company     string `orm:"size(100)"`
 	VatUserId   string `orm:"size(100)"`
 	VatRate     int
+	UserRole    string `orm:"size(100)"`
 }
 
 type Auth struct {
@@ -38,20 +45,13 @@ type Auth struct {
 	Salt     string `orm:"size(100)"`
 }
 
-type UserRoles struct {
-	UserId int64 `orm:"auto"`
-	Admin  bool  `orm:"size(100)"`
-	Staff  bool  `orm:"size(100)"`
-	Member bool  `orm:"size(100)"`
-}
-
 type Permission struct {
 	UserId    int `orm:"auto"`
 	MachineId int
 }
 
 func init() {
-	orm.RegisterModel(new(User), new(Auth), new(UserRoles), new(Permission))
+	orm.RegisterModel(new(User), new(Auth), new(Permission))
 }
 
 // Authenticate username and password, return user ID on success
@@ -118,19 +118,6 @@ func GetAllUsers() ([]*User, error) {
 	}
 	beego.Trace("Got num users:", num)
 	return users, nil
-}
-
-// Loads user roles from database into UserRoles struct
-func GetUserRoles(userId int64) (*UserRoles, error) {
-	userRoles := UserRoles{UserId: userId}
-	o := orm.NewOrm()
-	err := o.Read(&userRoles)
-	if err != nil {
-		beego.Error("Could not get user roles, ID:", userId)
-		return nil, err
-	} else {
-		return &userRoles, nil
-	}
 }
 
 // Returns which machines user is enabled to use

@@ -18,7 +18,6 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', func
 		Id: $routeParams.userId
 	};
 	$scope.userMachines = [];
-	$scope.userRoles = {};
 
 	$http({
 		method: 'GET',
@@ -52,24 +51,6 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', func
 	})
 	.error(function(data, status) {
 		console.log('Could not get user machines');
-		console.log('Data: ' + data);
-		console.log('Status code: ' + status);
-	});
-
-	$http({
-		method: 'GET',
-		url: '/api/users/' + $scope.user.Id + '/roles',
-		params: {
-			anticache: new Date().getTime()
-		}
-	})
-	.success(function(data) {
-		console.log('Got user roles');
-		console.log(data);
-		$scope.userRoles = data;
-	})
-	.error(function(data, status) {
-		console.log('Could not get user roles');
 		console.log('Data: ' + data);
 		console.log('Status code: ' + status);
 	});
@@ -120,6 +101,10 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', func
 		.error(function() {
 			toastr.error('Error while trying to save changes');
 		});
+	};
+
+	$scope.updateUserRoles = function(value) {
+		console.log('value:',value);
 	};
 }]); // app.controller
 

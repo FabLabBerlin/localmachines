@@ -57,15 +57,12 @@ func (this *Controller) IsAdmin(userIds ...int64) bool {
 		beego.Error("Expecting single or no value as input")
 		return false
 	}
-	var roles *models.UserRoles
-	roles, err = models.GetUserRoles(userId)
+	var user *models.User
+	user, err = models.GetUser(userId)
 	if err != nil {
 		return false
 	}
-	if roles.Admin {
-		return true
-	}
-	return false
+	return user.UserRole == models.ADMIN
 }
 
 // Return true if user is staff, if no args are passed, uses session user ID,
@@ -81,13 +78,10 @@ func (this *Controller) IsStaff(userIds ...int64) bool {
 		beego.Error("Expecting single or no value as input")
 		return false
 	}
-	var roles *models.UserRoles
-	roles, err = models.GetUserRoles(userId)
+	var user *models.User
+	user, err = models.GetUser(userId)
 	if err != nil {
 		return false
 	}
-	if roles.Staff {
-		return true
-	}
-	return false
+	return user.UserRole == models.STAFF
 }

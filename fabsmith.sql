@@ -177,6 +177,7 @@ CREATE TABLE `user` (
   `company` varchar(100) NOT NULL DEFAULT '',
   `vat_user_id` varchar(100) NOT NULL DEFAULT '',
   `vat_rate` int(11) NOT NULL,
+  `user_role` varchar(100) NOT NULL DEFAULT 'member',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -187,34 +188,10 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'Regular','User','user','user@example.com',0,0,0,0,'','',0),(2,'Regular','Admin','admin','admin@example.com',0,0,0,0,'','',0);
+INSERT INTO `user` VALUES (1,'Regular','User','user','user@example.com',0,0,0,0,'','',0,'member'),(2,'Regular','Admin','admin','admin@example.com',0,0,0,0,'','',0,'admin');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
---
--- Table structure for table `user_roles`
---
-
-DROP TABLE IF EXISTS `user_roles`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `user_roles` (
-  `user_id` int(11) NOT NULL,
-  `admin` tinyint(1) NOT NULL,
-  `staff` tinyint(1) NOT NULL,
-  `member` tinyint(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `user_roles`
---
-
-LOCK TABLES `user_roles` WRITE;
-/*!40000 ALTER TABLE `user_roles` DISABLE KEYS */;
-INSERT INTO `user_roles` VALUES (1,0,0,1),(2,1,0,0);
-/*!40000 ALTER TABLE `user_roles` ENABLE KEYS */;
-UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
