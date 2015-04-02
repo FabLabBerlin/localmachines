@@ -15,7 +15,15 @@ app.controller('MachineCtrl', ['$scope', '$routeParams', '$http', '$location',
  function($scope, $routeParams, $http, $location) {
 
   $scope.machine = {
-    Id: $routeParams.machineId
+    Id: $routeParams.machineId, 
+    Name: 'Test Name',
+    Shortname: 'TN',
+    Price: 10,
+    PriceUnit: 2,
+    Description: 'Lorem ipsum scriptum desc',
+    ImageSrc: 'assets/img/img-3d-printer.svg',
+    ImageName: 'img-3d-printer.svg',
+    ImageSize: '1.9K'
   };
 
   console.log('machine.Id: ' + $scope.machine.Id);
