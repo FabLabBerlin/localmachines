@@ -168,7 +168,6 @@ func (this *UsersController) Get() {
 			this.Data["json"] = user
 		}
 	} else {
-
 		// Requested user ID and stored session ID does not match,
 		// meaning that the logged user is trying to access other user data.
 		// Don't allow to get data of another user unless session user is admin or staff.

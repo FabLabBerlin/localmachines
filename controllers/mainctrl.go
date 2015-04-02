@@ -1,7 +1,9 @@
 package controllers
 
 import (
+	"errors"
 	"github.com/astaxie/beego"
+	"github.com/kr15h/fabsmith/models"
 )
 
 type MainController struct {
@@ -21,4 +23,55 @@ func (this *MainController) Get() {
 
 	beego.Info("Redirecting...")
 	this.Redirect(redirectUrl, 302)
+}
+
+func (this *Controller) GetSessionUserId() (int64, error) {
+	tmp := this.GetSession(SESSION_FIELD_NAME_USER_ID)
+	if sid, ok := tmp.(int64); ok {
+		return sid, nil
+	} else {
+		return 0, errors.New("User not logged in")
+	}
+}
+
+// Return true if user is admin, if no args are passed, uses session user ID,
+// if single user ID is passed, checks the passed one. Fails otherwise.
+func (this *Controller) IsAdmin(userIds ...int64) bool {
+	var userId int64
+	var err error
+	if len(userIds) == 0 {
+		userId = this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
+	} else if len(userIds) == 1 {
+		userId = userIds[0]
+	} else {
+		beego.Error("Expecting single or no value as input")
+		return false
+	}
+	var user *models.User
+	user, err = models.GetUser(userId)
+	if err != nil {
+		return false
+	}
+	return user.UserRole == models.ADMIN
+}
+
+// Return true if user is staff, if no args are passed, uses session user ID,
+// if single user ID is passed, checks the passed one. Fails otherwise.
+func (this *Controller) IsStaff(userIds ...int64) bool {
+	var userId int64
+	var err error
+	if len(userIds) == 0 {
+		userId = this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
+	} else if len(userIds) == 1 {
+		userId = userIds[0]
+	} else {
+		beego.Error("Expecting single or no value as input")
+		return false
+	}
+	var user *models.User
+	user, err = models.GetUser(userId)
+	if err != nil {
+		return false
+	}
+	return user.UserRole == models.STAFF
 }
