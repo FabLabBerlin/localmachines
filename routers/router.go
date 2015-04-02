@@ -20,6 +20,11 @@ func init() {
 				&controllers.UsersController{},
 			),
 		),
+		beego.NSNamespace("/memberships",
+			beego.NSInclude(
+				&controllers.MembershipsController{},
+			),
+		),
 		beego.NSNamespace("/machines",
 			beego.NSInclude(
 				&controllers.MachinesController{},

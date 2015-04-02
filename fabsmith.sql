@@ -134,6 +134,40 @@ INSERT INTO `machine` VALUES (1,'i3berlin 3D Printer','The tools you make. Your 
 /*!40000 ALTER TABLE `machine` ENABLE KEYS */;
 UNLOCK TABLES;
 
+
+--
+-- Table structure for table `membership`
+--
+
+DROP TABLE IF EXISTS `membership`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `membership` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) NOT NULL DEFAULT '',
+  `short_name` varchar(100) NOT NULL DEFAULT '',
+  `duration` int(11) NOT NULL,
+  `unit` varchar(100) NOT NULL,
+  `price` int(11) NOT NULL,
+  `machine_price_deduction` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `membership`
+--
+
+LOCK TABLES `membership` WRITE;
+/*!40000 ALTER TABLE `membership` DISABLE KEYS */;
+INSERT INTO `membership` VALUES (1,'6 Months Basic','6MB',180,'days',1000,50);
+INSERT INTO `membership` VALUES (2,'1 Month Basic','SMB',30,'days',150,50);
+INSERT INTO `membership` VALUES (3,'1 Day Basic','SDB',1,'days',40,50);
+/*!40000 ALTER TABLE `membership` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+
 --
 -- Table structure for table `permission`
 --
@@ -191,6 +225,36 @@ LOCK TABLES `user` WRITE;
 INSERT INTO `user` VALUES (1,'Regular','User','user','user@example.com',0,0,0,0,'','',0,'member'),(2,'Regular','Admin','admin','admin@example.com',0,0,0,0,'','',0,'admin');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
+
+
+
+--
+-- Table structure for table `user_membership`
+--
+
+DROP TABLE IF EXISTS `user_membership`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `user_membership` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `membership_id` int(11) NOT NULL,
+  `start_date` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `user_membership`
+--
+
+LOCK TABLES `user_membership` WRITE;
+/*!40000 ALTER TABLE `user_membership` DISABLE KEYS */;
+INSERT INTO `user_membership` VALUES (1,1,1,'2014-10-24');
+/*!40000 ALTER TABLE `user_membership` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
 
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
