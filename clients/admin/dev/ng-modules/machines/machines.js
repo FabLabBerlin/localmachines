@@ -11,27 +11,24 @@ app.config(['$routeProvider', function($routeProvider) {
   });
 }]); // app.config
 
-app.controller('MachinesCtrl', ['$scope', '$http', '$location', 
- function($scope, $http, $location) {
+app.controller('MachinesCtrl', ['$scope', '$http', '$location', '$cookieStore', 
+ function($scope, $http, $location, $cookieStore) {
 
-  $scope.machines = [
-    {
-      Id: 1, 
-      Name: 'Laser Cutter',
-      Price: 10,
-      PriceUnit: 'minute'
-    }, {
-      Id: 2, 
-      Name: '3D Priter',
-      Price: 10,
-      PriceUnit: 'minute'
-    }, {
-      Id: 3, 
-      Name: 'CNC Mill',
-      Price: 10,
-      PriceUnit: 'hour'
+  $scope.machines = [];
+
+  $http({
+    method: 'GET',
+    url: '/api/machines',
+    params: {
+      anticache: new Date().getTime()
     }
-  ];
+  })
+  .success(function(data) {
+    $scope.machines = data;
+  })
+  .error(function() {
+    toastr.error('Failed to get machines');
+  });
 
   $scope.addMachinePrompt = function() {
     vex.dialog.prompt({
@@ -68,7 +65,7 @@ app.controller('MachinesCtrl', ['$scope', '$http', '$location',
 
   $scope.editMachine = function(machineId) {
     $location.path('/machine/' + machineId);
-    $scope.$apply();
+    //$scope.$apply();
   };
 
 }]); // app.controller

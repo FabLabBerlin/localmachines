@@ -15,18 +15,23 @@ app.controller('MachineCtrl', ['$scope', '$routeParams', '$http', '$location',
  function($scope, $routeParams, $http, $location) {
 
   $scope.machine = {
-    Id: $routeParams.machineId, 
-    Name: 'Test Name',
-    Shortname: 'TN',
-    Price: 10,
-    PriceUnit: 'hour',
-    Description: 'Lorem ipsum scriptum desc',
-    ImageSrc: 'assets/img/img-3d-printer.svg',
-    ImageName: 'img-3d-printer.svg',
-    ImageSize: '1.9K'
+    Id: $routeParams.machineId
   };
 
-  console.log('machine.Id: ' + $scope.machine.Id);
+  $http({
+    method: 'GET',
+    url: '/api/machines/' + $scope.machine.Id,
+    params: {
+      anticache: new Date().getTime()
+    }
+  })
+  .success(function(data) {
+    console.log(data);
+    $scope.machine = data;
+  })
+  .error(function() {
+    toastr.error('Failed to get machine');
+  });
 
 }]); // app.controller
 
