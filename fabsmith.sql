@@ -121,7 +121,7 @@ CREATE TABLE `machines` (
   `price` double unsigned NOT NULL,
   `price_unit` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -130,7 +130,7 @@ CREATE TABLE `machines` (
 
 LOCK TABLES `machines` WRITE;
 /*!40000 ALTER TABLE `machines` DISABLE KEYS */;
-INSERT INTO `machines` VALUES (1,'i3berlin 3D Printer','3DP1','The tools you make. Your tools, your make.',NULL,1,'','0000-00-00 00:00:00',1.2,'minute'),(2,'MakerBot 3D printer',NULL,'NYC 3D printer 4 real and 4 life.',NULL,1,'','0000-00-00 00:00:00',0,'minute'),(3,'Zing Laser Cutter',NULL,'Cuts wood, plastic, paper. Fast.',NULL,1,'','0000-00-00 00:00:00',0,'minute'),(4,'CNC Router',NULL,'Cuts steel, plutanium, uranium. Drill on steroids.',NULL,0,'Something bad happened. With more text and more things that can go wrong.','0000-00-00 00:00:00',0,'minute'),(5,'Hand Drill',NULL,'A man is a man if he does not know how to handle one.',NULL,1,'','0000-00-00 00:00:00',0,'minute'),(6,'Blue Lamp',NULL,'Blue lamp for testing switches',NULL,0,' ','0000-00-00 00:00:00',0,'hour'),(7,'Yellow Lamp',NULL,'Yellow lamp for testing switches',NULL,1,' ','0000-00-00 00:00:00',0,'hour'),(8,'Red Lamp',NULL,'Red lamp for testing switches',NULL,1,' ','0000-00-00 00:00:00',0,'hour');
+INSERT INTO `machines` VALUES (2,'MakerBot 3D printer','MB3DP','NYC 3D printer 4 real and 4 life.','',1,'',NULL,15,'hour'),(3,'Zing Laser Cutter','ZLC','Cuts wood, plastic, paper. Fast.','',1,'',NULL,0,'minute'),(4,'CNC Router',NULL,'Cuts steel, plutanium, uranium. Drill on steroids.',NULL,0,'Something bad happened. With more text and more things that can go wrong.','0000-00-00 00:00:00',0,'minute'),(5,'Hand Drill','HD','A man is a man if he does not know how to handle one.','',1,'',NULL,0,'minute'),(8,'Red Lamp','RL','Red lamp for testing switches','',1,'',NULL,1,'hour');
 /*!40000 ALTER TABLE `machines` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -281,4 +281,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-04-07 13:00:18
+-- Dump completed on 2015-04-07 18:52:51
