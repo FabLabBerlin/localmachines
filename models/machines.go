@@ -19,7 +19,7 @@ type Machine struct {
 	Image       string `orm:"size(255)"` // TODO: media and media type tables
 	Available   bool
 	UnavailMsg  string    `orm:"type(text)"`
-	UnavailTill time.Time `orm:"type(datetime)"`
+	UnavailTill time.Time `orm:"null;type(date)" form:"Date,2006-01-02T15:04:05Z07:00`
 	Price       float32
 	PriceUnit   string `orm:"size(100)"`
 }
@@ -61,4 +61,18 @@ func CreateMachine(machineName string) (int64, error) {
 	} else {
 		return 0, err
 	}
+}
+
+func UpdateMachine(machine *Machine) error {
+	var err error
+	var num int64
+
+	o := orm.NewOrm()
+	num, err = o.Update(machine)
+	if err != nil {
+		return err
+	}
+
+	beego.Trace("Rows affected:", num)
+	return nil
 }

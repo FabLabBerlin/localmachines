@@ -35,6 +35,42 @@ app.controller('MachineCtrl',
     toastr.error('Failed to get machine');
   });
 
+  $scope.updateMachine = function() {
+
+    // Make a clone of the machine model
+    var machine = _.clone($scope.machine);
+
+    // Remove currently unused properties
+    delete machine.UnavailMsg;
+    delete machine.UnavailTill;
+    delete machine.Image;
+
+    machine.Price = parseFloat(machine.Price);
+
+    console.log(machine);
+    $http({
+      method: 'PUT',
+      url: '/api/machines/' + $scope.machine.Id,
+      headers: {'Content-Type': 'application/json' },
+      data: machine,
+      transformRequest: function(data) {
+        console.log('Machine data to send:', data);
+        return JSON.stringify(data);
+      },
+      params: {
+        anticache: new Date().getTime()
+      }
+    })
+    .success(function(data) {
+      console.log(data);
+      toastr.success('Update successful');
+    })
+    .error(function(data) {
+      console.log(data);
+      toastr.error('Failed to update');
+    });
+  };
+
 }]); // app.controller
 
 })(); // closure

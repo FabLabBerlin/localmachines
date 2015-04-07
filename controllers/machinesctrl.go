@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"github.com/astaxie/beego"
 	"github.com/kr15h/fabsmith/models"
 )
@@ -120,5 +121,67 @@ func (this *MachinesController) Create() {
 
 	// Success - we even got an ID!!!
 	this.Data["json"] = &models.MachineCreatedResponse{MachineId: machineId}
+	this.ServeJson()
+}
+
+// @Title Update
+// @Description Update machine
+// @Param	mid	path	int	true	"Machine ID"
+// @Param	model	body	models.Machine	true	"Machine model"
+// @Success 200 string ok
+// @Failure	403	Failed to update machine
+// @Failure	401	Not authorized
+// @router /:mid [put]
+func (this *MachinesController) Update() {
+
+	// expecting the following JSON
+	/*
+		{
+			"Available": true,
+			"Description": "My machine description",
+			"Id": 1,
+			"Image": "/image",
+			"Name": "My Machine Name",
+			"Price": 2.35,
+			"PriceUnit": "minute",
+			"Shortname": "MMN",
+			"UnavailMsg": "Can be empty",
+			"UnavailTill": "2002-10-02T10:00:00-05:00"
+		}
+	*/
+	// The UnavailTill field must be RFC 3339 formatted
+	// https://golang.org/src/time/format.go
+
+	var err error
+
+	// Attempt to decode passed json
+	dec := json.NewDecoder(this.Ctx.Request.Body)
+	req := models.Machine{}
+	if err = dec.Decode(&req); err != nil {
+		beego.Error("Failed to decode json:", err)
+		this.CustomAbort(403, "Failed to update machine")
+	}
+
+	var mid int64
+
+	// Get mid and check if it matches with the machine model ID
+	mid, err = this.GetInt64(":mid")
+	if err != nil {
+		beego.Error("Could not get :mid:", err)
+		this.CustomAbort(403, "Failed to update machine")
+	}
+	if mid != req.Id {
+		beego.Error("mid and model ID does not match:", err)
+		this.CustomAbort(403, "Failed to update machine")
+	}
+
+	// Update the database
+	err = models.UpdateMachine(&req)
+	if err != nil {
+		beego.Error("Failed updating machine:", err)
+		this.CustomAbort(403, "Failed to update machine")
+	}
+
+	this.Data["json"] = "ok"
 	this.ServeJson()
 }
