@@ -327,7 +327,7 @@ func (this *UsersController) GetUserMachines() {
 // @Title GetUserMemberships
 // @Description Get user memberships
 // @Param	uid		path 	int	true		"User ID"
-// @Success 200 {object} []models.UserMembership
+// @Success 200 {object} models.UserMembership
 // @Failure	403	Failed to get user memberships
 // @Failure	401	Not authorized
 // @router /:uid/memberships [get]
