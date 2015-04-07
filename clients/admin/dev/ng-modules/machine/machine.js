@@ -2,7 +2,8 @@
 
 'use strict';
 
-var app = angular.module('fabsmith.admin.machine', ['ngRoute', 'ngCookies']);
+var app = angular.module('fabsmith.admin.machine', 
+ ['ngRoute', 'ngCookies', 'fabsmith.admin.randomtoken']);
 
 app.config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/machine/:machineId', {
@@ -27,7 +28,6 @@ app.controller('MachineCtrl',
     }
   })
   .success(function(data) {
-    console.log(data);
     $scope.machine = data;
     $scope.machine.Price = $filter('currency')($scope.machine.Price,'',2);
   })
@@ -47,7 +47,6 @@ app.controller('MachineCtrl',
 
     machine.Price = parseFloat(machine.Price);
 
-    console.log(machine);
     $http({
       method: 'PUT',
       url: '/api/machines/' + $scope.machine.Id,
@@ -73,8 +72,16 @@ app.controller('MachineCtrl',
 
   $scope.deleteMachinePrompt = function() {
     console.log('delete machine prompt');
+
+    // You have to add the <random-token></random-token> directive somewhere
+    // in HTML in order to make this work
+    $scope.generateRandomToken();
+
     vex.dialog.prompt({
-      message: 'Enter <span class="delete-prompt-token">Randomtok3n</span> to delete',
+      // Unfortunately it is not possible to parse directives inside
+      // vex messages, so we just get the random token
+      message: 'Enter <span class="delete-prompt-token">' + 
+       $scope.randomToken + '</span> to delete',
       placeholder: 'Token',
       callback: $scope.deleteMachinePromptCallback
     });
@@ -82,7 +89,7 @@ app.controller('MachineCtrl',
 
   $scope.deleteMachinePromptCallback = function(value) {
     if (value) {    
-      if (value === 'Randomtok3n') {
+      if (value === $scope.randomToken) {
         $scope.deleteMachine();
       } else {
         toastr.error('Wrong token');
@@ -102,7 +109,7 @@ app.controller('MachineCtrl',
     })
     .success(function() {
       toastr.success('Machine deleted');
-      // redirect to machine list
+      $location.path('/machines');
     })
     .error(function() {
       toastr.error('Failed to delete machine');

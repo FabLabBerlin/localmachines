@@ -16,6 +16,7 @@ var app = angular.module('fabsmith', [
   'fabsmith.admin.bookings',
   'fabsmith.admin.invoices',
   'fabsmith.admin.users',
+  'fabsmith.admin.randomtoken',
   'fabsmith.version'
 ]);
 
