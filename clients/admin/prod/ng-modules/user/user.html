@@ -129,25 +129,10 @@
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td>Single Day Basic</td>
-        <td>2015-02-01</td>
-        <td>2015-02-02</td>
-        <td>
-          <div class="pull-right">
-            <button type="button" class="btn btn-primary btn-ico">
-              <i class="fa fa-edit"></i>
-            </button>
-            <button type="button" class="btn btn-danger btn-ico">
-              <i class="fa fa-close"></i>
-            </button>
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <td>Single Month Basic</td>
-        <td>2015-03-01</td>
-        <td>2015-03-31</td>
+      <tr ng-repeat="userMembership in userMemberships">
+        <td>{{userMembership.Id}}</td>
+        <td>{{userMembership.StartDate}}</td>
+        <td>{{userMembership.EndDate}}</td>
         <td>
           <div class="pull-right">
             <button type="button" class="btn btn-primary btn-ico">

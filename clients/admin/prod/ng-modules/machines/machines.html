@@ -1,50 +1,40 @@
 <div id="admin-activations" class="container-fluid">
 
-    <h1>Machines</h1>
+  <h1>Machines</h1>
 
-    <table class="table table-striped table-hover">
-        <thead>
-            <tr>
-                <th>Machine Name</th>
-                <th>Price €</th>
-                <th>Unit</th>
-                <th>&nbsp;</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Laser Cutter</td>
-                <td>1.00</td>
-                <td>Minute</td>
-                <td>
-                    <button type="button" class="btn btn-primary btn-ico pull-right">
-                        <span class="fa fa-edit"></span>
-                    </button>
-                </td>
-            </tr>
-            <tr>
-                <td>Laydrop 3D Printer</td>
-                <td>15.00</td>
-                <td>Hour</td>
-                <td>
-                    <button type="button" class="btn btn-primary btn-ico pull-right">
-                        <span class="fa fa-edit"></span>
-                    </button>
-                </td>
-            </tr>
-            <tr>
-                <td>CNC Mill</td>
-                <td>20.00</td>
-                <td>Hour</td>
-                <td>
-                    <button type="button" class="btn btn-primary btn-ico pull-right">
-                        <span class="fa fa-edit"></span>
-                    </button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+  <hr>
 
-    <button class="btn btn-primary pull-right"><span class="fa fa-plus"></span>&nbsp;Add Machine</button>
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th>Machine Name</th>
+        <th>Price €</th>
+        <th>Unit</th>
+        <th>&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <tr ng-repeat="machine in machines">
+        <td>{{machine.Name}}</td>
+        <td>{{machine.Price | currency:''}}</td>
+        <td>{{machine.PriceUnit}}</td>
+        <td>
+          <button type="button" class="btn btn-primary btn-ico pull-right"
+                  ng-click="editMachine(machine.Id)">
+            <i class="fa fa-edit"></i>
+          </button>
+        </td>
+      </tr>
+
+    </tbody>
+  </table>
+
+  <hr>
+
+  <button class="btn btn-primary btn-lg pull-right"
+          ng-click="addMachinePrompt()">
+    <i class="fa fa-plus"></i>&nbsp;Add Machine
+  </button>
 
 </div> <!-- /container -->
