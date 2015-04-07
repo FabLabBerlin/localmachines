@@ -77,7 +77,7 @@ app.controller('MainCtrl', ['$scope', '$http', '$location', '$cookieStore', '$co
  function($scope, $http, $location, $cookieStore, $cookies){
 
  	// Configure toastr default location
- 	toastr.options.positionClass = 'toast-bottom-right';
+ 	toastr.options.positionClass = 'toast-bottom-left';
 
 	// Configure vex theme
 	vex.defaultOptions.className = 'vex-theme-plain';
