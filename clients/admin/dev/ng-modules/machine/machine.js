@@ -69,6 +69,44 @@ app.controller('MachineCtrl',
       console.log(data);
       toastr.error('Failed to update');
     });
+  }; // updateMachine()
+
+  $scope.deleteMachinePrompt = function() {
+    console.log('delete machine prompt');
+    vex.dialog.prompt({
+      message: 'Enter <span class="delete-prompt-token">Randomtok3n</span> to delete',
+      placeholder: 'Token',
+      callback: $scope.deleteMachinePromptCallback
+    });
+  };
+
+  $scope.deleteMachinePromptCallback = function(value) {
+    if (value) {    
+      if (value === 'Randomtok3n') {
+        $scope.deleteMachine();
+      } else {
+        toastr.error('Wrong token');
+      }
+    } else if (value !== false) {
+      toastr.error('No token');
+    }
+  };
+
+  $scope.deleteMachine = function() {
+    $http({
+      method: 'DELETE',
+      url: '/api/machines/' + $scope.machine.Id,
+      params: {
+        anticache: new Date().getTime()
+      }
+    })
+    .success(function() {
+      toastr.success('Machine deleted');
+      // redirect to machine list
+    })
+    .error(function() {
+      toastr.error('Failed to delete machine');
+    });
   };
 
 }]); // app.controller

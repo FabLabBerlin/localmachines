@@ -134,6 +134,11 @@ func (this *MachinesController) Create() {
 // @router /:mid [put]
 func (this *MachinesController) Update() {
 
+	if !this.IsAdmin() {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
 	// expecting the following JSON
 	/*
 		{
@@ -180,6 +185,39 @@ func (this *MachinesController) Update() {
 	if err != nil {
 		beego.Error("Failed updating machine:", err)
 		this.CustomAbort(403, "Failed to update machine")
+	}
+
+	this.Data["json"] = "ok"
+	this.ServeJson()
+}
+
+// @Title Delete
+// @Description Delete machine
+// @Param	mid	path	int	true	"Machine ID"
+// @Success 200 string ok
+// @Failure	403	Failed to delete machine
+// @Failure	401	Not authorized
+// @router /:mid [delete]
+func (this *MachinesController) Delete() {
+
+	if !this.IsAdmin() {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	var err error
+	var mid int64
+
+	mid, err = this.GetInt64(":mid")
+	if err != nil {
+		beego.Error("Failed to get mid:", err)
+		this.CustomAbort(403, "Failed to delete machine")
+	}
+
+	err = models.DeleteMachine(mid)
+	if err != nil {
+		beego.Error("Failed to delete machine:", err)
+		this.CustomAbort(403, "Failed to delete machine")
 	}
 
 	this.Data["json"] = "ok"

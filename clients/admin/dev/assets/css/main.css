@@ -347,6 +347,9 @@ footer {
 .tt-cursor {
   background: #ffffff;
 }
+.delete-prompt-token {
+  color: #e66767;
+}
 #admin-machine #machine-image {
   width: 100%;
   height: auto;
