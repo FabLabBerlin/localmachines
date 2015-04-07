@@ -12,16 +12,22 @@ func init() {
 }
 
 type Machine struct {
-	Id           int64  `orm:"auto";"pk"`
-	Name         string `orm:"size(255)"`
-	Description  string `orm:"type(text)"`
-	Available    bool
-	UnavailMsg   string `orm:"type(text)"`
-	UnavailTill  time.Time
-	CalcByEnergy bool
-	CalcByTime   bool
-	CostsPerKwh  float32
-	CostsPerMin  float32
+	Id          int64  `orm:"auto";"pk"`
+	Name        string `orm:"size(255)"`
+	Shortname   string `orm:"size(100)"`
+	Description string `orm:"type(text)"`
+	Image       string `orm:"size(255)"` // TODO: media and media type tables
+	Available   bool
+	UnavailMsg  string    `orm:"type(text)"`
+	UnavailTill time.Time `orm:"type(datetime)"`
+	Price       float32
+	PriceUnit   string `orm:"size(100)"`
+}
+
+// Define custom table name as for SQL table with a name "machines"
+// makes more sense.
+func (u *Machine) TableName() string {
+	return "machines"
 }
 
 func GetMachine(machineId int64) (*Machine, error) {
@@ -38,7 +44,7 @@ func GetMachine(machineId int64) (*Machine, error) {
 func GetAllMachines() ([]*Machine, error) {
 	var machines []*Machine
 	o := orm.NewOrm()
-	num, err := o.QueryTable("machine").All(&machines)
+	num, err := o.QueryTable("machines").All(&machines)
 	if err != nil {
 		return nil, errors.New("Failed to get all machines")
 	}

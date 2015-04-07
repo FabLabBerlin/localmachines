@@ -73,7 +73,7 @@ CREATE TABLE `auth` (
 
 LOCK TABLES `auth` WRITE;
 /*!40000 ALTER TABLE `auth` DISABLE KEYS */;
-INSERT INTO `auth` VALUES (1,'0','7fe522dab147b009d9975320bf1634e4bc2d5254c163ccf615509638681f35edaa6bf87daa44e83bc498282301870a544e27f1aabdc8e10cadbaa4da8915acd5', '1aa9f5fd79bcb0071538c91302ab77d074f8e38dd80d36414bb17a64213d5618'),(2,'0', 'f936afa73ab93a950f3fe097d130229fc096f539210daef57bcf53984b376bb7f168b94d0b89e62021d6b3484d030867808c50b8cd162cc59ae9cdd1f9f052c8', 'f37e9523396613c23f0f53973005fdf916f17811794a1459990198376f1f02f5');
+INSERT INTO `auth` VALUES (1,'0','7fe522dab147b009d9975320bf1634e4bc2d5254c163ccf615509638681f35edaa6bf87daa44e83bc498282301870a544e27f1aabdc8e10cadbaa4da8915acd5','1aa9f5fd79bcb0071538c91302ab77d074f8e38dd80d36414bb17a64213d5618'),(2,'0','f936afa73ab93a950f3fe097d130229fc096f539210daef57bcf53984b376bb7f168b94d0b89e62021d6b3484d030867808c50b8cd162cc59ae9cdd1f9f052c8','f37e9523396613c23f0f53973005fdf916f17811794a1459990198376f1f02f5');
 /*!40000 ALTER TABLE `auth` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -103,37 +103,36 @@ INSERT INTO `hexaswitch` VALUES (1,6,'fe80::50:c4ff:fe04:8370');
 UNLOCK TABLES;
 
 --
--- Table structure for table `machine`
+-- Table structure for table `machines`
 --
 
-DROP TABLE IF EXISTS `machine`;
+DROP TABLE IF EXISTS `machines`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `machine` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+CREATE TABLE `machines` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL DEFAULT '',
+  `shortname` varchar(100) DEFAULT NULL,
   `description` text NOT NULL,
-  `available` tinyint(1) unsigned NOT NULL,
-  `unavail_msg` text NOT NULL,
-  `unavail_till` datetime NOT NULL,
-  `calc_by_energy` tinyint(1) unsigned NOT NULL,
-  `calc_by_time` tinyint(1) unsigned NOT NULL,
-  `costs_per_kwh` float unsigned NOT NULL,
-  `costs_per_min` float unsigned NOT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  `available` tinyint(1) NOT NULL,
+  `unavail_msg` text,
+  `unavail_till` datetime DEFAULT NULL,
+  `price` double unsigned NOT NULL,
+  `price_unit` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `machine`
+-- Dumping data for table `machines`
 --
 
-LOCK TABLES `machine` WRITE;
-/*!40000 ALTER TABLE `machine` DISABLE KEYS */;
-INSERT INTO `machine` VALUES (1,'i3berlin 3D Printer','The tools you make. Your tools, your make.',1,'','0000-00-00 00:00:00',0,1,0,0.2),(2,'MakerBot 3D printer','NYC 3D printer 4 real and 4 life.',1,'','0000-00-00 00:00:00',0,1,0,0.2),(3,'Zing Laser Cutter','Cuts wood, plastic, paper. Fast.',1,'','0000-00-00 00:00:00',0,1,0,1),(4,'CNC Router','Cuts steel, plutanium, uranium. Drill on steroids.',0,'Something bad happened. With more text and more things that can go wrong.','0000-00-00 00:00:00',0,1,0,1),(5,'Hand Drill','A man is a man if he does not know how to handle one.',1,'','0000-00-00 00:00:00',0,1,0,0.2),(6,'Blue Lamp','Blue lamp for testing switches',0,' ','0000-00-00 00:00:00',0,1,0,0.1),(7,'Yellow Lamp','Yellow lamp for testing switches',1,' ','0000-00-00 00:00:00',0,1,0,0.1),(8,'Red Lamp','Red lamp for testing switches',1,' ','0000-00-00 00:00:00',0,1,0,0.1);
-/*!40000 ALTER TABLE `machine` ENABLE KEYS */;
+LOCK TABLES `machines` WRITE;
+/*!40000 ALTER TABLE `machines` DISABLE KEYS */;
+INSERT INTO `machines` VALUES (1,'i3berlin 3D Printer','3DP1','The tools you make. Your tools, your make.',NULL,1,'','0000-00-00 00:00:00',1.2,'minute'),(2,'MakerBot 3D printer',NULL,'NYC 3D printer 4 real and 4 life.',NULL,1,'','0000-00-00 00:00:00',0,'minute'),(3,'Zing Laser Cutter',NULL,'Cuts wood, plastic, paper. Fast.',NULL,1,'','0000-00-00 00:00:00',0,'minute'),(4,'CNC Router',NULL,'Cuts steel, plutanium, uranium. Drill on steroids.',NULL,0,'Something bad happened. With more text and more things that can go wrong.','0000-00-00 00:00:00',0,'minute'),(5,'Hand Drill',NULL,'A man is a man if he does not know how to handle one.',NULL,1,'','0000-00-00 00:00:00',0,'minute'),(6,'Blue Lamp',NULL,'Blue lamp for testing switches',NULL,0,' ','0000-00-00 00:00:00',0,'hour'),(7,'Yellow Lamp',NULL,'Yellow lamp for testing switches',NULL,1,' ','0000-00-00 00:00:00',0,'hour'),(8,'Red Lamp',NULL,'Red lamp for testing switches',NULL,1,' ','0000-00-00 00:00:00',0,'hour');
+/*!40000 ALTER TABLE `machines` ENABLE KEYS */;
 UNLOCK TABLES;
-
 
 --
 -- Table structure for table `membership`
@@ -151,7 +150,7 @@ CREATE TABLE `membership` (
   `price` int(11) NOT NULL,
   `machine_price_deduction` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -160,13 +159,9 @@ CREATE TABLE `membership` (
 
 LOCK TABLES `membership` WRITE;
 /*!40000 ALTER TABLE `membership` DISABLE KEYS */;
-INSERT INTO `membership` VALUES (1,'6 Months Basic','6MB',180,'days',1000,50);
-INSERT INTO `membership` VALUES (2,'1 Month Basic','SMB',30,'days',150,50);
-INSERT INTO `membership` VALUES (3,'1 Day Basic','SDB',1,'days',40,50);
+INSERT INTO `membership` VALUES (1,'6 Months Basic','6MB',180,'days',1000,50),(2,'1 Month Basic','SMB',30,'days',150,50),(3,'1 Day Basic','SDB',1,'days',40,50);
 /*!40000 ALTER TABLE `membership` ENABLE KEYS */;
 UNLOCK TABLES;
-
-
 
 --
 -- Table structure for table `permission`
@@ -226,8 +221,6 @@ INSERT INTO `user` VALUES (1,'Regular','User','user','user@example.com',0,0,0,0,
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
-
-
 --
 -- Table structure for table `user_membership`
 --
@@ -250,12 +243,34 @@ CREATE TABLE `user_membership` (
 
 LOCK TABLES `user_membership` WRITE;
 /*!40000 ALTER TABLE `user_membership` DISABLE KEYS */;
-INSERT INTO `user_membership` VALUES (1,1,1,'2014-10-24');
+INSERT INTO `user_membership` VALUES (1,1,1,'2014-10-24 00:00:00');
 /*!40000 ALTER TABLE `user_membership` ENABLE KEYS */;
 UNLOCK TABLES;
 
+--
+-- Table structure for table `user_roles`
+--
 
+DROP TABLE IF EXISTS `user_roles`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `user_roles` (
+  `user_id` int(11) NOT NULL,
+  `admin` tinyint(1) NOT NULL,
+  `staff` tinyint(1) NOT NULL,
+  `member` tinyint(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
+--
+-- Dumping data for table `user_roles`
+--
+
+LOCK TABLES `user_roles` WRITE;
+/*!40000 ALTER TABLE `user_roles` DISABLE KEYS */;
+INSERT INTO `user_roles` VALUES (1,0,0,1),(2,1,0,0);
+/*!40000 ALTER TABLE `user_roles` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -266,4 +281,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-03-12 15:24:35
+-- Dump completed on 2015-04-07 13:00:18

@@ -11,8 +11,9 @@ app.config(['$routeProvider', function($routeProvider) {
   });
 }]); // app.config
 
-app.controller('MachineCtrl', ['$scope', '$routeParams', '$http', '$location', 
- function($scope, $routeParams, $http, $location) {
+app.controller('MachineCtrl', 
+ ['$scope', '$routeParams', '$http', '$location', '$filter', 
+ function($scope, $routeParams, $http, $location, $filter) {
 
   $scope.machine = {
     Id: $routeParams.machineId
@@ -28,6 +29,7 @@ app.controller('MachineCtrl', ['$scope', '$routeParams', '$http', '$location',
   .success(function(data) {
     console.log(data);
     $scope.machine = data;
+    $scope.machine.Price = $filter('currency')($scope.machine.Price,'',2);
   })
   .error(function() {
     toastr.error('Failed to get machine');
