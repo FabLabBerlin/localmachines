@@ -67,6 +67,7 @@ func GetUserMemberships(userId int64) (ums []*UserMembership, err error) {
 func CreateMembership(membershipName string) (int64, error) {
 	o := orm.NewOrm()
 	membership := Membership{Title: membershipName}
+	membership.Unit = "days"
 	id, err := o.Insert(&membership)
 	if err == nil {
 		return id, nil

@@ -70,7 +70,6 @@ app.controller('MembershipsCtrl', ['$scope', '$http', '$location',
       }
     })
     .success(function(membershipId) {
-      toastr.success(membershipId);
       $scope.editMembership(membershipId);
     })
     .error(function() {
