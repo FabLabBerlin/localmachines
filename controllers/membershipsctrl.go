@@ -41,3 +41,33 @@ func (this *MembershipsController) GetAll() {
 	this.Data["json"] = memberships
 	this.ServeJson()
 }
+
+// @Title Create
+// @Description Create new membership
+// @Param	mname	query	string	true	"Membership Name"
+// @Success	200	int	Membership ID
+// @Failure	403	Failed to create membership
+// @Failure	401	Not authorized
+// @router / [post]
+func (this *MembershipsController) Create() {
+
+	if !this.IsAdmin() {
+		beego.Error("Not authorized to create membership")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	membershipName := this.GetString("mname")
+	beego.Trace(membershipName)
+
+	// All clear - create membership in the database
+	var membershipId int64
+	var err error
+	membershipId, err = models.CreateMembership(membershipName)
+	if err != nil {
+		beego.Error("Failed to create membership", err)
+		this.CustomAbort(403, "Failed to create membership")
+	}
+
+	this.Data["json"] = membershipId
+	this.ServeJson()
+}

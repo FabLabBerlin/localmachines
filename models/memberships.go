@@ -49,3 +49,14 @@ func GetUserMemberships(userId int64) (ums []*UserMembership, err error) {
 	beego.Trace("Got num user memberships:", num)
 	return
 }
+
+func CreateMembership(membershipName string) (int64, error) {
+	o := orm.NewOrm()
+	membership := Membership{Title: membershipName}
+	id, err := o.Insert(&membership)
+	if err == nil {
+		return id, nil
+	} else {
+		return 0, err
+	}
+}

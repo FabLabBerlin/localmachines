@@ -52,11 +52,30 @@ app.controller('MembershipsCtrl', ['$scope', '$http', '$location',
   };
 
   $scope.membershipPromptCallback = function(value) {
-    toastr.warning(value);
+    if (value) {    
+      $scope.addMembership(value);
+    } else if (value !== false) {
+      toastr.error('No membership name');
+    }
   };
 
-  $scope.addMembership = function() {
+  $scope.addMembership = function(membershipName) {
     toastr.warning('adding membership');
+    $http({
+      method: 'POST',
+      url: '/api/memberships',
+      params: {
+        mname: membershipName,
+        anticache: new Date().getTime()
+      }
+    })
+    .success(function(membershipId) {
+      toastr.success(membershipId);
+      $scope.editMembership(membershipId);
+    })
+    .error(function() {
+      toastr.error('Failed to create membership');
+    });
   };
 
   $scope.editMembership = function(membershipId) {
