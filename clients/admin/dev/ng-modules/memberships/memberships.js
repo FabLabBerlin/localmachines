@@ -14,6 +14,22 @@ app.config(['$routeProvider', function($routeProvider) {
 app.controller('MembershipsCtrl', ['$scope', '$http', '$location', 
  function($scope, $http, $location) {
 
+  // Load all memberships
+  $http({
+    method: 'GET',
+    url: '/api/memberships',
+    params: {
+      anticache: new Date().getTime()
+    }
+  })
+  .success(function(data) {
+    $scope.memberships = data;
+  })
+  .error(function() {
+    toastr.error('Failed to load memberships');
+  });
+
+  /*
   $scope.memberships = [
     {
       Id: 1,
@@ -25,6 +41,7 @@ app.controller('MembershipsCtrl', ['$scope', '$http', '$location',
       MachinePriceDeduction: 50
     }
   ];
+  */
 
   $scope.addMembershipPrompt = function() {
     vex.dialog.prompt({
