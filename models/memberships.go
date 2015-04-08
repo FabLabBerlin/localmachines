@@ -15,6 +15,7 @@ type Membership struct {
 	Unit                  string `orm:"size(100)"`
 	Price                 int
 	MachinePriceDeduction int
+	AffectedMachines      string `orm:"type(text)"`
 }
 
 type UserMembership struct {

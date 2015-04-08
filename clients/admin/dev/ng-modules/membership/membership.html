@@ -50,45 +50,17 @@
       <div class="form-group">
         <label for="membership-price">Machines Affected by Membership</label>
         <div class="row">
-          <div class="col-sm-6">
+
+          <div class="col-sm-6" ng-repeat="machine in machines">
             <div class="checkbox-inline">
               <label>
-                <input type="checkbox" name="membership-machines-affected">
-                Machine title
+                <input type="checkbox"
+                       ng-model="machine['Checked']">
+                {{machine.Name}}
               </label>
             </div>
           </div>
-          <div class="col-sm-6">
-            <div class="checkbox-inline">
-              <label>
-                <input type="checkbox" name="membership-machines-affected">
-                Machine title
-              </label>
-            </div>
-          </div>
-          <div class="col-sm-6">
-            <div class="checkbox-inline">
-              <label>
-                <input type="checkbox" name="membership-machines-affected">
-                Machine title
-              </label>
-            </div>
-          </div>
-          <div class="col-sm-6">
-            <div class="checkbox-inline">
-              <label>
-                <input type="checkbox" name="membership-machines-affected">
-                Machine title
-              </label>
-            </div></div>
-          <div class="col-sm-6">
-            <div class="checkbox-inline">
-              <label>
-                <input type="checkbox" name="membership-machines-affected">
-                Machine title
-              </label>
-            </div>
-          </div>
+          
         </div>
       </div>
     </div>
