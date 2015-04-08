@@ -3,7 +3,7 @@
 'use strict';
 
 var app = angular.module('fabsmith.admin.machine', 
- ['ngRoute', 'ngCookies', 'fabsmith.admin.randomtoken']);
+ ['ngRoute', 'ngCookies']);
 
 app.config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/machine/:machineId', {
