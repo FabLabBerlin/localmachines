@@ -1,4 +1,4 @@
-<div id="admin-activations" class="container-fluid">
+<div id="admin-memberships" class="container-fluid">
 
   <h1>Memberships</h1>
 
@@ -21,7 +21,8 @@
         <td>{{membership.Unit}}</td>
         <td>{{membership.Price | currency:''}}</td>
         <td>
-          <button type="button" class="btn btn-primary btn-ico pull-right">
+          <button type="button" class="btn btn-primary btn-ico pull-right"
+                  ng-click="editMembership(membership.Id)">
             <span class="fa fa-edit"></span>
           </button>
         </td>

@@ -1,0 +1,128 @@
+<div id="admin-membership" class="container-fluid">
+
+  <h1>Edit Membership</h1>
+
+  <hr>
+
+  <div class="row">
+
+    <div class="col-sm-3">
+      <div class="form-group">
+        <label for="membership-title">Membership Title</label>
+        <input type="text" id="membership-title" class="form-control"
+               placeholder="Membership title" ng-model="membership.Title">
+      </div>
+    </div>
+
+    <div class="col-sm-3">
+      <div class="form-group">
+        <label for="membership-shortname">Shortname</label>
+        <input type="text" id="membership-shortname" class="form-control"
+               placeholder="Shortname" ng-model="membership.ShortName">
+      </div>
+    </div>
+    
+    <div class="col-sm-3">
+      <div class="form-group">
+        <label for="membership-duration">Duration (days)</label>
+        <input type="text" id="membership-duration" class="form-control"
+               placeholder="Duration" ng-model="membership.Duration">
+      </div>
+    </div>
+    
+    <div class="col-sm-3">
+      <div class="form-group">
+        <label for="membership-price">Membership Price</label>
+        <div class="input-group">
+          <input type="text" id="membership-price" class="form-control"
+                 placeholder="Price" ng-model="membership.Price">
+          <div class="input-group-addon">
+            <i class="fa fa-euro"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+  </div><!-- /.row -->
+
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="membership-price">Machines Affected by Membership</label>
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="checkbox-inline">
+              <label>
+                <input type="checkbox" name="membership-machines-affected">
+                Machine title
+              </label>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="checkbox-inline">
+              <label>
+                <input type="checkbox" name="membership-machines-affected">
+                Machine title
+              </label>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="checkbox-inline">
+              <label>
+                <input type="checkbox" name="membership-machines-affected">
+                Machine title
+              </label>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="checkbox-inline">
+              <label>
+                <input type="checkbox" name="membership-machines-affected">
+                Machine title
+              </label>
+            </div></div>
+          <div class="col-sm-6">
+            <div class="checkbox-inline">
+              <label>
+                <input type="checkbox" name="membership-machines-affected">
+                Machine title
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="form-group">
+        <label for="membership-price-deduction">Machine price deduction</label>
+        <div class="input-group">
+          <input type="text" id="membership-price-deduction" class="form-control"
+                 placeholder="Percentage" 
+                 ng-model="membership.MachinePriceDeduction">
+          <div class="input-group-addon">
+            <b>%</b>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /.row -->
+
+  <hr>
+
+  <div class="pull-right">
+
+    <button class="btn btn-danger btn-lg"
+            ng-click="deleteMembershipPrompt()">
+      <i class="fa fa-trash-o"></i>&nbsp;Delete
+    </button>
+
+    <button class="btn btn-primary btn-lg"
+            ng-click="updateMembership()">
+      <i class="fa fa-save"></i>&nbsp;Save
+    </button>
+
+    <random-token class="hidden"></random-token>
+
+  </div>
+
+</div> <!-- /container -->

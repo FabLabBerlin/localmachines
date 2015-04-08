@@ -13,6 +13,7 @@ var app = angular.module('fabsmith', [
   'fabsmith.admin.machines',
   'fabsmith.admin.machine',
   'fabsmith.admin.memberships',
+  'fabsmith.admin.membership',
   'fabsmith.admin.bookings',
   'fabsmith.admin.invoices',
   'fabsmith.admin.users',

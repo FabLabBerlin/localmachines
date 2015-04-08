@@ -35,15 +35,15 @@ app.controller('MembershipsCtrl', ['$scope', '$http', '$location',
   };
 
   $scope.membershipPromptCallback = function(value) {
-    console.log(value);
+    toastr.warning(value);
   };
 
   $scope.addMembership = function() {
     toastr.warning('adding membership');
   };
 
-  $scope.editMembership = function() {
-    toastr.warning('editing membership');
+  $scope.editMembership = function(membershipId) {
+    $location.path('/membership/' + membershipId);
   };
 
 }]); // app.controller
