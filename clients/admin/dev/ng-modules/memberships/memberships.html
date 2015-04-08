@@ -1,55 +1,38 @@
 <div id="admin-activations" class="container-fluid">
 
-    <h1>Memberships</h1>
+  <h1>Memberships</h1>
 
-    <table class="table table-striped table-hover">
-        <thead>
-            <tr>
-                <th>Membership Title</th>
-                <th>Short Name</th>
-                <th>Duration (days)</th>
-                <th>Price (€)</th>
-                <th>&nbsp;</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>6 Month Basic</td>
-                <td>6MB</td>
-                <td>180</td>
-                <td>1000</td>
-                <td>
-                    <button type="button" class="btn btn-primary btn-ico pull-right">
-                        <span class="fa fa-edit"></span>
-                    </button>
-                </td>
-            </tr>
-            <tr>
-                <td>Single Month Basic</td>
-                <td>SMB</td>
-                <td>30</td>
-                <td>100</td>
-                <td>
-                    <button type="button" class="btn btn-primary btn-ico pull-right">
-                        <span class="fa fa-edit"></span>
-                    </button>
-                </td>
-            </tr>
-            <tr>
-                <td>Single Day Basic</td>
-                <td>SDB</td>
-                <td>1</td>
-                <td>10</td>
-                <td>
-                    <button type="button" class="btn btn-primary btn-ico pull-right">
-                        <span class="fa fa-edit"></span>
-                    </button>
-                </td>
-            </tr>
-        </tbody>
-        
-    </table>
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th>Membership Title</th>
+        <th>Short Name</th>
+        <th>Duration</th>
+        <th>Unit</th>
+        <th>Price (€)</th>
+        <th>&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="membership in memberships">
+        <td>{{membership.Title}}</td>
+        <td>{{membership.ShortName}}</td>
+        <td>{{membership.Duration}}</td>
+        <td>{{membership.Unit}}</td>
+        <td>{{membership.Price | currency:''}}</td>
+        <td>
+          <button type="button" class="btn btn-primary btn-ico pull-right">
+            <span class="fa fa-edit"></span>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+    
+  </table>
 
-    <button class="btn btn-primary pull-right"><span class="fa fa-plus"></span>&nbsp;Add Membership</button>
+  <button class="btn btn-lg btn-primary pull-right"
+          ng-click="addMembershipPrompt()">
+    <span class="fa fa-plus"></span>&nbsp;Add Membership
+  </button>
 
 </div> <!-- /container -->
