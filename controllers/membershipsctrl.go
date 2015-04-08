@@ -71,3 +71,38 @@ func (this *MembershipsController) Create() {
 	this.Data["json"] = membershipId
 	this.ServeJson()
 }
+
+// @Title Get
+// @Description Get membership by membership ID
+// @Param	mid		path 	int	true		"Membership ID"
+// @Success 200 {object} models.Membership
+// @Failure	403	Failed to get membership
+// @Failure	401	Not authorized
+// @router /:mid [get]
+func (this *MembershipsController) Get() {
+
+	if !this.IsAdmin() {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	var err error
+	var mid int64
+
+	mid, err = this.GetInt64(":mid")
+	if err != nil {
+		beego.Error("Could not get mid")
+		this.CustomAbort(403, "Failed to get membership")
+	}
+
+	var membership *models.Membership
+
+	membership, err = models.GetMembership(mid)
+	if err != nil {
+		beego.Error("Could not get membership")
+		this.CustomAbort(403, "Failed to get membership")
+	}
+
+	this.Data["json"] = membership
+	this.ServeJson()
+}

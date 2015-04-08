@@ -28,6 +28,7 @@ func init() {
 	orm.RegisterModel((new(Membership)), new(UserMembership))
 }
 
+// Get all memberships from database
 func GetAllMemberships() (memberships []*Membership, err error) {
 	o := orm.NewOrm()
 	num, err := o.QueryTable("membership").All(&memberships)
@@ -37,6 +38,17 @@ func GetAllMemberships() (memberships []*Membership, err error) {
 	}
 	beego.Trace("Got num memberships:", num)
 	return
+}
+
+// Get single membership from database using membership unique ID
+func GetMembership(membershipId int64) (*Membership, error) {
+	membership := &Membership{Id: membershipId}
+	o := orm.NewOrm()
+	err := o.Read(membership)
+	if err != nil {
+		return membership, err
+	}
+	return membership, nil
 }
 
 func GetUserMemberships(userId int64) (ums []*UserMembership, err error) {
