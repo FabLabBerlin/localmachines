@@ -63,6 +63,7 @@ func GetUserMemberships(userId int64) (ums []*UserMembership, err error) {
 	return
 }
 
+// Creates a new membership in the database
 func CreateMembership(membershipName string) (int64, error) {
 	o := orm.NewOrm()
 	membership := Membership{Title: membershipName}
@@ -72,4 +73,19 @@ func CreateMembership(membershipName string) (int64, error) {
 	} else {
 		return 0, err
 	}
+}
+
+// Updates membership in the database
+func UpdateMembership(membership *Membership) error {
+	var err error
+	var num int64
+
+	o := orm.NewOrm()
+	num, err = o.Update(membership)
+	if err != nil {
+		return err
+	}
+
+	beego.Trace("Rows affected:", num)
+	return nil
 }

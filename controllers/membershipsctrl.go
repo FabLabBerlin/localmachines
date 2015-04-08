@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"github.com/astaxie/beego"
 	"github.com/kr15h/fabsmith/models"
 )
@@ -104,5 +105,54 @@ func (this *MembershipsController) Get() {
 	}
 
 	this.Data["json"] = membership
+	this.ServeJson()
+}
+
+// @Title Update
+// @Description Update membership
+// @Param	mid	path	int	true	"Membership ID"
+// @Param	model	body	models.Membership	true	"Membership model"
+// @Success 200 string ok
+// @Failure	403	Failed to update membership
+// @Failure	401	Not authorized
+// @router /:mid [put]
+func (this *MembershipsController) Update() {
+
+	if !this.IsAdmin() {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	var err error
+
+	// Attempt to decode passed json
+	dec := json.NewDecoder(this.Ctx.Request.Body)
+	req := models.Membership{}
+	if err = dec.Decode(&req); err != nil {
+		beego.Error("Failed to decode json:", err)
+		this.CustomAbort(403, "Failed to update membership")
+	}
+
+	var mid int64
+
+	// Get mid and check if it matches with the membership model ID
+	mid, err = this.GetInt64(":mid")
+	if err != nil {
+		beego.Error("Could not get :mid:", err)
+		this.CustomAbort(403, "Failed to update membership")
+	}
+	if mid != req.Id {
+		beego.Error("mid and model ID do not match:", err)
+		this.CustomAbort(403, "Failed to update membership")
+	}
+
+	// Update the database
+	err = models.UpdateMembership(&req)
+	if err != nil {
+		beego.Error("Failed updating membership:", err)
+		this.CustomAbort(403, "Failed to update membership")
+	}
+
+	this.Data["json"] = "ok"
 	this.ServeJson()
 }
