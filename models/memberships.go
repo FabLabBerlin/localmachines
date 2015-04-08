@@ -90,3 +90,16 @@ func UpdateMembership(membership *Membership) error {
 	beego.Trace("Rows affected:", num)
 	return nil
 }
+
+// Delete membership from the database
+func DeleteMembership(membershipId int64) error {
+	var num int64
+	var err error
+	o := orm.NewOrm()
+	num, err = o.Delete(&Membership{Id: membershipId})
+	if err != nil {
+		return err
+	}
+	beego.Trace("Deleted num rows:", num)
+	return nil
+}

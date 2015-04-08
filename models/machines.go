@@ -63,6 +63,7 @@ func CreateMachine(machineName string) (int64, error) {
 	}
 }
 
+// Update existing machine in the database
 func UpdateMachine(machine *Machine) error {
 	var err error
 	var num int64
@@ -77,6 +78,7 @@ func UpdateMachine(machine *Machine) error {
 	return nil
 }
 
+// Delete machine from the database
 func DeleteMachine(machineId int64) error {
 	var num int64
 	var err error

@@ -156,3 +156,36 @@ func (this *MembershipsController) Update() {
 	this.Data["json"] = "ok"
 	this.ServeJson()
 }
+
+// @Title Delete
+// @Description Delete membership
+// @Param	mid	path	int	true	"Membership ID"
+// @Success 200 string ok
+// @Failure	403	Failed to delete membership
+// @Failure	401	Not authorized
+// @router /:mid [delete]
+func (this *MembershipsController) Delete() {
+
+	if !this.IsAdmin() {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	var err error
+	var mid int64
+
+	mid, err = this.GetInt64(":mid")
+	if err != nil {
+		beego.Error("Failed to get mid:", err)
+		this.CustomAbort(403, "Failed to delete membership")
+	}
+
+	err = models.DeleteMembership(mid)
+	if err != nil {
+		beego.Error("Failed to delete membership:", err)
+		this.CustomAbort(403, "Failed to delete membership")
+	}
+
+	this.Data["json"] = "ok"
+	this.ServeJson()
+}
