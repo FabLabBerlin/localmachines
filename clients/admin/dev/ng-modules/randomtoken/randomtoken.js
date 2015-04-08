@@ -17,7 +17,7 @@ mod.directive('randomToken', function() {
           'H8tersGonn4'
         ];
 
-        var id = Math.round(Math.random() * tokens.length);
+        var id = Math.round(Math.random() * (tokens.length-1));
 
         $scope.randomToken = tokens[id];
       };
