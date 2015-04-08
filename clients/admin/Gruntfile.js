@@ -69,6 +69,7 @@ module.exports = function (grunt) {
 						'dev/bower_components/angular-ui-bootstrap/src/modal/modal.js',
 						'dev/bower_components/angular-ui-bootstrap/src/transition/transition.js',
 						'dev/bower_components/toastr/toastr.js',
+						'dev/bower_components/lodash/lodash.js',
 						'dev/ng-components/version/version.js',
 						'dev/ng-components/version/version-directive.js',
 						'dev/ng-components/version/interpolate-filter.js',
@@ -86,6 +87,7 @@ module.exports = function (grunt) {
 						'dev/ng-modules/machines/machines.js',
 						'dev/ng-modules/machine/machine.js',
 						'dev/ng-modules/memberships/memberships.js',
+						'dev/ng-modules/membership/membership.js',
 						'dev/ng-modules/bookings/bookings.js',
 						'dev/ng-modules/invoices/invoices.js',
 						'dev/ng-modules/users/users.js',
@@ -173,6 +175,11 @@ module.exports = function (grunt) {
 				}, {
 					src: 'dev/ng-modules/memberships/memberships.html', 
 					dest: 'prod/ng-modules/memberships/',
+					expand: true,
+					flatten: true
+				}, {
+					src: 'dev/ng-modules/membership/membership.html', 
+					dest: 'prod/ng-modules/membership/',
 					expand: true,
 					flatten: true
 				}, {
