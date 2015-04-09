@@ -30,6 +30,7 @@ app.controller('MachineCtrl',
   .success(function(data) {
     $scope.machine = data;
     $scope.machine.Price = $filter('currency')($scope.machine.Price,'',2);
+    $scope.getHexabusMapping();
   })
   .error(function() {
     toastr.error('Failed to get machine');
@@ -114,6 +115,66 @@ app.controller('MachineCtrl',
     .error(function() {
       toastr.error('Failed to delete machine');
     });
+  };
+
+  $scope.getHexabusMapping = function() {
+    $http({
+      method: 'GET',
+      url: '/api/hexabus/' + $scope.machine.Id,
+      params: {
+        anticache: new Date().getTime()
+      }
+    })
+    .success(function(mappingModel) {
+      $scope.hexabusMapping = mappingModel;
+    }); // no error - the mapping will just not be visible
+  };
+
+  // Create a field for entering the IP
+  $scope.createHexabusMapping = function() {
+    $http({
+      method: 'POST',
+      url: '/api/hexabus',
+      params: {
+        mid: $scope.machine.Id,
+        anticache: new Date().getTime()
+      }
+    })
+    .success(function(mappingId) {
+      $scope.getHexabusMapping();
+    })
+    .error(function() {
+      toastr.error('Failed to create hexabus mapping');
+    });
+    
+  };
+
+  $scope.removeHexabusMapping = function() {
+    $http({
+      method: 'DELETE',
+      url: '/api/hexabus/' + $scope.machine.Id,
+      params: {
+        anticache: new Date().getTime()
+      }
+    })
+    .success(function() {
+      toastr.success('Mapping deleted');
+      delete $scope.hexabusMapping;
+    })
+    .error(function() {
+      toastr.error('Failed to delete mapping');
+    });
+
+    
+  };
+
+  // Update the mapping with fresh IP
+  $scope.updateHexabusMapping = function () {
+    if ($scope.hexabusMapping) {
+      // Update mapping in the database
+    } else {
+      // Delete the mapping from database
+    }
   };
 
 }]); // app.controller
