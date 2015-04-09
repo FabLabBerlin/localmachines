@@ -102,12 +102,12 @@
         </div>
 
         <!-- Machine iterator -->
-        <div class="col-sm-6" ng-repeat="userMachine in userMachines">
+        <div class="col-sm-6" ng-repeat="machine in machines">
           <div class="checkbox-inline">
-            <label title="{{userMachine.Description}}">
+            <label title="{{machine.Description}}">
               <input type="checkbox" name="machine-permissions" 
-                     value="{{userMachine.Id}}" checked> 
-              {{userMachine.Name}}
+                     value="{{machine.Id}}" ng-model="machine.checked"> 
+              {{machine.Name}}
             </label>
           </div>
         </div>
