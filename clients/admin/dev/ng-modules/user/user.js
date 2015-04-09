@@ -72,6 +72,7 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', 'ran
     })
     .success(function(userMachines) {
 
+      $scope.userMachines = userMachines;
       $scope.getAvailableMemberships();
       
       _.each($scope.availableMachines, function(machine) {
@@ -265,6 +266,48 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', 'ran
   };
 
   $scope.saveUser = function() {
+
+    // TODO: This has to be a lot leaner!!!
+
+    // Update user permissions the painful way
+    console.log($scope.userMachines);
+    console.log($scope.availableMachines);
+
+    // Remove the ones that are not checked anymore
+    for (var i = 0; i < $scope.userMachines.length; i++) {
+      
+      // check if it is still checked
+      for (var j = 0; j < $scope.availableMachines.length; j++) {
+        if ($scope.userMachines[i].Id === $scope.availableMachines[j].Id) {
+          if (!$scope.availableMachines[j].Checked){
+            // Not checked = Remove the permission
+            $scope.deleteUserMachinePermission($scope.availableMachines[j].Id);
+            break;
+          }
+        }
+      } // for
+
+    } // for
+
+    // Add those who are checked now
+    for (var k = 0; k < $scope.availableMachines.length; k++) {
+
+      if ($scope.availableMachines[k].Checked) {
+        var wasThereAlready = false;
+        for (var l = 0; l < $scope.userMachines.length; l++) {
+          if ($scope.availableMachines[k].Id === $scope.userMachines[l].Id) {
+            wasThereAlready = true;
+            break;
+          }
+        } // for
+        if (!wasThereAlready) {
+          // Was not there, let's add!
+          $scope.addUserMachinePermission($scope.availableMachines[k].Id);
+        }
+      }
+
+    } // for
+
     $http({
       method: 'PUT',
       url: '/api/users/' + $scope.user.Id,
@@ -282,6 +325,40 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', 'ran
     })
     .error(function() {
       toastr.error('Error while trying to save changes');
+    });
+  };
+
+  $scope.deleteUserMachinePermission = function(machineId) {
+    $http({
+      method: 'DELETE',
+      url: '/api/users/' + $scope.user.Id + '/permissions',
+      params: {
+        mid: machineId,
+        anticache: new Date().getTime()
+      }
+    })
+    .success(function() {
+      console.log('Permission deleted: ' + machineId);
+    })
+    .error(function() {
+      toastr.error('Error while trying to remove premission: ' + machineId);
+    });
+  };
+
+  $scope.addUserMachinePermission = function(machineId) {
+    $http({
+      method: 'POST',
+      url: '/api/users/' + $scope.user.Id + '/permissions',
+      params: {
+        mid: machineId,
+        anticache: new Date().getTime()
+      }
+    })
+    .success(function() {
+      console.log('Permission added: ' + machineId);
+    })
+    .error(function() {
+      toastr.error('Error while trying to add premission: ' + machineId);
     });
   };
 

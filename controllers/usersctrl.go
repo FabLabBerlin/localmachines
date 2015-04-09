@@ -560,6 +560,9 @@ func (this *UsersController) GetUserRoles() {
 // @router /:uid/permissions [post]
 func (this *UsersController) CreateUserPermission() {
 
+	// TODO: think about bulk permission creation or another way
+	// 		 that does not use a separate table maybe.
+
 	// Check if logged in
 	suid := this.GetSession(SESSION_FIELD_NAME_USER_ID)
 	if suid == nil {
@@ -567,8 +570,8 @@ func (this *UsersController) CreateUserPermission() {
 		this.CustomAbort(401, "Not logged in")
 	}
 
-	// Only admin or staff should be able to do it
-	if !this.IsAdmin() && !this.IsStaff() {
+	// Only admin
+	if !this.IsAdmin() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
@@ -597,6 +600,55 @@ func (this *UsersController) CreateUserPermission() {
 	}
 
 	// We are done!
+	this.Data["json"] = "ok"
+	this.ServeJson()
+}
+
+// @Title DeleteUserPermission
+// @Description Delete user machine permission
+// @Param	uid		path 	int	true		"User ID"
+// @Param	mid		query 	int	true		"Machine ID"
+// @Success 200 string ok
+// @Failure	403	Failed to delete permission
+// @Failure	401	Not authorized
+// @router /:uid/permissions [delete]
+func (this *UsersController) DeleteUserPermission() {
+
+	// Check if logged in
+	suid := this.GetSession(SESSION_FIELD_NAME_USER_ID)
+	if suid == nil {
+		beego.Info("Not logged in")
+		this.CustomAbort(401, "Not logged in")
+	}
+
+	// Only admin
+	if !this.IsAdmin() {
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	// Get user ID for the machine permission to be made
+	var err error
+	var userId int64
+	userId, err = this.GetInt64(":uid")
+	if err != nil {
+		beego.Error("Failed to get requested user ID:", err)
+		this.CustomAbort(403, "Failed to create permission")
+	}
+
+	// Get machine ID for the permission being made
+	var machineId int64
+	machineId, err = this.GetInt64("mid")
+	if err != nil {
+		beego.Error("Failed to get queried machine ID")
+		this.CustomAbort(403, "Failed to create permission")
+	}
+
+	err = models.DeleteUserPermission(userId, machineId)
+	if err != nil {
+		beego.Error("Failed to delete permission:", err)
+		this.CustomAbort(403, "Failed to delete permission")
+	}
+
 	this.Data["json"] = "ok"
 	this.ServeJson()
 }

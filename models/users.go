@@ -17,8 +17,8 @@ const (
 )
 
 const (
-	ADMIN = "admin"
-	STAFF = "staff"
+	ADMIN  = "admin"
+	STAFF  = "staff"
 	MEMBER = "member"
 )
 
@@ -46,7 +46,8 @@ type Auth struct {
 }
 
 type Permission struct {
-	UserId    int64 `orm:"pk"`
+	Id        int64 `orm:"pk"`
+	UserId    int64
 	MachineId int64
 }
 
@@ -133,14 +134,49 @@ func GetUserPermissions(userId int64) ([]*Permission, error) {
 }
 
 func CreateUserPermission(userId, machineId int64) error {
-	beego.Trace(userId, machineId)
+	beego.Trace("Creating user permission")
 	permission := Permission{}
 	permission.UserId = userId
 	permission.MachineId = machineId
 	beego.Trace(permission)
+
 	o := orm.NewOrm()
-	_, err := o.Insert(&permission)
-	return err
+	created, id, err := o.ReadOrCreate(&permission, "UserId", "MachineId")
+	if err != nil {
+		return err
+	}
+
+	if created {
+		beego.Warning("User permission already exists:", id)
+	} else {
+		beego.Info("User permission created:", id)
+	}
+
+	return nil
+}
+
+func DeleteUserPermission(userId, machineId int64) error {
+	p := Permission{}
+	p.UserId = userId
+	p.MachineId = machineId
+
+	var err error
+
+	o := orm.NewOrm()
+	err = o.Read(&p, "UserId", "MachineId")
+	if err != nil {
+		return err
+	}
+
+	var num int64
+
+	num, err = o.Delete(&p)
+	if err != nil {
+		return err
+	}
+
+	beego.Trace("Num permissions deleted:", num)
+	return nil
 }
 
 // Generate scrypt hash
