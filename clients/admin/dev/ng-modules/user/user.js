@@ -40,20 +40,34 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', 'ran
 
 	$http({
 		method: 'GET',
-		url: '/api/users/' + $scope.user.Id + '/machines',
-		params: {
-			anticache: new Date().getTime()
-		}
+		url: '/api/machines'
 	})
 	.success(function(data) {
-		console.log('Got user machines');
-		console.log(data);
-		$scope.userMachines = data;
+		$scope.machines = data;
+		$http({
+			method: 'GET',
+			url: '/api/users/' + $scope.user.Id + '/machines',
+			params: {
+				anticache: new Date().getTime()
+			}
+		})
+		.success(function(data) {
+			_.each($scope.machines, function(machine) {
+				machine.checked = false;
+				_.each(data, function(userMachine) {
+					if (userMachine.Id === machine.Id) {
+						console.log(machine.Id);
+						machine.checked = true;
+					}
+				});
+			});
+		})
+		.error(function(data, status) {
+			console.log('Could not get user machines');
+		});
 	})
-	.error(function(data, status) {
-		console.log('Could not get user machines');
-		console.log('Data: ' + data);
-		console.log('Status code: ' + status);
+	.error(function() {
+		console.log('Could not get machines');
 	});
 
 	function formatDate(d) {
