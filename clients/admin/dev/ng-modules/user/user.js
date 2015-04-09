@@ -193,23 +193,40 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', 'ran
     }
   };
 
-  $scope.deleteUser = function() {
-    var email = prompt("Do you really want to delete this user? Please enter user's E-Mail address to continue");
-    if (email === $scope.user.Email) {
-      $http({
-        method: 'DELETE',
-        url: '/api/users/' + $scope.user.Id
-      })
-      .success(function(data) {
-        toastr.info('User deleted');
-        $location.path('/users');
-      })
-      .error(function() {
-        toastr.error('Error while trying to delete user');
-      });
-    } else {
-      toastr.warning('Delete User canceled.');
+  $scope.deleteUserPrompt = function() {
+    var token = randomToken.generate();
+    vex.dialog.prompt({
+      message: 'Enter <span class="delete-prompt-token">' + 
+       token + '</span> to delete',
+      placeholder: 'Token',
+      callback: $scope.deleteUserPromptCallback.bind(this, token)
+    });
+  };
+
+  $scope.deleteUserPromptCallback = function(expectedToken, value) {
+    if (value) {    
+      if (value === expectedToken) {
+        $scope.deleteUser();
+      } else {
+        toastr.error('Wrong token');
+      }
+    } else if (value !== false) {
+      toastr.error('No token');
     }
+  };
+
+  $scope.deleteUser = function() {
+    $http({
+      method: 'DELETE',
+      url: '/api/users/' + $scope.user.Id
+    })
+    .success(function() {
+      toastr.success('User deleted');
+      $location.path('/users');
+    })
+    .error(function() {
+      toastr.error('Error while trying to delete user');
+    });
   };
 
   $scope.deleteUserMembershipPrompt = function(userMembershipId) {
@@ -248,7 +265,6 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', 'ran
   };
 
   $scope.saveUser = function() {
-    console.log('user model:', $scope.user);
     $http({
       method: 'PUT',
       url: '/api/users/' + $scope.user.Id,
@@ -258,12 +274,11 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', 'ran
         UserRoles: $scope.userRoles
       },
       transformRequest: function(data) {
-        console.log('data to send:', data);
         return JSON.stringify(data);
       }
     })
     .success(function() {
-      toastr.info('Changes saved.');
+      toastr.success('User updated');
     })
     .error(function() {
       toastr.error('Error while trying to save changes');
