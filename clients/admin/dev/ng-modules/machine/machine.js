@@ -193,14 +193,12 @@ app.controller('MachineCtrl',
   // Update the mapping with fresh IP
   $scope.updateHexabusMapping = function () {
     if ($scope.hexabusMapping) {
-      console.log($scope.hexabusMapping);
       $http({
         method: 'PUT',
         url: '/api/hexabus/' + $scope.machine.Id,
         headers: {'Content-Type': 'application/json' },
         data: $scope.hexabusMapping,
         transformRequest: function(data) {
-          console.log('Machine data to send:', data);
           return JSON.stringify(data);
         },
         params: {
