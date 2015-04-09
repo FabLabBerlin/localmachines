@@ -102,11 +102,11 @@
         </div>
 
         <!-- Machine iterator -->
-        <div class="col-sm-6" ng-repeat="machine in machines">
+        <div class="col-sm-6" ng-repeat="machine in availableMachines">
           <div class="checkbox-inline">
             <label title="{{machine.Description}}">
-              <input type="checkbox" name="machine-permissions" 
-                     value="{{machine.Id}}" ng-model="machine.checked"> 
+              <input type="checkbox" 
+                     ng-model="machine['Checked']"> 
               {{machine.Name}}
             </label>
           </div>
@@ -138,7 +138,7 @@
             <!-- <button type="button" class="btn btn-primary btn-ico">
               <i class="fa fa-edit"></i>
             </button> -->
-            <button type="button" class="btn btn-danger btn-ico" ng-click="deleteUserMembership(userMembership.Id)">
+            <button type="button" class="btn btn-danger btn-ico" ng-click="deleteUserMembershipPrompt(userMembership.Id)">
               <i class="fa fa-close"></i>
             </button>
           </div>
