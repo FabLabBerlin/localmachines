@@ -101,6 +101,8 @@ func (this *UsersController) GetAll() {
 func (this *UsersController) Post() {
 	email := this.GetString("email")
 
+	// TODO: validate email
+
 	sid := this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
 	if !this.IsAdmin(sid) && !this.IsStaff(sid) {
 		beego.Error("Unauthorized attempt to delete user")
