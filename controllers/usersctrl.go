@@ -305,10 +305,12 @@ func (this *UsersController) GetUserMachines() {
 		for _, permission := range permissions {
 			machine, err := models.GetMachine(permission.MachineId)
 			if err != nil {
-				beego.Error("Failed to get machine ID", permission.MachineId)
-				this.CustomAbort(403, "Failed to get user machines")
+				beego.Warning("Failed to get machine ID", permission.MachineId)
+				// Just don't add the machine permission if not exists in db
+				//this.CustomAbort(403, "Failed to get user machines")
+			} else {
+				machines = append(machines, machine)
 			}
-			machines = append(machines, machine)
 		}
 	} else {
 
