@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"github.com/astaxie/beego"
 	"github.com/kr15h/fabsmith/models"
 )
@@ -105,6 +106,55 @@ func (this *HexabusController) Delete() {
 	if err != nil {
 		beego.Error("Failed to delete hexabus mapping:", err)
 		this.CustomAbort(403, "Failed to delete hexabus mapping")
+	}
+
+	this.Data["json"] = "ok"
+	this.ServeJson()
+}
+
+// @Title Update
+// @Description Update hexabus mapping by by machine ID
+// @Param	mid		path 	int	true		"Machine ID"
+// @Param	model	body	models.HexabusMapping	true	"Hexabus mapping model"
+// @Success 200 string ok
+// @Failure	403	Failed to update mapping
+// @Failure	401	Not authorized
+// @router /:mid [put]
+func (this *HexabusController) Update() {
+
+	if !this.IsAdmin() {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	var err error
+
+	// Attempt to decode passed json
+	dec := json.NewDecoder(this.Ctx.Request.Body)
+	req := models.HexabusMapping{}
+	if err = dec.Decode(&req); err != nil {
+		beego.Error("Failed to decode json:", err)
+		this.CustomAbort(403, "Failed to update mapping")
+	}
+
+	var mid int64
+
+	mid, err = this.GetInt64(":mid")
+	if err != nil {
+		beego.Error("Failed to get :mid:", err)
+		this.CustomAbort(403, "Failed to update mapping")
+	}
+
+	// Check if IDs match
+	if mid != req.MachineId {
+		beego.Error("mid and model machine ID do not match:", err)
+		this.CustomAbort(403, "Failed to update mapping")
+	}
+
+	err = models.UpdateHexabusMapping(&req)
+	if err != nil {
+		beego.Error("Failed updating mapping:", err)
+		this.CustomAbort(403, "Failed to update mapping")
 	}
 
 	this.Data["json"] = "ok"

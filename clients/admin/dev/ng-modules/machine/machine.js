@@ -62,8 +62,8 @@ app.controller('MachineCtrl',
       }
     })
     .success(function(data) {
-      console.log(data);
       toastr.success('Update successful');
+      //$scope.updateHexabusMapping();
     })
     .error(function(data) {
       console.log(data);
@@ -72,7 +72,6 @@ app.controller('MachineCtrl',
   }; // updateMachine()
 
   $scope.deleteMachinePrompt = function() {
-    console.log('delete machine prompt');
 
     // You have to add the <random-token></random-token> directive somewhere
     // in HTML in order to make this work
@@ -117,6 +116,8 @@ app.controller('MachineCtrl',
     });
   };
 
+  // TODO: move hexabus mapping to another module
+
   $scope.getHexabusMapping = function() {
     $http({
       method: 'GET',
@@ -127,6 +128,7 @@ app.controller('MachineCtrl',
     })
     .success(function(mappingModel) {
       $scope.hexabusMapping = mappingModel;
+      $scope.hexabusMappingChanged = false;
     }); // no error - the mapping will just not be visible
   };
 
@@ -149,7 +151,29 @@ app.controller('MachineCtrl',
     
   };
 
-  $scope.removeHexabusMapping = function() {
+  $scope.deleteHexabusMappingPrompt = function() {
+    $scope.generateRandomToken();
+    vex.dialog.prompt({
+      message: 'Enter <span class="delete-prompt-token">' + 
+       $scope.randomToken + '</span> to delete',
+      placeholder: 'Token',
+      callback: $scope.deleteHexabusMappingPromptCallback
+    });
+  };
+
+  $scope.deleteHexabusMappingPromptCallback = function(value) {
+    if (value) {    
+      if (value === $scope.randomToken) {
+        $scope.deleteHexabusMapping();
+      } else {
+        toastr.error('Wrong token');
+      }
+    } else if (value !== false) {
+      toastr.error('No token');
+    }
+  };
+
+  $scope.deleteHexabusMapping = function() {
     $http({
       method: 'DELETE',
       url: '/api/hexabus/' + $scope.machine.Id,
@@ -164,16 +188,32 @@ app.controller('MachineCtrl',
     .error(function() {
       toastr.error('Failed to delete mapping');
     });
-
-    
   };
 
   // Update the mapping with fresh IP
   $scope.updateHexabusMapping = function () {
     if ($scope.hexabusMapping) {
-      // Update mapping in the database
-    } else {
-      // Delete the mapping from database
+      console.log($scope.hexabusMapping);
+      $http({
+        method: 'PUT',
+        url: '/api/hexabus/' + $scope.machine.Id,
+        headers: {'Content-Type': 'application/json' },
+        data: $scope.hexabusMapping,
+        transformRequest: function(data) {
+          console.log('Machine data to send:', data);
+          return JSON.stringify(data);
+        },
+        params: {
+          anticache: new Date().getTime()
+        }
+      })
+      .success(function() {
+        $scope.hexabusMappingChanged = false;
+        toastr.success('Hexabus mapping updated');
+      })
+      .error(function() {
+        toastr.error('Failed to update hexabus mapping');
+      });
     }
   };
 

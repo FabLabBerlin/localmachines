@@ -97,20 +97,32 @@
           <div class="form-group">
             <input type="text" id="machine-hexabus-ip" class="form-control"
                    placeholder="IPv6 Address"
-                   ng-model="hexabusMapping.HexabusIp">
+                   ng-model="hexabusMapping.SwitchIp"
+                   ng-change="hexabusMappingChanged=true">
           </div>
         </div>
-        <div class="col-sm-6">
+        <div class="col-sm-6" ng-hide="hexabusMappingChanged">
           <div class="form-group">
             <button class="btn btn-danger btn-block"
-                    ng-click="removeHexabusMapping()">
+                    ng-click="deleteHexabusMappingPrompt()">
               <i class="fa fa-remove"></i>
               &nbsp;Delete Mapping
             </button>
           </div>
         </div>
+        <div class="col-sm-6" ng-show="hexabusMappingChanged">
+          <div class="form-group">
+            <button class="btn btn-primary btn-block"
+                    ng-click="updateHexabusMapping()">
+              <i class="fa fa-remove"></i>
+              &nbsp;Update Mapping
+            </button>
+          </div>
+        </div>
       </div>
+      
     </div>
+
 
     <!-- If mapping and IP are not set, this is visible -->
     <div class="col-sm-3" ng-hide="hexabusMapping">

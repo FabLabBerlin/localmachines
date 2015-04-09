@@ -69,3 +69,14 @@ func DeleteHexabusMapping(machineId int64) error {
 	beego.Trace("Affected num rows:", num)
 	return nil
 }
+
+// Update hexabus mapping
+func UpdateHexabusMapping(mapping *HexabusMapping) error {
+	o := orm.NewOrm()
+	num, err := o.Update(mapping)
+	if err != nil {
+		return err
+	}
+	beego.Trace("Affected num rows while updating:", num)
+	return nil
+}
