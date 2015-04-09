@@ -13,9 +13,9 @@ mod.service('randomToken', function() {
     'RandomSk8ter',
     'H8tersGonn4'
   ];
-  var id = Math.round(Math.random() * (tokens.length-1));
 
   this.generate = function() {
+    var id = Math.round(Math.random() * (tokens.length-1));
     return tokens[id];
   };
 

@@ -72,14 +72,8 @@ app.controller('MachineCtrl',
   }; // updateMachine()
 
   $scope.deleteMachinePrompt = function() {
-
-    // You have to add the <random-token></random-token> directive somewhere
-    // in HTML in order to make this work
     var token = randomToken.generate();
-
     vex.dialog.prompt({
-      // Unfortunately it is not possible to parse directives inside
-      // vex messages, so we just get the random token
       message: 'Enter <span class="delete-prompt-token">' + 
        token + '</span> to delete',
       placeholder: 'Token',
@@ -152,18 +146,18 @@ app.controller('MachineCtrl',
   };
 
   $scope.deleteHexabusMappingPrompt = function() {
-    $scope.generateRandomToken();
+    var token = randomToken.generate();
     vex.dialog.prompt({
       message: 'Enter <span class="delete-prompt-token">' + 
-       $scope.randomToken + '</span> to delete',
+       token + '</span> to delete',
       placeholder: 'Token',
-      callback: $scope.deleteHexabusMappingPromptCallback
+      callback: $scope.deleteHexabusMappingPromptCallback.bind(this, token)
     });
   };
 
-  $scope.deleteHexabusMappingPromptCallback = function(value) {
+  $scope.deleteHexabusMappingPromptCallback = function(expectedToken, value) {
     if (value) {    
-      if (value === $scope.randomToken) {
+      if (value === expectedToken) {
         $scope.deleteHexabusMapping();
       } else {
         toastr.error('Wrong token');
