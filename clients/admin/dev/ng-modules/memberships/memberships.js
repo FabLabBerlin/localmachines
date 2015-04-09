@@ -60,7 +60,6 @@ app.controller('MembershipsCtrl', ['$scope', '$http', '$location',
   };
 
   $scope.addMembership = function(membershipName) {
-    toastr.warning('adding membership');
     $http({
       method: 'POST',
       url: '/api/memberships',
