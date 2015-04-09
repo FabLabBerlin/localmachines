@@ -130,7 +130,7 @@
     </thead>
     <tbody>
       <tr ng-repeat="userMembership in userMemberships">
-        <td>{{userMembership.Id}}</td>
+        <td>{{membershipsById[userMembership.MembershipId].Title}}</td>
         <td>{{userMembership.StartDate}}</td>
         <td>{{userMembership.EndDate}}</td>
         <td>
@@ -153,9 +153,9 @@
         <select class="form-control" id="user-select-membership" placeholder="Membership">
           <!-- These have to be loaded via API -->
           <option value="" selected disabled>Select Membership</option>
-          <option>Single Day Basic</option>
-          <option>Single Month Basic</option>
-          <option>6 Month Basic</option>
+          <option ng-repeat="membership in memberships" value={{membership.Id}}>
+            {{membership.Title}}
+          </option>
         </select>
       </div>
     </div>
@@ -163,7 +163,7 @@
     <div class="col-sm-3">
       <div class="form-group">
         <div class="input-group">
-          <input class="form-control datepicker" placeholder="Start Date">
+          <input id="adm-add-user-membership-start-date" class="form-control datepicker" placeholder="Start Date">
           <div class="input-group-addon">
             <i class="fa fa-calendar"></i>
           </div>
@@ -172,19 +172,8 @@
     </div>
 
     <div class="col-sm-3">
-      <div class="form-group">
-        <div class="input-group">
-          <input class="form-control datepicker" placeholder="End Date">
-          <div class="input-group-addon">
-            <i class="fa fa-calendar"></i>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-sm-3">
-      <button class="btn btn-primary btn-block" id="user-add-membership-btn">
-        <i class="fa fa-plus"></i>&nbsp;Add Membership
+      <button class="btn btn-primary btn-block" id="user-add-membership-btn" ng-click="addUserMembership()">
+        <i class="fa fa-plus"></i>&nbsp;Add User Membership
       </button>
     </div>
   </div>

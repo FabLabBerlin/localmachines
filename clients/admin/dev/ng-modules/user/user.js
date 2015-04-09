@@ -71,6 +71,26 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', func
 
 	$http({
 		method: 'GET',
+		url: '/api/memberships',
+		params: {
+			anticache: new Date().getTime()
+		}
+	})
+	.success(function(data) {
+		$scope.memberships = data;
+		$scope.membershipsById = {};
+		_.each($scope.memberships, function(m) {
+			$scope.membershipsById[m.Id] = m;
+		});
+	})
+	.error(function(data, status) {
+		console.log('Could not get memberships');
+		console.log('Data: ' + data);
+		console.log('Status code: ' + status);
+	});
+
+	$http({
+		method: 'GET',
 		url: '/api/users/' + $scope.user.Id + '/memberships',
 		params: {
 			anticache: new Date().getTime()
@@ -95,6 +115,29 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', func
 		console.log('Data: ' + data);
 		console.log('Status code: ' + status);
 	});
+
+	$scope.addUserMembership = function() {
+		var startDate = $('#adm-add-user-membership-start-date').val();
+		if (!startDate) {
+			toastr.error('Please select a Start Date');
+			return;
+		}
+		startDate = new Date(startDate);
+		startDate = formatDate(startDate);
+		var userMembershipId = $('#user-select-membership').val();
+		if (!userMembershipId) {
+			toastr.error('Please select a Membership');
+			return;
+		}
+		$http({
+			method: 'POST',
+			url: '/api/users/' + $scope.user.Id + '/memberships',
+			data: {
+				StartDate: startDate,
+				UserMembershipId: userMembershipId
+			}
+		})
+	};
 
 	$scope.cancel = function() {
 		if (confirm('All changes will be discarded, click ok to continue.')) {
