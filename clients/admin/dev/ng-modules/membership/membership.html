@@ -53,7 +53,7 @@
 
           <div class="col-sm-6" ng-repeat="machine in machines">
             <div class="checkbox-inline">
-              <label>
+              <label title="{{machine.Description}}">
                 <input type="checkbox"
                        ng-model="machine['Checked']">
                 {{machine.Name}}
