@@ -198,11 +198,6 @@ module.exports = function (grunt) {
 					expand: true,
 					flatten: true
 				}, {
-					src: 'dev/ng-modules/randomtoken/randomtoken.html', 
-					dest: 'prod/ng-modules/randomtoken/',
-					expand: true,
-					flatten: true
-				}, {
 					src: 'dev/assets/img/*',
 					dest: 'prod/assets/img/',
 					filter: 'isFile',
