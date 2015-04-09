@@ -177,6 +177,9 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', 'ran
       data: {
         StartDate: startDate,
         UserMembershipId: userMembershipId
+      },
+      params: {
+        anticache: new Date().getTime()
       }
     })
     .success(function() {
@@ -253,7 +256,10 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', 'ran
   $scope.deleteUserMembership = function(userMembershipId) {
     $http({
       method: 'DELETE',
-      url: '/api/users/' + $scope.user.Id + '/memberships/' + userMembershipId
+      url: '/api/users/' + $scope.user.Id + '/memberships/' + userMembershipId,
+      params: {
+        anticache: new Date().getTime()
+      }
     })
     .success(function(data) {
       toastr.success('Membership deleted');
@@ -318,6 +324,9 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', 'ran
       },
       transformRequest: function(data) {
         return JSON.stringify(data);
+      },
+      params: {
+        anticache: new Date().getTime()
       }
     })
     .success(function() {
