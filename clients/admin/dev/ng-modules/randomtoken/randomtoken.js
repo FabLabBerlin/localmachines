@@ -1,3 +1,7 @@
+(function(){
+
+'use strict';
+
 var mod = angular.module("fabsmith.admin.randomtoken", []);
 
 mod.directive('randomToken', function() {
@@ -24,3 +28,5 @@ mod.directive('randomToken', function() {
     }]
   };
 });
+
+})(); // closure
