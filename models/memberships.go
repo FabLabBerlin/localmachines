@@ -13,7 +13,7 @@ type Membership struct {
 	ShortName             string `orm:"size(100)"`
 	Duration              int
 	Unit                  string `orm:"size(100)"`
-	Price                 int
+	Price                 float32
 	MachinePriceDeduction int
 	AffectedMachines      string `orm:"type(text)"`
 }

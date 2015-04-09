@@ -88,9 +88,9 @@ app.controller('MembershipCtrl',
 
     membership.AffectedMachines = affectedMachines;
     membership.Price = parseFloat(membership.Price);
-    membership.Duration = parseFloat(membership.Duration);
+    membership.Duration = parseInt(membership.Duration);
     membership.MachinePriceDeduction = 
-     parseFloat(membership.MachinePriceDeduction);
+     parseInt(membership.MachinePriceDeduction);
 
     $http({
       method: 'PUT',
