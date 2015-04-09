@@ -35,6 +35,11 @@ func init() {
 				&controllers.ActivationsController{},
 			),
 		),
+		beego.NSNamespace("/hexabus",
+			beego.NSInclude(
+				&controllers.HexabusController{},
+			),
+		),
 	)
 	beego.AddNamespace(ns)
 }
