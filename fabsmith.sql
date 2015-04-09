@@ -121,7 +121,7 @@ CREATE TABLE `machines` (
   `price` double unsigned NOT NULL,
   `price_unit` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -130,7 +130,7 @@ CREATE TABLE `machines` (
 
 LOCK TABLES `machines` WRITE;
 /*!40000 ALTER TABLE `machines` DISABLE KEYS */;
-INSERT INTO `machines` VALUES (2,'MakerBot 3D printer','MB3DP','NYC 3D printer 4 real and 4 life.','',1,'',NULL,15,'hour'),(3,'Zing Laser Cutter','ZLC','Cuts wood, plastic, paper. Fast.','',1,'',NULL,0,'minute'),(4,'CNC Router',NULL,'Cuts steel, plutanium, uranium. Drill on steroids.',NULL,0,'Something bad happened. With more text and more things that can go wrong.','0000-00-00 00:00:00',0,'minute'),(5,'Hand Drill','HD','A man is a man if he does not know how to handle one.','',1,'',NULL,0,'minute'),(8,'Red Lamp','RL','Red lamp for testing switches','',1,'',NULL,1,'hour');
+INSERT INTO `machines` VALUES (2,'MakerBot 3D printer','MB3DP','NYC 3D printer 4 real and 4 life.','',1,'',NULL,16,'hour'),(3,'Zing Laser Cutter','ZLC','Cuts wood, plastic, paper. Fast.','',1,'',NULL,1,'minute'),(4,'CNC Router','CNC','Cuts steel, plutanium, uranium. Drill on steroids.','',0,'',NULL,15,'hour'),(5,'Hand Drill','HD','A man is a man if he does not know how to handle one.','',1,'',NULL,1,'hour'),(8,'Red Lamp','RL','Red lamp for testing switches','',1,'',NULL,1,'hour'),(10,'Uber Cutter','UC4','With this cutter you can cut the moon off the sky.','',1,'',NULL,20,'hour'),(11,'My Mega Machine','MMM','You can make everything with this.','',1,'',NULL,10,'hour');
 /*!40000 ALTER TABLE `machines` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -147,10 +147,11 @@ CREATE TABLE `membership` (
   `short_name` varchar(100) NOT NULL DEFAULT '',
   `duration` int(11) NOT NULL,
   `unit` varchar(100) NOT NULL,
-  `price` int(11) NOT NULL,
+  `price` double NOT NULL,
   `machine_price_deduction` int(11) NOT NULL,
+  `affected_machines` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -159,7 +160,7 @@ CREATE TABLE `membership` (
 
 LOCK TABLES `membership` WRITE;
 /*!40000 ALTER TABLE `membership` DISABLE KEYS */;
-INSERT INTO `membership` VALUES (1,'6 Months Basic','6MB',180,'days',1000,50),(2,'1 Month Basic','SMB',30,'days',150,50),(3,'1 Day Basic','SDB',1,'days',40,50);
+INSERT INTO `membership` VALUES (1,'6 Months Basic','6MB',160,'days',400,50,'[2,3,4,5,8,10]'),(2,'1 Month Basic','SMB',30,'days',100,50,'[2,3,4,5,8,10]'),(3,'1 Day Basic','SDB',1,'days',20,50,'[2,3,4,8,10]'),(12,'Partnership','PS',0,'days',1.2,20,'[2,3,8,10,11]'),(13,'Guest','GST',10,'days',10,30,'[3,5]');
 /*!40000 ALTER TABLE `membership` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -281,4 +282,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-04-07 18:52:51
+-- Dump completed on 2015-04-09 11:38:31
