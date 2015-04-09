@@ -63,6 +63,19 @@ func GetUserMemberships(userId int64) (ums []*UserMembership, err error) {
 	return
 }
 
+// Delete membership from the database
+func DeleteUserMembership(userMembershipId int64) error {
+	var num int64
+	var err error
+	o := orm.NewOrm()
+	num, err = o.Delete(&UserMembership{Id: userMembershipId})
+	if err != nil {
+		return err
+	}
+	beego.Trace("Deleted num rows:", num)
+	return nil
+}
+
 // Creates a new membership in the database
 func CreateMembership(membershipName string) (int64, error) {
 	o := orm.NewOrm()

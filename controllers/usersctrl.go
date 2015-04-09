@@ -5,6 +5,7 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/kr15h/fabsmith/models"
+	"time"
 )
 
 type UsersController struct {
@@ -324,6 +325,60 @@ func (this *UsersController) GetUserMachines() {
 	this.ServeJson()
 }
 
+// @Title PostUserMemberships
+// @Description Post user membership
+// @Param	uid		path 	int	true		"User ID"
+// @Success 200 {object} models.UserMembership
+// @Failure	403	Failed to get user memberships
+// @Failure	401	Not authorized
+// @router /:uid/memberships [post]
+func (this *UsersController) PostUserMemberships() {
+	// Check if logged in
+	suid := this.GetSession(SESSION_FIELD_NAME_USER_ID)
+	if suid == nil {
+		beego.Info("Not logged in")
+		this.CustomAbort(401, "Not logged in")
+	}
+
+	if !this.IsAdmin() {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	// Get requested user ID
+	ruid, err := this.GetInt64(":uid")
+	if err != nil {
+		beego.Error("Failed to get :uid")
+		this.CustomAbort(403, "Failed to get :uid")
+	}
+
+	// Get requested user membership Id
+	userMembershipId, err := this.GetInt64("UserMembershipId")
+	if err != nil {
+		beego.Error("Failed to get :uid")
+		this.CustomAbort(403, "Failed to get :uid")
+	}
+
+	// Get requested start date
+	startDate, err := time.Parse("2006-01-02", this.GetString("StartDate"))
+	if err != nil {
+		beego.Error("Failed to parse startDate")
+		this.CustomAbort(400, "Failed to obtain start date")
+	}
+
+	o := orm.NewOrm()
+	um := models.UserMembership{
+		UserId:       ruid,
+		MembershipId: userMembershipId,
+		StartDate:    startDate,
+	}
+
+	if _, err := o.Insert(&um); err != nil {
+		beego.Error("Error creating new user membership: ", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+}
+
 // @Title GetUserMemberships
 // @Description Get user memberships
 // @Param	uid		path 	int	true		"User ID"
@@ -373,6 +428,32 @@ func (this *UsersController) GetUserMemberships() {
 	// Serve machines
 	this.Data["json"] = ums
 	this.ServeJson()
+}
+
+// @Title DeleteUserMembership
+// @Description Delete user membership
+// @Param	uid		path 	int	true		"User ID"
+// @Param	umid	path	int	true		"User Membership ID"
+// @Success 200
+// @Failure	403	Failed to get user memberships
+// @Failure	401	Not authorized
+// @router /:uid/memberships/:umid [delete]
+func (this *UsersController) DeleteUserMembership() {
+	if !this.IsAdmin() {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	umid, err := this.GetInt64(":umid")
+	if err != nil {
+		beego.Error("Failed to get :umid")
+		this.CustomAbort(403, "Failed to get :umid")
+	}
+
+	if err := models.DeleteUserMembership(umid); err != nil {
+		beego.Error("Failed to delete user membership")
+		this.CustomAbort(403, "Failed to :umid")
+	}
 }
 
 // @Title GetUserName

@@ -2,7 +2,7 @@
 
 'use strict';
 
-var app = angular.module('fabsmith.admin.membership', ['ngRoute', 'ngCookies']);
+var app = angular.module('fabsmith.admin.membership', ['ngRoute', 'ngCookies', 'fabsmith.admin.randomtoken']);
 
 app.config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/membership/:membershipId', {
@@ -12,8 +12,8 @@ app.config(['$routeProvider', function($routeProvider) {
 }]); // app.config
 
 app.controller('MembershipCtrl', 
- ['$scope', '$http', '$location', '$filter', '$routeParams',
- function($scope, $http, $location, $filter, $routeParams) {
+ ['$scope', '$http', '$location', '$filter', '$routeParams', 'randomToken',
+ function($scope, $http, $location, $filter, $routeParams, randomToken) {
 
   $scope.machines = [];
   $scope.membership = {
@@ -117,21 +117,21 @@ app.controller('MembershipCtrl',
 
     // You have to add the <random-token></random-token> directive somewhere
     // in HTML in order to make this work
-    $scope.generateRandomToken();
+    var token = randomToken.generate();
 
     vex.dialog.prompt({
       // Unfortunately it is not possible to parse directives inside
       // vex messages, so we just get the random token
       message: 'Enter <span class="delete-prompt-token">' + 
-       $scope.randomToken + '</span> to delete',
+       token + '</span> to delete',
       placeholder: 'Token',
-      callback: $scope.deleteMembershipPromptCallback
+      callback: $scope.deleteMembershipPromptCallback.bind(this, token)
     });
   };
 
-  $scope.deleteMembershipPromptCallback = function(value) {
+  $scope.deleteMembershipPromptCallback = function(expectedToken, value) {
     if (value) {    
-      if (value === $scope.randomToken) {
+      if (value === expectedToken) {
         $scope.deleteMembership();
       } else {
         toastr.error('Wrong token');
