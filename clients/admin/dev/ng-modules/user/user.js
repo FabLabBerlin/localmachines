@@ -1,7 +1,7 @@
 (function(){
 
 'use strict';
-var app = angular.module('fabsmith.admin.user', ['ngRoute', 'ngCookies']);
+var app = angular.module('fabsmith.admin.user', ['ngRoute', 'ngCookies', 'fabsmith.admin.randomtoken']);
 
 app.config(['$routeProvider', function($routeProvider) {
 	$routeProvider.when('/users/:userId', {
@@ -10,7 +10,7 @@ app.config(['$routeProvider', function($routeProvider) {
 	});
 }]); // app.config
 
-app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', function($scope, $routeParams, $http, $location) {
+app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', 'randomToken', function($scope, $routeParams, $http, $location, randomToken) {
 	
 	$('.datepicker').pickadate();
 
@@ -82,36 +82,39 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', func
 		_.each($scope.memberships, function(m) {
 			$scope.membershipsById[m.Id] = m;
 		});
-	})
-	.error(function(data, status) {
-		console.log('Could not get memberships');
-		console.log('Data: ' + data);
-		console.log('Status code: ' + status);
-	});
 
-	$http({
-		method: 'GET',
-		url: '/api/users/' + $scope.user.Id + '/memberships',
-		params: {
-			anticache: new Date().getTime()
-		}
-	})
-	.success(function(data) {
-		console.log('Got user memberships');
-		console.log(data);
-		$scope.userMemberships = _.map(data, function(userMembership) {
-			userMembership.StartDate = new Date(Date.parse(userMembership.StartDate));
-			_.merge(userMembership, {
-				EndDate: new Date(userMembership.StartDate)
+		$http({
+			method: 'GET',
+			url: '/api/users/' + $scope.user.Id + '/memberships',
+			params: {
+				anticache: new Date().getTime()
+			}
+		})
+		.success(function(data) {
+			console.log('Got user memberships');
+			console.log(data);
+			$scope.userMemberships = _.map(data, function(userMembership) {
+				userMembership.StartDate = new Date(Date.parse(userMembership.StartDate));
+				_.merge(userMembership, {
+					EndDate: new Date(userMembership.StartDate)
+				});
+				console.log('userMembership.Id: ', userMembership.Id);
+				var membership = $scope.membershipsById[userMembership.MembershipId];
+				console.log('membership: ', membership);
+				userMembership.EndDate.setDate(userMembership.StartDate.getDate() + membership.Duration); 
+				userMembership.StartDate = formatDate(userMembership.StartDate);
+				userMembership.EndDate = formatDate(userMembership.EndDate);
+				return userMembership;
 			});
-			userMembership.EndDate.setDate(userMembership.StartDate.getDate() + 180); 
-			userMembership.StartDate = formatDate(userMembership.StartDate);
-			userMembership.EndDate = formatDate(userMembership.EndDate);
-			return userMembership;
+		})
+		.error(function(data, status) {
+			console.log('Could not get user memberships');
+			console.log('Data: ' + data);
+			console.log('Status code: ' + status);
 		});
 	})
 	.error(function(data, status) {
-		console.log('Could not get user memberships');
+		console.log('Could not get memberships');
 		console.log('Data: ' + data);
 		console.log('Status code: ' + status);
 	});
@@ -137,6 +140,13 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', func
 				UserMembershipId: userMembershipId
 			}
 		})
+		.success(function() {
+			toastr.info('Successfully created user membership');
+			window.location.reload(true);
+		})
+		.error(function() {
+			toastr.error('Error while trying to create new User Membership');
+		});
 	};
 
 	$scope.cancel = function() {
@@ -162,6 +172,34 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', func
 		} else {
 			toastr.warning('Delete User canceled.');
 		}
+	};
+
+	$scope.deleteUserMembership = function(userMembershipId) {
+		var token = randomToken.generate();
+		vex.dialog.prompt({
+			message: 'Enter <span class="delete-prompt-token">' +
+			token + '</span> to delete',
+			placeholder: 'Token',
+			callback: function(value) {
+				if (!value) {
+					toastr.error('No token');
+				} else if (value === token) {
+					$http({
+						method: 'DELETE',
+						url: '/api/users/' + $scope.user.Id + '/memberships/' + userMembershipId
+					})
+					.success(function(data) {
+						toastr.info('Successfully deleted user membership');
+						window.location.reload(true);
+					})
+					.error(function() {
+						toastr.error('Error while trying to delete user membership');
+					});
+				} else {
+					toastr.error('Wrong token');
+				}
+			}
+		});
 	};
 
 	$scope.saveUser = function() {

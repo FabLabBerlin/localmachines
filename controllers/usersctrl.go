@@ -430,6 +430,32 @@ func (this *UsersController) GetUserMemberships() {
 	this.ServeJson()
 }
 
+// @Title DeleteUserMembership
+// @Description Delete user membership
+// @Param	uid		path 	int	true		"User ID"
+// @Param	umid	path	int	true		"User Membership ID"
+// @Success 200
+// @Failure	403	Failed to get user memberships
+// @Failure	401	Not authorized
+// @router /:uid/memberships/:umid [delete]
+func (this *UsersController) DeleteUserMembership() {
+	if !this.IsAdmin() {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	umid, err := this.GetInt64(":umid")
+	if err != nil {
+		beego.Error("Failed to get :umid")
+		this.CustomAbort(403, "Failed to get :umid")
+	}
+
+	if err := models.DeleteUserMembership(umid); err != nil {
+		beego.Error("Failed to delete user membership")
+		this.CustomAbort(403, "Failed to :umid")
+	}
+}
+
 // @Title GetUserName
 // @Description Get user name data only
 // @Param	uid		path 	int	true		"User ID"
