@@ -124,7 +124,8 @@
           <div class="checkbox-inline">
             <label title="{{machine.Description}}">
               <input type="checkbox" 
-                     ng-model="machine['Checked']"> 
+                     ng-model="machine['Checked']"
+                     ng-disabled="machine['Disabled']"> 
               {{machine.Name}}
             </label>
           </div>

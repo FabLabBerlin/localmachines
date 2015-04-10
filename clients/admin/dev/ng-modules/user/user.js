@@ -10,7 +10,9 @@ app.config(['$routeProvider', function($routeProvider) {
   });
 }]); // app.config
 
-app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', 'randomToken', function($scope, $routeParams, $http, $location, randomToken) {
+app.controller('UserCtrl', 
+ ['$scope', '$routeParams', '$http', '$location', 'randomToken', 
+ function($scope, $routeParams, $http, $location, randomToken) {
   
   // Init scope variables
   $('.datepicker').pickadate();
@@ -55,14 +57,24 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', 'ran
     })
     .success(function(availableMachines) {
       $scope.availableMachines = availableMachines;
-      $scope.loadUserMachinePermissions();
+
+      if ($scope.user.UserRole === 'admin') {
+        _.each($scope.availableMachines, function(machine){
+          machine.Disabled = true;
+          machine.Checked = true;
+        });
+        $scope.getAvailableMemberships();
+      } else {
+        $scope.loadUserMachinePermissions($scope.getAvailableMemberships);
+      }
+      
     })
     .error(function() {
       console.log('Could not get machines');
     });
   };
 
-  $scope.loadUserMachinePermissions = function() {
+  $scope.loadUserMachinePermissions = function(callback) {
     $http({
       method: 'GET',
       url: '/api/users/' + $scope.user.Id + '/machines',
@@ -273,7 +285,11 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', 'ran
   };
 
   $scope.saveUser = function() {
-    $scope.updateUserMachinePermissions($scope.updateUser);
+    if ($scope.user.UserRole === 'admin') {
+      $scope.updateUser();
+    } else {
+      $scope.updateUserMachinePermissions($scope.updateUser);
+    }
   };
 
   $scope.updateUser = function(callback) {
