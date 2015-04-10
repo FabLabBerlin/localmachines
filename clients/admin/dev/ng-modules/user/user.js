@@ -79,7 +79,10 @@ app.controller('UserCtrl',
     .success(function(userMachines) {
 
       $scope.userMachines = userMachines;
-      $scope.getAvailableMemberships();
+
+      if (callback) {
+        callback();
+      }
       
       _.each($scope.availableMachines, function(machine) {
         machine.Checked = false;
@@ -352,6 +355,21 @@ app.controller('UserCtrl',
 
   $scope.updateUserRoles = function(value) {
     console.log('value:',value);
+  };
+
+  $scope.updateAdminStatus = function() {
+    if ($scope.user.Admin) {
+      _.each($scope.availableMachines, function(machine){
+        machine.Checked = true;
+        machine.Disabled = true;
+      });
+    } else {
+      _.each($scope.availableMachines, function(machine){
+        machine.Checked = false;
+        machine.Disabled = false;
+      });
+      $scope.loadUserMachinePermissions();
+    }
   };
 }]); // app.controller
 

@@ -106,7 +106,10 @@
 
           <div class="checkbox-inline">
             <label>
-              <input type="checkbox" ng-model="user.Admin">Admin
+              <input type="checkbox" 
+                     ng-model="user.Admin"
+                     ng-change="updateAdminStatus()">
+              Admin
             </label>
           </div>
         </div>
