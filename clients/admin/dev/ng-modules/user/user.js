@@ -306,6 +306,7 @@ app.controller('UserCtrl',
     .error(function(data) {
       if (data === 'lastAdmin') {
         $scope.user.Admin = true;
+        $scope.updateAdminStatus();
         toastr.error('You are the last remaining admin. Remember - power comes with great responsibility!')
       } else {
         toastr.error('Error while trying to save changes');
