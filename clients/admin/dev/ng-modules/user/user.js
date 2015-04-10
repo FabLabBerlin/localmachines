@@ -27,6 +27,9 @@ app.controller('UserCtrl',
     })
     .success(function(user) {
       $scope.user = user;
+      if (user.UserRole === 'admin') {
+        user.Admin = true;
+      }
       $scope.loadAvailableMachines();
     })
     .error(function(data, status) {
@@ -272,6 +275,13 @@ app.controller('UserCtrl',
   };
 
   $scope.updateUser = function(callback) {
+
+    if ($scope.user.Admin) {
+      $scope.user.UserRole = 'admin';
+    } else {
+      $scope.user.UserRole = '';
+    }
+
     $http({
       method: 'PUT',
       url: '/api/users/' + $scope.user.Id,

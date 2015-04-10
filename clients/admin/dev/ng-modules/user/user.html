@@ -79,9 +79,11 @@
     <div class="col-sm-6">
       <div class="row">
         <div class="col-sm-12">
-          <h2>Roles</h2>
+          <h2>Role</h2>
         </div>
         <div class="col-sm-6">
+
+          <!--
           <div class="radio">
             <label>
               <input type="radio" name="user-role" value="admin" ng-model="user.UserRole">
@@ -100,12 +102,16 @@
               Member
             </label>
           </div>
+          -->
+
+          <div class="checkbox-inline">
+            <label>
+              <input type="checkbox" ng-model="user.Admin">Admin
+            </label>
+          </div>
         </div>
         <div class="col-sm-6 hidden-xs">
-          <div class="tip">Admin: Do everything<br>
-                           Staff: Limited access<br>
-                           Member: Activate machines
-          </div>
+          <div class="tip">Admins can access the admin panel - others can not.</div>
         </div>
       </div>
     </div>
