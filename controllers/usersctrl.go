@@ -247,15 +247,12 @@ func (this *UsersController) Put() {
 		beego.Error("Failed to decode json")
 		this.CustomAbort(400, "Failed to decode json")
 	}
-	o := orm.NewOrm()
-	if _, err := o.Update(&req.User); err != nil {
-		beego.Error("Failed to update user")
-		this.CustomAbort(400, "Failed to update user")
+
+	err := models.UpdateUser(&req.User)
+	if err != nil {
+		beego.Error("Failed to update user:", err)
+		this.CustomAbort(403, "lastAdmin")
 	}
-	/*if _, err := o.Update(&req.UserRoles); err != nil {
-		beego.Error("Failed to update user roles", err)
-		this.CustomAbort(400, "Failed to update user roles")
-	}*/
 }
 
 // @Title GetUserMachines

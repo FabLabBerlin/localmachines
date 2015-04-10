@@ -39,6 +39,10 @@ type User struct {
 	UserRole    string `orm:"size(100)"`
 }
 
+func (this *User) TableName() string {
+	return "user"
+}
+
 type Auth struct {
 	UserId int64  `orm:"pk"`
 	NfcKey string `orm:"size(100)"`
@@ -129,6 +133,31 @@ func DeleteUserAuth(userId int64) error {
 	return err
 }
 
+// Update user
+func UpdateUser(user *User) error {
+	o := orm.NewOrm()
+
+	// Check if not last admin in case UserRole is not admin
+	if user.UserRole != "admin" {
+		numAdmins, err := o.QueryTable(user.TableName()).
+			Filter("UserRole", "admin").Count()
+		if err != nil {
+			return err
+		}
+		beego.Trace("Number of admins:", numAdmins)
+		if numAdmins <= 1 {
+			return errors.New("Only one admin left")
+		}
+	}
+
+	if _, err := o.Update(user); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Deletes user
 func DeleteUser(userId int64) error {
 	o := orm.NewOrm()
 	_, err := o.Delete(&User{Id: userId})

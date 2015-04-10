@@ -303,8 +303,13 @@ app.controller('UserCtrl',
       }
       toastr.success('User updated');
     })
-    .error(function() {
-      toastr.error('Error while trying to save changes');
+    .error(function(data) {
+      if (data === 'lastAdmin') {
+        $scope.user.Admin = true;
+        toastr.error('You are the last remaining admin. Remember - power comes with great responsibility!')
+      } else {
+        toastr.error('Error while trying to save changes');
+      }
     });
   };
 
