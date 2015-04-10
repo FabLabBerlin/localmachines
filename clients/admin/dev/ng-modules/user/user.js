@@ -21,10 +21,7 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', 'ran
   $scope.loadUserData = function() {
     $http({
       method: 'GET',
-      url: '/api/users/' + $scope.user.Id,
-      params: {
-        anticache: new Date().getTime()
-      }
+      url: '/api/users/' + $scope.user.Id
     })
     .success(function(user) {
       $scope.user = user;
@@ -48,10 +45,7 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', 'ran
   $scope.loadAvailableMachines = function() {
     $http({
       method: 'GET',
-      url: '/api/machines',
-      params: {
-        anticache: new Date().getTime()
-      }
+      url: '/api/machines'
     })
     .success(function(availableMachines) {
       $scope.availableMachines = availableMachines;
@@ -65,10 +59,7 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', 'ran
   $scope.loadUserMachinePermissions = function() {
     $http({
       method: 'GET',
-      url: '/api/users/' + $scope.user.Id + '/machines',
-      params: {
-        anticache: new Date().getTime()
-      }
+      url: '/api/users/' + $scope.user.Id + '/machines'
     })
     .success(function(userMachines) {
 
@@ -107,10 +98,7 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', 'ran
   $scope.getAvailableMemberships = function() {
     $http({
       method: 'GET',
-      url: '/api/memberships',
-      params: {
-        anticache: new Date().getTime()
-      }
+      url: '/api/memberships'
     })
     .success(function(data) {
       $scope.memberships = data;
@@ -131,10 +119,7 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', 'ran
   $scope.getUserMemberships = function() {
     $http({
       method: 'GET',
-      url: '/api/users/' + $scope.user.Id + '/memberships',
-      params: {
-        anticache: new Date().getTime()
-      }
+      url: '/api/users/' + $scope.user.Id + '/memberships'
     })
     .success(function(data) {
       $scope.userMemberships = _.map(data, function(userMembership) {
@@ -177,9 +162,6 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', 'ran
       data: {
         StartDate: startDate,
         UserMembershipId: userMembershipId
-      },
-      params: {
-        anticache: new Date().getTime()
       }
     })
     .success(function() {
@@ -256,10 +238,7 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', 'ran
   $scope.deleteUserMembership = function(userMembershipId) {
     $http({
       method: 'DELETE',
-      url: '/api/users/' + $scope.user.Id + '/memberships/' + userMembershipId,
-      params: {
-        anticache: new Date().getTime()
-      }
+      url: '/api/users/' + $scope.user.Id + '/memberships/' + userMembershipId
     })
     .success(function(data) {
       toastr.success('Membership deleted');
@@ -324,9 +303,6 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', 'ran
       },
       transformRequest: function(data) {
         return JSON.stringify(data);
-      },
-      params: {
-        anticache: new Date().getTime()
       }
     })
     .success(function() {
@@ -342,8 +318,7 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', 'ran
       method: 'DELETE',
       url: '/api/users/' + $scope.user.Id + '/permissions',
       params: {
-        mid: machineId,
-        anticache: new Date().getTime()
+        mid: machineId
       }
     })
     .success(function() {
@@ -359,8 +334,7 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', 'ran
       method: 'POST',
       url: '/api/users/' + $scope.user.Id + '/permissions',
       params: {
-        mid: machineId,
-        anticache: new Date().getTime()
+        mid: machineId
       }
     })
     .success(function() {
@@ -377,8 +351,7 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', 'ran
       method: 'POST',
       url: '/api/users/' + $scope.user.Id + '/password',
       params: {
-        password: $('input[type="password"]').val(),
-        anticache: new Date().getTime()
+        password: $('input[type="password"]').val()
       }
     })
     .success(function() {
