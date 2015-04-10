@@ -42,6 +42,7 @@
 
   <div class="row">
 
+  <!--
     <div class="col-sm-3">
       <div class="form-group">
         <label>User Status</label>
@@ -52,6 +53,23 @@
     <div class="col-sm-3 hidden-xs">
       <label>&nbsp;</label>
       <div class="tip">Click on the icon to ban/unban user</div>
+    </div>
+  -->
+    <div class="col-sm-6">
+      <label for="user-password">User Password</label>
+      
+      <div class="row">
+        <div class="form-group">
+          <div class="col-sm-6">
+            <input type="password" class="form-control" id="user-password"
+                   ng-model="user.Password">
+          </div>
+          <div class="col-sm-6">
+            <button class="btn btn-primary btn-block">Update Password</button>
+          </div>
+        </div>
+      </div> <!-- /.row -->
+      
     </div>
 
   </div> <!-- /.row -->
