@@ -89,7 +89,7 @@ CREATE TABLE `hexaswitch` (
   `machine_id` int(11) NOT NULL,
   `switch_ip` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -98,7 +98,7 @@ CREATE TABLE `hexaswitch` (
 
 LOCK TABLES `hexaswitch` WRITE;
 /*!40000 ALTER TABLE `hexaswitch` DISABLE KEYS */;
-INSERT INTO `hexaswitch` VALUES (1,6,'fe80::50:c4ff:fe04:8370');
+INSERT INTO `hexaswitch` VALUES (1,6,'fe80::50:c4ff:fe04:8370'),(32,2,'11.222.333.44');
 /*!40000 ALTER TABLE `hexaswitch` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -130,7 +130,7 @@ CREATE TABLE `machines` (
 
 LOCK TABLES `machines` WRITE;
 /*!40000 ALTER TABLE `machines` DISABLE KEYS */;
-INSERT INTO `machines` VALUES (2,'MakerBot 3D printer','MB3DP','NYC 3D printer 4 real and 4 life.','',1,'',NULL,16,'hour'),(3,'Zing Laser Cutter','ZLC','Cuts wood, plastic, paper. Fast.','',1,'',NULL,1,'minute'),(4,'CNC Router','CNC','Cuts steel, plutanium, uranium. Drill on steroids.','',0,'',NULL,15,'hour'),(5,'Hand Drill','HD','A man is a man if he does not know how to handle one.','',1,'',NULL,1,'hour'),(8,'Red Lamp','RL','Red lamp for testing switches','',1,'',NULL,1,'hour'),(10,'Uber Cutter','UC4','With this cutter you can cut the moon off the sky.','',1,'',NULL,20,'hour'),(11,'My Mega Machine','MMM','You can make everything with this.','',1,'',NULL,10,'hour');
+INSERT INTO `machines` VALUES (2,'MakerBot 3D printer','MB3DP','NYC 3D printer 4 real and 4 life.','',1,'',NULL,16,'hour'),(3,'Zing Laser Cutter','ZLC','Cuts wood, plastic, paper. Fast.','',1,'',NULL,1,'minute'),(4,'CNC Router','CNC','Cuts steel, plutanium, uranium. Drill on steroids.','',0,'',NULL,15,'hour'),(5,'Hand Drill','HD','A man is a man if he does not know how to handle one.','',1,'',NULL,1,'hour'),(8,'Red Lamp','RL','Red lamp for testing switches','',1,'',NULL,1,'hour');
 /*!40000 ALTER TABLE `machines` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -172,9 +172,11 @@ DROP TABLE IF EXISTS `permission`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `permission` (
-  `user_id` int(11) unsigned NOT NULL,
-  `machine_id` int(11) unsigned NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `user_id` bigint(11) NOT NULL,
+  `machine_id` bigint(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -183,7 +185,7 @@ CREATE TABLE `permission` (
 
 LOCK TABLES `permission` WRITE;
 /*!40000 ALTER TABLE `permission` DISABLE KEYS */;
-INSERT INTO `permission` VALUES (1,2),(1,3),(1,4);
+INSERT INTO `permission` VALUES (2,1,2),(4,1,1),(5,1,3),(7,1,8),(11,1,5),(46,6,1),(56,5,1),(57,5,2),(58,5,4);
 /*!40000 ALTER TABLE `permission` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -209,7 +211,7 @@ CREATE TABLE `user` (
   `vat_rate` int(11) NOT NULL,
   `user_role` varchar(100) NOT NULL DEFAULT 'member',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -218,7 +220,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'Regular','User','user','user@example.com',0,0,0,0,'','',0,'member'),(2,'Regular','Admin','admin','admin@example.com',0,0,0,0,'','',0,'admin');
+INSERT INTO `user` VALUES (1,'Regular','User','user','user@example.com',0,0,0,0,'','',0,'member'),(2,'Regular','Admin','admin','admin@example.com',0,0,0,0,'','',0,'admin'),(4,'Kurmis','Ku','kurmisku','kurims@asdl.lv',0,0,0,0,'','',0,'member'),(6,'Dafne','Zucker','dafzu','asd@dsa.com',0,0,0,0,'','',0,'member');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -235,7 +237,7 @@ CREATE TABLE `user_membership` (
   `membership_id` int(11) NOT NULL,
   `start_date` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -244,7 +246,7 @@ CREATE TABLE `user_membership` (
 
 LOCK TABLES `user_membership` WRITE;
 /*!40000 ALTER TABLE `user_membership` DISABLE KEYS */;
-INSERT INTO `user_membership` VALUES (1,1,1,'2014-10-24 00:00:00');
+INSERT INTO `user_membership` VALUES (1,1,1,'2014-10-24 00:00:00'),(4,2,3,'2015-04-09 00:00:00'),(8,1,3,'2015-04-10 00:00:00'),(9,1,12,'2015-04-10 00:00:00');
 /*!40000 ALTER TABLE `user_membership` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -282,4 +284,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-04-09 11:38:31
+-- Dump completed on 2015-04-10 16:36:23
