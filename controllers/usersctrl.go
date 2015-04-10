@@ -210,6 +210,10 @@ func (this *UsersController) Delete() {
 		this.CustomAbort(403, "Failed to get :uid")
 	}
 
+	if err := models.DeleteUserAuth(uid); err != nil {
+		beego.Error("Failed to delete user auth")
+		this.CustomAbort(403, "Failed to delete :uid completely, please retry")
+	}
 	if err := models.DeleteUser(uid); err != nil {
 		beego.Error("Failed to delete user")
 		this.CustomAbort(403, "Failed to delete :uid")
@@ -496,6 +500,40 @@ func (this *UsersController) GetUserName() {
 	response.LastName = user.LastName
 	this.Data["json"] = response
 	this.ServeJson()
+}
+
+// @Title PostUserPassword
+// @Description Post user password
+// @Param	uid		path 	int	true		"User ID"
+// @Success 200
+// @Failure	403	Failed to get user
+// @Failure	401	Not authorized
+// @router /:uid/password [post]
+func (this *UsersController) PostUserPassword() {
+	// Check if logged in
+	suid := this.GetSession(SESSION_FIELD_NAME_USER_ID)
+	if suid == nil {
+		beego.Info("Not logged in")
+		this.CustomAbort(401, "Not logged in")
+	}
+
+	// Get requested user ID
+	ruid, err := this.GetInt64(":uid")
+	if err != nil {
+		beego.Error("Failed to get :uid")
+		this.CustomAbort(403, "Failed to get :uid")
+	}
+
+	if !this.IsAdmin() && suid != ruid {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	err = models.AuthSetPassword(ruid, this.GetString("password"))
+	if err != nil {
+		beego.Error("Unable to update password: ", err)
+		this.CustomAbort(403, "Unable to update password")
+	}
 }
 
 // @Title GetUserRoles

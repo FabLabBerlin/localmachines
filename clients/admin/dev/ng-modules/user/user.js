@@ -371,6 +371,24 @@ app.controller('UserCtrl', ['$scope', '$routeParams', '$http', '$location', 'ran
     });
   };
 
+  $scope.updatePassword = function() {
+    console.log('$scope.updatePassword()');
+    $http({
+      method: 'POST',
+      url: '/api/users/' + $scope.user.Id + '/password',
+      params: {
+        password: $('input[type="password"]').val(),
+        anticache: new Date().getTime()
+      }
+    })
+    .success(function() {
+      toastr.info('Password successfully updated');
+    })
+    .error(function() {
+      toastr.error('Error while trying to update password');
+    });
+  };
+
   $scope.updateUserRoles = function(value) {
     console.log('value:',value);
   };
