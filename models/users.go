@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"golang.org/x/crypto/scrypt"
@@ -39,7 +40,7 @@ type User struct {
 }
 
 type Auth struct {
-	UserId int    `orm:"auto"`
+	UserId int64  `orm:"pk"`
 	NfcKey string `orm:"size(100)"`
 	Hash   string `orm:"size(300)"`
 	Salt   string `orm:"size(100)"`
@@ -91,6 +92,41 @@ func AuthenticateUser(username, password string) (int64, error) {
 	} else {
 		return 0, errors.New("Failed to authenticate")
 	}
+}
+
+func AuthSetPassword(userId int64, password string) error {
+	o := orm.NewOrm()
+	auth := Auth{UserId: userId}
+	err := o.Read(&auth)
+	authRecordMissing := err == orm.ErrNoRows
+	if err != nil && !authRecordMissing {
+		return fmt.Errorf("Read: %v", err)
+	}
+	salt, err := createSalt()
+	if err != nil {
+		return fmt.Errorf("createSalt: %v", err)
+	}
+	auth.UserId = userId
+	auth.Salt = hex.EncodeToString(salt)
+	hash, err := hash(password, salt)
+	if err != nil {
+		return fmt.Errorf("createHash: %v", err)
+	}
+	auth.Hash = hex.EncodeToString(hash)
+	if authRecordMissing {
+		fmt.Printf("insert: auth: %v", auth)
+		_, err = o.Insert(&auth)
+	} else {
+		fmt.Printf("update: auth: %v", auth)
+		_, err = o.Update(&auth)
+	}
+	return err
+}
+
+func DeleteUserAuth(userId int64) error {
+	o := orm.NewOrm()
+	_, err := o.Delete(&Auth{UserId: userId})
+	return err
 }
 
 func DeleteUser(userId int64) error {

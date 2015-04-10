@@ -23,10 +23,7 @@ app.controller('UserCtrl',
   $scope.loadUserData = function() {
     $http({
       method: 'GET',
-      url: '/api/users/' + $scope.user.Id,
-      params: {
-        anticache: new Date().getTime()
-      }
+      url: '/api/users/' + $scope.user.Id
     })
     .success(function(user) {
       $scope.user = user;
@@ -50,10 +47,7 @@ app.controller('UserCtrl',
   $scope.loadAvailableMachines = function() {
     $http({
       method: 'GET',
-      url: '/api/machines',
-      params: {
-        anticache: new Date().getTime()
-      }
+      url: '/api/machines'
     })
     .success(function(availableMachines) {
       $scope.availableMachines = availableMachines;
@@ -77,10 +71,7 @@ app.controller('UserCtrl',
   $scope.loadUserMachinePermissions = function(callback) {
     $http({
       method: 'GET',
-      url: '/api/users/' + $scope.user.Id + '/machines',
-      params: {
-        anticache: new Date().getTime()
-      }
+      url: '/api/users/' + $scope.user.Id + '/machines'
     })
     .success(function(userMachines) {
 
@@ -119,10 +110,7 @@ app.controller('UserCtrl',
   $scope.getAvailableMemberships = function() {
     $http({
       method: 'GET',
-      url: '/api/memberships',
-      params: {
-        anticache: new Date().getTime()
-      }
+      url: '/api/memberships'
     })
     .success(function(data) {
       $scope.memberships = data;
@@ -143,10 +131,7 @@ app.controller('UserCtrl',
   $scope.getUserMemberships = function() {
     $http({
       method: 'GET',
-      url: '/api/users/' + $scope.user.Id + '/memberships',
-      params: {
-        anticache: new Date().getTime()
-      }
+      url: '/api/users/' + $scope.user.Id + '/memberships'
     })
     .success(function(data) {
       $scope.userMemberships = _.map(data, function(userMembership) {
@@ -190,9 +175,6 @@ app.controller('UserCtrl',
       data: {
         StartDate: startDate,
         UserMembershipId: userMembershipId
-      },
-      params: {
-        anticache: new Date().getTime()
       }
     })
     .success(function() {
@@ -269,10 +251,7 @@ app.controller('UserCtrl',
   $scope.deleteUserMembership = function(userMembershipId) {
     $http({
       method: 'DELETE',
-      url: '/api/users/' + $scope.user.Id + '/memberships/' + userMembershipId,
-      params: {
-        anticache: new Date().getTime()
-      }
+      url: '/api/users/' + $scope.user.Id + '/memberships/' + userMembershipId
     })
     .success(function(data) {
       toastr.success('Membership deleted');
@@ -303,9 +282,6 @@ app.controller('UserCtrl',
       },
       transformRequest: function(data) {
         return JSON.stringify(data);
-      },
-      params: {
-        anticache: new Date().getTime()
       }
     })
     .success(function() {
@@ -335,9 +311,6 @@ app.controller('UserCtrl',
       data: permissions,
       transformRequest: function(data) {
         return JSON.stringify(data);
-      },
-      params: {
-        anticache: new Date().getTime()
       }
     })
     .success(function() {
@@ -347,6 +320,23 @@ app.controller('UserCtrl',
     })
     .error(function() {
       toastr.error('Error while trying to update permissions');
+    });
+  };
+
+  $scope.updatePassword = function() {
+    console.log('$scope.updatePassword()');
+    $http({
+      method: 'POST',
+      url: '/api/users/' + $scope.user.Id + '/password',
+      params: {
+        password: $('input[type="password"]').val()
+      }
+    })
+    .success(function() {
+      toastr.info('Password successfully updated');
+    })
+    .error(function() {
+      toastr.error('Error while trying to update password');
     });
   };
 
