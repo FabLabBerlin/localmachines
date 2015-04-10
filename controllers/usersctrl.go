@@ -298,13 +298,13 @@ func (this *UsersController) GetUserMachines() {
 
 		// If the requested user roles is not admin and staff
 		// we need to get machine permissions first and then the machines
-		var permissions []*models.Permission
+		var permissions *[]models.Permission
 		permissions, err = models.GetUserPermissions(ruid)
 		if err != nil {
 			beego.Error("Failed to get user machine permissions")
 			this.CustomAbort(403, "Failed to get user machines")
 		}
-		for _, permission := range permissions {
+		for _, permission := range *permissions {
 			machine, err := models.GetMachine(permission.MachineId)
 			if err != nil {
 				beego.Warning("Failed to get machine ID", permission.MachineId)
@@ -650,5 +650,115 @@ func (this *UsersController) DeleteUserPermission() {
 	}
 
 	this.Data["json"] = "ok"
+	this.ServeJson()
+}
+
+// @Title Update User Machine Permissions
+// @Description Update user machine permissions
+// @Param	uid		path 	int	true	"User ID"
+// @Param	model	body	models.Permission	true	"Permissions Array"
+// @Success 200	ok
+// @Failure	403	Failed to update permissions
+// @Failure	401	Not authorized
+// @router /:uid/permissions [put]
+func (this *UsersController) UpdateUserPermissions() {
+
+	// Check if logged in
+	suid := this.GetSession(SESSION_FIELD_NAME_USER_ID)
+	if suid == nil {
+		beego.Info("Not logged in")
+		this.CustomAbort(401, "Not logged in")
+	}
+
+	// Only admin can do this
+	if !this.IsAdmin() {
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	// Get request user ID
+	var err error
+	var userId int64
+	userId, err = this.GetInt64(":uid")
+	if err != nil {
+		beego.Error("Failed to get requested user ID:", err)
+		this.CustomAbort(403, "Failed to update permissions")
+	}
+
+	// Get body as array of models.Permission
+	// Attempt to decode passed json
+	jsonDecoder := json.NewDecoder(this.Ctx.Request.Body)
+	permissions := []models.Permission{}
+	if err = jsonDecoder.Decode(&permissions); err != nil {
+		beego.Error("Failed to decode json:", err)
+		this.CustomAbort(403, "Failed to update permissions")
+	}
+
+	// Make sure that the user IDs of all the permissions are the same
+	// as the request user ID
+	for i := 0; i < len(permissions); i++ {
+		permissions[i].UserId = userId
+	}
+
+	// Update permissions
+	err = models.UpdateUserPermissions(userId, &permissions)
+	if err != nil {
+		beego.Error("Failed to update permissions:", err)
+		this.CustomAbort(403, "Failed to update permissions")
+	}
+
+	this.Data["json"] = "ok"
+	this.ServeJson()
+}
+
+// @Title Get User Machine Permissions
+// @Description Get user machine permissions
+// @Param	uid		path 	int	true	"User ID"
+// @Success 200	models.Permission
+// @Failure	403	Failed to update permissions
+// @Failure	401	Not authorized
+// @router /:uid/permissions [get]
+func (this *UsersController) GetUserPermissions() {
+
+	// Check if logged in
+	suid := this.GetSession(SESSION_FIELD_NAME_USER_ID)
+	if suid == nil {
+		beego.Info("Not logged in")
+		this.CustomAbort(401, "Not logged in")
+	}
+
+	// Get session user ID as int64
+	var suidInt64 int64
+	var found bool
+	suidInt64, found = suid.(int64)
+	if !found {
+		beego.Error("Could not cast session ID to int64")
+		this.CustomAbort(403, "Failed to get permissions")
+	}
+
+	// Get request user ID
+	var err error
+	var userId int64
+	userId, err = this.GetInt64(":uid")
+	if err != nil {
+		beego.Error("Failed to get requested user ID:", err)
+		this.CustomAbort(403, "Failed to get permissions")
+	}
+
+	// Allow to get other user permissions only if admin
+	if userId != suidInt64 {
+		if !this.IsAdmin() {
+			beego.Error("Not authorized to get other user permissions")
+			this.CustomAbort(401, "Not authorized")
+		}
+	}
+
+	var permissions *[]models.Permission
+	permissions, err = models.GetUserPermissions(userId)
+	if err != nil {
+		beego.Error("Failed to get user permissions")
+		this.CustomAbort(403, "Failed to get permissions")
+	}
+
+	this.Data["json"] = permissions
 	this.ServeJson()
 }

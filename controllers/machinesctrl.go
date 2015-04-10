@@ -62,7 +62,7 @@ func (this *MachinesController) Get() {
 			this.CustomAbort(403, "Failed to get machine")
 		}
 
-		var permissions []*models.Permission
+		var permissions *[]models.Permission
 		permissions, err = models.GetUserPermissions(sessUserId)
 		if err != nil {
 			beego.Error("Failed to get machine permissions", err)
@@ -70,7 +70,7 @@ func (this *MachinesController) Get() {
 		}
 
 		permissionFound := false
-		for _, value := range permissions {
+		for _, value := range *permissions {
 			if value.MachineId == machineId {
 				permissionFound = true
 				break

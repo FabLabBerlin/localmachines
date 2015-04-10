@@ -51,6 +51,10 @@ type Permission struct {
 	MachineId int64
 }
 
+func (this *Permission) TableName() string {
+	return "permission"
+}
+
 func init() {
 	orm.RegisterModel(new(User), new(Auth), new(Permission))
 }
@@ -122,15 +126,16 @@ func GetAllUsers() ([]*User, error) {
 }
 
 // Returns which machines user is enabled to use
-func GetUserPermissions(userId int64) ([]*Permission, error) {
-	var permissions []*Permission
+func GetUserPermissions(userId int64) (*[]Permission, error) {
+	var permissions []Permission
 	o := orm.NewOrm()
-	num, err := o.QueryTable("permission").Filter("user_id", userId).All(&permissions)
+	num, err := o.QueryTable("permission").
+		Filter("user_id", userId).All(&permissions)
 	if err != nil {
 		return nil, err
 	}
 	beego.Trace("Got num permissions:", num)
-	return permissions, nil
+	return &permissions, nil
 }
 
 func CreateUserPermission(userId, machineId int64) error {
@@ -176,6 +181,28 @@ func DeleteUserPermission(userId, machineId int64) error {
 	}
 
 	beego.Trace("Num permissions deleted:", num)
+	return nil
+}
+
+func UpdateUserPermissions(userId int64, permissions *[]Permission) error {
+
+	// Delete all existing permissions of the user
+	p := Permission{}
+	o := orm.NewOrm()
+	num, err := o.QueryTable(p.TableName()).
+		Filter("UserId", userId).Delete()
+	if err != nil {
+		return err
+	}
+	beego.Trace("Deleted num permissions:", num)
+
+	// Create new permissions
+	num, err = o.InsertMulti(len(*permissions), permissions)
+	if err != nil {
+		return err
+	}
+	beego.Trace("Inserted num permissions:", num)
+
 	return nil
 }
 

@@ -54,14 +54,14 @@ func (this *ActivationsController) Create() {
 	if !this.IsAdmin() && !this.IsStaff() {
 
 		// Check if user has permissions to create activation for the machine.
-		var userPermissions []*models.Permission
+		var userPermissions *[]models.Permission
 		userPermissions, err = models.GetUserPermissions(userId)
 		if err != nil {
 			beego.Error("Could not get user permissions")
 			this.CustomAbort(403, "Forbidden")
 		}
 		var userPermitted = false
-		for _, permission := range userPermissions {
+		for _, permission := range *userPermissions {
 			if int64(permission.MachineId) == machineId {
 				userPermitted = true
 				break
