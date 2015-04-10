@@ -305,7 +305,7 @@ func (this *UsersController) GetUserMachines() {
 		var permissions []*models.Permission
 		permissions, err = models.GetUserPermissions(ruid)
 		if err != nil {
-			beego.Error("Failed to get user machine permissions")
+			beego.Error("Failed to get user machine permissions: ", err)
 			this.CustomAbort(403, "Failed to get user machines")
 		}
 		for _, permission := range permissions {
