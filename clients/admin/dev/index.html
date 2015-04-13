@@ -41,12 +41,10 @@
 		<p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
 	<![endif]-->
 
-	<!-- Maybe there is a more elegand solution for 
-	     combining a directive and a controller -->
-	<div ng-controller="MainMenuCtrl">
-		<main-menu></main-menu>
-	</div>
+	<!-- Main menu of the Admin panel -->
+	<main-menu></main-menu>
 
+	<!-- Rest of the content -->
 	<div ng-view></div>
 
 	<!-- build:js assets/js/app.min.js -->
