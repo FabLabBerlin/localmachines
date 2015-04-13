@@ -307,7 +307,7 @@ app.controller('UserCtrl',
       if (data === 'lastAdmin') {
         $scope.user.Admin = true;
         $scope.updateAdminStatus();
-        toastr.error('You are the last remaining admin. Remember - power comes with great responsibility!')
+        toastr.error('You are the last remaining admin. Remember - power comes with great responsibility!');
       } else {
         toastr.error('Error while trying to save changes');
       }
@@ -343,16 +343,37 @@ app.controller('UserCtrl',
   };
 
   $scope.updatePassword = function() {
-    console.log('$scope.updatePassword()');
+    
+    // Check user entered password
+    var minPassLength = 5;
+
+    // If there is password at all
+    if (!$scope.userPassword || $scope.userPassword === '') {
+      toastr.error('No password');
+      return;
+    }
+
+    // If it is long enough
+    if ($scope.userPassword.length < minPassLength) {
+      toastr.error('Password too short');
+      return;
+    }
+
+    // If it matches the repeated password
+    if ($scope.userPassword !== $scope.userPasswordRepeat) {
+      toastr.error('Passwords do not match');
+      return;
+    }
+
     $http({
       method: 'POST',
       url: '/api/users/' + $scope.user.Id + '/password',
       params: {
-        password: $('input[type="password"]').val()
+        password: $scope.userPassword
       }
     })
     .success(function() {
-      toastr.info('Password successfully updated');
+      toastr.success('Password successfully updated');
     })
     .error(function() {
       toastr.error('Error while trying to update password');

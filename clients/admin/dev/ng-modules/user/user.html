@@ -40,37 +40,32 @@
 
   </div> <!-- /.row -->
 
+  <div>
+    <label for="user-password">User Password</label>
+  </div>
+
   <div class="row">
+    <div class="form-group">
 
-  <!--
-    <div class="col-sm-3">
-      <div class="form-group">
-        <label>User Status</label>
-        <div><span class="fa fa-ban"></span> Not verified</div>
+      <div class="col-sm-3">
+        <input type="password" class="form-control" 
+               id="user-password" placeholder="New password"
+               ng-model="userPassword">
       </div>
-    </div>
 
-    <div class="col-sm-3 hidden-xs">
-      <label>&nbsp;</label>
-      <div class="tip">Click on the icon to ban/unban user</div>
-    </div>
-  -->
-    <div class="col-sm-6">
-      <label for="user-password">User Password</label>
-      
-      <div class="row">
-        <div class="form-group">
-          <div class="col-sm-6">
-            <input type="password" class="form-control" id="user-password">
-          </div>
-          <div class="col-sm-6">
-            <button class="btn btn-primary btn-block" ng-click="updatePassword()">Update Password</button>
-          </div>
-        </div>
-      </div> <!-- /.row -->
-      
-    </div>
+      <div class="col-sm-3">
+        <input type="password" class="form-control"
+               placeholder="Repeat password"
+               ng-model="userPasswordRepeat">
+      </div>
 
+      <div class="col-sm-3">
+        <button class="btn btn-primary btn-block" ng-click="updatePassword()">
+          Update Password
+        </button>
+      </div>
+
+    </div> <!-- /.form-group -->
   </div> <!-- /.row -->
 
   <div class="row">
