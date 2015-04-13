@@ -79,6 +79,8 @@ app.config(['$httpProvider', function($httpProvider) {
 app.controller('MainCtrl', ['$scope', '$http', '$location', '$cookieStore', '$cookies', 
  function($scope, $http, $location, $cookieStore, $cookies){
 
+  $scope.mainMenu = {visible: false};
+
   // Configure toastr default location
   toastr.options.positionClass = 'toast-bottom-left';
 
@@ -95,6 +97,7 @@ app.controller('MainCtrl', ['$scope', '$http', '$location', '$cookieStore', '$co
   };
   $scope.$on('user-login', function (event, data){
     $scope.putUserData(data);
+    $scope.mainMenu.visible = true;
   });
 
   // Clear user data on user logout
@@ -109,6 +112,7 @@ app.controller('MainCtrl', ['$scope', '$http', '$location', '$cookieStore', '$co
   // Log out on logout event
   $scope.logout = function() {
     $scope.removeUserData();
+    $scope.mainMenu.visible = false;
 
     $http({
       method: 'GET',
