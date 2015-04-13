@@ -12,6 +12,114 @@ type ActivationsController struct {
 	Controller
 }
 
+// @Title Get All
+// @Description Get all activations
+// @Param	startDate		query 	string	true		"Period start date"
+// @Param	endDate		query 	string	true		"Period end date"
+// @Param	userId		query 	int	true		"User ID"
+// @Param	includeInvoiced		query 	bool	true		"Whether to include already invoiced activations"
+// @Param	itemsPerPage		query 	int	true		"Items per page or max number of items to return"
+// @Param	page		query 	int	true		"Current page to show"
+// @Success 200 {object} models.Activation
+// @Failure	403	Failed to get activations
+// @Failure	401	Not authorized
+// @router / [get]
+func (this *ActivationsController) GetAll() {
+
+	// Only admin can use this API call
+	if !this.IsAdmin() {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	var err error
+	var startDate string
+	var endDate string
+	var userId int64
+	var includeInvoiced bool
+	var itemsPerPage int64
+	var page int64
+
+	// Get variables
+	startDate = this.GetString("startDate")
+	if startDate == "" {
+		beego.Error("Missing start date")
+		this.CustomAbort(403, "Failed to get activations")
+	}
+
+	endDate = this.GetString("endDate")
+	if endDate == "" {
+		beego.Error("Missing end date")
+		this.CustomAbort(403, "Failed to get activations")
+	}
+
+	userId, err = this.GetInt64("userId")
+	if err != nil {
+		beego.Error("Could not get userId request variable:", err)
+		this.CustomAbort(403, "Failed to get activations")
+	}
+
+	includeInvoiced, err = this.GetBool("includeInvoiced")
+	if err != nil {
+		beego.Error("Could not get includeInvoiced request variable:", err)
+		this.CustomAbort(403, "Failed to get activations")
+	}
+
+	itemsPerPage, err = this.GetInt64("itemsPerPage")
+	if err != nil {
+		beego.Error("Could not get itemsPerPage request variable:", err)
+		this.CustomAbort(403, "Failed to get activations")
+	}
+
+	page, err = this.GetInt64("page")
+	if err != nil {
+		beego.Error("Could not get page request variable:", err)
+		this.CustomAbort(403, "Failed to get activations")
+	}
+
+	beego.Trace("startDate:", startDate)
+	beego.Trace("endDate:", endDate)
+	beego.Trace("userId:", userId)
+	beego.Trace("includeInvoiced:", includeInvoiced)
+	beego.Trace("itemsPerPage:", itemsPerPage)
+	beego.Trace("page:", page)
+
+	// Convert / parse string time values as time.Time
+	var timeForm = "2006-01-02"
+	var startTime time.Time
+
+	startTime, err = time.ParseInLocation(
+		timeForm, startDate, time.Now().Location())
+	if err != nil {
+		beego.Error("Failed to parse startDate:", err)
+		this.CustomAbort(403, "Failed to get activations")
+	}
+
+	var endTime time.Time
+
+	endTime, err = time.ParseInLocation(
+		timeForm, endDate, time.Now().Location())
+	if err != nil {
+		beego.Error("Failed to parse endDate:", err)
+		this.CustomAbort(403, "Failed to get activations")
+	}
+
+	beego.Trace(startTime)
+	beego.Trace(endTime)
+
+	// Get activations
+	var activations *[]models.Activation
+	activations, err = models.GetActivations(
+		startTime, endTime, userId, includeInvoiced, itemsPerPage, page)
+	if err != nil {
+		beego.Error("Failed to get activations:", err)
+		this.CustomAbort(403, "Failed to get activations")
+	}
+
+	this.Data["json"] = activations
+	this.ServeJson()
+}
+
 // @Title Get
 // @Description Get activation by activation ID
 // @Param	aid		path 	int	true		"Activation ID"
@@ -23,7 +131,7 @@ func (this *ActivationsController) Get() {
 
 }
 
-// @Title GetAll
+// @Title Get Active
 // @Description Get all active activations
 // @Success 200 {object} models.Activation
 // @Failure	403	Failed to get active activations
