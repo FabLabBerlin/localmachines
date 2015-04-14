@@ -15,9 +15,34 @@ app.config(['$routeProvider', function($routeProvider) {
 app.controller('ActivationsCtrl', ['$scope', '$http', '$location', 
  function($scope, $http, $location) {
 
+  // We need full machine names for the activation table
+  $scope.loadMachines = function() {
+    $http({
+      method: 'GET',
+      url: '/api/machines'
+    })
+    .success(function(machines){
+      $scope.machines = machines;
+    })
+    .error(function(){
+      toastr.error('Failed to get machines');
+    });
+  };
+
+  // Load machines before doing anything else
+  if (!$scope.machines) {
+    $scope.loadMachines();
+  }
+
   // Loads and reloads activations according to filter.
   // If user ID is not set - load all users
   $scope.loadActivations = function() {
+    
+    if (!$scope.machines) {
+      toastr.error('Machines not loaded');
+      return;
+    }
+
     $http({
       method: 'GET',
       url: '/api/activations', 
@@ -31,12 +56,42 @@ app.controller('ActivationsCtrl', ['$scope', '$http', '$location',
       }
     })
     .success(function(response) {
+      _.each(response.ActivationsPage, function(activation){
+        var machine = _.find($scope.machines, 'Id', activation.MachineId);
+        if (machine) {
+          activation.MachineName = machine.Name;
+        } else {
+          activation.MachineName = 'Undefined';
+        }
+        
+      });
+
+      var uniqUserIds = _.pluck(_.uniq(response.ActivationsPage, 'UserId'), 'UserId');
+      _.each(uniqUserIds, $scope.loadUserName);
+
       $scope.activations = response.ActivationsPage;
       $scope.numActivations = response.NumActivations;
       $scope.numPages = Math.ceil($scope.numActivations / $scope.itemsPerPage);
     })
     .error(function() {
       toastr.error('Failed to load activations');
+    });
+  };
+
+  $scope.loadUserName = function(userId) {
+    $http({
+      method: 'GET',
+      url: '/api/users/' + userId + '/name'
+    })
+    .success(function(user) {
+      _.each($scope.activations, function(activation) {
+        if (activation.UserId === user.UserId) {
+          activation.UserName = user.FirstName + ' ' + user.LastName;
+        }
+      });
+    })
+    .error(function() {
+      toastr.error('Failed to load user name');
     });
   };
 
@@ -48,12 +103,10 @@ app.controller('ActivationsCtrl', ['$scope', '$http', '$location',
     var endDateStr = $('#activations-end-date').val();
 
     if (startDateStr === '') {
-      toastr.warning('Missing start date');
       return;
     }
 
     if (endDateStr === '') {
-      toastr.warning('Missing endDate');
       return;
     }
 
@@ -70,12 +123,15 @@ app.controller('ActivationsCtrl', ['$scope', '$http', '$location',
     // Assign start and
     $scope.activationsStartDate = startDateStr;
     $scope.activationsEndDate = endDateStr;
+
+    $scope.activations = [];
+    $scope.currentPage = 1;
     $scope.loadActivations();
   };
 
   var pickadateOptions = {
     format: 'yyyy-mm-dd',
-    onSet: $scope.onFilterChange
+    onClose: $scope.onFilterChange
   };
   $('.datepicker').pickadate(pickadateOptions);
   $('.timepicker').pickatime(pickadateOptions);

@@ -60,7 +60,7 @@ func GetActivations(startTime time.Time,
 		Filter("timeStart__gt", startTime).
 		Filter("timeEnd__lt", endTime).
 		Filter("invoiced", includeInvoiced).
-		Filter("userId", userId).
+		//Filter("userId", userId).
 		Filter("active", false).
 		OrderBy("userId", "-id").
 		Limit(itemsPerPage).
@@ -91,7 +91,7 @@ func GetNumActivations(startTime time.Time,
 		Filter("timeStart__gt", startTime).
 		Filter("timeEnd__lt", endTime).
 		Filter("invoiced", includeInvoiced).
-		Filter("userId", userId).
+		//Filter("userId", userId).
 		Filter("active", false).
 		Count()
 

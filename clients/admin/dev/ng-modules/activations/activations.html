@@ -33,10 +33,10 @@
     </thead>
     <tbody>
       <tr ng-repeat="activation in activations">
-        <td>{{activation.MachineId}}</td>
-        <td>{{activation.TimeStart}}</td>
-        <td>{{activation.TimeEnd}}</td>
-        <td>{{activation.UserId}}</td>
+        <td>{{activation.MachineName}}</td>
+        <td>{{activation.TimeStart | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+        <td>{{activation.TimeEnd | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+        <td>{{activation.UserName}}</td>
         <td>
           <button type="button" class="btn btn-danger btn-ico pull-right">
             <span class="fa fa-close"></span>
@@ -46,7 +46,7 @@
     </tbody>
   </table>
 
-  <div class="row">
+  <div class="row" ng-show="activations.length">
     <div class="col-xs-2">
       <button class="btn btn-primary btn-block" 
               ng-disabled="currentPage <= 1"
