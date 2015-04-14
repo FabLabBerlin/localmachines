@@ -2,7 +2,8 @@
 
 'use strict';
 
-var app = angular.module('fabsmith.admin.activations', ['ngRoute', 'ngCookies']);
+var app = angular.module('fabsmith.admin.activations', 
+ ['ngRoute', 'ngCookies']);
 
 app.config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/activations', {
@@ -14,21 +15,15 @@ app.config(['$routeProvider', function($routeProvider) {
 app.controller('ActivationsCtrl', ['$scope', '$http', '$location', 
  function($scope, $http, $location) {
 
-  $('.datepicker').pickadate();
-  $('.timepicker').pickatime();
-
-  $scope.activations = [];
-  $scope.currentPage = 1;
-  $scope.itemsPerPage = 15;
-  
-
-  $scope.loadActivations = function(startDate, endDate, userId) {
+  // Loads and reloads activations according to filter.
+  // If user ID is not set - load all users
+  $scope.loadActivations = function() {
     $http({
       method: 'GET',
       url: '/api/activations', 
       params: {
-        startDate: '2015-01-01',
-        endDate: '2015-02-01',
+        startDate: $scope.activationsStartDate,
+        endDate: $scope.activationsEndDate,
         userId: 1,
         includeInvoiced: false,
         itemsPerPage: $scope.itemsPerPage,
@@ -45,7 +40,49 @@ app.controller('ActivationsCtrl', ['$scope', '$http', '$location',
     });
   };
 
-  $scope.loadActivations();
+  // This is called whenever start or end date changes
+  $scope.onFilterChange = function() {
+
+    // Check if both dates are set
+    var startDateStr = $('#activations-start-date').val();
+    var endDateStr = $('#activations-end-date').val();
+
+    if (startDateStr === '') {
+      toastr.warning('Missing start date');
+      return;
+    }
+
+    if (endDateStr === '') {
+      toastr.warning('Missing endDate');
+      return;
+    }
+
+    // Check if start date is earlier as end date
+    var startDate = new Date(startDateStr);
+    var endDate = new Date(endDateStr);
+    if (startDate >= endDate) {
+      toastr.warning('End date has to be later than start date');
+      return;
+    }
+
+    // TODO: Check user field
+
+    // Assign start and
+    $scope.activationsStartDate = startDateStr;
+    $scope.activationsEndDate = endDateStr;
+    $scope.loadActivations();
+  };
+
+  var pickadateOptions = {
+    format: 'yyyy-mm-dd',
+    onSet: $scope.onFilterChange
+  };
+  $('.datepicker').pickadate(pickadateOptions);
+  $('.timepicker').pickatime(pickadateOptions);
+
+  $scope.activations = [];
+  $scope.currentPage = 1;
+  $scope.itemsPerPage = 15;
 
   $scope.loadNextPage = function() {
     if ($scope.activations.length < $scope.itemsPerPage) {
