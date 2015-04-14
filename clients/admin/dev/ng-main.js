@@ -36,19 +36,33 @@ app.run(['$rootScope', '$location', '$http', '$cookieStore',
     // than the login page
     if (newPath !== '/login') {
 
-      // Just use the cookie user ID to check log in status.
-      // Very simple and no double requests.
-      if (userId) {
-        if (newPath) {
-          $location.path(newPath);
-        } else {
-          $location.path('/dashboard');
+      $http({
+        method: 'POST',
+        url: '/api/users/login',
+        params: {
+          username: '',
+          password: ''
         }
-      } else {
+      })
+      .success(function(data){
+        if (data.Status !== 'logged') {
+          $rootScope.mainMenu.visible = false;
+          $location.path('/login');
+        } else {
+          $rootScope.mainMenu.visible = true;
+          if (newPath) {
+            $location.path(newPath);
+          } else {
+            $location.path('/dashboard');
+          }
+        }
+      })
+      .error(function(){
+        $rootScope.mainMenu.visible = false;
         $location.path('/login');
-      }
+      });
 
-    }
+    } // if newPath
 
   });
 }]); // app.run
@@ -76,10 +90,11 @@ app.config(['$httpProvider', function($httpProvider) {
 }]); // app.config
 
 // Main controller, checks if user logged in
-app.controller('MainCtrl', ['$scope', '$http', '$location', '$cookieStore', '$cookies', 
- function($scope, $http, $location, $cookieStore, $cookies){
+app.controller('MainCtrl', 
+ ['$scope', '$http', '$location', '$cookieStore', '$cookies', '$rootScope', 
+ function($scope, $http, $location, $cookieStore, $cookies, $rootScope){
 
-  $scope.mainMenu = {visible: false};
+  $rootScope.mainMenu = {visible: false};
 
   // Configure toastr default location
   toastr.options.positionClass = 'toast-bottom-left';
