@@ -6,8 +6,8 @@
     <thead>
       <tr>
         <th>Machine</th>
-        <th>Start Time</th>
-        <th>End Time</th>
+        <th>Start Date</th>
+        <th>End Date</th>
         <th>User</th>
         <th>&nbsp;</th>
       </tr>
@@ -43,17 +43,28 @@
     </tbody>
   </table>
 
-  <div>
-    <button class="btn btn-primary" ng-show="currentPage > 1"
-            ng-click="loadPrevPage()">
-      <i class="fa fa-chevron-left"></i>
-    </button>
+  <div class="row">
+    <div class="col-xs-2">
+      <button class="btn btn-primary btn-block" 
+              ng-disabled="currentPage <= 1"
+              ng-click="loadPrevPage()">
+        <i class="fa fa-chevron-left"></i>
+      </button>
+    </div>
 
-    <button class="btn btn-primary pull-right" 
-            ng-show="activations.length >= itemsPerPage"
-            ng-click="loadNextPage()">
-      <i class="fa fa-chevron-right"></i>
-    </button>
+    <div class="col-xs-8">
+      <center>
+        Page: {{currentPage}} / {{numPages}}, Total: {{numActivations}}
+      </center>
+    </div>
+
+    <div class="col-xs-2">
+      <button class="btn btn-primary btn-block" 
+              ng-disabled="activations.length < itemsPerPage"
+              ng-click="loadNextPage()">
+        <i class="fa fa-chevron-right"></i>
+      </button>
+    </div>
   </div>
 
 </div> <!-- /container -->

@@ -20,7 +20,7 @@ type ActivationsController struct {
 // @Param	includeInvoiced		query 	bool	true		"Whether to include already invoiced activations"
 // @Param	itemsPerPage		query 	int	true		"Items per page or max number of items to return"
 // @Param	page		query 	int	true		"Current page to show"
-// @Success 200 {object} models.Activation
+// @Success 200 {object} models.GetActivationsResponse
 // @Failure	403	Failed to get activations
 // @Failure	401	Not authorized
 // @router / [get]
@@ -116,7 +116,20 @@ func (this *ActivationsController) GetAll() {
 		this.CustomAbort(403, "Failed to get activations")
 	}
 
-	this.Data["json"] = activations
+	// Get total activation count
+	var numActivations int64
+	numActivations, err = models.GetNumActivations(
+		startTime, endTime, userId, includeInvoiced)
+	if err != nil {
+		beego.Error("Failed to get number of activations:", err)
+		this.CustomAbort(403, "Failed to get activations")
+	}
+
+	r := models.GetActivationsResponse{}
+	r.NumActivations = numActivations
+	r.ActivationsPage = activations
+
+	this.Data["json"] = r
 	this.ServeJson()
 }
 

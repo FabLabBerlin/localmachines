@@ -35,9 +35,10 @@ app.controller('ActivationsCtrl', ['$scope', '$http', '$location',
         page: $scope.currentPage
       }
     })
-    .success(function(activations) {
-      console.log(activations);
-      $scope.activations = activations;
+    .success(function(response) {
+      $scope.activations = response.ActivationsPage;
+      $scope.numActivations = response.NumActivations;
+      $scope.numPages = Math.ceil($scope.numActivations / $scope.itemsPerPage);
     })
     .error(function() {
       toastr.error('Failed to load activations');

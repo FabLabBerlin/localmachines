@@ -35,6 +35,12 @@ func (this *Activation) TableName() string {
 	return "activations"
 }
 
+type GetActivationsResponse struct {
+	NumActivations  int64
+	ActivationsPage *[]Activation
+}
+
+// Get filtered activations in a paged manner
 func GetActivations(startTime time.Time,
 	endTime time.Time,
 	userId int64,
@@ -71,6 +77,36 @@ func GetActivations(startTime time.Time,
 	return &activations, nil
 }
 
+// Get number of matching activations.
+// Used together with GetActivations.
+func GetNumActivations(startTime time.Time,
+	endTime time.Time,
+	userId int64,
+	includeInvoiced bool) (int64, error) {
+
+	// Count activations matching params
+	o := orm.NewOrm()
+	act := Activation{}
+	cnt, err := o.QueryTable(act.TableName()).
+		Filter("timeStart__gt", startTime).
+		Filter("timeEnd__lt", endTime).
+		Filter("invoiced", includeInvoiced).
+		Filter("userId", userId).
+		Filter("active", false).
+		Count()
+
+	if err != nil {
+		msg := fmt.Sprintf("Failed to count activations: %v", err)
+		return 0, errors.New(msg)
+	}
+
+	beego.Trace("Num activations matches:", cnt)
+
+	return cnt, nil
+}
+
+// Get only active activations (active meaning that users are using
+// the machine/resource currently)
 func GetActiveActivations() ([]*Activation, error) {
 	var activations []*Activation
 	o := orm.NewOrm()
@@ -144,6 +180,7 @@ func CreateActivation(machineId, userId int64) (int64, error) {
 	return activationId, nil
 }
 
+// Close running/active activation
 func CloseActivation(activationId int64) error {
 
 	// Get activation start time and machine id
@@ -186,6 +223,8 @@ func CloseActivation(activationId int64) error {
 	return nil
 }
 
+// Delete activation.
+// It might happen that an activation is created by accident.
 func DeleteActivation(activationId int64) error {
 
 	// Set machine of the activation available
@@ -218,6 +257,7 @@ func DeleteActivation(activationId int64) error {
 	return nil
 }
 
+// Get the machine ID of a specific activation
 func GetActivationMachineId(activationId int64) (int64, error) {
 	activationModel := Activation{}
 	o := orm.NewOrm()
