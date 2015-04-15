@@ -15,7 +15,10 @@ app.controller('UserCtrl',
  function($scope, $routeParams, $http, $location, randomToken) {
   
   // Init scope variables
-  $('.datepicker').pickadate();
+  var pickadateOptions = {
+    format: 'yyyy-mm-dd'
+  };
+  $('.datepicker').pickadate(pickadateOptions);
   $scope.user = { Id: $routeParams.userId };
   $scope.userMachines = [];
   $scope.userMemberships = [];
@@ -168,8 +171,12 @@ app.controller('UserCtrl',
       toastr.error('Please select a Start Date');
       return;
     }
-    startDate = new Date(startDate);
-    startDate = formatDate(startDate);
+
+    if ($scope.overlapsUserMembership(startDate)) {
+      toastr.error('Overlapping existing membership');
+      return;
+    }
+
     var userMembershipId = $('#user-select-membership').val();
     if (!userMembershipId) {
       toastr.error('Please select a Membership');
@@ -190,6 +197,18 @@ app.controller('UserCtrl',
     .error(function() {
       toastr.error('Error while trying to create new User Membership');
     });
+  };
+
+  $scope.overlapsUserMembership = function(startDateStr) {
+    var startDate = new Date(startDateStr);
+    var overlap = false;
+    _.each($scope.userMemberships, function(mbs) {
+      var endDate = new Date(mbs.EndDate);
+      if (startDate <= endDate){
+        overlap = true;
+      }
+    });
+    return overlap;
   };
 
   $scope.cancel = function() {
