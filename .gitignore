@@ -6,3 +6,4 @@ conf/app.conf
 views/prod/*
 lastupdate.tmp
 routers/commentsRouter_github_com_kr15h_fabsmith_controllers.go
+files
