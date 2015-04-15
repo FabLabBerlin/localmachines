@@ -55,17 +55,25 @@ func GetActivations(startTime time.Time,
 	// Get activations from database
 	activations := []Activation{}
 	act := Activation{}
+	usr := User{}
 	o := orm.NewOrm()
-	num, err := o.QueryTable(act.TableName()).
-		Filter("timeStart__gt", startTime).
-		Filter("timeEnd__lt", endTime).
-		Filter("invoiced", includeInvoiced).
-		//Filter("userId", userId).
-		Filter("active", false).
-		OrderBy("userId", "-id").
-		Limit(itemsPerPage).
-		Offset(itemsPerPage * (page - 1)).
-		All(&activations)
+
+	var pageOffset int64
+	pageOffset = itemsPerPage * (page - 1)
+
+	query := fmt.Sprintf("SELECT * FROM %s a JOIN %s u ON a.user_id=u.id "+
+		"WHERE a.time_start>? AND a.time_end<? AND a.invoiced=? AND a.active=false "+
+		"ORDER BY u.first_name ASC, a.time_start DESC "+
+		"LIMIT ? OFFSET ?",
+		act.TableName(),
+		usr.TableName())
+
+	num, err := o.Raw(query,
+		startTime.Format("2006-01-02"),
+		endTime.Format("2006-01-02"),
+		includeInvoiced,
+		itemsPerPage,
+		pageOffset).QueryRows(&activations)
 
 	if err != nil {
 		msg := fmt.Sprintf("Failed to get activations: %v", err)
