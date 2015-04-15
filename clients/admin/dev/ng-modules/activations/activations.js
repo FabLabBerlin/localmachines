@@ -157,6 +157,30 @@ app.controller('ActivationsCtrl', ['$scope', '$http', '$location',
     $scope.loadActivations('', '', 0);
   };
 
+  // Creates invoice on the server side and returns link
+  $scope.createInvoice = function() {
+    $http({
+      method: 'POST',
+      url: '/api/invoices',
+      params: {
+        startDate: $scope.activationsStartDate,
+        endDate: $scope.activationsEndDate,
+        //userId: 1,
+        includeInvoiced: false,
+        itemsPerPage: $scope.itemsPerPage,
+        page: $scope.currentPage
+      }
+    })
+    .success(function(invoiceData) {
+      // invoiceData should contain link to the generated xls file
+      toastr.success('Invoice created');
+      console.log(invoiceData);
+    })
+    .error(function() {
+      toastr.error('Error creating invoice');
+    });
+  };
+
   // Test Typeahead
   var substringMatcher = function(strs) {
     return function findMatches(q, cb) {
