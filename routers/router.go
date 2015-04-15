@@ -40,6 +40,11 @@ func init() {
 				&controllers.HexabusController{},
 			),
 		),
+		beego.NSNamespace("/invoices",
+			beego.NSInclude(
+				&controllers.InvoicesController{},
+			),
+		),
 	)
 	beego.AddNamespace(ns)
 }
