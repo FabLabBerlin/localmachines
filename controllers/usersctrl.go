@@ -233,9 +233,9 @@ type UserPutRequest struct {
 // @Failure	403	Variable message
 // @router /:uid [put]
 func (this *UsersController) Put() {
-	sid := this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
-	if !this.IsAdmin(sid) && !this.IsStaff(sid) {
-		beego.Error("Unauthorized attempt to delete user")
+
+	if !this.IsAdmin() {
+		beego.Error("Unauthorized attempt update user")
 		this.CustomAbort(401, "Unauthorized")
 	}
 
@@ -246,6 +246,16 @@ func (this *UsersController) Put() {
 	} else {
 		beego.Error("Failed to decode json")
 		this.CustomAbort(400, "Failed to decode json")
+	}
+
+	// If the user is trying to disable his admin status
+	// do not allow to do that
+	if req.User.UserRole != "admin" {
+		sid := this.GetSession(SESSION_FIELD_NAME_USER_ID)
+		if sid == req.User.Id {
+			beego.Error("User can't unadmin itself")
+			this.CustomAbort(403, "selfAdmin")
+		}
 	}
 
 	err := models.UpdateUser(&req.User)
