@@ -134,7 +134,6 @@ app.controller('ActivationsCtrl', ['$scope', '$http', '$location',
     onClose: $scope.onFilterChange
   };
   $('.datepicker').pickadate(pickadateOptions);
-  $('.timepicker').pickatime(pickadateOptions);
 
   $scope.activations = [];
   $scope.currentPage = 1;
