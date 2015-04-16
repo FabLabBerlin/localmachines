@@ -6,6 +6,7 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/tealeg/xlsx"
+	"strconv"
 	"time"
 )
 
@@ -62,9 +63,25 @@ func CreateInvoice(startTime time.Time,
 
 		file = xlsx.NewFile()
 		sheet = file.AddSheet("Sheet1")
+
 		row = sheet.AddRow()
 		cell = row.AddCell()
-		cell.Value = "I am a cell!"
+		cell.Value = "Fab Lab Machine Usage Summary"
+
+		row = sheet.AddRow()
+		cell = row.AddCell()
+		cell.Value = "Period Start"
+		cell = row.AddCell()
+		cell.Value = startTime.Format("2006-01-02")
+
+		row = sheet.AddRow()
+		cell = row.AddCell()
+		cell.Value = "Period End"
+		cell = row.AddCell()
+		cell.Value = endTime.Format("2006-01-02")
+
+		_ = sheet.AddRow() // Spacer row
+		_ = sheet.AddRow() // Spacer row
 
 	} else {
 		return nil, errors.New("There are no invoiceable activations")
@@ -72,6 +89,30 @@ func CreateInvoice(startTime time.Time,
 
 	// Loop through users
 	for _, user := range users {
+
+		row = sheet.AddRow()
+		cell = row.AddCell()
+		cell.Value = "User"
+		cell = row.AddCell()
+		cell.Value = fmt.Sprintf("%s %s (%s)",
+			user.FirstName,
+			user.LastName,
+			user.Username)
+		cell = row.AddCell()
+
+		row = sheet.AddRow()
+		cell = row.AddCell()
+		cell.Value = "Email"
+		cell = row.AddCell()
+		cell.Value = user.Email
+
+		row = sheet.AddRow()
+		cell = row.AddCell()
+		cell.Value = "Debitor Number"
+		cell = row.AddCell()
+		// TODO: enable this value - it will be the Fastbill ID
+		cell.Value = "Undefined"
+		// TODO: add any other important data
 
 		// 1. Get unique user machines within the range of activations
 		machines := []Machine{}
@@ -97,6 +138,21 @@ func CreateInvoice(startTime time.Time,
 			beego.Trace("==========")
 			beego.Trace(user)
 			beego.Trace(machines)
+
+			// Add header row
+			row = sheet.AddRow()
+			cell = row.AddCell()
+			cell.Value = "Machine Name"
+			cell = row.AddCell()
+			cell.Value = "Product ID"
+			cell = row.AddCell()
+			cell.Value = "Usage"
+			cell = row.AddCell()
+			cell.Value = "Usage Unit"
+			cell = row.AddCell()
+			cell.Value = "Unit Price"
+			cell = row.AddCell()
+			cell.Value = "Total"
 
 			// 2. Loop through user machines and get activations per user machine
 			for _, machine := range machines {
@@ -133,11 +189,29 @@ func CreateInvoice(startTime time.Time,
 				var price float32
 				price = machine.Price * final
 
+				row = sheet.AddRow()
+				cell = row.AddCell()
+				cell.Value = machine.Name
+				cell = row.AddCell()
+				cell.Value = "Undefined"
+				cell = row.AddCell()
+				cell.Value = strconv.FormatFloat(float64(final), 'f', 2, 32)
+				cell = row.AddCell()
+				cell.Value = machine.PriceUnit
+				cell = row.AddCell()
+				cell.Value = strconv.FormatFloat(float64(machine.Price), 'f', 2, 32)
+				cell = row.AddCell()
+				cell.Value = strconv.FormatFloat(float64(price), 'f', 2, 32)
+
 				beego.Trace("-----")
 				beego.Trace(machine.Name)
 				beego.Trace(final, finalUnits)
 				beego.Trace("price:", price)
+
 			}
+
+			_ = sheet.AddRow() // Spacer Row
+			_ = sheet.AddRow() // Spacer Row
 
 		}
 	}
