@@ -18,11 +18,19 @@ type Membership struct {
 	AffectedMachines      string `orm:"type(text)"`
 }
 
+func (this *Membership) TableName() string {
+	return "membership"
+}
+
 type UserMembership struct {
 	Id           int64 `orm:"auto";"pk"`
 	UserId       int64
 	MembershipId int64
 	StartDate    time.Time
+}
+
+func (this *UserMembership) TableName() string {
+	return "user_membership"
 }
 
 func init() {
