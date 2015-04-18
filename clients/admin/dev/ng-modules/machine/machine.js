@@ -20,12 +20,13 @@ app.controller('MachineCtrl',
     Id: $routeParams.machineId
   };
 
+  $scope.machineImageNewFile = undefined;
+  $scope.machineImageNewFileName = undefined;
+  $scope.machineImageNewFileSize = undefined;
+
   $http({
     method: 'GET',
-    url: '/api/machines/' + $scope.machine.Id,
-    params: {
-      anticache: new Date().getTime()
-    }
+    url: '/api/machines/' + $scope.machine.Id
   })
   .success(function(data) {
     $scope.machine = data;
@@ -56,9 +57,6 @@ app.controller('MachineCtrl',
       transformRequest: function(data) {
         console.log('Machine data to send:', data);
         return JSON.stringify(data);
-      },
-      params: {
-        anticache: new Date().getTime()
       }
     })
     .success(function(data) {
@@ -96,10 +94,7 @@ app.controller('MachineCtrl',
   $scope.deleteMachine = function() {
     $http({
       method: 'DELETE',
-      url: '/api/machines/' + $scope.machine.Id,
-      params: {
-        anticache: new Date().getTime()
-      }
+      url: '/api/machines/' + $scope.machine.Id
     })
     .success(function() {
       toastr.success('Machine deleted');
@@ -115,10 +110,7 @@ app.controller('MachineCtrl',
   $scope.getHexabusMapping = function() {
     $http({
       method: 'GET',
-      url: '/api/hexabus/' + $scope.machine.Id,
-      params: {
-        anticache: new Date().getTime()
-      }
+      url: '/api/hexabus/' + $scope.machine.Id
     })
     .success(function(mappingModel) {
       $scope.hexabusMapping = mappingModel;
@@ -132,8 +124,7 @@ app.controller('MachineCtrl',
       method: 'POST',
       url: '/api/hexabus',
       params: {
-        mid: $scope.machine.Id,
-        anticache: new Date().getTime()
+        mid: $scope.machine.Id
       }
     })
     .success(function(mappingId) {
@@ -170,10 +161,7 @@ app.controller('MachineCtrl',
   $scope.deleteHexabusMapping = function() {
     $http({
       method: 'DELETE',
-      url: '/api/hexabus/' + $scope.machine.Id,
-      params: {
-        anticache: new Date().getTime()
-      }
+      url: '/api/hexabus/' + $scope.machine.Id
     })
     .success(function() {
       toastr.success('Mapping deleted');
@@ -182,6 +170,28 @@ app.controller('MachineCtrl',
     .error(function() {
       toastr.error('Failed to delete mapping');
     });
+  };
+
+  // cf. http://stackoverflow.com/q/17922557/485185
+  // There is also a plugin for <input type="file"> on change events.
+  $scope.machineImageLoad = function(o) {
+    var files = o.files;
+    if (files) {
+      var f = files[0];
+      var reader = new FileReader();
+      reader.onloadend = function() {
+        $scope.$apply(function() {
+          $scope.machineImageNewFile = reader.result;
+          $scope.machineImageNewFileName = f.name;
+          $scope.machineImageNewFileSize = f.size;
+        });
+      }
+      reader.readAsDataURL(f);
+    }
+  };
+
+  $scope.machineImageReplace = function() {
+    toastr.info('machineImageReplace()');
   };
 
   // Update the mapping with fresh IP
@@ -194,9 +204,6 @@ app.controller('MachineCtrl',
         data: $scope.hexabusMapping,
         transformRequest: function(data) {
           return JSON.stringify(data);
-        },
-        params: {
-          anticache: new Date().getTime()
         }
       })
       .success(function() {
