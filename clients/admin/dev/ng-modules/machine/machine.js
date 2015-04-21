@@ -185,7 +185,7 @@ app.controller('MachineCtrl',
           $scope.machineImageNewFileName = f.name;
           $scope.machineImageNewFileSize = f.size;
         });
-      }
+      };
       reader.readAsDataURL(f);
     }
   };
