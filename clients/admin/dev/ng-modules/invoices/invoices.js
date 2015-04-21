@@ -18,8 +18,8 @@ app.filter('myDate', function(){
   };    
 });
 
-app.controller('InvoicesCtrl', ['$scope', '$http', '$location', 
- function($scope, $http, $location) {
+app.controller('InvoicesCtrl', ['$scope', '$http', '$location', 'randomToken', 
+ function($scope, $http, $location, randomToken) {
 
   // Load invoices
   $scope.loadInvoices = function() {
@@ -38,12 +38,35 @@ app.controller('InvoicesCtrl', ['$scope', '$http', '$location',
   $scope.invoices = [];
   $scope.loadInvoices();
 
+  $scope.deleteInvoicePrompt = function(invoiceId) {
+    var token = randomToken.generate();
+    vex.dialog.prompt({
+      message: 'Enter <span class="delete-prompt-token">' + 
+       token + '</span> to delete',
+      placeholder: 'Token',
+      callback: $scope.deleteInvoicePromptCallback.bind(this, token, invoiceId)
+    });
+  };
+
+  $scope.deleteInvoicePromptCallback = function(expectedToken, invoiceId, value) {
+    if (value) {    
+      if (value === expectedToken) {
+        $scope.deleteInvoice(invoiceId);
+      } else {
+        toastr.error('Wrong token');
+      }
+    } else if (value !== false) {
+      toastr.error('No token');
+    }
+  };
+
   $scope.deleteInvoice = function(invoiceId) {
     $http({
       method: 'DELETE',
       url: '/api/invoices/' + invoiceId
     })
     .success(function(response) {
+      toastr.success("Invoice deleted");
       $scope.loadInvoices();
     })
     .error(function() {
