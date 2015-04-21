@@ -1,6 +1,7 @@
 package models
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 	"github.com/astaxie/beego"
@@ -18,6 +19,9 @@ type Invoice struct {
 	Id          int64  `orm:"auto";"pk"`
 	Activations string `orm:type(text)`
 	FilePath    string `orm:size(255)`
+	Created     time.Time
+	PeriodFrom  time.Time
+	PeriodTo    time.Time
 }
 
 func init() {
@@ -117,34 +121,101 @@ func CreateInvoice(startTime, endTime time.Time) (*Invoice, error) {
 			fmt.Sprintf("Failed to create *.xlsx file: %v", err))
 	}
 
+	invoice.Created = time.Now()
+	invoice.PeriodFrom = startTime
+	invoice.PeriodTo = endTime
+
 	// Store invoice entry
 	o := orm.NewOrm()
-	var invoiceId int64
-	invoiceId, err = o.Insert(&invoice)
+
+	/*
+		invoiceId, err = o.Insert(&invoice)
+		if err != nil {
+			return nil, errors.New(
+				fmt.Sprintf("Failed to insert invoice into db: %v", err))
+		}
+		beego.Trace("Created invoice ID:", invoiceId)
+	*/
+
+	// Beego time management is very strange...
+	// Thinking of converting all datetime fields to string fields in models
+	query := fmt.Sprintf("INSERT INTO %s VALUES (?,?,?,?,?,?)",
+		invoice.TableName())
+
+	var res sql.Result
+	res, err = o.Raw(query,
+		nil, invoice.Activations, invoice.FilePath,
+		time.Now().Format("2006-01-02 15:04:05"),
+		invoice.PeriodFrom.Format("2006-01-02 15:04:05"),
+		invoice.PeriodTo.Format("2006-01-02 15:04:05")).Exec()
+
 	if err != nil {
+		beego.Error("Failed to insert invoice into db:", err)
 		return nil, errors.New(
 			fmt.Sprintf("Failed to insert invoice into db: %v", err))
 	}
-	beego.Trace("Created invoice ID:", invoiceId)
 
+	invoice.Id, err = res.LastInsertId()
+	if err != nil {
+		return nil, errors.New(
+			fmt.Sprintf("Failed to acquire last inserted id: %v", err))
+	}
 	return &invoice, nil
 }
 
 func GetAllInvoices() (*[]Invoice, error) {
 
-	invoices := []Invoice{}
+	type CustomInvoice struct {
+		Id          int64
+		Activations string
+		FilePath    string
+		Created     string
+		PeriodFrom  string
+		PeriodTo    string
+	}
+
+	customInvoices := []CustomInvoice{}
 	inv := Invoice{}
 	o := orm.NewOrm()
 
 	query := fmt.Sprintf("SELECT i.* FROM %s i ORDER BY i.id DESC",
 		inv.TableName())
-	num, err := o.Raw(query).QueryRows(&invoices)
+	num, err := o.Raw(query).QueryRows(&customInvoices)
 
 	if err != nil {
 		return nil, errors.New(
 			fmt.Sprintf("Failed to get all invoices: %v", err))
 	}
 	beego.Trace("Got num invoices:", num)
+
+	invoices := []Invoice{}
+
+	for invIter := 0; invIter < len(customInvoices); invIter++ {
+		inv := Invoice{}
+		inv.Id = customInvoices[invIter].Id
+		inv.Activations = customInvoices[invIter].Activations
+		inv.FilePath = customInvoices[invIter].FilePath
+		inv.Created, err = time.ParseInLocation("2006-01-02 15:04:05",
+			customInvoices[invIter].Created, time.Now().Location())
+		if err != nil {
+			return nil, errors.New(
+				fmt.Sprintf("Failed to parse invoice: %v", err))
+		}
+		inv.PeriodFrom, err = time.ParseInLocation("2006-01-02 15:04:05",
+			customInvoices[invIter].PeriodFrom, time.Now().Location())
+		if err != nil {
+			return nil, errors.New(
+				fmt.Sprintf("Failed to parse invoice: %v", err))
+		}
+		inv.PeriodTo, err = time.ParseInLocation("2006-01-02 15:04:05",
+			customInvoices[invIter].PeriodTo, time.Now().Location())
+		if err != nil {
+			return nil, errors.New(
+				fmt.Sprintf("Failed to parse invoice: %v", err))
+		}
+
+		invoices = append(invoices, inv)
+	}
 
 	return &invoices, nil
 }

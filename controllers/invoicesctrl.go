@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/kr15h/fabsmith/models"
 	"time"
@@ -70,11 +71,14 @@ func (this *InvoicesController) Create() {
 	beego.Trace("endDate:", endDate)
 
 	// Convert / parse string time values as time.Time
-	var timeForm = "2006-01-02"
+	var timeForm = "2006-01-02 15:04:05"
 	var startTime time.Time
 
-	startTime, err = time.ParseInLocation(
-		timeForm, startDate, time.Now().Location())
+	// Enhance start date
+	startDate = fmt.Sprintf("%s 00:00:00", startDate)
+
+	startTime, err = time.Parse(
+		timeForm, startDate)
 	if err != nil {
 		beego.Error("Failed to parse startDate:", err)
 		this.CustomAbort(403, "Failed to create invoice")
@@ -82,8 +86,11 @@ func (this *InvoicesController) Create() {
 
 	var endTime time.Time
 
-	endTime, err = time.ParseInLocation(
-		timeForm, endDate, time.Now().Location())
+	// Enhance end date, make all the day inclusive
+	endDate = fmt.Sprintf("%s 23:59:59", endDate)
+
+	endTime, err = time.Parse(
+		timeForm, endDate)
 	if err != nil {
 		beego.Error("Failed to parse endDate:", err)
 		this.CustomAbort(403, "Failed to create invoice")
