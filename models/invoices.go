@@ -220,6 +220,19 @@ func GetAllInvoices() (*[]Invoice, error) {
 	return &invoices, nil
 }
 
+func DeleteInvoice(invoiceId int64) error {
+	invoice := Invoice{}
+	invoice.Id = invoiceId
+	o := orm.NewOrm()
+	num, err := o.Delete(&invoice)
+	if err != nil {
+		return errors.New(
+			fmt.Sprintf("Failed to delete invoice: %v", err))
+	}
+	beego.Trace("Deleted num invoices:", num)
+	return nil
+}
+
 func (this *Invoice) createXlsxFile(filePath string,
 	invSummarry *InvoiceSummary) error {
 

@@ -34,6 +34,39 @@ func (this *InvoicesController) GetAll() {
 	this.ServeJson()
 }
 
+// @Title Get All Invoices
+// @Description Get all invoices from the database
+// @Param	iid	path	int	true	"Invoice ID"
+// @Success 200 string ok
+// @Failure	403	Failed to delete
+// @Failure	401	Not authorized
+// @router /:iid [delete]
+func (this *InvoicesController) Delete() {
+
+	if !this.IsAdmin() {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	var err error
+	var iid int64
+
+	iid, err = this.GetInt64(":iid")
+	if err != nil {
+		beego.Error("Failed to get iid:", err)
+		this.CustomAbort(403, "Failed to delete invoice")
+	}
+
+	err = models.DeleteInvoice(iid)
+	if err != nil {
+		beego.Error("Failed to delete invoice:", err)
+		this.CustomAbort(403, "Failed to delete invoice")
+	}
+
+	this.Data["json"] = "ok"
+	this.ServeJson()
+}
+
 // @Title Create Invoice
 // @Description Create invoice from selection of activations
 // @Param	startDate		query 	string	true		"Period start date"

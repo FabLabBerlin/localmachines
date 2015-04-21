@@ -22,7 +22,8 @@
                href="/{{invoice.FilePath}}">
               <span class="fa fa-download"></span>
             </a>&nbsp;&nbsp;
-            <button type="button" class="btn btn-danger btn-ico">
+            <button type="button" class="btn btn-danger btn-ico"
+                    ng-click="deleteInvoice(invoice.Id)">
               <span class="fa fa-close"></span>
             </button>
           </span>
