@@ -6,19 +6,29 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/tealeg/xlsx"
+	"math/rand"
+	"strconv"
 	"time"
 )
 
+// Invoice entry that is saved in the database.
+// Activations field contains a JSON array with activation IDs.
+// XlsFile field contains URL to the generated XLSX file.
 type Invoice struct {
 	Id          int64  `orm:"auto";"pk"`
 	Activations string `orm:type(text)`
-	XlsFile     string `orm:size(255)`
+	FilePath    string `orm:size(255)`
+}
+
+func init() {
+	orm.RegisterModel(new(Invoice))
 }
 
 func (this *Invoice) TableName() string {
 	return "invoices"
 }
 
+// This is a user activation row that appears in the XLSX file
 type InvoiceActivation struct {
 	MachineId           int64 // Machine info
 	MachineName         string
@@ -52,20 +62,12 @@ type InvoiceSummary struct {
 	UserSummaries   []*UserSummary
 }
 
-func init() {
-	orm.RegisterModel(new(Invoice))
-}
-
 func CreateInvoice(startTime, endTime time.Time) (*Invoice, error) {
-
-	beego.Info("Creating invoice...")
-
-	var invoice *Invoice
 
 	var err error
 
 	// Create invoice object that will be returned
-	invoice = &Invoice{}
+	invoice := Invoice{}
 
 	// Get all uninvoiced activations in the time range
 	var activations *[]Activation
@@ -75,17 +77,19 @@ func CreateInvoice(startTime, endTime time.Time) (*Invoice, error) {
 			fmt.Sprintf("Failed to get activations: %v", err))
 	}
 
+	beego.Trace("Activations str:", invoice.Activations)
+
 	// Enhance activations with user and membership data
-	var invActivations *[]InvoiceActivation
-	invActivations, err = invoice.getEnhancedActivations(activations)
+	var enhancedActivations *[]*InvoiceActivation
+	enhancedActivations, err = invoice.getEnhancedActivations(activations)
 	if err != nil {
 		return nil, errors.New(
 			fmt.Sprintf("Failed to get enhanced activations: %v", err))
 	}
 
 	// Create user summaries from invoice activations
-	var userSummaries *[]UserSummary
-	userSummaries = invoice.getUserSummaries(invActivations)
+	var userSummaries *[]*UserSummary
+	userSummaries = invoice.getUserSummaries(enhancedActivations)
 	if err != nil {
 		return nil, errors.New(
 			fmt.Sprintf("Failed to get user summaries: %v", err))
@@ -95,26 +99,200 @@ func CreateInvoice(startTime, endTime time.Time) (*Invoice, error) {
 		beego.Trace((*userSummaries)[i].Activations)
 	}
 
-	// Create a xlsx file if there
-	var file *xlsx.File
-	//var sheet *xlsx.Sheet
-	//var row *xlsx.Row
-	//var cell *xlsx.Cell
-	file = xlsx.NewFile()
-	//sheet = file.AddSheet("Sheet1")
+	// Create invoice summary
+	invSummary := InvoiceSummary{}
+	invSummary.InvoiceName = "Invoice"
+	invSummary.PeriodStartTime = startTime
+	invSummary.PeriodEndTime = endTime
+	invSummary.UserSummaries = *userSummaries
 
-	// Fill the xlsx sheet
+	// Create *.xlsx file.
+	fileName := invoice.getInvoiceFileName(startTime, endTime)
+	filePath := fmt.Sprintf("files/%s.xlsx", fileName)
+	invoice.FilePath = filePath
 
-	filename := "files/MyXLSXFile.xlsx"
-	err = file.Save(filename)
+	err = invoice.createXlsxFile(filePath, &invSummary)
 	if err != nil {
-		fmt.Printf(err.Error())
+		return nil, errors.New(
+			fmt.Sprintf("Failed to create *.xlsx file: %v", err))
 	}
 
-	inv := Invoice{}
-	inv.XlsFile = filename
+	// Store invoice entry
+	o := orm.NewOrm()
+	var invoiceId int64
+	invoiceId, err = o.Insert(&invoice)
+	if err != nil {
+		return nil, errors.New(
+			fmt.Sprintf("Failed to insert invoice into db: %v", err))
+	}
+	beego.Trace("Created invoice ID:", invoiceId)
 
-	return &inv, nil
+	return &invoice, nil
+}
+
+func (this *Invoice) createXlsxFile(filePath string,
+	invSummarry *InvoiceSummary) error {
+
+	userSummaries := &(*invSummarry).UserSummaries
+
+	// Create a xlsx file if there
+	var file *xlsx.File
+	var sheet *xlsx.Sheet
+	var row *xlsx.Row
+	var cell *xlsx.Cell
+	var err error
+
+	file = xlsx.NewFile()
+	sheet = file.AddSheet("User Summaries")
+
+	// Create header
+	row = sheet.AddRow()
+	cell = row.AddCell()
+	cell.Value = "Fab Lab Machine Usage Summary"
+
+	row = sheet.AddRow()
+	cell = row.AddCell()
+	cell.Value = "Period Start Date"
+	cell = row.AddCell()
+	cell.Value = invSummarry.PeriodStartTime.Format("2006-01-02")
+
+	row = sheet.AddRow()
+	cell = row.AddCell()
+	cell.Value = "Period End Date"
+	cell = row.AddCell()
+	cell.Value = invSummarry.PeriodEndTime.Format("2006-01-02")
+
+	row = sheet.AddRow()
+	row = sheet.AddRow()
+
+	// Fill the xlsx sheet
+	for usrSumIter := 0; usrSumIter < len(*userSummaries); usrSumIter++ {
+		userSummary := (*userSummaries)[usrSumIter]
+
+		row = sheet.AddRow()
+		cell = row.AddCell()
+		cell.Value = "User"
+		cell = row.AddCell()
+		cell.Value = fmt.Sprintf("%s (%s)",
+			userSummary.UserFullName, userSummary.Username)
+		cell = row.AddCell()
+		cell.Value = userSummary.UserEmail
+
+		row = sheet.AddRow()
+		cell = row.AddCell()
+		cell.Value = "Debitor Number"
+		cell = row.AddCell()
+		cell.Value = userSummary.DebitorNumber
+
+		row = sheet.AddRow()
+		cell = row.AddCell()
+		cell.Value = "Activations"
+
+		row = sheet.AddRow()
+		_ = row.AddCell()
+		cell = row.AddCell()
+		cell.Value = "Machine Name"
+		cell = row.AddCell()
+		cell.Value = "Product ID"
+		cell = row.AddCell()
+		cell.Value = "Usage"
+		cell = row.AddCell()
+		cell.Value = "Usage Unit"
+		cell = row.AddCell()
+		cell.Value = "€ per Unit"
+		cell = row.AddCell()
+		cell.Value = "Total €"
+		cell = row.AddCell()
+		cell.Value = "Memberships"
+		cell = row.AddCell()
+		cell.Value = "Discounted €"
+
+		sumTotal := 0.0
+		sumTotalDisc := 0.0
+
+		for actIter := 0; actIter < len(userSummary.Activations); actIter++ {
+			activation := (*userSummary).Activations[actIter]
+			row = sheet.AddRow()
+			_ = row.AddCell() // one empty for offset
+			cell = row.AddCell()
+			cell.Value = activation.MachineName
+
+			cell = row.AddCell()
+			cell.Value = activation.MachineProductId
+
+			cell = row.AddCell()
+			//beego.Trace(activation.MachineUsage)
+			cell.Value = strconv.FormatFloat(activation.MachineUsage,
+				'f', 2, 64)
+
+			cell = row.AddCell()
+			cell.Value = activation.MachineUsageUnit
+
+			cell = row.AddCell()
+			cell.Value = strconv.FormatFloat(activation.MachinePricePerUnit,
+				'f', 2, 64)
+
+			// Calculate total
+			priceTotal := activation.MachineUsage *
+				activation.MachinePricePerUnit
+			sumTotal += priceTotal
+			cell = row.AddCell()
+			cell.Value = strconv.FormatFloat(priceTotal, 'f', 2, 64)
+
+			// Memberships
+			membershipStr := ""
+			for memIter := 0; memIter < len(activation.Memberships); memIter++ {
+				membership := (*activation).Memberships[memIter]
+				memStr := fmt.Sprintf("%s (%d%%)",
+					membership.ShortName,
+					membership.MachinePriceDeduction)
+				if membershipStr == "" {
+					membershipStr = memStr
+				} else {
+					membershipStr = fmt.Sprintf("%s, %s",
+						membershipStr, memStr)
+				}
+
+				// Discount total price
+				priceTotal = priceTotal - (priceTotal *
+					float64(membership.MachinePriceDeduction) / 100.0)
+			}
+			sumTotalDisc += priceTotal
+			if membershipStr == "" {
+				membershipStr = "None"
+			}
+			cell = row.AddCell()
+			cell.Value = membershipStr
+
+			cell = row.AddCell()
+			cell.Value = strconv.FormatFloat(priceTotal, 'f', 2, 64)
+		} // for userSummary activations
+
+		row = sheet.AddRow()
+		_ = row.AddCell()
+		_ = row.AddCell()
+		_ = row.AddCell()
+		_ = row.AddCell()
+		_ = row.AddCell()
+		cell = row.AddCell()
+		cell.Value = "Subtotal €"
+		cell = row.AddCell()
+		cell.Value = strconv.FormatFloat(sumTotal, 'f', 2, 64)
+		cell = row.AddCell()
+		cell.Value = "Discounted €"
+		cell = row.AddCell()
+		cell.Value = strconv.FormatFloat(sumTotalDisc, 'f', 2, 64)
+
+		_ = sheet.AddRow() // extra row after each user summary
+	} // for userSummaries
+
+	err = file.Save(filePath)
+	if err != nil {
+		return err
+	}
+
+	this.FilePath = filePath
+	return nil
 }
 
 func (this *Invoice) getActivations(startTime,
@@ -125,10 +303,10 @@ func (this *Invoice) getActivations(startTime,
 	var err error
 	o := orm.NewOrm()
 
-	query := fmt.Sprintf("SELECT * FROM %s a JOIN %s u ON a.user_id=u.id "+
+	query := fmt.Sprintf("SELECT a.* FROM %s a JOIN %s u ON a.user_id=u.id "+
 		"WHERE a.time_start > ? AND a.time_end < ? "+
 		"AND a.invoiced = false AND a.active = false "+
-		"ORDER BY u.first_name ASC",
+		"ORDER BY u.first_name ASC, a.machine_id",
 		act.TableName(),
 		usr.TableName())
 
@@ -140,75 +318,100 @@ func (this *Invoice) getActivations(startTime,
 		return nil, err
 	}
 
+	this.Activations = "["
+	for actIter := 0; actIter < len(activations); actIter++ {
+		var format string
+		if actIter == 0 {
+			format = "%s%d"
+		} else {
+			format = "%s,%d"
+		}
+		this.Activations = fmt.Sprintf(format,
+			this.Activations,
+			activations[actIter].Id)
+	}
+	this.Activations = fmt.Sprintf("%s]", this.Activations)
+
 	return &activations, nil
 }
 
-func (this *Invoice) getEnhancedActivations(
-	activations *[]Activation) (*[]InvoiceActivation, error) {
+func (this *Invoice) getInvoiceFileName(startTime,
+	endTime time.Time) string {
 
-	enhancedActivations := []InvoiceActivation{}
-	for _, a := range *activations {
-		var ia *InvoiceActivation
-		var err error
-		ia, err = this.enhanceActivation(&a)
+	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
+	b := make([]rune, 10)
+	rand.Seed(time.Now().UTC().UnixNano())
+	for i := range b {
+		b[i] = letters[rand.Intn(len(letters))]
+	}
+
+	return fmt.Sprintf("invoice-%s-%s-%s",
+		startTime.Format("20060102"),
+		endTime.Format("20060102"),
+		string(b))
+}
+
+func (this *Invoice) getEnhancedActivations(
+	activations *[]Activation) (*[]*InvoiceActivation, error) {
+
+	enhActivations := []*InvoiceActivation{}
+
+	// Enhance each activation in the activations slice.
+	for actIter := 0; actIter < len(*activations); actIter++ {
+		var activation *Activation = &(*activations)[actIter]
+		invActivation, err := this.enhanceActivation(activation)
 		if err != nil {
 			return nil, errors.New(
 				fmt.Sprintf("Failed to enhance activation: %v", err))
 		}
-		enhancedActivations = append(enhancedActivations, *ia)
+		enhActivations = append(enhActivations, invActivation)
 	}
-	return &enhancedActivations, nil
+
+	return &enhActivations, nil
 }
 
 func (this *Invoice) getUserSummaries(
-	invoiceActivations *[]InvoiceActivation) *[]UserSummary {
+	invoiceActivations *[]*InvoiceActivation) *[]*UserSummary {
 
-	// Create a slice for unique user summaries
-	userSummaries := []UserSummary{}
+	// Create a slice for unique user summaries.
+	userSummaries := []*UserSummary{}
 
-	// Sort invoice activations by user
-	//for _, iActivation := range *invoiceActivations {
-	for j := 0; j < len(*invoiceActivations); j++ {
-		// Search for user Id in the user summaries slice
+	// Sort invoice activations by user.
+	for invActIter := 0; invActIter < len(*invoiceActivations); invActIter++ {
 
-		iActivation := &(*invoiceActivations)[j]
-
+		// Search for user Id in the user summaries slice.
+		iActivation := (*invoiceActivations)[invActIter]
 		uSummaryExists := false
 		var summary *UserSummary
 
-		for i := 0; i < len(userSummaries); i++ {
-			if iActivation.UserId == userSummaries[i].UserId {
+		for usrSumIter := 0; usrSumIter < len(userSummaries); usrSumIter++ {
+			if iActivation.UserId == userSummaries[usrSumIter].UserId {
 				uSummaryExists = true
-				beego.Trace("Summary exists")
-				summary = &userSummaries[i]
+				summary = userSummaries[usrSumIter]
 				break
 			}
 		}
 
+		// Create new user summary if it does not exist for the user.
 		if !uSummaryExists {
-			beego.Trace("Creating new summary")
-			summary = &UserSummary{}
-			summary.UserId = iActivation.UserId
-			summary.UserFullName = iActivation.UserFullName
-			summary.Username = iActivation.Username
-			summary.UserEmail = iActivation.UserEmail
-			summary.DebitorNumber = "Undefined"
-
-			// For some reason the first activation is not appended
-			summary.Activations = []*InvoiceActivation{iActivation}
-
-			userSummaries = append(userSummaries, *summary)
-			beego.Trace("Created new user summary for user", summary.UserFullName)
+			newSummary := UserSummary{}
+			newSummary.UserId = iActivation.UserId
+			newSummary.UserFullName = iActivation.UserFullName
+			newSummary.Username = iActivation.Username
+			newSummary.UserEmail = iActivation.UserEmail
+			newSummary.DebitorNumber = "Undefined"
+			userSummaries = append(userSummaries, &newSummary)
+			summary = userSummaries[len(userSummaries)-1]
 		}
 
-		// Append the invoice activation to the user summary
+		// Append the invoice activation to the user summary.
 		if summary.UserId == iActivation.UserId {
-			beego.Trace("Appending activation")
 			summary.Activations = append(summary.Activations, iActivation)
-			beego.Trace(summary.Activations)
 		}
 	} // for
 
+	// Return populated user summaries slice.
 	return &userSummaries
 }
 
@@ -233,6 +436,20 @@ func (this *Invoice) enhanceActivation(activation *Activation) (*InvoiceActivati
 	invActivation.MachineProductId = "Undefined"
 	invActivation.MachinePricePerUnit = float64(machine.Price)
 	invActivation.MachineUsageUnit = machine.PriceUnit
+
+	// Usage time is stored as seconds and we need to transform that into
+	// other format depending on the machine usage unit.
+	if invActivation.MachineUsageUnit == "minute" {
+		invActivation.MachineUsage = float64(activation.TimeTotal) / 60.0
+		if invActivation.MachineUsage < 0.01 {
+			invActivation.MachineUsage = 0.01
+		}
+	} else if invActivation.MachineUsageUnit == "hour" {
+		invActivation.MachineUsage = float64(activation.TimeTotal) / 60.0 / 60.0
+		if invActivation.MachineUsage < 0.01 {
+			invActivation.MachineUsage = 0.01
+		}
+	}
 
 	// Get activation user data
 	user := &User{}
@@ -289,7 +506,7 @@ func (this *Invoice) enhanceActivation(activation *Activation) (*InvoiceActivati
 
 		// We need to get the actual membership to be able to do that
 		mem := &Membership{}
-		query = fmt.Sprintf("SELECT title, duration, unit, "+
+		query = fmt.Sprintf("SELECT title, short_name, duration, unit, "+
 			"machine_price_deduction, affected_machines FROM %s "+
 			"WHERE id = ?", mem.TableName())
 		err = o.Raw(query, usrMem.MembershipId).QueryRow(mem)
