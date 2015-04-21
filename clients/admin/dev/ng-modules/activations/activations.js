@@ -175,6 +175,19 @@ app.controller('ActivationsCtrl', ['$scope', '$http', '$location',
       // invoiceData should contain link to the generated xls file
       toastr.success('Invoice created');
       console.log(invoiceData);
+
+      var filePathParts = invoiceData.FilePath.split("/");
+      var fileName = filePathParts[filePathParts.length-1];
+
+      var alertContent = '<div class="row">'+
+        '<div class="col-xs-6"><b>Invoice created!</b><br>'+
+        '<b>File name:</b> ' + fileName + '</div>'+
+        '<div class="col-xs-6"><a '+
+        'href="/' + invoiceData.FilePath + '" '+ 
+        'class="btn btn-primary btn-block">'+
+        'Download</a></div>'+
+        '</div>';
+      vex.dialog.alert(alertContent);
     })
     .error(function() {
       toastr.error('Error creating invoice');
