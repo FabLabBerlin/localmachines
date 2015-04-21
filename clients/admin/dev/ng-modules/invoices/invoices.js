@@ -14,7 +14,20 @@ app.config(['$routeProvider', function($routeProvider) {
 app.controller('InvoicesCtrl', ['$scope', '$http', '$location', 
  function($scope, $http, $location) {
 
- 	// Stuff goes here
+ 	$scope.invoices = [];
+
+ 	// Load invoices
+ 	$http({
+ 		method: 'GET',
+ 		url: '/api/invoices'
+ 	})
+ 	.success(function(invoices) {
+ 		toastr.success('Invoices loaded');
+ 		$scope.invoices = invoices;
+ 	})
+ 	.error(function() {
+ 		toastr.error('Failed to load invoices');
+ 	});
 
 }]); // app.controller
 

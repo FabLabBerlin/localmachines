@@ -130,6 +130,25 @@ func CreateInvoice(startTime, endTime time.Time) (*Invoice, error) {
 	return &invoice, nil
 }
 
+func GetAllInvoices() (*[]Invoice, error) {
+
+	invoices := []Invoice{}
+	inv := Invoice{}
+	o := orm.NewOrm()
+
+	query := fmt.Sprintf("SELECT i.* FROM %s i ORDER BY i.id DESC",
+		inv.TableName())
+	num, err := o.Raw(query).QueryRows(&invoices)
+
+	if err != nil {
+		return nil, errors.New(
+			fmt.Sprintf("Failed to get all invoices: %v", err))
+	}
+	beego.Trace("Got num invoices:", num)
+
+	return &invoices, nil
+}
+
 func (this *Invoice) createXlsxFile(filePath string,
 	invSummarry *InvoiceSummary) error {
 

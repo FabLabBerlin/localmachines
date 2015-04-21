@@ -10,6 +10,29 @@ type InvoicesController struct {
 	Controller
 }
 
+// @Title Get All Invoices
+// @Description Get all invoices from the database
+// @Success 200 {object} models.Invoice
+// @Failure	403	Failed to get all invoices
+// @Failure	401	Not authorized
+// @router / [get]
+func (this *InvoicesController) GetAll() {
+
+	if !this.IsAdmin() {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	invoices, err := models.GetAllInvoices()
+	if err != nil {
+		beego.Error("Failed to get all invoices")
+		this.CustomAbort(403, "Failed to get all invoices")
+	}
+
+	this.Data["json"] = invoices
+	this.ServeJson()
+}
+
 // @Title Create Invoice
 // @Description Create invoice from selection of activations
 // @Param	startDate		query 	string	true		"Period start date"
