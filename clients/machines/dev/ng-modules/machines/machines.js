@@ -223,6 +223,21 @@ app.controller('MachinesCtrl',
 
   };
 
+  $scope.deactivatePrompt = function(machine) {
+    vex.dialog.buttons.YES.text = 'Yes';
+    vex.dialog.buttons.NO.text = 'No';
+    vex.dialog.confirm({
+      message: 'Are you sure?',
+      callback: $scope.deactivatePromptCallback.bind(this, machine)
+    });
+  };
+
+  $scope.deactivatePromptCallback = function(machine, value) {
+    if (value) {    
+      $scope.deactivate(machine);
+    }
+  };
+
   $scope.deactivate = function(machine) {
 
     // Stop activation timer interval
