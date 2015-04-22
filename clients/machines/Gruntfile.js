@@ -56,15 +56,13 @@ module.exports = function (grunt) {
 						'dev/bower_components/vex/js/vex.combined.min.js',
 						'dev/bower_components/angular/angular.js',
 						'dev/bower_components/angular-route/angular-route.js',
-						'dev/bower_components/angular-timer/dist/angular-timer.min.js',
 						'dev/bower_components/angular-cookies/angular-cookies.min.js',
 						'dev/bower_components/angular-ui-bootstrap/src/transition/transition.js',
 						'dev/bower_components/toastr/toastr.js',
 						'dev/ng-components/version/version.js',
 						'dev/ng-components/version/version-directive.js',
 						'dev/ng-components/version/interpolate-filter.js',
-						'dev/ng-components/filters.js',
-						'dev/bower_components/webfontloader/webfontloader.js'
+						'dev/ng-components/filters.js'
 					],
 					'tmp/app.js': [
 						'tmp/dependencies.js',
