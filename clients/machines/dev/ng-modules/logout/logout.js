@@ -2,7 +2,7 @@
 
 'use strict';
 
-angular.module('fabsmith.logout', ['ngRoute', 'timer'])
+angular.module('fabsmith.logout', ['ngRoute'])
 
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/logout', {
@@ -15,7 +15,6 @@ angular.module('fabsmith.logout', ['ngRoute', 'timer'])
 
   // Activate countdown
   $scope.abortLogout = function() {
-    $scope.$broadcast('timer-clear');
     $location.path('/machines');
   };
 

@@ -7,12 +7,11 @@ var MACHINE_STATUS_AVAILABLE = 'free';
 var MACHINE_STATUS_OCCUPIED = 'occupied';
 var MACHINE_STATUS_USED = 'used'; // Used by the current user
 var MACHINE_STATUS_UNAVAILABLE = 'unavailable';
-var LOGOUT_TIMER_DELAY = 30;
 
 // Our local app variable for the module
 
 var app = angular.module('fabsmith.machines', 
-  ['ngRoute', 'timer', 'fabsmithFilters']);
+  ['ngRoute', 'fabsmithFilters']);
 
 app.config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/machines', {
@@ -44,7 +43,8 @@ app.controller('MachinesCtrl',
     });
   };
 
-  $scope.userFullName = $cookieStore.get('FirstName') + ' ' + $cookieStore.get('LastName');
+  $scope.userFullName = $cookieStore.get('FirstName') + 
+    ' ' + $cookieStore.get('LastName');
   $scope.machines = [];
   $scope.loadMachines();
 
@@ -154,14 +154,6 @@ app.controller('MachinesCtrl',
     return activationElapsedTime;
   };
 
-  // Configure timer
-  $scope.resetTimer = function() {
-    $scope.$broadcast('timer-clear');
-    $scope.$broadcast('timer-set-countdown', LOGOUT_TIMER_DELAY);
-    $scope.$broadcast('timer-start');
-  };
-  $scope.resetTimer();
-
   $scope.getOccupierName = function(machine, userId) {
     $http({
       method: 'GET',
@@ -190,7 +182,6 @@ app.controller('MachinesCtrl',
 
   // Activate a machine by the currenty logged in user
   $scope.activate = function(machineId) {
-    $scope.resetTimer();
     $scope.showGlobalLoader();
     $http({
       method: 'POST',
@@ -273,11 +264,7 @@ app.directive('fsMachineItem', function() {
       }
 
       $scope.toggleInfo = function() {
-
-        $scope.resetTimer();
-
         $scope.infoVisible = !$scope.infoVisible;
-
         if ($scope.infoVisible) {
           $($element).find('.machine-info-content').first().slideDown();
         } else {
@@ -322,13 +309,11 @@ app.directive('fsMachineBodyOccupied', function() {
       // As we are using this scope for more than one directive
       if ($scope.machine.occupied) {
         var user = {};
-        user.Admin = $cookieStore.get('Admin');
-        user.Staff = $cookieStore.get('Staff');
-        user.Member = $cookieStore.get('Member');
+        user.Admin = $cookieStore.get('UserRole') === 'admin';
         $scope.user = user;
 
         // Activate occupied machine timer if user is admin or staff
-        if (user.Admin || user.Staff) {
+        if (user.Admin) {
           $scope.machine.activationInterval = setInterval(function() {
             $scope.machine.ActivationSecondsElapsed++;
             $scope.$apply();

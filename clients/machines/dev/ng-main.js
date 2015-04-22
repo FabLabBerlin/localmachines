@@ -82,6 +82,9 @@ app.config(['$httpProvider', function($httpProvider) {
 app.controller('MainCtrl', ['$scope', '$http', '$location', '$cookieStore', '$cookies', 
 function($scope, $http, $location, $cookieStore, $cookies){
 
+  // Configure root scope so Android can access
+  window.ROOT_SCOPE = $scope;
+
   // Confixure VEX dialog theme
   vex.defaultOptions.className = 'vex-theme-plain';
 
@@ -123,9 +126,6 @@ function($scope, $http, $location, $cookieStore, $cookies){
     });
 
   };
-  $scope.$on('timer-stopped', function (event, data){
-    $scope.logout();
-  });
   $scope.$on('logout', function (event, data){
     $scope.logout();
   });

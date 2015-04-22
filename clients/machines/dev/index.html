@@ -4,86 +4,73 @@
 <!--[if IE 8]>         <html lang="en" ng-app="fabsmith" class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]><!--> <html lang="en" ng-app="fabsmith" class="no-js"> <!--<![endif]-->
 <head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-	<meta name="description" content="Access machines">
-	<meta name="author" content="Krisjanis Rijnieks">
-	<title>Machines</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <meta name="description" content="Access machines">
+  <meta name="author" content="Krisjanis Rijnieks">
+  <title>Machines</title>
 
-	<!-- CSS Style -->
-	<!-- build:css assets/css/app.min.css -->
-	<link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-	<link href="bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet">
-	<link href="bower_components/toastr/toastr.min.css" rel="stylesheet">
-	<link rel="stylesheet" href="bower_components/vex/css/vex.css" />
-	<link rel="stylesheet" href="bower_components/vex/css/vex-theme-plain.css" />
-	<link rel="stylesheet" href="assets/css/main.css">
-	<!-- /build -->
+  <!-- CSS Style -->
+  <!-- build:css assets/css/app.min.css -->
+  <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+  <link href="bower_components/toastr/toastr.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="bower_components/vex/css/vex.css" />
+  <link rel="stylesheet" href="bower_components/vex/css/vex-theme-plain.css" />
+  <link rel="stylesheet" href="assets/css/main.css">
+  <!-- /build -->
 
-	<!-- Load Modernizr before any other JavaScript -->
-	<!-- build:js assets/js/modernizr.min.js -->
-	<script src="bower_components/modernizr/modernizr.js"></script>
-	<!-- /build -->
+  <!-- Load Modernizr before any other JavaScript -->
+  <!-- build:js assets/js/modernizr.min.js -->
+  <script src="bower_components/modernizr/modernizr.js"></script>
+  <!-- /build -->
 
-	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-	<!--[if lt IE 9]>
-		<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-		<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-	<![endif]-->
+  <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
 </head>
 <body ng-controller="MainCtrl">
 
-	<!--[if lt IE 7]>
-		<p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-	<![endif]-->
+  <!--[if lt IE 7]>
+    <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+  <![endif]-->
 
-	<div ng-view></div>
+  <div ng-view></div>
 
-	<!-- Loader -->
-	<div id="loader-global" class="hidden">
-		<div class="spinner">
-			<i class="fa fa-cog fa-spin"></i>
-		</div>
-	</div>
+  <!-- Loader -->
+  <div id="loader-global" class="hidden">
+    <div class="spinner">
+      <i class="fa fa-cog fa-spin"></i>
+    </div>
+  </div>
 
-	<!-- build:js assets/js/app.min.js -->
+  <!-- build:js assets/js/app.min.js -->
 
-	<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-	<script src="assets/js/ie10-viewport-bug-workaround.js"></script>
+  <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+  <script src="assets/js/ie10-viewport-bug-workaround.js"></script>
 
-	<!-- Dependencies-->
-	<script src="bower_components/jquery/dist/jquery.js"></script>
-	<script src="bower_components/lodash/lodash.js"></script>
-	<script src="bower_components/vex/js/vex.combined.min.js"></script>
-	<script src="bower_components/angular/angular.js"></script>
-	<script src="bower_components/angular-route/angular-route.js"></script>
-	<script src="bower_components/angular-timer/dist/angular-timer.min.js"></script>
-	<script src="bower_components/angular-cookies/angular-cookies.min.js"></script>
-	<script src="bower_components/angular-ui-bootstrap/src/transition/transition.js"></script>
-	<script src="bower_components/toastr/toastr.js"></script>
-	
-	<!-- Application -->
-	<script src="ng-main.js"></script>
-	<script src="ng-modules/login/login.js"></script>
-	<script src="ng-modules/machines/machines.js"></script>
-	<script src="ng-modules/logout/logout.js"></script>
-	<script src="ng-components/version/version.js"></script>
-	<script src="ng-components/version/version-directive.js"></script>
-	<script src="ng-components/version/interpolate-filter.js"></script>
-	<script src="ng-components/filters.js"></script>
+  <!-- Dependencies-->
+  <script src="bower_components/jquery/dist/jquery.js"></script>
+  <script src="bower_components/lodash/lodash.js"></script>
+  <script src="bower_components/vex/js/vex.combined.min.js"></script>
+  <script src="bower_components/angular/angular.js"></script>
+  <script src="bower_components/angular-route/angular-route.js"></script>
+  <script src="bower_components/angular-cookies/angular-cookies.min.js"></script>
+  <script src="bower_components/toastr/toastr.js"></script>
+  
+  <!-- Application -->
+  <script src="ng-main.js"></script>
+  <script src="ng-modules/login/login.js"></script>
+  <script src="ng-modules/machines/machines.js"></script>
+  <script src="ng-modules/logout/logout.js"></script>
+  <script src="ng-components/version/version.js"></script>
+  <script src="ng-components/version/version-directive.js"></script>
+  <script src="ng-components/version/interpolate-filter.js"></script>
+  <script src="ng-components/filters.js"></script>
 
-	<!-- Load nice fonts: will be removed to improve performance -->
-	<script src="bower_components/webfontloader/webfontloader.js"></script>
-
-	<!-- /build -->
-
-	<script>
-		WebFont.load({
-			google: {
-				families: ['Open Sans', 'Open Sans:bold']
-			}
-		});
-	</script>
+  <!-- /build -->
 </body>
 </html>

@@ -3,15 +3,11 @@
   <div class="container">
 
     <div class="row">
-      <div class="col-xs-8 logged-user-label">Logged in as</div>
-      <div class="col-xs-4 auto-logout-label">Logout in</div>
+      <div class="col-xs-12 logged-user-label">Logged in as</div>
     </div> <!-- /row -->
   
     <div class="row">
-      <div class="col-xs-8 logged-user-value" ng-bind="userFullName"></div>
-      <div class="col-xs-4 auto-logout-value">
-        <timer interval="1000" countdown="30">{{countdown+1 | timeleft}}</timer>
-      </div>
+      <div class="col-xs-12 logged-user-value" ng-bind="userFullName"></div>
     </div> <!-- /row -->
   
   </div> <!-- /container -->
