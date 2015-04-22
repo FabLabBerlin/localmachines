@@ -58,7 +58,6 @@ module.exports = function (grunt) {
 						'dev/bower_components/angular-route/angular-route.js',
 						'dev/bower_components/angular-timer/dist/angular-timer.min.js',
 						'dev/bower_components/angular-cookies/angular-cookies.min.js',
-						'dev/bower_components/angular-ui-bootstrap/src/modal/modal.js',
 						'dev/bower_components/angular-ui-bootstrap/src/transition/transition.js',
 						'dev/bower_components/toastr/toastr.js',
 						'dev/ng-components/version/version.js',
@@ -130,8 +129,7 @@ module.exports = function (grunt) {
 						'dev/ng-modules/machines/machine-body-occupied.html',
 						'dev/ng-modules/machines/machine-body-unavailable.html',
 						'dev/ng-modules/machines/machine-body-used.html',
-						'dev/ng-modules/machines/machine-item.html',
-						'dev/ng-modules/machines/deactivate-modal.html'
+						'dev/ng-modules/machines/machine-item.html'
 					],
 					dest: 'prod/ng-modules/machines/',
 					expand: true,
