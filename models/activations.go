@@ -215,7 +215,8 @@ func CloseActivation(activationId int64) error {
 	totalDuration := timeNow.Sub(timeStart)
 
 	// Update activation
-	query = fmt.Sprintf("UPDATE %s SET active=false, time_end=?, time_total=? WHERE id=?", act.TableName())
+	query = fmt.Sprintf("UPDATE %s SET active=false, time_end=?, "+
+		"time_total=? WHERE id=?", act.TableName())
 	_, err = o.Raw(query,
 		timeNow.Format("2006-01-02 15:04:05"),
 		totalDuration.Seconds(), activationId).Exec()
@@ -225,7 +226,8 @@ func CloseActivation(activationId int64) error {
 	}
 
 	// Make the machine available
-	_, err = o.QueryTable("machine").Filter("Id", tempModel.MachineId).
+	mch := Machine{}
+	_, err = o.QueryTable(mch.TableName()).Filter("Id", tempModel.MachineId).
 		Update(orm.Params{"available": true})
 	if err != nil {
 		beego.Error("Failed to available machine")
