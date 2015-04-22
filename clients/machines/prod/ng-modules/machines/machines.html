@@ -2,14 +2,23 @@
 <header>
   <div class="container">
 
-    <div class="row">
-      <div class="col-xs-12 logged-user-label">Logged in as</div>
-    </div> <!-- /row -->
-  
-    <div class="row">
-      <div class="col-xs-12 logged-user-value" ng-bind="userFullName"></div>
-    </div> <!-- /row -->
-  
+  <div class="row">
+    <div class="col-xs-8">
+      <div class="row">
+        <div class="col-xs-12 logged-user-label">Logged in as</div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12 logged-user-value" 
+             ng-bind="userFullName"></div>
+      </div>
+    </div>
+    <div class="col-xs-4">
+      <button class="btn btn-lg btn-danger btn-block" 
+              ng-click="logout()">Exit&nbsp;
+              <i class="fa fa-sign-out"></i></button>
+    </div>
+  </div>
+
   </div> <!-- /container -->
 </header>
 
@@ -20,5 +29,7 @@
 
 <!-- Footer for logout button -->
 <footer class="container">
-  <button class="btn btn-danger btn-block" ng-click="logout()">Logout</button>
+  <button class="btn btn-lg btn-danger btn-block" 
+        ng-click="logout()">Exit&nbsp;
+        <i class="fa fa-sign-out"></i></button>
 </footer>
