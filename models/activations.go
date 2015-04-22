@@ -133,7 +133,8 @@ func CreateActivation(machineId, userId int64) (int64, error) {
 
 	// Check if machine with machineId exists
 	o := orm.NewOrm()
-	machineExists := o.QueryTable("machine").Filter("Id", machineId).Exist()
+	mch := Machine{}
+	machineExists := o.QueryTable(mch.TableName()).Filter("Id", machineId).Exist()
 	beego.Trace("machineExists:", machineExists)
 	if !machineExists {
 		return 0, errors.New("Machine with provided ID does not exist")
@@ -142,7 +143,8 @@ func CreateActivation(machineId, userId int64) (int64, error) {
 	// Check for duplicate activations
 	var dupActivations []Activation
 	act := Activation{} // Used to get table name of the model
-	query := fmt.Sprintf("SELECT id FROM %s WHERE machine_id = ? AND user_id = ? AND active = 1", act.TableName())
+	query := fmt.Sprintf("SELECT id FROM %s WHERE machine_id = ? "+
+		"AND user_id = ? AND active = 1", act.TableName())
 	numDuplicates, err := o.Raw(query, machineId, userId).
 		QueryRows(&dupActivations)
 	if err != nil {
@@ -158,7 +160,8 @@ func CreateActivation(machineId, userId int64) (int64, error) {
 	// TODO: explore the beego ORM time management,
 	// try to fix or use as it should be used.
 	var res sql.Result
-	query = fmt.Sprintf("INSERT INTO %s VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", act.TableName())
+	query = fmt.Sprintf("INSERT INTO %s VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+		act.TableName())
 	res, err = o.Raw(query,
 		nil, nil, userId, machineId, true,
 		time.Now().Format("2006-01-02 15:04:05"),
@@ -178,7 +181,7 @@ func CreateActivation(machineId, userId int64) (int64, error) {
 	beego.Trace("Created activation with ID", activationId)
 
 	// Update machine as unavailable
-	_, err = o.QueryTable("machine").
+	_, err = o.QueryTable(mch.TableName()).
 		Filter("Id", machineId).
 		Update(orm.Params{"available": false})
 	if err != nil {

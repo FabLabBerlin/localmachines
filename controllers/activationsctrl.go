@@ -167,19 +167,32 @@ func (this *ActivationsController) GetActive() {
 // @Failure 401 Not authorized
 // @router / [post]
 func (this *ActivationsController) Create() {
+
 	var machineId int64
 	var err error
-	machineId, err = this.GetInt64("mid")
-	userId := this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
 
-	if !this.IsAdmin() && !this.IsStaff() {
+	userId, ok := this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
+	if ok == false {
+		beego.Error("Failed to get session user ID")
+		this.CustomAbort(403, "Failed to create activation")
+	}
+
+	machineId, err = this.GetInt64("mid")
+	if err != nil {
+		beego.Error("Failed to get mid:", err)
+		this.CustomAbort(403, "Failed to create activation")
+	}
+
+	// Admins can activate any machine (except broken ones).
+	// Regular users have to refer to their permissions.
+	if !this.IsAdmin() {
 
 		// Check if user has permissions to create activation for the machine.
 		var userPermissions *[]models.Permission
 		userPermissions, err = models.GetUserPermissions(userId)
 		if err != nil {
 			beego.Error("Could not get user permissions")
-			this.CustomAbort(403, "Forbidden")
+			this.CustomAbort(403, "Failed to create activation")
 		}
 		var userPermitted = false
 		for _, permission := range *userPermissions {
@@ -190,7 +203,7 @@ func (this *ActivationsController) Create() {
 		}
 		if !userPermitted {
 			beego.Error("User has no permission to activate the machine")
-			this.CustomAbort(401, "Unauthorized")
+			this.CustomAbort(401, "Not authorized")
 		}
 	}
 
