@@ -29,10 +29,7 @@ app.controller('MachinesCtrl',
   $scope.loadMachines = function() {
     $http({
       method: 'GET',
-      url: '/api/users/' + $cookieStore.get('Id') + '/machines',
-      params: {
-        anticache: new Date().getTime()
-      }
+      url: '/api/users/' + $cookieStore.get('Id') + '/machines'
     })
     .success(function(machines){
       console.log(machines);
@@ -54,10 +51,7 @@ app.controller('MachinesCtrl',
   $scope.getActiveActivations = function(machines) {
     $http({
       method: 'GET',
-      url: '/api/activations/active',
-      params: {
-        anticache: new Date().getTime()
-      }
+      url: '/api/activations/active'
     })
     .success(function(activations){
       console.log(activations);
@@ -171,10 +165,7 @@ app.controller('MachinesCtrl',
   $scope.getOccupierName = function(machine, userId) {
     $http({
       method: 'GET',
-      url: '/api/users/' + userId + '/name',
-      params: {
-        anticache: new Date().getTime()
-      }
+      url: '/api/users/' + userId + '/name'
     })
     .success(function(data){
       machine.occupier = data.FirstName + ' ' + data.LastName;
@@ -205,8 +196,7 @@ app.controller('MachinesCtrl',
       method: 'POST',
       url: '/api/activations',
       params: {
-        mid: machineId,
-        anticache: new Date().getTime()
+        mid: machineId
       }
     })
     .success(function(data) {
@@ -252,10 +242,7 @@ app.controller('MachinesCtrl',
 
     $http({
       method: 'PUT', 
-      url: '/api/activations/' + machine.ActivationId, 
-      params: {
-        anticache: new Date().getTime()
-      }
+      url: '/api/activations/' + machine.ActivationId
     })
     .success(function(data) {
       $scope.hideGlobalLoader();

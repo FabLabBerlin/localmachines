@@ -22,8 +22,7 @@ angular.module('fabsmith.login', ['ngRoute', 'ngCookies'])
       url: '/api/users/login',
       data: {
         username: $scope.username,
-        password: $scope.password,
-        anticache: new Date().getTime()
+        password: $scope.password
       }
     })
     .success(function(loginResponse) {

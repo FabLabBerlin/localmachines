@@ -1,23 +1,23 @@
 <div class="machine" ng-class="{available: machine.available, used: machine.used, occupied: machine.occupied, unavailable: machine.unavailable}">
-	<div class="container">
-		<div class="machine-header">
-			<div class="machine-title pull-left">{{machine.Name}}</div>
-			<div class="machine-info-btn pull-right">
-				
-				<a class="machine-info-toggle" ng-click="toggleInfo()">
-					<span class="glyphicon glyphicon-info-sign" ng-class="{hidden: infoVisible}"></span>
-					<span class="glyphicon glyphicon-remove-circle" ng-class="{hidden: !infoVisible}"></span>
-				</a>
+  <div class="container">
+    <div class="machine-header">
+      <div class="machine-title pull-left">{{machine.Name}}</div>
+      <div class="machine-info-btn pull-right">
+        
+        <a class="machine-info-toggle" ng-click="toggleInfo()">
+          <span class="glyphicon glyphicon-info-sign" ng-class="{hidden: infoVisible}"></span>
+          <span class="glyphicon glyphicon-remove-circle" ng-class="{hidden: !infoVisible}"></span>
+        </a>
 
-			</div>
-			<div class="clearfix"></div>
-			<div class="machine-info-content">{{machine.Description}}</div>
-		</div> <!-- /machine-header -->
-		<div class="machine-body">
-			<fs-machine-body-available ng-class="{hidden: !machine.available}"></fs-machine-body-available>
-			<fs-machine-body-used ng-class="{hidden: !machine.used}"></fs-machine-body-used>
-			<fs-machine-body-occupied ng-class="{hidden: !machine.occupied}"></fs-machine-body-occupied>
-			<fs-machine-body-unavailable ng-class="{hidden: !machine.unavailable}"></fs-machine-body-unavailable>
-		</div> <!-- /machine-body -->
-	</div> <!-- /container -->
+      </div>
+      <div class="clearfix"></div>
+      <div class="machine-info-content">{{machine.Description}}</div>
+    </div> <!-- /machine-header -->
+    <div class="machine-body">
+      <fs-machine-body-available ng-class="{hidden: !machine.available}"></fs-machine-body-available>
+      <fs-machine-body-used ng-class="{hidden: !machine.used}"></fs-machine-body-used>
+      <fs-machine-body-occupied ng-class="{hidden: !machine.occupied}"></fs-machine-body-occupied>
+      <fs-machine-body-unavailable ng-class="{hidden: !machine.unavailable}"></fs-machine-body-unavailable>
+    </div> <!-- /machine-body -->
+  </div> <!-- /container -->
 </div> <!-- /machine available -->
