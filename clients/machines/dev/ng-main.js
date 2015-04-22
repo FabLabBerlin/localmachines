@@ -12,13 +12,6 @@ var app = angular.module('fabsmith', [
   'fabsmith.version'
 ]);
 
-// Default redirect to login view
-/*
-.config(['$routeProvider', function($routeProvider) {
-  $routeProvider.otherwise({redirectTo: '/login'});
-}])
-*/
-
 // This checks whether an user is logged in always before 
 // switching to a new view
 app.run(['$rootScope', '$location', '$http', 
@@ -32,7 +25,6 @@ app.run(['$rootScope', '$location', '$http',
         
         // If it is not login (main) view, 
         // check if the user is logged in
-        // TODO: figure out a way that does not need a request
         if (newPath !== '/login') {
             $http({
                 method: 'POST',

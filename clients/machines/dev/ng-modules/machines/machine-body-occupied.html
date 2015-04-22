@@ -1,13 +1,19 @@
 <div class="row">
-	<div class="col-xs-6">
-		<div class="machine-action-info">
-			<div class="machine-action-label machine-occupied-label">Occupied by</div>
-			<div class="machine-occupied-value">{{machine.occupier}}</div>
-			<div class="machine-occupied-time-value" ng-class="{hidden: !user.Admin && !user.Staff}">{{machine.ActivationSecondsElapsed | timeleft}}</div>
-		</div>
-	</div>
-	<div class="col-xs-6">
-		<div class="indicator indicator-occupied" ng-class="{hidden: user.Admin || user.Staff}">Occupied</div>
-		<button class="btn btn-lg btn-warning btn-block" ng-class="{hidden: !user.Admin && !user.Staff}" ng-click="deactivate(machine)">Stop</button>
-	</div>
+  <div class="col-xs-6">
+    <div class="machine-action-info">
+      <div class="machine-action-label machine-occupied-label">Occupied by</div>
+      <div class="machine-occupied-value">{{machine.occupier}}</div>
+      <div class="machine-occupied-time-value" 
+           ng-class="{hidden: !machine.UserAdmin}">
+        {{machine.ActivationSecondsElapsed | timeleft}}
+      </div>
+    </div>
+  </div>
+  <div class="col-xs-6">
+    <div class="indicator indicator-occupied" 
+        ng-class="{hidden: machine.UserAdmin}">Occupied</div>
+    <button class="btn btn-lg btn-warning btn-block" 
+            ng-class="{hidden: !machine.UserAdmin}" 
+            ng-click="deactivate(machine)">Stop</button>
+  </div>
 </div> <!-- /row -->

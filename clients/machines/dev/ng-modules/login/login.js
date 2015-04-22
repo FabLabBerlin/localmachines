@@ -12,75 +12,60 @@ angular.module('fabsmith.login', ['ngRoute', 'ngCookies'])
 }])
 
 .controller('LoginCtrl', ['$scope', '$http', '$location', function($scope, $http, $location) {
-	
-	// Local login function - if we do it by entering username and 
-	// password in the browser
-	$scope.login = function() {
-		// Attempt to login via API
-		$http({
-			method: 'POST',
-			url: '/api/users/login',
-			data: {
-				username: $scope.username,
-				password: $scope.password,
-				anticache: new Date().getTime()
-			}
-		})
-		.success(function(data, status) {
-			if (data.UserId) {
+  
+  // Local login function - if we do it by entering username and 
+  // password in the browser
+  $scope.login = function() {
+    // Attempt to login via API
+    $http({
+      method: 'POST',
+      url: '/api/users/login',
+      data: {
+        username: $scope.username,
+        password: $scope.password,
+        anticache: new Date().getTime()
+      }
+    })
+    .success(function(loginResponse) {
+      if (loginResponse.UserId) {
+        $scope.getUser(loginResponse.UserId);
+      } else {
+        toastr.error('Failed to log in');
+      }
+    })
+    .error(function(data, status) {
+      toastr.error('Failed to log in');
+    });
+  };
 
-				// Get user data
-				$http({
-					method: 'GET',
-					url: '/api/users/' + data.UserId
-				})
-				.success(function(userData){
-					$scope.onUserDataLoaded(userData);
-				})
-				.error(function(data, status){
-					toastr.error('Could not get user data');
-				});
-				
-			} // if data.UserId
-		})
-		.error(function(data, status) {
-			toastr.error('Failed to log in');
-		});
-	};
+  $scope.getUser = function(userId) {
+    $http({
+      method: 'GET',
+      url: '/api/users/' + userId
+    })
+    .success(function(userData){
+      $scope.onUserDataLoaded(userData);
+    })
+    .error(function(data, status){
+      toastr.error('Could not get user data');
+    });
+  };
 
-	$scope.onUserDataLoaded = function(userData){
-		// Get user roles
-		$http({
-			method: 'GET',
-			url: '/api/users/' + userData.Id + '/roles',
-			data: {
-				anticache: new Date().getTime()
-			}
-		})
-		.success(function(userRoles){
-			$scope.onUserRolesLoaded(userRoles, userData);
-		})
-		.error(function(data, status){
-			alert('Could not load user roles');
-		});
-	};
+  $scope.onUserDataLoaded = function(userData){
+    $scope.$emit('user-login', userData);
+    $location.path('/machines');
+  };
 
-	$scope.onUserRolesLoaded = function(userRoles, userData){
-		userData = _.merge(userData, userRoles); 
-		$scope.$emit('user-login', userData);
-		$location.path('/machines');
-	};
+  // Make the main controller scope accessible from outside
+  // So we can use our Android app to call login function
+  window.LOGIN_CTRL_SCOPE = $scope;
 
-	// Make the main controller scope accessible from outside
-	// So we can use our Android app to call login function
-	window.LOGIN_CTRL_SCOPE = $scope;
-
-	// Call this from Android app as LOGIN_CTRL_SCOPE.login("user", "pass");
-	$scope.androidLogin = function(username, password) {
-		$scope.username = username;
-		$scope.password = password;
-		$scope.login();
-	};
+  // Call this from Android app as LOGIN_CTRL_SCOPE.login("user", "pass");
+  $scope.androidLogin = function(username, password) {
+    $scope.username = username;
+    $scope.password = password;
+    $scope.login();
+  };
 
 }]);
 
