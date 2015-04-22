@@ -12,7 +12,7 @@ var LOGOUT_TIMER_DELAY = 30;
 // Our local app variable for the module
 
 var app = angular.module('fabsmith.machines', 
-  ['ngRoute', 'timer', 'fabsmithFilters', 'ui.bootstrap.modal']);
+  ['ngRoute', 'timer', 'fabsmithFilters']);
 
 app.config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/machines', {
@@ -22,8 +22,8 @@ app.config(['$routeProvider', function($routeProvider) {
 }]);
 
 app.controller('MachinesCtrl', 
- ['$scope', '$http', '$location', '$route', '$cookieStore', '$modal', 
- function($scope, $http, $location, $route, $cookieStore, $modal) {
+ ['$scope', '$http', '$location', '$route', '$cookieStore', 
+ function($scope, $http, $location, $route, $cookieStore) {
 
   // Attempt to get logged user machines
   $scope.loadMachines = function() {
@@ -242,19 +242,6 @@ app.controller('MachinesCtrl',
 
   };
 
-  $scope.deactivatePrompt = function(machine) {
-    
-    $scope.resetTimer();
-    
-    var modal = $scope.openDeactivateModal();
-    modal.result.then(function() {
-      $scope.resetTimer();
-      $scope.deactivate(machine);
-    }, function () {
-      $scope.resetTimer();
-    });
-  };
-
   $scope.deactivate = function(machine) {
 
     // Stop activation timer interval
@@ -281,44 +268,6 @@ app.controller('MachinesCtrl',
       toastr.error('Failed to deactivate');
     });
   };
-
-  // TODO: use the activation api calls to handle the following
-  $scope.isAvailable = function(machine) {
-    return machine.Status === MACHINE_STATUS_AVAILABLE;
-  };
-
-  $scope.isOccupied = function(machine) {
-    return machine.Status === MACHINE_STATUS_OCCUPIED;
-  };
-
-  $scope.isUsed = function(machine) {
-    return machine.Status === MACHINE_STATUS_USED;
-  };
-
-  $scope.isUnavailable = function(machine) {
-    return machine.Status === MACHINE_STATUS_UNAVAILABLE;
-  };
-
-  $scope.setAllStates = function(machine, trueOrFalse) {
-    machine.available = trueOrFalse;
-    machine.used = trueOrFalse;
-    machine.occupied = trueOrFalse;
-    machine.unavailable = trueOrFalse;
-  };
-
-  // TODO: Remove the angular-ui-bootstrap dependency ans substitute with 
-  //       plain Bootstrap HTML. Current solution causes path problems.
-  $scope.openDeactivateModal = function() {
-    var modalInstance = $modal.open({
-      backdrop: false,
-      templateUrl: 'ng-modules/machines/deactivate-modal.html?v1',
-      windowTemplateUrl: '/views/bower_components/angular-ui-bootstrap/template/modal/window.html',
-      controller: 'DeactivateModalCtrl'
-      });
-
-      return modalInstance;
-
-  }; // showModal
 
 }]);
 
@@ -410,18 +359,6 @@ app.directive('fsMachineBodyUnavailable', function() {
     templateUrl: 'ng-modules/machines/machine-body-unavailable.html',
     restrict: 'E'
   };
-});
-
-app.controller('DeactivateModalCtrl', function ($scope, $modalInstance) {
-
-  $scope.proceed = function () {
-    $modalInstance.close('eh');
-  };
-
-  $scope.cancel = function () {
-    $modalInstance.dismiss('cancel');
-  };
-
 });
 
 })(); // closure
