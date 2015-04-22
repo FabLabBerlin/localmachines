@@ -82,6 +82,12 @@ app.config(['$httpProvider', function($httpProvider) {
 app.controller('MainCtrl', ['$scope', '$http', '$location', '$cookieStore', '$cookies', 
 function($scope, $http, $location, $cookieStore, $cookies){
 
+  // Configure toastr default location
+  toastr.options.positionClass = 'toast-bottom-left';
+
+  // Configure vex theme
+  vex.defaultOptions.className = 'vex-theme-plain';
+
   // Configure root scope so Android can access
   window.ROOT_SCOPE = $scope;
 
