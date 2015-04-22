@@ -8,7 +8,7 @@ Edit this file to affect css styling and use Grunt tasks to compile it.
 */
 body {
   padding-bottom: 40px;
-  background-color: #eeeeee;
+  background-color: #ffffff;
   color: #4a4a4a;
   font-family: 'Open Sans', sans-serif;
   font-weight: normal;
@@ -36,26 +36,32 @@ li {
 .panel-title a {
   cursor: pointer;
 }
+.checkbox-inline label {
+  font-weight: normal;
+}
+.input-group {
+  display: inline-table;
+}
 .machine-item,
 .activation-item {
   border-radius: 10px;
   padding: 10px;
 }
-.form-signin,
+.form-login,
 .app-meta {
   max-width: 330px;
   padding: 15px;
   margin: 0 auto;
-  margin-top: 40px;
+  margin-top: 60px;
 }
-.form-signin .form-signin-heading,
-.form-signin .checkbox {
+.form-login .form-login-heading,
+.form-login .checkbox {
   margin-bottom: 10px;
 }
-.form-signin .checkbox {
+.form-login .checkbox {
   font-weight: normal;
 }
-.form-signin .form-control {
+.form-login .form-control {
   position: relative;
   height: auto;
   -webkit-box-sizing: border-box;
@@ -64,20 +70,20 @@ li {
   padding: 10px;
   font-size: 16px;
 }
-.form-signin .form-control:focus {
+.form-login .form-control:focus {
   z-index: 2;
 }
-.form-signin input[type="text"] {
+.form-login input[type="text"] {
   margin-bottom: 5px;
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
 }
-.form-signin input[type="password"] {
+.form-login input[type="password"] {
   margin-bottom: 10px;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
-.form-signin .ng-dirty.ng-valid {
+.form-login .ng-dirty.ng-valid {
   border: 1px solid #66dd55;
 }
 .app-meta {
@@ -97,9 +103,8 @@ li {
   background: rgba(0, 0, 0, 0.25);
 }
 #loader-global .spinner {
-  color: #090909;
-  backgorund: transparent;
-  display: block;
+  background: #090909;
+  display: table-cell;
   width: 50px;
   height: 50px;
   position: absolute;
@@ -107,62 +112,90 @@ li {
   top: 50%;
   margin-left: -25px;
   margin-top: -25px;
-  font-size: 50px;
+  border-radius: 25px;
 }
-/*
- * Bootstrap overrides
- */
+#loader-global .spinner img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-left: -12px;
+  margin-top: -12px;
+}
+/* Bootstrap overrides */
 .btn {
-  height: 50px;
-  border: 1px solid #B02F38;
-  border-radius: 8px;
-  font-weight: bold;
-  font-size: 15px;
-  color: #FFFFFF;
+  border-radius: 0;
+  border: none;
+}
+.btn-primary {
+  background: #a3cc52;
+}
+.btn-primary:hover {
+  background: #8ab536;
+}
+.btn-danger {
+  background: #e66767;
+}
+.btn-danger:hover {
+  background: #df3b3b;
+}
+/* Add icon button missing in Bootstrap */
+.btn-ico,
+.btn-ico:hover,
+.btn-ico:active,
+.btn-ico:focus,
+.btn-ico:visited {
+  background: transparent;
+  /* Remove the default Bootstrap glow on button click */
+  outline: none !important;
+  box-shadow: none !important;
+}
+.btn-ico {
+  padding: 0;
+  font-size: 20px;
   line-height: 1;
 }
-.btn-lg {
-  height: 70px;
-  font-weight: bold;
-  font-size: 22px;
-  color: #FFFFFF;
-  line-height: 1;
+.btn-ico {
+  color: #a6a6a6;
 }
-.btn-primary,
-.touch .btn-primary:hover,
-.touch .btn-primary:focus {
-  background: #61C5EA;
-  border: 1px solid #3998B2;
+.btn-ico:hover {
+  color: #8d8d8d;
 }
-.no-touch .btn-primary:hover,
-.no-touch .btn-primary:focus {
-  background: #3996B8;
-  color: #B3EBFF;
-  border: 1px solid #3998B2;
+.btn-ico.btn-primary {
+  color: #a3cc52;
 }
-.btn-danger,
-.touch .btn-danger:hover,
-.touch .btn-danger:focus {
-  background: #E85459;
-  border: 1px solid #B03135;
+.btn-ico.btn-primary:hover {
+  color: #8ab536;
 }
-.no-touch .btn-danger:hover,
-.no-touch .btn-danger:focus {
-  background: #B02F38;
-  border: 1px solid #B02F38;
-  color: #FF999C;
+.btn-ico.btn-danger {
+  color: #e66767;
 }
-.btn-warning,
-.touch .btn-warning:hover,
-.touch .btn-warning:focus {
-  background: #FAE451;
-  border: 1px solid #D9C22B;
+.btn-ico.btn-danger:hover {
+  color: #df3b3b;
 }
-.no-touch .btn-warning:hover,
-.no-touch .btn-warning:focus {
-  background: #D9C22B;
-  border: 1px solid #D9C22B;
-  color: #FFF5B3;
+nav.navbar {
+  background-color: #595959;
+  border-bottom: 2px solid black;
+}
+nav.navbar .navbar-brand {
+  color: white;
+}
+nav.navbar .navbar-brand:hover {
+  color: #333333;
+}
+nav.navbar .navbar-brand {
+  padding-left: 15px;
+  padding-top: 10px;
+}
+nav.navbar .navbar-nav > li {
+  margin: 0;
+}
+nav.navbar .navbar-nav > li > a {
+  color: white;
+}
+.navbar-collapse {
+  --position: relative;
+  --z-index: 999;
+  background: #595959;
 }
 /*
  * Dashboard Styling 
@@ -191,6 +224,12 @@ header {
 .auto-logout-label,
 .auto-logout-value {
   text-align: right;
+}
+#adm-dashboard {
+  background: white;
+}
+.adm-edit-entry {
+  cursor: pointer;
 }
 .machine {
   background-image: linear-gradient(180deg, #eeeeee 0%, #ffffff 100%);
@@ -288,4 +327,26 @@ header {
 }
 footer {
   margin-top: 40px;
+}
+.twitter-typeahead {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+}
+.tt-dropdown-menu {
+  background: #eeeeee;
+}
+.tt-suggestion {
+  color: #4a4a4a;
+}
+.tt-highlight {
+  font-weight: bold;
+  color: #000000;
+}
+.tt-cursor {
+  background: #ffffff;
+}
+.delete-prompt-token {
+  color: #e66767;
 }
