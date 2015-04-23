@@ -7,11 +7,11 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/kr15h/fabsmith/docs"
 	_ "github.com/kr15h/fabsmith/routers"
-	"os"
 )
 
 func main() {
-	configRunmode()
+	beego.Info("beego.RunMode:", beego.RunMode)
+
 	configClients()
 	configDatabase()
 
@@ -40,19 +40,6 @@ func configClients() {
 		beego.SetStaticPath("/machines", "clients/machines/prod")
 		beego.SetStaticPath("/admin", "clients/admin/prod")
 	}
-}
-
-func configRunmode() {
-
-	// Set Beego runmode from FabSmith env variables
-	runmode := os.Getenv("FABSMITH_RUNMODE")
-	if runmode != "" {
-		beego.RunMode = runmode
-	}
-
-	// Print FABSMITH_RUNMODE environment variable
-	beego.Trace("FABSMITH_RUNMODE:", os.Getenv("FABSMITH_RUNMODE"))
-	beego.Trace("beego.RunMode:", beego.RunMode)
 }
 
 func configDatabase() {
