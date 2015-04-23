@@ -1,9 +1,12 @@
 package controllers
 
 import (
+	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/kr15h/fabsmith/models"
+	"strings"
 )
 
 type MachinesController struct {
@@ -222,4 +225,50 @@ func (this *MachinesController) Delete() {
 
 	this.Data["json"] = "ok"
 	this.ServeJson()
+}
+
+func decodeDataUri(dataUri string) ([]byte, error) {
+	fmt.Printf("dataUri: %s", dataUri)
+	sep := "base64,"
+	i := strings.Index(dataUri, sep)
+	if i < 0 {
+		return nil, fmt.Errorf("cannot remove prefix from data uri")
+	}
+	dataUri = dataUri[i+len(sep):]
+	data, err := base64.StdEncoding.DecodeString(dataUri)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+// @Title PostImage
+// @Description Post machine image
+// @Param	mid	path	int	true	"Machine ID"
+// @Success 200 string ok
+// @Failure	400	Bad Request
+// @Failure	401	Not authorized
+// @Failure	500 Internal Server Error
+// @router /:mid/image [post]
+func (this *MachinesController) PostImage() {
+	img, err := decodeDataUri(this.GetString("Image"))
+	if err != nil {
+		beego.Error("decode data uri:", err)
+		this.CustomAbort(400, "Bad Request")
+	}
+	i := strings.LastIndex(this.GetString("Filename"), ".")
+	var fileExt string
+	if i >= 0 {
+		fileExt = this.GetString("Filename")[i:]
+	} else {
+		this.CustomAbort(500, "File name has no proper extension")
+	}
+	fn := imageFilename(this.GetString(":mid"), fileExt)
+	if err = models.UploadImage(fn, img); err != nil {
+		this.CustomAbort(500, "Internal Server Error")
+	}
+}
+
+func imageFilename(machineId string, fileExt string) string {
+	return "machine-" + machineId + fileExt
 }
