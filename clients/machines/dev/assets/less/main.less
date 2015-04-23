@@ -305,11 +305,15 @@ footer div {
 
 .login {
   position: absolute;
-  top: 50%;
+  top: 54%;
   transform: translateY(-50%); 
   -ms-transform: translateY(-50%);
   -webkit-transform: translateY(-50%); 
   width: 100%;
+}
+
+.login-heading {
+  font-size: 18px;
 }
 
 .login-form .checkbox {
@@ -344,19 +348,19 @@ footer div {
 
 .login-form input[type="text"] {
   margin-bottom: 5px;
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0;
-  height: 50px;
-  font-size: 18px;
-  line-height: 1;
+  border-radius: 0;
+  height: 35px;
+  font-size: 12px;
 }
 .login-form input[type="password"] {
   margin-bottom: 10px;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-  height: 50px;
-  font-size: 18px;
-  line-height: 1;
+  border-radius: 0;
+  height: 35px;
+  font-size: 12px;
+}
+
+.btn-login {
+  height: 35px;
 }
 
 .brand-image {
@@ -369,5 +373,26 @@ footer div {
   left: 0;
   bottom: 0;
   width: 100%;
+}
+
+@media (min-width: 460px) {
+  .login-heading {
+    font-size: 30px;
+  }
+
+  .login-form input[type="text"] {
+    height: @lg-height;
+    font-size: 18px;
+  }
+  .login-form input[type="password"] {
+    height: @lg-height;
+    font-size: 18px;
+  }
+  
+  .btn-login {
+    height: @lg-height;
+    font-size: 22px;
+    font-weight: bold;
+  }
 }
 
