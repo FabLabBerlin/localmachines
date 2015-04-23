@@ -25,7 +25,7 @@ app.controller('MembershipCtrl',
     method: 'GET',
     url: '/api/machines',
     params: {
-      anticache: new Date().getTime()
+      ac: new Date().getTime()
     }
   })
   .success(function(machines) {
@@ -42,7 +42,7 @@ app.controller('MembershipCtrl',
       method: 'GET',
       url: '/api/memberships/' + $scope.membership.Id,
       params: {
-        anticache: new Date().getTime()
+        ac: new Date().getTime()
       }
     })
     .success(function(membershipModel) {
@@ -102,7 +102,7 @@ app.controller('MembershipCtrl',
         return JSON.stringify(data);
       },
       params: {
-        anticache: new Date().getTime()
+        ac: new Date().getTime()
       }
     })
     .success(function() {
@@ -146,7 +146,7 @@ app.controller('MembershipCtrl',
       method: 'DELETE',
       url: '/api/memberships/' + $scope.membership.Id,
       params: {
-        anticache: new Date().getTime()
+        ac: new Date().getTime()
       }
     })
     .success(function() {

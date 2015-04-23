@@ -25,7 +25,10 @@ app.controller('InvoicesCtrl', ['$scope', '$http', '$location', 'randomToken',
   $scope.loadInvoices = function() {
     $http({
       method: 'GET',
-      url: '/api/invoices'
+      url: '/api/invoices',
+      params: {
+        ac: new Date().getTime()
+      }
     })
     .success(function(invoices) {
       $scope.invoices = invoices;
@@ -63,7 +66,10 @@ app.controller('InvoicesCtrl', ['$scope', '$http', '$location', 'randomToken',
   $scope.deleteInvoice = function(invoiceId) {
     $http({
       method: 'DELETE',
-      url: '/api/invoices/' + invoiceId
+      url: '/api/invoices/' + invoiceId,
+      params: {
+        ac: new Date().getTime()
+      }
     })
     .success(function(response) {
       toastr.success("Invoice deleted");

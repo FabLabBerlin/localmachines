@@ -20,7 +20,7 @@ app.controller('MachinesCtrl', ['$scope', '$http', '$location', '$cookieStore',
     method: 'GET',
     url: '/api/machines',
     params: {
-      anticache: new Date().getTime()
+      ac: new Date().getTime()
     }
   })
   .success(function(data) {
@@ -52,7 +52,7 @@ app.controller('MachinesCtrl', ['$scope', '$http', '$location', '$cookieStore',
       url: '/api/machines',
       params: {
         mname: machineName,
-        anticache: new Date().getTime()
+        ac: new Date().getTime()
       }
     })
     .success(function(data) {

@@ -27,7 +27,10 @@ app.controller('MachineCtrl',
 
   $http({
     method: 'GET',
-    url: '/api/machines/' + $scope.machine.Id
+    url: '/api/machines/' + $scope.machine.Id,
+    params: {
+      ac: new Date().getTime()
+    }
   })
   .success(function(data) {
     $scope.machine = data;
@@ -61,6 +64,9 @@ app.controller('MachineCtrl',
       transformRequest: function(data) {
         console.log('Machine data to send:', data);
         return JSON.stringify(data);
+      },
+      params: {
+        ac: new Date().getTime()
       }
     })
     .success(function(data) {
@@ -98,7 +104,10 @@ app.controller('MachineCtrl',
   $scope.deleteMachine = function() {
     $http({
       method: 'DELETE',
-      url: '/api/machines/' + $scope.machine.Id
+      url: '/api/machines/' + $scope.machine.Id,
+      params: {
+        ac: new Date().getTime()
+      }
     })
     .success(function() {
       toastr.success('Machine deleted');
@@ -114,7 +123,10 @@ app.controller('MachineCtrl',
   $scope.getHexabusMapping = function() {
     $http({
       method: 'GET',
-      url: '/api/hexabus/' + $scope.machine.Id
+      url: '/api/hexabus/' + $scope.machine.Id,
+      params: {
+        ac: new Date().getTime()
+      }
     })
     .success(function(mappingModel) {
       $scope.hexabusMapping = mappingModel;
@@ -128,7 +140,8 @@ app.controller('MachineCtrl',
       method: 'POST',
       url: '/api/hexabus',
       params: {
-        mid: $scope.machine.Id
+        mid: $scope.machine.Id,
+        ac: new Date().getTime()
       }
     })
     .success(function(mappingId) {
@@ -165,7 +178,10 @@ app.controller('MachineCtrl',
   $scope.deleteHexabusMapping = function() {
     $http({
       method: 'DELETE',
-      url: '/api/hexabus/' + $scope.machine.Id
+      url: '/api/hexabus/' + $scope.machine.Id,
+      params: {
+        ac: new Date().getTime()
+      }
     })
     .success(function() {
       toastr.success('Mapping deleted');
@@ -216,6 +232,9 @@ app.controller('MachineCtrl',
         data: $scope.hexabusMapping,
         transformRequest: function(data) {
           return JSON.stringify(data);
+        },
+        params: {
+          ac: new Date().getTime()
         }
       })
       .success(function() {
