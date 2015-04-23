@@ -192,6 +192,14 @@ app.controller('MachineCtrl',
 
   $scope.machineImageReplace = function() {
     toastr.info('machineImageReplace()');
+    $http({
+      method: 'POST',
+      url: '/api/machines/' + $scope.machine.Id + '/image',
+      data: {
+        Filename: $scope.machineImageNewFileName,
+        Image: $scope.machineImageNewFile
+      }
+    })
   };
 
   // Update the mapping with fresh IP
