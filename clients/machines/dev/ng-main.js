@@ -31,7 +31,8 @@ app.run(['$rootScope', '$location', '$http',
         url: '/api/users/login',
         params: {
           username: 'blank', // TODO: randomize?
-          password: 'blank'
+          password: 'blank',
+          params: { ac: new Date().now() }
         }
       })
       .success(function(data) {
@@ -107,7 +108,8 @@ function($scope, $http, $location, $cookieStore, $cookies){
 
     $http({
       method: 'GET',
-      url: '/api/users/logout'
+      url: '/api/users/logout',
+      params: { ac: new Date().now() }
     })
     .success(function() {
       $location.path('/');
