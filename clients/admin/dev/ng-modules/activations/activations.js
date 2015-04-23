@@ -19,7 +19,10 @@ app.controller('ActivationsCtrl', ['$scope', '$http', '$location',
   $scope.loadMachines = function() {
     $http({
       method: 'GET',
-      url: '/api/machines'
+      url: '/api/machines',
+      params: {
+        ac: new Date().getTime()
+      }
     })
     .success(function(machines){
       $scope.machines = machines;
@@ -52,7 +55,8 @@ app.controller('ActivationsCtrl', ['$scope', '$http', '$location',
         userId: 1,
         includeInvoiced: false,
         itemsPerPage: $scope.itemsPerPage,
-        page: $scope.currentPage
+        page: $scope.currentPage,
+        ac: new Date().getTime()
       }
     })
     .success(function(response) {
@@ -81,7 +85,10 @@ app.controller('ActivationsCtrl', ['$scope', '$http', '$location',
   $scope.loadUserName = function(userId) {
     $http({
       method: 'GET',
-      url: '/api/users/' + userId + '/name'
+      url: '/api/users/' + userId + '/name',
+      params: {
+        ac: new Date().getTime()
+      }
     })
     .success(function(user) {
       _.each($scope.activations, function(activation) {
@@ -168,7 +175,8 @@ app.controller('ActivationsCtrl', ['$scope', '$http', '$location',
         //userId: 1,
         includeInvoiced: false,
         itemsPerPage: $scope.itemsPerPage,
-        page: $scope.currentPage
+        page: $scope.currentPage,
+        ac: new Date().getTime()
       }
     })
     .success(function(invoiceData) {

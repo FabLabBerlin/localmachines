@@ -19,7 +19,7 @@ app.controller('MembershipsCtrl', ['$scope', '$http', '$location',
     method: 'GET',
     url: '/api/memberships',
     params: {
-      anticache: new Date().getTime()
+      ac: new Date().getTime()
     }
   })
   .success(function(data) {
@@ -65,7 +65,7 @@ app.controller('MembershipsCtrl', ['$scope', '$http', '$location',
       url: '/api/memberships',
       params: {
         mname: membershipName,
-        anticache: new Date().getTime()
+        ac: new Date().getTime()
       }
     })
     .success(function(membershipId) {

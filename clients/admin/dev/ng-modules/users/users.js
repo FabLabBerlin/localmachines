@@ -21,7 +21,7 @@ app.controller('UsersCtrl', ['$scope', '$http', '$location',
       method: 'GET',
       url: '/api/users',
       params: {
-        anticache: new Date().getTime()
+        ac: new Date().getTime()
       }
     })
     .success(function(users) {
@@ -54,8 +54,10 @@ app.controller('UsersCtrl', ['$scope', '$http', '$location',
       method: 'POST',
       url: '/api/users',
       data: {
-        email: email,
-        anticache: new Date().getTime()
+        email: email
+      },
+      params: {
+        ac: new Date().getTime()
       }
     })
     .success(function(user) {

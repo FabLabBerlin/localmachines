@@ -26,7 +26,10 @@ app.controller('UserCtrl',
   $scope.loadUserData = function() {
     $http({
       method: 'GET',
-      url: '/api/users/' + $scope.user.Id
+      url: '/api/users/' + $scope.user.Id,
+      params: {
+        ac: new Date().getTime()
+      }
     })
     .success(function(user) {
       $scope.user = user;
@@ -53,7 +56,10 @@ app.controller('UserCtrl',
   $scope.loadAvailableMachines = function() {
     $http({
       method: 'GET',
-      url: '/api/machines'
+      url: '/api/machines',
+      params: {
+        ac: new Date().getTime()
+      }
     })
     .success(function(availableMachines) {
       $scope.availableMachines = availableMachines;
@@ -77,7 +83,10 @@ app.controller('UserCtrl',
   $scope.loadUserMachinePermissions = function(callback) {
     $http({
       method: 'GET',
-      url: '/api/users/' + $scope.user.Id + '/machines'
+      url: '/api/users/' + $scope.user.Id + '/machines',
+      params: {
+        ac: new Date().getTime()
+      }
     })
     .success(function(userMachines) {
 
@@ -119,7 +128,10 @@ app.controller('UserCtrl',
   $scope.getAvailableMemberships = function() {
     $http({
       method: 'GET',
-      url: '/api/memberships'
+      url: '/api/memberships',
+      params: {
+        ac: new Date().getTime()
+      }
     })
     .success(function(data) {
       $scope.memberships = data;
@@ -140,7 +152,10 @@ app.controller('UserCtrl',
   $scope.getUserMemberships = function() {
     $http({
       method: 'GET',
-      url: '/api/users/' + $scope.user.Id + '/memberships'
+      url: '/api/users/' + $scope.user.Id + '/memberships',
+      params: {
+        ac: new Date().getTime()
+      }
     })
     .success(function(data) {
       $scope.userMemberships = _.map(data, function(userMembership) {
@@ -188,6 +203,9 @@ app.controller('UserCtrl',
       data: {
         StartDate: startDate,
         UserMembershipId: userMembershipId
+      }, 
+      params: {
+        ac: new Date().getTime()
       }
     })
     .success(function() {
@@ -242,7 +260,10 @@ app.controller('UserCtrl',
   $scope.deleteUser = function() {
     $http({
       method: 'DELETE',
-      url: '/api/users/' + $scope.user.Id
+      url: '/api/users/' + $scope.user.Id,
+      params: {
+        ac: new Date().getTime()
+      }
     })
     .success(function() {
       toastr.success('User deleted');
@@ -276,7 +297,10 @@ app.controller('UserCtrl',
   $scope.deleteUserMembership = function(userMembershipId) {
     $http({
       method: 'DELETE',
-      url: '/api/users/' + $scope.user.Id + '/memberships/' + userMembershipId
+      url: '/api/users/' + $scope.user.Id + '/memberships/' + userMembershipId,
+      params: {
+        ac: new Date().getTime()
+      }
     })
     .success(function(data) {
       toastr.success('Membership deleted');
@@ -314,6 +338,9 @@ app.controller('UserCtrl',
       },
       transformRequest: function(data) {
         return JSON.stringify(data);
+      },
+      params: {
+        ac: new Date().getTime()
       }
     })
     .success(function() {
@@ -353,6 +380,9 @@ app.controller('UserCtrl',
       data: permissions,
       transformRequest: function(data) {
         return JSON.stringify(data);
+      },
+      params: {
+        ac: new Date().getTime()
       }
     })
     .success(function() {
@@ -392,7 +422,8 @@ app.controller('UserCtrl',
       method: 'POST',
       url: '/api/users/' + $scope.user.Id + '/password',
       params: {
-        password: $scope.userPassword
+        password: $scope.userPassword,
+        ac: new Date().getTime()
       }
     })
     .success(function() {
