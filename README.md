@@ -1,12 +1,12 @@
-#FabSmith
+# FabSmith
 Internal machine activation software for Fab Labs. Build with [BeeGo](http://beego.me) framework for [GoLang](https://golang.org) and [Angular.js](https://angularjs.org).
 
-##Table of contents
+## Table of contents
 - [Quick-start](#quick-start)
   - [Configuration](#configuration)
+  - [Running](#running)
   - [Compiling and Installing Go](#compiling-and-installing-go)
-  - [Beego](#beego)
-  - [AngularJS](#angularjs)
+  - [Installing Beego](#installing-beego)
   - [Node.js](#nodejs)
 - [Versioning](#versioning)
 - [Runmode](#runmode)
@@ -14,38 +14,21 @@ Internal machine activation software for Fab Labs. Build with [BeeGo](http://bee
   - [Requirements](#requirements)
   - [Hexabus IPv6 Network Setup](#hexabus-ipv6-network-setup)
 - [Development](#development)
+  - [Core Development](#core-development)
+  - [Clients Development](#clients-development)
 - [API Documentation](#api-documentation)
 
-##Quick-start
+## Quick-Start
+This section will show you how to get it working as fast as possible. 
+
 If you have [GoLang](https://golang.org), [Bee](https://github.com/beego/bee) and [Beego](http://beego.me), use the follwing to clone the repo:  
 ```
 go get github.com/kr15h/fabsmith
 ```
-You can find the project in `$GOPATH/src/github.com/kr15h/fabsmith` once cloned.
 
-There is a clean separation between the Fabsmith core engine written in GoLang and the clients that operate with the REST API of the core. Clients are HTML-based and reside under the `/clients` directory.
+You can find the project in `$GOPATH/src/github.com/kr15h/fabsmith` once cloned. Navigate to it using `cd $GOPATH/src/github.com/kr15h/fabsmith`.
 
-Each of the clients is a separate Angular JS application with a [Grunt](http://gruntjs.com)-based workflow. You need to run the following commands from within each client directory separately:
-
-```
-cd clients/machines
-npm install
-bower install
-```
-
-Make sure that you have Bower installed - if not, follow the instructions on [Bower](http://bower.io) website.
-
-###Grunt Tasks
-For each of the client applications there are 2 Grunt tasks:
-
- 1. `grunt dev`
- 2. `grunt prod`
- 
-Use `grunt dev` while developing - it will compile LESS into CSS and check JavaScript errors. When ready to go into production mode, run `grunt prod` - it will compile LESS, concatinate and compress all the JavaScript files, put it all in the `/prod` sub-directory of the client. The client will be served from there whenever Fabsmith will be launched in `prod` mode.
-
-Current version of this software is being tested on a Raspberry Pi, Raspbian and this README should be compatible with other Linux systems.
-
-For Hexabus part now there is working solution that requires the use of `radvd`. The next step would be to understand how to make it work on Mac OS X with `rtadvd`. 
+Run `go get` to install all GoLang dependencies.
 
 ### Configuration
 You have to make a copy of the `conf/app.example.conf` file to be able to run Fabsmith:  
@@ -53,19 +36,31 @@ You have to make a copy of the `conf/app.example.conf` file to be able to run Fa
 cp conf/app.example.conf conf/app.conf
 ```
 
+Edit the `conf/app.conf` file to match your environment.
+
 Compile FabSmith with `bee run` from the `github.com/kr15h/fabsmith` direcotry. It will compile and run the project. To use just the binary afterwards, use the following:  
 ```
 sudo ./fabsmith
 ```
 
-You can set the runmode via environment variables `FABSMITH_RUNMODE` or `BEEGO_RUNMODE` to alter the runmode. You can pass environment variables directly on launching the program:  
+It might be possible that it complains about the GOPATH not being set. In that case run the binary like this:
 ```
-sudo FABSMITH_RUNMODE="prod" ./fabsmith
+sudo GOPATH="/home/youruser/gospace" ./fabsmith
 ```
 
-The `FABSMITH_RUNMODE` environment variable overrides the config runmode. The default runmode is `dev`.
+You can set the runmode via environment variable or `BEEGO_RUNMODE` to alter the runmode. You can pass environment variables directly on launching the program:  
+```
+sudo BEEGO_RUNMODE="prod" ./fabsmith
+```
 
-###Compiling and Installing Go
+The `BEEGO_RUNMODE` environment variable overrides the config runmode.
+
+### Running
+To run compile and run use `bee run`. It should spawn a local web server accessible through the port you defined in `conf/app.conf`, e.g. `http://localhost:8080`. You can access the admin interface via `http://localhost:8080/admin`.
+
+If you are not able to compile and run at this point - check your config file and whether you are not missing GoLang or Beego.
+
+### Compiling and Installing Go
 You will need to compile GoLang from source on the Raspberry Pi. Takes about 2 hours. 
 
  1. Memory split. You should give more for the CPU of the Pi. Open `sudo raspi-config`, go to **Advanced Settings**, select **Memory Split** and enter **128**. On a 512M Raspberry Pi 128M will be given to the GPU and the rest to CPU. This should be enough.
@@ -124,21 +119,14 @@ export PATH="/usr/local/bin:/usr/bin:/bin:/usr/bin/X11:/usr/games:$GOROOT/bin:$G
  Create `~/go-workspace` directory. Name it as you wish, but remember to change the path to it in the lines above added to the shell config file.
  
 These instructions have been adapted from [Dave Cheney's](http://dave.cheney.net/2012/09/25/installing-go-on-the-raspberry-pi) blog article. If something goes wrong - refer to it.
- 
 
-###Beego
+###Installing Beego
 You will need to install BeeGo MVC framework to make use of the code found in this repository. Refer to the official [BeeGo installation instuctions](http://beego.me/quickstart) to do that.
-
-###AngularJS
-On the Beego side there is single frontend template `views/index.html` that loads in AngularJS application from within `static/` directory. The AngularJS side is build on the [AngularJS Seed](https://github.com/angular/angular-seed) project.
-
-Once you clone the source from this repository, you have to cd into the `static/` directory and execute `npm install` to install all the project spceific dependencies.
 
 ###Node.js
 We use Node.js to fully benefit from the AngularJS Seed project. Use the [Node Version Manager](https://github.com/creationix/nvm) to install latest Node.js version. On the Raspberry Pi it will compile it from source and it takes approximately 2 hours.
 
 ###MySQL
-
 Install on Linux:  
 ```
 sudo apt-get update
@@ -158,17 +146,15 @@ SET PASSWORD FOR 'fabsmith'@'localhost' =  PASSWORD('fabsmith');
 
 Restore a database from a dump:
 ```
-./scripts/restoredb.sh
+mysql -u user -p -d database < fabsmith.sql
 ```
 
 In future the Beego application should take care of this on it's own.
 
 Dump database:
 ```
-./scripts/dumpdb.sh
+mysqldump -u user -p fabsmith > fabsmith.sql
 ```
-
-Edit the files `restoredb.sh` and `dumpdb.sh` to add your specific username and password combination.
 
 Create a safe MySQL user: 
 ```
@@ -268,13 +254,34 @@ As you see we don't use the `-Iusb0` part anymore.
 
 ## Development
 
-The development environment is a constant work in progress and does not implement a decent test-driven development workflow yet.  
-
-The Angular JS applications that can be found in the `views/` directory are integrated with a custom [Grunt](http://gruntjs.com) workflow. While developing use the `grunt dev` task - it will constantly check for changes in your JavaScript and [Less](http://lesscss.org) files, compile CSS from Less and check JavaScript for erros with the help of [JSHint](http://jshint.com). You can use a [LiveReload](http://feedback.livereload.com/knowledgebase/articles/86242-how-do-i-install-and-use-the-browser-extensions-) browser extension to reload views each time a change is detected.
+The development environment is a constant work in progress and does not implement a decent test-driven development workflow yet. Soon.
 
 When ready to move the system to `prod` runmode, run `grunt prod` to compile the production mode of the Angular JS applications.
 
 More info about the development workflow will be added to Wiki.
+
+### Core Development
+
+Core / API development. Everything that is no in the `clients` directory is relevant to this part.
+
+### Clients Development
+
+There is a clean separation between the Fabsmith core engine written in GoLang and the clients that operate with the REST API of the core. Clients are HTML-based and reside under the `/clients` directory.
+
+To switch to development mode, you have to change the `runmode` in `conf/app.conf` to `dev`. Each of the clients have a `dev` and `prod` directory with the same hierarchy. When the runmode is `dev`, clients are loaded from their `dev` directory. If the runmode is `prod`, clients are loaded from their `prod` directories. The `prod` directories of the clients contain minified and optimized files for the client interfaces.
+
+Each of the clients is a separate Angular JS application with a [Grunt](http://gruntjs.com)-based workflow. You need to run the following commands from within each client directory separately to download all the development dependencies and be able to use the clients in `dev` mode:
+
+```
+cd clients/machines
+npm instal && bower install
+cd ../admin
+npm instal && bower install
+```
+
+Make sure that you have Bower installed (it has been added as one of the npm dependencies though) - if not, follow the instructions on [Bower](http://bower.io) website.
+
+Whenever you are finished with the client development, remember to run `grunt prod` for each of the clients to compile the `prod` version of the client. Also remember to edit the `Gruntfile.js` before running grunt to add extra configuration in case extra libraries have been added and new modules have to be copied.
 
 ## API Documentation
 
