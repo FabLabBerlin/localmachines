@@ -304,11 +304,6 @@ footer div {
 }
 
 .login {
-  position: absolute;
-  top: 54%;
-  transform: translateY(-50%); 
-  -ms-transform: translateY(-50%);
-  -webkit-transform: translateY(-50%); 
   width: 100%;
 }
 
@@ -369,13 +364,10 @@ footer div {
 }
 
 .absolute-bottom {
-  position: absolute;
-  left: 0;
-  bottom: 0;
   width: 100%;
 }
 
-@media (min-width: 460px) {
+@media (min-width: 768px) {
   .login-heading {
     font-size: 30px;
   }
@@ -393,6 +385,22 @@ footer div {
     height: @lg-height;
     font-size: 22px;
     font-weight: bold;
+  }
+
+  .absolute-bottom {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+  }
+
+  .login {
+    position: absolute;
+    top: 52%;
+    transform: translateY(-50%); 
+    -ms-transform: translateY(-50%);
+    -webkit-transform: translateY(-50%); 
+    width: 100%;
   }
 }
 
