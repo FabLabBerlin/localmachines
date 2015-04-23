@@ -12,6 +12,13 @@
   width: 550px;
   font-size: 30px;
   line-height: 1.5;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateY(-50%) translateX(-50%);
+  -ms-transform: translateY(-50%) translateX(-50%);
+  /* IE 9 */
+  -webkit-transform: translateY(-50%) translateX(-50%);
 }
 .vex.vex-theme-custom .vex-content h1,
 .vex.vex-theme-custom .vex-content h2,
@@ -285,9 +292,7 @@ nav.navbar .navbar-nav > li > a {
   --z-index: 999;
   background: #595959;
 }
-/*
- * Dashboard Styling 
- */
+/* Dashboard Styling */
 header {
   background: #4A4A4A;
   border-bottom: 2px solid #000000;

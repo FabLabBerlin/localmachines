@@ -226,6 +226,7 @@ app.controller('MachinesCtrl',
   $scope.deactivatePrompt = function(machine) {
     vex.dialog.buttons.YES.text = 'Yes';
     vex.dialog.buttons.NO.text = 'No';
+
     vex.dialog.confirm({
       message: 'Do you really want to stop the activation for <b>' + 
         machine.Name + '</b>?',
