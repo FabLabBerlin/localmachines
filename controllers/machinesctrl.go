@@ -228,7 +228,6 @@ func (this *MachinesController) Delete() {
 }
 
 func decodeDataUri(dataUri string) ([]byte, error) {
-	fmt.Printf("dataUri: %s", dataUri)
 	sep := "base64,"
 	i := strings.Index(dataUri, sep)
 	if i < 0 {
@@ -251,6 +250,16 @@ func decodeDataUri(dataUri string) ([]byte, error) {
 // @Failure	500 Internal Server Error
 // @router /:mid/image [post]
 func (this *MachinesController) PostImage() {
+	if !this.IsAdmin() && !this.IsStaff() {
+		beego.Error("Not authorized to create machine")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	mid, err := this.GetInt64(":mid")
+	if err != nil {
+		beego.Error("Failed to get mid:", err)
+		this.CustomAbort(403, "Failed to delete machine")
+	}
 	img, err := decodeDataUri(this.GetString("Image"))
 	if err != nil {
 		beego.Error("decode data uri:", err)
@@ -266,6 +275,17 @@ func (this *MachinesController) PostImage() {
 	fn := imageFilename(this.GetString(":mid"), fileExt)
 	if err = models.UploadImage(fn, img); err != nil {
 		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	m, err := models.GetMachine(mid)
+	if err != nil {
+		beego.Error("Failed to get :mid variable")
+		this.CustomAbort(403, "Failed to get machine")
+	}
+	m.Image = fn
+	if err = models.UpdateMachine(m); err != nil {
+		beego.Error("Failed updating machine:", err)
+		this.CustomAbort(403, "Failed to update machine")
 	}
 }
 

@@ -20,6 +20,7 @@ app.controller('MachineCtrl',
     Id: $routeParams.machineId
   };
 
+  $scope.machineImageFile = undefined;
   $scope.machineImageNewFile = undefined;
   $scope.machineImageNewFileName = undefined;
   $scope.machineImageNewFileSize = undefined;
@@ -32,6 +33,9 @@ app.controller('MachineCtrl',
     $scope.machine = data;
     $scope.machine.Price = $filter('currency')($scope.machine.Price,'',2);
     $scope.getHexabusMapping();
+    if ($scope.machine.Image) {
+      $scope.machineImageFile = "/files/" + $scope.machine.Image;
+    }
   })
   .error(function() {
     toastr.error('Failed to get machine');
