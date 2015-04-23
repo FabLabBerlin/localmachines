@@ -3,24 +3,26 @@
   <div class="container-fluid">
 
   <div class="row">
-    <div class="col-xs-8">
-      <div class="row">
-        <div class="col-xs-12 logged-user-label">Logged in as</div>
-      </div>
-      <div class="row">
-        <div class="col-xs-12 logged-user-value" 
-             ng-bind="userFullName"></div>
-      </div>
+    <div class="col-xs-6">
+      <img src="assets/img/logo_fablab_berlin.svg" class="brand-image">
     </div>
-    <div class="col-xs-4">
-      <button class="btn btn-lg btn-danger btn-block" 
-              ng-click="logout()">Exit&nbsp;
-              <i class="fa fa-sign-out"></i></button>
+    <div class="col-xs-6 text-right">
+      <button class="btn btn-danger btn-logout pull-right" 
+              ng-click="logout()">
+              <i class="fa fa-sign-out"></i>
+      </button>
     </div>
   </div>
 
   </div> <!-- /container -->
 </header>
+
+<div class="logged-user-name">
+  <div class="text-center">
+  <i class="fa fa-user-secret"></i>&nbsp;
+  {{userFullName}}
+  </div>
+</div>
 
 <!-- Machine list -->
 <div class="machines">
@@ -28,8 +30,14 @@
 </div> <!-- /machines -->
 
 <!-- Footer for logout button -->
-<footer class="container-fluid">
-  <button class="btn btn-lg btn-danger btn-block" 
-        ng-click="logout()">Exit&nbsp;
-        <i class="fa fa-sign-out"></i></button>
+<div class="container-fluid">
+  <button class="btn btn-lg btn-danger btn-block btn-logout-bottom" 
+          ng-click="logout()">Exit&nbsp;
+          <i class="fa fa-sign-out"></i></button>
+</div>
+
+<footer>
+  <div class="container-fluid">
+    <i class="fa fa-copyright"></i> Fab Lab Berlin 2015
+  </div>
 </footer>

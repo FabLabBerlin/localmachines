@@ -2,7 +2,6 @@
 @import "vex-theme.less";
 
 body {
-  padding-bottom: 40px;
   background-color: @bg-color-default;
   color: @text-color-default;
   font-family: 'Helvetica', 'Arial', sans-serif;
@@ -67,10 +66,16 @@ li {
 }
 
 .btn-primary { background: @color-primary; }
-.btn-primary:hover { background: darken(@color-primary, 10%); }
+.btn-primary:hover,
+.btn-primary:active, 
+.btn-primary:focus, 
+.btn-primary:visited  { background: darken(@color-primary, 10%); }
 
 .btn-danger { background: @color-danger; }
-.btn-danger:hover { background: darken(@color-danger, 10%); }
+.btn-danger:hover,
+.btn-danger:active, 
+.btn-danger:focus, 
+.btn-danger:visited { background: darken(@color-danger, 10%); }
 
 /* Add icon button missing in Bootstrap */
 
@@ -100,6 +105,12 @@ li {
 .btn-ico.btn-danger { color: @color-danger }
 .btn-ico.btn-danger:hover { color: darken(@color-danger, 10%) }
 
+.btn-logout {
+  width: @lg-height;
+  height: @lg-height;
+  font-size: 22px;
+  line-height: 1;
+}
 nav.navbar {
   background-color: @navbar-background-color;
   border-bottom: 2px solid black;
@@ -135,32 +146,31 @@ nav.navbar .navbar-nav > li > a {
 /* Dashboard Styling */
 
 header {
-  background: #4A4A4A;
-  border-bottom: 2px solid #000000;
-  color: #ffffff;
+  border-bottom: 2px solid darken(@bg-color-default, 10%);
+  color: #999999;
   padding-top: 20px;
   padding-bottom: 20px;
 }
 
-.logged-user-label,
-.auto-logout-label {
-  font-size: 10px;
-  color: #FFFFFF;
-  line-height: 1;
+footer {
+  margin-top: 20px;
+  margin-bottom: 0;
+  border-top: 2px solid darken(@bg-color-default, 10%);
+}
+
+footer div {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.btn-logout-bottom {
+  margin-top: 20px;
+}
+
+.logged-user-name {
+  padding-top: 10px;
   padding-bottom: 10px;
-}
-
-.logged-user-value, 
-.auto-logout-value {
-  font-weight: bold;
-  font-size: 24px;
-  color: #FFFFFF;
-  line-height: 1;
-}
-
-.auto-logout-label,
-.auto-logout-value {
-  text-align: right;
+  border-bottom: 2px solid darken(@bg-color-default, 10%);
 }
 
 #adm-dashboard {
@@ -266,37 +276,6 @@ header {
   margin-top: 5px;
 }
 
-footer {
-  margin-top: 40px;
-}
-
-.twitter-typeahead {
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  line-height: 1;
-}
-
-.tt-dropdown-menu {
-  background: #eeeeee;
-}
-
-.tt-suggestions {
-}
-
-.tt-suggestion {
-  color: @text-color-default;
-}
-
-.tt-highlight {
-  font-weight: bold;
-  color: #000000;
-}
-
-.tt-cursor {
-  background: #ffffff;
-}
-
 .delete-prompt-token {
   color: @color-danger;
 }
@@ -324,6 +303,15 @@ footer {
   color: #A6A6A6;
 }
 
+.login {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%); 
+  -ms-transform: translateY(-50%);
+  -webkit-transform: translateY(-50%); 
+  width: 100%;
+}
+
 .login-form .checkbox {
   font-weight: normal;
 }
@@ -344,26 +332,10 @@ footer {
   border: 1px solid #66dd55;
 }
 
-.app-meta {
-  margin-top: 10px;
-  color: #999999;
-}
-
-.login {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%); 
-  -ms-transform: translateY(-50%); /* IE 9 */
-  -webkit-transform: translateY(-50%); 
-  width: 100%;
-}
-
-.login-form,
-.app-meta {
+.login-form {
   max-width: 500px;
   padding: 15px;
   margin: 0 auto;
-  margin-top: 60px;
 }
 .login-form .login-form-heading,
 .login-form .checkbox {
@@ -374,48 +346,28 @@ footer {
   margin-bottom: 5px;
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
-  height: @lg-height;
+  height: 50px;
   font-size: 18px;
+  line-height: 1;
 }
 .login-form input[type="password"] {
   margin-bottom: 10px;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
-  height: @lg-height;
+  height: 50px;
   font-size: 18px;
-}
-
-.branding {
-  position: absolute;
-  width: 100%;
-  text-align: center;
-  top: 0;
-  left: 0;
-}
-
-.brand-wrapper {
-  max-width: 500px;
-  margin: 0 auto;
-  text-align: left;
-  padding: 25px 15px 15px 15px;
+  line-height: 1;
 }
 
 .brand-image {
-  width: 25%;
-  height: auto;
+  width: auto;
+  height: @lg-height;
 }
 
-.privacy {
+.absolute-bottom {
   position: absolute;
-  width: 100%;
-  bottom: 0;
-  text-align: center;
   left: 0;
+  bottom: 0;
+  width: 100%;
 }
 
-.privacy-wrapper {
-  max-width: 500px;
-  margin: 0 auto;
-  text-align: left;
-  padding: 25px 15px 15px 15px;
-}

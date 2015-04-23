@@ -1,40 +1,36 @@
-<div class="branding">
+<header>
   <div class="container-fluid">
-    <div class="brand-wrapper">
-      <img src="assets/img/logo_fablab_berlin.svg" class="brand-image">
-    </div>
+    <img src="assets/img/logo_fablab_berlin.svg" class="brand-image">
   </div>
-</div>
+</header>
 
 <div class="login">
-<div class="container-fluid">
-
-  <form name="loginForm" class="login-form" role="form" 
-        novalidate ng-submit="loginForm.$valid && login()">
-    
-    <h2>Please log in</h2>
-
-    <input ng-model="username" type="text" class="form-control" 
-           placeholder="Username" required autofocus>
-    <input ng-model="password" type="password" class="form-control" 
-           placeholder="Password" required>
-    <!-- Don't show the Remember me checkbox while it is not working -->
-    <!--
-    <label class="checkbox">
-      <input ng-model="remember" type="checkbox" value="remember-me"> Remember me
-    </label>
-    -->
-    <button class="btn btn-lg btn-primary btn-block" 
-            type="submit">Log In</button>
-  </form>
-
-</div> <!-- /container -->
-</div>
-
-<div class="privacy">
   <div class="container-fluid">
-    <div class="privacy-wrapper">
-      <i class="fa fa-copyright"></i> Fab Lab Berlin 2015
-    </div>
-  </div>
+  
+    <form name="loginForm" class="login-form" role="form" 
+          novalidate ng-submit="loginForm.$valid && login()">
+      
+      <h2>Please log in</h2>
+  
+      <input ng-model="username" type="text" class="form-control" 
+             placeholder="Username" required autofocus>
+      <input ng-model="password" type="password" class="form-control" 
+             placeholder="Password" required>
+      <!-- Don't show the Remember me checkbox while it is not working -->
+      <!--
+      <label class="checkbox">
+        <input ng-model="remember" type="checkbox" value="remember-me"> Remember me
+      </label>
+      -->
+      <button class="btn btn-lg btn-primary btn-block" 
+              type="submit">Log In</button>
+    </form>
+  
+  </div> <!-- /container -->
 </div>
+
+<footer class="absolute-bottom">
+  <div class="container-fluid">
+    <i class="fa fa-copyright"></i> Fab Lab Berlin 2015
+  </div>
+</footer>
