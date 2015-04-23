@@ -1,67 +1,35 @@
 <div id="admin-activations" class="container-fluid">
 
-    <h1>Invoices</h1>
+  <h1>Invoices</h1>
 
-    <table class="table table-striped table-hover">
-        <thead>
-            <tr>
-                <th>User</th>
-                <th>Period</th>
-                <th>Created on</th>
-                <th>Created by</th>
-                <th>&nbsp;</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Silvu Okki</td>
-                <td>2015-03-02 - 2015-03-30</td>
-                <td>2015-04-01 14:00</td>
-                <td>Murat Vurucu</td>
-                <td>
-                    <span class="pull-right">
-                        <button type="button" class="btn btn-primary btn-ico">
-                            <span class="fa fa-download"></span>
-                        </button>&nbsp;&nbsp;
-                        <button type="button" class="btn btn-danger btn-ico">
-                            <span class="fa fa-close"></span>
-                        </button>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td>Silvu Okki</td>
-                <td>2015-03-02 - 2015-03-30</td>
-                <td>2015-04-01 14:00</td>
-                <td>Murat Vurucu</td>
-                <td>
-                    <span class="pull-right">
-                        <button type="button" class="btn btn-primary btn-ico">
-                            <span class="fa fa-download"></span>
-                        </button>&nbsp;&nbsp;
-                        <button type="button" class="btn btn-danger btn-ico">
-                            <span class="fa fa-close"></span>
-                        </button>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td>Silvu Okki</td>
-                <td>2015-03-02 - 2015-03-30</td>
-                <td>2015-04-01 14:00</td>
-                <td>Murat Vurucu</td>
-                <td>
-                    <span class="pull-right">
-                        <button type="button" class="btn btn-primary btn-ico">
-                            <span class="fa fa-download"></span>
-                        </button>&nbsp;&nbsp;
-                        <button type="button" class="btn btn-danger btn-ico">
-                            <span class="fa fa-close"></span>
-                        </button>
-                    </span>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th>Period From</th>
+        <th>Period To</th>
+        <th>Created on</th>
+        <th>&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="invoice in invoices">
+        <td>{{invoice.PeriodFrom | date:'yyyy-MM-dd'}}</td>
+        <td>{{invoice.PeriodTo | date:'yyyy-MM-dd'}}</td>
+        <td>{{invoice.Created | date:'yyyy-MM-dd HH:mm'}}</td>
+        <td>
+          <span class="pull-right">
+            <a class="btn btn-primary btn-ico"
+               href="/{{invoice.FilePath}}">
+              <span class="fa fa-download"></span>
+            </a>&nbsp;&nbsp;
+            <button type="button" class="btn btn-danger btn-ico"
+                    ng-click="deleteInvoicePrompt(invoice.Id)">
+              <span class="fa fa-close"></span>
+            </button>
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
 </div> <!-- /container -->

@@ -67,19 +67,20 @@
       <div class="row"> 
         <div class="col-sm-6">
           <div class="form-group">
-            <img id="machine-image" ng-src="{{machine.Image}}" 
-              src="assets/img/img-machine-placeholder.svg" 
+            <img id="machine-image"
+              ng-src="{{machineImageNewFile || machine.Image || 'assets/img/img-machine-placeholder.svg'}}"
               alt="Machine image">
           </div>
         </div>
         <div class="col-sm-6">
           <div class="form-group">
-            <button class="btn btn-primary btn-block" disabled>
+            <input type="file" onchange="angular.element(this).scope().machineImageLoad(this)">
+            <button class="btn btn-primary btn-block" ng-disabled="!machineImageNewFile" ng-click="machineImageReplace()">
               <i class="fa fa-file-image-o"></i>&nbsp;Replace
             </button>
           </div>
           <p>Supported types: svg</p>
-          <p>Name: {{machine.ImageName}}<br>Size: {{machine.ImageSize}}</p>
+          <p>Name: {{machineImageNewFileName || machine.ImageName}}<br>Size: {{machineImageNewFileSize || machine.ImageSize}}</p>
         </div>
       </div>
 

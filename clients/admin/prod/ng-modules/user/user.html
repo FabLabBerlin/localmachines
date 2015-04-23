@@ -40,20 +40,32 @@
 
   </div> <!-- /.row -->
 
+  <div>
+    <label for="user-password">User Password</label>
+  </div>
+
   <div class="row">
+    <div class="form-group">
 
-    <div class="col-sm-3">
-      <div class="form-group">
-        <label>User Status</label>
-        <div><span class="fa fa-ban"></span> Not verified</div>
+      <div class="col-sm-3">
+        <input type="password" class="form-control" 
+               id="user-password" placeholder="New password"
+               ng-model="userPassword">
       </div>
-    </div>
 
-    <div class="col-sm-3 hidden-xs">
-      <label>&nbsp;</label>
-      <div class="tip">Click on the icon to ban/unban user</div>
-    </div>
+      <div class="col-sm-3">
+        <input type="password" class="form-control"
+               placeholder="Repeat password"
+               ng-model="userPasswordRepeat">
+      </div>
 
+      <div class="col-sm-3">
+        <button class="btn btn-primary btn-block" ng-click="updatePassword()">
+          Update Password
+        </button>
+      </div>
+
+    </div> <!-- /.form-group -->
   </div> <!-- /.row -->
 
   <div class="row">
@@ -62,9 +74,11 @@
     <div class="col-sm-6">
       <div class="row">
         <div class="col-sm-12">
-          <h2>Roles</h2>
+          <h2>Role</h2>
         </div>
         <div class="col-sm-6">
+
+          <!--
           <div class="radio">
             <label>
               <input type="radio" name="user-role" value="admin" ng-model="user.UserRole">
@@ -83,12 +97,19 @@
               Member
             </label>
           </div>
+          -->
+
+          <div class="checkbox-inline">
+            <label>
+              <input type="checkbox" 
+                     ng-model="user.Admin"
+                     ng-change="updateAdminStatus()">
+              Admin
+            </label>
+          </div>
         </div>
         <div class="col-sm-6 hidden-xs">
-          <div class="tip">Admin: Do everything<br>
-                           Staff: Limited access<br>
-                           Member: Activate machines
-          </div>
+          <div class="tip">Admins can access the admin panel - others can not.</div>
         </div>
       </div>
     </div>
@@ -106,7 +127,8 @@
           <div class="checkbox-inline">
             <label title="{{machine.Description}}">
               <input type="checkbox" 
-                     ng-model="machine['Checked']"> 
+                     ng-model="machine['Checked']"
+                     ng-disabled="machine['Disabled']"> 
               {{machine.Name}}
             </label>
           </div>
