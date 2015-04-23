@@ -86,13 +86,10 @@ function($scope, $http, $location, $cookieStore, $cookies){
   toastr.options.positionClass = 'toast-bottom-left';
 
   // Configure vex theme
-  vex.defaultOptions.className = 'vex-theme-plain';
+  vex.defaultOptions.className = 'vex-theme-custom';
 
   // Configure root scope so Android can access
   window.ROOT_SCOPE = $scope;
-
-  // Confixure VEX dialog theme
-  vex.defaultOptions.className = 'vex-theme-plain';
 
   // Store user data on user login
   $scope.putUserData = function(data) {
