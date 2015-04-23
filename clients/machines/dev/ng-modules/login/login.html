@@ -6,6 +6,7 @@
   </div>
 </div>
 
+<div class="login">
 <div class="container-fluid">
 
   <form name="loginForm" class="login-form" role="form" 
@@ -27,19 +28,8 @@
             type="submit">Log In</button>
   </form>
 
-  <script>
-    var onWinRes = function() {
-      var fh = $('.login-form').height();
-      var wh = $(window).height();
-      var mt = (wh - fh) / 2 - 30;
-      $('.login-form').css('margin-top', mt);
-    };
-
-    $(document).ready(onWinRes);
-    $(window).resize(onWinRes);
-  </script>
-
 </div> <!-- /container -->
+</div>
 
 <div class="privacy">
   <div class="container-fluid">
