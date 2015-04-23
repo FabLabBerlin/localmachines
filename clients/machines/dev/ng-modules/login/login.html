@@ -1,10 +1,18 @@
-<div class="container">
+<div class="branding">
+  <div class="container-fluid">
+    <div class="brand-wrapper">
+      <img src="assets/img/logo_fablab_berlin.svg" class="brand-image">
+    </div>
+  </div>
+</div>
 
-  <form name="loginForm" class="form-login" role="form" 
+<div class="container-fluid">
+
+  <form name="loginForm" class="login-form" role="form" 
         novalidate ng-submit="loginForm.$valid && login()">
-
-    <h2 class="form-signin-heading">Please log in</h2>
     
+    <h2>Please log in</h2>
+
     <input ng-model="username" type="text" class="form-control" 
            placeholder="Username" required autofocus>
     <input ng-model="password" type="password" class="form-control" 
@@ -19,4 +27,24 @@
             type="submit">Log In</button>
   </form>
 
+  <script>
+    var onWinRes = function() {
+      var fh = $('.login-form').height();
+      var wh = $(window).height();
+      var mt = (wh - fh) / 2 - 30;
+      $('.login-form').css('margin-top', mt);
+    };
+
+    $(document).ready(onWinRes);
+    $(window).resize(onWinRes);
+  </script>
+
 </div> <!-- /container -->
+
+<div class="privacy">
+  <div class="container-fluid">
+    <div class="privacy-wrapper">
+      <i class="fa fa-copyright"> Fab Lab Berlin 2015</i>
+    </div>
+  </div>
+</div>

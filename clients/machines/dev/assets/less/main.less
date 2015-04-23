@@ -25,29 +25,89 @@
   color: #A6A6A6;
 }
 
-.form-login,
+.login-form .checkbox {
+  font-weight: normal;
+}
+.login-form .form-control {
+  position: relative;
+  height: auto;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  padding: 10px;
+  font-size: 16px;
+}
+.login-form .form-control:focus {
+  z-index: 2;
+}
+
+.login-form .ng-dirty.ng-valid {
+  border: 1px solid #66dd55;
+}
+
 .app-meta {
-  max-width: 50%;
+  margin-top: 10px;
+  color: #999999;
+}
+
+.login-form,
+.app-meta {
+  max-width: 500px;
   padding: 15px;
   margin: 0 auto;
   margin-top: 60px;
 }
-.form-login .form-login-heading,
-.form-login .checkbox {
+.login-form .login-form-heading,
+.login-form .checkbox {
   margin-bottom: 10px;
 }
 
-.form-login input[type="text"] {
+.login-form input[type="text"] {
   margin-bottom: 5px;
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
   height: @lg-height;
   font-size: 18px;
 }
-.form-login input[type="password"] {
+.login-form input[type="password"] {
   margin-bottom: 10px;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
   height: @lg-height;
   font-size: 18px;
+}
+
+.branding {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  top: 0;
+  left: 0;
+}
+
+.brand-wrapper {
+  max-width: 500px;
+  margin: 0 auto;
+  text-align: left;
+  padding: 25px 15px 15px 15px;
+}
+
+.brand-image {
+  width: 25%;
+  height: auto;
+}
+
+.privacy {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  text-align: center;
+  left: 0;
+}
+
+.privacy-wrapper {
+  max-width: 500px;
+  margin: 0 auto;
+  text-align: left;
+  padding: 25px 15px 15px 15px;
 }
