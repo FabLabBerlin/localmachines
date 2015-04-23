@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"time"
@@ -80,13 +81,24 @@ func UpdateMachine(machine *Machine) error {
 
 // Delete machine from the database
 func DeleteMachine(machineId int64) error {
-	var num int64
 	var err error
 	o := orm.NewOrm()
-	num, err = o.Delete(&Machine{Id: machineId})
+
+	// delete machine
+	_, err = o.Delete(&Machine{Id: machineId})
 	if err != nil {
-		return err
+		return errors.New(
+			fmt.Sprintf("Failed to delete machine: %v", err))
 	}
-	beego.Trace("Deleted num rows:", num)
+
+	// delete switch mapping
+	swch := HexabusMapping{}
+	_, err = o.QueryTable(swch.TableName()).Filter("machine_id",
+		machineId).Delete()
+	if err != nil {
+		return errors.New(
+			fmt.Sprintf("Failed to delete switch mapping: %v", err))
+	}
+
 	return nil
 }
