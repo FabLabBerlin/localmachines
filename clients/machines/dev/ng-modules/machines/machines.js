@@ -29,7 +29,7 @@ app.controller('MachinesCtrl',
     $http({
       method: 'GET',
       url: '/api/users/' + $cookieStore.get('Id') + '/machines',
-      params: { ac: new Date().now() }
+      params: { ac: new Date().getTime() }
     })
     .success(function(machines){
       console.log(machines);
@@ -53,7 +53,7 @@ app.controller('MachinesCtrl',
     $http({
       method: 'GET',
       url: '/api/activations/active',
-      params: { ac: new Date().now() }
+      params: { ac: new Date().getTime() }
     })
     .success(function(activations){
       console.log(activations);
@@ -160,7 +160,7 @@ app.controller('MachinesCtrl',
     $http({
       method: 'GET',
       url: '/api/users/' + userId + '/name',
-      params: { ac: new Date().now() }
+      params: { ac: new Date().getTime() }
     })
     .success(function(data){
       machine.occupier = data.FirstName + ' ' + data.LastName;
@@ -191,7 +191,7 @@ app.controller('MachinesCtrl',
       url: '/api/activations',
       params: {
         mid: machineId,
-        params: { ac: new Date().now() }
+        ac: new Date().getTime()
       }
     })
     .success(function(data) {
@@ -255,7 +255,7 @@ app.controller('MachinesCtrl',
     $http({
       method: 'PUT', 
       url: '/api/activations/' + machine.ActivationId,
-      params: { ac: new Date().now() }
+      params: { ac: new Date().getTime() }
     })
     .success(function(data) {
       $scope.hideGlobalLoader();

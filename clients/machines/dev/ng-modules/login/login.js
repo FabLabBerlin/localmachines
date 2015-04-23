@@ -24,7 +24,7 @@ angular.module('fabsmith.login', ['ngRoute', 'ngCookies'])
         username: $scope.username,
         password: $scope.password
       },
-      params: { ac: new Date().now() }
+      params: { ac: new Date().getTime() }
     })
     .success(function(loginResponse) {
       if (loginResponse.UserId) {
@@ -42,7 +42,7 @@ angular.module('fabsmith.login', ['ngRoute', 'ngCookies'])
     $http({
       method: 'GET',
       url: '/api/users/' + userId,
-      params: { ac: new Date().now() }
+      params: { ac: new Date().getTime() }
     })
     .success(function(userData){
       $scope.onUserDataLoaded(userData);

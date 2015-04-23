@@ -22,7 +22,7 @@ angular.module('fabsmith.logout', ['ngRoute'])
     $http({
       method: 'GET',
       url: '/api/users/logout',
-      params: { ac: new Date().now() }
+      params: { ac: new Date().getTime() }
     })
     .success(function() {
       $location.path('/');
