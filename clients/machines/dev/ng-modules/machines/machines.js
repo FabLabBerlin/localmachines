@@ -28,7 +28,8 @@ app.controller('MachinesCtrl',
   $scope.loadMachines = function() {
     $http({
       method: 'GET',
-      url: '/api/users/' + $cookieStore.get('Id') + '/machines'
+      url: '/api/users/' + $cookieStore.get('Id') + '/machines',
+      params: { ac: new Date().now() }
     })
     .success(function(machines){
       console.log(machines);
@@ -51,7 +52,8 @@ app.controller('MachinesCtrl',
   $scope.getActiveActivations = function(machines) {
     $http({
       method: 'GET',
-      url: '/api/activations/active'
+      url: '/api/activations/active',
+      params: { ac: new Date().now() }
     })
     .success(function(activations){
       console.log(activations);
@@ -157,7 +159,8 @@ app.controller('MachinesCtrl',
   $scope.getOccupierName = function(machine, userId) {
     $http({
       method: 'GET',
-      url: '/api/users/' + userId + '/name'
+      url: '/api/users/' + userId + '/name',
+      params: { ac: new Date().now() }
     })
     .success(function(data){
       machine.occupier = data.FirstName + ' ' + data.LastName;
@@ -187,7 +190,8 @@ app.controller('MachinesCtrl',
       method: 'POST',
       url: '/api/activations',
       params: {
-        mid: machineId
+        mid: machineId,
+        params: { ac: new Date().now() }
       }
     })
     .success(function(data) {
@@ -250,7 +254,8 @@ app.controller('MachinesCtrl',
 
     $http({
       method: 'PUT', 
-      url: '/api/activations/' + machine.ActivationId
+      url: '/api/activations/' + machine.ActivationId,
+      params: { ac: new Date().now() }
     })
     .success(function(data) {
       $scope.hideGlobalLoader();
