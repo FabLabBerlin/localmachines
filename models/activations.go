@@ -61,7 +61,7 @@ func GetActivations(startTime time.Time,
 	var pageOffset int64
 	pageOffset = itemsPerPage * (page - 1)
 
-	query := fmt.Sprintf("SELECT * FROM %s a JOIN %s u ON a.user_id=u.id "+
+	query := fmt.Sprintf("SELECT a.* FROM %s a JOIN %s u ON a.user_id=u.id "+
 		"WHERE a.time_start>? AND a.time_end<? AND a.invoiced=? AND a.active=false "+
 		"ORDER BY u.first_name ASC, a.time_start DESC "+
 		"LIMIT ? OFFSET ?",
