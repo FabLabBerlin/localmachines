@@ -189,6 +189,16 @@ func DeleteUser(userId int64) error {
 	}
 	beego.Trace("Deleted num user memberships:", num)
 
+	// Delete all user machine permissions associated with this user
+	perm := Permission{}
+	num, err = o.QueryTable(perm.TableName()).Filter("user_id",
+		userId).Delete()
+	if err != nil {
+		return errors.New(
+			fmt.Sprintf("Failed to delete user machine permissions: %v", err))
+	}
+	beego.Trace("Deleted num user machine permissions:", num)
+
 	return nil
 }
 
