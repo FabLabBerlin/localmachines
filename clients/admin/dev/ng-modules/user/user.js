@@ -398,7 +398,7 @@ app.controller('UserCtrl',
   $scope.updatePassword = function() {
     
     // Check user entered password
-    var minPassLength = 5;
+    var minPassLength = 3;
 
     // If there is password at all
     if (!$scope.userPassword || $scope.userPassword === '') {
