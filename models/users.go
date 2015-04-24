@@ -159,9 +159,37 @@ func UpdateUser(user *User) error {
 
 // Deletes user
 func DeleteUser(userId int64) error {
+	var num int64
+	var err error
+
+	// Delete user
 	o := orm.NewOrm()
-	_, err := o.Delete(&User{Id: userId})
-	return err
+	num, err = o.Delete(&User{Id: userId})
+	if err != nil {
+		return errors.New(
+			fmt.Sprintf("Failed to delete user: %v", err))
+	}
+	beego.Trace("Deleted num user rows:", num)
+
+	// Delete all user activations along with the user
+	act := Activation{}
+	num, err = o.QueryTable(act.TableName()).Filter("user_id", userId).Delete()
+	if err != nil {
+		return errors.New(
+			fmt.Sprintf("Failed to delete user activations: %v", err))
+	}
+	beego.Trace("Deleted num user activations:", num)
+
+	// Delete all user memberships along with the user
+	umem := UserMembership{}
+	num, err = o.QueryTable(umem.TableName()).Filter("user_id", userId).Delete()
+	if err != nil {
+		return errors.New(
+			fmt.Sprintf("Failed to delete user memberships: %v", err))
+	}
+	beego.Trace("Deleted num user memberships:", num)
+
+	return nil
 }
 
 // Loads user data from database into User struct
