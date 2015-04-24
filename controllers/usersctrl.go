@@ -250,12 +250,15 @@ func (this *UsersController) Put() {
 
 	// If the user is trying to disable his admin status
 	// do not allow to do that
-	if req.User.UserRole != "admin" {
-		sid := this.GetSession(SESSION_FIELD_NAME_USER_ID)
-		if sid == req.User.Id {
-			beego.Error("User can't unadmin itself")
-			this.CustomAbort(403, "selfAdmin")
-		}
+	sessUserId, ok := this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
+	if !ok {
+		beego.Error("Failed to get session user ID")
+		this.CustomAbort(403, "Failed to update user")
+	}
+
+	if sessUserId == req.User.Id && req.User.UserRole != "admin" {
+		beego.Error("User can't unadmin itself")
+		this.CustomAbort(403, "selfAdmin")
 	}
 
 	err := models.UpdateUser(&req.User)

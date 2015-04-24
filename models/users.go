@@ -146,7 +146,13 @@ func UpdateUser(user *User) error {
 		}
 		beego.Trace("Number of admins:", numAdmins)
 		if numAdmins <= 1 {
-			return errors.New("Only one admin left")
+			// Check if the user we are updating is that 1 last admin
+			userIsAdmin := o.QueryTable(user.TableName()).
+				Filter("id", user.Id).
+				Filter("user_role", "admin").Exist()
+			if userIsAdmin {
+				return errors.New("Only one admin left")
+			}
 		}
 	}
 

@@ -333,8 +333,7 @@ app.controller('UserCtrl',
       url: '/api/users/' + $scope.user.Id,
       headers: {'Content-Type': 'application/json' },
       data: {
-        User: $scope.user,
-        UserRoles: $scope.userRoles
+        User: $scope.user
       },
       transformRequest: function(data) {
         return JSON.stringify(data);
