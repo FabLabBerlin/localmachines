@@ -326,7 +326,7 @@ func (this *Invoice) createXlsxFile(filePath string,
 			cell = row.AddCell()
 			//beego.Trace(activation.MachineUsage)
 			cell.Value = strconv.FormatFloat(activation.MachineUsage,
-				'f', 2, 64)
+				'f', 4, 64)
 
 			cell = row.AddCell()
 			cell.Value = activation.MachineUsageUnit
