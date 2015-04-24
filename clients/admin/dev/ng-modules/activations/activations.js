@@ -12,8 +12,8 @@ app.config(['$routeProvider', function($routeProvider) {
   });
 }]); // app.config
 
-app.controller('ActivationsCtrl', ['$scope', '$http', '$location', 
- function($scope, $http, $location) {
+app.controller('ActivationsCtrl', ['$scope', '$http', '$location', 'randomToken', 
+ function($scope, $http, $location, randomToken) {
 
   // We need full machine names for the activation table
   $scope.loadMachines = function() {
@@ -67,7 +67,6 @@ app.controller('ActivationsCtrl', ['$scope', '$http', '$location',
         } else {
           activation.MachineName = 'Undefined';
         }
-        
       });
 
       var uniqUserIds = _.pluck(_.uniq(response.ActivationsPage, 'UserId'), 'UserId');
@@ -199,6 +198,45 @@ app.controller('ActivationsCtrl', ['$scope', '$http', '$location',
     })
     .error(function() {
       toastr.error('Error creating invoice');
+    });
+  };
+
+  $scope.deleteActivationPrompt = function(activationId) {
+    var token = randomToken.generate();
+    vex.dialog.prompt({
+      message: 'Enter <span class="delete-prompt-token">' + 
+       token + '</span> to delete',
+      placeholder: 'Token',
+      callback: $scope.deleteActivationPromptCallback.bind(this, token, activationId)
+    });
+  };
+
+  $scope.deleteActivationPromptCallback = 
+   function(expectedToken, activationId, value) {
+    if (value) {    
+      if (value === expectedToken) {
+        $scope.deleteActivation(activationId);
+      } else {
+        toastr.error('Wrong token');
+      }
+    } else if (value !== false) {
+      toastr.error('No token');
+    }
+  };
+
+  $scope.deleteActivation = function(activationId) {
+    $http({
+      method: 'DELETE',
+      url: '/api/activations/' + activationId,
+      params: {
+        ac: new Date().getTime()
+      }
+    })
+    .success(function(data) {
+      $scope.loadActivations();
+    }) 
+    .error(function() {
+      toastr.error('Failed to delete activation');
     });
   };
 
