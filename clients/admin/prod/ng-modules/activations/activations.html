@@ -33,12 +33,13 @@
     </thead>
     <tbody>
       <tr ng-repeat="activation in activations">
-        <td>{{activation.MachineName}}</td>
+        <td>{{activation.Id}} {{activation.MachineName}}</td>
         <td>{{activation.TimeStart | date:'yyyy-MM-dd HH:mm:ss'}}</td>
         <td>{{activation.TimeEnd | date:'yyyy-MM-dd HH:mm:ss'}}</td>
         <td>{{activation.UserName}}</td>
         <td>
-          <button type="button" class="btn btn-danger btn-ico pull-right">
+          <button type="button" class="btn btn-danger btn-ico pull-right"
+                  ng-click="deleteActivationPrompt(activation.Id)">
             <span class="fa fa-close"></span>
           </button>
         </td>
