@@ -218,8 +218,11 @@ app.controller('MachineCtrl',
       data: {
         Filename: $scope.machineImageNewFileName,
         Image: $scope.machineImageNewFile
+      },
+      params: {
+        ac: new Date().getTime()
       }
-    })
+    });
   };
 
   // Update the mapping with fresh IP
