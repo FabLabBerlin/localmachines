@@ -81,24 +81,47 @@ func UpdateMachine(machine *Machine) error {
 
 // Delete machine from the database
 func DeleteMachine(machineId int64) error {
+	var num int64
 	var err error
 	o := orm.NewOrm()
 
 	// delete machine
-	_, err = o.Delete(&Machine{Id: machineId})
+	num, err = o.Delete(&Machine{Id: machineId})
 	if err != nil {
 		return errors.New(
 			fmt.Sprintf("Failed to delete machine: %v", err))
 	}
+	beego.Trace("Deleted num machines:", num)
 
 	// delete switch mapping
 	swch := HexabusMapping{}
-	_, err = o.QueryTable(swch.TableName()).Filter("machine_id",
+	num, err = o.QueryTable(swch.TableName()).Filter("machine_id",
 		machineId).Delete()
 	if err != nil {
 		return errors.New(
 			fmt.Sprintf("Failed to delete switch mapping: %v", err))
 	}
+	beego.Trace("Deleted num switch mappings:", num)
+
+	// Delete activations assigned to machine
+	act := Activation{}
+	num, err = o.QueryTable(act.TableName()).Filter("machine_id",
+		machineId).Delete()
+	if err != nil {
+		return errors.New(
+			fmt.Sprintf("Failed to delete activations: %v", err))
+	}
+	beego.Trace("Deleted num activations:", num)
+
+	// Delete user machine permissions of this machine
+	perm := Permission{}
+	num, err = o.QueryTable(perm.TableName()).Filter("machine_id",
+		machineId).Delete()
+	if err != nil {
+		return errors.New(
+			fmt.Sprintf("Failed to delete machine permissions: %v", err))
+	}
+	beego.Trace("Deleted num machine permissions:", num)
 
 	return nil
 }
