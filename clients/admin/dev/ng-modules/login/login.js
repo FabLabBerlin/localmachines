@@ -26,10 +26,7 @@ app.controller('LoginCtrl', ['$scope', '$http', '$location', function($scope, $h
       }
     })
     .success(function(data) {
-
       if (data.UserId) {
-        console.log('User ID: ' + data.UserId);
-
         // Get user data
         $http({
           method: 'GET',
@@ -39,7 +36,6 @@ app.controller('LoginCtrl', ['$scope', '$http', '$location', function($scope, $h
           }
         })
         .success(function(data){
-          console.log('Got user data');
           $scope.$emit('user-login', data);
           $location.path('/dashboard');
         })
