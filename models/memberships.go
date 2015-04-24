@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"time"
@@ -76,10 +77,13 @@ func DeleteUserMembership(userMembershipId int64) error {
 	var num int64
 	var err error
 	o := orm.NewOrm()
+
 	num, err = o.Delete(&UserMembership{Id: userMembershipId})
 	if err != nil {
-		return err
+		return errors.New(
+			fmt.Sprintf("Failed to delete user membership: %v", err))
 	}
+
 	beego.Trace("Deleted num rows:", num)
 	return nil
 }
@@ -117,6 +121,23 @@ func DeleteMembership(membershipId int64) error {
 	var num int64
 	var err error
 	o := orm.NewOrm()
+
+	// Check if the membership has been added to user memberships.
+	// Do not allow deletion if so.
+	umem := UserMembership{}
+	num, err = o.QueryTable(umem.TableName()).
+		Filter("membership_id", membershipId).
+		Count()
+	if err != nil {
+		return errors.New(
+			fmt.Sprintf("Failed to get user memberships: %v", err))
+	}
+
+	if num > 0 {
+		return errors.New(
+			fmt.Sprintf("Membership has been assigned to %d users", num))
+	}
+
 	num, err = o.Delete(&Membership{Id: membershipId})
 	if err != nil {
 		return err
