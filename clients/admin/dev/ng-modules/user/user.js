@@ -418,7 +418,7 @@ app.controller('UserCtrl',
     }
 
     $http({
-      method: 'POST',
+      method: 'POST', // TODO: change this to PUT as it is an update operation?
       url: '/api/users/' + $scope.user.Id + '/password',
       params: {
         password: $scope.userPassword,
@@ -430,6 +430,37 @@ app.controller('UserCtrl',
     })
     .error(function() {
       toastr.error('Error while trying to update password');
+    });
+  };
+
+  $scope.updateNfcUid = function() {
+    var minUidLen = 4;
+
+    // If there is an uid at all
+    if (!$scope.nfcUid || $scope.nfcUid === '') {
+      toastr.error('No NFC UID');
+      return;
+    }
+
+    // If it is long enough
+    if ($scope.nfcUid.length < minUidLen) {
+      toastr.error('NFC UID too short');
+      return;
+    }
+
+    $http({
+      method: 'PUT',
+      url: '/api/users/' + $scope.user.Id + '/nfcuid',
+      params: {
+        nfcuid: $scope.nfcUid,
+        ac: new Date().getTime()
+      }
+    })
+    .success(function() {
+      toastr.success('NFC UID successfully updated');
+    })
+    .error(function() {
+      toastr.error('Error while updating NFC UID');
     });
   };
 

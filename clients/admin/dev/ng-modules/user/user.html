@@ -45,28 +45,54 @@
   </div>
 
   <div class="row">
-    <div class="form-group">
-
+    
       <div class="col-sm-3">
-        <input type="password" class="form-control" 
-               id="user-password" placeholder="New password"
-               ng-model="userPassword">
+        <div class="form-group">
+          <input type="password" class="form-control" 
+                 id="user-password" placeholder="New password"
+                 ng-model="userPassword">
+        </div>
       </div>
 
       <div class="col-sm-3">
-        <input type="password" class="form-control"
-               placeholder="Repeat password"
-               ng-model="userPasswordRepeat">
+        <div class="form-group">
+          <input type="password" class="form-control"
+                 placeholder="Repeat password"
+                 ng-model="userPasswordRepeat">
+        </div>
       </div>
 
       <div class="col-sm-3">
-        <button class="btn btn-primary btn-block" ng-click="updatePassword()">
-          Update Password
+        <div class="form-group">
+          <button class="btn btn-primary btn-block" ng-click="updatePassword()">
+            Update Password
+          </button>
+        </div>
+      </div>
+    
+  </div> <!-- /.row -->
+
+  <div>
+    <label for="user-nfc-uid">NFC UID</label>
+  </div>
+
+  <div class="row">
+
+    <div class="col-sm-3">
+      <div class="form-group">
+        <input id="user-nfc-uid" type="text" 
+               class="form-control" ng-model="nfcUid">
+      </div>
+    </div>
+
+    <div class="col-sm-3">
+      <div class="form-group">
+        <button class="btn btn-primary btn-block" ng-click="updateNfcUid()">
+          Update NFC UID
         </button>
       </div>
-
-    </div> <!-- /.form-group -->
-  </div> <!-- /.row -->
+    </div>
+  </div><!-- /.row -->
 
   <div class="row">
 
