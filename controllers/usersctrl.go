@@ -47,6 +47,44 @@ func (this *UsersController) Login() {
 	this.ServeJson()
 }
 
+// @Title LoginUid
+// @Description Logs user into the system by using NFC UID
+// @Param	uid		query 	string	true		"The NFC UID"
+// @Success 200 {object} models.LoginResponse
+// @Failure 401 Failed to authenticate
+// @router /loginuid [post]
+func (this *UsersController) LoginUid() {
+	var username string
+	var userId int64
+	var err error
+
+	sessUsername := this.GetSession(SESSION_FIELD_NAME_USERNAME)
+
+	if sessUsername == nil {
+		uid := this.GetString("uid")
+		beego.Trace("uid", uid)
+		username, userId, err = models.AuthenticateUserUid(uid)
+		if err != nil {
+			beego.Error(err)
+			this.CustomAbort(401, "Failed to authenticate")
+		} else {
+			this.SetSession(SESSION_FIELD_NAME_USERNAME, username)
+			this.SetSession(SESSION_FIELD_NAME_USER_ID, userId)
+			this.Data["json"] = models.LoginResponse{"ok", userId}
+		}
+	} else {
+		var ok bool
+		userId, ok = this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
+		if !ok {
+			beego.Error("Could not get session user ID")
+			this.CustomAbort(401, "Failed to authenticate")
+		}
+		this.Data["json"] = models.LoginResponse{"logged", userId}
+	}
+
+	this.ServeJson()
+}
+
 // @Title logout
 // @Description Logs out current logged in user session
 // @Success 200 {object} models.StatusResponse

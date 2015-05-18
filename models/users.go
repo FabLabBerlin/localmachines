@@ -98,6 +98,40 @@ func AuthenticateUser(username, password string) (int64, error) {
 	}
 }
 
+// Authenticate user by using NFC uid
+// TODO: provide some kind of basic crypto
+func AuthenticateUserUid(uid string) (string, int64, error) {
+	var err error
+
+	// uid can not be empty or less than 4 chars
+	if uid == "" || len(uid) < 4 {
+		err = errors.New("Invalid NFC UID")
+		return "", 0, err
+	}
+
+	auth := Auth{}
+	auth.NfcKey = uid
+	o := orm.NewOrm()
+
+	// Get user ID
+	err = o.Read(&auth, "NfcKey")
+	if err != nil {
+		return "", 0, errors.New(
+			fmt.Sprintf("Failed to read auth table: %v", err))
+	}
+
+	// Get user name
+	user := User{}
+	user.Id = auth.UserId
+	err = o.Read(&user, "Id")
+	if err != nil {
+		return "", 0, errors.New(
+			fmt.Sprintf("Failed to read user table: %v", err))
+	}
+
+	return user.Username, user.Id, nil
+}
+
 func AuthSetPassword(userId int64, password string) error {
 	o := orm.NewOrm()
 	auth := Auth{UserId: userId}
