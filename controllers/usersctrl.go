@@ -584,6 +584,52 @@ func (this *UsersController) PostUserPassword() {
 	}
 }
 
+// @Title UpdateNfcUid
+// @Description Update user NFC UID
+// @Param	uid		path 	int	true		"User ID"
+// @Param	nfcuid		query 	int	true		"NFC UID"
+// @Success 200	string	ok
+// @Failure	403	Failed to update NFC UID
+// @Failure	401	Not authorized
+// @router /:uid/nfcuid [put]
+func (this *UsersController) UpdateNfcUid() {
+	// Check if logged in
+	suid := this.GetSession(SESSION_FIELD_NAME_USER_ID)
+	if suid == nil {
+		beego.Info("Not logged in")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	// Get requested user ID
+	ruid, err := this.GetInt64(":uid")
+	if err != nil {
+		beego.Error("Failed to get :ruid")
+		this.CustomAbort(403, "Failed to update NFC UID")
+	}
+
+	// User can't change NFC UID of others if she is not an admin
+	if !this.IsAdmin() && suid != ruid {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	// Get the NFC UID
+	nfcuid := this.GetString("nfcuid")
+	if nfcuid == "" {
+		beego.Error("Empty nfcuid")
+		this.CustomAbort(403, "Failed to update NFC UID")
+	}
+
+	err = models.AuthUpdateNfcUid(ruid, nfcuid)
+	if err != nil {
+		beego.Error("Unable to update NFC UID: ", err)
+		this.CustomAbort(403, "Failed to update NFC UID")
+	}
+
+	this.Data["json"] = "ok"
+	this.ServeJson()
+}
+
 // @Title GetUserRoles
 // @Description Get user roles
 // @Param	uid		path 	int	true		"User ID"

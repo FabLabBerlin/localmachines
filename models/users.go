@@ -161,6 +161,25 @@ func AuthSetPassword(userId int64, password string) error {
 	return err
 }
 
+func AuthUpdateNfcUid(userId int64, nfcUid string) error {
+	var err error
+	var num int64
+	o := orm.NewOrm()
+	auth := Auth{UserId: userId}
+	err = o.Read(&auth)
+	authRecordMissing := err == orm.ErrNoRows
+	if err != nil && !authRecordMissing {
+		return fmt.Errorf("Missing auth record: %v", err)
+	}
+	auth.NfcKey = nfcUid
+	num, err = o.Update(&auth, "NfcKey")
+	if err != nil {
+		return fmt.Errorf("Failed to update: %v", err)
+	}
+	beego.Trace("Update affected num rows:", num)
+	return nil
+}
+
 func DeleteUserAuth(userId int64) error {
 	o := orm.NewOrm()
 	_, err := o.Delete(&Auth{UserId: userId})
