@@ -25,6 +25,7 @@
 		"prompt": false,
 		"toastr": false,
 		"vex": false,
-		"_": false
+		"_": false,
+		"libnfc": false
 	}
 }
