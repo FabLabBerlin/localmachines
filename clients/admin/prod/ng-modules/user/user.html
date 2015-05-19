@@ -85,13 +85,26 @@
       </div>
     </div>
 
+    <div class="col-sm-3" ng-show="nfcSupport">
+      <div class="form-group">
+        <button class="btn btn-warning btn-block" 
+                ng-disabled="nfcPolling"
+                ng-click="getNfcUid()">
+          {{nfcButtonLabel}}
+        </button>
+      </div>
+    </div>
+
     <div class="col-sm-3">
       <div class="form-group">
-        <button class="btn btn-primary btn-block" ng-click="updateNfcUid()">
+        <button class="btn btn-primary btn-block" 
+                ng-click="updateNfcUid()">
           Update NFC UID
         </button>
       </div>
     </div>
+
+    
   </div><!-- /.row -->
 
   <div class="row">
