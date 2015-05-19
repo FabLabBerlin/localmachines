@@ -18,17 +18,14 @@ app.controller('LoginCtrl', ['$scope', '$http', '$location', function($scope, $h
 
     $scope.onNfcError = function(error) {
       window.libnfc.cardRead.disconnect($scope.loginWithUid);
-      //window.libnfc.nfcReaderError.connect(function(){});
-      
+      window.libnfc.cardReaderError.disconnect($scope.onNfcError);
       toastr.error(error);
-      // TODO: Do things depending on the kind of error
-
-      // For now, reattempt to poll the card again after timeout
       setTimeout($scope.getNfcUid, 2000);
     };
 
     $scope.loginWithUid = function(uid) {
       window.libnfc.cardRead.disconnect($scope.loginWithUid);
+      window.libnfc.cardReaderError.disconnect($scope.onNfcError);
       $http({
         method: 'POST',
         url: '/api/users/loginuid',
@@ -51,6 +48,7 @@ app.controller('LoginCtrl', ['$scope', '$http', '$location', function($scope, $h
     $scope.getNfcUid = function() {
       //window.libnfc.nfcReaderError.connect($scope.onNfcError);
       window.libnfc.cardRead.connect($scope.loginWithUid);
+      window.libnfc.cardReaderError.connect($scope.onNfcError);
       window.libnfc.asyncScan(); // For infinite amount of time
     };
 
@@ -79,6 +77,7 @@ app.controller('LoginCtrl', ['$scope', '$http', '$location', function($scope, $h
   $scope.login = function() {
     if (window.libnfc) {
       window.libnfc.cardRead.disconnect($scope.loginWithUid);
+      window.libnfc.cardReaderError.disconnect($scope.onNfcError);
     }
 
     $http({
