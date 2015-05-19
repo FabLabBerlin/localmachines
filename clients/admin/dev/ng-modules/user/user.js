@@ -13,6 +13,53 @@ app.config(['$routeProvider', function($routeProvider) {
 app.controller('UserCtrl', 
  ['$scope', '$routeParams', '$http', '$location', 'randomToken', 
  function($scope, $routeParams, $http, $location, randomToken) {
+
+  // Check for NFC browser
+  if (window.libnfc) {
+    $scope.nfcSupport = true;
+    $scope.nfcPolling = false;
+    $scope.nfcButtonLabel = "Read NFC UID";
+
+    $scope.onNfcUid = function(uid) {
+      // The timeout can cause trouble now, so we clear it
+      clearTimeout($scope.getNfcUidTimeout); 
+
+      // Assign the uid to the form field
+      $scope.nfcUid = uid;
+
+      // Reset UI element state to normal
+      $scope.nfcPolling = false;
+      $scope.nfcButtonLabel = "Read NFC UID";
+      $scope.$apply();
+    };
+
+    // Cancel callback
+    $scope.cancelGetNfcUid = function() {
+      // Clear the callback, assign an empty function to it
+      window.libnfc.cardRead.connect(function(){});
+
+      // Warn the user that it took too long for him to find the card
+      toastr.warning("Reading NFC took too long");
+
+      // Reset UI element state to normal
+      $scope.nfcPolling = false;
+      $scope.nfcButtonLabel = "Read NFC UID";
+      $scope.$apply();
+    };
+
+    $scope.getNfcUid = function() {
+      // Add event listener
+      window.libnfc.cardRead.connect($scope.onNfcUid);
+
+      // Start waiting for the NFC card to approach the reader
+      window.libnfc.asyncScan();
+      $scope.nfcPolling = true;
+      $scope.nfcButtonLabel = "Waiting for NFC card...";
+
+      // Cancel scan after timeout
+      $scope.getNfcUidTimeout = setTimeout($scope.cancelGetNfcUid, 10000);
+    };
+  }
   
   // Init scope variables
   var pickadateOptions = {
