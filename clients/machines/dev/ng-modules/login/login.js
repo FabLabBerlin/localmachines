@@ -13,6 +13,49 @@ angular.module('fabsmith.login', ['ngRoute', 'ngCookies'])
 
 .controller('LoginCtrl', ['$scope', '$http', '$location', function($scope, $http, $location) {
   
+  if (window.libnfc) {
+    $scope.nfcSupport = true;
+
+    $scope.onNfcError = function(error) {
+      window.libnfc.cardRead.disconnect($scope.loginWithUid);
+      window.libnfc.cardReaderError.disconnect($scope.onNfcError);
+      toastr.error(error);
+      $scope.nfcErrorTimeout = setTimeout($scope.getNfcUid, 2000);
+    };
+
+    $scope.loginWithUid = function(uid) {
+      window.libnfc.cardRead.disconnect($scope.loginWithUid);
+      window.libnfc.cardReaderError.disconnect($scope.onNfcError);
+      $http({
+        method: 'POST',
+        url: '/api/users/loginuid',
+        data: {
+          uid: uid,
+          ac: new Date().getTime()
+        }
+      })
+      .success(function(loginResponse) {
+        if (loginResponse.UserId) {
+          $scope.getUser(loginResponse.UserId);
+        } else {
+          toastr.error('Failed to log in');
+        }
+      })
+      .error(function(data, status) {
+        toastr.error('Failed to log in');
+      });
+    };
+
+    $scope.getNfcUid = function() {
+      //window.libnfc.nfcReaderError.connect($scope.onNfcError);
+      window.libnfc.cardRead.connect($scope.loginWithUid);
+      window.libnfc.cardReaderError.connect($scope.onNfcError);
+      window.libnfc.asyncScan(); // For infinite amount of time
+    };
+
+    $scope.getNfcUid();
+  }
+
   // Local login function - if we do it by entering username and 
   // password in the browser
   $scope.login = function() {
@@ -49,6 +92,9 @@ angular.module('fabsmith.login', ['ngRoute', 'ngCookies'])
     })
     .error(function(data, status){
       toastr.error('Could not get user data');
+      if (window.libnfc) {
+        $scope.nfcErrorTimeout = setTimeout($scope.getNfcUid, 2000);
+      }
     });
   };
 
