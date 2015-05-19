@@ -20,7 +20,7 @@ app.controller('LoginCtrl', ['$scope', '$http', '$location', function($scope, $h
       window.libnfc.cardRead.disconnect($scope.loginWithUid);
       window.libnfc.cardReaderError.disconnect($scope.onNfcError);
       toastr.error(error);
-      setTimeout($scope.getNfcUid, 2000);
+      $scope.nfcErrorTimeout = setTimeout($scope.getNfcUid, 2000);
     };
 
     $scope.loginWithUid = function(uid) {
@@ -76,8 +76,19 @@ app.controller('LoginCtrl', ['$scope', '$http', '$location', function($scope, $h
 
   $scope.login = function() {
     if (window.libnfc) {
-      window.libnfc.cardRead.disconnect($scope.loginWithUid);
-      window.libnfc.cardReaderError.disconnect($scope.onNfcError);
+      try {
+        window.libnfc.cardRead.disconnect($scope.loginWithUid);
+      } catch (err) {
+        toastr.error(err.message);
+      }
+
+      try {
+        window.libnfc.cardReaderError.disconnect($scope.onNfcError);
+      } catch (err) {
+        toastr.error(err.message);
+      }
+
+      clearTimeout($scope.nfcErrorTimeout);
     }
 
     $http({
