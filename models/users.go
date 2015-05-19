@@ -50,6 +50,10 @@ type Auth struct {
 	Salt   string `orm:"size(100)"`
 }
 
+func (this *Auth) TableName() string {
+	return "auth"
+}
+
 type Permission struct {
 	Id        int64 `orm:"pk"`
 	UserId    int64
@@ -171,6 +175,22 @@ func AuthUpdateNfcUid(userId int64, nfcUid string) error {
 	if err != nil && !authRecordMissing {
 		return fmt.Errorf("Missing auth record: %v", err)
 	}
+
+	// No update required if the UIDs already match
+	if auth.NfcKey == nfcUid {
+		beego.Warning("This UID is already assigned to the user")
+		return nil
+	}
+
+	// Check if another user uses the same UID
+	num, err = o.QueryTable(auth.TableName()).Filter("NfcKey", nfcUid).Count()
+	if err != nil {
+		beego.Warning("Failed to get matching auth records")
+	}
+	if num > 0 {
+		return errors.New("Auth records with the UID exist")
+	}
+
 	auth.NfcKey = nfcUid
 	num, err = o.Update(&auth, "NfcKey")
 	if err != nil {
