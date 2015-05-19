@@ -21,10 +21,8 @@ app.controller('UserCtrl',
     $scope.nfcButtonLabel = "Read NFC UID";
 
     $scope.onNfcUid = function(uid) {
-      // The timeout can cause trouble now, so we clear it
-      clearTimeout($scope.getNfcUidTimeout); 
-
-      // Assign the uid to the form field
+      window.libnfc.cardRead.disconnect($scope.onNfcUid);
+      clearTimeout($scope.getNfcUidTimeout);
       $scope.nfcUid = uid;
 
       // Reset UI element state to normal
@@ -35,10 +33,7 @@ app.controller('UserCtrl',
 
     // Cancel callback
     $scope.cancelGetNfcUid = function() {
-      // Clear the callback, assign an empty function to it
-      window.libnfc.cardRead.connect(function(){});
-
-      // Warn the user that it took too long for him to find the card
+      window.libnfc.cardRead.disconnect($scope.onNfcUid);
       toastr.warning("Reading NFC took too long");
 
       // Reset UI element state to normal
