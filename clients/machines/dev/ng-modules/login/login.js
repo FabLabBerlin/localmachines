@@ -53,7 +53,7 @@ angular.module('fabsmith.login', ['ngRoute', 'ngCookies'])
       window.libnfc.asyncScan(); // For infinite amount of time
     };
 
-    $scope.getNfcUid();
+    setTimeout($scope.getNfcUid, 1000);
   }
 
   // Local login function - if we do it by entering username and 
