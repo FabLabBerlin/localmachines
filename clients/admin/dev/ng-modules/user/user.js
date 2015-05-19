@@ -24,7 +24,7 @@ app.controller('UserCtrl',
       $scope.nfcPolling = false;
       $scope.nfcButtonLabel = "Read NFC UID";
       $scope.$apply();
-    }
+    };
 
     $scope.onNfcUid = function(uid) {
       window.libnfc.cardRead.disconnect($scope.onNfcUid);
@@ -45,6 +45,7 @@ app.controller('UserCtrl',
     $scope.onNfcError = function(error) {
       window.libnfc.cardRead.disconnect($scope.onNfcUid);
       window.libnfc.cardReaderError.disconnect($scope.onNfcError);
+      clearTimeout($scope.getNfcUidTimeout);
       toastr.error(error);
       $scope.resetNfcUi();
     };
