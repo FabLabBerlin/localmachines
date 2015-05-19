@@ -24,6 +24,38 @@ app.controller('MachinesCtrl',
  ['$scope', '$http', '$location', '$route', '$cookieStore', 
  function($scope, $http, $location, $route, $cookieStore) {
 
+  if (window.libnfc) {
+
+    $scope.onNfcError = function(error) {
+      window.libnfc.cardRead.disconnect($scope.nfcLogout);
+      window.libnfc.cardReaderError.disconnect($scope.onNfcError);
+      toastr.error(error);
+      $scope.nfcTimeout = setTimeout($scope.activateNfcLogout, 2000);
+    };
+
+    $scope.onNfc = function(uid) {
+      window.libnfc.cardRead.disconnect($scope.onNfc);
+      window.libnfc.cardReaderError.disconnect($scope.onNfcError);
+      $scope.logout();
+    };
+
+    $scope.activateNfcLogout = function() {
+      window.libnfc.cardRead.connect($scope.onNfc);
+      window.libnfc.cardReaderError.connect($scope.onNfcError);
+      window.libnfc.asyncScan();
+      toastr.info('You can log out by using your NFC card');
+    };
+
+    // NFC logout functionality is activated N seconds after log in
+    $scope.nfcTimeout = setTimeout($scope.activateNfcLogout, 5000);
+  }
+
+  // Makes sure that NFC intervals are cleared
+  $scope.smartLogout = function() {
+    clearTimeout($scope.nfcTimeout);
+    $scope.logout();
+  };
+
   // Attempt to get logged user machines
   $scope.loadMachines = function() {
     $http({
