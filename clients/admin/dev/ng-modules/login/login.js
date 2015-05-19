@@ -13,7 +13,74 @@ app.config(['$routeProvider', function($routeProvider) {
 
 app.controller('LoginCtrl', ['$scope', '$http', '$location', function($scope, $http, $location) {
   // Local login function - if we do it by entering username and password in the browser
+  if (window.libnfc) {
+    $scope.nfcSupport = true;
+
+    $scope.onNfcError = function(error) {
+      window.libnfc.cardRead.disconnect($scope.loginWithUid);
+      //window.libnfc.nfcReaderError.connect(function(){});
+      
+      toastr.error(error);
+      // TODO: Do things depending on the kind of error
+
+      // For now, reattempt to poll the card again after timeout
+      setTimeout($scope.getNfcUid, 2000);
+    };
+
+    $scope.loginWithUid = function(uid) {
+      window.libnfc.cardRead.disconnect($scope.loginWithUid);
+      $http({
+        method: 'POST',
+        url: '/api/users/loginuid',
+        data: {
+          uid: uid,
+          ac: new Date().getTime()
+        }
+      })
+      .success(function(data) {
+        if (data.UserId) {
+          $scope.getUserData(data.UserId);
+        }
+      })
+      .error(function() {
+        toastr.error('Failed to log in');
+        setTimeout($scope.getNfcUid, 2000);
+      });
+    };
+
+    $scope.getNfcUid = function() {
+      //window.libnfc.nfcReaderError.connect($scope.onNfcError);
+      window.libnfc.cardRead.connect($scope.loginWithUid);
+      window.libnfc.asyncScan(); // For infinite amount of time
+    };
+
+    $scope.getNfcUid();
+  } // if window.libnfc
+
+  $scope.getUserData = function(userId) {
+    $http({
+      method: 'GET',
+      url: '/api/users/' + userId,
+      params: {
+        ac: new Date().getTime()
+      }
+    })
+    .success(function(data){
+      $scope.$emit('user-login', data);
+      $location.path('/dashboard');
+    })
+    .error(function(data, status){
+      console.log('Status: ' + status);
+      console.log('Data' + data);
+      toastr.error('Could not get user data');
+    });
+  };
+
   $scope.login = function() {
+    if (window.libnfc) {
+      window.libnfc.cardRead.disconnect($scope.loginWithUid);
+    }
+
     $http({
       method: 'POST',
       url: '/api/users/login',
@@ -27,25 +94,8 @@ app.controller('LoginCtrl', ['$scope', '$http', '$location', function($scope, $h
     })
     .success(function(data) {
       if (data.UserId) {
-        // Get user data
-        $http({
-          method: 'GET',
-          url: '/api/users/' + data.UserId,
-          params: {
-            ac: new Date().getTime()
-          }
-        })
-        .success(function(data){
-          $scope.$emit('user-login', data);
-          $location.path('/dashboard');
-        })
-        .error(function(data, status){
-          console.log('Status: ' + status);
-          console.log('Data' + data);
-          toastr.error('Could not get user data');
-        });
-        
-      } // if data.UserId
+        $scope.getUserData(data.UserId);
+      }
     })
     .error(function() {
       toastr.error('Failed to log in');

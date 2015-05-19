@@ -1,19 +1,25 @@
 <div class="container">
 
-	<form name="loginForm" class="form-login" role="form" 
-		novalidate ng-submit="loginForm.$valid && login()">
-		<h2 class="form-login-heading">Please log in</h2>
-		<input ng-model="username" type="text" class="form-control" 
-			placeholder="Username" required autofocus>
-		<input ng-model="password" type="password" class="form-control" 
-			placeholder="Password" required>
-		<!-- Don't show the Remember me checkbox while it is not working -->
-		<!--
-		<label class="checkbox">
-			<input ng-model="remember" type="checkbox" value="remember-me"> Remember me
-		</label>
-		-->
-		<button class="btn btn-primary btn-block" type="submit">Log In</button>
-	</form>
+  <form name="loginForm" class="form-login" role="form" 
+    novalidate ng-submit="loginForm.$valid && login()">
+    <h2 class="form-login-heading">Please log in</h2>
+    <input ng-model="username" type="text" class="form-control" 
+      placeholder="Username" required autofocus>
+    <input ng-model="password" type="password" class="form-control" 
+      placeholder="Password" required>
+    <!-- Don't show the Remember me checkbox while it is not working -->
+    <!--
+    <label class="checkbox">
+      <input ng-model="remember" type="checkbox" value="remember-me"> Remember me
+    </label>
+    -->
+    <button class="btn btn-primary btn-block" type="submit">Log In</button>
+
+    <div class="login-nfc-info"
+         ng-show="nfcSupport">
+      You can also use you NFC card to log in!
+    </div>
+  </form>
+
 
 </div> <!-- /container -->
