@@ -20,31 +20,39 @@ app.controller('UserCtrl',
     $scope.nfcPolling = false;
     $scope.nfcButtonLabel = "Read NFC UID";
 
-    $scope.onNfcUid = function(uid) {
-      window.libnfc.cardRead.disconnect($scope.onNfcUid);
-      clearTimeout($scope.getNfcUidTimeout);
-      $scope.nfcUid = uid;
-
-      // Reset UI element state to normal
+    $scope.resetNfcUi = function() {
       $scope.nfcPolling = false;
       $scope.nfcButtonLabel = "Read NFC UID";
       $scope.$apply();
-    };
+    }
+
+    $scope.onNfcUid = function(uid) {
+      window.libnfc.cardRead.disconnect($scope.onNfcUid);
+      window.libnfc.cardReaderError.disconnect($scope.onNfcError);
+      clearTimeout($scope.getNfcUidTimeout);
+      $scope.nfcUid = uid;
+      $scope.resetNfcUi();
+    };    
 
     // Cancel callback
     $scope.cancelGetNfcUid = function() {
       window.libnfc.cardRead.disconnect($scope.onNfcUid);
+      window.libnfc.cardReaderError.disconnect($scope.onNfcError);
       toastr.warning("Reading NFC took too long");
+      $scope.resetNfcUi();
+    };
 
-      // Reset UI element state to normal
-      $scope.nfcPolling = false;
-      $scope.nfcButtonLabel = "Read NFC UID";
-      $scope.$apply();
+    $scope.onNfcError = function(error) {
+      window.libnfc.cardRead.disconnect($scope.onNfcUid);
+      window.libnfc.cardReaderError.disconnect($scope.onNfcError);
+      toastr.error(error);
+      $scope.resetNfcUi();
     };
 
     $scope.getNfcUid = function() {
       // Add event listener
       window.libnfc.cardRead.connect($scope.onNfcUid);
+      window.libnfc.cardReaderError.connect($scope.onNfcError);
 
       // Start waiting for the NFC card to approach the reader
       window.libnfc.asyncScan();
