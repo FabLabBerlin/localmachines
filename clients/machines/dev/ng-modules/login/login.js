@@ -39,10 +39,12 @@ angular.module('fabsmith.login', ['ngRoute', 'ngCookies'])
           $scope.getUser(loginResponse.UserId);
         } else {
           toastr.error('Failed to log in');
+          setTimeout($scope.getNfcUid, 1000);
         }
       })
       .error(function(data, status) {
         toastr.error('Failed to log in');
+        setTimeout($scope.getNfcUid, 1000);
       });
     };
 
