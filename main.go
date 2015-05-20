@@ -36,9 +36,11 @@ func configClients() {
 	if beego.RunMode == "dev" {
 		beego.SetStaticPath("/machines", "clients/machines/dev")
 		beego.SetStaticPath("/admin", "clients/admin/dev")
+		beego.SetStaticPath("/signup", "clients/signup/dev")
 	} else { // prod and any other runmode
 		beego.SetStaticPath("/machines", "clients/machines/prod")
 		beego.SetStaticPath("/admin", "clients/admin/prod")
+		beego.SetStaticPath("/signup", "clients/signup/prod")
 	}
 }
 
