@@ -389,16 +389,24 @@ func UpdateUserPermissions(userId int64, permissions *[]Permission) error {
 	// Delete all existing permissions of the user
 	p := Permission{}
 	o := orm.NewOrm()
+	beego.Info("Attempting to delete user permissions row...")
 	num, err := o.QueryTable(p.TableName()).
 		Filter("UserId", userId).Delete()
 	if err != nil {
-		return err
+		beego.Error("Error:", err)
+		//return err
 	}
 	beego.Trace("Deleted num permissions:", num)
+
+	// If there are no permissions, do nothing
+	if len(*permissions) <= 0 {
+		return nil
+	}
 
 	// Create new permissions
 	num, err = o.InsertMulti(len(*permissions), permissions)
 	if err != nil {
+		beego.Error("Failed to insert permissions")
 		return err
 	}
 	beego.Trace("Inserted num permissions:", num)

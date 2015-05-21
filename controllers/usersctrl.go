@@ -181,42 +181,21 @@ func (this *UsersController) Post() {
 
 	// TODO: validate email
 
-	sid := this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
-	if !this.IsAdmin(sid) && !this.IsStaff(sid) {
+	if !this.IsAdmin() {
 		beego.Error("Unauthorized attempt to delete user")
 		this.CustomAbort(401, "Unauthorized")
 	}
 
 	user := models.User{Email: email}
-	o := orm.NewOrm()
-	if err := o.Begin(); err == nil {
-		id, err := o.Insert(&user)
-		if err != nil {
-			beego.Error("Cannot create user: ", err)
-			o.Rollback()
-			this.CustomAbort(500, "Internal Server Error")
-		}
-		user.Id = id
-		user.Email = email
 
-		/*userRoles := models.UserRoles{
-			UserId: user.Id,
-			Admin:  false,
-			Staff:  false,
-			Member: false,
-		}
-		if _, err := o.Insert(&userRoles); err != nil {
-			beego.Error("Cannot create user roles: ", err)
-			o.Rollback()
-			this.CustomAbort(500, "Internal Server Error")
-		}*/
-	}
-	if err := o.Commit(); err == nil {
+	// Attempt to create the user
+	if userId, err := models.CreateUser(&user); err != nil {
+		beego.Error("Failed to create user:", err)
+		this.CustomAbort(500, "Internal Server Error")
+	} else {
+		user.Id = userId
 		this.Data["json"] = user
 		this.ServeJson()
-	} else {
-		beego.Error("Error committing new user")
-		this.CustomAbort(500, "Internal Server Error")
 	}
 }
 
