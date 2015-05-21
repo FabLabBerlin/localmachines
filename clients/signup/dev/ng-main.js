@@ -5,6 +5,7 @@
 // Declare app level module which depends on views, and components
 var app = angular.module('fabsmith.signup', [
   'ngRoute',
+  'fabsmith.signup.welcome',
   'fabsmith.signup.form',
   'fabsmith.signup.thanks'
 ]);
@@ -21,7 +22,7 @@ app.config(['$httpProvider', function($httpProvider) {
 }]);
 
 // Signup main controller
-app.controller('MainCtrl', ['$scope', '$location', 
+app.controller('MainCtrl', ['$scope', '$location',
  function($scope, $location){
 
   // Configure toastr default location
@@ -32,7 +33,7 @@ app.controller('MainCtrl', ['$scope', '$location',
   vex.defaultOptions.className = 'vex-theme-custom';
 
   // Redirect
-  $location.path('/form');
+  $location.path('/welcome');
 
 }]);
 

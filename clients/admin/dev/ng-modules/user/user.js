@@ -10,8 +10,8 @@ app.config(['$routeProvider', function($routeProvider) {
   });
 }]); // app.config
 
-app.controller('UserCtrl', 
- ['$scope', '$routeParams', '$http', '$location', 'randomToken', 
+app.controller('UserCtrl',
+ ['$scope', '$routeParams', '$http', '$location', 'randomToken',
  function($scope, $routeParams, $http, $location, randomToken) {
 
   // Check for NFC browser
@@ -32,7 +32,7 @@ app.controller('UserCtrl',
       clearTimeout($scope.getNfcUidTimeout);
       $scope.nfcUid = uid;
       $scope.resetNfcUi();
-    };    
+    };
 
     // Cancel callback
     $scope.cancelGetNfcUid = function() {
@@ -64,7 +64,7 @@ app.controller('UserCtrl',
       $scope.getNfcUidTimeout = setTimeout($scope.cancelGetNfcUid, 10000);
     };
   }
-  
+
   // Init scope variables
   var pickadateOptions = {
     format: 'yyyy-mm-dd'
@@ -124,7 +124,7 @@ app.controller('UserCtrl',
       } else {
         $scope.loadUserMachinePermissions($scope.getAvailableMemberships);
       }
-      
+
     })
     .error(function() {
       console.log('Could not get machines');
@@ -146,7 +146,7 @@ app.controller('UserCtrl',
       if (callback) {
         callback();
       }
-      
+
       _.each($scope.availableMachines, function(machine) {
         machine.Checked = false;
         _.each(userMachines, function(userMachine) {
@@ -190,7 +190,7 @@ app.controller('UserCtrl',
       _.each($scope.memberships, function(m) {
         $scope.membershipsById[m.Id] = m;
       });
-      
+
       $scope.getUserMemberships();
     })
     .error(function(data, status) {
@@ -217,8 +217,8 @@ app.controller('UserCtrl',
         //console.log('userMembership.Id: ', userMembership.Id);
         var membership = $scope.membershipsById[userMembership.MembershipId];
         //console.log('membership: ', membership);
-        userMembership.EndDate.setDate(userMembership.StartDate.getDate() + 
-         membership.Duration); 
+        userMembership.EndDate.setDate(userMembership.StartDate.getDate() +
+         membership.Duration);
         userMembership.StartDate = formatDate(userMembership.StartDate);
         userMembership.EndDate = formatDate(userMembership.EndDate);
         return userMembership;
@@ -254,7 +254,7 @@ app.controller('UserCtrl',
       data: {
         StartDate: startDate,
         UserMembershipId: userMembershipId
-      }, 
+      },
       params: {
         ac: new Date().getTime()
       }
@@ -289,7 +289,7 @@ app.controller('UserCtrl',
   $scope.deleteUserPrompt = function() {
     var token = randomToken.generate();
     vex.dialog.prompt({
-      message: 'Enter <span class="delete-prompt-token">' + 
+      message: 'Enter <span class="delete-prompt-token">' +
        token + '</span> to delete',
       placeholder: 'Token',
       callback: $scope.deleteUserPromptCallback.bind(this, token)
@@ -297,7 +297,7 @@ app.controller('UserCtrl',
   };
 
   $scope.deleteUserPromptCallback = function(expectedToken, value) {
-    if (value) {    
+    if (value) {
       if (value === expectedToken) {
         $scope.deleteUser();
       } else {
@@ -332,7 +332,7 @@ app.controller('UserCtrl',
       token + '</span> to delete',
       placeholder: 'Token',
       callback: function(value) {
-        if (value) {    
+        if (value) {
           if (value === token) {
             $scope.deleteUserMembership(userMembershipId);
           } else {
@@ -404,7 +404,7 @@ app.controller('UserCtrl',
         $scope.user.Admin = true;
         $scope.updateAdminStatus();
         toastr.error('You are the last remaining admin. Remember - power comes with great responsibility!');
-      } else if (data === 'selfAdmin') { 
+      } else if (data === 'selfAdmin') {
         $scope.user.Admin = true;
         $scope.updateAdminStatus();
         toastr.error('You can not unadmin yourself. Someone else has to do it.');
@@ -446,7 +446,7 @@ app.controller('UserCtrl',
   };
 
   $scope.updatePassword = function() {
-    
+
     // Check user entered password
     var minPassLength = 3;
 
