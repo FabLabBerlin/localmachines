@@ -73,7 +73,33 @@ angular.module('fabsmith.signup.form', ['ngRoute'])
       return;
     }
 
-    $location.path('/thanks');
+
+    $http({
+      method: 'POST',
+      url: '/api/users/signup',
+      data: {
+        "User": {
+          "Email": $scope.email,
+          "Company": $scope.company,
+          "FirstName": $scope.firstName,
+          "LastName": $scope.lastName,
+          "Username": $scope.username
+        },
+        "Password": $scope.password
+      },
+      transformRequest: function(data) {
+        return JSON.stringify(data);
+      },
+      headers: {'Content-Type': 'application/json'}
+    })
+    .success(function() {
+      toastr.success("Registration successful !");
+      $location.path('/thanks');
+    })
+    .error(function() {
+      toastr.error('Error while trying to register');
+    });
+
   };
 
 }]);
