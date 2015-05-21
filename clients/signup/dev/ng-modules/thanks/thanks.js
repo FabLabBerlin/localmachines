@@ -16,7 +16,11 @@ angular.module('fabsmith.signup.thanks', ['ngRoute'])
 
   $scope.backToWelcome = function() {
     $location.path('/welcome');
+    $scope.$apply();
   };
+
+  var timeout = 10 * 1000;
+  setTimeout($scope.backToWelcome, timeout);
 
 }]);
 
