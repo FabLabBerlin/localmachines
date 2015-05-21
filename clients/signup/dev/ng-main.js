@@ -27,7 +27,6 @@ app.controller('MainCtrl', ['$scope', '$location',
 
   // Configure toastr default location
   toastr.options.positionClass = 'toast-bottom-left';
-  toastr.info('MainCtrl loaded');
 
   // Configure vex theme
   vex.defaultOptions.className = 'vex-theme-custom';
