@@ -129,6 +129,46 @@ func (this *UsersController) GetAll() {
 	this.ServeJson()
 }
 
+type UserSignupRequest struct {
+	User     models.User
+	Password string
+}
+
+// @Title Signup
+// @Description Accept user signup, create a zombie user with no privileges for later access
+// @Param	model	body	UserSignupRequest	true	"User model and password"
+// @Success 200 string ok
+// @Failure 500 Internal Server Error
+// @router /signup [post]
+func (this *UsersController) Signup() {
+	var err error
+	var userId int64
+
+	// Get body as array of models.User
+	// Attempt to decode passed json
+	jsonDecoder := json.NewDecoder(this.Ctx.Request.Body)
+	data := UserSignupRequest{}
+	if err = jsonDecoder.Decode(&data); err != nil {
+		beego.Error("Failed to decode json:", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	// Attempt to create the user
+	if userId, err = models.CreateUser(&data.User); err != nil {
+		beego.Error("Failed to create user:", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	// Set the password
+	if err = models.AuthSetPassword(userId, data.Password); err != nil {
+		beego.Error("Failed to set password for user ID", userId)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	this.Data["json"] = userId
+	this.ServeJson()
+}
+
 // @Title Post
 // @Description create user and associated tables
 // @Param	email		query 	string	true		"The new user's E-Mail"

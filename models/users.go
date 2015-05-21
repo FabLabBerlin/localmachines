@@ -68,6 +68,24 @@ func init() {
 	orm.RegisterModel(new(User), new(Auth), new(Permission))
 }
 
+// Attempt to create user, do not complain if it already exists
+func CreateUser(user *User) (userId int64, er error) {
+	o := orm.NewOrm()
+
+	if created, id, err := o.ReadOrCreate(user, "Email"); err == nil {
+		if created {
+			beego.Info("Created user with ID", id)
+		} else {
+			beego.Info("User already exists with ID", id,
+				"and email", user.Email)
+			return 0, fmt.Errorf("User exists")
+		}
+		return id, nil
+	} else {
+		return 0, fmt.Errorf("Could not ReadOrCreate user: %v", err)
+	}
+}
+
 // Authenticate username and password, return user ID on success
 func AuthenticateUser(username, password string) (int64, error) {
 	authModel := Auth{}
