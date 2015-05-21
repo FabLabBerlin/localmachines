@@ -1,0 +1,39 @@
+/* Dashboard Styling */
+header {
+  border-bottom: 2px solid #e6e6e6;
+  color: #999999;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+footer {
+  margin-top: 20px;
+  margin-bottom: 0;
+  border-top: 2px solid #e6e6e6;
+}
+footer div {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+.brand-image {
+  width: auto;
+  height: 70px;
+}
+/* Centered div */
+.login-form {
+  max-width: 500px;
+  margin: 0 auto;
+}
+.absolute-bottom {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+}
+.login {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  -webkit-transform: translateY(-50%);
+  width: 100%;
+}
