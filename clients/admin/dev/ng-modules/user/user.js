@@ -147,6 +147,7 @@ app.controller('UserCtrl',
         callback();
       }
       
+      console.log(userMachines);
       _.each($scope.availableMachines, function(machine) {
         machine.Checked = false;
         _.each(userMachines, function(userMachine) {
@@ -415,6 +416,15 @@ app.controller('UserCtrl',
   };
 
   $scope.updateUserMachinePermissions = function(callback) {
+    
+    // Do not update machine permissions for an admin user
+    if ($scope.user.Admin) {
+      if (callback) {
+        callback();
+      }
+      return;
+    }
+
     var permissions = [];
     _.each($scope.availableMachines, function(machine) {
       if (machine.Checked) {
@@ -526,7 +536,9 @@ app.controller('UserCtrl',
         machine.Disabled = true;
       });
     } else {
+      console.log('uncheck avail machines');
       _.each($scope.availableMachines, function(machine){
+        console.log(machine.Id);
         machine.Checked = false;
         machine.Disabled = false;
       });
