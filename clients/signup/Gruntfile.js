@@ -3,7 +3,7 @@
 module.exports = function (grunt) {
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
-		
+
 		jshint: {
 			options: {
 				jshintrc: '.jshintrc'
@@ -27,7 +27,7 @@ module.exports = function (grunt) {
 
 			prod: {
 				files: {
-					// Here it would be possible to create a custom bootstrap 
+					// Here it would be possible to create a custom bootstrap
 					// compile script that compiles only the bootstrap components
 					// we actually need
 					'prod/assets/css/app.min.css': [
@@ -60,6 +60,7 @@ module.exports = function (grunt) {
 					'tmp/app.js': [
 						'tmp/dependencies.js',
 						'dev/ng-main.js',
+						'dev/ng-modules/welcome/welcome.js',
 						'dev/ng-modules/form/form.js',
 						'dev/ng-modules/thanks/thanks.js'
 					]
@@ -80,7 +81,7 @@ module.exports = function (grunt) {
 			prod: {
 				options: {
 					process: true
-				}, 
+				},
 				files: {
 					'prod/index.html': ['dev/index.html']
 				}
@@ -134,7 +135,7 @@ module.exports = function (grunt) {
 				options: {livereload: true, atBegin: true}
 			},
 			css: {
-				files: ['dev/**/*.less'], 
+				files: ['dev/**/*.less'],
 				tasks: ['less:dev'],
 				options: {livereload: true, atBegin: true}
 			}

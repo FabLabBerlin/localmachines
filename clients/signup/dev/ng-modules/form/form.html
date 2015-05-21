@@ -1,8 +1,86 @@
 <div class="container-fluid">
 
-  <h2>Signup Form</h2>
-  <p>Add a form here!</p>
-  <button class="btn btn-primary"
-          ng-click="submitForm()">Yes</button>
+  <div class="container">
+    <form method="" action="">
+
+      <div class="row">
+        <div class="col-md-offset-3 col-md-3">
+          <div class="form-group">
+            <label for="email">Email address</label>
+            <input type="email" class="form-control"
+                    id="email" placeholder="Enter E-Mail"
+                    ng-model="email">
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-group">
+            <label for="company">Company name</label>
+            <input type="company" class="form-control"
+                    id="company" placeholder="Enter your company name"
+                    ng-model="company">
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-offset-3 col-md-3">
+          <div class="form-group">
+            <label for="first_name">First Name</label>
+            <input type="text" class="form-control"
+                    id="first_name" placeholder="Enter first name"
+                    ng-model="firstName">
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-group">
+            <label for="last_name">Last Name</label>
+            <input type="text" class="form-control"
+                    id="last_name" placeholder="Enter last name"
+                    ng-model="lastName">
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-offset-3 col-md-3">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input id="username" type="text" class="form-control"
+                   placeholder="Enter Username" ng-model="username">
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-offset-3 col-md-6">
+          <label for="password">Password</label>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-offset-3 col-md-3">
+          <div class="form-group">
+            <input type="password" class="form-control"
+                    id="password" placeholder="Your password"
+                    ng-model="password">
+          </div>
+        </div>
+        <div class="col-md-3 clear">
+          <div class="form-group">
+            <input type="password" class="form-control"
+                    id="password-repeat" placeholder="Repeat your password"
+                    ng-model="passwordRepeat">
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-offset-3 col-md-3">
+          <button class="btn btn-lg btn-primary"
+                  ng-click="submitForm()">Sign up !</button>
+        </div>
+      </div>
+    </form>
+  </div>
 
 </div>
