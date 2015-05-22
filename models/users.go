@@ -9,6 +9,7 @@ import (
 	"github.com/astaxie/beego/orm"
 	"golang.org/x/crypto/scrypt"
 	"io"
+	"time"
 )
 
 // cf. http://stackoverflow.com/a/23039768/485185
@@ -36,7 +37,9 @@ type User struct {
 	Company     string `orm:"size(100)"`
 	VatUserId   string `orm:"size(100)"`
 	VatRate     int
-	UserRole    string `orm:"size(100)"`
+	UserRole    string    `orm:"size(100)"`
+	Created     time.Time `orm:"type(datetime)"`
+	Comments    string    `orm:"type(text)"`
 }
 
 func (this *User) TableName() string {
@@ -75,6 +78,16 @@ func CreateUser(user *User) (userId int64, er error) {
 	if created, id, err := o.ReadOrCreate(user, "Email"); err == nil {
 		if created {
 			beego.Info("Created user with ID", id)
+
+			// Update created time.
+			// Still using a hack here as Beego timezone support is foggy.
+			updQuery := fmt.Sprintf("UPDATE %s SET created=? WHERE id=?",
+				user.TableName())
+			_, err = o.Raw(updQuery,
+				time.Now().Format("2006-01-02 15:04:05"), id).Exec()
+			if err != nil {
+				beego.Error("Failed to update user creation time")
+			}
 		} else {
 			beego.Info("User already exists with ID", id,
 				"and email", user.Email)
