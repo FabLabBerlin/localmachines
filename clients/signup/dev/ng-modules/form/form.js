@@ -99,9 +99,40 @@ angular.module('fabsmith.signup.form', ['ngRoute'])
     .error(function() {
       toastr.error('Error while trying to register');
     });
-
   };
 
-}]);
+  // Instant call function
+  (function(){
+    // Check for idle time
+    var idleTime = 0;
+    $(document).ready(function () {
+      //Increment the idle time counter every minute.
+      var idleInterval = setInterval(timerIncrement, /*60*/ 1 * 1000); // 1 minute
 
+      //Zero the idle timer on mouse movement or a keypress.
+      $(this).mousemove(function (e) {
+        idleTime = 0;
+      });
+      $(this).keypress(function (e) {
+        idleTime = 0;
+      });
+    });
+
+    function timerIncrement() {
+      idleTime = idleTime + 1;
+      // After 5 minutes we reset the form
+      if (idleTime > 4) {
+        $scope.email = "";
+        $scope.company = "";
+        $scope.firstName = "";
+        $scope.lastName = "";
+        $scope.username = "";
+        $scope.password = "";
+        $scope.$apply();
+        idleTime = 0;
+      }
+    }
+  })();
+
+}]);
 })();
