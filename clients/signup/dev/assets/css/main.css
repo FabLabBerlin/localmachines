@@ -19,9 +19,11 @@ footer div {
   height: 70px;
 }
 /* Centered div */
-.login-form {
+.signup-form {
   max-width: 500px;
   margin: 0 auto;
+  padding-top: 25px;
+  padding-bottom: 25px;
 }
 @media (min-width: 768px) {
   .absolute-bottom {
@@ -30,7 +32,7 @@ footer div {
     bottom: 0;
     width: 100%;
   }
-  .login {
+  .signup {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
