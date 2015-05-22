@@ -15,7 +15,7 @@ angular.module('fabsmith.signup.thanks', ['ngRoute'])
  function($scope, $location) {
 
   $scope.backToForm = function() {
-    $location.path('/from');
+    $location.path('/form');
   };
 
   var timeout = 10 * 1000;
