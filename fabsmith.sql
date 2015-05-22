@@ -148,6 +148,7 @@ CREATE TABLE `machines` (
   `unavail_till` datetime DEFAULT NULL,
   `price` double unsigned NOT NULL,
   `price_unit` varchar(100) DEFAULT NULL,
+  `comments` text DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
