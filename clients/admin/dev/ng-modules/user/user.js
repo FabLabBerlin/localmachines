@@ -134,7 +134,7 @@ app.controller('UserCtrl',
   $scope.loadUserMachinePermissions = function(callback) {
     $http({
       method: 'GET',
-      url: '/api/users/' + $scope.user.Id + '/machines',
+      url: '/api/users/' + $scope.user.Id + '/machinepermissions',
       params: {
         ac: new Date().getTime()
       }

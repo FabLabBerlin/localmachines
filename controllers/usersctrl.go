@@ -325,6 +325,71 @@ func (this *UsersController) Put() {
 	}
 }
 
+// @Title GetUserMachinePermissions
+// @Description Get current saved machine permissions
+// @Param	uid		path 	int	true		"User ID"
+// @Success 200 {object} models.Machine
+// @Failure	500	Internal Server Error
+// @Failure	401	Unauthorized
+// @router /:uid/machinepermissions [get]
+func (this *UsersController) GetUserMachinePermissions() {
+
+	// Check if logged in
+	suid := this.GetSession(SESSION_FIELD_NAME_USER_ID)
+	if suid == nil {
+		beego.Info("Not logged in")
+		this.CustomAbort(401, "Unauthorized")
+	}
+
+	// Get requested user ID
+	var err error
+	var ruid int64
+	ruid, err = this.GetInt64(":uid")
+	if err != nil {
+		beego.Error("Failed to get :uid")
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	// Attempt to get user sessio id as int64
+	suidInt64, ok := suid.(int64)
+	if !ok {
+		beego.Error("Failed to get session user ID")
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	// If the session user ID and the request user ID does not match
+	// check whether the session user is an admin, return if not
+	if suidInt64 != ruid {
+		if !this.IsAdmin() {
+			beego.Error("Not authorized to access other user machine permissions")
+			this.CustomAbort(401, "Unauthorized")
+		}
+	}
+
+	// We need to get machine permissions first and then the machines
+	var permissions *[]models.Permission
+	var machines []*models.Machine
+	permissions, err = models.GetUserPermissions(ruid)
+	if err != nil {
+		beego.Error("Failed to get user machine permissions: ", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+	for _, permission := range *permissions {
+		machine, err := models.GetMachine(permission.MachineId)
+		if err != nil {
+			beego.Warning("Failed to get machine ID", permission.MachineId)
+			// Just don't add the machine permission if not exists in db
+			//this.CustomAbort(403, "Failed to get user machines")
+		} else {
+			machines = append(machines, machine)
+		}
+	}
+
+	// Serve machines
+	this.Data["json"] = machines
+	this.ServeJson()
+}
+
 // @Title GetUserMachines
 // @Description Get user machines
 // @Param	uid		path 	int	true		"User ID"
