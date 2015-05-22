@@ -23,6 +23,7 @@ type Machine struct {
 	UnavailTill time.Time `orm:"null;type(date)" form:"Date,2006-01-02T15:04:05Z07:00`
 	Price       float32
 	PriceUnit   string `orm:"size(100)"`
+	Comments    string `orm:"type(text)"`
 }
 
 // Define custom table name as for SQL table with a name "machines"
