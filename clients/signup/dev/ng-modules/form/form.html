@@ -93,7 +93,7 @@
             <input type="checkbox"
                     id="agb"
                     ng-model="agb_dpa_agreed">
-            I accept the AGB and Data Protection Agreement
+              Ja, ich habe die <a ng-click="displayAGB()">AGB</a> und <a ng-click="displayDatenschutzbestimmungen()">Datenschutzbestimmungen</a> von Makea Industries GmbH gelesen und stimme ihnen uneingeschränkt zu.
           </label>
         </div>
       </div>
@@ -101,7 +101,9 @@
       <div class="row">
         <div class="col-xs-6">
           <button class="btn btn-lg btn-primary"
-                  ng-click="submitForm()">Sign up !</button>
+                  ng-click="submitForm()">
+            Sign up !
+          </button>
         </div>
       </div>
 
