@@ -101,8 +101,9 @@ angular.module('fabsmith.signup.form', ['ngRoute'])
     });
   };
 
+  var numberOfSecondsBeforeResting = 5;
   // Instant call function
-  (function(){
+  (function(nbSecToReset){
     // Check for idle time
     var idleTime = 0;
     $(document).ready(function () {
@@ -121,7 +122,7 @@ angular.module('fabsmith.signup.form', ['ngRoute'])
     function timerIncrement() {
       idleTime = idleTime + 1;
       // After 5 minutes we reset the form
-      if (idleTime > 4) {
+      if (idleTime > (nbSecToReset-1)) {
         $scope.email = "";
         $scope.company = "";
         $scope.firstName = "";
@@ -132,7 +133,7 @@ angular.module('fabsmith.signup.form', ['ngRoute'])
         idleTime = 0;
       }
     }
-  })();
+  })(numberOfSecondsBeforeResting);
 
 }]);
 })();
