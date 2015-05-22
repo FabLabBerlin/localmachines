@@ -14,13 +14,15 @@ angular.module('fabsmith.signup.thanks', ['ngRoute'])
 .controller('ThanksCtrl', ['$scope', '$location',
  function($scope, $location) {
 
-  $scope.backToWelcome = function() {
-    $location.path('/from');
-    $scope.$apply();
+  $scope.backToForm = function() {
+    $location.path('/form');
   };
 
   var timeout = 10 * 1000;
-  setTimeout($scope.backToWelcome, timeout);
+  setTimeout(function(){
+    $scope.backToForm();
+    $scope.$apply();
+  }, timeout);
 
 }]);
 

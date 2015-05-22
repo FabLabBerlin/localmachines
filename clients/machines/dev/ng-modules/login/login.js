@@ -12,7 +12,7 @@ angular.module('fabsmith.login', ['ngRoute', 'ngCookies'])
 }])
 
 .controller('LoginCtrl', ['$scope', '$http', '$location', function($scope, $http, $location) {
-  
+
   if (window.libnfc) {
     $scope.nfcSupport = true;
 
@@ -58,7 +58,7 @@ angular.module('fabsmith.login', ['ngRoute', 'ngCookies'])
     setTimeout($scope.getNfcUid, 1000);
   }
 
-  // Local login function - if we do it by entering username and 
+  // Local login function - if we do it by entering username and
   // password in the browser
   $scope.login = function() {
     // Attempt to login via API
@@ -103,6 +103,10 @@ angular.module('fabsmith.login', ['ngRoute', 'ngCookies'])
   $scope.onUserDataLoaded = function(userData){
     $scope.$emit('user-login', userData);
     $location.path('/machines');
+  };
+
+  $scope.goToSignUp = function(){
+    window.location = '/signup';
   };
 
   // Make the main controller scope accessible from outside
