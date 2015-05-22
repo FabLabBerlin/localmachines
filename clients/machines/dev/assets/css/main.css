@@ -531,3 +531,8 @@ footer div {
     width: 100%;
   }
 }
+.signup-link {
+  padding: 10px;
+  margin-top: 20px;
+  text-align: center;
+}
