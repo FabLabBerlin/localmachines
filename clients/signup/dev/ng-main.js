@@ -5,7 +5,6 @@
 // Declare app level module which depends on views, and components
 var app = angular.module('fabsmith.signup', [
   'ngRoute',
-  'fabsmith.signup.welcome',
   'fabsmith.signup.form',
   'fabsmith.signup.thanks'
 ]);
@@ -32,7 +31,7 @@ app.controller('MainCtrl', ['$scope', '$location',
   vex.defaultOptions.className = 'vex-theme-custom';
 
   // Redirect
-  $location.path('/welcome');
+  $location.path('/form');
 
 }]);
 
