@@ -239,6 +239,7 @@ CREATE TABLE `user` (
   `vat_rate` int(11) NOT NULL,
   `user_role` varchar(100) NOT NULL DEFAULT 'member',
   `created` datetime DEFAULT NULL,
+  `comments` text DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;

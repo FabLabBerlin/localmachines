@@ -39,6 +39,7 @@ type User struct {
 	VatRate     int
 	UserRole    string    `orm:"size(100)"`
 	Created     time.Time `orm:"type(datetime)"`
+	Comments    string    `orm:"type(text)"`
 }
 
 func (this *User) TableName() string {
