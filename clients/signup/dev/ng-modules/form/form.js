@@ -108,7 +108,7 @@ angular.module('fabsmith.signup.form', ['ngRoute'])
     });
   };
 
-  var numberOfSecondsBeforeResting = 5;
+  var numberOfSecondsBeforeResting = 30;
   // Instant call function
   (function(nbSecToReset){
     // Check for idle time
