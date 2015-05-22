@@ -15,7 +15,7 @@ angular.module('fabsmith.signup.thanks', ['ngRoute'])
  function($scope, $location) {
 
   $scope.backToWelcome = function() {
-    $location.path('/welcome');
+    $location.path('/from');
     $scope.$apply();
   };
 

@@ -14,6 +14,7 @@
             <label for="email">Email address</label>
             <input type="email" class="form-control"
                     id="email" placeholder="Enter E-Mail"
+                    autocomplete="off"
                     ng-model="email">
           </div>
         </div>
@@ -22,6 +23,7 @@
             <label for="company">Company name</label>
             <input type="company" class="form-control"
                     id="company" placeholder="Enter your company name"
+                    autocomplete="off"
                     ng-model="company">
           </div>
         </div>
@@ -33,6 +35,7 @@
             <label for="first_name">First Name</label>
             <input type="text" class="form-control"
                     id="first_name" placeholder="Enter first name"
+                    autocomplete="off"
                     ng-model="firstName">
           </div>
         </div>
@@ -41,6 +44,7 @@
             <label for="last_name">Last Name</label>
             <input type="text" class="form-control"
                     id="last_name" placeholder="Enter last name"
+                    autocomplete="off"
                     ng-model="lastName">
           </div>
         </div>
@@ -50,14 +54,16 @@
         <div class="col-xs-6">
           <div class="form-group">
             <label for="username">Username</label>
-            <input id="username" type="text" class="form-control"
-                   placeholder="Enter Username" ng-model="username">
+            <input type="text" class="form-control"
+                    id="username" placeholder="Enter Username"
+                    autocomplete="off"
+                    ng-model="username">
           </div>
         </div>
       </div>
 
       <div class="row">
-        <div class="col-xs-6 clear">
+        <div class="col-xs-6">
           <label for="password">Password</label>
         </div>
       </div>
@@ -67,6 +73,7 @@
           <div class="form-group">
             <input type="password" class="form-control"
                     id="password" placeholder="Your password"
+                    autocomplete="off"
                     ng-model="password">
           </div>
         </div>
@@ -74,15 +81,29 @@
           <div class="form-group">
             <input type="password" class="form-control"
                     id="password-repeat" placeholder="Repeat your password"
+                    autocomplete="off"
                     ng-model="passwordRepeat">
           </div>
         </div>
       </div>
 
       <div class="row">
+        <div class="col-xs-12">
+          <label for="agb">
+            <input type="checkbox"
+                    id="agb"
+                    ng-model="agb_dpa_agreed">
+              Ja, ich habe die <a ng-click="displayAGB()">AGB</a> und <a ng-click="displayDatenschutzbestimmungen()">Datenschutzbestimmungen</a> von Makea Industries GmbH gelesen und stimme ihnen uneingeschränkt zu.
+          </label>
+        </div>
+      </div>
+
+      <div class="row">
         <div class="col-xs-6">
           <button class="btn btn-lg btn-primary"
-                  ng-click="submitForm()">Sign up !</button>
+                  ng-click="submitForm()">
+            Sign up !
+          </button>
         </div>
       </div>
 
