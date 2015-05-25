@@ -411,7 +411,7 @@ func (this *UsersController) GetUserMachines() {
 	var ruid int64
 	ruid, err = this.GetInt64(":uid")
 	if err != nil {
-		beego.Error("Failed to get :uid")
+		beego.Error("Failed to get :uid", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
