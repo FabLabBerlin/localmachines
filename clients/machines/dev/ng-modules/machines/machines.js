@@ -110,15 +110,11 @@ app.controller('MachinesCtrl',
       params: { ac: new Date().getTime() }
     })
     .success(function(machines){
-      //console.log(machines);
       $scope.onMachinesLoaded(machines);
     })
     .error(function(data, status) {
-      if (status === 401) {
-        alert('Not authorized');
-      } else {
-        alert('Error loading machines');
-      }
+      toastr.error('Failed to load machines');
+      $scope.smartLogout();
     });
   };
 
@@ -134,11 +130,11 @@ app.controller('MachinesCtrl',
       params: { ac: new Date().getTime() }
     })
     .success(function(activations){
-      //console.log(activations);
       $scope.onActivationsLoaded(activations, machines);
     })
     .error(function(data, status){
-      alert('Failed to load active activations');
+      toastr.error('Loading activations failed');
+      $scope.smartLogout();
     });
   };
 
