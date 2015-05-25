@@ -499,6 +499,26 @@ footer div {
 .absolute-bottom {
   width: 100%;
 }
+.scroll-nav {
+  font-size: 40px;
+  line-height: 40px;
+  height: 60px;
+  padding-top: 10px;
+  text-align: center;
+  position: fixed;
+  width: 100%;
+  background: #ffffff;
+}
+.scroll-nav-top {
+  top: 0;
+  left: 0;
+  border-bottom: 2px solid #e6e6e6;
+}
+.scroll-nav-bottom {
+  bottom: 0;
+  left: 0;
+  border-top: 2px solid #e6e6e6;
+}
 @media (min-width: 768px) {
   .login-heading {
     font-size: 30px;

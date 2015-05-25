@@ -24,6 +24,9 @@ app.controller('MachinesCtrl',
  ['$scope', '$http', '$location', '$route', '$cookieStore', 
  function($scope, $http, $location, $route, $cookieStore) {
 
+  $scope.scrollTop = false;
+  $scope.scrollBottom = false;
+
   if (window.libnfc) {
 
     $scope.onNfcError = function(error) {
@@ -48,6 +51,49 @@ app.controller('MachinesCtrl',
 
     // NFC logout functionality is activated N seconds after log in
     $scope.nfcTimeout = setTimeout($scope.activateNfcLogout, 5000);
+
+    $scope.scrollTop = true;
+    $scope.scrollBottom = true;
+    $('.scroll-nav-top').hide();
+    $scope.currentScroll = 0;
+    $scope.scrollStep = $(window).height() / 2;
+  
+    $scope.checkScroll = function() {
+      if ($(window).height() + $scope.currentScroll >= $('html,body').height()) {
+          //$scope.scrollBottom = false;
+          $('.scroll-nav-bottom').slideUp();
+        } else {
+          $('.scroll-nav-bottom').slideDown();
+        }
+  
+        if ($scope.currentScroll <= 0) {
+          $('.scroll-nav-top').slideUp();
+        } else {
+          $('.scroll-nav-top').slideDown();
+        }
+    };
+  
+    $scope.scrollUp = function() {
+      $scope.currentScroll -= $scope.scrollStep;
+      $scope.checkScroll();
+      if ( $scope.currentScroll <= 0 ) {
+        $scope.currentScroll = 0;
+      }
+      $('html,body').animate({
+        scrollTop: $scope.currentScroll
+      }, 'easeOutExpo');
+    };
+  
+    $scope.scrollDown = function() {
+      $scope.currentScroll += $scope.scrollStep;
+      $scope.checkScroll();
+      if ($scope.currentScroll + $(window).height() >= $('html,body').height()) {
+        $scope.currentScroll = $('html,body').height() - $(window).height();
+      }
+      $('html,body').animate({
+        scrollTop: $scope.currentScroll
+      }, 'easeOutExpo');
+    };
   }
 
   // Makes sure that NFC intervals are cleared
@@ -64,7 +110,7 @@ app.controller('MachinesCtrl',
       params: { ac: new Date().getTime() }
     })
     .success(function(machines){
-      console.log(machines);
+      //console.log(machines);
       $scope.onMachinesLoaded(machines);
     })
     .error(function(data, status) {
@@ -88,7 +134,7 @@ app.controller('MachinesCtrl',
       params: { ac: new Date().getTime() }
     })
     .success(function(activations){
-      console.log(activations);
+      //console.log(activations);
       $scope.onActivationsLoaded(activations, machines);
     })
     .error(function(data, status){
