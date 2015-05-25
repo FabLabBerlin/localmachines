@@ -6,10 +6,10 @@
 
 <div class="login">
   <div class="container-fluid">
-    
-    <form name="loginForm" class="login-form" role="form" 
+
+    <form name="loginForm" class="login-form" role="form"
           novalidate ng-submit="loginForm.$valid && login()">
-      
+
       <div class="nfc-login" ng-show="nfcSupport">
         <div class="nfc-login-info-icon">
           <i class="fa fa-credit-card"></i>
@@ -21,10 +21,10 @@
 
       <div class="regular-login" ng-hide="nfcSupport">
         <h2 class="login-heading">Please log in</h2>
-  
-        <input ng-model="username" type="text" class="form-control" 
+
+        <input ng-model="username" type="text" class="form-control"
                placeholder="Username" required autofocus>
-        <input ng-model="password" type="password" class="form-control" 
+        <input ng-model="password" type="password" class="form-control"
                placeholder="Password" required>
         <!-- Don't show the Remember me checkbox while it is not working -->
         <!--
@@ -32,11 +32,19 @@
           <input ng-model="remember" type="checkbox" value="remember-me"> Remember me
         </label>
         -->
-        <button class="btn btn-primary btn-block btn-login" 
+        <button class="btn btn-primary btn-block btn-login"
                 type="submit">Log In</button>
+
+        <div class="signup-link">
+          <button class="btn btn-lg btn-info"
+            ng-click="goToSignUp()">
+            <i class="fa fa-sign-in"></i>
+            Sign up
+          </button>
+        </div>
       </div><!-- /.regular-login -->
     </form>
-  
+
   </div> <!-- /container -->
 </div>
 
