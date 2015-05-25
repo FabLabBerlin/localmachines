@@ -1,8 +1,118 @@
-<div class="container-fluid">
+<header>
+  <div class="container-fluid">
+    <img src="assets/img/logo_fablab_berlin.svg" class="brand-image">
+  </div>
+</header>
 
-  <h2>Signup Form</h2>
-  <p>Add a form here!</p>
-  <button class="btn btn-primary"
-          ng-click="submitForm()">Yes</button>
+<div class="signup">
+  <div class="container-fluid">
+    <div class="signup-form">
 
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="email">Email address</label>
+            <input type="email" class="form-control"
+                    id="email" placeholder="Enter E-Mail"
+                    autocomplete="off"
+                    ng-model="email">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="company">Company name</label>
+            <input type="company" class="form-control"
+                    id="company" placeholder="Enter your company name"
+                    autocomplete="off"
+                    ng-model="company">
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="first_name">First Name</label>
+            <input type="text" class="form-control"
+                    id="first_name" placeholder="Enter first name"
+                    autocomplete="off"
+                    ng-model="firstName">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="last_name">Last Name</label>
+            <input type="text" class="form-control"
+                    id="last_name" placeholder="Enter last name"
+                    autocomplete="off"
+                    ng-model="lastName">
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" class="form-control"
+                    id="username" placeholder="Enter Username"
+                    autocomplete="off"
+                    ng-model="username">
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6">
+          <label for="password">Password</label>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <input type="password" class="form-control"
+                    id="password" placeholder="Your password"
+                    autocomplete="off"
+                    ng-model="password">
+          </div>
+        </div>
+        <div class="col-md-6 clear">
+          <div class="form-group">
+            <input type="password" class="form-control"
+                    id="password-repeat" placeholder="Repeat your password"
+                    autocomplete="off"
+                    ng-model="passwordRepeat">
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <label for="agb">
+            <input type="checkbox"
+                    id="agb"
+                    ng-model="agb_dpa_agreed">
+              Ja, ich habe die <a ng-click="displayAGB()">AGB</a> und <a ng-click="displayDatenschutzbestimmungen()">Datenschutzbestimmungen</a> von Makea Industries GmbH gelesen und stimme ihnen uneingeschränkt zu.
+          </label>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6">
+          <button class="btn btn-lg btn-primary"
+                  ng-click="submitForm()">
+            Sign up !
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
 </div>
+
+<footer class="absolute-bottom">
+  <div class="container-fluid">
+    <i class="fa fa-copyright"></i> Fab Lab Berlin 2015
+  </div>
+</footer>
