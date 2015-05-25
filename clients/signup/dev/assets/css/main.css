@@ -1,3 +1,65 @@
+/* Bootstrap overrides */
+.btn {
+  border-radius: 0;
+  border: none;
+}
+.btn-primary {
+  background: #a3cc52;
+}
+.btn-primary:hover,
+.btn-primary:active,
+.btn-primary:focus,
+.btn-primary:visited {
+  background: #8ab536;
+}
+.btn-danger {
+  background: #e66767;
+}
+.btn-danger:hover,
+.btn-danger:active,
+.btn-danger:focus,
+.btn-danger:visited {
+  background: #df3b3b;
+}
+/* Add icon button missing in Bootstrap */
+.btn-ico,
+.btn-ico:hover,
+.btn-ico:active,
+.btn-ico:focus,
+.btn-ico:visited {
+  background: transparent;
+  /* Remove the default Bootstrap glow on button click */
+  outline: none !important;
+  box-shadow: none !important;
+}
+.btn-ico {
+  padding: 0;
+  font-size: 20px;
+  line-height: 1;
+}
+.btn-ico {
+  color: #a6a6a6;
+}
+.btn-ico:hover {
+  color: #8d8d8d;
+}
+.btn-ico.btn-primary {
+  color: #a3cc52;
+}
+.btn-ico.btn-primary:hover {
+  color: #8ab536;
+}
+.btn-ico.btn-danger {
+  color: #e66767;
+}
+.btn-ico.btn-danger:hover {
+  color: #df3b3b;
+}
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  border-radius: 0;
+}
 /* Dashboard Styling */
 header {
   border-bottom: 2px solid #e6e6e6;
@@ -25,19 +87,6 @@ footer div {
   padding-top: 25px;
   padding-bottom: 25px;
 }
-@media (min-width: 768px) {
-  .absolute-bottom {
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-  }
-  .signup {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    -ms-transform: translateY(-50%);
-    -webkit-transform: translateY(-50%);
-    width: 100%;
-  }
+.agb-label {
+  font-weight: normal;
 }
