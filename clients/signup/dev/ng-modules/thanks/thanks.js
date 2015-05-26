@@ -18,13 +18,11 @@ angular.module('fabsmith.signup.thanks', ['ngRoute'])
     $location.path('/form');
   };
 
-  /*
   var timeout = 10 * 1000;
   setTimeout(function(){
     $scope.backToForm();
     $scope.$apply();
   }, timeout);
-*/
 
 }]);
 

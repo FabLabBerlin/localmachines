@@ -261,12 +261,10 @@ footer div {
   text-align: center;
 }
 .signup-thanks h2 {
-  line-height: 60px;
+  line-height: 1.2;
 }
 .signup-thanks .fa {
   color: #a3cc52;
-  font-size: 60px;
-  vertical-align: top;
 }
 .signup-thanks p {
   vertical-align: middle;
