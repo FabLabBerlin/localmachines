@@ -7,6 +7,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/kr15h/fabsmith/docs"
 	_ "github.com/kr15h/fabsmith/routers"
+	"github.com/astaxie/beego/context"
 )
 
 func main() {
@@ -24,7 +25,20 @@ func main() {
 	// Config default files directory
 	beego.StaticDir["/files"] = "files"
 
+	// Routing https
+	beego.InsertFilter("/", beego.BeforeRouter, RedirectHttp)  // for http://mysite
+
 	beego.Run()
+}
+
+var RedirectHttp = func(ctx *context.Context) {
+	HttpsEnabled, err := beego.AppConfig.Bool("EnableHttpTLS")
+	if HttpsEnabled && err == nil {
+    if !ctx.Input.IsSecure() {
+        url := "https://" + ctx.Input.Domain() + ":" + beego.AppConfig.String("HttpsPort") + ctx.Input.Uri()
+        ctx.Redirect(302, url)
+    }
+	}
 }
 
 func configClients() {
