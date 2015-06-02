@@ -109,15 +109,11 @@ angular.module('fabsmith.signup.form', ['ngRoute'])
   };
 
   var numberOfSecondsBeforeResting = 30;
-  // Instant call function
   (function(nbSecToReset){
-    // Check for idle time
     var idleTime = 0;
     $(document).ready(function () {
-      //Increment the idle time counter every minute.
-      var idleInterval = setInterval(timerIncrement, /*60*/ 1 * 1000); // 1 minute
+      var idleInterval = setInterval(timerIncrement, 1000);
 
-      //Zero the idle timer on mouse movement or a keypress.
       $(this).mousemove(function (e) {
         idleTime = 0;
       });
@@ -128,7 +124,6 @@ angular.module('fabsmith.signup.form', ['ngRoute'])
 
     function timerIncrement() {
       idleTime = idleTime + 1;
-      // After 5 minutes we reset the form
       if (idleTime > (nbSecToReset-1)) {
         $scope.email = "";
         $scope.company = "";
