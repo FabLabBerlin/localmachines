@@ -96,7 +96,7 @@ app.controller('MachinesCtrl',
     };
 
     $scope.watchingActivity = false;
-    $scope.numberOfSecondsBeforeLogOut = 5;
+    $scope.numberOfSecondsBeforeLogOut = 30;
     (function(nbSecLogOut){
       var idleTime = 0;
       $(document).ready(function () {
