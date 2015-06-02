@@ -95,35 +95,37 @@ app.controller('MachinesCtrl',
       }, 'easeOutExpo');
     };
 
-    var numberOfSecondsBeforeLogOut = 30;
+    $scope.watchingActivity = false;
+    $scope.numberOfSecondsBeforeLogOut = 5;
     (function(nbSecLogOut){
       var idleTime = 0;
       $(document).ready(function () {
-        //Increment the idle time counter every minute.
-        var idleInterval = setInterval(timerIncrement, 1000); // 1 second
+        if(!$scope.watchingActivity){
+          $scope.watchingActivity = true;
+          $scope.idleInterval = setInterval(timerIncrement, 1000);
 
-        //Zero the idle timer on mouse movement or a keypress.
-        $(this).mousemove(function (e) {
-          idleTime = 0;
-        });
-        $(this).keypress(function (e) {
-          idleTime = 0;
-        });
+          $(this).mousemove(function (e) {
+            idleTime = 0;
+          });
+          $(this).keypress(function (e) {
+            idleTime = 0;
+          });
+        }
       });
 
       function timerIncrement() {
         idleTime = idleTime + 1;
         if (idleTime > (nbSecLogOut-1)) {
           toastr.info('Inactivity time out reached. If you want to manage the machines you can log in again.');
-          idleTime = 0;
           $scope.smartLogout();
         }
       }
-    })(numberOfSecondsBeforeLogOut);
+    })($scope.numberOfSecondsBeforeLogOut);
   }
 
   // Makes sure that NFC intervals are cleared
   $scope.smartLogout = function() {
+    clearInterval($scope.idleInterval);
     clearTimeout($scope.nfcTimeout);
     $scope.logout();
   };
