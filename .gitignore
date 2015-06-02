@@ -8,3 +8,4 @@ lastupdate.tmp
 routers/commentsRouter_github_com_kr15h_fabsmith_controllers.go
 files/*
 !files/README.md
+cert/
