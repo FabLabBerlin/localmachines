@@ -10,7 +10,7 @@ var MACHINE_STATUS_UNAVAILABLE = 'unavailable';
 
 // Our local app variable for the module
 
-var app = angular.module('fabsmith.machines', 
+var app = angular.module('fabsmith.machines',
   ['ngRoute', 'fabsmithFilters']);
 
 app.config(['$routeProvider', function($routeProvider) {
@@ -20,8 +20,8 @@ app.config(['$routeProvider', function($routeProvider) {
   });
 }]);
 
-app.controller('MachinesCtrl', 
- ['$scope', '$http', '$location', '$route', '$cookieStore', 
+app.controller('MachinesCtrl',
+ ['$scope', '$http', '$location', '$route', '$cookieStore',
  function($scope, $http, $location, $route, $cookieStore) {
 
   $scope.scrollTop = false;
@@ -57,7 +57,7 @@ app.controller('MachinesCtrl',
     $('.scroll-nav-top').hide();
     $scope.currentScroll = 0;
     $scope.scrollStep = $(window).height() / 2;
-  
+
     $scope.checkScroll = function() {
       if ($(window).height() + $scope.currentScroll >= $('html,body').height()) {
           //$scope.scrollBottom = false;
@@ -65,14 +65,14 @@ app.controller('MachinesCtrl',
         } else {
           $('.scroll-nav-bottom').slideDown();
         }
-  
+
         if ($scope.currentScroll <= 0) {
           $('.scroll-nav-top').slideUp();
         } else {
           $('.scroll-nav-top').slideDown();
         }
     };
-  
+
     $scope.scrollUp = function() {
       $scope.currentScroll -= $scope.scrollStep;
       $scope.checkScroll();
@@ -83,7 +83,7 @@ app.controller('MachinesCtrl',
         scrollTop: $scope.currentScroll
       }, 'easeOutExpo');
     };
-  
+
     $scope.scrollDown = function() {
       $scope.currentScroll += $scope.scrollStep;
       $scope.checkScroll();
@@ -94,6 +94,32 @@ app.controller('MachinesCtrl',
         scrollTop: $scope.currentScroll
       }, 'easeOutExpo');
     };
+
+    var numberOfSecondsBeforeLogOut = 30;
+    (function(nbSecLogOut){
+      var idleTime = 0;
+      $(document).ready(function () {
+        //Increment the idle time counter every minute.
+        var idleInterval = setInterval(timerIncrement, 1000); // 1 second
+
+        //Zero the idle timer on mouse movement or a keypress.
+        $(this).mousemove(function (e) {
+          idleTime = 0;
+        });
+        $(this).keypress(function (e) {
+          idleTime = 0;
+        });
+      });
+
+      function timerIncrement() {
+        idleTime = idleTime + 1;
+        if (idleTime > (nbSecLogOut-1)) {
+          toastr.info('Inactivity time out reached. If you want to manage the machines you can log in again.');
+          idleTime = 0;
+          $scope.smartLogout();
+        }
+      }
+    })(numberOfSecondsBeforeLogOut);
   }
 
   // Makes sure that NFC intervals are cleared
@@ -118,7 +144,7 @@ app.controller('MachinesCtrl',
     });
   };
 
-  $scope.userFullName = $cookieStore.get('FirstName') + 
+  $scope.userFullName = $cookieStore.get('FirstName') +
     ' ' + $cookieStore.get('LastName');
   $scope.machines = [];
   $scope.loadMachines();
@@ -153,7 +179,7 @@ app.controller('MachinesCtrl',
     // Got activations
     // Add status vars to machines
     for (var mchIter = 0; mchIter < machines.length; mchIter++) {
-      
+
       // TODO: figure out simpler way for indicating machine status
       machines[mchIter].available = false;
       machines[mchIter].used = false;
@@ -164,13 +190,13 @@ app.controller('MachinesCtrl',
         machines[mchIter].available = true;
         machines[mchIter].unavailable = false;
       } else {
-        
+
         // If machine is not available it means that
-        // it is either occupied by someone else, 
+        // it is either occupied by someone else,
         // unavailable or used by the user logged
         for (var actIter = 0; actIter < activations.length; actIter++) {
           if (activations[actIter].MachineId === machines[mchIter].Id) {
-            
+
             var activationStartTime;
             var timeNow;
             var activationElapsedTime;
@@ -187,9 +213,9 @@ app.controller('MachinesCtrl',
 
               // What we also need is to start the counter interval
               // Start timer for elapsed time
-              machines[mchIter].ActivationSecondsElapsed = 
+              machines[mchIter].ActivationSecondsElapsed =
                   $scope.getActivationElapsedSeconds(activations[actIter]);
-              machines[mchIter].activationInterval = 
+              machines[mchIter].activationInterval =
                 setInterval($scope.updateElapsedTime, 1000, mchIter);
 
             } else {
@@ -199,15 +225,15 @@ app.controller('MachinesCtrl',
               machines[mchIter].unavailable = false;
               machines[mchIter].OccupiedByUserId = activations[actIter].UserId;
               machines[mchIter].ActivationId = activations[actIter].Id;
-              machines[mchIter].UserAdmin = 
+              machines[mchIter].UserAdmin =
                 ($cookieStore.get('UserRole') === 'admin');
-              
+
               // But, if logged as admin, we can also set the activation ID
               // and elapsed time
               if ( machines[mchIter].UserAdmin ) {
-                machines[mchIter].ActivationSecondsElapsed = 
+                machines[mchIter].ActivationSecondsElapsed =
                   $scope.getActivationElapsedSeconds(activations[actIter]);
-                machines[mchIter].activationInterval = 
+                machines[mchIter].activationInterval =
                   setInterval($scope.updateElapsedTime, 1000, mchIter);
               }
 
@@ -277,18 +303,18 @@ app.controller('MachinesCtrl',
 
         // Machine found condition
         if ($scope.machines[machineIter].Id === machineId) {
-          
+
           // Refresh data of the new activation
           $scope.machines[machineIter].ActivationSecondsElapsed = 0;
           $scope.machines[machineIter].OccupiedByUserId = parseInt( $cookieStore.get('Id') );
           $scope.machines[machineIter].ActivationId = data.ActivationId;
           $scope.machines[machineIter].available = false;
           $scope.machines[machineIter].used = true;
-  
+
           // Start timer for elapsed time
-          $scope.machines[machineIter].activationInterval = 
+          $scope.machines[machineIter].activationInterval =
             setInterval($scope.updateElapsedTime, 1000, machineIter);
-  
+
           // Exit the machine finding for loop
           break;
         }
@@ -306,14 +332,14 @@ app.controller('MachinesCtrl',
     vex.dialog.buttons.NO.text = 'No';
 
     vex.dialog.confirm({
-      message: 'Do you really want to stop the activation for <b>' + 
+      message: 'Do you really want to stop the activation for <b>' +
         machine.Name + '</b>?',
       callback: $scope.deactivatePromptCallback.bind(this, machine)
     });
   };
 
   $scope.deactivatePromptCallback = function(machine, value) {
-    if (value) {    
+    if (value) {
       $scope.deactivate(machine);
     }
   };
@@ -327,7 +353,7 @@ app.controller('MachinesCtrl',
     $scope.showGlobalLoader();
 
     $http({
-      method: 'PUT', 
+      method: 'PUT',
       url: '/api/activations/' + machine.ActivationId,
       params: { ac: new Date().getTime() }
     })
@@ -350,7 +376,7 @@ app.directive('fsMachineItem', function() {
     templateUrl: 'ng-modules/machines/machine-item.html',
     restrict: 'E',
     controller: ['$scope', '$element', function($scope, $element) {
-      
+
       $scope.infoVisible = false;
 
       if ($scope.infoVisible) {
@@ -384,7 +410,7 @@ app.directive('fsMachineBodyUsed', function() {
     templateUrl: 'ng-modules/machines/machine-body-used.html',
     restrict: 'E',
     controller: ['$scope', function($scope){
-      
+
       if ($scope.machine.Status === MACHINE_STATUS_USED) {
         $scope.machine.activationInterval = setInterval(function() {
           $scope.machine.ActivationSecondsElapsed++;
