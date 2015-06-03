@@ -101,8 +101,9 @@ angular.module('fabsmith.login', ['ngRoute', 'ngCookies'])
   };
 
   $scope.onUserDataLoaded = function(userData){
-    $scope.$emit('user-login', userData);
-    $location.path('/machines');
+    $scope.$emit('user-login', userData, function(){
+      $location.path('/machines');
+    });
   };
 
   $scope.goToSignUp = function(){

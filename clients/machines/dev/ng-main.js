@@ -12,9 +12,9 @@ var app = angular.module('fabsmith', [
   'fabsmith.version'
 ]);
 
-// This checks whether an user is logged in always before 
+// This checks whether an user is logged in always before
 // switching to a new view
-app.run(['$rootScope', '$location', '$http', 
+app.run(['$rootScope', '$location', '$http',
   function($rootScope, $location, $http) {
 
   // On each location change
@@ -22,8 +22,8 @@ app.run(['$rootScope', '$location', '$http',
 
     // Get requested angular path
     var newPath = newUrl.split('#')[1];
-    
-    // If it is not login (main) view, 
+
+    // If it is not login (main) view,
     // check if the user is logged in
     if (newPath !== '/login') {
       $http({
@@ -69,7 +69,7 @@ app.config(['$httpProvider', function($httpProvider) {
 }]);
 
 // Main controller, checks if user logged in
-app.controller('MainCtrl', ['$scope', '$http', '$location', '$cookieStore', '$cookies', 
+app.controller('MainCtrl', ['$scope', '$http', '$location', '$cookieStore', '$cookies',
 function($scope, $http, $location, $cookieStore, $cookies){
 
   // Configure toastr default location
@@ -89,8 +89,11 @@ function($scope, $http, $location, $cookieStore, $cookies){
       }
     }
   };
-  $scope.$on('user-login', function (event, data){
+  $scope.$on('user-login', function (event, data, callback){
     $scope.putUserData(data);
+    if(callback){
+      callback();
+    }
   });
 
   // Clear user data on user logout
