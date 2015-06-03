@@ -50,7 +50,7 @@ app.controller('MachinesCtrl',
     };
 
     // NFC logout functionality is activated N seconds after log in
-    $scope.nfcTimeout = setTimeout($scope.activateNfcLogout, 5000);
+    $scope.nfcTimeout = setTimeout($scope.activateNfcLogout, 1000);
 
     $scope.scrollTop = true;
     $scope.scrollBottom = true;
