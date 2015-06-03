@@ -125,6 +125,12 @@ app.controller('MachinesCtrl',
 
   // Makes sure that NFC intervals are cleared
   $scope.smartLogout = function() {
+    // Clearing timers of all machines
+    $.map($scope.machines, function(machine, i){
+      if(machine.activationInterval !== undefined){
+        clearInterval(machine.activationInterval);
+      }
+    });
     clearInterval($scope.idleInterval);
     clearTimeout($scope.nfcTimeout);
     $scope.logout();
