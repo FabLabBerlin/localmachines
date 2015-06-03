@@ -52,14 +52,18 @@ app.controller('MachinesCtrl',
     // NFC logout functionality is activated N seconds after log in
     $scope.nfcTimeout = setTimeout($scope.activateNfcLogout, 1000);
 
-    $scope.scrollTop = true;
-    $scope.scrollBottom = true;
-    $('.scroll-nav-top').hide();
-    $scope.currentScroll = 0;
-    $scope.scrollStep = $(window).height() / 2;
+    setTimeout(function(){
+      $scope.scrollTop = true;
+      $scope.scrollBottom = true;
+      $('.scroll-nav-top').hide();
+      $scope.currentScroll = 0;
+      $scope.scrollStep = $(window).height() / 2;
+      $scope.checkScroll();
+    }, 200);
 
     $scope.checkScroll = function() {
-      if ($(window).height() + $scope.currentScroll >= $('html,body').height()) {
+      if($(window).height() < $("html, body").height()){
+        if ($(window).height() + $scope.currentScroll >= $('html,body').height()) {
           //$scope.scrollBottom = false;
           $('.scroll-nav-bottom').slideUp();
         } else {
@@ -71,6 +75,10 @@ app.controller('MachinesCtrl',
         } else {
           $('.scroll-nav-top').slideDown();
         }
+      } else {
+        $('.scroll-nav-top').hide();
+        $('.scroll-nav-bottom').hide();
+      }
     };
 
     $scope.scrollUp = function() {
