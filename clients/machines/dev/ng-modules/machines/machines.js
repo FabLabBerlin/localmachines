@@ -39,7 +39,7 @@ app.controller('MachinesCtrl',
     $scope.onNfc = function(uid) {
       window.libnfc.cardRead.disconnect($scope.onNfc);
       window.libnfc.cardReaderError.disconnect($scope.onNfcError);
-      $scope.logout();
+      $scope.smartLogout();
     };
 
     $scope.activateNfcLogout = function() {
