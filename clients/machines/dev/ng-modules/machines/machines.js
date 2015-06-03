@@ -217,8 +217,6 @@ app.controller('MachinesCtrl',
               // Start timer for elapsed time
               machines[mchIter].ActivationSecondsElapsed =
                   $scope.getActivationElapsedSeconds(activations[actIter]);
-              machines[mchIter].activationInterval =
-                setInterval($scope.updateElapsedTime, 1000, mchIter);
 
             } else {
 
@@ -235,8 +233,6 @@ app.controller('MachinesCtrl',
               if ( machines[mchIter].UserAdmin ) {
                 machines[mchIter].ActivationSecondsElapsed =
                   $scope.getActivationElapsedSeconds(activations[actIter]);
-                machines[mchIter].activationInterval =
-                  setInterval($scope.updateElapsedTime, 1000, mchIter);
               }
 
               // Get user name
@@ -412,8 +408,7 @@ app.directive('fsMachineBodyUsed', function() {
     templateUrl: 'ng-modules/machines/machine-body-used.html',
     restrict: 'E',
     controller: ['$scope', function($scope){
-
-      if ($scope.machine.Status === MACHINE_STATUS_USED) {
+      if ($scope.machine.used) {
         $scope.machine.activationInterval = setInterval(function() {
           $scope.machine.ActivationSecondsElapsed++;
           $scope.$apply();
