@@ -150,7 +150,6 @@ app.controller('MachineCtrl',
     .error(function() {
       toastr.error('Failed to create hexabus mapping');
     });
-    
   };
 
   $scope.deleteHexabusMappingPrompt = function() {
@@ -189,6 +188,24 @@ app.controller('MachineCtrl',
     })
     .error(function() {
       toastr.error('Failed to delete mapping');
+    });
+  };
+
+  // The UrlSwitch
+  $scope.createUrlSwitchMapping = function() {
+    $http({
+      method: 'POST',
+      url: '/api/urlswitch',
+      params: {
+        mid: $scope.machine.Id,
+        ac: new Date().getTime()
+      }
+    })
+    .success(function(mappingId) {
+      toastr.success('UrlSwitch mapping created');
+    })
+    .error(function() {
+      toastr.error('Failed to create UrlSwitch mapping');
     });
   };
 

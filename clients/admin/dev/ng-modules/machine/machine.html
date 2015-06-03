@@ -124,13 +124,27 @@
       
     </div>
 
-
     <!-- If mapping and IP are not set, this is visible -->
     <div class="col-sm-3" ng-hide="hexabusMapping">
       <div class="form-group">
         <label>Hexabus Mapping</label>
         <button class="btn btn-primary btn-block"
                 ng-click="createHexabusMapping()">
+          <i class="fa fa-plus"></i>
+          &nbsp;Create Mapping
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /.row -->
+
+  <div class="row">
+
+    <div class="col-sm-3">
+      <div class="form-group">
+        <label>UrlSwitch Mapping</label>
+        <button class="btn btn-primary btn-block"
+                ng-click="createUrlSwitchMapping()">
           <i class="fa fa-plus"></i>
           &nbsp;Create Mapping
         </button>
