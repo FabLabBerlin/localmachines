@@ -39,7 +39,7 @@ CREATE TABLE `activations` (
   `invoiced` tinyint(1) NOT NULL,
   `changed` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=346 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -88,7 +88,7 @@ CREATE TABLE `hexaswitch` (
   `machine_id` int(11) NOT NULL,
   `switch_ip` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -115,7 +115,7 @@ CREATE TABLE `invoices` (
   `period_from` datetime DEFAULT NULL,
   `period_to` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -191,6 +191,32 @@ INSERT INTO `membership` VALUES (1,'6 Months Basic','6MB',160,'days',400,50,'[1,
 UNLOCK TABLES;
 
 --
+-- Table structure for table `netswitch`
+--
+
+DROP TABLE IF EXISTS `netswitch`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `netswitch` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `machine_id` int(11) unsigned NOT NULL,
+  `url_on` varchar(255) NOT NULL DEFAULT '',
+  `url_off` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `netswitch`
+--
+
+LOCK TABLES `netswitch` WRITE;
+/*!40000 ALTER TABLE `netswitch` DISABLE KEYS */;
+INSERT INTO `netswitch` VALUES (7,1,'asdasd','asdasd');
+/*!40000 ALTER TABLE `netswitch` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `permission`
 --
 
@@ -239,7 +265,7 @@ CREATE TABLE `user` (
   `created` datetime DEFAULT NULL,
   `comments` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -266,7 +292,7 @@ CREATE TABLE `user_membership` (
   `start_date` datetime NOT NULL,
   `end_date` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -312,4 +338,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-05-26 22:00:00
+-- Dump completed on 2015-06-04 19:58:28
