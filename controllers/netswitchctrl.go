@@ -77,3 +77,36 @@ func (this *NetSwitchController) Create() {
 	this.Data["json"] = mappingId
 	this.ServeJson()
 }
+
+// @Title Delete
+// @Description Delete NetSwitch mapping by by machine ID
+// @Param	mid		path 	int	true		"Machine ID"
+// @Success 200 string ok
+// @Failure	500	Internal Server Error
+// @Failure	401	Not authorized
+// @router /:mid [delete]
+func (this *NetSwitchController) Delete() {
+
+	if !this.IsAdmin() {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	var err error
+	var mid int64
+
+	mid, err = this.GetInt64(":mid")
+	if err != nil {
+		beego.Error("Failed to get :mid:", err)
+		this.CustomAbort(403, "Internal Server Error")
+	}
+
+	err = models.DeleteNetSwitchMapping(mid)
+	if err != nil {
+		beego.Error("Failed to delete NetSwitch mapping:", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	this.Data["json"] = "ok"
+	this.ServeJson()
+}

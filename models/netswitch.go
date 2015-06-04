@@ -46,3 +46,21 @@ func GetNetSwitchMapping(machineId int64) (*NetSwitchMapping, error) {
 	}
 	return &mapping, nil
 }
+
+func DeleteNetSwitchMapping(machineId int64) error {
+	mapping, err := GetNetSwitchMapping(machineId)
+	if err != nil {
+		return err
+	}
+
+	var num int64
+
+	o := orm.NewOrm()
+	num, err = o.Delete(mapping)
+	if err != nil {
+		return err
+	}
+
+	beego.Trace("Affected num rows:", num)
+	return nil
+}
