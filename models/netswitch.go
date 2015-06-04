@@ -35,3 +35,14 @@ func CreateNetSwitchMapping(machineId int64) (int64, error) {
 	}
 	return id, nil
 }
+
+func GetNetSwitchMapping(machineId int64) (*NetSwitchMapping, error) {
+	mapping := NetSwitchMapping{}
+	mapping.MachineId = machineId
+	o := orm.NewOrm()
+	err := o.Read(&mapping, "MachineId")
+	if err != nil {
+		return &mapping, err
+	}
+	return &mapping, nil
+}
