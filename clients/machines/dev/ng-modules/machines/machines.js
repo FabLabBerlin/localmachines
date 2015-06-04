@@ -131,6 +131,11 @@ app.controller('MachinesCtrl',
     })($scope.numberOfSecondsBeforeLogOut);
   }
 
+  // Reloading machines every 1 second
+  $scope.reloadMachinesInterval = setInterval(function(){
+    $scope.loadMachines();
+  }, 1000);
+
   // Makes sure that NFC intervals are cleared
   $scope.smartLogout = function() {
     // Clearing timers of all machines
@@ -139,6 +144,7 @@ app.controller('MachinesCtrl',
         clearInterval(machine.activationInterval);
       }
     });
+    clearInterval($scope.reloadMachinesInterval);
     clearInterval($scope.idleInterval);
     clearTimeout($scope.nfcTimeout);
     $scope.logout();
