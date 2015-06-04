@@ -309,7 +309,7 @@ app.controller('MachineCtrl',
   };
 
   $scope.machineImageReplace = function() {
-    toastr.info('machineImageReplace()');
+    toastr.info('Uploading machine image...');
     $http({
       method: 'POST',
       url: '/api/machines/' + $scope.machine.Id + '/image',
@@ -319,7 +319,13 @@ app.controller('MachineCtrl',
       },
       params: {
         ac: new Date().getTime()
-      }
+      },
+    })
+    .success(function(){
+      toastr.success('Machine image successfully uploaded');
+    })
+    .error(function(){
+      toastr.error('Uploading machine image failed');
     });
   };
 
