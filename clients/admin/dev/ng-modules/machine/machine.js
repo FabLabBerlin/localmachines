@@ -191,21 +191,21 @@ app.controller('MachineCtrl',
     });
   };
 
-  // The UrlSwitch
-  $scope.createUrlSwitchMapping = function() {
+  // The NetSwitch
+  $scope.createNetSwitchMapping = function() {
     $http({
       method: 'POST',
-      url: '/api/urlswitch',
+      url: '/api/netswitch',
       params: {
         mid: $scope.machine.Id,
         ac: new Date().getTime()
       }
     })
     .success(function(mappingId) {
-      toastr.success('UrlSwitch mapping created');
+      toastr.success('NetSwitch mapping created');
     })
     .error(function() {
-      toastr.error('Failed to create UrlSwitch mapping');
+      toastr.error('Failed to create NetSwitch mapping');
     });
   };
 
