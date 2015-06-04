@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/astaxie/beego"
+	"github.com/kr15h/fabsmith/models"
 )
 
 type NetSwitchController struct {
@@ -31,16 +32,14 @@ func (this *NetSwitchController) Create() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	/*
-		var mappingId int64
+	var mappingId int64
 
-		mappingId, err = models.CreateHexabusMapping(mid)
-		if err != nil {
-			beego.Error("Failed to create hexabus mapping:", err)
-			this.CustomAbort(403, "Failed to create mapping")
-		}
-	*/
+	mappingId, err = models.CreateNetSwitchMapping(mid)
+	if err != nil {
+		beego.Error("Failed to create NetSwitch mapping:", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
 
-	this.Data["json"] = mid
+	this.Data["json"] = mappingId
 	this.ServeJson()
 }
