@@ -219,10 +219,49 @@ app.controller('MachineCtrl',
       }
     })
     .success(function(mappingId) {
-      toastr.success('NetSwitch mapping created');
+      $scope.getNetSwitchMapping();
     })
     .error(function() {
       toastr.error('Failed to create NetSwitch mapping');
+    });
+  };
+
+  $scope.deleteNetSwitchMappingPrompt = function() {
+    var token = randomToken.generate();
+    vex.dialog.prompt({
+      message: 'Enter <span class="delete-prompt-token">' + 
+       token + '</span> to delete',
+      placeholder: 'Token',
+      callback: $scope.deleteNetSwitchMappingPromptCallback.bind(this, token)
+    });
+  };
+
+  $scope.deleteNetSwitchMappingPromptCallback = function(expectedToken, value) {
+    if (value) {    
+      if (value === expectedToken) {
+        $scope.deleteNetSwitchMapping();
+      } else {
+        toastr.error('Wrong token');
+      }
+    } else if (value !== false) {
+      toastr.error('No token');
+    }
+  };
+
+  $scope.deleteNetSwitchMapping = function() {
+    $http({
+      method: 'DELETE',
+      url: '/api/netswitch/' + $scope.machine.Id,
+      params: {
+        ac: new Date().getTime()
+      }
+    })
+    .success(function() {
+      toastr.success('Mapping deleted');
+      delete $scope.netSwitchMapping;
+    })
+    .error(function() {
+      toastr.error('Failed to delete mapping');
     });
   };
 

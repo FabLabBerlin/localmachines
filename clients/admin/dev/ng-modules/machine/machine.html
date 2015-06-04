@@ -88,6 +88,7 @@
 
   </div><!-- /.row -->
 
+  <!-- Hexabus -->
   <div class="row">
     
     <!-- If mapping and IP are set, this is visible -->
@@ -121,7 +122,6 @@
           </div>
         </div>
       </div>
-      
     </div>
 
     <!-- If mapping and IP are not set, this is visible -->
@@ -138,10 +138,54 @@
 
   </div><!-- /.row -->
 
+  <!-- NetSwitch -->
   <div class="row">
 
-    <div class="col-sm-3" ng-show="netSwitchMapping">
-      {{netSwitchMapping.UrlOn}} / {{netSwitchMaping.UrlOff}}
+    <div class="col-sm-9" ng-show="netSwitchMapping">
+      <label for="machine-hexabus-ip">NetSwitch Config</label>
+      <div class="row">
+
+        <div class="col-sm-4">
+          <div class="form-group">
+            <input type="text" id="machine-netswitch-url-on" 
+                   class="form-control"
+                   placeholder="On URL"
+                   ng-model="netSwitchMapping.UrlOn"
+                   ng-change="netSwitchMappingChanged=true">
+          </div>
+        </div>
+
+        <div class="col-sm-4">
+          <div class="form-group">
+            <input type="text" id="machine-netswitch-url-off" 
+                   class="form-control"
+                   placeholder="Off URL"
+                   ng-model="netSwitchMapping.UrlOff"
+                   ng-change="hexabusMappingChanged=true">
+          </div>
+        </div>
+        
+        <div class="col-sm-4" ng-hide="netSwitchMappingChanged">
+          <div class="form-group">
+            <button class="btn btn-danger btn-block"
+                    ng-click="deleteNetSwitchMappingPrompt()">
+              <i class="fa fa-remove"></i>
+              &nbsp;Delete Mapping
+            </button>
+          </div>
+        </div>
+        
+        <div class="col-sm-4" ng-show="netSwitchMappingChanged">
+          <div class="form-group">
+            <button class="btn btn-primary btn-block"
+                    ng-click="updateNetSwitchMapping()">
+              <i class="fa fa-remove"></i>
+              &nbsp;Update Mapping
+            </button>
+          </div>
+        </div>
+      
+      </div>
     </div>
 
     <div class="col-sm-3" ng-hide="netSwitchMapping">
