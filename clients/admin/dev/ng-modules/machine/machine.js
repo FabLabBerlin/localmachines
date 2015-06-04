@@ -265,6 +265,31 @@ app.controller('MachineCtrl',
     });
   };
 
+  // Update the mapping with fresh IP
+  $scope.updateNetSwitchMapping = function () {
+    if ($scope.netSwitchMapping) {
+      $http({
+        method: 'PUT',
+        url: '/api/netswitch/' + $scope.machine.Id,
+        headers: {'Content-Type': 'application/json' },
+        data: $scope.netSwitchMapping,
+        transformRequest: function(data) {
+          return JSON.stringify(data);
+        },
+        params: {
+          ac: new Date().getTime()
+        }
+      })
+      .success(function() {
+        $scope.netSwitchMappingChanged = false;
+        toastr.success('NetSwitch mapping updated');
+      })
+      .error(function() {
+        toastr.error('Failed to update NetSwitch mapping');
+      });
+    }
+  };
+
   // cf. http://stackoverflow.com/q/17922557/485185
   // There is also a plugin for <input type="file"> on change events.
   $scope.machineImageLoad = function(o) {
