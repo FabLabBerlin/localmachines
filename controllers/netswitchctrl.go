@@ -4,7 +4,7 @@ import (
 	"github.com/astaxie/beego"
 )
 
-type UrlSwitchController struct {
+type NetSwitchController struct {
 	Controller
 }
 
@@ -15,7 +15,7 @@ type UrlSwitchController struct {
 // @Failure	500	Internal Server Error
 // @Failure	401	Not authorized
 // @router / [post]
-func (this *UrlSwitchController) Create() {
+func (this *NetSwitchController) Create() {
 
 	if !this.IsAdmin() {
 		beego.Error("Not authorized")

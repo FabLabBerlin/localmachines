@@ -46,9 +46,9 @@ func init() {
 				&controllers.InvoicesController{},
 			),
 		),
-		beego.NSNamespace("/urlswitch",
+		beego.NSNamespace("/netswitch",
 			beego.NSInclude(
-				&controllers.UrlSwitchController{},
+				&controllers.NetSwitchController{},
 			),
 		),
 	)
