@@ -36,6 +36,7 @@ app.controller('MachineCtrl',
     $scope.machine = data;
     $scope.machine.Price = $filter('currency')($scope.machine.Price,'',2);
     $scope.getHexabusMapping();
+    $scope.getNetSwitchMapping();
     if ($scope.machine.Image) {
       $scope.machineImageFile = "/files/" + $scope.machine.Image;
     }
@@ -192,6 +193,22 @@ app.controller('MachineCtrl',
   };
 
   // The NetSwitch
+  // TODO: Create another module for this
+
+  $scope.getNetSwitchMapping = function() {
+    $http({
+      method: 'GET',
+      url: '/api/netswitch/' + $scope.machine.Id,
+      params: {
+        ac: new Date().getTime()
+      }
+    })
+    .success(function(mappingModel) {
+      $scope.netSwitchMapping = mappingModel;
+      $scope.netSwitchMappingChanged = false;
+    }); // no error - the mapping will just not be visible
+  };
+
   $scope.createNetSwitchMapping = function() {
     $http({
       method: 'POST',

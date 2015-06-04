@@ -140,7 +140,11 @@
 
   <div class="row">
 
-    <div class="col-sm-3">
+    <div class="col-sm-3" ng-show="netSwitchMapping">
+      {{netSwitchMapping.UrlOn}} / {{netSwitchMaping.UrlOff}}
+    </div>
+
+    <div class="col-sm-3" ng-hide="netSwitchMapping">
       <div class="form-group">
         <label>NetSwitch Mapping</label>
         <button class="btn btn-primary btn-block"
