@@ -239,6 +239,21 @@ func (this *ActivationsController) Create() {
 		}
 	}
 
+	// Check if NetSwitch mapping exists
+	var netSwitchMapping *models.NetSwitchMapping = nil
+	netSwitchMapping, err = models.GetNetSwitchMapping(machineId)
+	if err != nil {
+		beego.Error("Failed to get NetSwitch mapping")
+	} else if netSwitchMapping != nil {
+		if err = netSwitchMapping.On(); err != nil {
+			beego.Error("Failed to turn on netswitch:", err)
+			if err = models.DeleteActivation(activationId); err != nil {
+				beego.Error("Failed to delete activation")
+			}
+			this.CustomAbort(500, "Internal Server Error")
+		}
+	}
+
 	response := models.ActivationCreateResponse{}
 	response.ActivationId = activationId
 	this.Data["json"] = response
@@ -280,6 +295,17 @@ func (this *ActivationsController) Close() {
 	}
 
 	go deactivateMachineAfterTimeout(machineId, deactivateTimeout)
+
+	// Check if NetSwitch mapping exists
+	var netSwitchMapping *models.NetSwitchMapping = nil
+	netSwitchMapping, err = models.GetNetSwitchMapping(machineId)
+	if err != nil {
+		beego.Error("Failed to get NetSwitch mapping")
+	} else if netSwitchMapping != nil {
+		if err = netSwitchMapping.Off(); err != nil {
+			beego.Error("Failed to turn off netswitch:", err)
+		}
+	}
 
 	statusResponse := models.StatusResponse{}
 	statusResponse.Status = "ok"
