@@ -273,6 +273,31 @@ func (this *ActivationsController) Close() {
 		beego.Error("Failed to get :aid")
 		this.CustomAbort(403, "Failed to close activation")
 	}
+
+	var machineId int64
+	machineId, err = models.GetActivationMachineId(aid)
+	if err != nil {
+		beego.Error("Failed to get machine ID")
+		this.CustomAbort(403, "Failed to close activation")
+	}
+
+	// Attempt to switch off the machine first. This is a way to detect
+	// network errors early as the users won't be able to end their activation
+	// unless the error in the network is fixed.
+	var netSwitch *models.NetSwitchMapping = nil
+	netSwitch, err = models.GetNetSwitchMapping(machineId)
+	if err != nil {
+		beego.Error("Failed to get NetSwitch mapping")
+	} else if netSwitch != nil {
+		if err = netSwitch.Off(); err != nil {
+			beego.Error("Failed to turn off netswitch:", err)
+			// Abort here if user is NOT admin.
+			if !this.IsAdmin() {
+				this.CustomAbort(500, "Internal Server Error")
+			}
+		}
+	}
+
 	err = models.CloseActivation(aid)
 	if err != nil {
 		beego.Error("Failed to close activation")
@@ -287,25 +312,7 @@ func (this *ActivationsController) Close() {
 		deactivateTimeout = 30
 	}
 
-	var machineId int64
-	machineId, err = models.GetActivationMachineId(aid)
-	if err != nil {
-		beego.Error("Failed to get machine ID")
-		this.CustomAbort(403, "Failed to close activation")
-	}
-
 	go deactivateMachineAfterTimeout(machineId, deactivateTimeout)
-
-	// Check if NetSwitch mapping exists
-	var netSwitchMapping *models.NetSwitchMapping = nil
-	netSwitchMapping, err = models.GetNetSwitchMapping(machineId)
-	if err != nil {
-		beego.Error("Failed to get NetSwitch mapping")
-	} else if netSwitchMapping != nil {
-		if err = netSwitchMapping.Off(); err != nil {
-			beego.Error("Failed to turn off netswitch:", err)
-		}
-	}
 
 	statusResponse := models.StatusResponse{}
 	statusResponse.Status = "ok"
