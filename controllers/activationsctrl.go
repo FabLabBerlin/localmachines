@@ -207,6 +207,21 @@ func (this *ActivationsController) Create() {
 		}
 	}
 
+	// Before creating an activation, try to switch on the NetSwitch
+	var netSwitchMapping *models.NetSwitchMapping = nil
+	netSwitchMapping, err = models.GetNetSwitchMapping(machineId)
+	if err != nil {
+		beego.Error("Failed to get NetSwitch mapping")
+	} else if netSwitchMapping != nil {
+		if err = netSwitchMapping.On(); err != nil {
+			beego.Error("Failed to turn on netswitch:", err)
+			//if err = models.DeleteActivation(activationId); err != nil {
+			//	beego.Error("Failed to delete activation")
+			//}
+			this.CustomAbort(500, "Internal Server Error")
+		}
+	}
+
 	// Continue with creating activation
 	var activationId int64
 	activationId, err = models.CreateActivation(machineId, userId)
@@ -236,21 +251,6 @@ func (this *ActivationsController) Create() {
 				beego.Error("Failed to delete activation")
 			}
 			this.CustomAbort(403, "Failed to create activation")
-		}
-	}
-
-	// Check if NetSwitch mapping exists
-	var netSwitchMapping *models.NetSwitchMapping = nil
-	netSwitchMapping, err = models.GetNetSwitchMapping(machineId)
-	if err != nil {
-		beego.Error("Failed to get NetSwitch mapping")
-	} else if netSwitchMapping != nil {
-		if err = netSwitchMapping.On(); err != nil {
-			beego.Error("Failed to turn on netswitch:", err)
-			if err = models.DeleteActivation(activationId); err != nil {
-				beego.Error("Failed to delete activation")
-			}
-			this.CustomAbort(500, "Internal Server Error")
 		}
 	}
 
