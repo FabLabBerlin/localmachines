@@ -9,6 +9,7 @@ import (
 	"github.com/astaxie/beego/orm"
 	"golang.org/x/crypto/scrypt"
 	"io"
+	"strings"
 	"time"
 )
 
@@ -103,8 +104,16 @@ func CreateUser(user *User) (userId int64, er error) {
 func AuthenticateUser(username, password string) (int64, error) {
 	authModel := Auth{}
 	o := orm.NewOrm()
-	err := o.Raw("SELECT hash, salt FROM auth INNER JOIN user ON auth.user_id = user.id WHERE user.username = ?",
-		username).QueryRow(&authModel)
+	var err error
+	query := "SELECT hash, salt FROM auth INNER JOIN user ON auth.user_id = user.id"
+	if strings.Contains(username, "@") {
+		beego.Info("query by email")
+		err = o.Raw(query+" WHERE user.email = ?", username).QueryRow(&authModel)
+	} else {
+		beego.Info("query by user name")
+		err = o.Raw(query+" WHERE user.username = ?", username).QueryRow(&authModel)
+	}
+
 	if err != nil {
 		beego.Error("Could not read into AuthModel:", err)
 		return 0, err
@@ -122,7 +131,13 @@ func AuthenticateUser(username, password string) (int64, error) {
 	isAuthSuccessful := hex.EncodeToString(hash) == authModel.Hash
 	if isAuthSuccessful {
 		user := User{}
-		err := o.QueryTable("user").Filter("username", username).One(&user, "id")
+		var err error
+		query := o.QueryTable("user")
+		if strings.Contains(username, "@") {
+			err = query.Filter("email", username).One(&user, "id")
+		} else {
+			err = query.Filter("username", username).One(&user, "id")
+		}
 		if err != nil {
 			beego.Error("Could not get user ID for user", username)
 			return 0, errors.New("Failed to authenticate")
