@@ -264,7 +264,9 @@ CREATE TABLE `user` (
   `user_role` varchar(100) NOT NULL DEFAULT 'member',
   `created` datetime DEFAULT NULL,
   `comments` text,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE (`username`),
+  UNIQUE (`email`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

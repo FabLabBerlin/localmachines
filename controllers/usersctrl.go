@@ -5,6 +5,7 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/kr15h/fabsmith/models"
+	"strings"
 	"time"
 )
 
@@ -319,9 +320,16 @@ func (this *UsersController) Put() {
 	}
 
 	err := models.UpdateUser(&req.User)
+	beego.Info("err: ", err)
+	beego.Info("er msg: ", err.Error())
 	if err != nil {
-		beego.Error("Failed to update user:", err)
-		this.CustomAbort(403, "lastAdmin")
+		if strings.Contains(err.Error(), "Error 1062") {
+			beego.Error("Failed to update user due to duplicate entry:", err)
+			this.CustomAbort(400, "duplicateEntry")
+		} else {
+			beego.Error("Failed to update user:", err)
+			this.CustomAbort(403, "lastAdmin")
+		}
 	}
 }
 
