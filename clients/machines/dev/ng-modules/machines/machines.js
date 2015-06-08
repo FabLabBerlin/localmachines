@@ -37,8 +37,6 @@ app.controller('MachinesCtrl',
     };
 
     $scope.onNfc = function(uid) {
-      window.libnfc.cardRead.disconnect($scope.onNfc);
-      window.libnfc.cardReaderError.disconnect($scope.onNfcError);
       $scope.smartLogout();
     };
 
@@ -138,6 +136,11 @@ app.controller('MachinesCtrl',
 
   // Makes sure that NFC intervals are cleared
   $scope.smartLogout = function() {
+    // Disconnecting events from the nfc reader
+    if(window.libnfc) {
+      window.libnfc.cardRead.disconnect($scope.onNfc);
+      window.libnfc.cardReaderError.disconnect($scope.onNfcError);
+    }
     // Clearing timers of all machines
     $.map($scope.machines, function(machine, i){
       if(machine.activationInterval !== undefined){
