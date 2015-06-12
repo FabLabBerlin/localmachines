@@ -203,24 +203,27 @@ app.controller('MachinesCtrl',
 
     // Got activations
     // Add status vars to machines
-    for (var mchIter = 0; mchIter < machines.length; mchIter++) {
+    $scope.machines = _.map(machines, function(machine, i) {
+      if (machine.Image) {
+        machine.ImageUrl = '/files/' + machine.Image;
+      }
 
       // TODO: figure out simpler way for indicating machine status
-      machines[mchIter].available = false;
-      machines[mchIter].used = false;
-      machines[mchIter].occupied = false;
-      machines[mchIter].unavailable = true;
+      machine.available = false;
+      machine.used = false;
+      machine.occupied = false;
+      machine.unavailable = true;
 
-      if (machines[mchIter].Available) {
-        machines[mchIter].available = true;
-        machines[mchIter].unavailable = false;
+      if (machine.Available) {
+        machine.available = true;
+        machine.unavailable = false;
       } else {
 
         // If machine is not available it means that
         // it is either occupied by someone else,
         // unavailable or used by the user logged
         for (var actIter = 0; actIter < activations.length; actIter++) {
-          if (activations[actIter].MachineId === machines[mchIter].Id) {
+          if (activations[actIter].MachineId === machine.Id) {
 
             var activationStartTime;
             var timeNow;
@@ -229,42 +232,42 @@ app.controller('MachinesCtrl',
             if ($cookieStore.get('Id') === activations[actIter].UserId) {
 
               // Machine is being used by logged user
-              machines[mchIter].used = true;
-              machines[mchIter].unavailable = false;
+              machine.used = true;
+              machine.unavailable = false;
 
               // Assign other activation related data to the machine object
-              machines[mchIter].OccupiedByUserId = activations[actIter].UserId;
-              machines[mchIter].ActivationId = activations[actIter].Id;
+              machine.OccupiedByUserId = activations[actIter].UserId;
+              machine.ActivationId = activations[actIter].Id;
 
               // What we also need is to start the counter interval
               // Start timer for elapsed time
-              machines[mchIter].ActivationSecondsElapsed =
+              machine.ActivationSecondsElapsed =
                   $scope.getActivationElapsedSeconds(activations[actIter]);
 
             } else {
 
               // Machine is being used by someone else
-              machines[mchIter].occupied = true;
-              machines[mchIter].unavailable = false;
-              machines[mchIter].OccupiedByUserId = activations[actIter].UserId;
-              machines[mchIter].ActivationId = activations[actIter].Id;
-              machines[mchIter].UserAdmin =
+              machine.occupied = true;
+              machine.unavailable = false;
+              machine.OccupiedByUserId = activations[actIter].UserId;
+              machine.ActivationId = activations[actIter].Id;
+              machine.UserAdmin =
                 ($cookieStore.get('UserRole') === 'admin');
 
               // But, if logged as admin, we can also set the activation ID
               // and elapsed time
-              if ( machines[mchIter].UserAdmin ) {
-                machines[mchIter].ActivationSecondsElapsed =
+              if ( machine.UserAdmin ) {
+                machine.ActivationSecondsElapsed =
                   $scope.getActivationElapsedSeconds(activations[actIter]);
               }
 
               // Get user name
-              $scope.getOccupierName(machines[mchIter], activations[actIter].UserId);
+              $scope.getOccupierName(machine, activations[actIter].UserId);
             }
           }
         } // for activations
       } // if machine available else
-    } // for machines
+    }); // for machines
 
     $scope.machines = machines;
   };

@@ -362,6 +362,10 @@ footer div {
   border-top: 1px solid #FFFFFF;
   padding-top: 15px;
 }
+.machine-image {
+  height: 200px;
+  width: 200px;
+}
 .machine-info-content {
   padding-top: 15px;
 }
