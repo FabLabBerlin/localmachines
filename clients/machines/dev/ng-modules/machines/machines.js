@@ -144,7 +144,10 @@ app.controller('MachinesCtrl',
     // Clearing timers of all machines
     $.map($scope.machines, function(machine, i){
       if(machine.activationInterval !== undefined){
+        console.log('smartLogout: clear activation interval machine ID: ' + 
+          machine.Id);
         clearInterval(machine.activationInterval);
+        machine.activationInterval = 0;
       }
     });
     clearInterval($scope.reloadMachinesInterval);
@@ -201,11 +204,19 @@ app.controller('MachinesCtrl',
 
   $scope.onActivationsLoaded = function(activations, machines){
 
+    // Backup existing machine data
+    var machinesBackup = $scope.machines;
+
     // Got activations
     // Add status vars to machines
     $scope.machines = _.map(machines, function(machine, i) {
       if (machine.Image) {
         machine.ImageUrl = '/files/' + machine.Image;
+      }
+
+      // Transfer the activation interval from previous machine instance
+      if (machinesBackup[i]) {
+        machine.activationInterval = machinesBackup[i].activationInterval;
       }
 
       // TODO: figure out simpler way for indicating machine status
@@ -336,8 +347,12 @@ app.controller('MachinesCtrl',
           $scope.machines[machineIter].used = true;
 
           // Start timer for elapsed time
-          $scope.machines[machineIter].activationInterval =
-            setInterval($scope.updateElapsedTime, 1000, machineIter);
+          if (!$scope.machines[machineIter].activationInterval) {
+            console.log('activate: set activation interval machine ID: ' + 
+              $scope.machines[machineIter].Id);
+            $scope.machines[machineIter].activationInterval =
+              setInterval($scope.updateElapsedTime, 1000, machineIter);
+          }
 
           // Exit the machine finding for loop
           break;
@@ -371,7 +386,10 @@ app.controller('MachinesCtrl',
   $scope.deactivate = function(machine) {
 
     // Stop activation timer interval
+    console.log('deactivate: clear activation interval machine ID: ' + 
+      machine.Id);
     clearInterval(machine.activationInterval);
+    machine.activationInterval = 0;
 
     // Show loader
     $scope.showGlobalLoader();
@@ -435,10 +453,16 @@ app.directive('fsMachineBodyUsed', function() {
     restrict: 'E',
     controller: ['$scope', function($scope){
       if ($scope.machine.used) {
-        $scope.machine.activationInterval = setInterval(function() {
-          $scope.machine.ActivationSecondsElapsed++;
-          $scope.$apply();
-        }, 1000);
+        console.log('fsMachineBodyUsed: machine.activationInterval before: ' + $scope.machine.activationInterval);
+        if (!$scope.machine.activationInterval) {
+          console.log('fsMachineBodyUsed: set activation interval machine ID ' + 
+            $scope.machine.Id);
+          $scope.machine.activationInterval = setInterval(function() {
+            $scope.machine.ActivationSecondsElapsed++;
+            $scope.$apply();
+          }, 1000);
+          console.log('fsMachineBodyUsed: machine.activationInterval after: ' + $scope.machine.activationInterval);
+        }
       }
 
     }]
@@ -459,10 +483,17 @@ app.directive('fsMachineBodyOccupied', function() {
 
         // Activate occupied machine timer if user is admin or staff
         if (user.Admin) {
-          $scope.machine.activationInterval = setInterval(function() {
-            $scope.machine.ActivationSecondsElapsed++;
-            $scope.$apply();
-          }, 1000);
+          console.log('fsMachineBodyOccupied: machine.activationInterval before: ' + $scope.machine.activationInterval);
+          if (!$scope.machine.activationInterval) {
+            console.log('fsMachineBodyOccupied: set activation interval machine ID: ' + 
+              $scope.machine.Id);
+            $scope.machine.activationInterval = setInterval(function() {
+              $scope.machine.ActivationSecondsElapsed++;
+              $scope.$apply();
+            }, 1000);
+            console.log('fsMachineBodyOccupied: machine.activationInterval after: ' + $scope.machine.activationInterval);
+          }
+          
         }
 
       }
