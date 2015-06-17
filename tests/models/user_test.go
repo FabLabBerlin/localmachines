@@ -305,3 +305,26 @@ func TestGetAllUsers(t *testing.T) {
 		})
 	})
 }
+
+func TestUpdateUser(t *testing.T) {
+	Convey("Testing UpdateUser", t, func() {
+		u := models.User{
+			Username: "test",
+		}
+		Convey("Creating a user and try to modify FirstName", func() {
+			uid, _ := models.CreateUser(&u)
+			defer models.DeleteUser(uid)
+			user, _ := models.GetUser(uid)
+
+			user.FirstName = "YOLO"
+			err := models.UpdateUser(user)
+			So(err, ShouldBeNil)
+			user, _ = models.GetUser(user.Id)
+			So(user.FirstName, ShouldEqual, "YOLO")
+		})
+		Convey("Try updating non-existing user", func() {
+			err := models.UpdateUser(&u)
+			So(err, ShouldNotBeNil)
+		})
+	})
+}
