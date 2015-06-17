@@ -62,6 +62,27 @@ func init() {
 	orm.RegisterDataBase("default", "mysql", mysqlConnString)
 }
 
+func TestDeleteUser(t *testing.T) {
+	Convey("Testing Delete user", t, func() {
+		u := models.User{
+			FirstName: "test",
+			LastName:  "test",
+		}
+		Convey("Creating User and delete it", func() {
+			// Creating user
+			uc, err := models.CreateUser(&u)
+			So(err, ShouldBeNil)
+			So(uc, ShouldBeGreaterThan, 0)
+			err = models.DeleteUser(uc)
+			So(err, ShouldBeNil)
+		})
+		Convey("Try to delete non-existing user", func() {
+			err := models.DeleteUser(0)
+			So(err, ShouldNotBeNil)
+		})
+	})
+}
+
 func TestUserCreate(t *testing.T) {
 	Convey("Testing CreateUser", t, func() {
 		u := models.User{
@@ -71,15 +92,14 @@ func TestUserCreate(t *testing.T) {
 		Convey("Creating one user into database", func() {
 			// Creating user
 			uc, err := models.CreateUser(&u)
+			defer models.DeleteUser(uc)
 			So(err, ShouldBeNil)
 			So(uc, ShouldBeGreaterThan, 0)
-
-			// Deleting user for nexts tests
-			models.DeleteUser(uc)
 		})
 		Convey("Creating 2 users that are identical into database, should get an error", func() {
 			// Creating first user
 			uc, err := models.CreateUser(&u)
+			defer models.DeleteUser(uc)
 			So(err, ShouldBeNil)
 			So(uc, ShouldBeGreaterThan, 0)
 
@@ -87,9 +107,29 @@ func TestUserCreate(t *testing.T) {
 			uc2, err2 := models.CreateUser(&u)
 			So(err2, ShouldNotBeNil)
 			So(uc2, ShouldEqual, 0)
+		})
+	})
+}
 
-			// Deleting user for nexts tests
-			models.DeleteUser(uc)
+func TestDeleteUserAuth(t *testing.T) {
+	Convey("Testing DeleteUserAuth", t, func() {
+		u := models.User{
+			Username: "test",
+		}
+		Convey("Creating user with password and delete his Auth", func() {
+			uid, err := models.CreateUser(&u)
+			defer models.DeleteUser(uid)
+
+			So(err, ShouldBeNil)
+			So(uid, ShouldBeGreaterThan, 0)
+			err = models.AuthSetPassword(uid, "test")
+			So(err, ShouldBeNil)
+			err = models.DeleteUserAuth(uid)
+			So(err, ShouldBeNil)
+		})
+		Convey("Delete auth on non-existing user", func() {
+			err := models.DeleteUserAuth(0)
+			So(err, ShouldNotBeNil)
 		})
 	})
 }
