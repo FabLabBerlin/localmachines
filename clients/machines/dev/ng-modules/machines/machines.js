@@ -209,7 +209,7 @@ app.controller('MachinesCtrl',
 
     // Got activations
     // Add status vars to machines
-    $scope.machines = _.map(machines, function(machine, i) {
+    _.map(machines, function(machine, i) {
       if (machine.Image) {
         machine.ImageUrl = '/files/' + machine.Image;
       }
@@ -280,7 +280,40 @@ app.controller('MachinesCtrl',
       } // if machine available else
     }); // for machines
 
-    $scope.machines = machines;
+    if ($scope.machines.length > 0 &&
+      $scope.machines.length === machines.length) {
+      console.log('Checking for changes in the newly loaded machines');
+      // Iterate over existing machines and search for changes
+      _.each($scope.machines, function(machine, i) {
+        if (machines[i].available !== machine.available ||
+          machines[i].occupied !== machine.occupied ||
+          machines[i].used !== machine.used ||
+          machines[i].unavailable !== machine.unavailable) {
+          console.log('Change found, updating $scope.machines[i]');
+          $scope.machines[i] = machines[i];
+          if (machines[i].used || machines[i].occupied) {
+            
+            // Start the elapsed time timer if it became occupied or used
+            if ($scope.machines[i].activationInterval !== 0) {
+              console.log('Start activation timer for machine ID: ' + 
+                $scope.machines[i].Id);
+              $scope.machines[i].activationInterval = setInterval(
+                $scope.updateElapsedTime, 1000, i);
+            }
+          } else {
+            
+            // Else destroy the timer
+            console.log('Stop activation timer for machine ID: ' + 
+              $scope.machines[i].Id);
+            clearInterval($scope.machines[i].activationInterval);
+            $scope.machines[i].activationInterval = 0;
+          }
+        }
+      });
+    } else {
+      console.log('Assigning the newly loaded machines to $scope.machines the first time');
+      $scope.machines = machines;
+    }
   };
 
   $scope.getActivationElapsedSeconds = function(activation){
