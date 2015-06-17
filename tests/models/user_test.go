@@ -20,6 +20,9 @@ func init() {
 	apppath, _ := filepath.Abs(filepath.Dir(filepath.Join(file, ".."+string(filepath.Separator)+".."+string(filepath.Separator))))
 	beego.TestBeegoInit(apppath)
 
+	// Setting log level
+	beego.SetLevel(beego.LevelError)
+
 	// Force Runmode to "test"
 	beego.RunMode = "test"
 
