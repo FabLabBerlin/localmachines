@@ -328,3 +328,55 @@ func TestUpdateUser(t *testing.T) {
 		})
 	})
 }
+
+func TestCreateUserPermission(t *testing.T) {
+	Convey("Testing CreateUserPermission", t, func() {
+		u := models.User{
+			Username: "test",
+		}
+		Convey("Creating one UserPermission", func() {
+			uid, _ := models.CreateUser(&u)
+			defer models.DeleteUser(uid)
+
+			err := models.CreateUserPermission(uid, 0)
+			So(err, ShouldBeNil)
+		})
+	})
+}
+
+func TestDeleteUserPermission(t *testing.T) {
+	Convey("Testing DeleteUserPermission", t, func() {
+		u := models.User{
+			Username: "test",
+		}
+		Convey("Creating one UserPermission and delete it", func() {
+			uid, _ := models.CreateUser(&u)
+			defer models.DeleteUser(uid)
+			models.CreateUserPermission(uid, 0)
+
+			err := models.DeleteUserPermission(uid, 0)
+			So(err, ShouldBeNil)
+		})
+	})
+}
+
+func TestUpdateUserPermission(t *testing.T) {
+	Convey("Testing UpdateUserPermission", t, func() {
+		u := models.User{
+			Username: "test",
+		}
+		Convey("Creating one User and update his permission", func() {
+			uid, _ := models.CreateUser(&u)
+			defer models.DeleteUser(uid)
+
+			perms := &[]models.Permission{
+				models.Permission{UserId: uid, MachineId: 0},
+				models.Permission{UserId: uid, MachineId: 1},
+				models.Permission{UserId: uid, MachineId: 2},
+				models.Permission{UserId: uid, MachineId: 3},
+			}
+			err := models.UpdateUserPermissions(uid, perms)
+			So(err, ShouldBeNil)
+		})
+	})
+}
