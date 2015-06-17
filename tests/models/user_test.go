@@ -93,3 +93,36 @@ func TestUserCreate(t *testing.T) {
 		})
 	})
 }
+
+func TestAuthenticateUser(t *testing.T) {
+	Convey("Testing AuthenticateUser", t, func() {
+		u := models.User{
+			Username: "test",
+		}
+		Convey("Creating a user and setting him a password", func() {
+			uid, err := models.CreateUser(&u)
+			defer models.DeleteUser(uid)
+
+			So(err, ShouldBeNil)
+			So(uid, ShouldBeGreaterThan, 0)
+			err = models.AuthSetPassword(uid, "test")
+			So(err, ShouldBeNil)
+
+		})
+
+		Convey("Creating a user with a password and try to authenticate him", func() {
+			uid, err := models.CreateUser(&u)
+			defer models.DeleteUser(uid)
+
+			So(err, ShouldBeNil)
+			So(uid, ShouldBeGreaterThan, 0)
+			err = models.AuthSetPassword(uid, "test")
+			So(err, ShouldBeNil)
+
+			authUID, err := models.AuthenticateUser("test", "test")
+			So(authUID, ShouldEqual, uid)
+			So(err, ShouldBeNil)
+
+		})
+	})
+}
