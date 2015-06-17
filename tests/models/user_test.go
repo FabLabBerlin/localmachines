@@ -93,3 +93,113 @@ func TestUserCreate(t *testing.T) {
 		})
 	})
 }
+
+func TestAuthenticateUser(t *testing.T) {
+	Convey("Testing AuthenticateUser", t, func() {
+		u := models.User{
+			Username: "test",
+		}
+		Convey("Creating a user and setting him a password", func() {
+			uid, err := models.CreateUser(&u)
+			defer models.DeleteUser(uid)
+
+			So(err, ShouldBeNil)
+			So(uid, ShouldBeGreaterThan, 0)
+			err = models.AuthSetPassword(uid, "test")
+			defer models.DeleteUserAuth(uid)
+			So(err, ShouldBeNil)
+		})
+		Convey("Creating a user with a password and try to authenticate him", func() {
+			uid, err := models.CreateUser(&u)
+			defer models.DeleteUser(uid)
+
+			So(err, ShouldBeNil)
+			So(uid, ShouldBeGreaterThan, 0)
+			err = models.AuthSetPassword(uid, "test")
+			defer models.DeleteUserAuth(uid)
+			So(err, ShouldBeNil)
+
+			authUID, err := models.AuthenticateUser("test", "test")
+			So(authUID, ShouldEqual, uid)
+			So(err, ShouldBeNil)
+		})
+		Convey("Creating a user with a password and try to authenticate with wrong username", func() {
+			uid, err := models.CreateUser(&u)
+			defer models.DeleteUser(uid)
+
+			So(err, ShouldBeNil)
+			So(uid, ShouldBeGreaterThan, 0)
+			err = models.AuthSetPassword(uid, "test")
+			defer models.DeleteUserAuth(uid)
+			So(err, ShouldBeNil)
+
+			authUID, err := models.AuthenticateUser("wrong", "test")
+			So(authUID, ShouldEqual, 0)
+			So(err, ShouldNotBeNil)
+		})
+		Convey("Creating a user with a password and try to authenticate with wrong password", func() {
+			uid, err := models.CreateUser(&u)
+			defer models.DeleteUser(uid)
+
+			So(err, ShouldBeNil)
+			So(uid, ShouldBeGreaterThan, 0)
+			err = models.AuthSetPassword(uid, "test")
+			defer models.DeleteUserAuth(uid)
+			So(err, ShouldBeNil)
+
+			authUID, err := models.AuthenticateUser("test", "wrong")
+			So(authUID, ShouldEqual, 0)
+			So(err, ShouldNotBeNil)
+		})
+	})
+}
+
+func TestAuthenticateUserUID(t *testing.T) {
+	Convey("Testing AuthenticateUser", t, func() {
+		u := models.User{
+			Username: "test",
+		}
+		Convey("Creating a user and setting him a NFC UID", func() {
+			uid, err := models.CreateUser(&u)
+			defer models.DeleteUser(uid)
+
+			So(err, ShouldBeNil)
+			So(uid, ShouldBeGreaterThan, 0)
+			err = models.AuthSetPassword(uid, "test")
+			defer models.DeleteUserAuth(uid)
+			So(err, ShouldBeNil)
+			err = models.AuthUpdateNfcUid(uid, "123456")
+			So(err, ShouldBeNil)
+		})
+		Convey("Creating a user with a NFC UID and try to authenticate him", func() {
+			uid, err := models.CreateUser(&u)
+			defer models.DeleteUser(uid)
+
+			So(err, ShouldBeNil)
+			So(uid, ShouldBeGreaterThan, 0)
+			err = models.AuthSetPassword(uid, "test")
+			defer models.DeleteUserAuth(uid)
+			So(err, ShouldBeNil)
+			err = models.AuthUpdateNfcUid(uid, "123456")
+			So(err, ShouldBeNil)
+			_, authUID, err := models.AuthenticateUserUid("123456")
+			So(authUID, ShouldEqual, uid)
+			So(err, ShouldBeNil)
+		})
+		Convey("Creating a user with a NFC UID and try to authenticate him with wrong UID", func() {
+			uid, err := models.CreateUser(&u)
+			defer models.DeleteUser(uid)
+
+			So(err, ShouldBeNil)
+			So(uid, ShouldBeGreaterThan, 0)
+			err = models.AuthSetPassword(uid, "test")
+			defer models.DeleteUserAuth(uid)
+			So(err, ShouldBeNil)
+			err = models.AuthUpdateNfcUid(uid, "123456")
+			So(err, ShouldBeNil)
+			_, authUID, err := models.AuthenticateUserUid("654321")
+			So(authUID, ShouldEqual, 0)
+			So(err, ShouldNotBeNil)
+		})
+	})
+}
