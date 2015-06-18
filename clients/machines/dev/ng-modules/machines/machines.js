@@ -287,30 +287,27 @@ app.controller('MachinesCtrl',
           machines[i].occupied !== machine.occupied ||
           machines[i].used !== machine.used ||
           machines[i].unavailable !== machine.unavailable) {
+          
           console.log('Change found, updating $scope.machines[i]');
-          $scope.machines[i] = machines[i];
-          if (machines[i].used || machines[i].occupied) {
-            
-            // Stop interval if there is one
-            if ($scope.machines[i].activationInterval !== 0) {
-              clearInterval($scope.machines[i].activationInterval);
-              $scope.machines[i].activationInterval = 0;
-            }
 
-            // Start the elapsed time timer if it became occupied or used
-            console.log('Start activation timer for machine ID: ' + 
-              $scope.machines[i].Id);
-            $scope.machines[i].activationInterval = setInterval(
-              $scope.updateElapsedTime, 1000, i);
-            
-          } else {
-            
-            // Else destroy the timer
-            console.log('Stop activation timer for machine ID: ' + 
-              $scope.machines[i].Id);
+          // Stop interval if there is one
+          if ($scope.machines[i].activationInterval !== 0) {
             clearInterval($scope.machines[i].activationInterval);
             $scope.machines[i].activationInterval = 0;
           }
+
+          // Stop interval if there is one
+          if (machines[i].activationInterval !== 0) {
+            clearInterval(machines[i].activationInterval);
+            machines[i].activationInterval = 0;
+          }
+
+          $scope.machines[i] = machines[i];
+          if (machines[i].used || machines[i].occupied) {
+            $scope.machines[i].activationInterval = setInterval(
+              $scope.updateElapsedTime, 1000, i);
+          }
+
         }
       });
     } else {
