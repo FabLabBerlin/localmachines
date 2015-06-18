@@ -51,17 +51,6 @@ func GetAllMemberships() (memberships []*Membership, err error) {
 	return
 }
 
-// Get single membership from database using membership unique ID
-func GetMembership(membershipId int64) (*Membership, error) {
-	membership := &Membership{Id: membershipId}
-	o := orm.NewOrm()
-	err := o.Read(membership)
-	if err != nil {
-		return membership, err
-	}
-	return membership, nil
-}
-
 // Creates a new membership in the database
 func CreateMembership(membershipName string) (int64, error) {
 	o := orm.NewOrm()
@@ -73,6 +62,17 @@ func CreateMembership(membershipName string) (int64, error) {
 	} else {
 		return 0, err
 	}
+}
+
+// Get single membership from database using membership unique ID
+func GetMembership(membershipId int64) (*Membership, error) {
+	membership := &Membership{Id: membershipId}
+	o := orm.NewOrm()
+	err := o.Read(membership)
+	if err != nil {
+		return membership, err
+	}
+	return membership, nil
 }
 
 // Updates membership in the database
