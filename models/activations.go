@@ -164,6 +164,18 @@ func CreateActivation(machineId, userId int64) (int64, error) {
 		return 0, errors.New("Duplicate activations found")
 	}
 
+	// Check if the machine is available
+	machineAvailable := o.QueryTable(mch.TableName()).
+		Filter("Id", machineId).
+		Filter("Available", true).
+		Exist()
+
+	beego.Trace("machineAvailable:", machineAvailable)
+
+	if !machineAvailable {
+		return 0, fmt.Errorf("Machine ID %s not available", machineId)
+	}
+
 	// Beego model time stuff is bad, here we use workaround that works.
 	// TODO: explore the beego ORM time management,
 	// try to fix or use as it should be used.
