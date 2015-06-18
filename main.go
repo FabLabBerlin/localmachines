@@ -3,11 +3,11 @@ package main
 import (
 	"fmt"
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/context"
 	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/kr15h/fabsmith/docs"
 	_ "github.com/kr15h/fabsmith/routers"
-	"github.com/astaxie/beego/context"
 )
 
 func main() {
@@ -17,16 +17,14 @@ func main() {
 	configDatabase()
 
 	// Config automatic API docs
-	if beego.RunMode == "dev" {
-		beego.DirectoryIndex = true
-		beego.StaticDir["/swagger"] = "swagger"
-	}
+	beego.DirectoryIndex = true
+	beego.StaticDir["/swagger"] = "swagger"
 
 	// Config default files directory
 	beego.StaticDir["/files"] = "files"
 
 	// Routing https
-	beego.InsertFilter("/", beego.BeforeRouter, RedirectHttp)  // for http://mysite
+	beego.InsertFilter("/", beego.BeforeRouter, RedirectHttp) // for http://mysite
 
 	beego.Run()
 }
@@ -34,10 +32,10 @@ func main() {
 var RedirectHttp = func(ctx *context.Context) {
 	HttpsEnabled, err := beego.AppConfig.Bool("EnableHttpTLS")
 	if HttpsEnabled && err == nil {
-    if !ctx.Input.IsSecure() {
-        url := "https://" + ctx.Input.Domain() + ":" + beego.AppConfig.String("HttpsPort") + ctx.Input.Uri()
-        ctx.Redirect(302, url)
-    }
+		if !ctx.Input.IsSecure() {
+			url := "https://" + ctx.Input.Domain() + ":" + beego.AppConfig.String("HttpsPort") + ctx.Input.Uri()
+			ctx.Redirect(302, url)
+		}
 	}
 }
 
