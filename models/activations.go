@@ -125,6 +125,14 @@ func GetActiveActivations() ([]*Activation, error) {
 		return nil, errors.New("Failed to get active activations")
 	}
 	beego.Trace("Got num activations:", num)
+
+	// Calculate total time for all activations
+	for i := 0; i < len(activations); i++ {
+		timeNow := time.Now()
+		activations[i].TimeTotal =
+			int(timeNow.Sub(activations[i].TimeStart).Seconds())
+	}
+
 	return activations, nil
 }
 
@@ -154,6 +162,18 @@ func CreateActivation(machineId, userId int64) (int64, error) {
 	if numDuplicates > 0 {
 		beego.Error("Duplicate activations found:", numDuplicates)
 		return 0, errors.New("Duplicate activations found")
+	}
+
+	// Check if the machine is available
+	machineAvailable := o.QueryTable(mch.TableName()).
+		Filter("Id", machineId).
+		Filter("Available", true).
+		Exist()
+
+	beego.Trace("machineAvailable:", machineAvailable)
+
+	if !machineAvailable {
+		return 0, fmt.Errorf("Machine ID %s not available", machineId)
 	}
 
 	// Beego model time stuff is bad, here we use workaround that works.
