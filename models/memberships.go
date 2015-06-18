@@ -120,15 +120,19 @@ func DeleteMembership(membershipId int64) error {
 	return nil
 }
 
-func CreateUserMembership(userMembership *UserMembership) error {
-	o := orm.NewOrm()
+func CreateUserMembership(userMembership *UserMembership) (umid int64, err error) {
+	if userMembership != nil {
+		o := orm.NewOrm()
 
-	if _, err := o.Insert(userMembership); err != nil {
-		beego.Error("Error creating new user membership: ", err)
-		return err
+		if umid, err := o.Insert(userMembership); err != nil {
+			beego.Error("Error creating new user membership: ", err)
+			return umid, err
+		}
+
+		return umid, nil
+	} else {
+		return 0, errors.New("userMembership is nil")
 	}
-
-	return nil
 }
 
 func GetUserMemberships(userId int64) (ums []*UserMembership, err error) {
