@@ -28,6 +28,7 @@ func fibo(rank uint64) uint64 {
 
 // Test example for fibonacci
 func TestFibonacci(t *testing.T) {
+	t.Parallel()
 	Convey("Testing fibonacci", t, func() {
 		Convey("Fibo(0) should return 0", func() {
 			So(fibo(0), ShouldEqual, 0)
