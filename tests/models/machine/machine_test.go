@@ -120,7 +120,7 @@ func TestGetAllMachines(t *testing.T) {
 			So(len(machines), ShouldEqual, 0)
 			So(err, ShouldBeNil)
 		})
-		SkipConvey("Creating two machines and get them all", func() {
+		Convey("Creating two machines and get them all", func() {
 			mid1, _ := models.CreateMachine(machineOneName)
 			defer models.DeleteMachine(mid1)
 			mid2, _ := models.CreateMachine(machineTwoName)
@@ -130,6 +130,24 @@ func TestGetAllMachines(t *testing.T) {
 
 			So(len(machines), ShouldEqual, 2)
 			So(err, ShouldBeNil)
+		})
+	})
+}
+
+func TestUpdateMachine(t *testing.T) {
+	Convey("Testing UpdateMachine", t, func() {
+		machineName := "My lovely machine"
+		newMachineName := "This new name is soooooooooooo cool :)"
+		Convey("Creating a machine and update it", func() {
+			mid, _ := models.CreateMachine(machineName)
+			defer models.DeleteMachine(mid)
+			machine, _ := models.GetMachine(mid)
+			machine.Name = newMachineName
+
+			err := models.UpdateMachine(machine)
+			machine, _ = models.GetMachine(mid)
+			So(err, ShouldBeNil)
+			So(machine.Name, ShouldEqual, newMachineName)
 		})
 	})
 }
