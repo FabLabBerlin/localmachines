@@ -244,8 +244,11 @@ app.controller('MachinesCtrl',
 
               // What we also need is to start the counter interval
               // Start timer for elapsed time
+              /*
               machine.ActivationSecondsElapsed =
                   $scope.getActivationElapsedSeconds(activations[actIter]);
+              */
+              machine.ActivationSecondsElapsed = activations[actIter].TimeTotal;
 
             } else {
 
@@ -260,8 +263,11 @@ app.controller('MachinesCtrl',
               // But, if logged as admin, we can also set the activation ID
               // and elapsed time
               if ( machine.UserAdmin ) {
+                /*
                 machine.ActivationSecondsElapsed =
                   $scope.getActivationElapsedSeconds(activations[actIter]);
+                */
+                machine.ActivationSecondsElapsed = activations[actIter].TimeTotal;
               }
 
               // Get user name
@@ -287,7 +293,6 @@ app.controller('MachinesCtrl',
             
             // Start the elapsed time timer if it became occupied or used
             if ($scope.machines[i].activationInterval !== 0) {
-              $scope.ActivationSecondsElapsed = 0;
               console.log('Start activation timer for machine ID: ' + 
                 $scope.machines[i].Id);
               $scope.machines[i].activationInterval = setInterval(
@@ -307,14 +312,6 @@ app.controller('MachinesCtrl',
       console.log('Assigning the newly loaded machines to $scope.machines the first time');
       $scope.machines = machines;
     }
-  };
-
-  $scope.getActivationElapsedSeconds = function(activation){
-    var activationStartTime = Date.parse(activation.TimeStart);
-    var timeNow = Date.now();
-    var activationElapsedTime = timeNow - activationStartTime;
-    activationElapsedTime = Math.round(activationElapsedTime / 1000);
-    return activationElapsedTime;
   };
 
   $scope.getOccupierName = function(machine, userId) {

@@ -125,6 +125,14 @@ func GetActiveActivations() ([]*Activation, error) {
 		return nil, errors.New("Failed to get active activations")
 	}
 	beego.Trace("Got num activations:", num)
+
+	// Calculate total time for all activations
+	for i := 0; i < len(activations); i++ {
+		timeNow := time.Now()
+		activations[i].TimeTotal =
+			int(timeNow.Sub(activations[i].TimeStart).Seconds())
+	}
+
 	return activations, nil
 }
 
