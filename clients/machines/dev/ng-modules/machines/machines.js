@@ -204,19 +204,11 @@ app.controller('MachinesCtrl',
 
   $scope.onActivationsLoaded = function(activations, machines){
 
-    // Backup existing machine data
-    var machinesBackup = $scope.machines;
-
     // Got activations
     // Add status vars to machines
     _.map(machines, function(machine, i) {
       if (machine.Image) {
         machine.ImageUrl = '/files/' + machine.Image;
-      }
-
-      // Transfer the activation interval from previous machine instance
-      if (machinesBackup[i]) {
-        machine.activationInterval = machinesBackup[i].activationInterval;
       }
 
       // TODO: figure out simpler way for indicating machine status
