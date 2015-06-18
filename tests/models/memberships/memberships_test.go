@@ -166,3 +166,13 @@ func TestDeleteMembership(t *testing.T) {
 		})
 	})
 }
+
+func TestCreateUserMembership(t *testing.T) {
+	Convey("Testing CreateUserMembership", t, func() {
+		Convey("Try creating a user with nil parameter", func() {
+			_, err := models.CreateUserMembership(nil)
+
+			So(err, ShouldNotBeNil)
+		})
+	})
+}
