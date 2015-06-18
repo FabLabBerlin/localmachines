@@ -77,3 +77,59 @@ func TestDeleteMachine(t *testing.T) {
 		})
 	})
 }
+
+func TestCreateMachine(t *testing.T) {
+	Convey("Testing CreateMachine", t, func() {
+		machineName := "My lovely machine"
+		Convey("Creating a machine", func() {
+			mid, err := models.CreateMachine(machineName)
+			defer models.DeleteMachine(mid)
+
+			So(err, ShouldBeNil)
+		})
+	})
+}
+
+func TestGetMachine(t *testing.T) {
+	Convey("Testing GetMachine", t, func() {
+		machineName := "My lovely machine"
+		Convey("Creating a machine and trying to get it", func() {
+			mid, _ := models.CreateMachine(machineName)
+			defer models.DeleteMachine(mid)
+			machine, err := models.GetMachine(mid)
+
+			So(machine.Name, ShouldEqual, machineName)
+			So(err, ShouldBeNil)
+		})
+		Convey("Trying to get a non-existing machine", func() {
+			machine, err := models.GetMachine(0)
+
+			So(machine, ShouldBeNil)
+			So(err, ShouldNotBeNil)
+		})
+	})
+}
+
+func TestGetAllMachines(t *testing.T) {
+	Convey("Testing GetAllMachines", t, func() {
+		machineOneName := "My first machine"
+		machineTwoName := "My second lovely machine <3"
+		Convey("GetAllMachines when there are no machines in the database", func() {
+			machines, err := models.GetAllMachines()
+
+			So(len(machines), ShouldEqual, 0)
+			So(err, ShouldBeNil)
+		})
+		SkipConvey("Creating two machines and get them all", func() {
+			mid1, _ := models.CreateMachine(machineOneName)
+			defer models.DeleteMachine(mid1)
+			mid2, _ := models.CreateMachine(machineTwoName)
+			defer models.DeleteMachine(mid2)
+
+			machines, err := models.GetAllMachines()
+
+			So(len(machines), ShouldEqual, 2)
+			So(err, ShouldBeNil)
+		})
+	})
+}
