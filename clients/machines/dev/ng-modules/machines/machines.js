@@ -287,6 +287,7 @@ app.controller('MachinesCtrl',
             
             // Start the elapsed time timer if it became occupied or used
             if ($scope.machines[i].activationInterval !== 0) {
+              $scope.ActivationSecondsElapsed = 0;
               console.log('Start activation timer for machine ID: ' + 
                 $scope.machines[i].Id);
               $scope.machines[i].activationInterval = setInterval(
