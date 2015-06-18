@@ -1,4 +1,4 @@
-package tests
+package userTests
 
 import (
 	"fmt"
@@ -17,7 +17,7 @@ import (
 func init() {
 	_, file, _, _ := runtime.Caller(1)
 	// find app.conf path
-	apppath, _ := filepath.Abs(filepath.Dir(filepath.Join(file, ".."+string(filepath.Separator)+".."+string(filepath.Separator))))
+	apppath, _ := filepath.Abs(filepath.Dir(filepath.Join(file, ".."+string(filepath.Separator)+".."+string(filepath.Separator)+".."+string(filepath.Separator))))
 	beego.TestBeegoInit(apppath)
 
 	// Setting log level
