@@ -62,92 +62,86 @@ func init() {
 	orm.RegisterDataBase("default", "mysql", mysqlConnString)
 }
 
-func TestDeleteMachine(t *testing.T) {
-	Convey("Testing DeleteMachine", t, func() {
-		machineName := "My lovely machine"
-		Convey("Creating a machine and delete it", func() {
-			mid, _ := models.CreateMachine(machineName)
-
-			err := models.DeleteMachine(mid)
-			So(err, ShouldBeNil)
+func TestMachine(t *testing.T) {
+	t.Parallel()
+	Convey("Testing Machine model", t, func() {
+		Reset(func() {
+			o := orm.NewOrm()
+			var machines []models.Machine
+			o.QueryTable("machines").All(&machines)
+			for _, item := range machines {
+				o.Delete(&item)
+			}
 		})
-		Convey("Try to delete non-existing user", func() {
-			err := models.DeleteMachine(0)
-			So(err, ShouldNotBeNil)
+		Convey("Testing DeleteMachine", func() {
+			machineName := "My lovely machine"
+			Convey("Creating a machine and delete it", func() {
+				mid, _ := models.CreateMachine(machineName)
+
+				err := models.DeleteMachine(mid)
+				So(err, ShouldBeNil)
+			})
+			Convey("Try to delete non-existing user", func() {
+				err := models.DeleteMachine(0)
+				So(err, ShouldNotBeNil)
+			})
 		})
-	})
-}
+		Convey("Testing CreateMachine", func() {
+			machineName := "My lovely machine"
+			Convey("Creating a machine", func() {
+				_, err := models.CreateMachine(machineName)
 
-func TestCreateMachine(t *testing.T) {
-	Convey("Testing CreateMachine", t, func() {
-		machineName := "My lovely machine"
-		Convey("Creating a machine", func() {
-			mid, err := models.CreateMachine(machineName)
-			defer models.DeleteMachine(mid)
-
-			So(err, ShouldBeNil)
+				So(err, ShouldBeNil)
+			})
 		})
-	})
-}
+		Convey("Testing GetMachine", func() {
+			machineName := "My lovely machine"
+			Convey("Creating a machine and trying to get it", func() {
+				mid, _ := models.CreateMachine(machineName)
+				machine, err := models.GetMachine(mid)
 
-func TestGetMachine(t *testing.T) {
-	Convey("Testing GetMachine", t, func() {
-		machineName := "My lovely machine"
-		Convey("Creating a machine and trying to get it", func() {
-			mid, _ := models.CreateMachine(machineName)
-			defer models.DeleteMachine(mid)
-			machine, err := models.GetMachine(mid)
+				So(machine.Name, ShouldEqual, machineName)
+				So(err, ShouldBeNil)
+			})
+			Convey("Trying to get a non-existing machine", func() {
+				machine, err := models.GetMachine(0)
 
-			So(machine.Name, ShouldEqual, machineName)
-			So(err, ShouldBeNil)
+				So(machine, ShouldBeNil)
+				So(err, ShouldNotBeNil)
+			})
 		})
-		Convey("Trying to get a non-existing machine", func() {
-			machine, err := models.GetMachine(0)
+		Convey("Testing GetAllMachines", func() {
+			machineOneName := "My first machine"
+			machineTwoName := "My second lovely machine <3"
+			Convey("GetAllMachines when there are no machines in the database", func() {
+				machines, err := models.GetAllMachines()
 
-			So(machine, ShouldBeNil)
-			So(err, ShouldNotBeNil)
+				So(len(machines), ShouldEqual, 0)
+				So(err, ShouldBeNil)
+			})
+			Convey("Creating two machines and get them all", func() {
+				models.CreateMachine(machineOneName)
+				models.CreateMachine(machineTwoName)
+
+				machines, err := models.GetAllMachines()
+
+				So(len(machines), ShouldEqual, 2)
+				So(err, ShouldBeNil)
+			})
 		})
-	})
-}
+		Convey("Testing UpdateMachine", func() {
+			machineName := "My lovely machine"
+			newMachineName := "This new name is soooooooooooo cool :)"
+			Convey("Creating a machine and update it", func() {
+				mid, _ := models.CreateMachine(machineName)
+				machine, _ := models.GetMachine(mid)
+				machine.Name = newMachineName
 
-func TestGetAllMachines(t *testing.T) {
-	Convey("Testing GetAllMachines", t, func() {
-		machineOneName := "My first machine"
-		machineTwoName := "My second lovely machine <3"
-		Convey("GetAllMachines when there are no machines in the database", func() {
-			machines, err := models.GetAllMachines()
-
-			So(len(machines), ShouldEqual, 0)
-			So(err, ShouldBeNil)
-		})
-		Convey("Creating two machines and get them all", func() {
-			mid1, _ := models.CreateMachine(machineOneName)
-			defer models.DeleteMachine(mid1)
-			mid2, _ := models.CreateMachine(machineTwoName)
-			defer models.DeleteMachine(mid2)
-
-			machines, err := models.GetAllMachines()
-
-			So(len(machines), ShouldEqual, 2)
-			So(err, ShouldBeNil)
-		})
-	})
-}
-
-func TestUpdateMachine(t *testing.T) {
-	Convey("Testing UpdateMachine", t, func() {
-		machineName := "My lovely machine"
-		newMachineName := "This new name is soooooooooooo cool :)"
-		Convey("Creating a machine and update it", func() {
-			mid, _ := models.CreateMachine(machineName)
-			defer models.DeleteMachine(mid)
-			machine, _ := models.GetMachine(mid)
-			machine.Name = newMachineName
-
-			err := models.UpdateMachine(machine)
-			machine, _ = models.GetMachine(mid)
-			So(err, ShouldBeNil)
-			So(machine.Name, ShouldEqual, newMachineName)
+				err := models.UpdateMachine(machine)
+				machine, _ = models.GetMachine(mid)
+				So(err, ShouldBeNil)
+				So(machine.Name, ShouldEqual, newMachineName)
+			})
 		})
 	})
 }
