@@ -3,9 +3,10 @@ package models
 import (
 	"errors"
 	"fmt"
+	"time"
+
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	"time"
 )
 
 type Membership struct {
@@ -50,44 +51,6 @@ func GetAllMemberships() (memberships []*Membership, err error) {
 	return
 }
 
-// Get single membership from database using membership unique ID
-func GetMembership(membershipId int64) (*Membership, error) {
-	membership := &Membership{Id: membershipId}
-	o := orm.NewOrm()
-	err := o.Read(membership)
-	if err != nil {
-		return membership, err
-	}
-	return membership, nil
-}
-
-func GetUserMemberships(userId int64) (ums []*UserMembership, err error) {
-	o := orm.NewOrm()
-	num, err := o.QueryTable("user_membership").Filter("user_id", userId).All(&ums)
-	if err != nil {
-		beego.Error("Failed to get user memberships")
-		return nil, errors.New("Failed to get user memberships")
-	}
-	beego.Trace("Got num user memberships:", num)
-	return
-}
-
-// Delete membership from the database
-func DeleteUserMembership(userMembershipId int64) error {
-	var num int64
-	var err error
-	o := orm.NewOrm()
-
-	num, err = o.Delete(&UserMembership{Id: userMembershipId})
-	if err != nil {
-		return errors.New(
-			fmt.Sprintf("Failed to delete user membership: %v", err))
-	}
-
-	beego.Trace("Deleted num rows:", num)
-	return nil
-}
-
 // Creates a new membership in the database
 func CreateMembership(membershipName string) (int64, error) {
 	o := orm.NewOrm()
@@ -99,6 +62,17 @@ func CreateMembership(membershipName string) (int64, error) {
 	} else {
 		return 0, err
 	}
+}
+
+// Get single membership from database using membership unique ID
+func GetMembership(membershipId int64) (*Membership, error) {
+	membership := &Membership{Id: membershipId}
+	o := orm.NewOrm()
+	err := o.Read(membership)
+	if err != nil {
+		return membership, err
+	}
+	return membership, nil
 }
 
 // Updates membership in the database
@@ -142,6 +116,48 @@ func DeleteMembership(membershipId int64) error {
 	if err != nil {
 		return err
 	}
+	beego.Trace("Deleted num rows:", num)
+	return nil
+}
+
+func CreateUserMembership(userMembership *UserMembership) (umid int64, err error) {
+	if userMembership != nil {
+		o := orm.NewOrm()
+
+		if umid, err := o.Insert(userMembership); err != nil {
+			beego.Error("Error creating new user membership: ", err)
+			return umid, err
+		}
+
+		return umid, nil
+	} else {
+		return 0, errors.New("userMembership is nil")
+	}
+}
+
+func GetUserMemberships(userId int64) (ums []*UserMembership, err error) {
+	o := orm.NewOrm()
+	num, err := o.QueryTable("user_membership").Filter("user_id", userId).All(&ums)
+	if err != nil {
+		beego.Error("Failed to get user memberships")
+		return nil, errors.New("Failed to get user memberships")
+	}
+	beego.Trace("Got num user memberships:", num)
+	return
+}
+
+// Delete membership from the database
+func DeleteUserMembership(userMembershipId int64) error {
+	var num int64
+	var err error
+	o := orm.NewOrm()
+
+	num, err = o.Delete(&UserMembership{Id: userMembershipId})
+	if err != nil {
+		return errors.New(
+			fmt.Sprintf("Failed to delete user membership: %v", err))
+	}
+
 	beego.Trace("Deleted num rows:", num)
 	return nil
 }
