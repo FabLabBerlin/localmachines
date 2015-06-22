@@ -63,7 +63,6 @@ func init() {
 }
 
 func TestMachine(t *testing.T) {
-	t.Parallel()
 	Convey("Testing Machine model", t, func() {
 		Reset(func() {
 			o := orm.NewOrm()
