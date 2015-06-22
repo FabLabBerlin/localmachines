@@ -13,24 +13,34 @@ func init() {
 }
 
 type Machine struct {
-	Id          int64  `orm:"auto";"pk"`
-	Name        string `orm:"size(255)"`
-	Shortname   string `orm:"size(100)"`
-	Description string `orm:"type(text)"`
-	Image       string `orm:"size(255)"` // TODO: media and media type tables
-	Available   bool
-	UnavailMsg  string    `orm:"type(text)"`
-	UnavailTill time.Time `orm:"null;type(date)" form:"Date,2006-01-02T15:04:05Z07:00`
-	Price       float32
-	PriceUnit   string `orm:"size(100)"`
-	Comments    string `orm:"type(text)"`
-	Visible     bool
+	Id                int64  `orm:"auto";"pk"`
+	Name              string `orm:"size(255)"`
+	Shortname         string `orm:"size(100)"`
+	Description       string `orm:"type(text)"`
+	Image             string `orm:"size(255)"` // TODO: media and media type tables
+	Available         bool
+	UnavailMsg        string    `orm:"type(text)"`
+	UnavailTill       time.Time `orm:"null;type(date)" form:"Date,2006-01-02T15:04:05Z07:00`
+	Price             float32
+	PriceUnit         string `orm:"size(100)"`
+	Comments          string `orm:"type(text)"`
+	Visible           bool
+	ConnectedMachines string `orm:"size(255)"`
 }
 
 // Define custom table name as for SQL table with a name "machines"
 // makes more sense.
 func (u *Machine) TableName() string {
 	return "machines"
+}
+
+type ConnectedMachine struct {
+	Id   int64
+	Name string
+}
+
+type ConnectedMachineList struct {
+	Data []*ConnectedMachine
 }
 
 func GetMachine(machineId int64) (*Machine, error) {
@@ -126,4 +136,20 @@ func DeleteMachine(machineId int64) error {
 	beego.Trace("Deleted num machine permissions:", num)
 
 	return nil
+}
+
+func GetConnectedMachines(machineId int64) (*ConnectedMachineList, error) {
+	machine := ConnectedMachine{}
+	machine.Id = 1
+	machine.Name = "Machine Deus Ex"
+
+	machine2 := ConnectedMachine{}
+	machine2.Id = 2
+	machine2.Name = "Machine Ikarus Mist"
+
+	machineList := ConnectedMachineList{}
+	machineList.Data = append(machineList.Data, &machine)
+	machineList.Data = append(machineList.Data, &machine2)
+
+	return &machineList, nil
 }

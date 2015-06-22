@@ -97,6 +97,38 @@ func (this *MachinesController) Get() {
 	this.ServeJson()
 }
 
+// @Title Get
+// @Description Get connected machines
+// @Param	mid		path 	int	true		"Machine ID"
+// @Success 200 {object} models.ConnectedMachineList
+// @Failure	401	Not authorized
+// @Failure	500	Internal Server Error
+// @router /:mid/connected [get]
+func (this *MachinesController) GetConnected() {
+
+	var machineId int64
+	var err error
+	machineId, err = this.GetInt64(":mid")
+	if err != nil {
+		beego.Error("Failed to get :mid variable")
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	if !this.IsAdmin() {
+		beego.Error("Not authorized")
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	machineList, err := models.GetConnectedMachines(machineId)
+	if err != nil {
+		beego.Error("Failed to get connected machines")
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	this.Data["json"] = machineList
+	this.ServeJson()
+}
+
 // @Title Create
 // @Description Create machine
 // @Param	mname	query	string	true	"Machine Name"

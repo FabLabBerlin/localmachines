@@ -20,30 +20,56 @@ app.controller('MachineCtrl',
     Id: $routeParams.machineId
   };
 
+  $scope.connectedMachines = [
+    {Id:1, Name:"Fuse Maze Machine"}, 
+    {Id:2, Name:"Como Status Machine"}
+  ];
+
   $scope.machineImageFile = undefined;
   $scope.machineImageNewFile = undefined;
   $scope.machineImageNewFileName = undefined;
   $scope.machineImageNewFileSize = undefined;
 
-  $http({
-    method: 'GET',
-    url: '/api/machines/' + $scope.machine.Id,
-    params: {
-      ac: new Date().getTime()
-    }
-  })
-  .success(function(data) {
-    $scope.machine = data;
-    $scope.machine.Price = $filter('currency')($scope.machine.Price,'',2);
-    $scope.getHexabusMapping();
-    $scope.getNetSwitchMapping();
-    if ($scope.machine.Image) {
-      $scope.machineImageFile = "/files/" + $scope.machine.Image;
-    }
-  })
-  .error(function() {
-    toastr.error('Failed to get machine');
-  });
+  $scope.loadMachine = function(machineId) {
+    $http({
+      method: 'GET',
+      url: '/api/machines/' + machineId,
+      params: {
+        ac: new Date().getTime()
+      }
+    })
+    .success(function(data) {
+      $scope.machine = data;
+      $scope.machine.Price = $filter('currency')($scope.machine.Price,'',2);
+      $scope.getHexabusMapping();
+      $scope.getNetSwitchMapping();
+      if ($scope.machine.Image) {
+        $scope.machineImageFile = "/files/" + $scope.machine.Image;
+      }
+    })
+    .error(function() {
+      toastr.error('Failed to get machine');
+    });
+  };
+
+  $scope.loadConnectedMachines = function(machineId) {
+    $http({
+      method: 'GET',
+      url: '/api/machines/' + machineId + '/connected',
+      params: {
+        ac: new Date().getTime()
+      }
+    })
+    .success(function(machineList) {
+      $scope.connectedMachines = machineList.Data;
+    })
+    .error(function() {
+      toastr.error('Failed to load connected machines');
+    });
+  };
+
+  $scope.loadMachine($scope.machine.Id);
+  $scope.loadConnectedMachines($scope.machine.Id);
 
   $scope.updateMachine = function() {
 
@@ -288,6 +314,43 @@ app.controller('MachineCtrl',
         toastr.error('Failed to update NetSwitch mapping');
       });
     }
+  };
+
+  // Connected machine stuff
+  // TODO: Put this in separate module / file
+
+  $scope.loadConnectedMachineCandidates = function() {
+
+  };
+
+  $scope.addConnectedMachine = function() {
+
+  };
+
+  $scope.removeConnectedMachinePrompt = function() {
+    var token = randomToken.generate();
+    vex.dialog.prompt({
+      message: 'Enter <span class="delete-prompt-token">' + 
+       token + '</span> to remove',
+      placeholder: 'Token',
+      callback: $scope.removeConnectedMachinePromptCallback.bind(this, token)
+    });
+  };
+
+  $scope.removeConnectedMachinePromptCallback = function(expectedToken, value) {
+    if (value) {    
+      if (value === expectedToken) {
+        $scope.removeConnectedMachine();
+      } else {
+        toastr.error('Wrong token');
+      }
+    } else if (value !== false) {
+      toastr.error('No token');
+    }
+  };
+
+  $scope.removeConnectedMachine = function() {
+    toastr.info('removeConnectedMachine()');
   };
 
   // cf. http://stackoverflow.com/q/17922557/485185
