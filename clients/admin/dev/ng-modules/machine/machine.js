@@ -20,11 +20,6 @@ app.controller('MachineCtrl',
     Id: $routeParams.machineId
   };
 
-  $scope.connectedMachines = [
-    {Id:1, Name:"Fuse Maze Machine"}, 
-    {Id:2, Name:"Como Status Machine"}
-  ];
-
   $scope.machineImageFile = undefined;
   $scope.machineImageNewFile = undefined;
   $scope.machineImageNewFileName = undefined;
@@ -61,6 +56,7 @@ app.controller('MachineCtrl',
       }
     })
     .success(function(machineList) {
+      console.log(machineList);
       $scope.connectedMachines = machineList.Data;
     })
     .error(function() {

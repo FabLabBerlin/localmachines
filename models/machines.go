@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/astaxie/beego"
@@ -139,17 +140,50 @@ func DeleteMachine(machineId int64) error {
 }
 
 func GetConnectedMachines(machineId int64) (*ConnectedMachineList, error) {
-	machine := ConnectedMachine{}
-	machine.Id = 1
-	machine.Name = "Machine Deus Ex"
 
-	machine2 := ConnectedMachine{}
-	machine2.Id = 2
-	machine2.Name = "Machine Ikarus Mist"
+	machine := Machine{}
+	machine.Id = machineId
+
+	o := orm.NewOrm()
+	err := o.Read(&machine)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to get connected machines: %v", err)
+	}
+
+	beego.Trace("connected machines:", machine.ConnectedMachines)
 
 	machineList := ConnectedMachineList{}
-	machineList.Data = append(machineList.Data, &machine)
-	machineList.Data = append(machineList.Data, &machine2)
+
+	// Empty string, to not waste resources - return
+	if machine.ConnectedMachines == "" {
+		return &machineList, nil
+	}
+
+	// Parse string into object we can digest,
+	// so we can load machine data individually
+	var machineIds []int64
+	err = json.Unmarshal([]byte(machine.ConnectedMachines), &machineIds)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to unmarshal json: %v", err)
+	}
+
+	// Load connected machine data from the database
+	for _, val := range machineIds {
+		m := Machine{}
+		m.Id = val
+		err = o.Read(&m)
+		if err != nil {
+			beego.Error("Failed to get connected machine from db, ID", val)
+			return nil, fmt.Errorf("Failed to get connected machine: %v", err)
+		}
+		cm := ConnectedMachine{}
+		cm.Id = m.Id
+		cm.Name = m.Name
+		machineList.Data = append(machineList.Data, &cm)
+	}
+
+	//machineList.Data = append(machineList.Data, &machine1)
+	//machineList.Data = append(machineList.Data, &machine2)
 
 	return &machineList, nil
 }
