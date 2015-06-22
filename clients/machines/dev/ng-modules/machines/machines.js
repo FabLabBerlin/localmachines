@@ -153,6 +153,8 @@ app.controller('MachinesCtrl',
     clearInterval($scope.reloadMachinesInterval);
     clearInterval($scope.idleInterval);
     clearTimeout($scope.nfcTimeout);
+    // Hide spinner if it is visible
+    $scope.hideGlobalLoader();
     $scope.logout();
   };
 
@@ -331,11 +333,15 @@ app.controller('MachinesCtrl',
   };
 
   $scope.showGlobalLoader = function() {
-    $('#loader-global').removeClass('hidden');
+    while ($('#loader-global').hasClass('hidden')) {
+      $('#loader-global').removeClass('hidden');
+    }
   };
 
   $scope.hideGlobalLoader = function() {
-    $('#loader-global').addClass('hidden');
+    if (!$('#loader-global').hasClass('hidden')) {
+      $('#loader-global').addClass('hidden');
+    }
   };
 
   $scope.updateElapsedTime = function(machineIter) {
