@@ -3,6 +3,7 @@ package membershipTests
 import (
 	"testing"
 
+	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/kr15h/fabsmith/models"
@@ -14,117 +15,112 @@ func init() {
 	ConfigDB()
 }
 
-func TestGetAllMemberships(t *testing.T) {
-	Convey("Testing GetAllMemberships", t, func() {
-		membershipName := "Lel"
-		Convey("Getting all memberships when there is nothing in the database", func() {
-			memberships, err := models.GetAllMemberships()
-
-			So(err, ShouldBeNil)
-			So(len(memberships), ShouldEqual, 0)
-		})
-		Convey("Creating 2 memberships and get them all", func() {
-			mid1, _ := models.CreateMembership(membershipName)
-			defer models.DeleteMembership(mid1)
-			mid2, _ := models.CreateMembership(membershipName)
-			defer models.DeleteMembership(mid2)
-
-			memberships, err := models.GetAllMemberships()
-
-			So(err, ShouldBeNil)
-			So(len(memberships), ShouldEqual, 2)
-		})
-	})
-}
-
-func TestCreateMembership(t *testing.T) {
-	Convey("Testing CreateMembership", t, func() {
-		membershipName := "My awesome membership"
-		Convey("Creating one membership", func() {
-			mid, err := models.CreateMembership(membershipName)
-			defer models.DeleteMembership(mid)
-
-			So(err, ShouldBeNil)
-		})
-	})
-}
-
-func TestGetMembership(t *testing.T) {
-	Convey("Testing GetMembership", t, func() {
-		membershipName := "Lel"
-		Convey("Getting non-existing membership", func() {
-			_, err := models.GetMembership(0)
-
-			So(err, ShouldNotBeNil)
-		})
-		Convey("Creating a membership and getting it", func() {
-			mid, _ := models.CreateMembership(membershipName)
-			defer models.DeleteMembership(mid)
-			membership, err := models.GetMembership(mid)
-
-			So(membership.Id, ShouldEqual, mid)
-			So(err, ShouldBeNil)
-		})
-	})
-}
-
-func TestUpdateMembership(t *testing.T) {
-	Convey("Testing UpdateMembership", t, func() {
-		membershipName := "Lel"
-		newMembershipName := "DatAwesomeNewName"
-		Convey("Try updating with nil object", func() {
-			panicFunc := func() {
-				models.UpdateMembership(nil)
+func TestMemberships(t *testing.T) {
+	Convey("Testing Machine model", t, func() {
+		Reset(func() {
+			o := orm.NewOrm()
+			var memberships []models.Membership
+			o.QueryTable("membership").All(&memberships)
+			for _, item := range memberships {
+				o.Delete(&item)
 			}
-
-			So(panicFunc, ShouldPanic)
 		})
-		Convey("Try to update non existing membership", func() {
-			m := &models.Membership{
-				Title: membershipName,
-			}
+		Convey("Testing GetAllMemberships", func() {
+			membershipName := "Lel"
+			Convey("Getting all memberships when there is nothing in the database", func() {
+				memberships, err := models.GetAllMemberships()
 
-			err := models.UpdateMembership(m)
-			So(err, ShouldNotBeNil)
+				So(err, ShouldBeNil)
+				So(len(memberships), ShouldEqual, 0)
+			})
+			Convey("Creating 2 memberships and get them all", func() {
+				mid1, _ := models.CreateMembership(membershipName)
+				defer models.DeleteMembership(mid1)
+				mid2, _ := models.CreateMembership(membershipName)
+				defer models.DeleteMembership(mid2)
+
+				memberships, err := models.GetAllMemberships()
+
+				So(err, ShouldBeNil)
+				So(len(memberships), ShouldEqual, 2)
+			})
 		})
-		Convey("Create membership and update it", func() {
-			mid, _ := models.CreateMembership(membershipName)
-			defer models.DeleteMembership(mid)
+		Convey("Testing CreateMembership", func() {
+			membershipName := "My awesome membership"
+			Convey("Creating one membership", func() {
+				mid, err := models.CreateMembership(membershipName)
+				defer models.DeleteMembership(mid)
 
-			m, _ := models.GetMembership(mid)
-			m.Title = newMembershipName
-
-			err := models.UpdateMembership(m)
-			nm, _ := models.GetMembership(mid)
-			So(err, ShouldBeNil)
-			So(nm.Title, ShouldEqual, newMembershipName)
+				So(err, ShouldBeNil)
+			})
 		})
-	})
-}
+		Convey("Testing GetMembership", func() {
+			membershipName := "Lel"
+			Convey("Getting non-existing membership", func() {
+				_, err := models.GetMembership(0)
 
-func TestDeleteMembership(t *testing.T) {
-	Convey("Testing DeleteMembership", t, func() {
-		membershipName := "My awesome membership program"
-		Convey("Try to delete non-existing membership", func() {
-			err := models.DeleteMembership(0)
+				So(err, ShouldNotBeNil)
+			})
+			Convey("Creating a membership and getting it", func() {
+				mid, _ := models.CreateMembership(membershipName)
+				defer models.DeleteMembership(mid)
+				membership, err := models.GetMembership(mid)
 
-			So(err, ShouldNotBeNil)
+				So(membership.Id, ShouldEqual, mid)
+				So(err, ShouldBeNil)
+			})
 		})
-		Convey("Creating a membership and delete it", func() {
-			mid, _ := models.CreateMembership(membershipName)
-			err := models.DeleteMembership(mid)
+		Convey("Testing UpdateMembership", func() {
+			membershipName := "Lel"
+			newMembershipName := "DatAwesomeNewName"
+			Convey("Try updating with nil object", func() {
+				panicFunc := func() {
+					models.UpdateMembership(nil)
+				}
 
-			So(err, ShouldBeNil)
+				So(panicFunc, ShouldPanic)
+			})
+			Convey("Try to update non existing membership", func() {
+				m := &models.Membership{
+					Title: membershipName,
+				}
+
+				err := models.UpdateMembership(m)
+				So(err, ShouldNotBeNil)
+			})
+			Convey("Create membership and update it", func() {
+				mid, _ := models.CreateMembership(membershipName)
+				defer models.DeleteMembership(mid)
+
+				m, _ := models.GetMembership(mid)
+				m.Title = newMembershipName
+
+				err := models.UpdateMembership(m)
+				nm, _ := models.GetMembership(mid)
+				So(err, ShouldBeNil)
+				So(nm.Title, ShouldEqual, newMembershipName)
+			})
 		})
-	})
-}
+		Convey("Testing DeleteMembership", func() {
+			membershipName := "My awesome membership program"
+			Convey("Try to delete non-existing membership", func() {
+				err := models.DeleteMembership(0)
 
-func TestCreateUserMembership(t *testing.T) {
-	Convey("Testing CreateUserMembership", t, func() {
-		Convey("Try creating a user with nil parameter", func() {
-			_, err := models.CreateUserMembership(nil)
+				So(err, ShouldNotBeNil)
+			})
+			Convey("Creating a membership and delete it", func() {
+				mid, _ := models.CreateMembership(membershipName)
+				err := models.DeleteMembership(mid)
 
-			So(err, ShouldNotBeNil)
+				So(err, ShouldBeNil)
+			})
+		})
+		Convey("Testing CreateUserMembership", func() {
+			Convey("Try creating a user with nil parameter", func() {
+				_, err := models.CreateUserMembership(nil)
+
+				So(err, ShouldNotBeNil)
+			})
 		})
 	})
 }
