@@ -24,6 +24,7 @@ type Machine struct {
 	Price       float32
 	PriceUnit   string `orm:"size(100)"`
 	Comments    string `orm:"type(text)"`
+	Visible     bool
 }
 
 // Define custom table name as for SQL table with a name "machines"

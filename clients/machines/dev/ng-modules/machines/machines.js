@@ -166,6 +166,7 @@ app.controller('MachinesCtrl',
       params: { ac: new Date().getTime() }
     })
     .success(function(machines){
+      console.log(machines);
       $scope.onMachinesLoaded(machines);
     })
     .error(function(data, status) {
@@ -288,7 +289,8 @@ app.controller('MachinesCtrl',
         if (machines[i].available !== machine.available ||
           machines[i].occupied !== machine.occupied ||
           machines[i].used !== machine.used ||
-          machines[i].unavailable !== machine.unavailable) {
+          machines[i].unavailable !== machine.unavailable ||
+          machines[i].Visible !== machine.Visible) {
           
           console.log('Change found, updating $scope.machines[i]');
 

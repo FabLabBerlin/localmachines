@@ -1,4 +1,9 @@
-<div class="machine" ng-class="{available: machine.available, used: machine.used, occupied: machine.occupied, unavailable: machine.unavailable}">
+<div class="machine" 
+     ng-show="machine.Visible"
+     ng-class="{available: machine.available, 
+                used: machine.used, 
+                occupied: machine.occupied, 
+                unavailable: machine.unavailable}">
   <div class="container-fluid">
   
     <div class="machine-header">
