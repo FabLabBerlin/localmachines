@@ -16,7 +16,7 @@ func init() {
 }
 
 func TestMemberships(t *testing.T) {
-	Convey("Testing Machine model", t, func() {
+	Convey("Testing Membership model", t, func() {
 		Reset(func() {
 			o := orm.NewOrm()
 			var memberships []models.Membership
