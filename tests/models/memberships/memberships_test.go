@@ -34,11 +34,8 @@ func TestMemberships(t *testing.T) {
 				So(len(memberships), ShouldEqual, 0)
 			})
 			Convey("Creating 2 memberships and get them all", func() {
-				mid1, _ := models.CreateMembership(membershipName)
-				defer models.DeleteMembership(mid1)
-				mid2, _ := models.CreateMembership(membershipName)
-				defer models.DeleteMembership(mid2)
-
+				models.CreateMembership(membershipName)
+				models.CreateMembership(membershipName)
 				memberships, err := models.GetAllMemberships()
 
 				So(err, ShouldBeNil)
@@ -48,8 +45,7 @@ func TestMemberships(t *testing.T) {
 		Convey("Testing CreateMembership", func() {
 			membershipName := "My awesome membership"
 			Convey("Creating one membership", func() {
-				mid, err := models.CreateMembership(membershipName)
-				defer models.DeleteMembership(mid)
+				_, err := models.CreateMembership(membershipName)
 
 				So(err, ShouldBeNil)
 			})
@@ -63,7 +59,6 @@ func TestMemberships(t *testing.T) {
 			})
 			Convey("Creating a membership and getting it", func() {
 				mid, _ := models.CreateMembership(membershipName)
-				defer models.DeleteMembership(mid)
 				membership, err := models.GetMembership(mid)
 
 				So(membership.Id, ShouldEqual, mid)
@@ -84,19 +79,17 @@ func TestMemberships(t *testing.T) {
 				m := &models.Membership{
 					Title: membershipName,
 				}
-
 				err := models.UpdateMembership(m)
+
 				So(err, ShouldNotBeNil)
 			})
 			Convey("Create membership and update it", func() {
 				mid, _ := models.CreateMembership(membershipName)
-				defer models.DeleteMembership(mid)
-
 				m, _ := models.GetMembership(mid)
 				m.Title = newMembershipName
-
 				err := models.UpdateMembership(m)
 				nm, _ := models.GetMembership(mid)
+
 				So(err, ShouldBeNil)
 				So(nm.Title, ShouldEqual, newMembershipName)
 			})
