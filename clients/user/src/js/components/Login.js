@@ -17,6 +17,13 @@ var Login = React.createClass({
         event.preventDefault();
         LoginActions.submitLoginForm(this.state);
         this.clearAndFocus();
+    },
+
+    componentDidMount() {
+        UserStore.onChange = this.onChange;
+    },
+
+    onChange() {
         if( UserStore.getIsLogged ) {
             this.transitionTo('/');
         }

@@ -57,25 +57,6 @@ var UserStore = {
         });
     },
 
-    // It seems to work
-    submitLoginFormToServer(loginInfo) {
-        console.log(loginInfo);
-        $.ajax({
-            url: '/api/users/login',
-            dataType: 'json',
-            type: 'POST',
-            data: loginInfo,
-            success: function(data) {
-                this._state.isLogged = true;
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error('/users/login', status, err.toString());
-                this._state.failToLogin = true;
-                //this.onChange();
-            }.bind(this),
-        });
-    },
-
     // Logout from server
     logoutFromServer() {
         $.ajax({
@@ -95,19 +76,58 @@ var UserStore = {
     // then send it to the server
     submitStateToServer(userState) {
         this.formatUserStateToSendToServer(userState);
-        /*
-        var _url = '/api/users/' + this._state.userID,
-
-            dataToSend = this._state.infoUser,
-            _type = 'PUT';
-        getDataFromServer(_url, dataToSend, _type, function() {});
-        */
     },
 
-    // To get the User information for the server after login in
-    getUserStateFromServer(){
-        //getting the initial set of data from the server with the UID
-        //CALL API
+    // It seems to work
+    submitLoginFormToServer(loginInfo) {
+        $.ajax({
+            url: '/api/users/login',
+            dataType: 'json',
+            type: 'POST',
+            data: loginInfo,
+            success: function(data) {
+                this._state.UserID = data["UserId"];
+                this.getUserStateFromServer(data["UserId"]);
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error('/users/login', status, err.toString());
+                this._state.failToLogin = true;
+                //this.onChange();
+            }.bind(this),
+        });
+    },
+
+    // To get the User information from the server after login
+    getUserStateFromServer(uid){
+        $.ajax({
+            url: '/api/users/' + uid,
+            dataType: 'json',
+            type: 'GET',
+            success: function(data) {
+                this._state.rawInfoUser = data;
+                this.getMachineFromServer(uid);
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error('/users/{uid}', status, err.toString());
+            }.bind(this),
+        });
+    },
+
+    // To get the Machine information from the server after login
+    getMachineFromServer(uid){
+        $.ajax({
+            url: '/api/users/' + uid + '/machinepermissions',
+            dataType: 'json',
+            type: 'GET',
+            success: function(data) {
+                this._state.rawInfoMachine = data;
+                this._state.isLogged = true;
+                this.onChange();
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error('/users/{uid}/machinepermissions', status, err.toString());
+            }.bind(this),
+        });
     },
 
     // Change the input to match the rawInfoUser format
@@ -132,7 +152,6 @@ var UserStore = {
             var name = infoWhichMatter[index];
             lightState[name] = this._state.rawInfoUser[name];
         }
-        console.log(lightState);
         return lightState;
     },
 

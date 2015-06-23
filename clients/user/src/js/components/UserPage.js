@@ -1,4 +1,5 @@
 import React from 'react';
+import {Navigation} from 'react-router';
 import UserForm from './UserForm';
 import MachineList from './MachineList';
 import Membership from './Membership';
@@ -6,6 +7,8 @@ import UserActions from '../actions/UserActions';
 import UserStore from '../stores/UserStore'
 
 var UserPage = React.createClass({
+
+    mixins: [ Navigation ],
 
     // If not login, redirect to the login page
     statics: {
@@ -22,9 +25,7 @@ var UserPage = React.createClass({
     // getting state from UserStore
     getInitialState: function() {
         var _infoUser = UserStore.getInfoUser();
-        console.log(_infoUser);
         var _infoMachine = UserStore.getInfoMachine();
-        console.log(_infoMachine);
         return {
             infoUser: _infoUser,
             infoMachine: _infoMachine
@@ -33,13 +34,12 @@ var UserPage = React.createClass({
 
     // Pass the responsabilité to the store via the action
     handleSubmit() {
-        console.log('USERPAGE MODAFOCKA');
-        console.log(this.state.infoUser);
         UserActions.submitState(this.state.infoUser);
     },
 
     handleLogout(){
         UserActions.logout();
+        this.transitionTo('/login');
     },
 
     /*
