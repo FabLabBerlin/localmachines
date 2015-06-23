@@ -207,17 +207,23 @@ func (this *ActivationsController) Create() {
 		}
 	}
 
-	// Before creating an activation, try to switch on the NetSwitch
-	var netSwitchMapping *models.NetSwitchMapping = nil
-	netSwitchMapping, err = models.GetNetSwitchMapping(machineId)
+	// Turn on the machine
+	machine := models.Machine{}
+	machine.Id = machineId
+	err = machine.On()
 	if err != nil {
-		beego.Error("Failed to get NetSwitch mapping")
-	} else if netSwitchMapping != nil {
-		if err = netSwitchMapping.On(); err != nil {
-			beego.Error("Failed to turn on netswitch:", err)
-			//if err = models.DeleteActivation(activationId); err != nil {
-			//	beego.Error("Failed to delete activation")
-			//}
+		beego.Error("Failed to turn on machine:", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	// Turn on the connected machines
+	var connectedMachines *models.ConnectedMachineList
+	connectedMachines, err = models.GetConnectedMachines(machineId)
+	if err != nil {
+		beego.Warning("Failed to get connected machines:", err)
+	} else {
+		if err = connectedMachines.On(); err != nil {
+			beego.Error("Failed to turn on connected machines:", err)
 			this.CustomAbort(500, "Internal Server Error")
 		}
 	}
@@ -284,14 +290,23 @@ func (this *ActivationsController) Close() {
 	// Attempt to switch off the machine first. This is a way to detect
 	// network errors early as the users won't be able to end their activation
 	// unless the error in the network is fixed.
-	var netSwitch *models.NetSwitchMapping = nil
-	netSwitch, err = models.GetNetSwitchMapping(machineId)
+	machine := models.Machine{}
+	machine.Id = machineId
+	if err = machine.Off(); err != nil {
+		beego.Error("Failed to switch off machine")
+		if !this.IsAdmin() {
+			this.CustomAbort(500, "Internal Server Error")
+		}
+	}
+
+	// Get connected machines and try to swich them off as well
+	var connectedMachines *models.ConnectedMachineList
+	connectedMachines, err = models.GetConnectedMachines(machineId)
 	if err != nil {
-		beego.Error("Failed to get NetSwitch mapping")
-	} else if netSwitch != nil {
-		if err = netSwitch.Off(); err != nil {
-			beego.Error("Failed to turn off netswitch:", err)
-			// Abort here if user is NOT admin.
+		beego.Warning("Failed to get connected machines:", err)
+	} else {
+		if err = connectedMachines.Off(); err != nil {
+			beego.Error("Failed to switch off connected machines")
 			if !this.IsAdmin() {
 				this.CustomAbort(500, "Internal Server Error")
 			}
@@ -361,7 +376,7 @@ func deactivateMachineAfterTimeout(machineId int64, timeoutSeconds int64) {
 	o := orm.NewOrm()
 	activationModel := models.Activation{Id: 0}
 	beego.Info("Attempt to get an active activation with the machine ID", machineId)
-	err := o.Raw("SELECT id FROM activation WHERE active=true AND machine_id=?",
+	err := o.Raw("SELECT id FROM activations WHERE active=true AND machine_id=?",
 		machineId).QueryRow(&activationModel)
 	if err != nil {
 		beego.Error("There was an error while getting activation:", err)
