@@ -331,9 +331,6 @@ app.controller('MachineCtrl',
 
   // Connected machine stuff
   // TODO: Put this in separate module / file
-
-
-
   $scope.addConnectedMachine = function() {
     var connMachineId = $('#connectable-machine-select').val();
     if (!connMachineId) {
@@ -356,6 +353,9 @@ app.controller('MachineCtrl',
     }
 
     // Add machine to the connected machine list
+    if (!$scope.connectedMachines) {
+      $scope.connectedMachines = [];
+    }
     $scope.connectedMachines.push(connMachine);
 
     // And also update the machine.ConnectedMachines string based array
@@ -367,20 +367,22 @@ app.controller('MachineCtrl',
     $scope.machine.ConnectedMachines = str;
   };
 
-  $scope.removeConnectedMachinePrompt = function() {
+  $scope.removeConnectedMachinePrompt = function(connMachineId) {
     var token = randomToken.generate();
     vex.dialog.prompt({
       message: 'Enter <span class="delete-prompt-token">' + 
        token + '</span> to remove',
       placeholder: 'Token',
-      callback: $scope.removeConnectedMachinePromptCallback.bind(this, token)
+      callback: $scope.removeConnectedMachinePromptCallback.
+        bind(this, token, connMachineId)
     });
   };
 
-  $scope.removeConnectedMachinePromptCallback = function(expectedToken, value) {
+  $scope.removeConnectedMachinePromptCallback = 
+    function(expectedToken, connMachineId, value) {
     if (value) {    
       if (value === expectedToken) {
-        $scope.removeConnectedMachine();
+        $scope.removeConnectedMachine(connMachineId);
       } else {
         toastr.error('Wrong token');
       }
@@ -389,8 +391,30 @@ app.controller('MachineCtrl',
     }
   };
 
-  $scope.removeConnectedMachine = function() {
-    toastr.info('removeConnectedMachine()');
+  $scope.removeConnectedMachine = function(connMachineId) {
+
+    // Search for connected machine with the ID so we can swap
+    // move it from connected machines to connectable machines
+    for (var i = 0; i < $scope.connectedMachines.length; i++) {
+      if (parseInt($scope.connectedMachines[i].Id) === parseInt(connMachineId)) {
+        if (!$scope.connectableMachines) {
+          $scope.connectableMachines = [];
+        }
+        $scope.connectableMachines.push($scope.connectedMachines[i]);
+        $scope.connectedMachines.splice(i, 1);
+        $scope.$apply();
+        break;
+      }
+    }
+
+    // And also update the machine.ConnectedMachines string based array
+    // User will have to press `Save` to update the database
+    var str = '';
+    for (i = 0; i < $scope.connectedMachines.length; i++) {
+      str += $scope.connectedMachines[i].Id + ',';
+    }
+    str = '[' + str.substr(0, str.length - 1) + ']';
+    $scope.machine.ConnectedMachines = str;
   };
 
   // cf. http://stackoverflow.com/q/17922557/485185
