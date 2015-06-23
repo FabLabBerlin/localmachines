@@ -237,3 +237,40 @@ MachineLoop:
 
 	return &cmList, nil
 }
+
+func (this *Machine) On() error {
+	var netSwitchMapping *NetSwitchMapping = nil
+	var err error
+	netSwitchMapping, err = GetNetSwitchMapping(this.Id)
+	if err != nil {
+		beego.Warning("Failed to get NetSwitch mapping:", err)
+	} else if netSwitchMapping != nil {
+		if err = netSwitchMapping.On(); err != nil {
+			return fmt.Errorf("Failed to turn on NetSwitch: %v", err)
+		}
+	}
+
+	return nil
+}
+
+func (this *Machine) Off() error {
+	var netSwitch *NetSwitchMapping = nil
+	var err error
+	netSwitch, err = GetNetSwitchMapping(this.Id)
+	if err != nil {
+		beego.Warning("Failed to get NetSwitch mapping:", err)
+	} else if netSwitch != nil {
+		if err = netSwitch.Off(); err != nil {
+			return fmt.Errorf("Failed to turn on NetSwitch: %v", err)
+		}
+	}
+	return nil
+}
+
+func (this *ConnectedMachineList) On() error {
+	return nil
+}
+
+func (this *ConnectedMachineList) Off() error {
+	return nil
+}
