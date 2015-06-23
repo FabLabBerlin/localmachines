@@ -131,8 +131,8 @@ func (this *MachinesController) GetConnected() {
 
 // @Title GetConnected
 // @Description Get connectable machines
-// @Param	mid		path 	int	true		"Machine ID"
-// @Success 200 {object} models.ConnectedMachineList
+// @Param	mid		path 	int	true		Machine ID
+// @Success 200 {object} models.ConnectableMachineList
 // @Failure	401	Not authorized
 // @Failure	500	Internal Server Error
 // @router /:mid/connectable [get]
