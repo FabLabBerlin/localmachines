@@ -88,6 +88,16 @@
 
   </div><!-- /.row -->
 
+  <div class="row">
+    <div class="col-sm-3">
+      <div class="form-group">
+        <label>
+          <input type="checkbox" ng-model="machine.Visible"> Visible
+        </label>
+      </div>
+    </div><!-- -->
+  </div><!-- /.row -->
+
   <!-- Hexabus -->
   <div class="row">
     
@@ -202,13 +212,70 @@
   </div><!-- /.row -->
 
   <div class="row">
-    <div class="col-sm-12">
-      <h2>Comments</h2>
-    </div>
     <div class="col-sm-6">
-      <textarea class="form-control" ng-model="machine.Comments"></textarea>
-    </div>
-  </div>
+      
+      <h2>Comments</h2>
+      <textarea class="form-control" 
+                ng-model="machine.Comments"></textarea>
+    
+    </div><!-- /.col Comments -->
+    <div class="col-sm-6">
+
+      <h2>Connected Machines</h2>
+      <table class="table table-striped table-hover"
+             ng-show="connectedMachines.length">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>&nbsp;</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="connectedMachine in connectedMachines">
+            <td>{{connectedMachine.Id}}</td>
+            <td>{{connectedMachine.Name}}</td>
+            <td>
+              <span class="pull-right">
+                <a class="btn btn-danger btn-ico"
+                   ng-click="removeConnectedMachinePrompt(connectedMachine.Id)">
+                  <span class="fa fa-close"></span>
+                </a>
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table><!-- Connected Machines table -->
+
+      <div class="row" ng-show="connectableMachines.length">
+        <div class="col-sm-8">
+          
+          <select class="form-control"
+                  id="connectable-machine-select">
+            <option value="" selected disabled>Select Machine</option>
+            <option ng-repeat="connectable in connectableMachines"
+                    value="{{connectable.Id}}">
+              {{connectable.Name}}
+            </option>
+          </select>
+
+        </div>
+        <div class="col-sm-4">
+          <button class="btn btn-block btn-primary"
+                  ng-click="addConnectedMachine()">
+            <i class="fa fa-plus"></i> Add
+          </button>
+        </div>
+      </div><!-- /.row Add Connected Machine -->
+      
+    </div><!-- /.col Connected Machines -->
+  </div><!-- /.row Comments and Connected Machines -->
+
+  
+
+  
+  
+  
 
   <hr>
 
