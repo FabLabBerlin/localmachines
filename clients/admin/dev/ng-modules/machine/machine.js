@@ -341,7 +341,7 @@ app.controller('MachineCtrl',
     // Store connectable
     var connMachine = {
       Id: $('#connectable-machine-select').val(),
-      Name: $('#connectable-machine-select').text()
+      Name: $('#connectable-machine-select option:selected').text()
     };
 
     // Remove the connectable option so we do not repeat ourselves
@@ -365,6 +365,8 @@ app.controller('MachineCtrl',
     }
     str = '[' + str.substr(0, str.length - 1) + ']';
     $scope.machine.ConnectedMachines = str;
+
+    $scope.updateMachine();
   };
 
   $scope.removeConnectedMachinePrompt = function(connMachineId) {
@@ -415,6 +417,8 @@ app.controller('MachineCtrl',
     }
     str = '[' + str.substr(0, str.length - 1) + ']';
     $scope.machine.ConnectedMachines = str;
+
+    $scope.updateMachine();
   };
 
   // cf. http://stackoverflow.com/q/17922557/485185
