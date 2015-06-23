@@ -3,7 +3,6 @@ package modelTest
 import (
 	"testing"
 
-	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/kr15h/fabsmith/models"
@@ -16,14 +15,7 @@ func init() {
 
 func TestNetswitch(t *testing.T) {
 	Convey("Testing Netswitch model", t, func() {
-		Reset(func() {
-			o := orm.NewOrm()
-			var netswitches []models.NetSwitchMapping
-			o.QueryTable("netswitch").All(&netswitches)
-			for _, item := range netswitches {
-				o.Delete(&item)
-			}
-		})
+		Reset(ResetDB)
 		Convey("Testing CreateNetswitchMapping", func() {
 			Convey("Creating a netswitch mapping regulary", func() {
 				nid, err := models.CreateNetSwitchMapping(0)

@@ -3,7 +3,6 @@ package modelTest
 import (
 	"testing"
 
-	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/kr15h/fabsmith/models"
@@ -16,26 +15,7 @@ func init() {
 
 func TestActivations(t *testing.T) {
 	Convey("Testing Activation model", t, func() {
-		Reset(func() {
-			o := orm.NewOrm()
-			var activations []models.Activation
-			o.QueryTable("activations").All(&activations)
-			for _, item := range activations {
-				o.Delete(&item)
-			}
-
-			var machines []models.Machine
-			o.QueryTable("machines").All(&machines)
-			for _, item := range machines {
-				o.Delete(&item)
-			}
-
-			var users []models.User
-			o.QueryTable("user").All(&users)
-			for _, item := range users {
-				o.Delete(&item)
-			}
-		})
+		Reset(ResetDB)
 		Convey("Testing CreateActivation", func() {
 			user := models.User{FirstName: "ILoveFabLabs"}
 			Convey("Creating activation with non-existing machine", func() {
