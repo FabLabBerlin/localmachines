@@ -1,13 +1,11 @@
-package machineTests
+package modelTest
 
 import (
 	"testing"
 
-	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/kr15h/fabsmith/models"
-	. "github.com/kr15h/fabsmith/tests/models"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -17,14 +15,7 @@ func init() {
 
 func TestMachine(t *testing.T) {
 	Convey("Testing Machine model", t, func() {
-		Reset(func() {
-			o := orm.NewOrm()
-			var machines []models.Machine
-			o.QueryTable("machines").All(&machines)
-			for _, item := range machines {
-				o.Delete(&item)
-			}
-		})
+		Reset(ResetDB)
 		Convey("Testing DeleteMachine", func() {
 			machineName := "My lovely machine"
 			Convey("Creating a machine and delete it", func() {

@@ -1,13 +1,11 @@
-package userTests
+package modelTest
 
 import (
 	"testing"
 
-	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/kr15h/fabsmith/models"
-	. "github.com/kr15h/fabsmith/tests/models"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -17,30 +15,7 @@ func init() {
 
 func TestUsers(t *testing.T) {
 	Convey("Testing User model", t, func() {
-		Reset(func() {
-			o := orm.NewOrm()
-
-			// Removing all users
-			var users []models.User
-			o.QueryTable("user").All(&users)
-			for _, item := range users {
-				o.Delete(&item)
-			}
-
-			// Removing all permissions
-			var permissions []models.Permission
-			o.QueryTable("permission").All(&permissions)
-			for _, item := range permissions {
-				o.Delete(&item)
-			}
-
-			// Removing all auths
-			var auths []models.Auth
-			o.QueryTable("auth").All(&auths)
-			for _, item := range auths {
-				o.Delete(&item)
-			}
-		})
+		Reset(ResetDB)
 		Convey("Testing Delete user", func() {
 			u := models.User{
 				FirstName: "test",

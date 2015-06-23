@@ -1,13 +1,11 @@
-package userTests
+package modelTest
 
 import (
 	"testing"
 
-	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/kr15h/fabsmith/models"
-	. "github.com/kr15h/fabsmith/tests/models"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -15,16 +13,9 @@ func init() {
 	ConfigDB()
 }
 
-func TestUsers(t *testing.T) {
+func TestHexabus(t *testing.T) {
 	Convey("Testing Hexabus model", t, func() {
-		Reset(func() {
-			o := orm.NewOrm()
-			var hexabuses []models.HexabusMapping
-			o.QueryTable("hexaswitch").All(&hexabuses)
-			for _, item := range hexabuses {
-				o.Delete(&item)
-			}
-		})
+		Reset(ResetDB)
 		Convey("Testing CreateHexabusMapping", func() {
 			Convey("Creating a Hexabus mapping regulary", func() {
 				nid, err := models.CreateHexabusMapping(0)
