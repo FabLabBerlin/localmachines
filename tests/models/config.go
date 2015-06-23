@@ -1,4 +1,4 @@
-package test
+package modelTest
 
 import (
 	"fmt"
@@ -9,11 +9,11 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
-// Configure database for tests
+// ConfigDB : Configure database for tests
 func ConfigDB() {
 	_, file, _, _ := runtime.Caller(1)
 
-	apppath, _ := filepath.Abs(filepath.Dir(filepath.Join(file, ".."+string(filepath.Separator)+".."+string(filepath.Separator)+".."+string(filepath.Separator))))
+	apppath, _ := filepath.Abs(filepath.Dir(filepath.Join(file, ".."+string(filepath.Separator)+".."+string(filepath.Separator))))
 	beego.TestBeegoInit(apppath)
 
 	beego.SetLevel(beego.LevelError)

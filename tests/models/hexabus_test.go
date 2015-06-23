@@ -1,4 +1,4 @@
-package userTests
+package modelTest
 
 import (
 	"testing"
@@ -7,7 +7,6 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/kr15h/fabsmith/models"
-	. "github.com/kr15h/fabsmith/tests/models"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -15,7 +14,7 @@ func init() {
 	ConfigDB()
 }
 
-func TestUsers(t *testing.T) {
+func TestHexabus(t *testing.T) {
 	Convey("Testing Hexabus model", t, func() {
 		Reset(func() {
 			o := orm.NewOrm()
