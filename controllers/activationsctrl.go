@@ -207,6 +207,27 @@ func (this *ActivationsController) Create() {
 		}
 	}
 
+	// Turn on the machine
+	machine := models.Machine{}
+	machine.Id = machineId
+	err = machine.On()
+	if err != nil {
+		beego.Error("Failed to turn on machine:", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	// Turn on the connected machines
+	var connectedMachines *models.ConnectedMachineList
+	connectedMachines, err = models.GetConnectedMachines(machineId)
+	if err != nil {
+		beego.Warning("Failed to get connected machines:", err)
+	} else {
+		if err = connectedMachines.On(); err != nil {
+			beego.Error("Failed to turn on connected machines:", err)
+			this.CustomAbort(500, "Internal Server Error")
+		}
+	}
+
 	// Continue with creating activation
 	var activationId int64
 	activationId, err = models.CreateActivation(machineId, userId)
@@ -258,6 +279,40 @@ func (this *ActivationsController) Close() {
 		beego.Error("Failed to get :aid")
 		this.CustomAbort(403, "Failed to close activation")
 	}
+
+	var machineId int64
+	machineId, err = models.GetActivationMachineId(aid)
+	if err != nil {
+		beego.Error("Failed to get machine ID")
+		this.CustomAbort(403, "Failed to close activation")
+	}
+
+	// Attempt to switch off the machine first. This is a way to detect
+	// network errors early as the users won't be able to end their activation
+	// unless the error in the network is fixed.
+	machine := models.Machine{}
+	machine.Id = machineId
+	if err = machine.Off(); err != nil {
+		beego.Error("Failed to switch off machine")
+		if !this.IsAdmin() {
+			this.CustomAbort(500, "Internal Server Error")
+		}
+	}
+
+	// Get connected machines and try to swich them off as well
+	var connectedMachines *models.ConnectedMachineList
+	connectedMachines, err = models.GetConnectedMachines(machineId)
+	if err != nil {
+		beego.Warning("Failed to get connected machines:", err)
+	} else {
+		if err = connectedMachines.Off(); err != nil {
+			beego.Error("Failed to switch off connected machines")
+			if !this.IsAdmin() {
+				this.CustomAbort(500, "Internal Server Error")
+			}
+		}
+	}
+
 	err = models.CloseActivation(aid)
 	if err != nil {
 		beego.Error("Failed to close activation")
@@ -270,13 +325,6 @@ func (this *ActivationsController) Close() {
 	if err != nil {
 		beego.Error("Failed to get deactivate timeout from config:", err)
 		deactivateTimeout = 30
-	}
-
-	var machineId int64
-	machineId, err = models.GetActivationMachineId(aid)
-	if err != nil {
-		beego.Error("Failed to get machine ID")
-		this.CustomAbort(403, "Failed to close activation")
 	}
 
 	go deactivateMachineAfterTimeout(machineId, deactivateTimeout)
@@ -328,7 +376,7 @@ func deactivateMachineAfterTimeout(machineId int64, timeoutSeconds int64) {
 	o := orm.NewOrm()
 	activationModel := models.Activation{Id: 0}
 	beego.Info("Attempt to get an active activation with the machine ID", machineId)
-	err := o.Raw("SELECT id FROM activation WHERE active=true AND machine_id=?",
+	err := o.Raw("SELECT id FROM activations WHERE active=true AND machine_id=?",
 		machineId).QueryRow(&activationModel)
 	if err != nil {
 		beego.Error("There was an error while getting activation:", err)

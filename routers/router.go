@@ -14,6 +14,10 @@ func init() {
 	// Set main redirect in the MainController
 	beego.Router("/", &controllers.MainController{})
 	beego.Router("/crossdomain.xml", &controllers.CrossdomainController{})
+	beego.Router("/apple-touch-icon.png", &controllers.AppleTouchIconController{})
+	beego.Router("/favicon.png", &controllers.FaviconController{})
+	// No need to create a router for favicon.ico and robots.txt as they are
+	// handled by beego router.go
 
 	ns := beego.NewNamespace("/api",
 		beego.NSNamespace("/users",
@@ -44,6 +48,11 @@ func init() {
 		beego.NSNamespace("/invoices",
 			beego.NSInclude(
 				&controllers.InvoicesController{},
+			),
+		),
+		beego.NSNamespace("/netswitch",
+			beego.NSInclude(
+				&controllers.NetSwitchController{},
 			),
 		),
 	)

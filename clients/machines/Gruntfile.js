@@ -77,6 +77,11 @@ module.exports = function (grunt) {
 
 		uglify: {
 			prod: {
+				options: {
+					compress: {
+        		drop_console: true
+      		}
+				},
 				files: {
 					'prod/assets/js/modernizr.min.js': 'dev/bower_components/modernizr/modernizr.js',
 					'prod/assets/js/app.min.js': 'tmp/app.js'

@@ -37,8 +37,6 @@ app.controller('MachinesCtrl',
     };
 
     $scope.onNfc = function(uid) {
-      window.libnfc.cardRead.disconnect($scope.onNfc);
-      window.libnfc.cardReaderError.disconnect($scope.onNfcError);
       $scope.smartLogout();
     };
 
@@ -131,16 +129,32 @@ app.controller('MachinesCtrl',
     })($scope.numberOfSecondsBeforeLogOut);
   }
 
+  // Reloading machines every 1 second
+  $scope.reloadMachinesInterval = setInterval(function(){
+    $scope.loadMachines();
+  }, 2000);
+
   // Makes sure that NFC intervals are cleared
   $scope.smartLogout = function() {
+    // Disconnecting events from the nfc reader
+    if(window.libnfc) {
+      window.libnfc.cardRead.disconnect($scope.onNfc);
+      window.libnfc.cardReaderError.disconnect($scope.onNfcError);
+    }
     // Clearing timers of all machines
     $.map($scope.machines, function(machine, i){
       if(machine.activationInterval !== undefined){
+        console.log('smartLogout: clear activation interval machine ID: ' + 
+          machine.Id);
         clearInterval(machine.activationInterval);
+        machine.activationInterval = 0;
       }
     });
+    clearInterval($scope.reloadMachinesInterval);
     clearInterval($scope.idleInterval);
     clearTimeout($scope.nfcTimeout);
+    // Hide spinner if it is visible
+    $scope.hideGlobalLoader();
     $scope.logout();
   };
 
@@ -152,6 +166,7 @@ app.controller('MachinesCtrl',
       params: { ac: new Date().getTime() }
     })
     .success(function(machines){
+      console.log(machines);
       $scope.onMachinesLoaded(machines);
     })
     .error(function(data, status) {
@@ -194,24 +209,27 @@ app.controller('MachinesCtrl',
 
     // Got activations
     // Add status vars to machines
-    for (var mchIter = 0; mchIter < machines.length; mchIter++) {
+    _.map(machines, function(machine, i) {
+      if (machine.Image) {
+        machine.ImageUrl = '/files/' + machine.Image;
+      }
 
       // TODO: figure out simpler way for indicating machine status
-      machines[mchIter].available = false;
-      machines[mchIter].used = false;
-      machines[mchIter].occupied = false;
-      machines[mchIter].unavailable = true;
+      machine.available = false;
+      machine.used = false;
+      machine.occupied = false;
+      machine.unavailable = true;
 
-      if (machines[mchIter].Available) {
-        machines[mchIter].available = true;
-        machines[mchIter].unavailable = false;
+      if (machine.Available) {
+        machine.available = true;
+        machine.unavailable = false;
       } else {
 
         // If machine is not available it means that
         // it is either occupied by someone else,
         // unavailable or used by the user logged
         for (var actIter = 0; actIter < activations.length; actIter++) {
-          if (activations[actIter].MachineId === machines[mchIter].Id) {
+          if (activations[actIter].MachineId === machine.Id) {
 
             var activationStartTime;
             var timeNow;
@@ -220,52 +238,86 @@ app.controller('MachinesCtrl',
             if ($cookieStore.get('Id') === activations[actIter].UserId) {
 
               // Machine is being used by logged user
-              machines[mchIter].used = true;
-              machines[mchIter].unavailable = false;
+              machine.used = true;
+              machine.unavailable = false;
 
               // Assign other activation related data to the machine object
-              machines[mchIter].OccupiedByUserId = activations[actIter].UserId;
-              machines[mchIter].ActivationId = activations[actIter].Id;
+              machine.OccupiedByUserId = activations[actIter].UserId;
+              machine.ActivationId = activations[actIter].Id;
 
               // What we also need is to start the counter interval
               // Start timer for elapsed time
-              machines[mchIter].ActivationSecondsElapsed =
+              /*
+              machine.ActivationSecondsElapsed =
                   $scope.getActivationElapsedSeconds(activations[actIter]);
+              */
+              machine.ActivationSecondsElapsed = activations[actIter].TimeTotal;
 
             } else {
 
               // Machine is being used by someone else
-              machines[mchIter].occupied = true;
-              machines[mchIter].unavailable = false;
-              machines[mchIter].OccupiedByUserId = activations[actIter].UserId;
-              machines[mchIter].ActivationId = activations[actIter].Id;
-              machines[mchIter].UserAdmin =
+              machine.occupied = true;
+              machine.unavailable = false;
+              machine.OccupiedByUserId = activations[actIter].UserId;
+              machine.ActivationId = activations[actIter].Id;
+              machine.UserAdmin =
                 ($cookieStore.get('UserRole') === 'admin');
 
               // But, if logged as admin, we can also set the activation ID
               // and elapsed time
-              if ( machines[mchIter].UserAdmin ) {
-                machines[mchIter].ActivationSecondsElapsed =
+              if ( machine.UserAdmin ) {
+                /*
+                machine.ActivationSecondsElapsed =
                   $scope.getActivationElapsedSeconds(activations[actIter]);
+                */
+                machine.ActivationSecondsElapsed = activations[actIter].TimeTotal;
               }
 
               // Get user name
-              $scope.getOccupierName(machines[mchIter], activations[actIter].UserId);
+              $scope.getOccupierName(machine, activations[actIter].UserId);
             }
           }
         } // for activations
       } // if machine available else
-    } // for machines
+    }); // for machines
 
-    $scope.machines = machines;
-  };
+    if ($scope.machines.length > 0 &&
+      $scope.machines.length === machines.length) {
+      console.log('Checking for changes in the newly loaded machines');
+      // Iterate over existing machines and search for changes
+      _.each($scope.machines, function(machine, i) {
+        if (machines[i].available !== machine.available ||
+          machines[i].occupied !== machine.occupied ||
+          machines[i].used !== machine.used ||
+          machines[i].unavailable !== machine.unavailable ||
+          machines[i].Visible !== machine.Visible) {
+          
+          console.log('Change found, updating $scope.machines[i]');
 
-  $scope.getActivationElapsedSeconds = function(activation){
-    var activationStartTime = Date.parse(activation.TimeStart);
-    var timeNow = Date.now();
-    var activationElapsedTime = timeNow - activationStartTime;
-    activationElapsedTime = Math.round(activationElapsedTime / 1000);
-    return activationElapsedTime;
+          // Stop interval if there is one
+          if ($scope.machines[i].activationInterval !== 0) {
+            clearInterval($scope.machines[i].activationInterval);
+            $scope.machines[i].activationInterval = 0;
+          }
+
+          // Stop interval if there is one
+          if (machines[i].activationInterval !== 0) {
+            clearInterval(machines[i].activationInterval);
+            machines[i].activationInterval = 0;
+          }
+
+          $scope.machines[i] = machines[i];
+          if (machines[i].used || machines[i].occupied) {
+            $scope.machines[i].activationInterval = setInterval(
+              $scope.updateElapsedTime, 1000, i);
+          }
+
+        }
+      });
+    } else {
+      console.log('Assigning the newly loaded machines to $scope.machines the first time');
+      $scope.machines = machines;
+    }
   };
 
   $scope.getOccupierName = function(machine, userId) {
@@ -283,11 +335,15 @@ app.controller('MachinesCtrl',
   };
 
   $scope.showGlobalLoader = function() {
-    $('#loader-global').removeClass('hidden');
+    while ($('#loader-global').hasClass('hidden')) {
+      $('#loader-global').removeClass('hidden');
+    }
   };
 
   $scope.hideGlobalLoader = function() {
-    $('#loader-global').addClass('hidden');
+    if (!$('#loader-global').hasClass('hidden')) {
+      $('#loader-global').addClass('hidden');
+    }
   };
 
   $scope.updateElapsedTime = function(machineIter) {
@@ -323,9 +379,18 @@ app.controller('MachinesCtrl',
           $scope.machines[machineIter].available = false;
           $scope.machines[machineIter].used = true;
 
+          if ($scope.machines[machineIter].activationInterval !== 0) {
+            clearInterval($scope.machines[machineIter].activationInterval);
+            $scope.machines[machineIter].activationInterval = 0;
+          }
+
           // Start timer for elapsed time
-          $scope.machines[machineIter].activationInterval =
-            setInterval($scope.updateElapsedTime, 1000, machineIter);
+          if (!$scope.machines[machineIter].activationInterval) {
+            console.log('activate: set activation interval machine ID: ' + 
+              $scope.machines[machineIter].Id);
+            $scope.machines[machineIter].activationInterval =
+              setInterval($scope.updateElapsedTime, 1000, machineIter);
+          }
 
           // Exit the machine finding for loop
           break;
@@ -359,7 +424,10 @@ app.controller('MachinesCtrl',
   $scope.deactivate = function(machine) {
 
     // Stop activation timer interval
+    console.log('deactivate: clear activation interval machine ID: ' + 
+      machine.Id);
     clearInterval(machine.activationInterval);
+    machine.activationInterval = 0;
 
     // Show loader
     $scope.showGlobalLoader();
@@ -423,10 +491,23 @@ app.directive('fsMachineBodyUsed', function() {
     restrict: 'E',
     controller: ['$scope', function($scope){
       if ($scope.machine.used) {
+
+        console.log('fsMachineBodyUsed: machine.activationInterval before: ' + $scope.machine.activationInterval);
+        
+        if ($scope.machine.activationInterval !== 0) {
+          clearInterval($scope.machine.activationInterval);
+          $scope.machine.activationInterval = 0;
+        }
+
+        console.log('fsMachineBodyUsed: set activation interval machine ID ' + 
+          $scope.machine.Id);
         $scope.machine.activationInterval = setInterval(function() {
           $scope.machine.ActivationSecondsElapsed++;
           $scope.$apply();
         }, 1000);
+        
+        console.log('fsMachineBodyUsed: machine.activationInterval after: ' + $scope.machine.activationInterval);
+        
       }
 
     }]
@@ -447,10 +528,21 @@ app.directive('fsMachineBodyOccupied', function() {
 
         // Activate occupied machine timer if user is admin or staff
         if (user.Admin) {
+          console.log('fsMachineBodyOccupied: machine.activationInterval before: ' + $scope.machine.activationInterval);
+          
+          if ($scope.machine.activationInterval !== 0) {
+              clearInterval($scope.machine.activationInterval);
+              $scope.machine.activationInterval = 0;
+          }
+
+          console.log('fsMachineBodyOccupied: set activation interval machine ID: ' + 
+            $scope.machine.Id);
           $scope.machine.activationInterval = setInterval(function() {
             $scope.machine.ActivationSecondsElapsed++;
             $scope.$apply();
           }, 1000);
+          console.log('fsMachineBodyOccupied: machine.activationInterval after: ' + $scope.machine.activationInterval);
+          
         }
 
       }

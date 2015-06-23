@@ -402,7 +402,9 @@ app.controller('UserCtrl',
       toastr.success('User updated');
     })
     .error(function(data) {
-      if (data === 'lastAdmin') {
+      if (data === 'duplicateEntry') {
+        toastr.error('Duplicate entry error. Make sure that fields like user name and email are unique.');
+      } else if (data === 'lastAdmin') {
         $scope.user.Admin = true;
         $scope.updateAdminStatus();
         toastr.error('You are the last remaining admin. Remember - power comes with great responsibility!');

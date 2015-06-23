@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/astaxie/beego"
@@ -13,23 +14,44 @@ func init() {
 }
 
 type Machine struct {
-	Id          int64  `orm:"auto";"pk"`
-	Name        string `orm:"size(255)"`
-	Shortname   string `orm:"size(100)"`
-	Description string `orm:"type(text)"`
-	Image       string `orm:"size(255)"` // TODO: media and media type tables
-	Available   bool
-	UnavailMsg  string    `orm:"type(text)"`
-	UnavailTill time.Time `orm:"null;type(date)" form:"Date,2006-01-02T15:04:05Z07:00`
-	Price       float32
-	PriceUnit   string `orm:"size(100)"`
-	Comments    string `orm:"type(text)"`
+	Id                int64  `orm:"auto";"pk"`
+	Name              string `orm:"size(255)"`
+	Shortname         string `orm:"size(100)"`
+	Description       string `orm:"type(text)"`
+	Image             string `orm:"size(255)"` // TODO: media and media type tables
+	Available         bool
+	UnavailMsg        string    `orm:"type(text)"`
+	UnavailTill       time.Time `orm:"null;type(date)" form:"Date,2006-01-02T15:04:05Z07:00`
+	Price             float32
+	PriceUnit         string `orm:"size(100)"`
+	Comments          string `orm:"type(text)"`
+	Visible           bool
+	ConnectedMachines string `orm:"size(255)"`
+	SwitchRefCount    int64
 }
 
 // Define custom table name as for SQL table with a name "machines"
 // makes more sense.
 func (u *Machine) TableName() string {
 	return "machines"
+}
+
+type ConnectedMachine struct {
+	Id   int64
+	Name string
+}
+
+type ConnectedMachineList struct {
+	Data []*ConnectedMachine
+}
+
+type ConnectableMachine struct {
+	Id   int64
+	Name string
+}
+
+type ConnectableMachineList struct {
+	Data []*ConnectableMachine
 }
 
 func GetMachine(machineId int64) (*Machine, error) {
@@ -123,6 +145,150 @@ func DeleteMachine(machineId int64) error {
 			fmt.Sprintf("Failed to delete machine permissions: %v", err))
 	}
 	beego.Trace("Deleted num machine permissions:", num)
+
+	return nil
+}
+
+func GetConnectedMachines(machineId int64) (*ConnectedMachineList, error) {
+
+	machine := Machine{}
+	machine.Id = machineId
+
+	o := orm.NewOrm()
+	err := o.Read(&machine)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to get connected machines: %v", err)
+	}
+
+	beego.Trace("connected machines:", machine.ConnectedMachines)
+
+	machineList := ConnectedMachineList{}
+
+	// Empty string, to not waste resources - return
+	if machine.ConnectedMachines == "" {
+		return &machineList, nil
+	}
+
+	// Parse string into object we can digest,
+	// so we can load machine data individually
+	var machineIds []int64
+	err = json.Unmarshal([]byte(machine.ConnectedMachines), &machineIds)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to unmarshal json: %v", err)
+	}
+
+	// Load connected machine data from the database
+	for _, val := range machineIds {
+		m := Machine{}
+		m.Id = val
+		err = o.Read(&m)
+		if err != nil {
+			beego.Error("Failed to get connected machine from db, ID", val)
+			return nil, fmt.Errorf("Failed to get connected machine: %v", err)
+		}
+		cm := ConnectedMachine{}
+		cm.Id = m.Id
+		cm.Name = m.Name
+		machineList.Data = append(machineList.Data, &cm)
+	}
+
+	//machineList.Data = append(machineList.Data, &machine1)
+	//machineList.Data = append(machineList.Data, &machine2)
+
+	return &machineList, nil
+}
+
+func GetConnectableMachines(machineId int64) (*ConnectableMachineList, error) {
+
+	// All machines can be connectable
+	var machines []*Machine
+	var err error
+	machines, err = GetAllMachines()
+	if err != nil {
+		return nil, err
+	}
+
+	// We have to substract the ones connected already from
+	// the full machine list
+	var machineList *ConnectedMachineList
+	machineList, err = GetConnectedMachines(machineId)
+	if err != nil {
+		return nil, err
+	}
+
+	cmList := ConnectableMachineList{}
+
+MachineLoop:
+	for _, machine := range machines {
+		if machine.Id == machineId {
+			continue MachineLoop
+		}
+
+		for _, connMachine := range machineList.Data {
+			if machine.Id == connMachine.Id {
+				continue MachineLoop
+			}
+		}
+
+		cm := ConnectableMachine{}
+		cm.Id = machine.Id
+		cm.Name = machine.Name
+		cmList.Data = append(cmList.Data, &cm)
+	}
+
+	return &cmList, nil
+}
+
+func (this *Machine) On() error {
+	var netSwitchMapping *NetSwitchMapping = nil
+	var err error
+	netSwitchMapping, err = GetNetSwitchMapping(this.Id)
+	if err != nil {
+		beego.Warning("Failed to get NetSwitch mapping:", err)
+	} else if netSwitchMapping != nil {
+		if err = netSwitchMapping.On(); err != nil {
+			return fmt.Errorf("Failed to turn on NetSwitch: %v", err)
+		}
+	}
+	return nil
+}
+
+func (this *Machine) Off() error {
+	var netSwitch *NetSwitchMapping = nil
+	var err error
+	netSwitch, err = GetNetSwitchMapping(this.Id)
+	if err != nil {
+		beego.Warning("Failed to get NetSwitch mapping:", err)
+	} else if netSwitch != nil {
+		if err = netSwitch.Off(); err != nil {
+			return fmt.Errorf("Failed to turn off NetSwitch: %v", err)
+		}
+	}
+	return nil
+}
+
+func (this *ConnectedMachineList) On() error {
+
+	for _, cm := range this.Data {
+		m := Machine{}
+		m.Id = cm.Id
+		if err := m.On(); err != nil {
+			return fmt.Errorf("Failed to turn on connected machine: %v", err)
+		}
+	}
+
+	return nil
+}
+
+func (this *ConnectedMachineList) Off() error {
+
+	for _, cm := range this.Data {
+		m := Machine{}
+		m.Id = cm.Id
+		if err := m.Off(); err != nil {
+			return fmt.Errorf("Failed to turn off connected machine: %v", err)
+		}
+	}
 
 	return nil
 }
