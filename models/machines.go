@@ -240,8 +240,15 @@ MachineLoop:
 }
 
 func (this *Machine) On() error {
-	var netSwitchMapping *NetSwitchMapping = nil
+
+	// Get current switch reference count
 	var err error
+	o := orm.NewOrm()
+	if err = o.Read(this); err != nil {
+		return fmt.Errorf("Failed to get machine switch ref count: %v", err)
+	}
+
+	var netSwitchMapping *NetSwitchMapping = nil
 	netSwitchMapping, err = GetNetSwitchMapping(this.Id)
 	if err != nil {
 		beego.Warning("Failed to get NetSwitch mapping:", err)
@@ -250,12 +257,47 @@ func (this *Machine) On() error {
 			return fmt.Errorf("Failed to turn on NetSwitch: %v", err)
 		}
 	}
+
+	// Increase and update switch reference count
+	this.SwitchRefCount += 1
+	var num int64
+	num, err = o.Update(this)
+	if err != nil {
+		return fmt.Errorf("Failed to update machine switch ref count: %v", err)
+	}
+	beego.Trace("Num affected rows during switch ref update:", num)
+
 	return nil
 }
 
 func (this *Machine) Off() error {
-	var netSwitch *NetSwitchMapping = nil
+
+	// Get current switch reference count
 	var err error
+	o := orm.NewOrm()
+	if err = o.Read(this); err != nil {
+		return fmt.Errorf("Failed to get machine switch ref count: %v", err)
+	}
+
+	this.SwitchRefCount -= 1
+	if this.SwitchRefCount < 0 {
+		this.SwitchRefCount = 0
+	}
+
+	// Update reference count
+	var num int64
+	num, err = o.Update(this)
+	if err != nil {
+		return fmt.Errorf("Failed to update machine switch ref count: %v", err)
+	}
+	beego.Trace("Num affected rows during switch ref update:", num)
+
+	// Turn off the switch physically only when reference count reaches 0
+	if this.SwitchRefCount > 0 {
+		return nil
+	}
+
+	var netSwitch *NetSwitchMapping = nil
 	netSwitch, err = GetNetSwitchMapping(this.Id)
 	if err != nil {
 		beego.Warning("Failed to get NetSwitch mapping:", err)
