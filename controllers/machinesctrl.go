@@ -97,14 +97,14 @@ func (this *MachinesController) Get() {
 	this.ServeJson()
 }
 
-// @Title GetConnected
+// @Title GetConnections
 // @Description Get connected machines
 // @Param	mid		path 	int	true		"Machine ID"
 // @Success 200 {object} models.ConnectedMachineList
 // @Failure	401	Not authorized
 // @Failure	500	Internal Server Error
-// @router /:mid/connected [get]
-func (this *MachinesController) GetConnected() {
+// @router /:mid/connections [get]
+func (this *MachinesController) GetConnections() {
 
 	var machineId int64
 	var err error
