@@ -44,6 +44,15 @@ type ConnectedMachineList struct {
 	Data []*ConnectedMachine
 }
 
+type ConnectableMachine struct {
+	Id   int64
+	Name string
+}
+
+type ConnectableMachineList struct {
+	Data []*ConnectableMachine
+}
+
 func GetMachine(machineId int64) (*Machine, error) {
 	beego.Trace(machineId)
 	machine := Machine{Id: machineId}
@@ -186,4 +195,45 @@ func GetConnectedMachines(machineId int64) (*ConnectedMachineList, error) {
 	//machineList.Data = append(machineList.Data, &machine2)
 
 	return &machineList, nil
+}
+
+func GetConnectableMachines(machineId int64) (*ConnectableMachineList, error) {
+
+	// All machines can be connectable
+	var machines []*Machine
+	var err error
+	machines, err = GetAllMachines()
+	if err != nil {
+		return nil, err
+	}
+
+	// We have to substract the ones connected already from
+	// the full machine list
+	var machineList *ConnectedMachineList
+	machineList, err = GetConnectedMachines(machineId)
+	if err != nil {
+		return nil, err
+	}
+
+	cmList := ConnectableMachineList{}
+
+MachineLoop:
+	for _, machine := range machines {
+		if machine.Id == machineId {
+			continue MachineLoop
+		}
+
+		for _, connMachine := range machineList.Data {
+			if machine.Id == connMachine.Id {
+				continue MachineLoop
+			}
+		}
+
+		cm := ConnectableMachine{}
+		cm.Id = machine.Id
+		cm.Name = machine.Name
+		cmList.Data = append(cmList.Data, &cm)
+	}
+
+	return &cmList, nil
 }

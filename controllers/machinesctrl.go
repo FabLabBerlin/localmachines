@@ -97,7 +97,7 @@ func (this *MachinesController) Get() {
 	this.ServeJson()
 }
 
-// @Title Get
+// @Title GetConnected
 // @Description Get connected machines
 // @Param	mid		path 	int	true		"Machine ID"
 // @Success 200 {object} models.ConnectedMachineList
@@ -126,6 +126,39 @@ func (this *MachinesController) GetConnected() {
 	}
 
 	this.Data["json"] = machineList
+	this.ServeJson()
+}
+
+// @Title GetConnected
+// @Description Get connectable machines
+// @Param	mid		path 	int	true		"Machine ID"
+// @Success 200 {object} models.ConnectedMachineList
+// @Failure	401	Not authorized
+// @Failure	500	Internal Server Error
+// @router /:mid/connectable [get]
+func (this *MachinesController) GetConnectable() {
+
+	var machineId int64
+	var err error
+	machineId, err = this.GetInt64(":mid")
+	if err != nil {
+		beego.Error("Failed to get :mid variable")
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	if !this.IsAdmin() {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	var cmList *models.ConnectableMachineList
+	cmList, err = models.GetConnectableMachines(machineId)
+	if err != nil {
+		beego.Error("Could not get connectable machine list:", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	this.Data["json"] = cmList
 	this.ServeJson()
 }
 
