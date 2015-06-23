@@ -26,9 +26,11 @@ var UserPage = React.createClass({
     getInitialState: function() {
         var _infoUser = UserStore.getInfoUser();
         var _infoMachine = UserStore.getInfoMachine();
+        var _infoMembership = UserStore.getMembership();
         return {
             infoUser: _infoUser,
-            infoMachine: _infoMachine
+            infoMachine: _infoMachine,
+            infoMembership: _infoMembership
         };
     },
 
@@ -65,7 +67,7 @@ var UserPage = React.createClass({
                     submit={this.handleSubmit}
                 />
                 <MachineList info={this.state.infoMachine} />
-                <Membership />
+                <Membership info={this.state.infoMembership} />
             </div>
         );
     }

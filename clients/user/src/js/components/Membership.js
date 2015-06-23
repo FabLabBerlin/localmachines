@@ -4,7 +4,10 @@ var Membership = React.createClass({
     render() {
         return (
             <div className="membership" >
-                <p>membership</p>
+                <p> Membership </p>
+                <ul>
+                    <li>here the membership</li><!-- here change to be dynamic -->
+                </ul>
             </div>
         );
     }

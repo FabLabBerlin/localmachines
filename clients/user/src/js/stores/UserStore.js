@@ -4,60 +4,13 @@ var UserStore = {
         failToLogin: false,
         isLogged: false,
         // everything @ get /users/{uid}
-        rawInfoUser: {
-            Id: -1,
-            FirstName: "fakeUser",
-            LastName: "fakeUser",
-            Username: "fakeUser",
-            Email: "fakeUser@example.com",
-            InvoiceAddr: 1,
-            ShipAddr: 2,
-            ClientId: 3,
-            B2b: false,
-            Company: "makea",
-            VatUserId: "",
-            VatRate: -1,
-            UserRole: "",
-            Created: "0001-01-01T00:00:20Z",
-            Comments: ""    
-        },
+        rawInfoUser: {},
         // everything @ get /users/{uid}/machinepermissions
-        rawInfoMachine: [
-            {
-                Id: '1',
-                Name: 'ouioui',
-                Shortname: 'oui',
-                Description: 'du oui à foison'
-            }
-        ]
+        rawInfoMachine: [],
+        rawInfoMembership:{}
     },
 
-   /*
-    * To make request from the server
-    * _url: the url for the API call
-    * nameState: the name of the state you'll modify
-    * _data: the data you're sending
-
-    * _type: methods you use ('GET', 'POST' etc ...)
-    *
-    */
-    getDataFromServer(_url, stateName, _dataToSend, _type, functionIfFail) {
-        $.ajax({
-            url: _url,
-            dataType: 'json',
-            type: _type,
-            data: _dataToSend,
-            success: function(data) {
-                this._state[stateName] = data;
-            }.bind(this),
-            error: function(xhr, status, err) {
-                console.error(_url, status, err.toString());
-                functionIfFail();
-            }.bind(this),
-        });
-    },
-
-    // Logout from server
+    // Logout
     logoutFromServer() {
         $.ajax({
             url: '/api/users/logout',
@@ -121,11 +74,26 @@ var UserStore = {
             type: 'GET',
             success: function(data) {
                 this._state.rawInfoMachine = data;
+                this.getMembershipFromServer(uid);
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error('/users/{uid}/machinepermissions', status, err.toString());
+            }.bind(this),
+        });
+    },
+
+    getMembershipFromServer(uid) {
+        $.ajax({
+            url: '/api/users/' + uid + '/memberships',
+            dataType: 'json',
+            type: 'GET',
+            success: function(data) {
+                this._state.rawInfoMembership = data;
                 this._state.isLogged = true;
                 this.onChange();
             }.bind(this),
             error: function(xhr, status, err) {
-                console.error('/users/{uid}/machinepermissions', status, err.toString());
+                console.error('/users/{uid}/memberships', status, err.toString());
             }.bind(this),
         });
     },
@@ -175,6 +143,10 @@ var UserStore = {
     // Use by UserPage to get its state
     getInfoMachine: function() {
         return this._state.rawInfoMachine;
+    },
+
+    getMembership() {
+        return this._state.raw
     },
 
     onChange() {}

@@ -6,9 +6,8 @@ var MachineList = React.createClass({
             return (
                 <div key={machine.Id} >
                     <ul>
-                        <li>{machine.Name}</li>
-                        <li>{machine.Shortname}</li>
-                        <li>{machine.Description}</li>
+                        <li>Machine name: {machine.Name}</li>
+                        <li>Description: {machine.Description}</li>
                     </ul>
                 </div>
             );
