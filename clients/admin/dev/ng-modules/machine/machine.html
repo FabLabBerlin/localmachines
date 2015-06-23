@@ -245,6 +245,27 @@
           </tr>
         </tbody>
       </table><!-- Connected Machines table -->
+
+      <div class="row" ng-show="connectableMachines.length">
+        <div class="col-sm-8">
+          
+          <select class="form-control"
+                  id="connectable-machine-select">
+            <option value="" selected disabled>Select Machine</option>
+            <option ng-repeat="connectable in connectableMachines"
+                    value="{{connectable.Id}}">
+              {{connectable.Name}}
+            </option>
+          </select>
+
+        </div>
+        <div class="col-sm-4">
+          <button class="btn btn-block btn-primary"
+                  ng-click="addConnectedMachine()">
+            <i class="fa fa-plus"></i> Add
+          </button>
+        </div>
+      </div><!-- /.row Add Connected Machine -->
       
     </div><!-- /.col Connected Machines -->
   </div><!-- /.row Comments and Connected Machines -->

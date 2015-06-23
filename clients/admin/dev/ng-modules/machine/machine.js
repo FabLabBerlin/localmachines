@@ -64,8 +64,25 @@ app.controller('MachineCtrl',
     });
   };
 
+  $scope.loadConnectableMachines = function(machineId) {
+    $http({
+      method: 'GET',
+      url: '/api/machines/' + machineId + '/connectable',
+      params: {
+        ac: new Date().getTime()
+      }
+    })
+    .success(function(machineList) {
+      $scope.connectableMachines = machineList.Data;
+    })
+    .error(function() {
+      toastr.error('Failed to load connectable machines');
+    });
+  };
+
   $scope.loadMachine($scope.machine.Id);
   $scope.loadConnectedMachines($scope.machine.Id);
+  $scope.loadConnectableMachines($scope.machine.Id);
 
   $scope.updateMachine = function() {
 
@@ -315,12 +332,39 @@ app.controller('MachineCtrl',
   // Connected machine stuff
   // TODO: Put this in separate module / file
 
-  $scope.loadConnectedMachineCandidates = function() {
 
-  };
 
   $scope.addConnectedMachine = function() {
+    var connMachineId = $('#connectable-machine-select').val();
+    if (!connMachineId) {
+      toastr.error('Please select a machine to connect');
+      return;
+    }
 
+    // Store connectable
+    var connMachine = {
+      Id: $('#connectable-machine-select').val(),
+      Name: $('#connectable-machine-select').text()
+    };
+
+    // Remove the connectable option so we do not repeat ourselves
+    for (var i = 0; i < $scope.connectableMachines.length; i++) {
+      if (parseInt($scope.connectableMachines[i].Id) === parseInt(connMachine.Id)) {
+        $scope.connectableMachines.splice(i, 1);
+        break;
+      }
+    }
+
+    // Add machine to the connected machine list
+    $scope.connectedMachines.push(connMachine);
+
+    // And also update the machine.ConnectedMachines string based array
+    var str = '';
+    for (i = 0; i < $scope.connectedMachines.length; i++) {
+      str += $scope.connectedMachines[i].Id + ',';
+    }
+    str = '[' + str.substr(0, str.length - 1) + ']';
+    $scope.machine.ConnectedMachines = str;
   };
 
   $scope.removeConnectedMachinePrompt = function() {
