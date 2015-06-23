@@ -37,5 +37,55 @@ func TestActivations(t *testing.T) {
 				So(err, ShouldBeNil)
 			})
 		})
+		Convey("Testing CloseActivation", func() {
+			Convey("Trying to close a non-existing activation", func() {
+				err := models.CloseActivation(0)
+
+				So(err, ShouldNotBeNil)
+			})
+			Convey("Creating an activation and close it", func() {
+				mid, _ := models.CreateMachine("lel")
+				aid, _ := models.CreateActivation(mid, 0)
+				err := models.CloseActivation(aid)
+
+				So(err, ShouldBeNil)
+			})
+		})
+		Convey("Testing DeleteActivation", func() {
+			Convey("Trying to delete non-existing activation", func() {
+				err := models.DeleteActivation(0)
+
+				So(err, ShouldNotBeNil)
+			})
+			Convey("Creating an activation and delete it", func() {
+				mid, _ := models.CreateMachine("lel")
+				aid, _ := models.CreateActivation(mid, 0)
+				err := models.DeleteActivation(aid)
+
+				So(err, ShouldBeNil)
+			})
+		})
+		Convey("Testing GetActivationMachineId", func() {
+			Convey("Getting activation id on non-existing machine", func() {
+				_, err := models.GetActivationMachineId(0)
+
+				So(err, ShouldNotBeNil)
+			})
+			Convey("Getting activation id on non-activated machine", func() {
+				mid, _ := models.CreateMachine("lel")
+				aid, _ := models.CreateActivation(mid, 0)
+				models.CloseActivation(aid)
+				_, err := models.GetActivationMachineId(aid)
+
+				So(err, ShouldBeNil)
+			})
+			Convey("Creating activation on a machine and get activation's id", func() {
+				mid, _ := models.CreateMachine("lel")
+				aid, _ := models.CreateActivation(mid, 0)
+				gmid, _ := models.GetActivationMachineId(aid)
+
+				So(mid, ShouldEqual, gmid)
+			})
+		})
 	})
 }
