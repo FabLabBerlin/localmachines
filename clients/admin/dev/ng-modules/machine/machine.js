@@ -50,7 +50,7 @@ app.controller('MachineCtrl',
   $scope.loadConnectedMachines = function(machineId) {
     $http({
       method: 'GET',
-      url: '/api/machines/' + machineId + '/connected',
+      url: '/api/machines/' + machineId + '/connections',
       params: {
         ac: new Date().getTime()
       }
