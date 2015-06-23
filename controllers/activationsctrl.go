@@ -207,12 +207,25 @@ func (this *ActivationsController) Create() {
 		}
 	}
 
+	// Turn on the machine
 	machine := models.Machine{}
 	machine.Id = machineId
 	err = machine.On()
 	if err != nil {
 		beego.Error("Failed to turn on machine:", err)
 		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	// Turn on the connected machines
+	var connectedMachines *models.ConnectedMachineList
+	connectedMachines, err = models.GetConnectedMachines(machineId)
+	if err != nil {
+		beego.Warning("Failed to get connected machines:", err)
+	} else {
+		if err = connectedMachines.On(); err != nil {
+			beego.Error("Failed to turn on connected machines:", err)
+			this.CustomAbort(500, "Internal Server Error")
+		}
 	}
 
 	// Continue with creating activation
@@ -286,6 +299,20 @@ func (this *ActivationsController) Close() {
 		}
 	}
 
+	// Get connected machines and try to swich them off as well
+	var connectedMachines *models.ConnectedMachineList
+	connectedMachines, err = models.GetConnectedMachines(machineId)
+	if err != nil {
+		beego.Warning("Failed to get connected machines:", err)
+	} else {
+		if err = connectedMachines.Off(); err != nil {
+			beego.Error("Failed to switch off connected machines")
+			if !this.IsAdmin() {
+				this.CustomAbort(500, "Internal Server Error")
+			}
+		}
+	}
+
 	err = models.CloseActivation(aid)
 	if err != nil {
 		beego.Error("Failed to close activation")
@@ -349,7 +376,7 @@ func deactivateMachineAfterTimeout(machineId int64, timeoutSeconds int64) {
 	o := orm.NewOrm()
 	activationModel := models.Activation{Id: 0}
 	beego.Info("Attempt to get an active activation with the machine ID", machineId)
-	err := o.Raw("SELECT id FROM activation WHERE active=true AND machine_id=?",
+	err := o.Raw("SELECT id FROM activations WHERE active=true AND machine_id=?",
 		machineId).QueryRow(&activationModel)
 	if err != nil {
 		beego.Error("There was an error while getting activation:", err)

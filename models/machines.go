@@ -27,6 +27,7 @@ type Machine struct {
 	Comments          string `orm:"type(text)"`
 	Visible           bool
 	ConnectedMachines string `orm:"size(255)"`
+	SwitchRefCount    int64
 }
 
 // Define custom table name as for SQL table with a name "machines"
@@ -249,7 +250,6 @@ func (this *Machine) On() error {
 			return fmt.Errorf("Failed to turn on NetSwitch: %v", err)
 		}
 	}
-
 	return nil
 }
 
@@ -261,16 +261,34 @@ func (this *Machine) Off() error {
 		beego.Warning("Failed to get NetSwitch mapping:", err)
 	} else if netSwitch != nil {
 		if err = netSwitch.Off(); err != nil {
-			return fmt.Errorf("Failed to turn on NetSwitch: %v", err)
+			return fmt.Errorf("Failed to turn off NetSwitch: %v", err)
 		}
 	}
 	return nil
 }
 
 func (this *ConnectedMachineList) On() error {
+
+	for _, cm := range this.Data {
+		m := Machine{}
+		m.Id = cm.Id
+		if err := m.On(); err != nil {
+			return fmt.Errorf("Failed to turn on connected machine: %v", err)
+		}
+	}
+
 	return nil
 }
 
 func (this *ConnectedMachineList) Off() error {
+
+	for _, cm := range this.Data {
+		m := Machine{}
+		m.Id = cm.Id
+		if err := m.Off(); err != nil {
+			return fmt.Errorf("Failed to turn off connected machine: %v", err)
+		}
+	}
+
 	return nil
 }
