@@ -16,7 +16,7 @@ var Login = React.createClass({
     statics: {
         willTransitionTo(transition) {
             if(UserStore.getIsLogged()) {
-                transition.redirect('/');
+                transition.redirect('login');
             }
         }
     },

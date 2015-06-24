@@ -32,18 +32,21 @@ var UserStore = {
     // then send it to the server
     submitStateToServer(userState) {
         this.formatUserStateToSendToServer(userState);
+        /*
         $.ajax({
             url: '/api/users/' + this._state.userID,
             dataType: 'json',
             type: 'PUT',
             data: this._state.rawInfoUser,
             success: function() {
-                alert('change done');
+                window.alert('change done');
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error('/users/{uid}', status, err.toString());
             }.bind(this),
         });
+        */
+       console.log(this._state.rawInfoUser);
     },
 
     // To log in
@@ -151,6 +154,8 @@ var UserStore = {
         this._state.rawInfoUser = {};
         this._state.rawInfoMachine = [];
         this._state.rawInfoMachine = {};
+        console.log('clean state ==> onChangelogout');
+        this.onChangeLogout();
     },
 
     /*
@@ -159,6 +164,9 @@ var UserStore = {
      *
      */
     // Getter to the state
+    getUID () {
+        return this._state.userID;
+    },
     getIsLogged: function() {
         return this._state.isLogged;
     },
@@ -176,6 +184,7 @@ var UserStore = {
         return this._state.rawInfoMembership;
     },
 
+    onChangeLogout() {},
     onChange() {}
 
 };

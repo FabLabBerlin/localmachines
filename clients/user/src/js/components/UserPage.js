@@ -13,8 +13,8 @@ var UserPage = React.createClass({
     // If not login, redirect to the login page
     statics: {
         willTransitionTo(transition) {
-            if(!UserStore.getIsLogged()) {
-                transition.redirect('/login');
+            if(!UserStore.getUID()) {
+                transition.redirect('login');
             }
         }
     },
@@ -41,7 +41,12 @@ var UserPage = React.createClass({
 
     handleLogout(){
         UserActions.logout();
-        this.transitionTo('/login');
+    },
+
+    onChangeLogout() {
+        if( !UserStore.getIsLogged() ){
+            this.transitionTo('login');
+        }
     },
 
     /*
@@ -57,6 +62,9 @@ var UserPage = React.createClass({
         });
     },
 
+    componentDidMount() {
+        UserStore.onChangeLogout = this.onChangeLogout;
+    },
 
     render() {
         return (
