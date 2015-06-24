@@ -68,7 +68,18 @@ func GetMachine(machineId int64) (*Machine, error) {
 func GetAllMachines() ([]*Machine, error) {
 	var machines []*Machine
 	o := orm.NewOrm()
-	num, err := o.QueryTable("machines").All(&machines)
+	qb, err := orm.NewQueryBuilder("mysql")
+	if err != nil {
+		return nil, err
+	}
+	sql := qb.Select("machines.*").
+		From("machines").
+		InnerJoin("activations").
+		On("machines.id = activations.machine_id").
+		GroupBy("machine_id").
+		OrderBy("sum(time_total)").Desc().
+		String()
+	num, err := o.Raw(sql).QueryRows(&machines)
 	if err != nil {
 		return nil, errors.New("Failed to get all machines")
 	}

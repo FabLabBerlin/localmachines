@@ -205,10 +205,6 @@ func TestUsers(t *testing.T) {
 				Username: "test",
 				Email:    "test@example.com",
 			}
-			u2 := models.User{
-				Username: "god",
-				Email:    "god@example.com",
-			}
 			Convey("Creating a user and try to modify FirstName", func() {
 				uid, _ := models.CreateUser(&u)
 				user, _ := models.GetUser(uid)
@@ -225,18 +221,30 @@ func TestUsers(t *testing.T) {
 				So(err, ShouldNotBeNil)
 			})
 			Convey("Update user with duplicate username, should return error", func() {
-				models.CreateUser(&u)
-				models.CreateUser(&u2)
-				u2.Username = u.Username
-				err := models.UpdateUser(&u2)
+				user1 := models.User{}
+				user1.Username = "hesus"
+				user1.Email = "hesus@example.com"
+				user2 := models.User{}
+				user2.Username = "hrist"
+				user2.Email = "hrist@example.com"
+				models.CreateUser(&user1)
+				models.CreateUser(&user2)
+				user2.Username = user1.Username
+				err := models.UpdateUser(&user2)
 
 				So(err, ShouldNotBeNil)
 			})
 			Convey("Update user with duplicate email, should return error", func() {
-				models.CreateUser(&u)
-				models.CreateUser(&u2)
-				u2.Email = u.Email
-				err := models.UpdateUser(&u2)
+				user1 := models.User{}
+				user1.Username = "hesus"
+				user1.Email = "hesus@example.com"
+				user2 := models.User{}
+				user2.Username = "hrist"
+				user2.Email = "hrist@example.com"
+				models.CreateUser(&user1)
+				models.CreateUser(&user2)
+				user2.Email = user1.Email
+				err := models.UpdateUser(&user2)
 
 				So(err, ShouldNotBeNil)
 			})
