@@ -54,6 +54,32 @@ func TestUsers(t *testing.T) {
 				So(err2, ShouldNotBeNil)
 				So(uc2, ShouldEqual, 0)
 			})
+			Convey("Create 2 users with identical username, should return error", func() {
+				user1 := models.User{}
+				user1.Username = "william"
+				user1.Email = "william@example.com"
+				user2 := models.User{}
+				user2.Username = user1.Username
+				user2.Email = "ismael@example.com"
+				uid, err := models.CreateUser(&user1)
+				_, err = models.CreateUser(&user2)
+
+				So(uid, ShouldBeGreaterThan, 0)
+				So(err, ShouldNotBeNil)
+			})
+			Convey("Create 2 users with identical email, should return error", func() {
+				user1 := models.User{}
+				user1.Username = "william"
+				user1.Email = "william@example.com"
+				user2 := models.User{}
+				user2.Username = "baram"
+				user2.Email = user1.Email
+				uid, err := models.CreateUser(&user1)
+				_, err = models.CreateUser(&user2)
+
+				So(uid, ShouldBeGreaterThan, 0)
+				So(err, ShouldNotBeNil)
+			})
 		})
 		Convey("Testing DeleteUserAuth", func() {
 			u := models.User{
