@@ -10,7 +10,6 @@ let routes = (
         <Route name="user" handler={UserPage} />
         <Route name="login" handler={Login} />
         <DefaultRoute handler={UserPage} />
-        <NotFoundRoute handler={UserPage} />
     </Route>
 );
 
