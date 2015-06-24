@@ -23,12 +23,13 @@ func TestUsers(t *testing.T) {
 			}
 			Convey("Creating User and delete it", func() {
 				uc, err := models.CreateUser(&u)
-
 				err = models.DeleteUser(uc)
+
 				So(err, ShouldBeNil)
 			})
 			Convey("Try to delete non-existing user", func() {
 				err := models.DeleteUser(0)
+
 				So(err, ShouldNotBeNil)
 			})
 		})
@@ -46,12 +47,10 @@ func TestUsers(t *testing.T) {
 			Convey("Creating 2 users that are identical into database, should get an error", func() {
 				// Creating first user
 				uc, err := models.CreateUser(&u)
+				uc2, err2 := models.CreateUser(&u)
 
 				So(err, ShouldBeNil)
 				So(uc, ShouldBeGreaterThan, 0)
-
-				// Creating second user
-				uc2, err2 := models.CreateUser(&u)
 				So(err2, ShouldNotBeNil)
 				So(uc2, ShouldEqual, 0)
 			})
@@ -131,6 +130,7 @@ func TestUsers(t *testing.T) {
 			})
 			Convey("Setting NFC UID to non-existing user", func() {
 				err := models.AuthUpdateNfcUid(0, "123456")
+
 				So(err, ShouldNotBeNil)
 			})
 		})
