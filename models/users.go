@@ -275,6 +275,39 @@ func UpdateUser(user *User) error {
 		}
 	}
 
+	// Check for duplicate username and email entries
+	var query string
+	query = fmt.Sprintf("SELECT id FROM %s WHERE username=? AND id!=?",
+		user.TableName())
+	type UserIdStruct struct {
+		Id int64
+	}
+	var sameUsernameUserIds []UserIdStruct
+	num, err := o.Raw(query, user.Username, user.Id).
+		QueryRows(&sameUsernameUserIds)
+	if err != nil {
+		return fmt.Errorf("Failed to query db: %v", err)
+	}
+	beego.Trace("Found num users with the same username:", num)
+	if num > 0 {
+		return fmt.Errorf("User with the same username exists: %v", err)
+	}
+	query = fmt.Sprintf("SELECT id FROM %s WHERE email=? AND id!=?",
+		user.TableName())
+	var sameEmailUserIds []UserIdStruct
+	num, err = o.Raw(query, user.Email, user.Id).
+		QueryRows(&sameEmailUserIds)
+	if err != nil {
+		return fmt.Errorf("Failed to query db: %v", err)
+	}
+	beego.Trace("Found num users with the same email:", num)
+	if num > 0 {
+		return fmt.Errorf("User with the same email exists", err)
+	}
+
+	// TODO: Check email regex
+
+	// Update the user finally
 	if _, err := o.Update(user); err != nil {
 		return err
 	}

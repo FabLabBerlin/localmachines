@@ -342,6 +342,12 @@ func (this *UsersController) Put() {
 		if strings.Contains(err.Error(), "Error 1062") {
 			beego.Error("Failed to update user due to duplicate entry:", err)
 			this.CustomAbort(400, "duplicateEntry")
+		} else if strings.Contains(err.Error(), "same username") {
+			beego.Error("Failed to update username:", err)
+			this.CustomAbort(500, "Internal Server Error")
+		} else if strings.Contains(err.Error(), "same email") {
+			beego.Error("Failed to update user email:", err)
+			this.CustomAbort(500, "Internal Server Error")
 		} else {
 			beego.Error("Failed to update user:", err)
 			this.CustomAbort(403, "lastAdmin")
