@@ -39,8 +39,8 @@ var UserStore = {
             type: 'POST',
             data: loginInfo,
             success: function(data) {
-                this._state.UserID = data["UserId"];
-                this.getUserStateFromServer(data["UserId"]);
+                this._state.userID = data.UserId;
+                this.getUserStateFromServer(this._state.userID);
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error('/users/login', status, err.toString());
@@ -84,7 +84,7 @@ var UserStore = {
 
     getMembershipFromServer(uid) {
         $.ajax({
-            url: '/api/users/' + uid + '/memberships',
+            url: '/api/users/'+ uid +'/memberships',
             dataType: 'json',
             type: 'GET',
             success: function(data) {
