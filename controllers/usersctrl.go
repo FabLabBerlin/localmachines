@@ -285,17 +285,13 @@ type UserPutRequest struct {
 // @Title Put
 // @Description Update user with uid
 // @Param	uid		path 	int	true		"User ID"
-// @Success	200
+// @Param	body	body	models.User	true	"User model"
+// @Success	200	ok
 // @Failure	400	Variable message
 // @Failure	401	Unauthorized
 // @Failure	403	Variable message
 // @router /:uid [put]
 func (this *UsersController) Put() {
-
-	if !this.IsAdmin() {
-		beego.Error("Unauthorized attempt update user")
-		this.CustomAbort(401, "Unauthorized")
-	}
 
 	dec := json.NewDecoder(this.Ctx.Request.Body)
 	req := UserPutRequest{}
@@ -303,23 +299,45 @@ func (this *UsersController) Put() {
 		beego.Info("req: ", req)
 	} else {
 		beego.Error("Failed to decode json")
-		this.CustomAbort(400, "Failed to decode json")
+		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	// If the user is trying to disable his admin status
-	// do not allow to do that
+	// If the user is trying update his own information
+	// let him do so. Check that by comparing session user ID
+	// with the one passed as :uid
 	sessUserId, ok := this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
 	if !ok {
 		beego.Error("Failed to get session user ID")
-		this.CustomAbort(403, "Failed to update user")
+		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	if sessUserId == req.User.Id && req.User.UserRole != "admin" {
-		beego.Error("User can't unadmin itself")
-		this.CustomAbort(403, "selfAdmin")
+	beego.Trace("req.User.Id:", req.User.Id)
+	beego.Trace("sessUserId:", sessUserId)
+	if req.User.Id != sessUserId {
+		if !this.IsAdmin() {
+			beego.Error("Unauthorized attempt update user")
+			this.CustomAbort(401, "Not authorized")
+		}
 	}
 
-	err := models.UpdateUser(&req.User)
+	// Do not allow change user role if not admin and self
+	existingUser, err := models.GetUser(req.User.Id)
+	if err != nil {
+		beego.Error("User does not exist, user ID:", req.User.Id)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	if existingUser.UserRole != req.User.UserRole {
+		if sessUserId == req.User.Id {
+			beego.Error("User can't change his own user role")
+			this.CustomAbort(500, "Internal Server Error")
+		} else if !this.IsAdmin() {
+			beego.Error("User is not authorized to change UserRole")
+			this.CustomAbort(500, "Internal Server Error")
+		}
+	}
+
+	err = models.UpdateUser(&req.User)
 	if err != nil {
 		if strings.Contains(err.Error(), "Error 1062") {
 			beego.Error("Failed to update user due to duplicate entry:", err)
@@ -329,6 +347,9 @@ func (this *UsersController) Put() {
 			this.CustomAbort(403, "lastAdmin")
 		}
 	}
+
+	this.Data["json"] = "ok"
+	this.ServeJson()
 }
 
 // @Title GetUserMachinePermissions
