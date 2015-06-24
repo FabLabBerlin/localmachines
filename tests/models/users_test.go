@@ -232,6 +232,14 @@ func TestUsers(t *testing.T) {
 
 				So(err, ShouldNotBeNil)
 			})
+			Convey("Update user with duplicate email, should return error", func() {
+				models.CreateUser(&u)
+				models.CreateUser(&u2)
+				u2.Email = u.Email
+				err := models.UpdateUser(&u2)
+
+				So(err, ShouldNotBeNil)
+			})
 		})
 		Convey("Testing CreateUserPermission", func() {
 			u := models.User{
