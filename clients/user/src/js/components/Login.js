@@ -12,6 +12,15 @@ var Login = React.createClass({
      * Getting stuff from OUTSIDE of the component
      */
 
+    // If not login, redirect to the login page
+    statics: {
+        willTransitionTo(transition) {
+            if(UserStore.getIsLogged()) {
+                transition.redirect('/');
+            }
+        }
+    },
+
     // Sending the form
     handleSubmit: function(event) {
         event.preventDefault();
