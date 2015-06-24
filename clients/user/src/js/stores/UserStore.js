@@ -1,14 +1,17 @@
 var UserStore = {
     _state: {
         userID: 0,
-        failToLogin: false,
         isLogged: false,
-        // everything @ get /users/{uid}
         rawInfoUser: {},
-        // everything @ get /users/{uid}/machinepermissions
         rawInfoMachine: [],
         rawInfoMembership:{}
     },
+
+    /*
+     *
+     * API CALL
+     *
+     */
 
     // Logout
     logoutFromServer() {
@@ -29,9 +32,21 @@ var UserStore = {
     // then send it to the server
     submitStateToServer(userState) {
         this.formatUserStateToSendToServer(userState);
+        $.ajax({
+            url: '/api/users/' + this._state.userID,
+            dataType: 'json',
+            type: 'PUT',
+            data: this._state.rawInfoUser,
+            success: function() {
+                alert('change done');
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error('/users/{uid}', status, err.toString());
+            }.bind(this),
+        });
     },
 
-    // It seems to work
+    // To log in
     submitLoginFormToServer(loginInfo) {
         $.ajax({
             url: '/api/users/login',
@@ -44,8 +59,7 @@ var UserStore = {
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error('/users/login', status, err.toString());
-                this._state.failToLogin = true;
-                //this.onChange();
+                //invoke toaster stuff
             }.bind(this),
         });
     },
@@ -82,6 +96,7 @@ var UserStore = {
         });
     },
 
+    // To get the user's membership
     getMembershipFromServer(uid) {
         $.ajax({
             url: '/api/users/'+ uid +'/memberships',
@@ -98,6 +113,12 @@ var UserStore = {
         });
     },
 
+    /*
+     *
+     * INTERN CALL
+     *
+     */
+    
     // Change the input to match the rawInfoUser format
     formatUserStateToSendToServer(userState) {
         for(var data in userState) {
@@ -126,13 +147,17 @@ var UserStore = {
     // To call before logout
     cleanState() {
         this._state.isLogged = false;
-        this._state.failToLogin = false;
         this._state.userID = 0;
         this._state.rawInfoUser = {};
         this._state.rawInfoMachine = [];
         this._state.rawInfoMachine = {};
     },
 
+    /*
+     *
+     * GETTER
+     *
+     */
     // Getter to the state
     getIsLogged: function() {
         return this._state.isLogged;

@@ -37,9 +37,9 @@ var UserForm = React.createClass({
                 <form onSubmit={this.handleSubmit} >
                     {NodeInput}
                     <br />
-                    <input type="password"
+                    <input type="password" placeholder="new password"
                     />
-                    <input type="password"
+                    <input type="password" placeholder="new password"
                     />
                     <button>Okay</button>
                 </form>
