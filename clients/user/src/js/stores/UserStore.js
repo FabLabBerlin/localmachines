@@ -46,7 +46,7 @@ var UserStore = {
             }.bind(this),
         });
         */
-       console.log(this._state.rawInfoUser);
+       alert('virtually done');
     },
 
     // To log in
@@ -149,12 +149,12 @@ var UserStore = {
 
     // To call before logout
     cleanState() {
+        console.log('clean state');
         this._state.isLogged = false;
         this._state.userID = 0;
         this._state.rawInfoUser = {};
         this._state.rawInfoMachine = [];
         this._state.rawInfoMachine = {};
-        console.log('clean state ==> onChangelogout');
         this.onChangeLogout();
     },
 

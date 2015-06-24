@@ -21,6 +21,11 @@ var Login = React.createClass({
         }
     },
 
+    componentDidMount() {
+        LoginActions.submitLoginForm(this.state);
+        UserStore.onChange = this.onChange;
+    },
+
     // Sending the form
     handleSubmit: function(event) {
         event.preventDefault();
@@ -28,13 +33,9 @@ var Login = React.createClass({
         this.clearAndFocus();
     },
 
-    componentDidMount() {
-        UserStore.onChange = this.onChange;
-    },
-
     onChange() {
         if( UserStore.getIsLogged ) {
-            this.transitionTo('/');
+            this.replaceWith('user');
         }
     },
 
@@ -65,7 +66,7 @@ var Login = React.createClass({
     render() {
         return (
             <div className="login" >
-                <p>Logging page</p>
+                <p>Login</p>
                 <form onSubmit={this.handleSubmit} >
                     <input 
                         ref="name" 
