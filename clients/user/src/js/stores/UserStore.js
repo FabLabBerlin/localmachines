@@ -123,12 +123,14 @@ var UserStore = {
         return lightState;
     },
 
+    // To call before logout
     cleanState() {
         this._state.isLogged = false;
         this._state.failToLogin = false;
         this._state.userID = 0;
         this._state.rawInfoUser = {};
         this._state.rawInfoMachine = [];
+        this._state.rawInfoMachine = {};
     },
 
     // Getter to the state
@@ -146,7 +148,7 @@ var UserStore = {
     },
 
     getMembership() {
-        return this._state.raw
+        return this._state.rawInfoMembership;
     },
 
     onChange() {}
