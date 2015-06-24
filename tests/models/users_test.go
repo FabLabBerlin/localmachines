@@ -203,6 +203,11 @@ func TestUsers(t *testing.T) {
 		Convey("Testing UpdateUser", func() {
 			u := models.User{
 				Username: "test",
+				Email:    "test@example.com",
+			}
+			u2 := models.User{
+				Username: "god",
+				Email:    "god@example.com",
 			}
 			Convey("Creating a user and try to modify FirstName", func() {
 				uid, _ := models.CreateUser(&u)
@@ -216,6 +221,14 @@ func TestUsers(t *testing.T) {
 			})
 			Convey("Try updating non-existing user", func() {
 				err := models.UpdateUser(&u)
+
+				So(err, ShouldNotBeNil)
+			})
+			Convey("Update user with duplicate username, should return error", func() {
+				models.CreateUser(&u)
+				models.CreateUser(&u2)
+				u2.Username = u.Username
+				err := models.UpdateUser(&u2)
 
 				So(err, ShouldNotBeNil)
 			})
