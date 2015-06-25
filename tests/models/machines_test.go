@@ -71,6 +71,22 @@ func TestMachine(t *testing.T) {
 				So(len(machines), ShouldEqual, 2)
 				So(err, ShouldBeNil)
 			})
+			// TODO: Check if sorting in the right direction
+			Convey("Check if the machines are returned in descending order "+
+				"when ordered by number of activations", func() {
+				models.CreateMachine(machineOneName)
+				mid, _ := models.CreateMachine(machineTwoName)
+
+				user := models.User{}
+				user.Email = "email@example.com"
+				user.Username = "hesus"
+				uid, _ := models.CreateUser(&user)
+
+				models.CreateActivation(mid, uid)
+				allMachines, _ := models.GetAllMachines()
+
+				So(allMachines[0].Id, ShouldEqual, mid)
+			})
 		})
 		Convey("Testing UpdateMachine", func() {
 			machineName := "My lovely machine"
