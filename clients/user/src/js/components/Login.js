@@ -65,15 +65,17 @@ var Login = React.createClass({
 
     render() {
         return (
-            <div class="login" >
+            // issue with className="login" like the machine login page 
+            <div className="app" > 
                 <div className="container-fluid">
                     <div className="regular-login" >
                         <form className="login-form"
                             onSubmit={this.handleSubmit} >
-                            <h2 class="login-heading">Please log in</h2>
+                            <h2 className="login-heading">Please log in</h2>
                             <input 
                                 ref="name" 
                                 type="text"
+                                name="username"
                                 className="form-control"
                                 value={this.state.username}
                                 onChange={this.handleChange}
@@ -83,6 +85,7 @@ var Login = React.createClass({
                             />
                             <input
                                 type="password" 
+                                name="password"
                                 className="form-control"
                                 ref="Password" 
                                 value={this.state.password}
@@ -94,8 +97,8 @@ var Login = React.createClass({
                                 type="submit">Log In</button>
                         </form>
                     </div>
-                    </div>
-                    </div>
+                </div>
+            </div>
         );
     }
 });

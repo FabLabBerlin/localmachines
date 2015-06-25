@@ -40,10 +40,12 @@ var UserPage = React.createClass({
     },
 
     handleLogout(){
+        console.log('handlelogout obsolete');
         UserActions.logout();
     },
 
     onChangeLogout() {
+        console.log('onChange Logout juste avant de changer de page');
         if( !UserStore.getIsLogged() ){
             this.replaceWith('login');
         }
@@ -68,14 +70,20 @@ var UserPage = React.createClass({
 
     render() {
         return (
-            <div className="userPage" >
-                <button onClick={this.handleLogout} >Logout</button>
-                <UserForm info={this.state.infoUser} 
-                    func={this.handleChangeForm}
-                    submit={this.handleSubmit}
-                />
-                <MachineList info={this.state.infoMachine} />
-                <Membership info={this.state.infoMembership} />
+            <div className="signup" >
+                <div className="container-fluid" >
+                    <div className="signup-form" >
+                        <h2>Your information</h2>
+                        <UserForm info={this.state.infoUser} 
+                            func={this.handleChangeForm}
+                            submit={this.handleSubmit}
+                        />
+                    </div>
+                    <h3>Machine you can use</h3>
+                    <MachineList info={this.state.infoMachine} />
+                    <h3>Your Membership</h3>
+                    <Membership info={this.state.infoMembership} />
+                </div>
             </div>
         );
     }

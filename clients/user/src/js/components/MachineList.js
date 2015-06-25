@@ -5,22 +5,29 @@ var MachineList = React.createClass({
         if(this.props.info.length != 0) {
             var MachineNode = this.props.info.map(function(machine) {
                 return (
-                    <div key={machine.Id} >
-                        <ul>
-                            <li>Machine name: {machine.Name}</li>
-                            <li>Description: {machine.Description}</li>
-                        </ul>
-                    </div>
+                    <tr key={machine.Id}>
+                        <td>{machine.Name}</td>
+                        <td>{machine.Shortname}</td>
+                        <td>{machine.Description}</td>
+                    </tr>
                 );
             });
         } else {
             var MachineNode = <p>You do not have access to any machines</p>;
         }
         return (
-            <div className="machineList" >
-                <p>Machine List</p>
-                {MachineNode}
-            </div>
+            <table className="table table-striped table-hover" >
+                <thead>
+                    <tr>
+                        <th>Machine Name</th>
+                        <th>Machine Shortname</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {MachineNode}
+                </tbody>
+            </table>
         );
     }
 });
