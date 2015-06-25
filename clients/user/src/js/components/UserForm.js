@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React from 'react';
 
 var UserForm = React.createClass({
@@ -14,30 +15,20 @@ var UserForm = React.createClass({
     },
 
     render() {
-        // Create a temporary Array to map it easily
-        // Putting in the name(key) of the data(value) and his value
-        var infoUserTmp = new Array();
-        for(var data in this.props.info ) {
-            var tmp = {};
-            tmp['key'] = data;
-            tmp['value'] = this.props.info[data];
-            infoUserTmp.push(tmp);
-        }
-        // Map the Array to create a special input for each one
-        var NodeInput = infoUserTmp.map(function(info) {
+        var NodeInput = _.map(this.props.info, function(value, key) {
             return (
-                <div className="col-md-6" >
-                    <div className="form-group" >
-                        <label htmlFor="user-information" >{info.key}</label>
-                        <input type="text" value={info.value} 
-                            id={info.key}
+                <div className="col-md-6" key={key}>
+                    <div className="form-group">
+                        <label htmlFor="user-information" >{key}</label>
+                        <input type="text" value={value} 
+                            id={key}
                             className="form-control"
                             onChange={this.handleChangeForm}
                         />
                     </div>
                 </div>
             );
-        }, this);
+        }.bind(this));
         return (
             //l61, put font-awesome to get the logo
             <div className="" >
