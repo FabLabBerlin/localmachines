@@ -50,14 +50,14 @@ func TestUsersAPI(t *testing.T) {
 		})
 		Convey("Testing /users/login/", func() {
 			Convey("Try to log in without parameters, should return 403", func() {
-				r, _ := http.NewRequest("POST", "/api/users/login/", nil)
+				r, _ := http.NewRequest("POST", "/api/users/login", nil)
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
 
 				So(w.Code, ShouldEqual, 401)
 			})
 			Convey("Try to log in with wrong parameters, should return 403", func() {
-				r, _ := http.NewRequest("POST", "/api/users/login/?username=a&password=a", nil)
+				r, _ := http.NewRequest("POST", "/api/users/login?username=a&password=a", nil)
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
 
@@ -71,6 +71,31 @@ func TestUsersAPI(t *testing.T) {
 				models.AuthSetPassword(uid, "aze")
 
 				r, _ := http.NewRequest("POST", "/api/users/login?username=aze&password=aze", nil)
+				w := httptest.NewRecorder()
+				beego.BeeApp.Handlers.ServeHTTP(w, r)
+
+				So(w.Code, ShouldEqual, 200)
+			})
+		})
+		Convey("Testing /users/logout", func() {
+			Convey("Try to logout without being logged in, should return 200", func() {
+				r, _ := http.NewRequest("GET", "/api/users/logout", nil)
+				w := httptest.NewRecorder()
+				beego.BeeApp.Handlers.ServeHTTP(w, r)
+
+				So(w.Code, ShouldEqual, 200)
+			})
+			Convey("Try to logout after being logged in as a regular user, should return 200", func() {
+				r, _ := http.NewRequest("GET", "/api/users/logout", nil)
+				r.AddCookie(LoginAsRegular())
+				w := httptest.NewRecorder()
+				beego.BeeApp.Handlers.ServeHTTP(w, r)
+
+				So(w.Code, ShouldEqual, 200)
+			})
+			Convey("Try to logout after being logged in as an admin, should return 200", func() {
+				r, _ := http.NewRequest("GET", "/api/users/logout", nil)
+				r.AddCookie(LoginAsAdmin())
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
 
