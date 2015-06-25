@@ -7,15 +7,16 @@ import {DefaultRoute, Route, Routes, NotFoundRoute} from 'react-router';
 
 require('bootstrap-less');
 require('../assets/less/main.less');
+require('font-awesome-webpack');
 
 let routes = (
-    <Route name="app" path="/" handler={App} >
-        <Route name="user" handler={UserPage} />
-        <Route name="login" handler={Login} />
-        <DefaultRoute handler={UserPage} />
-    </Route>
+  <Route name="app" path="/" handler={App} >
+    <Route name="user" handler={UserPage} />
+    <Route name="login" handler={Login} />
+    <DefaultRoute handler={UserPage} />
+  </Route>
 );
 
 Router.run(routes, Router.HashLocation, function(Handler) {
-    React.render(<Handler />, document.body);
+  React.render(<Handler />, document.body);
 });
