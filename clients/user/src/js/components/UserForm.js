@@ -26,22 +26,41 @@ var UserForm = React.createClass({
         // Map the Array to create a special input for each one
         var NodeInput = infoUserTmp.map(function(info) {
             return (
-                <input type="text" value={info.value} 
-                    id={info.key}
-                    onChange={this.handleChangeForm}
-                />
+                <div className="col-sm-3" >
+                    <div className="form-group" >
+                        <label htmlFor="user-information" >{info.key}</label>
+                        <input type="text" value={info.value} 
+                            id={info.key}
+                            className="form-control"
+                            onChange={this.handleChangeForm}
+                        />
+                    </div>
+                </div>
             );
         }, this);
         return (
-            <div className="userForm" >
+            //l61, put font-awesome to get the logo
+            <div className="container-fluid" >
                 <form onSubmit={this.handleSubmit} >
-                    {NodeInput}
-                    <br />
-                    <input type="password" placeholder="new password"
-                    />
-                    <input type="password" placeholder="new password"
-                    />
-                    <button>Okay</button>
+                    <div className="row" >
+                        {NodeInput}
+                    </div>
+                    <div className="row" >
+                        <div className="form-group" >
+                            <div className="col-sm-3" >
+                                <label htmlFor="user-password" >User Password </label>
+                                <input 
+                                    type="password" className="form-control"
+                                    placeholder="new password"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div className="pull-right" >
+                        <button className="btn btn-primary btn-lg">
+                            Save
+                        </button>
+                    </div>
                 </form>
             </div>
         );
