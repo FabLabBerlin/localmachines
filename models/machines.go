@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"sort"
 	"time"
 )
 
@@ -65,26 +66,60 @@ func GetMachine(machineId int64) (*Machine, error) {
 	return &machine, nil
 }
 
+type ExtendedMachine struct {
+	NumActivations int64
+	MachineData    *Machine
+}
+type ExtendedMachineList []*ExtendedMachine
+
+func (s ExtendedMachineList) Len() int {
+	return len(s)
+}
+func (s ExtendedMachineList) Less(i, j int) bool {
+	return s[i].NumActivations < s[j].NumActivations
+}
+func (s ExtendedMachineList) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+
 func GetAllMachines() ([]*Machine, error) {
-	var machines []*Machine
+	var machines []Machine
 	o := orm.NewOrm()
-	qb, err := orm.NewQueryBuilder("mysql")
+	m := Machine{}
+	num, err := o.QueryTable(m.TableName()).All(&machines)
 	if err != nil {
-		return nil, err
-	}
-	sql := qb.Select("machines.*").
-		From("machines").
-		InnerJoin("activations").
-		On("machines.id = activations.machine_id").
-		GroupBy("machine_id").
-		OrderBy("sum(time_total)").Desc().
-		String()
-	num, err := o.Raw(sql).QueryRows(&machines)
-	if err != nil {
-		return nil, errors.New("Failed to get all machines")
+		return nil, fmt.Errorf("Failed to get all machines: %v", err)
 	}
 	beego.Trace("Got num machines:", num)
-	return machines, nil
+
+	var extendedMachines ExtendedMachineList
+
+	// Get sum of activations per machine
+	a := Activation{}
+	for i := 0; i < len(machines); i++ {
+		var numActivations int64
+		query := fmt.Sprintf("SELECT COUNT(*) FROM %s WHERE machine_id=?",
+			a.TableName())
+		beego.Trace("Counting activations for machine with ID", machines[i].Id)
+		err = o.Raw(query, machines[i].Id).QueryRow(&numActivations)
+		if err != nil {
+			return nil, fmt.Errorf("Failed to read activations: %v", err)
+		}
+		extendedMachine := ExtendedMachine{}
+		extendedMachine.NumActivations = numActivations
+		extendedMachine.MachineData = &machines[i]
+		extendedMachines = append(extendedMachines, &extendedMachine)
+	}
+
+	// Sort the machines by number of activations
+	sort.Sort(extendedMachines)
+	// Build new machine slice
+	var sortedMachines []*Machine
+	for i := 0; i < len(extendedMachines); i++ {
+		sortedMachines = append(sortedMachines, extendedMachines[i].MachineData)
+	}
+
+	return sortedMachines, nil
 }
 
 func CreateMachine(machineName string) (int64, error) {
