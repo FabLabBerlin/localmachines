@@ -73,7 +73,7 @@ var UserPage = React.createClass({
             <div className="signup" >
                 <div className="container-fluid" >
                     <div className="signup-form" >
-                        <h2>Your information</h2>
+                        <h3>Your information</h3>
                         <UserForm info={this.state.infoUser} 
                             func={this.handleChangeForm}
                             submit={this.handleSubmit}

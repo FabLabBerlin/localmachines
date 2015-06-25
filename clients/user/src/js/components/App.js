@@ -19,7 +19,7 @@ var App = React.createClass({
                                 <li>
                                     <button 
                                         onClick={UserActions.logout}
-                                        className="btn btn-danger btn-lg"
+                                        className="btn btn-danger btn-lg2"
                                         >
                                         Logout
                                     </button>
@@ -29,7 +29,9 @@ var App = React.createClass({
                         </div>
                     </nav>
 
-                    <RouteHandler />
+                    <div className="blue" >
+                        <RouteHandler />
+                    </div>
 
                     <footer className="absolute-bottom" >
                         <div className="container-fuild">
