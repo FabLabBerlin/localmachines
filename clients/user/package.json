@@ -1,14 +1,14 @@
 {
-  "name": "webpack-test",
+  "name": "fabsmith-user-profile",
   "version": "1.0.0",
-  "description": "",
+  "description": "Fabsmith user profile client module",
   "main": "index.js",
   "scripts": {
     "dev": "webpack --watch --progress --colors",
     "prod": "webpack --progress --colors"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Louis Delboc",
+  "license": "MIT",
   "devDependencies": {
     "babel-loader": "^5.1.4",
     "bootstrap-less": "^3.3.8",
@@ -22,6 +22,7 @@
     "react-router": "^0.13.3",
     "style-loader": "^0.12.3",
     "url-loader": "^0.5.6",
-    "webpack": "^1.9.10"
+    "webpack": "^1.9.10",
+    "font-awesome": "^4.3.0"
   }
 }
