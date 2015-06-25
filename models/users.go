@@ -74,9 +74,45 @@ func init() {
 
 // Attempt to create user, do not complain if it already exists
 func CreateUser(user *User) (userId int64, er error) {
+
+	var err error
+	var num int64
+	var query string
+	type UserIdStruct struct {
+		Id int64
+	}
+
 	o := orm.NewOrm()
 
-	if created, id, err := o.ReadOrCreate(user, "Email"); err == nil {
+	// Check if user with the same username does exist
+	if user.Username != "" {
+		query = fmt.Sprintf("SELECT id FROM %s WHERE username=?", user.TableName())
+		var userIds []UserIdStruct
+		num, err = o.Raw(query, user.Username).QueryRows(&userIds)
+		if err != nil {
+			return 0, fmt.Errorf("Failed to exec query: %v", err)
+		}
+		if num > 0 {
+			return 0, errors.New("User with the same username exists")
+		}
+	}
+
+	// Check if user with the same email does exist
+	if user.Email != "" {
+		query = fmt.Sprintf("SELECT id FROM %s WHERE email=?", user.TableName())
+		var userEmailIds []UserIdStruct
+		num, err = o.Raw(query, user.Email).QueryRows(&userEmailIds)
+		if err != nil {
+			return 0, fmt.Errorf("Failed to exec query: %v", err)
+		}
+		if num > 0 {
+			return 0, errors.New("User with the same email exists")
+		}
+	}
+
+	var created bool
+	var id int64
+	if created, id, err = o.ReadOrCreate(user, "Email"); err == nil {
 		if created {
 			beego.Info("Created user with ID", id)
 
