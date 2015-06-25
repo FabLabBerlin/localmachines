@@ -1,4 +1,4 @@
-package test
+package controllerTest
 
 import (
 	"net/http"
@@ -18,7 +18,7 @@ func init() {
 }
 
 // TestMain is a sample to run an endpoint test
-func TestMain(t *testing.T) {
+func TestRedirect(t *testing.T) {
 
 	Convey("Test Station Endpoint", t, func() {
 		Convey("Status Code Should Be 302", func() {
