@@ -68,14 +68,18 @@ var UserPage = React.createClass({
 
     render() {
         return (
-            <div className="userPage" >
-                <button onClick={this.handleLogout} >Logout</button>
-                <UserForm info={this.state.infoUser} 
-                    func={this.handleChangeForm}
-                    submit={this.handleSubmit}
-                />
-                <MachineList info={this.state.infoMachine} />
-                <Membership info={this.state.infoMembership} />
+            <div className="signup" >
+                <div className="container-fluid" >
+                    <div className="signup-form" >
+                        <button onClick={this.handleLogout} >Logout</button>
+                        <UserForm info={this.state.infoUser} 
+                            func={this.handleChangeForm}
+                            submit={this.handleSubmit}
+                        />
+                        <MachineList info={this.state.infoMachine} />
+                        <Membership info={this.state.infoMembership} />
+                    </div>
+                </div>
             </div>
         );
     }
