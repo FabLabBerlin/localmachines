@@ -76,7 +76,7 @@ func (s ExtendedMachineList) Len() int {
 	return len(s)
 }
 func (s ExtendedMachineList) Less(i, j int) bool {
-	return s[i].NumActivations < s[j].NumActivations
+	return s[i].NumActivations > s[j].NumActivations
 }
 func (s ExtendedMachineList) Swap(i, j int) {
 	s[i], s[j] = s[j], s[i]
