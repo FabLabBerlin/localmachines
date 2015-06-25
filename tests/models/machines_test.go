@@ -3,8 +3,6 @@ package modelTest
 import (
 	"testing"
 
-	_ "github.com/go-sql-driver/mysql"
-
 	"github.com/kr15h/fabsmith/models"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -24,7 +22,7 @@ func TestMachine(t *testing.T) {
 				err := models.DeleteMachine(mid)
 				So(err, ShouldBeNil)
 			})
-			Convey("Try to delete non-existing user", func() {
+			Convey("Try to delete non-existing machine", func() {
 				err := models.DeleteMachine(0)
 				So(err, ShouldNotBeNil)
 			})

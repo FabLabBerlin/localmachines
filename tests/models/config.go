@@ -5,6 +5,8 @@ import (
 	"path/filepath"
 	"runtime"
 
+	_ "github.com/go-sql-driver/mysql"
+
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/kr15h/fabsmith/models"
@@ -20,6 +22,11 @@ func ConfigDB() {
 	beego.SetLevel(beego.LevelError)
 
 	beego.RunMode = "test"
+
+	runmodetest, err := beego.AppConfig.Bool("runmodtest")
+	if !runmodetest || err != nil {
+		panic("Your configuration file is wrong for testing, see app.example.conf")
+	}
 
 	mysqlUser := beego.AppConfig.String("mysqluser")
 	if mysqlUser == "" {
