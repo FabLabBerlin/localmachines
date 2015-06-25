@@ -7,8 +7,8 @@ var App = React.createClass({
     render: function() {
         return (
             <div className="app" >
-                <nav class="navbar navbar-default" >
-                    <div className="collapse navbar-collapse" >
+                <nav className="navbar navbar-default" >
+                    <div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                         <ul className="nav navbar-nav" >
                             <li>
                                 <img src="assets/logo_fablab_berlin.svg" className="brand-image" />
@@ -17,14 +17,15 @@ var App = React.createClass({
                         {UserStore.getIsLogged() ? (
                             <ul className="nav navbar-nav navbar-right" >
                                 <li>
-                                    <a onClick={UserActions.logout} >
-                                        <i className="glyphicon glyphicon-log-out"></i>
-                                    </a>
+                                    <button 
+                                        onClick={UserActions.logout}
+                                        className="btn btn-danger btn-lg"
+                                        >
+                                        Logout
+                                    </button>
                                 </li>
                             </ul>
-                            ):(
-                            ''
-                            )}
+                            ):('')}
                         </div>
                     </nav>
 
