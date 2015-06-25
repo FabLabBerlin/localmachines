@@ -65,27 +65,37 @@ var Login = React.createClass({
 
     render() {
         return (
-            <div className="login" >
-                <p>Login</p>
-                <form onSubmit={this.handleSubmit} >
-                    <input 
-                        ref="name" 
-                        name="username"
-                        value={this.state.username}
-                        onChange={this.handleChange}
-                        placeholder="username" 
-                    />
-                    <input
-                        type="password" 
-                        name="password"
-                        ref="password" 
-                        value={this.state.password}
-                        onChange={this.handleChange}
-                        placeholder="password" 
-                    />
-                    <button > Submit </button>
-                </form>
-            </div>
+            <div class="login" >
+                <div className="container-fluid">
+                    <div className="regular-login" >
+                        <form className="login-form"
+                            onSubmit={this.handleSubmit} >
+                            <h2 class="login-heading">Please log in</h2>
+                            <input 
+                                ref="name" 
+                                type="text"
+                                className="form-control"
+                                value={this.state.username}
+                                onChange={this.handleChange}
+                                placeholder="Username" 
+                                required
+                                autofocus
+                            />
+                            <input
+                                type="password" 
+                                className="form-control"
+                                ref="Password" 
+                                value={this.state.password}
+                                onChange={this.handleChange}
+                                placeholder="password" 
+                                required
+                            />
+                            <button className="btn btn-primary btn-block btn-login"
+                                type="submit">Log In</button>
+                        </form>
+                    </div>
+                    </div>
+                    </div>
         );
     }
 });

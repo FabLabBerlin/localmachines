@@ -1,0 +1,455 @@
+@import "~bootstrap-less/bootstrap/bootstrap.less";
+@import "common.less";
+@import "vex-theme.less";
+
+body {
+  background-color: @bg-color-default;
+  color: @text-color-default;
+  font-family: 'Helvetica', 'Arial', sans-serif;
+  font-weight: normal;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: bold;
+}
+
+ul, li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+li {
+  margin-bottom: 10px;
+}
+
+.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
+.checkbox-inline label { font-weight: normal; }
+.input-group {
+  display: inline-table;
+}
+
+.machine-item,
+.activation-item {
+  border-radius: 10px;
+  padding: 10px;
+}
+
+/* Loading */
+
+#loader-global {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 9999;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+#loader-global .spinner {
+  display: table-cell;
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  font-size: 50px;
+  margin-left: -25px;
+  margin-top: -25px;
+}
+
+/* Bootstrap overrides */
+
+.btn {
+  border-radius: 0;
+  border: none;
+}
+
+.btn-primary { background: @color-primary; }
+.btn-primary:hover,
+.btn-primary:active,
+.btn-primary:focus,
+.btn-primary:visited  { background: darken(@color-primary, 10%); }
+
+.btn-danger { background: @color-danger; }
+.btn-danger:hover,
+.btn-danger:active,
+.btn-danger:focus,
+.btn-danger:visited { background: darken(@color-danger, 10%); }
+
+/* Add icon button missing in Bootstrap */
+
+.btn-ico,
+.btn-ico:hover,
+.btn-ico:active,
+.btn-ico:focus,
+.btn-ico:visited {
+  background: transparent;
+  /* Remove the default Bootstrap glow on button click */
+  outline:none !important;
+  box-shadow:none !important;
+}
+
+.btn-ico {
+  padding: 0;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.btn-ico { color: @color-neutral }
+.btn-ico:hover { color: darken(@color-neutral, 10%) }
+
+.btn-ico.btn-primary { color: @color-primary }
+.btn-ico.btn-primary:hover { color: darken(@color-primary, 10%) }
+
+.btn-ico.btn-danger { color: @color-danger }
+.btn-ico.btn-danger:hover { color: darken(@color-danger, 10%) }
+
+.btn-logout {
+  width: @lg-height;
+  height: @lg-height;
+  font-size: 22px;
+  line-height: 1;
+}
+nav.navbar {
+  background-color: @navbar-background-color;
+  border-bottom: 2px solid black;
+}
+
+nav.navbar .navbar-brand {
+  color: white;
+}
+
+nav.navbar .navbar-brand:hover {
+  color: #333333;
+}
+
+nav.navbar .navbar-brand {
+  padding-left: 15px;
+  padding-top: 10px;
+}
+
+nav.navbar .navbar-nav > li {
+  margin: 0;
+}
+
+nav.navbar .navbar-nav > li > a {
+  color: white;
+}
+
+.navbar-collapse {
+  --position: relative;
+  --z-index: 999;
+  background: @navbar-background-color;
+}
+
+/* Dashboard Styling */
+
+header {
+  border-bottom: 2px solid darken(@bg-color-default, 10%);
+  color: #999999;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+footer {
+  margin-top: 20px;
+  margin-bottom: 0;
+  border-top: 2px solid darken(@bg-color-default, 10%);
+}
+
+footer div {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.btn-logout-bottom {
+  margin-top: 20px;
+}
+
+.logged-user-name {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid darken(@bg-color-default, 10%);
+}
+
+#adm-dashboard {
+  background: white;
+}
+
+.adm-edit-entry {
+  cursor: pointer;
+}
+
+.machine {
+  background-image: linear-gradient(180deg, #EEEEEE 0%, #FFFFFF 100%);
+  border-bottom: 2px solid #E6E6E6;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.machine-header {
+  border-bottom: 1px solid #E6E6E6;
+  padding-bottom: 15px;
+  font-size: 22px;
+  line-height: 1;
+  font-weight: bold;
+}
+
+.machine-info-toggle {
+  color: @text-color-default;
+  cursor: pointer;
+}
+
+.machine-info-toggle:hover {
+  color: #6A6A6A;
+}
+
+.machine-info-content,
+.machine-unavailable-value {
+  font-size: 12px;
+  line-height: 17px;
+}
+
+.machine-body {
+  border-top: 1px solid #FFFFFF;
+  padding-top: 15px;
+}
+
+.machine-image {
+  height: @lg-height;
+  width: auto;
+}
+
+.machine-info-content {
+  padding-top: 15px;
+}
+
+.machine-action-info {
+  border-left-width: 3px;
+  border-left-style: solid;
+  min-height: 70px;
+  padding-left: 15px;
+}
+
+.machine.available .machine-action-info{
+  border-left-color: @color-primary;
+}
+
+.machine.used .machine-action-info {
+  border-left-color: @color-danger;
+}
+
+.machine.occupied .machine-action-info {
+  border-left-color: @color-warning;
+}
+
+.machine.unavailable .machine-action-info {
+  border-left-color: @color-neutral;
+}
+
+.machine-action-label {
+  font-size: 9px;
+  line-height: 1;
+  margin-bottom: 15px;
+}
+
+.machine-price-value {
+  font-weight: bold;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.machine-price-currency {
+  font-size: 12px;
+  line-height: 1;
+}
+
+.machine-time-value {
+  font-weight: bold;
+  font-size: 30px;
+  line-height: 1;
+}
+
+.machine-occupied-value {
+  font-weight: bold;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.machine-occupied-time-value {
+  margin-top: 5px;
+}
+
+.delete-prompt-token {
+  color: @color-danger;
+}
+
+.btn-lg,
+.indicator {
+  height: @lg-height;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.indicator {
+  width: 100%;
+  text-align: center;
+  line-height: 70px;
+}
+
+.indicator-occupied {
+  border: 1px solid #FAE451;
+  color: #FAE451;
+}
+
+.indicator-unavailable {
+  border: 1px solid #A6A6A6;
+  color: #A6A6A6;
+}
+
+.nfc-login-info-icon {
+  font-size: 100px;
+  line-height: 1;
+  text-align: center;
+}
+
+.nfc-login-info-text {
+  text-align: center;
+  font-size: 20px;
+  line-height: 1;
+  margin-top: 15px;
+}
+
+.login {
+  width: 100%;
+}
+
+.login-heading {
+  font-size: 18px;
+}
+
+.login-form .checkbox {
+  font-weight: normal;
+}
+.login-form .form-control {
+  position: relative;
+  height: auto;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  padding: 10px;
+  font-size: 16px;
+}
+.login-form .form-control:focus {
+  z-index: 2;
+}
+
+.login-form .ng-dirty.ng-valid {
+  border: 1px solid #66dd55;
+}
+
+.login-form {
+  max-width: 500px;
+  padding: 15px;
+  margin: 0 auto;
+}
+.login-form .login-form-heading,
+.login-form .checkbox {
+  margin-bottom: 10px;
+}
+
+.login-form input[type="text"] {
+  margin-bottom: 5px;
+  border-radius: 0;
+}
+.login-form input[type="password"] {
+  margin-bottom: 10px;
+  border-radius: 0;
+}
+
+.btn-login {
+  height: 45px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.login-heading {
+  font-size: 28px;
+}
+
+.brand-image {
+  width: auto;
+  height: @lg-height;
+}
+
+.absolute-bottom {
+  width: 100%;
+}
+
+.scroll-nav {
+  font-size: 40px;
+  line-height: 40px;
+  height: 60px;
+  padding-top: 10px;
+  text-align: center;
+  position: fixed;
+  width: 100%;
+  background: #ffffff;
+}
+
+.scroll-nav-top {
+  top: 0;
+  left: 0;
+  border-bottom: 2px solid darken(@bg-color-default, 10%);
+}
+
+.scroll-nav-bottom {
+  bottom: 0;
+  left: 0;
+  border-top: 2px solid darken(@bg-color-default, 10%);
+}
+
+@media (min-width: 768px) {
+  .login-heading {
+    font-size: 30px;
+  }
+
+  .login-form input[type="text"] {
+    height: @lg-height;
+    font-size: 18px;
+  }
+  .login-form input[type="password"] {
+    height: @lg-height;
+    font-size: 18px;
+  }
+
+  .btn-login {
+    height: @lg-height;
+    font-size: 22px;
+    font-weight: bold;
+  }
+
+  .absolute-bottom {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+  }
+
+  .login {
+    position: absolute;
+    top: 52%;
+    transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+    width: 100%;
+  }
+}
+
+.signup-link {
+	padding: 10px;
+	margin-top: 20px;
+	text-align: center;
+}

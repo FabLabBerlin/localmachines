@@ -21,6 +21,11 @@ func ConfigDB() {
 
 	beego.RunMode = "test"
 
+	runmodetest, err := beego.AppConfig.Bool("runmodtest")
+	if !runmodetest || err != nil {
+		panic("Your configuration file is wrong for testing, see app.example.conf")
+	}
+
 	mysqlUser := beego.AppConfig.String("mysqluser")
 	if mysqlUser == "" {
 		panic("Please set mysqluser in app.conf")

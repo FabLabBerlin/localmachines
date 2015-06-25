@@ -24,7 +24,7 @@ func TestMachine(t *testing.T) {
 				err := models.DeleteMachine(mid)
 				So(err, ShouldBeNil)
 			})
-			Convey("Try to delete non-existing user", func() {
+			Convey("Try to delete non-existing machine", func() {
 				err := models.DeleteMachine(0)
 				So(err, ShouldNotBeNil)
 			})
