@@ -5,6 +5,8 @@ import (
 	"path/filepath"
 	"runtime"
 
+	_ "github.com/go-sql-driver/mysql"
+
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/kr15h/fabsmith/models"

@@ -3,8 +3,6 @@ package modelTest
 import (
 	"testing"
 
-	_ "github.com/go-sql-driver/mysql"
-
 	"github.com/kr15h/fabsmith/models"
 	. "github.com/smartystreets/goconvey/convey"
 )
