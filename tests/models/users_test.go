@@ -39,6 +39,10 @@ func TestUsers(t *testing.T) {
 				_, err := models.CreateUser(&user)
 				So(err, ShouldNotBeNil)
 
+				user.Email = ""
+				_, err = models.CreateUser(&user)
+				So(err, ShouldNotBeNil)
+
 				user.Email = "hacking@backintime"
 				_, err = models.CreateUser(&user)
 				So(err, ShouldNotBeNil)
@@ -245,6 +249,28 @@ func TestUsers(t *testing.T) {
 				Username: "test",
 				Email:    "test@example.com",
 			}
+			Convey("Updating user with invalid email should not work", func() {
+				user := models.User{}
+				user.Username = "hackerman"
+				user.Email = "hacker@inspacefeels.good"
+				user.Id, _ = models.CreateUser(&user)
+
+				user.Email = ""
+				err := models.UpdateUser(&user)
+				So(err, ShouldNotBeNil)
+
+				user.Email = "invalidemail"
+				err = models.UpdateUser(&user)
+				So(err, ShouldNotBeNil)
+
+				user.Email = "invalid@email"
+				err = models.UpdateUser(&user)
+				So(err, ShouldNotBeNil)
+
+				user.Email = "invalid@email."
+				err = models.UpdateUser(&user)
+				So(err, ShouldNotBeNil)
+			})
 			Convey("Creating a user and try to modify FirstName", func() {
 				uid, _ := models.CreateUser(&u)
 				user, _ := models.GetUser(uid)
