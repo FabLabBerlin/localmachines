@@ -3,6 +3,7 @@ import UserActions from '../actions/UserActions';
 import React from 'react';
 import {Link, RouteHandler} from 'react-router';
 
+
 var App = React.createClass({
   render: function() {
     return (
@@ -13,7 +14,7 @@ var App = React.createClass({
 
             <div className="row">
               <div className="col-xs-6">
-                <img src="assets/logo_fablab_berlin.svg" 
+                <img src="img/logo_fablab_berlin.svg" 
                      className="brand-image"/>
               </div>
               {UserStore.getIsLogged() ? (

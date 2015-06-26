@@ -149,7 +149,6 @@ var UserStore = {
 
     // To call before logout
     cleanState() {
-        console.log('clean state');
         this._state.isLogged = false;
         this._state.userID = 0;
         this._state.rawInfoUser = {};

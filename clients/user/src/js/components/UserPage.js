@@ -36,13 +36,7 @@ var UserPage = React.createClass({
     UserActions.submitState(this.state.infoUser);
   },
 
-  handleLogout(){
-    console.log('handlelogout obsolete');
-    UserActions.logout();
-  },
-
   onChangeLogout() {
-    console.log('onChange Logout juste avant de changer de page');
     if( !UserStore.getIsLogged() ){
       this.replaceWith('login');
     }
