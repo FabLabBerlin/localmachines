@@ -182,8 +182,6 @@ func TestUsersAPI(t *testing.T) {
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
 
-				beego.Critical(w.Body)
-
 				So(w.Code, ShouldEqual, 500)
 			})
 			Convey("Try creating user with email, should return 200", func() {
@@ -199,8 +197,6 @@ func TestUsersAPI(t *testing.T) {
 				r.AddCookie(LoginAsRegular())
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
-
-				beego.Critical(w.Body)
 
 				So(w.Code, ShouldEqual, 401)
 			})
