@@ -16,13 +16,12 @@ var Login = React.createClass({
     statics: {
         willTransitionTo(transition) {
             if(UserStore.getIsLogged()) {
-                transition.redirect('login');
+                transition.redirect('user');
             }
         }
     },
 
     componentDidMount() {
-        LoginActions.submitLoginForm(this.state);
         UserStore.onChange = this.onChange;
     },
 

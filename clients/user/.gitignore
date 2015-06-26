@@ -4,3 +4,4 @@ node_modules
 bundle.js
 dev/*
 !dev/index.html
+!dev/img/*
