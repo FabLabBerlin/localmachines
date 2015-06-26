@@ -180,8 +180,6 @@ func (this *UsersController) Signup() {
 func (this *UsersController) Post() {
 	email := this.GetString("email")
 
-	// TODO: validate email
-
 	if !this.IsAdmin() {
 		beego.Error("Unauthorized attempt to delete user")
 		this.CustomAbort(401, "Unauthorized")
@@ -189,7 +187,9 @@ func (this *UsersController) Post() {
 
 	user := models.User{Email: email}
 
-	// Attempt to create the user
+	// Attempt to create the user.
+	// The CreateUser function takes (or should take)
+	// care of validating the email.
 	if userId, err := models.CreateUser(&user); err != nil {
 		beego.Error("Failed to create user:", err)
 		this.CustomAbort(500, "Internal Server Error")
