@@ -61,20 +61,18 @@ var UserPage = React.createClass({
 
   render() {
     return (
-      <div className="signup" >
-        <div className="container" >
-          <div className="signup-form" >
-            <h3>Your information</h3>
-            <UserForm info={this.state.infoUser} 
-              func={this.handleChangeForm}
-              submit={this.handleSubmit}
-            />
-          </div>
-          <h3>Machine you can use</h3>
-          <MachineList info={this.state.infoMachine} />
-          <h3>Your Membership</h3>
-          <Membership info={this.state.infoMembership} />
-        </div>
+      <div className="container">
+        <h3>Your information</h3>
+          <UserForm info={this.state.infoUser} 
+            func={this.handleChangeForm}
+            submit={this.handleSubmit}
+          />
+          
+        <h3>Machines you can use</h3>
+        <MachineList info={this.state.infoMachine} />
+          
+        <h3>Your Memberships</h3>
+        <Membership info={this.state.infoMembership} />
       </div>
     );
   }
