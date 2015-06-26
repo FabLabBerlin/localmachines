@@ -165,5 +165,37 @@ func TestUsersAPI(t *testing.T) {
 				So(w.Code, ShouldEqual, 200)
 			})
 		})
+		Convey("Testing POST /users/", func() {
+			Convey("Try creating user without parameters", func() {
+				r, _ := http.NewRequest("POST", "/api/users/", nil)
+				r.AddCookie(LoginAsAdmin())
+				w := httptest.NewRecorder()
+				beego.BeeApp.Handlers.ServeHTTP(w, r)
+
+				beego.Critical(w.Body)
+
+				So(w.Code, ShouldEqual, 500)
+			})
+			Convey("Try creating user with email", func() {
+				r, _ := http.NewRequest("POST", "/api/users/?email=a", nil)
+				r.AddCookie(LoginAsAdmin())
+				w := httptest.NewRecorder()
+				beego.BeeApp.Handlers.ServeHTTP(w, r)
+
+				beego.Critical(w.Body)
+
+				So(w.Code, ShouldEqual, 200)
+			})
+			Convey("Try creating user as a regular user", func() {
+				r, _ := http.NewRequest("POST", "/api/users/?email=a", nil)
+				r.AddCookie(LoginAsRegular())
+				w := httptest.NewRecorder()
+				beego.BeeApp.Handlers.ServeHTTP(w, r)
+
+				beego.Critical(w.Body)
+
+				So(w.Code, ShouldEqual, 401)
+			})
+		})
 	})
 }
