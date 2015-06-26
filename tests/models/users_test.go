@@ -32,25 +32,41 @@ func TestUsers(t *testing.T) {
 			})
 		})
 		Convey("Testing CreateUser", func() {
-			u := models.User{
-				Email:    "test",
-				Username: "test",
-			}
-			Convey("Creating one user into database", func() {
-				uc, err := models.CreateUser(&u)
+			Convey("Creating user with invalid email should not work", func() {
+				user := models.User{}
+				user.Username = "hackenberg"
+				user.Email = "hackingbackintime"
+				_, err := models.CreateUser(&user)
+				So(err, ShouldNotBeNil)
+
+				user.Email = "hacking@backintime"
+				_, err = models.CreateUser(&user)
+				So(err, ShouldNotBeNil)
+
+				user.Email = "hacking@backintime."
+				_, err = models.CreateUser(&user)
+				So(err, ShouldNotBeNil)
+			})
+			Convey("Creating user with valid email should work", func() {
+				user := models.User{}
+				user.Username = "hackerman"
+				user.Email = "hacking@backin.time"
+				uid, err := models.CreateUser(&user)
 
 				So(err, ShouldBeNil)
-				So(uc, ShouldBeGreaterThan, 0)
+				So(uid, ShouldBeGreaterThan, 0)
 			})
 			Convey("Creating 2 users that are identical into database, should get an error", func() {
-				// Creating first user
-				uc, err := models.CreateUser(&u)
-				uc2, err2 := models.CreateUser(&u)
+				user := models.User{}
+				user.Username = "hackerman"
+				user.Email = "hacking@backin.time"
+				uid1, err1 := models.CreateUser(&user)
+				uid2, err2 := models.CreateUser(&user)
 
-				So(err, ShouldBeNil)
-				So(uc, ShouldBeGreaterThan, 0)
+				So(err1, ShouldBeNil)
+				So(uid1, ShouldBeGreaterThan, 0)
 				So(err2, ShouldNotBeNil)
-				So(uc2, ShouldEqual, 0)
+				So(uid2, ShouldEqual, 0)
 			})
 			Convey("Create 2 users with identical username, should return error", func() {
 				user1 := models.User{}
