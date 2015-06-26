@@ -20,46 +20,6 @@ ul, li {
   list-style: none;
 }
 
-li {
-  margin-bottom: 10px;
-}
-
-.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
-.checkbox-inline label { font-weight: normal; }
-.input-group {
-  display: inline-table;
-}
-
-.machine-item,
-.activation-item {
-  border-radius: 10px;
-  padding: 10px;
-}
-
-/* Loading */
-
-#loader-global {
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 9999;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.25);
-}
-
-#loader-global .spinner {
-  display: table-cell;
-  width: 50px;
-  height: 50px;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  font-size: 50px;
-  margin-left: -25px;
-  margin-top: -25px;
-}
-
 /* Bootstrap overrides */
 
 .btn {
@@ -156,7 +116,6 @@ nav.navbar .navbar-nav > li > a {
 
 header {
   border-bottom: 2px solid darken(@bg-color-default, 10%);
-  color: #999999;
   padding-top: 20px;
   padding-bottom: 20px;
 }
@@ -425,52 +384,5 @@ footer div {
 }
 
 @media (min-width: 768px) {
-  .login-heading {
-    font-size: 30px;
-  }
 
-  .login-form input[type="text"] {
-    height: @lg-height;
-    font-size: 18px;
-  }
-  .login-form input[type="password"] {
-    height: @lg-height;
-    font-size: 18px;
-  }
-
-  .btn-login {
-    height: @lg-height;
-    font-size: 22px;
-    font-weight: bold;
-  }
-
-  .absolute-bottom {
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-  }
-
-  .login {
-    position: absolute;
-    top: 52%;
-    transform: translateY(-50%);
-    -ms-transform: translateY(-50%);
-    -webkit-transform: translateY(-50%);
-    width: 100%;
-  }
-}
-
-/* Centered div */
-.signup-form {
-  max-width: 500px;
-  margin: 0 auto;
-  padding-top: 0px;
-  padding-bottom: 25px;
-}
-
-.signup-link {
-	padding: 10px;
-	margin-top: 20px;
-	text-align: center;
-}
+}/* @media (min-width: 768px) */
