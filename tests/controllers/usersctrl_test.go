@@ -26,14 +26,14 @@ func TestUsersAPI(t *testing.T) {
 	Convey("Test users API", t, func() {
 		Reset(ResetDB)
 		Convey("Testing POST /users/login/", func() {
-			Convey("Try to log in without parameters, should return 403", func() {
+			Convey("Try to log in without parameters, should return 401", func() {
 				r, _ := http.NewRequest("POST", "/api/users/login", nil)
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
 
 				So(w.Code, ShouldEqual, 401)
 			})
-			Convey("Try to log in with wrong parameters, should return 403", func() {
+			Convey("Try to log in with wrong parameters, should return 401", func() {
 				r, _ := http.NewRequest("POST", "/api/users/login?username=a&password=a", nil)
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
@@ -180,6 +180,8 @@ func TestUsersAPI(t *testing.T) {
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
 
+				beego.Critical(w.Body)
+
 				So(w.Code, ShouldEqual, 500)
 			})
 			Convey("Try creating user with email, should return 200", func() {
@@ -202,12 +204,12 @@ func TestUsersAPI(t *testing.T) {
 			})
 		})
 		Convey("Testing GET /users/:uid", func() {
-			Convey("Try to get user without being logged in, should return 200 ???", func() {
-				r, _ := http.NewRequest("GET", "/api/users/0", nil)
+			Convey("Try to get user without being logged in, should return 401", func() {
+				r, _ := http.NewRequest("GET", "/api/users/1", nil)
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
 
-				So(w.Code, ShouldEqual, 200)
+				So(w.Code, ShouldEqual, 401)
 			})
 			Convey("Try to get non-existing user, should return 403", func() {
 				r, _ := http.NewRequest("GET", "/api/users/0", nil)
@@ -229,7 +231,7 @@ func TestUsersAPI(t *testing.T) {
 
 				So(w.Code, ShouldEqual, 200)
 			})
-			Convey("Try to get existing user as a regular one, should return 200", func() {
+			Convey("Try to get existing user as a regular one, should return 401", func() {
 				u := &models.User{
 					Username: "A",
 				}
@@ -239,9 +241,7 @@ func TestUsersAPI(t *testing.T) {
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
 
-				beego.Critical(w.Body)
-
-				So(w.Code, ShouldEqual, 200)
+				So(w.Code, ShouldEqual, 401)
 			})
 		})
 	})
