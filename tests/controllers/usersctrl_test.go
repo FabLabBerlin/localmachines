@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"testing"
 
 	_ "github.com/kr15h/fabsmith/routers"
@@ -154,7 +155,7 @@ func TestUsersAPI(t *testing.T) {
 
 				So(w.Code, ShouldEqual, 200)
 			})
-			Convey("Try signup with User and password", func() {
+			Convey("Try signup with User and password, should return 200", func() {
 				var jsonStr = []byte(`{"User": {"Username":"A"}, "Password":"A" }`)
 				r, _ := http.NewRequest("POST", "/api/users/signup", bytes.NewBuffer(jsonStr))
 				r.Header.Set("X-Custom-Header", "myvalue")
@@ -166,27 +167,30 @@ func TestUsersAPI(t *testing.T) {
 			})
 		})
 		Convey("Testing POST /users/", func() {
-			Convey("Try creating user without parameters", func() {
+			Convey("Try creating user without being logged in, should return 403", func() {
+				r, _ := http.NewRequest("POST", "/api/users/", nil)
+				w := httptest.NewRecorder()
+				beego.BeeApp.Handlers.ServeHTTP(w, r)
+
+				So(w.Code, ShouldEqual, 403)
+			})
+			Convey("Try creating user without parameters, should return 500", func() {
 				r, _ := http.NewRequest("POST", "/api/users/", nil)
 				r.AddCookie(LoginAsAdmin())
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
 
-				beego.Critical(w.Body)
-
 				So(w.Code, ShouldEqual, 500)
 			})
-			Convey("Try creating user with email", func() {
+			Convey("Try creating user with email, should return 200", func() {
 				r, _ := http.NewRequest("POST", "/api/users/?email=a", nil)
 				r.AddCookie(LoginAsAdmin())
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
 
-				beego.Critical(w.Body)
-
 				So(w.Code, ShouldEqual, 200)
 			})
-			Convey("Try creating user as a regular user", func() {
+			Convey("Try creating user as a regular user, should return 401", func() {
 				r, _ := http.NewRequest("POST", "/api/users/?email=a", nil)
 				r.AddCookie(LoginAsRegular())
 				w := httptest.NewRecorder()
@@ -195,6 +199,49 @@ func TestUsersAPI(t *testing.T) {
 				beego.Critical(w.Body)
 
 				So(w.Code, ShouldEqual, 401)
+			})
+		})
+		Convey("Testing GET /users/:uid", func() {
+			Convey("Try to get user without being logged in, should return 403", func() {
+				r, _ := http.NewRequest("GET", "/api/users/0", nil)
+				w := httptest.NewRecorder()
+				beego.BeeApp.Handlers.ServeHTTP(w, r)
+
+				So(w.Code, ShouldEqual, 403)
+			})
+			Convey("Try to get non-existing user, should return 403", func() {
+				r, _ := http.NewRequest("GET", "/api/users/0", nil)
+				r.AddCookie(LoginAsAdmin())
+				w := httptest.NewRecorder()
+				beego.BeeApp.Handlers.ServeHTTP(w, r)
+
+				So(w.Code, ShouldEqual, 403)
+			})
+			Convey("Try to get existing user, should return 200", func() {
+				u := &models.User{
+					Username: "A",
+				}
+				mid, _ := models.CreateUser(u)
+				r, _ := http.NewRequest("GET", "/api/users/"+strconv.FormatInt(mid, 10), nil)
+				r.AddCookie(LoginAsAdmin())
+				w := httptest.NewRecorder()
+				beego.BeeApp.Handlers.ServeHTTP(w, r)
+
+				So(w.Code, ShouldEqual, 200)
+			})
+			Convey("Try to get existing user as a regular one, should return 200", func() {
+				u := &models.User{
+					Username: "A",
+				}
+				mid, _ := models.CreateUser(u)
+				r, _ := http.NewRequest("GET", "/api/users/"+strconv.FormatInt(mid, 10), nil)
+				r.AddCookie(LoginAsRegular())
+				w := httptest.NewRecorder()
+				beego.BeeApp.Handlers.ServeHTTP(w, r)
+
+				beego.Critical(w.Body)
+
+				So(w.Code, ShouldEqual, 200)
 			})
 		})
 	})
