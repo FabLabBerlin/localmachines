@@ -260,8 +260,9 @@ func (this *UsersController) Get() {
 // @Failure	401	Unauthorized
 // @router /:uid [delete]
 func (this *UsersController) Delete() {
-	sid := this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
-	if !this.IsAdmin(sid) && !this.IsStaff(sid) {
+	sid, ok := this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
+
+	if !ok || (!this.IsAdmin(sid) && !this.IsStaff(sid)) {
 		beego.Error("Unauthorized attempt to delete user")
 		this.CustomAbort(401, "Unauthorized")
 	}
