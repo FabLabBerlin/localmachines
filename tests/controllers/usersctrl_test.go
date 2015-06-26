@@ -1,6 +1,7 @@
 package controllerTest
 
 import (
+	"bytes"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -126,6 +127,38 @@ func TestUsersAPI(t *testing.T) {
 			Convey("Try to get users being logged in as an admin, should return 200", func() {
 				r, _ := http.NewRequest("GET", "/api/users/", nil)
 				r.AddCookie(LoginAsAdmin())
+				w := httptest.NewRecorder()
+				beego.BeeApp.Handlers.ServeHTTP(w, r)
+
+				So(w.Code, ShouldEqual, 200)
+			})
+		})
+		Convey("Testing /users/signup/", func() {
+			Convey("Try signup with empty body", func() {
+				var jsonStr = []byte("")
+				r, _ := http.NewRequest("POST", "/api/users/signup", bytes.NewBuffer(jsonStr))
+				r.Header.Set("X-Custom-Header", "myvalue")
+				r.Header.Set("Content-Type", "application/json")
+				w := httptest.NewRecorder()
+				beego.BeeApp.Handlers.ServeHTTP(w, r)
+
+				So(w.Code, ShouldEqual, 500)
+			})
+			Convey("Try signup with User only", func() {
+				var jsonStr = []byte(`{"User": {"Username":"A"} }`)
+				r, _ := http.NewRequest("POST", "/api/users/signup", bytes.NewBuffer(jsonStr))
+				r.Header.Set("X-Custom-Header", "myvalue")
+				r.Header.Set("Content-Type", "application/json")
+				w := httptest.NewRecorder()
+				beego.BeeApp.Handlers.ServeHTTP(w, r)
+
+				So(w.Code, ShouldEqual, 200)
+			})
+			Convey("Try signup with User and password", func() {
+				var jsonStr = []byte(`{"User": {"Username":"A"}, "Password":"A" }`)
+				r, _ := http.NewRequest("POST", "/api/users/signup", bytes.NewBuffer(jsonStr))
+				r.Header.Set("X-Custom-Header", "myvalue")
+				r.Header.Set("Content-Type", "application/json")
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
 
