@@ -24,7 +24,7 @@ func TestUsersAPI(t *testing.T) {
 
 	Convey("Test users API", t, func() {
 		Reset(ResetDB)
-		Convey("Testing /users/login/", func() {
+		Convey("Testing POST /users/login/", func() {
 			Convey("Try to log in without parameters, should return 403", func() {
 				r, _ := http.NewRequest("POST", "/api/users/login", nil)
 				w := httptest.NewRecorder()
@@ -53,7 +53,7 @@ func TestUsersAPI(t *testing.T) {
 				So(w.Code, ShouldEqual, 200)
 			})
 		})
-		Convey("Testing /users/loginuid/", func() {
+		Convey("Testing POST /users/loginuid/", func() {
 			Convey("Try to log in without uid parameter, should return 403", func() {
 				r, _ := http.NewRequest("POST", "/api/users/loginuid", nil)
 				w := httptest.NewRecorder()
@@ -83,7 +83,7 @@ func TestUsersAPI(t *testing.T) {
 				So(w.Code, ShouldEqual, 200)
 			})
 		})
-		Convey("Testing /users/logout", func() {
+		Convey("Testing GET /users/logout", func() {
 			Convey("Try to logout without being logged in, should return 200", func() {
 				r, _ := http.NewRequest("GET", "/api/users/logout", nil)
 				w := httptest.NewRecorder()
@@ -108,7 +108,7 @@ func TestUsersAPI(t *testing.T) {
 				So(w.Code, ShouldEqual, 200)
 			})
 		})
-		Convey("Testing /users/", func() {
+		Convey("Testing GET /users/", func() {
 			Convey("Try to get users without being logged in, should return 401", func() {
 				r, _ := http.NewRequest("GET", "/api/users/", nil)
 				w := httptest.NewRecorder()
@@ -133,7 +133,7 @@ func TestUsersAPI(t *testing.T) {
 				So(w.Code, ShouldEqual, 200)
 			})
 		})
-		Convey("Testing /users/signup/", func() {
+		Convey("Testing POST /users/signup/", func() {
 			Convey("Try signup with empty body", func() {
 				var jsonStr = []byte("")
 				r, _ := http.NewRequest("POST", "/api/users/signup", bytes.NewBuffer(jsonStr))
