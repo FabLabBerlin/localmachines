@@ -19,7 +19,7 @@ func init() {
 
 // TestMain is a sample to run an endpoint test
 func TestRedirect(t *testing.T) {
-	SkipConvey("Test Station Endpoint", t, func() {
+	Convey("Test Station Endpoint", t, func() {
 		Convey("Status Code Should Be 302", func() {
 			r, _ := http.NewRequest("GET", "/", nil)
 			w := httptest.NewRecorder()

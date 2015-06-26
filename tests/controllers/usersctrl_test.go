@@ -43,6 +43,7 @@ func TestUsersAPI(t *testing.T) {
 			Convey("Try to login with good parameters, should return 200", func() {
 				u := models.User{
 					Username: "aze",
+					Email:    "aze@easylab.io",
 				}
 				uid, _ := models.CreateUser(&u)
 				models.AuthSetPassword(uid, "aze")
@@ -72,6 +73,7 @@ func TestUsersAPI(t *testing.T) {
 			Convey("Try to login with good parameters, should return 200", func() {
 				u := models.User{
 					Username: "aze",
+					Email:    "aze@easylab.io",
 				}
 				uid, _ := models.CreateUser(&u)
 				models.AuthSetPassword(uid, "aze")
@@ -135,7 +137,7 @@ func TestUsersAPI(t *testing.T) {
 			})
 		})
 		Convey("Testing POST /users/signup/", func() {
-			Convey("Try signup with empty body", func() {
+			Convey("Try signup with empty body, should return 500", func() {
 				var jsonStr = []byte("")
 				r, _ := http.NewRequest("POST", "/api/users/signup", bytes.NewBuffer(jsonStr))
 				r.Header.Set("X-Custom-Header", "myvalue")
@@ -145,7 +147,7 @@ func TestUsersAPI(t *testing.T) {
 
 				So(w.Code, ShouldEqual, 500)
 			})
-			Convey("Try signup with User only", func() {
+			Convey("Try signup with User only, should return 500", func() {
 				var jsonStr = []byte(`{"User": {"Username":"A"} }`)
 				r, _ := http.NewRequest("POST", "/api/users/signup", bytes.NewBuffer(jsonStr))
 				r.Header.Set("X-Custom-Header", "myvalue")
@@ -153,10 +155,10 @@ func TestUsersAPI(t *testing.T) {
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
 
-				So(w.Code, ShouldEqual, 200)
+				So(w.Code, ShouldEqual, 500)
 			})
 			Convey("Try signup with User and password, should return 200", func() {
-				var jsonStr = []byte(`{"User": {"Username":"A"}, "Password":"A" }`)
+				var jsonStr = []byte(`{"User": {"Username":"A", "Email": "a@easylab.io"}, "Password":"A" }`)
 				r, _ := http.NewRequest("POST", "/api/users/signup", bytes.NewBuffer(jsonStr))
 				r.Header.Set("X-Custom-Header", "myvalue")
 				r.Header.Set("Content-Type", "application/json")
@@ -185,7 +187,7 @@ func TestUsersAPI(t *testing.T) {
 				So(w.Code, ShouldEqual, 500)
 			})
 			Convey("Try creating user with email, should return 200", func() {
-				r, _ := http.NewRequest("POST", "/api/users/?email=a", nil)
+				r, _ := http.NewRequest("POST", "/api/users/?email=a@easylab.io", nil)
 				r.AddCookie(LoginAsAdmin())
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
@@ -193,7 +195,7 @@ func TestUsersAPI(t *testing.T) {
 				So(w.Code, ShouldEqual, 200)
 			})
 			Convey("Try creating user as a regular user, should return 401", func() {
-				r, _ := http.NewRequest("POST", "/api/users/?email=a", nil)
+				r, _ := http.NewRequest("POST", "/api/users/?email=a@easylab.io", nil)
 				r.AddCookie(LoginAsRegular())
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
@@ -222,6 +224,7 @@ func TestUsersAPI(t *testing.T) {
 			Convey("Try to get existing user, should return 200", func() {
 				u := &models.User{
 					Username: "A",
+					Email:    "a@easylab.io",
 				}
 				mid, _ := models.CreateUser(u)
 				r, _ := http.NewRequest("GET", "/api/users/"+strconv.FormatInt(mid, 10), nil)
@@ -234,6 +237,7 @@ func TestUsersAPI(t *testing.T) {
 			Convey("Try to get existing user as a regular one, should return 401", func() {
 				u := &models.User{
 					Username: "A",
+					Email:    "a@easylab.io",
 				}
 				mid, _ := models.CreateUser(u)
 				r, _ := http.NewRequest("GET", "/api/users/"+strconv.FormatInt(mid, 10), nil)
