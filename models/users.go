@@ -9,6 +9,7 @@ import (
 	"github.com/astaxie/beego/orm"
 	"golang.org/x/crypto/scrypt"
 	"io"
+	"regexp"
 	"strings"
 	"time"
 )
@@ -24,6 +25,8 @@ const (
 	STAFF  = "staff"
 	MEMBER = "member"
 )
+
+const _EXP_EMAIL = `^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`
 
 type User struct {
 	Id          int64  `orm:"auto";"pk"`
@@ -83,6 +86,18 @@ func CreateUser(user *User) (userId int64, er error) {
 	}
 
 	o := orm.NewOrm()
+
+	// Validate email
+	if user.Email == "" {
+		return 0, errors.New("Email field should not be blank")
+	}
+	exp, err := regexp.Compile(_EXP_EMAIL)
+	if err != nil {
+		return 0, fmt.Errorf("Failed to compile rexex: %v", err)
+	}
+	if !exp.MatchString(user.Email) {
+		return 0, errors.New("Invalid email")
+	}
 
 	// Check if user with the same username does exist
 	if user.Username != "" {
@@ -309,6 +324,18 @@ func UpdateUser(user *User) error {
 				return errors.New("Only one admin left")
 			}
 		}
+	}
+
+	// Validate email
+	if user.Email == "" {
+		return errors.New("Email field should not be blank")
+	}
+	exp, err := regexp.Compile(_EXP_EMAIL)
+	if err != nil {
+		return fmt.Errorf("Failed to compile rexex: %v", err)
+	}
+	if !exp.MatchString(user.Email) {
+		return errors.New("Invalid email")
 	}
 
 	// Check for duplicate username and email entries
