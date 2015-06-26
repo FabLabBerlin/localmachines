@@ -2,6 +2,10 @@ node_modules
 *swp
 *swo
 bundle.js
-dev/*
+dev/*.woff2
+dev/*.woff
+dev/*.ttf
+dev/*.svg
+dev/*.eot
 !dev/index.html
 !dev/img/*
