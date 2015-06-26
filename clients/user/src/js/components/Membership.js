@@ -4,7 +4,7 @@ var Membership = React.createClass({
   render() {
     var MembershipNode = ( 
       <tr>
-        <td>You do not have any memberships</td>
+        <td colSpan="2">You do not have any memberships</td>
       </tr> 
     );
     if(this.props.info.length != 0) {

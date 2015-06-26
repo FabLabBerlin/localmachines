@@ -19,7 +19,6 @@ func init() {
 
 // TestMain is a sample to run an endpoint test
 func TestRedirect(t *testing.T) {
-
 	Convey("Test Station Endpoint", t, func() {
 		Convey("Status Code Should Be 302", func() {
 			r, _ := http.NewRequest("GET", "/", nil)

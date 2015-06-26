@@ -2,11 +2,12 @@ package controllers
 
 import (
 	"encoding/json"
+	"strings"
+	"time"
+
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/kr15h/fabsmith/models"
-	"strings"
-	"time"
 )
 
 type UsersController struct {
@@ -216,8 +217,11 @@ func (this *UsersController) Get() {
 		this.CustomAbort(403, "Failed to get :uid")
 	}
 
-	sid := this.GetSession(SESSION_FIELD_NAME_USER_ID)
-	if uid == sid {
+	suid, ok := this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
+	if !ok {
+		beego.Error("Can't get data if not logged in")
+		this.CustomAbort(401, "Unauthorized")
+	} else if uid == suid {
 
 		// Request user ID and session user ID match.
 		// The user is logged in and deserves to get her data.
@@ -232,7 +236,7 @@ func (this *UsersController) Get() {
 		// Requested user ID and stored session ID does not match,
 		// meaning that the logged user is trying to access other user data.
 		// Don't allow to get data of another user unless session user is admin or staff.
-		if !this.IsAdmin(sid.(int64)) && !this.IsStaff(sid.(int64)) {
+		if !this.IsAdmin(suid) && !this.IsStaff(suid) {
 			beego.Error("Unauthorized attempt to get other user data")
 			this.CustomAbort(401, "Unauthorized")
 		} else {
@@ -256,8 +260,9 @@ func (this *UsersController) Get() {
 // @Failure	401	Unauthorized
 // @router /:uid [delete]
 func (this *UsersController) Delete() {
-	sid := this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
-	if !this.IsAdmin(sid) && !this.IsStaff(sid) {
+	sid, ok := this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
+
+	if !ok || (!this.IsAdmin(sid) && !this.IsStaff(sid)) {
 		beego.Error("Unauthorized attempt to delete user")
 		this.CustomAbort(401, "Unauthorized")
 	}
