@@ -32,8 +32,8 @@ var App = React.createClass({
 
         <RouteHandler />
 
-        <footer className="absolute-bottom">
-          <div className="container-fuild">
+        <footer>
+          <div className="container-fluid">
             <i className="fa fa-copyright"></i> Fab Lab Berlin 2015
           </div>
         </footer>
