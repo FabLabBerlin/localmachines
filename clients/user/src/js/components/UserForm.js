@@ -54,7 +54,7 @@ var UserForm = React.createClass({
                             </div>
                         </div>
                     </div>
-                    <div className="col-sm-6" >
+                    <div className="row col-md-offset-5" >
                         <button className="btn btn-primary btn-lg">
                             Save
                         </button>

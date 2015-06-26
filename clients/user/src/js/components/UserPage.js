@@ -68,7 +68,7 @@ var UserPage = React.createClass({
     render() {
         return (
             <div className="signup" >
-                <div className="container-fluid" >
+                <div className="container" >
                     <div className="signup-form" >
                         <h3>Your information</h3>
                         <UserForm info={this.state.infoUser} 
