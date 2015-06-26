@@ -38,9 +38,13 @@ func (this *Controller) GetSessionUserId() (int64, error) {
 // if single user ID is passed, checks the passed one. Fails otherwise.
 func (this *Controller) IsAdmin(userIds ...int64) bool {
 	var userId int64
+	var ok bool
 	var err error
 	if len(userIds) == 0 {
-		userId = this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
+		userId, ok = this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
+		if !ok {
+			return false
+		}
 	} else if len(userIds) == 1 {
 		userId = userIds[0]
 	} else {
