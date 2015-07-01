@@ -20,12 +20,19 @@ app.config(['$routeProvider', function($routeProvider) {
   });
 }]);
 
+function getUser($cookieStore){
+  var user = {};
+  user.Admin = $cookieStore.get('UserRole') === 'admin';
+  return user;
+}
+
 app.controller('MachinesCtrl',
  ['$scope', '$http', '$location', '$route', '$cookieStore',
  function($scope, $http, $location, $route, $cookieStore) {
 
   $scope.scrollTop = false;
   $scope.scrollBottom = false;
+  $scope.user = getUser($cookieStore);
 
   if (window.libnfc) {
 
@@ -522,10 +529,7 @@ app.directive('fsMachineBodyOccupied', function() {
 
       // As we are using this scope for more than one directive
       if ($scope.machine.occupied) {
-        var user = {};
-        user.Admin = $cookieStore.get('UserRole') === 'admin';
-        $scope.user = user;
-
+        $scope.user = getUser($cookieStore);
         // Activate occupied machine timer if user is admin or staff
         if (user.Admin) {
           console.log('fsMachineBodyOccupied: machine.activationInterval before: ' + $scope.machine.activationInterval);
@@ -554,6 +558,13 @@ app.directive('fsMachineBodyOccupied', function() {
 app.directive('fsMachineBodyUnavailable', function() {
   return {
     templateUrl: 'ng-modules/machines/machine-body-unavailable.html',
+    restrict: 'E'
+  };
+});
+
+app.directive('fsMachineBodyAdminOnOff', function() {
+  return {
+    templateUrl: 'ng-modules/machines/machine-body-admin-on-off.html',
     restrict: 'E'
   };
 });
