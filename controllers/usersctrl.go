@@ -304,7 +304,7 @@ func (this *UsersController) Put() {
 		beego.Info("req: ", req)
 	} else {
 		beego.Error("Failed to decode json")
-		this.CustomAbort(500, "Internal Server Error")
+		this.CustomAbort(500, "Internal Server Error A")
 	}
 
 	// If the user is trying update his own information
@@ -316,8 +316,6 @@ func (this *UsersController) Put() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	beego.Trace("req.User.Id:", req.User.Id)
-	beego.Trace("sessUserId:", sessUserId)
 	if req.User.Id != sessUserId {
 		if !this.IsAdmin() {
 			beego.Error("Unauthorized attempt update user")

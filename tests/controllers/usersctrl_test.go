@@ -138,9 +138,8 @@ func TestUsersAPI(t *testing.T) {
 		})
 		Convey("Testing POST /users/signup/", func() {
 			Convey("Try signup with empty body, should return 500", func() {
-				var jsonStr = []byte("")
+				var jsonStr = []byte("{}")
 				r, _ := http.NewRequest("POST", "/api/users/signup", bytes.NewBuffer(jsonStr))
-				r.Header.Set("X-Custom-Header", "myvalue")
 				r.Header.Set("Content-Type", "application/json")
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
@@ -150,7 +149,6 @@ func TestUsersAPI(t *testing.T) {
 			Convey("Try signup with User only, should return 500", func() {
 				var jsonStr = []byte(`{"User": {"Username":"A"} }`)
 				r, _ := http.NewRequest("POST", "/api/users/signup", bytes.NewBuffer(jsonStr))
-				r.Header.Set("X-Custom-Header", "myvalue")
 				r.Header.Set("Content-Type", "application/json")
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
@@ -160,7 +158,6 @@ func TestUsersAPI(t *testing.T) {
 			Convey("Try signup with User and password, should return 200", func() {
 				var jsonStr = []byte(`{"User": {"Username":"A", "Email": "a@easylab.io"}, "Password":"A" }`)
 				r, _ := http.NewRequest("POST", "/api/users/signup", bytes.NewBuffer(jsonStr))
-				r.Header.Set("X-Custom-Header", "myvalue")
 				r.Header.Set("Content-Type", "application/json")
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
@@ -276,6 +273,74 @@ func TestUsersAPI(t *testing.T) {
 				mid, _ := models.CreateUser(u)
 				r, _ := http.NewRequest("DELETE", "/api/users/"+strconv.FormatInt(mid, 10), nil)
 				r.AddCookie(LoginAsAdmin())
+				w := httptest.NewRecorder()
+				beego.BeeApp.Handlers.ServeHTTP(w, r)
+
+				So(w.Code, ShouldEqual, 200)
+			})
+		})
+		Convey("Testing PUT /users/:uid", func() {
+			Convey("Try to modify a user without being connected, should return 500", func() {
+				var jsonStr = []byte("{}")
+				r, _ := http.NewRequest("PUT", "/api/users/0", bytes.NewBuffer(jsonStr))
+				r.Header.Set("Content-Type", "application/json")
+				w := httptest.NewRecorder()
+				beego.BeeApp.Handlers.ServeHTTP(w, r)
+
+				So(w.Code, ShouldEqual, 500)
+			})
+			Convey("Try to modify a user as a regular user, should return 401", func() {
+				var jsonStr = []byte("{}")
+				r, _ := http.NewRequest("PUT", "/api/users/0", bytes.NewBuffer(jsonStr))
+				r.AddCookie(LoginAsRegular())
+				r.Header.Set("Content-Type", "application/json")
+				w := httptest.NewRecorder()
+				beego.BeeApp.Handlers.ServeHTTP(w, r)
+
+				So(w.Code, ShouldEqual, 401)
+			})
+			Convey("Try to modify self userRole as a regular user, should return 500", func() {
+				cookie := LoginAsRegular()
+				var jsonStr = []byte(`{"User": {"Id": ` + strconv.FormatInt(RegularUID, 10) + `, "Email": "raaaaaaaaaaaaaaaaadom@easylab.io", "UserRole": "` + models.ADMIN + `"}}`)
+				r, _ := http.NewRequest("PUT", "/api/users/"+strconv.FormatInt(RegularUID, 10), bytes.NewBuffer(jsonStr))
+				r.AddCookie(cookie)
+				r.Header.Set("Content-Type", "application/json")
+				w := httptest.NewRecorder()
+				beego.BeeApp.Handlers.ServeHTTP(w, r)
+
+				So(w.Code, ShouldEqual, 500)
+			})
+			Convey("Try to modify self user as a regular user, should return 200", func() {
+				cookie := LoginAsRegular()
+				var jsonStr = []byte(`{"User": {"Id": ` + strconv.FormatInt(RegularUID, 10) + `, "Email": "raaaaaaaaaaaaaaaaadom@easylab.io"}}`)
+				r, _ := http.NewRequest("PUT", "/api/users/"+strconv.FormatInt(RegularUID, 10), bytes.NewBuffer(jsonStr))
+				r.AddCookie(cookie)
+				r.Header.Set("Content-Type", "application/json")
+				w := httptest.NewRecorder()
+				beego.BeeApp.Handlers.ServeHTTP(w, r)
+
+				So(w.Code, ShouldEqual, 200)
+			})
+			Convey("Try to modify a user that doesn't exists as an admin, should return 500", func() {
+				var jsonStr = []byte(`{"User": {"Id": 0, "Email": "raaaaaaaaaaaaaaaaadom@easylab.io"}}`)
+				r, _ := http.NewRequest("PUT", "/api/users/0", bytes.NewBuffer(jsonStr))
+				r.AddCookie(LoginAsAdmin())
+				r.Header.Set("Content-Type", "application/json")
+				w := httptest.NewRecorder()
+				beego.BeeApp.Handlers.ServeHTTP(w, r)
+
+				So(w.Code, ShouldEqual, 500)
+			})
+			Convey("Try to modify a user as an admin, should return 200", func() {
+				u := models.User{
+					Username: "lel",
+					Email:    "lel@easylab.io",
+				}
+				uid, _ := models.CreateUser(&u)
+				var jsonStr = []byte(`{"User": {"Id": ` + strconv.FormatInt(uid, 10) + `, "Email": "raaaaaaaaaaaaaaaaadom@easylab.io"}}`)
+				r, _ := http.NewRequest("PUT", "/api/users/"+strconv.FormatInt(uid, 10), bytes.NewBuffer(jsonStr))
+				r.AddCookie(LoginAsAdmin())
+				r.Header.Set("Content-Type", "application/json")
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
 
