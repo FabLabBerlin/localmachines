@@ -304,7 +304,7 @@ func (this *UsersController) Put() {
 		beego.Info("req: ", req)
 	} else {
 		beego.Error("Failed to decode json")
-		this.CustomAbort(500, "Internal Server Error A")
+		this.CustomAbort(500, "Internal Server Error")
 	}
 
 	// If the user is trying update his own information
