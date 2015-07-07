@@ -2,7 +2,7 @@ import $ from 'jquery';
 
 var UserStore = {
     _state: {
-        userID: 0,
+        userId: 0,
         isLogged: false,
         rawInfoUser: {},
         rawInfoMachine: [],
@@ -153,7 +153,7 @@ var UserStore = {
     // To call before logout
     cleanState() {
         this._state.isLogged = false;
-        this._state.userID = 0;
+        this._state.userId = 0;
         this._state.rawInfoUser = {};
         this._state.rawInfoMachine = [];
         this._state.rawInfoMachine = {};
@@ -167,7 +167,7 @@ var UserStore = {
      */
     // Getter to the state
     getUID () {
-        return this._state.userID;
+        return this._state.userId;
     },
     getIsLogged: function() {
         return this._state.isLogged;
