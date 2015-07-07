@@ -1,3 +1,5 @@
+import $ from 'jquery';
+
 var UserStore = {
     _state: {
         userID: 0,
@@ -17,6 +19,7 @@ var UserStore = {
     logoutFromServer() {
         $.ajax({
             url: '/api/users/logout',
+            type: 'GET',
             dataType: 'json',
             cache: false,
             success: function() {
