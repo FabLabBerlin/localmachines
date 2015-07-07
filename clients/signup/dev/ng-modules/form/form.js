@@ -14,7 +14,8 @@ angular.module('fabsmith.signup.form', ['ngRoute'])
 .controller('FormCtrl', ['$scope', '$location', '$http',
  function($scope, $location, $http) {
 
-  $scope.emailRegExp = /^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/;
+  // Regular expression for email spec : RFC 5322
+  $scope.emailRegExp = /^[-a-z0-9~!$%^*_=+}{\'?]+(\.[-a-z0-9~!$%^*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?/i;
   $scope.minUsernameAndPasswordLength = 3;
 
   $scope.submitForm = function() {
