@@ -157,9 +157,12 @@ describe('UserStore test', function() {
    *
    */
   it('call into $.ajax with json parameters', function() {
-
-
-    //UserStore.submitStateToServer(userStateTest);
+    /*
+     * Test submitUpdatedStateToServer
+     * TODO: debug the function in the store
+     * TODO: test formatUserStateToSendToServer
+     */
+    //UserStore.submitUpdatedStateToServer(userStateTest);
 
     /*
      * Test submitLoginFormToServer
@@ -173,7 +176,6 @@ describe('UserStore test', function() {
       success: jasmine.any(Function),
       error: jasmine.any(Function)
     });
-
   });
 
   /*
