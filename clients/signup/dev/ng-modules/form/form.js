@@ -14,7 +14,7 @@ angular.module('fabsmith.signup.form', ['ngRoute'])
 .controller('FormCtrl', ['$scope', '$location', '$http',
  function($scope, $location, $http) {
 
-  $scope.emailRegExp = /^[_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/;
+  $scope.emailRegExp = /^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/;
   $scope.minUsernameAndPasswordLength = 3;
 
   $scope.submitForm = function() {
