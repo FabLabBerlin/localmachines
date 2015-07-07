@@ -3,7 +3,7 @@ import UserStore from '../stores/UserStore'
 var UserActions = {
 
     submitState(userState){
-        UserStore.submitStateToServer(userState);
+        UserStore.submitUpdatedStateToServer(userState);
     },
 
     logout() {

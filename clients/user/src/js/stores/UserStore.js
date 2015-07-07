@@ -33,7 +33,7 @@ var UserStore = {
 
     // Put the information from UserForm in the state 
     // then send it to the server
-    submitStateToServer(userState) {
+    submitUpdatedStateToServer(userState) {
         this.formatUserStateToSendToServer(userState);
         /*
         $.ajax({
@@ -156,7 +156,7 @@ var UserStore = {
         this._state.userId = 0;
         this._state.rawInfoUser = {};
         this._state.rawInfoMachine = [];
-        this._state.rawInfoMachine = {};
+        this._state.rawInfoMembership = {};
         this.onChangeLogout();
     },
 
