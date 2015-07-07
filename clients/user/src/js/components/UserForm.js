@@ -1,19 +1,35 @@
 import _ from 'lodash';
 import React from 'react';
 
+/*
+ * UserForm component:
+ * manage the form the user fill to update his profile
+ */
 var UserForm = React.createClass({
 
-  // Pass changing of the input responsability to the parent
+  /*
+   * Handle the change in the input
+   * @event: typing in the form
+   * User function passed by props
+   */
   handleChangeForm(event) {
     this.props.func(event);
   },
 
-  // Pass the submit responsibility to the parent
+  /*
+   * Ask the UserPage the send the form to the server
+   * Use function passed by props
+   */
   handleSubmit() {
-    // should send value to useractions
     this.props.submit();
   },
 
+  /*
+   * Render the form:
+   * for each information in the userPage state:
+   *  - create an input
+   *  - give the value of the state to the related input
+   */
   render() {
     var NodeInput = _.map(this.props.info, function(value, key) {
       return (
@@ -30,7 +46,6 @@ var UserForm = React.createClass({
       );
     }.bind(this));
     return (
-      //l61, put font-awesome to get the logo
       <form onSubmit={this.handleSubmit}>
 
         <div className="row">
@@ -39,7 +54,7 @@ var UserForm = React.createClass({
 
         <div className="row">
           <div className="form-group">
-            
+
             <div className="col-sm-6">
               <label htmlFor="user-password">User Password </label>
               <input 
@@ -47,7 +62,7 @@ var UserForm = React.createClass({
                 placeholder="new password"
               />
             </div>
-            
+
             <div className="col-sm-6">
               <label htmlFor="user-password">User Password </label>
               <input 
@@ -60,7 +75,7 @@ var UserForm = React.createClass({
         </div>
 
         <hr />
-        
+
         <div className="clearfix">
           <div className="pull-right">
             <button className="btn btn-primary">
