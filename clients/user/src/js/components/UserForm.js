@@ -1,30 +1,12 @@
-/*
- * Dependencies for toastr
- */
-import ReactToastr from 'react-toastr';
-var {ToastContainer} = ReactToastr;
-var ToastMessageFactory = React.createFactory(ReactToastr.ToastMessage.animation);
+"use strict";
 import _ from 'lodash';
-import React from 'react';
+import React from "react";
 
 /*
  * UserForm component:
  * manage the form the user fill to update his profile
  */
 var UserForm = React.createClass({
-
-  addAlert(title, message) {
-    this.clearAlert();
-    this.refs.container.success(message, title, {
-                                  closeButton: true,
-                                  timeOut: 0,
-                                  extendedTimeOut: 0
-                                });
-  },
-
-  clearAlert() {
-    this.refs.container.clear();
-  },
 
   /*
    * Handle the change in the input
@@ -52,11 +34,14 @@ var UserForm = React.createClass({
     var minPassLength = 3;
     var password = document.getElementById('password');
     if(password.value !== document.getElementById('repeat').value){
-      this.addAlert("Invalide Password", "Passwords do no match");
+      //this.addAlert("Invalide Password", "Passwords do no match");
+      alert('pwd no match');
     } else if(!password.value || password.value === '') {
-      this.addAlert("Invalide Password", "You didn't write any new password");
+      //this.addAlert("Invalide Password", "You didn't write any new password");
+      alert('no pwd');
     } else if(password.value.length < minPassLength) {
-      this.addAlert("Invalide Password", "Password too short");
+      //this.addAlert("Invalide Password", "Password too short");
+      alert('too short');
     } else {
       this.props.passwordFunc(password.value);
     }
@@ -85,7 +70,6 @@ var UserForm = React.createClass({
     }.bind(this));
     return (
       <form >
-        <ToastContainer toastMessageFactory={ToastMessageFactory} ref="container" className="toast-bottom-left" />
 
         <div className="row">
           {NodeInput}
@@ -94,7 +78,7 @@ var UserForm = React.createClass({
         <div className="row">
           <div className="form-group">
 
-            <div className="col-sm-6">
+            <div className="col-sm-3">
               <label htmlFor="user-password">User Password </label>
               <input 
                 type="password" className="form-control"
@@ -103,13 +87,20 @@ var UserForm = React.createClass({
               />
             </div>
 
-            <div className="col-sm-6">
+            <div className="col-sm-3">
               <label htmlFor="user-password">User Password </label>
               <input 
                 type="password" className="form-control"
                 id="repeat"
                 placeholder="repeat password"
               />
+            </div>
+
+            <div className="col-sm-2" >
+              <button className="btn btn-primary"
+                onClick={this.updatePassword} >
+                Update Password
+              </button>
             </div>
 
           </div>
@@ -119,11 +110,6 @@ var UserForm = React.createClass({
 
         <div className="clearfix">
           <div className="pull-right">
-
-            <button className="btn btn-primary"
-              onClick={this.updatePassword} >
-              Update Password
-            </button>
 
             <button className="btn btn-primary"
              onClick={this.handleSubmit} >
