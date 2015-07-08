@@ -2,6 +2,7 @@ import $ from 'jquery';
 
 /*
  * @UserStore:
+ * All the information about the user are stored here
  * All the interaction between the front-end and the back-end are done here
  */
 var UserStore = {
@@ -9,7 +10,7 @@ var UserStore = {
    * The state of the store
    */
   _state: {
-    userId: 0,
+    userID: 0,
     isLogged: false,
     rawInfoUser: {},
     rawInfoMachine: [],
@@ -40,13 +41,12 @@ var UserStore = {
    * try to put the information in the UserForm into the database
    */
   submitUpdatedStateToServer(userState) {
-    this.formatUserStateToSendToServer(userState);
-    /*
+    var updatedState = this.formatUserStateToSendToServer(userState);
     $.ajax({
+      headers : {'Content-Type' : 'application/json'},
       url: '/api/users/' + this._state.userID,
-      dataType: 'json',
       type: 'PUT',
-      data: this._state.rawInfoUser,
+      data: JSON.stringify( updatedState ),
       success: function() {
         window.alert('change done');
       }.bind(this),
@@ -54,8 +54,6 @@ var UserStore = {
         console.error('/users/{uid}', status, err.toString());
       }.bind(this),
     });
-    */
-  alert('virtually done');
   },
 
   /*
@@ -145,6 +143,8 @@ var UserStore = {
     for(var data in userState) {
       this._state.rawInfoUser[data] = userState[data];
     }
+    var specialUpdateFormat = { User: this._state.rawInfoUser };
+    return specialUpdateFormat;
   },
 
   /*
@@ -172,7 +172,7 @@ var UserStore = {
    */
   cleanState() {
     this._state.isLogged = false;
-    this._state.userId = 0;
+    this._state.userID = 0;
     this._state.rawInfoUser = {};
     this._state.rawInfoMachine = [];
     this._state.rawInfoMembership = {};
@@ -183,7 +183,7 @@ var UserStore = {
    * Get the UID
    */
   getUID () {
-    return this._state.userId;
+    return this._state.userID;
   },
 
   /*

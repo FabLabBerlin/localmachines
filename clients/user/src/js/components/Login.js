@@ -1,6 +1,5 @@
 import React from 'react';
 import {Navigation} from 'react-router';
-
 import UserStore from '../stores/UserStore';
 import LoginActions from '../actions/LoginActions';
 
@@ -19,7 +18,7 @@ var Login = React.createClass({
   /*
    * Set the initial state
    */
-  getInitialState: function() {
+  getInitialState() {
     return {
       username: '',
       password: ''
@@ -30,7 +29,7 @@ var Login = React.createClass({
    * Submit the form
    * Clear the input
    */
-  handleSubmit: function(event) {
+  handleSubmit(event) {
     event.preventDefault();
     LoginActions.submitLoginForm(this.state);
     this.clearAndFocus();
@@ -39,7 +38,7 @@ var Login = React.createClass({
   /*
    * Update the state when there are changes in the input
    */
-  handleChange: function(e) {
+  handleChange(e) {
     this.setState({
       [e.target.name]: e.target.value
     });
@@ -48,7 +47,7 @@ var Login = React.createClass({
   /*
    * Clear the state and input and do the focus on the name input
    */
-  clearAndFocus: function() {
+  clearAndFocus() {
     this.setState({username: '', password: ''}, function() {
       React.findDOMNode(this.refs.name).focus();
     });
@@ -77,7 +76,6 @@ var Login = React.createClass({
    */
   render() {
     return (
-      // issue with className="login" like the machine login page 
       <div className="app" > 
         <div className="container-fluid">
           <div className="regular-login" >
