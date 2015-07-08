@@ -814,6 +814,9 @@ func (this *UsersController) PostUserPassword() {
 		beego.Error("Unable to update password: ", err)
 		this.CustomAbort(403, "Unable to update password")
 	}
+
+	this.Data["json"] = models.StatusResponse{"Password changed successfully!"}
+	this.ServeJson()
 }
 
 // @Title UpdateNfcUid
