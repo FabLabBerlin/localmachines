@@ -20,12 +20,19 @@ app.config(['$routeProvider', function($routeProvider) {
   });
 }]);
 
+function getUser($cookieStore){
+  var user = {};
+  user.Admin = $cookieStore.get('UserRole') === 'admin';
+  return user;
+}
+
 app.controller('MachinesCtrl',
  ['$scope', '$http', '$location', '$route', '$cookieStore',
  function($scope, $http, $location, $route, $cookieStore) {
 
   $scope.scrollTop = false;
   $scope.scrollBottom = false;
+  $scope.user = getUser($cookieStore);
 
   if (window.libnfc) {
 
@@ -404,6 +411,31 @@ app.controller('MachinesCtrl',
 
   };
 
+  function switchMachine(machineId, onOrOff) {
+    $scope.showGlobalLoader();
+    $http({
+      method: 'POST',
+      url: '/api/machines/' + machineId + '/turn_' + onOrOff,
+      params: { ac: new Date().getTime() }
+    })
+    .success(function(data) {
+      $scope.hideGlobalLoader();
+      window.location.reload();
+    })
+    .error(function() {
+      $scope.hideGlobalLoader();
+      toastr.error('Failed to turn ' + onOrOff);
+    });
+  }
+
+  $scope.turnOn = function(machineId) {
+    switchMachine(machineId, 'on');
+  };
+
+  $scope.turnOff = function(machineId) {
+    switchMachine(machineId, 'off');
+  };
+
   $scope.deactivatePrompt = function(machine) {
     vex.dialog.buttons.YES.text = 'Yes';
     vex.dialog.buttons.NO.text = 'No';
@@ -522,10 +554,8 @@ app.directive('fsMachineBodyOccupied', function() {
 
       // As we are using this scope for more than one directive
       if ($scope.machine.occupied) {
-        var user = {};
-        user.Admin = $cookieStore.get('UserRole') === 'admin';
+        var user = getUser($cookieStore);
         $scope.user = user;
-
         // Activate occupied machine timer if user is admin or staff
         if (user.Admin) {
           console.log('fsMachineBodyOccupied: machine.activationInterval before: ' + $scope.machine.activationInterval);
@@ -554,6 +584,13 @@ app.directive('fsMachineBodyOccupied', function() {
 app.directive('fsMachineBodyUnavailable', function() {
   return {
     templateUrl: 'ng-modules/machines/machine-body-unavailable.html',
+    restrict: 'E'
+  };
+});
+
+app.directive('fsMachineBodyAdminOnOff', function() {
+  return {
+    templateUrl: 'ng-modules/machines/machine-body-admin-on-off.html',
     restrict: 'E'
   };
 });
