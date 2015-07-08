@@ -499,6 +499,120 @@ func (this *UsersController) GetUserMachines() {
 	this.ServeJson()
 }
 
+// @Title GetUserBill
+// @Description Get a user PayAsYouGo data (Machines, usage and price per machine and total price)
+// @Param	uid		path 	int	true		"User ID"
+// @Success 200 {object} models.Machine
+// @Failure	401	Unauthorized
+// @Failure	500	Internal Server Error
+// @router /:uid/bill [get]
+func (this *UsersController) GetUserBill() {
+
+	// Get requested user ID
+	var err error
+	var ruid int64
+	ruid, err = this.GetInt64(":uid")
+	if err != nil {
+		beego.Error("Failed to get :uid", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	// Check if logged in
+	suid := this.GetSession(SESSION_FIELD_NAME_USER_ID)
+	if suid == nil {
+		beego.Info("Not logged in")
+		this.CustomAbort(401, "Unauthorized")
+	}
+
+	suidInt64, ok := suid.(int64)
+	if !ok {
+		beego.Error("Could not get session user ID as int64")
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	if !this.IsAdmin() && suidInt64 != ruid {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Unauthorized")
+	}
+
+	firstDayOfThisMonth := time.Date(time.Now().Year(), time.Now().Month(), 0, 0, 0, 0, 0, time.Now().Location())
+	tomorrow := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day()+1, 0, 0, 0, 0, time.Now().Location())
+	activations, err := models.GetActivations(firstDayOfThisMonth, tomorrow, ruid, false, 5000, 1)
+	if err != nil {
+		beego.Error(err.Error())
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	beego.Debug(firstDayOfThisMonth.Format("2006-01-02"))
+	beego.Debug(activations)
+
+	var total = TotalUsage{
+		TotalTime:  0,
+		TotalPrice: 0,
+		Details:    []MachineUsage{},
+	}
+
+	beego.Debug(len(*activations))
+	for index := 0; index < len(*activations); index++ {
+		activation := (*activations)[index]
+		beego.Debug(activation)
+		beego.Debug(activation.TimeTotal)
+		if !activation.Active {
+			updateDetails := func(machine *models.Machine, activation models.Activation, total *TotalUsage, ratio float32) {
+				total.TotalPrice += float32(activation.TimeTotal) / ratio * machine.Price
+
+				detailIndex := -1
+				for index, item := range total.Details {
+					if int64(item.MachineId) == machine.Id {
+						detailIndex = index
+					}
+				}
+
+				if detailIndex != -1 {
+					total.Details[detailIndex].Price += float32(activation.TimeTotal) / ratio * machine.Price
+					total.Details[detailIndex].Time += activation.TimeTotal
+				} else {
+					total.Details = append(total.Details, MachineUsage{
+						MachineId:   int64(activation.MachineId),
+						MachineName: machine.Name,
+						Price:       float32(activation.TimeTotal) / ratio * machine.Price,
+						Time:        activation.TimeTotal,
+					})
+				}
+			}
+			total.TotalTime += activation.TimeTotal
+			machine, _ := models.GetMachine(int64(activation.MachineId))
+			switch machine.PriceUnit {
+			case "day":
+				updateDetails(machine, activation, &total, float32(24*3600))
+			case "hour":
+				updateDetails(machine, activation, &total, float32(3600))
+			case "minute":
+				updateDetails(machine, activation, &total, float32(60))
+			default:
+				updateDetails(machine, activation, &total, float32(1))
+			}
+		}
+	}
+
+	// Serve activations
+	this.Data["json"] = total
+	this.ServeJson()
+}
+
+type TotalUsage struct {
+	TotalTime  int
+	TotalPrice float32
+	Details    []MachineUsage
+}
+
+type MachineUsage struct {
+	MachineId   int64
+	MachineName string
+	Price       float32
+	Time        int
+}
+
 // @Title PostUserMemberships
 // @Description Post user membership
 // @Param	uid		path 	int	true		"User ID"
