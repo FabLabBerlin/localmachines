@@ -65,6 +65,13 @@ var UserPage = React.createClass({
   },
 
   /*
+   * TODO: commentary
+   */
+  updatePassword(password) {
+    UserActions.updatePassword(password);
+  },
+
+  /*
    * When logout, redirect to the login page
    */
   onChangeLogout() {
@@ -92,6 +99,7 @@ var UserPage = React.createClass({
         <h3>Your information</h3>
           <UserForm info={this.state.infoUser} 
             func={this.handleChangeForm}
+            passwordFunc={this.updatePassword}
             submit={this.handleSubmit}
           />
           

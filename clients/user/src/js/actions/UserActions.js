@@ -15,6 +15,14 @@ var UserActions = {
   },
 
   /*
+   * Ask the store to update the password
+   * @password: new password the user want to have
+   */
+  updatePassword(password) {
+    UserStore.updatePassword(password);
+  },
+
+  /*
    * To logout
    */
   logout() {

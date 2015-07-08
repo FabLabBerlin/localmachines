@@ -78,6 +78,30 @@ var UserStore = {
   },
 
   /*
+   * Update the user's password
+   */
+  updatePassword(newPassword) {
+    $.ajax({
+      url: '/api/users/' + this._state.userID + '/password',
+      dataType: 'json',
+      type: 'POST',
+      data: {
+        password: newPassword,
+        ac: new Date().getTime()
+      },
+      success: function() {
+        //toastr.success('Password successfully updated');
+        alert('password updated');
+      }.bind(this),
+      error: function(xhr, status, err) {
+        //toastr.error('Error while trying to update password');
+        console.log('error');
+        console.error('/users/{uid}/password', status, err.toString());
+      }.bind(this),
+    });
+  },
+
+  /*
    * Fetch User Data and store them
    * fetch the user info and call getMachineFromServer
    */

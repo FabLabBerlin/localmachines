@@ -25,6 +25,28 @@ var UserForm = React.createClass({
   },
 
   /*
+   * Update the user password
+   * make syntax verification
+   * if all good, give the upper hand to the UserPage
+   */
+  updatePassword() {
+    var minPassLength = 3;
+    var password = document.getElementById('password');
+    if(password.value !== document.getElementById('repeat').value){
+      //toastr.error('Password do not match');
+      alert('passwords do not match');
+    } else if(!password.value || password.value === '') {
+      //toastr.error('No password');
+      alert('no password');
+    } else if(password.value.length < minPassLength) {
+      //toastr.error('Password too short');
+      alert('password too short');
+    } else {
+      this.props.passwordFunc(password.value);
+    }
+  },
+
+  /*
    * Render the form:
    * for each information in the userPage state:
    *  - create an input
@@ -46,7 +68,7 @@ var UserForm = React.createClass({
       );
     }.bind(this));
     return (
-      <form onSubmit={this.handleSubmit}>
+      <form >
 
         <div className="row">
           {NodeInput}
@@ -59,6 +81,7 @@ var UserForm = React.createClass({
               <label htmlFor="user-password">User Password </label>
               <input 
                 type="password" className="form-control"
+                id="password"
                 placeholder="new password"
               />
             </div>
@@ -67,6 +90,7 @@ var UserForm = React.createClass({
               <label htmlFor="user-password">User Password </label>
               <input 
                 type="password" className="form-control"
+                id="repeat"
                 placeholder="repeat password"
               />
             </div>
@@ -78,7 +102,14 @@ var UserForm = React.createClass({
 
         <div className="clearfix">
           <div className="pull-right">
-            <button className="btn btn-primary">
+
+            <button className="btn btn-primary"
+              onClick={this.updatePassword} >
+              Update Password
+            </button>
+
+            <button className="btn btn-primary"
+             onClick={this.handleSubmit} >
               <i className="fa fa-save"></i> Save
             </button>
           </div>
