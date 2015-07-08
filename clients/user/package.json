@@ -4,16 +4,20 @@
   "description": "Fabsmith user profile client module",
   "main": "index.js",
   "scripts": {
+    "test": "jest",
     "dev": "webpack --watch --progress --colors",
     "prod": "webpack --progress --colors"
   },
   "author": "Louis Delboc",
   "license": "MIT",
   "devDependencies": {
+    "babel-jest": "^5.3.0",
     "babel-loader": "^5.1.4",
     "bootstrap-less": "^3.3.8",
     "css-loader": "^0.15.1",
     "file-loader": "^0.8.4",
+    "font-awesome-webpack": "^0.0.3",
+    "jest-cli": "^0.4.15",
     "jquery": "^2.1.4",
     "less": "^2.5.1",
     "less-loader": "^2.2.0",
@@ -23,7 +27,14 @@
     "react-router": "^0.13.3",
     "style-loader": "^0.12.3",
     "url-loader": "^0.5.6",
-    "webpack": "^1.9.10",
-    "font-awesome-webpack": "^0.0.3"
+    "webpack": "^1.9.10"
+  },
+  "jest": {
+    "rootDir": ".",
+    "testDirectoryName": "__test__",
+    "scriptPreprocessor": "<rootDir>/preprocessor",
+    "unmockedModulePathPatterns": [
+      "react"
+    ]
   }
 }

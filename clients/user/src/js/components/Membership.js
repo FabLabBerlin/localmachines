@@ -1,6 +1,15 @@
 import React from 'react';
 
+/*
+ * Membership component:
+ * Display the membership the user is subscribing
+ */
 var Membership = React.createClass({
+
+  /*
+   * Create the table for each data
+   * Display it
+   */
   render() {
     var MembershipNode = ( 
       <tr>

@@ -6,11 +6,24 @@ import Membership from './Membership';
 import UserActions from '../actions/UserActions';
 import UserStore from '../stores/UserStore'
 
+/*
+ * UserPage component:
+ * manage the interaction with user
+ * @children:
+ *  - UserForm
+ *  - MachineList
+ *  - Membership
+ */
 var UserPage = React.createClass({
 
+  /*
+   * to use transitionTo/replaceWith/redirect and some function related to the router
+   */
   mixins: [ Navigation ],
 
-  // If not login, redirect to the login page
+  /*
+   * If not logged then redirect to the login page
+   */
   statics: {
     willTransitionTo(transition) {
       if(!UserStore.getIsLogged()) {
@@ -20,10 +33,9 @@ var UserPage = React.createClass({
   },
 
   /*
-   * Getting stuff from OUTSIDE of the component
+   * Fetching the user state from the store
    */
-  // getting state from UserStore
-  getInitialState: function() {
+  getInitialState() {
     return {
       infoUser: UserStore.getInfoUser(),
       infoMachine: UserStore.getInfoMachine(),
@@ -31,21 +43,18 @@ var UserPage = React.createClass({
     };
   },
 
-  // Pass the responsabilité to the store via the action
+  /*
+   * Submit the user information to the store via the action
+   */
   handleSubmit() {
     UserActions.submitState(this.state.infoUser);
   },
 
-  onChangeLogout() {
-    if( !UserStore.getIsLogged() ){
-      this.replaceWith('login');
-    }
-  },
-
   /*
-   * INSIDE the component
+   * When a change happend in the form:
+   * @event: the event which occured
+   * change the state to be coherent with the input values
    */
-  // Change the state of the input related
   handleChangeForm(event) {
     // Create a temporary state to replace the old one
     var tmpState = this.state.infoUser;
@@ -55,10 +64,28 @@ var UserPage = React.createClass({
     });
   },
 
+  /*
+   * When logout, redirect to the login page
+   */
+  onChangeLogout() {
+    if( !UserStore.getIsLogged() ){
+      this.replaceWith('login');
+    }
+  },
+
+  /*
+   * To synchronize the logout call with the logout event
+   */
   componentDidMount() {
     UserStore.onChangeLogout = this.onChangeLogout;
   },
 
+  /*
+   * Render:
+   *  - UserForm: form to update the user information
+   *  - MachineList: machines the user can access
+   *  - Membership: membership the user subscribe
+   */
   render() {
     return (
       <div className="container">
