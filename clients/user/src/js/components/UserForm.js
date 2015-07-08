@@ -1,3 +1,9 @@
+/*
+ * Dependencies for toastr
+ */
+import ReactToastr from 'react-toastr';
+var {ToastContainer} = ReactToastr;
+var ToastMessageFactory = React.createFactory(ReactToastr.ToastMessage.animation);
 import _ from 'lodash';
 import React from 'react';
 
@@ -6,6 +12,19 @@ import React from 'react';
  * manage the form the user fill to update his profile
  */
 var UserForm = React.createClass({
+
+  addAlert(title, message) {
+    this.clearAlert();
+    this.refs.container.success(message, title, {
+                                  closeButton: true,
+                                  timeOut: 0,
+                                  extendedTimeOut: 0
+                                });
+  },
+
+  clearAlert() {
+    this.refs.container.clear();
+  },
 
   /*
    * Handle the change in the input
@@ -33,14 +52,11 @@ var UserForm = React.createClass({
     var minPassLength = 3;
     var password = document.getElementById('password');
     if(password.value !== document.getElementById('repeat').value){
-      //toastr.error('Password do not match');
-      alert('passwords do not match');
+      this.addAlert("Invalide Password", "Passwords do no match");
     } else if(!password.value || password.value === '') {
-      //toastr.error('No password');
-      alert('no password');
+      this.addAlert("Invalide Password", "You didn't write any new password");
     } else if(password.value.length < minPassLength) {
-      //toastr.error('Password too short');
-      alert('password too short');
+      this.addAlert("Invalide Password", "Password too short");
     } else {
       this.props.passwordFunc(password.value);
     }
@@ -69,6 +85,7 @@ var UserForm = React.createClass({
     }.bind(this));
     return (
       <form >
+        <ToastContainer toastMessageFactory={ToastMessageFactory} ref="container" className="toast-bottom-left" />
 
         <div className="row">
           {NodeInput}
