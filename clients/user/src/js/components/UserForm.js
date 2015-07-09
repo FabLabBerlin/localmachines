@@ -70,38 +70,35 @@ var UserForm = React.createClass({
 
         <div className="row">
           {NodeInput}
-        </div>
 
-        <div className="row">
+          <div className="col-md-12" >
+            <label htmlFor="user-information" >Password</label>
+          </div>
+
           <div className="form-group">
-
             <div className="col-sm-3">
-              <label htmlFor="user-password">User Password </label>
               <input 
                 type="password" className="form-control"
                 id="password"
                 placeholder="new password"
               />
             </div>
-
             <div className="col-sm-3">
-              <label htmlFor="user-password">User Password </label>
               <input 
                 type="password" className="form-control"
                 id="repeat"
                 placeholder="repeat password"
               />
             </div>
-
             <div className="col-sm-2" >
               <button className="btn btn-primary"
                 onClick={this.updatePassword} >
                 Update Password
               </button>
             </div>
-
           </div>
         </div>
+
 
         <hr />
 
@@ -109,7 +106,7 @@ var UserForm = React.createClass({
           <div className="pull-right">
 
             <button className="btn btn-primary"
-             onClick={this.handleSubmit} >
+              onClick={this.handleSubmit} >
               <i className="fa fa-save"></i> Save
             </button>
           </div>
