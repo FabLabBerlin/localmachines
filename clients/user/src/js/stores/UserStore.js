@@ -147,6 +147,7 @@ var UserStore = {
       type: 'GET',
       success: function(data) {
         this._state.rawInfoBill = data;
+        console.log(data);
         this.getMembershipFromServer(uid);
       }.bind(this),
       error: function(xhr, status, err) {
@@ -217,6 +218,7 @@ var UserStore = {
     this._state.userId = 0;
     this._state.rawInfoUser = {};
     this._state.rawInfoMachine = [];
+    this._state.rawInfoBill = {};
     this._state.rawInfoMembership = {};
     this.onChangeLogout();
     toastr.success('Bye');
