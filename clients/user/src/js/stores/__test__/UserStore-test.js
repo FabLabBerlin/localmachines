@@ -14,7 +14,7 @@ describe('UserStore test', function() {
     userId: 5,
     isLogged: true,
     rawInfoUser: {
-      Id: 1,
+      Id: 5,
       FirstName: "Regular",
       LastName: "User",
       Username: "user",
@@ -68,7 +68,36 @@ describe('UserStore test', function() {
   };
 
   var testInfoMachine = UserStore._state['rawInfoMachine'];
-  var uidTest = 3;
+  var uidTest = 5;
+
+  var userUpdateFullState = {
+    User: {
+      Id: 5,
+      FirstName: "user",
+      LastName: "Update",
+      Username: "State",
+      Email: "user@example.com",
+      InvoiceAddr: 0,
+      ShipAddr: 0,
+      ClientId: 0,
+      B2b: false,
+      Company: "",
+      VatUserId: "",
+      VatRate: 0,
+      UserRole: "",
+      Created: "0001-01-01T00:00:00Z",
+      Comments: ""
+    },
+  };
+
+  var userUpdateState = {
+    FirstName: "user",
+    LastName: "Update",
+    Username: "State",
+    Email: "user@example.com",
+    InvoiceAddr: 0,
+    ShipAddr: 0
+  };
 
   var wantedResponse = {
     FirstName: "Regular",
@@ -92,17 +121,17 @@ describe('UserStore test', function() {
     password: 'test'
   };
 
-
   /*
    *
    * TEST API CALLS
    * without params or only uid
    *
    */
-  it('call into $.ajax with no param or uid', function() {
-    /*
-     * Test logout
-     */
+
+  /*
+   * Test logout
+   */
+  it('test logoutFromServer', function() {
     UserStore.logoutFromServer();
     expect($.ajax).toBeCalledWith({
       cache: false,
@@ -112,37 +141,29 @@ describe('UserStore test', function() {
       success: jasmine.any(Function),
       error: jasmine.any(Function)
     });
+  });
 
+  it('test getUserStateFromServer', function(){
     /*
      * Test getUserStateFromServer
      */
     UserStore.getUserStateFromServer(uidTest);
     expect($.ajax).toBeCalledWith({
-      url: '/api/users/3',
+      url: '/api/users/5',
       dataType: 'json',
       type: 'GET',
       success: jasmine.any(Function),
       error: jasmine.any(Function)
     });
+  })
 
-    /*
-     * Test getMachineFromServer
-     */
+  /*
+   * Test getMachineFromServer
+   */
+  it('test getMachineFromServer', function() {
     UserStore.getMachineFromServer(uidTest);
     expect($.ajax).toBeCalledWith({
-      url: '/api/users/3/machinepermissions',
-      dataType: 'json',
-      type: 'GET',
-      success: jasmine.any(Function),
-      error: jasmine.any(Function)
-    });
-
-    /*
-     * Test getMembershipFromServer
-     */
-    UserStore.getMembershipFromServer(uidTest);
-    expect($.ajax).toBeCalledWith({
-      url: '/api/users/3/machinepermissions',
+      url: '/api/users/5/machinepermissions',
       dataType: 'json',
       type: 'GET',
       success: jasmine.any(Function),
@@ -151,28 +172,46 @@ describe('UserStore test', function() {
   });
 
   /*
-   *
-   * TEST API CALLS
-   * with json param
-   *
+   * Test getMembershipFromServer
    */
-  it('call into $.ajax with json parameters', function() {
-    /*
-     * Test submitUpdatedStateToServer
-     * TODO: debug the function in the store
-     * TODO: test formatUserStateToSendToServer
-     */
-    //UserStore.submitUpdatedStateToServer(userStateTest);
+  it('test getMembershipFromServer', function() {
+    UserStore.getMembershipFromServer(uidTest);
+    expect($.ajax).toBeCalledWith({
+      url: '/api/users/5/machinepermissions',
+      dataType: 'json',
+      type: 'GET',
+      success: jasmine.any(Function),
+      error: jasmine.any(Function)
+    });
+  });
 
-    /*
-     * Test submitLoginFormToServer
-     */
+  /*
+   * Test submitLoginFormToServer
+   */
+  it('test submitLoginFormToServer', function() {
     UserStore.submitLoginFormToServer(loginInfoTest);
     expect($.ajax).toBeCalledWith({
       url: '/api/users/login',
       dataType: 'json',
       type: 'POST',
       data: loginInfoTest,
+      success: jasmine.any(Function),
+      error: jasmine.any(Function)
+    });
+  });
+
+  /*
+   * Test updatePassword
+   */
+  it('test updatePassword', function() {
+    UserStore.updatePassword('passwordTest');
+    expect($.ajax).toBeCalledWith({
+      url: '/api/users/5/password',
+      dataType: 'json',
+      type: 'POST',
+      data: {
+        password: 'passwordTest'
+      },
       success: jasmine.any(Function),
       error: jasmine.any(Function)
     });
@@ -194,6 +233,28 @@ describe('UserStore test', function() {
     expect( UserStore.getInfoUser() ).toEqual(wantedResponse);
     expect( UserStore.getInfoMachine() ).toEqual(testInfoMachine);
     expect( UserStore.getMembership() ).toEqual({});
+  });
+
+  /*
+   * Test submitUpdatedStateToServer
+   */
+  it('test submitUpdatedStateToServer', function() {
+    UserStore.submitUpdatedStateToServer(userUpdateState);
+    expect($.ajax).toBeCalledWith({
+      headers: {'Content-Type': 'application/json'},
+      url: '/api/users/5',
+      type: 'PUT',
+      data: JSON.stringify(userUpdateFullState),
+      success: jasmine.any(Function),
+      error: jasmine.any(Function)
+    });
+  });
+
+  /*
+   * Test formatUserStateToSendToServer
+   */
+  it('test formatUserStateToSendToServer', function() {
+    expect( UserStore.formatUserStateToSendToServer(userUpdateState) ).toEqual(userUpdateFullState);
   });
 
   /*

@@ -11,10 +11,11 @@ var UserStore = {
    * The state of the store
    */
   _state: {
-    userID: 0,
+    userId: 0,
     isLogged: false,
     rawInfoUser: {},
     rawInfoMachine: [],
+    rawInfoBill: {},
     rawInfoMembership:{}
   },
 
@@ -45,7 +46,7 @@ var UserStore = {
     var updatedState = this.formatUserStateToSendToServer(userState);
     $.ajax({
       headers : {'Content-Type' : 'application/json'},
-      url: '/api/users/' + this._state.userID,
+      url: '/api/users/' + this._state.userId,
       type: 'PUT',
       data: JSON.stringify( updatedState ),
       success: function() {
@@ -69,8 +70,8 @@ var UserStore = {
       type: 'POST',
       data: loginInfo,
       success: function(data) {
-        this._state.userID = data.UserId;
-        this.getUserStateFromServer(this._state.userID);
+        this._state.userId = data.UserId;
+        this.getUserStateFromServer(this._state.userId);
       }.bind(this),
       error: function(xhr, status, err) {
         console.error('/users/login', status, err.toString());
@@ -83,12 +84,11 @@ var UserStore = {
    */
   updatePassword(newPassword) {
     $.ajax({
-      url: '/api/users/' + this._state.userID + '/password',
+      url: '/api/users/' + this._state.userId + '/password',
       dataType: 'json',
       type: 'POST',
       data: {
-        password: newPassword,
-        ac: new Date().getTime()
+        password: newPassword
       },
       success: function() {
         toastr.success('Password successfully updated');
@@ -114,6 +114,7 @@ var UserStore = {
         this.getMachineFromServer(uid);
       }.bind(this),
       error: function(xhr, status, err) {
+        toastr.error('Error getting the user\'s information');
         console.error('/users/{uid}', status, err.toString());
       }.bind(this),
     });
@@ -130,10 +131,27 @@ var UserStore = {
       type: 'GET',
       success: function(data) {
         this._state.rawInfoMachine = data;
+        this.getInfoBillFromServer(uid);
+      }.bind(this),
+      error: function(xhr, status, err) {
+        toastr.error('Error getting the user\'s machines');
+        console.error('/users/{uid}/machinepermissions', status, err.toString());
+      }.bind(this),
+    });
+  },
+
+  getInfoBillFromServer(uid) {
+    $.ajax({
+      url: '/api/users/' + uid + '/bill',
+      dataType: 'json',
+      type: 'GET',
+      success: function(data) {
+        this._state.rawInfoBill = data;
         this.getMembershipFromServer(uid);
       }.bind(this),
       error: function(xhr, status, err) {
-        console.error('/users/{uid}/machinepermissions', status, err.toString());
+        toastr.error('Error getting the user\'s bill information');
+        console.error('/users/{uid}/bill', status, err.toString());
       }.bind(this),
     });
   },
@@ -153,6 +171,7 @@ var UserStore = {
         this.onChange();
       }.bind(this),
       error: function(xhr, status, err) {
+        toastr.error('Error getting the membership');
         console.error('/users/{uid}/memberships', status, err.toString());
       }.bind(this),
     });
@@ -195,7 +214,7 @@ var UserStore = {
    */
   cleanState() {
     this._state.isLogged = false;
-    this._state.userID = 0;
+    this._state.userId = 0;
     this._state.rawInfoUser = {};
     this._state.rawInfoMachine = [];
     this._state.rawInfoMembership = {};
@@ -207,7 +226,7 @@ var UserStore = {
    * Get the UID
    */
   getUID () {
-    return this._state.userID;
+    return this._state.userId;
   },
 
   /*
@@ -230,6 +249,13 @@ var UserStore = {
    */
   getInfoMachine: function() {
     return this._state.rawInfoMachine;
+  },
+
+  /*
+   * return the detailled Bill of the user
+   */
+  getInfoBill: function() {
+    return this._state.rawInfoBill;
   },
 
   /*
