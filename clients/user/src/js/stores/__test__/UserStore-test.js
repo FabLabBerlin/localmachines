@@ -204,4 +204,5 @@ describe('UserStore test', function() {
     UserStore.cleanState();
     expect(UserStore._state).toEqual(emptyState);
   });
+
 });

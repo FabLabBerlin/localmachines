@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import toastr from 'toastr';
 
 /*
  * @UserStore:
@@ -48,9 +49,10 @@ var UserStore = {
       type: 'PUT',
       data: JSON.stringify( updatedState ),
       success: function() {
-        window.alert('change done');
+        toastr.success('Status updated');
       }.bind(this),
       error: function(xhr, status, err) {
+        toastr.error('Error updating');
         console.error('/users/{uid}', status, err.toString());
       }.bind(this),
     });
@@ -72,7 +74,6 @@ var UserStore = {
       }.bind(this),
       error: function(xhr, status, err) {
         console.error('/users/login', status, err.toString());
-        //invoke toaster stuff
       }.bind(this),
     });
   },
@@ -90,12 +91,10 @@ var UserStore = {
         ac: new Date().getTime()
       },
       success: function() {
-        //toastr.success('Password successfully updated');
-        alert('password updated');
+        toastr.success('Password successfully updated');
       }.bind(this),
       error: function(xhr, status, err) {
-        //toastr.error('Error while trying to update password');
-        console.log('error');
+        toastr.error('Error while trying to update password');
         console.error('/users/{uid}/password', status, err.toString());
       }.bind(this),
     });
@@ -201,6 +200,7 @@ var UserStore = {
     this._state.rawInfoMachine = [];
     this._state.rawInfoMembership = {};
     this.onChangeLogout();
+    toastr.success('Bye');
   },
 
   /*

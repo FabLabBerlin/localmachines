@@ -1,6 +1,6 @@
-"use strict";
 import _ from 'lodash';
 import React from "react";
+import toastr from 'toastr';
 
 /*
  * UserForm component:
@@ -34,14 +34,11 @@ var UserForm = React.createClass({
     var minPassLength = 3;
     var password = document.getElementById('password');
     if(password.value !== document.getElementById('repeat').value){
-      //this.addAlert("Invalide Password", "Passwords do no match");
-      alert('pwd no match');
+      toastr.error('Passwords do not match');
     } else if(!password.value || password.value === '') {
-      //this.addAlert("Invalide Password", "You didn't write any new password");
-      alert('no pwd');
+      toastr.error('You did not write any new password');
     } else if(password.value.length < minPassLength) {
-      //this.addAlert("Invalide Password", "Password too short");
-      alert('too short');
+      toastr.error('Password too short');
     } else {
       this.props.passwordFunc(password.value);
     }

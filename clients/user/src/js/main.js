@@ -9,9 +9,9 @@ import {DefaultRoute, Route, Routes, NotFoundRoute} from 'react-router';
  * The style dependencies for webpack
  */
 require('bootstrap-less');
-require('../assets/toastr.css');
 require('../assets/less/main.less');
 require('font-awesome-webpack');
+require('toastr/build/toastr.min.css');
 
 /*
  * Defined all the routes the router has
