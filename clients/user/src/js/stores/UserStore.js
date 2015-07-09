@@ -13,6 +13,7 @@ var UserStore = {
   _state: {
     userId: 0,
     isLogged: false,
+    firstTry: true,
     rawInfoUser: {},
     rawInfoMachine: [],
     rawInfoBill: {},
@@ -72,8 +73,14 @@ var UserStore = {
       success: function(data) {
         this._state.userId = data.UserId;
         this.getUserStateFromServer(this._state.userId);
+        this._state.firstTry = true;
       }.bind(this),
       error: function(xhr, status, err) {
+        if(this._state.firstTry == true) {
+          this._state.firstTry = false;
+        } else {
+          toastr.error('Wrong password or username');
+        }
         console.error('/users/login', status, err.toString());
       }.bind(this),
     });
