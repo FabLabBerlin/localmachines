@@ -1,6 +1,6 @@
-"use strict";
 import _ from 'lodash';
 import React from "react";
+import toastr from 'toastr';
 
 /*
  * UserForm component:
@@ -34,14 +34,11 @@ var UserForm = React.createClass({
     var minPassLength = 3;
     var password = document.getElementById('password');
     if(password.value !== document.getElementById('repeat').value){
-      //this.addAlert("Invalide Password", "Passwords do no match");
-      alert('pwd no match');
+      toastr.error('Passwords do not match');
     } else if(!password.value || password.value === '') {
-      //this.addAlert("Invalide Password", "You didn't write any new password");
-      alert('no pwd');
+      toastr.error('You did not write any new password');
     } else if(password.value.length < minPassLength) {
-      //this.addAlert("Invalide Password", "Password too short");
-      alert('too short');
+      toastr.error('Password too short');
     } else {
       this.props.passwordFunc(password.value);
     }
@@ -73,38 +70,35 @@ var UserForm = React.createClass({
 
         <div className="row">
           {NodeInput}
-        </div>
 
-        <div className="row">
+          <div className="col-md-12" >
+            <label htmlFor="user-information" >Password</label>
+          </div>
+
           <div className="form-group">
-
             <div className="col-sm-3">
-              <label htmlFor="user-password">User Password </label>
               <input 
                 type="password" className="form-control"
                 id="password"
                 placeholder="new password"
               />
             </div>
-
             <div className="col-sm-3">
-              <label htmlFor="user-password">User Password </label>
               <input 
                 type="password" className="form-control"
                 id="repeat"
                 placeholder="repeat password"
               />
             </div>
-
             <div className="col-sm-2" >
               <button className="btn btn-primary"
                 onClick={this.updatePassword} >
                 Update Password
               </button>
             </div>
-
           </div>
         </div>
+
 
         <hr />
 
@@ -112,7 +106,7 @@ var UserForm = React.createClass({
           <div className="pull-right">
 
             <button className="btn btn-primary"
-             onClick={this.handleSubmit} >
+              onClick={this.handleSubmit} >
               <i className="fa fa-save"></i> Save
             </button>
           </div>

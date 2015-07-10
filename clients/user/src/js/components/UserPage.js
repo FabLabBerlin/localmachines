@@ -2,6 +2,7 @@ import React from 'react';
 import {Navigation} from 'react-router';
 import UserForm from './UserForm';
 import MachineList from './MachineList';
+import BillTable from './BillTable';
 import Membership from './Membership';
 import UserActions from '../actions/UserActions';
 import UserStore from '../stores/UserStore'
@@ -39,6 +40,7 @@ var UserPage = React.createClass({
     return {
       infoUser: UserStore.getInfoUser(),
       infoMachine: UserStore.getInfoMachine(),
+      infoBill: UserStore.getInfoBill(),
       infoMembership: UserStore.getMembership()
     };
   },
@@ -85,6 +87,7 @@ var UserPage = React.createClass({
    */
   componentDidMount() {
     UserStore.onChangeLogout = this.onChangeLogout;
+    console.log(this.state.infoBill);
   },
 
   /*
@@ -106,6 +109,9 @@ var UserPage = React.createClass({
         <h3>Machines you can use</h3>
         <MachineList info={this.state.infoMachine} />
           
+        <h3>Your spending</h3>
+        <BillTable info={this.state.infoBill} />
+
         <h3>Your Memberships</h3>
         <Membership info={this.state.infoMembership} />
       </div>
