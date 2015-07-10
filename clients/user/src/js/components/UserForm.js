@@ -1,6 +1,11 @@
 import _ from 'lodash';
 import React from "react";
+
+/*
+ * Import toastr and set position
+ */
 import toastr from 'toastr';
+toastr.options.possitionClass = 'toast-bottom-left';
 
 /*
  * UserForm component:

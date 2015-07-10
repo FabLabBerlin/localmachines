@@ -1,5 +1,10 @@
 import $ from 'jquery';
+
+/*
+ * Import toastr and set position
+ */
 import toastr from 'toastr';
+toastr.options.positionClass = 'toast-bottom-left';
 
 /*
  * @UserStore:
