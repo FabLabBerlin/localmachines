@@ -73,7 +73,7 @@ var UserStore = {
         this._state.firstTry = true;
       }.bind(this),
       error: function(xhr, status, err) {
-        if(this._state.firstTry == true) {
+        if(this._state.firstTry === true) {
           this._state.firstTry = false;
         } else {
           toastr.error('Wrong password or username');

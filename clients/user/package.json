@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
+    "start": "npm run-script prod",
     "dev": "webpack --watch --progress --colors",
-    "prod": "webpack --progress --colors"
+    "prod": "NODE_ENV=production webpack -p --progress --colors"
   },
   "author": "Louis Delboc",
   "license": "MIT",
