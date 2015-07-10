@@ -5,6 +5,13 @@ import toastr from 'toastr';
  * @UserStore:
  * All the information about the user are stored here
  * All the interaction between the front-end and the back-end are done here
+ * @state
+ * @ajax calls:
+ *  - PUT
+ *  - POST
+ *  - GET
+ * @formatfunction
+ * @getter
  */
 var UserStore = {
   /*
@@ -18,25 +25,6 @@ var UserStore = {
     rawInfoMachine: [],
     rawInfoBill: {},
     rawInfoMembership:{}
-  },
-
-  /*
-   * Ask the server to logout
-   * If successful, clean the state
-   */
-  logoutFromServer() {
-    $.ajax({
-      url: '/api/users/logout',
-      type: 'GET',
-      dataType: 'json',
-      cache: false,
-      success: function() {
-        this.cleanState();
-      }.bind(this),
-      error: function(xhr, status, err) {
-        console.error('/users/logout', status, err.toString())
-      }.bind(this)
-    });
   },
 
   /*
@@ -128,8 +116,8 @@ var UserStore = {
   },
 
   /*
-   * Fetch Machine the user can use and store them
-   * call getMembershipFromServer if successful
+   * Fetch Machines the user can use and store them
+   * call getInfoBillFromServer if successful
    */
   getMachineFromServer(uid){
     $.ajax({
@@ -147,6 +135,10 @@ var UserStore = {
     });
   },
 
+  /*
+   * Fetch bill information and store them
+   * call getMembershipFromServer if sucessful
+   */
   getInfoBillFromServer(uid) {
     $.ajax({
       url: '/api/users/' + uid + '/bill',
@@ -182,6 +174,25 @@ var UserStore = {
         toastr.error('Error getting the membership');
         console.error('/users/{uid}/memberships', status, err.toString());
       }.bind(this),
+    });
+  },
+
+  /*
+   * Ask the server to logout
+   * If successful, clean the state
+   */
+  logoutFromServer() {
+    $.ajax({
+      url: '/api/users/logout',
+      type: 'GET',
+      dataType: 'json',
+      cache: false,
+      success: function() {
+        this.cleanState();
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error('/users/logout', status, err.toString())
+      }.bind(this)
     });
   },
 

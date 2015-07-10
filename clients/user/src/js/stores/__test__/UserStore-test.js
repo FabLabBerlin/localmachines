@@ -64,6 +64,18 @@ describe('UserStore test', function() {
         SwitchRefCount: 0
       }
     ],
+    rawInfoBill: {
+      TotalTime: 257,
+      TotalPrice: 1.1422222,
+      Details: [
+        {
+          MachineId: 1,
+          MachineName: "Laydrop 3D Printer",
+          Price: "1.1422222",
+          Time: 257
+        },
+      ]
+    },
     rawInfoMembership: []
   };
 
@@ -113,6 +125,7 @@ describe('UserStore test', function() {
     isLogged : false,
     rawInfoUser : {},
     rawInfoMachine : [],
+    rawInfoBill: {},
     rawInfoMembership : {}
   };
 
@@ -164,6 +177,20 @@ describe('UserStore test', function() {
     UserStore.getMachineFromServer(uidTest);
     expect($.ajax).toBeCalledWith({
       url: '/api/users/5/machinepermissions',
+      dataType: 'json',
+      type: 'GET',
+      success: jasmine.any(Function),
+      error: jasmine.any(Function)
+    });
+  });
+
+  /*
+   * Test getInfoBillFromServer
+   */
+  it('test getInfoBillFromServer', function() {
+    UserStore.getInfoBillFromServer(uidTest);
+    expect($.ajax).toBeCalledWith({
+      url: '/api/users/5/bill',
       dataType: 'json',
       type: 'GET',
       success: jasmine.any(Function),
