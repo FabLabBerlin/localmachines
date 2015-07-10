@@ -537,7 +537,7 @@ func (this *UsersController) GetUserBill() {
 
 	firstDayOfThisMonth := time.Date(time.Now().Year(), time.Now().Month(), 0, 0, 0, 0, 0, time.Now().Location())
 	tomorrow := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day()+1, 0, 0, 0, 0, time.Now().Location())
-	activations, err := models.GetActivations(firstDayOfThisMonth, tomorrow, ruid, false, 5000, 1)
+	activations, err := models.GetUserActivations(firstDayOfThisMonth, tomorrow, ruid)
 	if err != nil {
 		beego.Error(err.Error())
 		this.CustomAbort(500, "Internal Server Error")

@@ -4,9 +4,10 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
+
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	"time"
 )
 
 func init() {
@@ -38,6 +39,40 @@ func (this *Activation) TableName() string {
 type GetActivationsResponse struct {
 	NumActivations  int64
 	ActivationsPage *[]Activation
+}
+
+// Get activations of a specific user
+func GetUserActivations(startTime time.Time,
+	endTime time.Time,
+	userId int64) (*[]Activation, error) {
+
+	// Get activations from database
+	activations := []Activation{}
+	act := Activation{}
+	usr := User{}
+	o := orm.NewOrm()
+
+	query := fmt.Sprintf("SELECT a.* FROM %s a JOIN %s u ON a.user_id=u.id "+
+		"WHERE a.time_start>? AND a.time_end<? AND a.active=false AND a.user_id=? "+
+		"ORDER BY u.first_name ASC, a.time_start DESC",
+		act.TableName(),
+		usr.TableName())
+
+	beego.Trace(query)
+
+	num, err := o.Raw(query,
+		startTime.Format("2006-01-02"),
+		endTime.Format("2006-01-02"),
+		userId).QueryRows(&activations)
+
+	if err != nil {
+		msg := fmt.Sprintf("Failed to get activations: %v", err)
+		return nil, errors.New(msg)
+	}
+
+	beego.Trace("Got num activations:", num)
+
+	return &activations, nil
 }
 
 // Get filtered activations in a paged manner
