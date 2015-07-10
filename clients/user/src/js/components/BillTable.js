@@ -8,7 +8,7 @@ var BillTable = React.createClass({
           <tr key={info.MachineId} >
             <td>{info.MachineName}</td>
             <td>{info.Time}</td>
-            <td>{info.Price}</td>
+            <td>{info.Price} <i className="fa fa-eur"></i></td>
           </tr>
         );
       });
@@ -21,7 +21,7 @@ var BillTable = React.createClass({
           <tr>
             <th>Machine Name</th>
             <th>Time (s)</th>
-            <th>Credit</th>
+            <th>Credit <i className="fa fa-eur"></i></th>
           </tr>
         </thead>
         <tbody>
@@ -29,7 +29,7 @@ var BillTable = React.createClass({
           <tr>
             <td><label>Total</label></td>
             <td><label>{this.props.info.TotalTime}</label></td>
-            <td><label>{this.props.info.TotalPrice}</label></td>
+            <td><label>{this.props.info.TotalPrice}</label> <i className="fa fa-eur"></i></td>
           </tr>
         </tbody>
       </table>
