@@ -37,7 +37,7 @@ var App = React.createClass({
                     <i className="fa fa-sign-out"></i>
                   </button>
                   <a href="/machines"
-                    className="btn btn-danger linkToPanel"
+                    className="btn btn-info linkToPanel"
                     role="button" >
                     Switch to <br/>
                     machine panel

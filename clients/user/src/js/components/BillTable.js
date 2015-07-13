@@ -10,13 +10,14 @@ String.prototype.toHHMMSS = function() {
 
 var BillTable = React.createClass({
   render() {
+    var VAT = 0.19;
     if(this.props.info.Details.length != 0) {
       var BillNode = this.props.info.Details.map(function(info) {
         return (
           <tr key={info.MachineId} >
             <td>{info.MachineName}</td>
             <td>{info.Time.toString().toHHMMSS()}</td>
-            <td>{(info.Price * 0.19).toFixed(2)} <i className="fa fa-eur"></i></td>
+            <td>{(info.Price * VAT).toFixed(2)} <i className="fa fa-eur"></i></td>
             <td>{info.Price.toFixed(2)} <i className="fa fa-eur"></i></td>
           </tr>
         );
@@ -31,7 +32,7 @@ var BillTable = React.createClass({
             <th>Machine Name</th>
             <th>Time (h:m:s)</th>
             <th>VAT(19%)</th>
-            <th>Expenses <i className="fa fa-eur"></i></th>
+            <th>Expenses <i className="fa fa-eur"></i> (VAT included)</th>
           </tr>
         </thead>
         <tbody>
@@ -39,7 +40,7 @@ var BillTable = React.createClass({
           <tr>
             <td><label>Total</label></td>
             <td><label>{this.props.info.TotalTime.toString().toHHMMSS()}</label></td>
-            <td><label>{(this.props.info.TotalPrice * 0.19).toFixed(2)}</label> <i className="fa fa-eur"></i></td>
+            <td><label>{(this.props.info.TotalPrice * VAT).toFixed(2)}</label> <i className="fa fa-eur"></i></td>
             <td><label>{this.props.info.TotalPrice.toFixed(2)}</label> <i className="fa fa-eur"></i></td>
           </tr>
         </tbody>

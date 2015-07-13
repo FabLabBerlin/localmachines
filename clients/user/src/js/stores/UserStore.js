@@ -33,7 +33,7 @@ var UserStore = {
     rawInfoUser: {},
     rawInfoMachine: [],
     rawInfoBill: {},
-    rawInfoMembership:{}
+    rawInfoMembership: []
   },
 
   /*
