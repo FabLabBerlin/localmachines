@@ -1,7 +1,7 @@
 import $ from 'jquery';
 
 /*
- * Import toastr and set position
+ * Import toastr and set the position
  */
 import toastr from 'toastr';
 toastr.options.positionClass = 'toast-bottom-left';
@@ -17,6 +17,10 @@ toastr.options.positionClass = 'toast-bottom-left';
  *  - GET
  * @formatfunction
  * @getter
+ * TODO: It would be possible to have multiple membership
+ *       or to keep trace of your spending in membership
+ *       Need to Change the reponse of /users/uid/membership by an array 
+ *
  */
 var UserStore = {
   /*
@@ -69,7 +73,7 @@ var UserStore = {
         this._state.firstTry = true;
       }.bind(this),
       error: function(xhr, status, err) {
-        if(this._state.firstTry == true) {
+        if(this._state.firstTry === true) {
           this._state.firstTry = false;
         } else {
           toastr.error('Wrong password or username');

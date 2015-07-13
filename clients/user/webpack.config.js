@@ -1,9 +1,18 @@
 var webpack = require('webpack');
 
+function getOutputDevOrProd() {
+  if(process.env.NODE_ENV !== 'production') {
+    var outputDir = '/dev';
+  } else {
+    var outputDir = '/prod';
+  }
+  return outputDir;
+}
+
 module.exports = {
   entry: './src/js/main.js',
   output: {
-    path: __dirname + '/dev',
+    path: __dirname + getOutputDevOrProd(),
     filename: 'bundle.js'
   },
   module: {
