@@ -543,8 +543,7 @@ func (this *UsersController) GetUserBill() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	beego.Debug(firstDayOfThisMonth.Format("2006-01-02"))
-	beego.Debug(activations)
+	memberships, _ := models.GetUserMemberships(ruid)
 
 	var total = TotalUsage{
 		TotalTime:  0,
@@ -552,45 +551,66 @@ func (this *UsersController) GetUserBill() {
 		Details:    []MachineUsage{},
 	}
 
-	beego.Debug(len(*activations))
-	for index := 0; index < len(*activations); index++ {
-		activation := (*activations)[index]
-		beego.Debug(activation)
-		beego.Debug(activation.TimeTotal)
-		if !activation.Active {
-			updateDetails := func(machine *models.Machine, activation models.Activation, total *TotalUsage, ratio float32) {
-				total.TotalPrice += float32(activation.TimeTotal) / ratio * machine.Price
+	updateDetails := func(machine *models.Machine, activation models.Activation, membs *[]models.MembershipResponse, total *TotalUsage, ratio float64) {
+		reduction := float64(1)
+		for _, memb := range *membs {
+			var machinesAffected MachinesAffectedArray
+			err := json.Unmarshal([]byte(`{"MachinesIds":`+memb.AffectedMachines+`}`), &machinesAffected)
+			if err != nil {
+				beego.Critical(err.Error())
+			}
+			beego.Debug(memb.AffectedMachines)
+			beego.Debug(machinesAffected.MachinesIds)
 
-				detailIndex := -1
-				for index, item := range total.Details {
-					if int64(item.MachineId) == machine.Id {
-						detailIndex = index
-					}
-				}
-
-				if detailIndex != -1 {
-					total.Details[detailIndex].Price += float32(activation.TimeTotal) / ratio * machine.Price
-					total.Details[detailIndex].Time += activation.TimeTotal
-				} else {
-					total.Details = append(total.Details, MachineUsage{
-						MachineId:   int64(activation.MachineId),
-						MachineName: machine.Name,
-						Price:       float32(activation.TimeTotal) / ratio * machine.Price,
-						Time:        activation.TimeTotal,
-					})
+			reductionOnThisMachine := false
+			for _, item := range machinesAffected.MachinesIds {
+				if int64(item) == machine.Id {
+					reductionOnThisMachine = true
 				}
 			}
+
+			if reductionOnThisMachine {
+				reduction *= float64((float64(100) - float64(memb.MachinePriceDeduction)) / float64(100))
+			}
+		}
+
+		detailIndex := -1
+		for index, item := range total.Details {
+			if int64(item.MachineId) == machine.Id {
+				detailIndex = index
+			}
+		}
+		beego.Debug(reduction)
+		actualPrice := float64(activation.TimeTotal) / ratio * (float64(machine.Price) * float64(reduction))
+
+		total.TotalPrice += actualPrice
+		if detailIndex != -1 {
+			total.Details[detailIndex].Price += actualPrice
+			total.Details[detailIndex].Time += activation.TimeTotal
+		} else {
+			total.Details = append(total.Details, MachineUsage{
+				MachineId:   int64(activation.MachineId),
+				MachineName: machine.Name,
+				Price:       actualPrice,
+				Time:        activation.TimeTotal,
+			})
+		}
+	}
+
+	for index := 0; index < len(*activations); index++ {
+		activation := (*activations)[index]
+		if !activation.Active {
 			total.TotalTime += activation.TimeTotal
 			machine, _ := models.GetMachine(int64(activation.MachineId))
 			switch machine.PriceUnit {
 			case "day":
-				updateDetails(machine, activation, &total, float32(24*3600))
+				updateDetails(machine, activation, memberships, &total, float64(24*3600))
 			case "hour":
-				updateDetails(machine, activation, &total, float32(3600))
+				updateDetails(machine, activation, memberships, &total, float64(3600))
 			case "minute":
-				updateDetails(machine, activation, &total, float32(60))
+				updateDetails(machine, activation, memberships, &total, float64(60))
 			default:
-				updateDetails(machine, activation, &total, float32(1))
+				updateDetails(machine, activation, memberships, &total, float64(1))
 			}
 		}
 	}
@@ -602,15 +622,19 @@ func (this *UsersController) GetUserBill() {
 
 type TotalUsage struct {
 	TotalTime  int
-	TotalPrice float32
+	TotalPrice float64
 	Details    []MachineUsage
 }
 
 type MachineUsage struct {
 	MachineId   int64
 	MachineName string
-	Price       float32
+	Price       float64
 	Time        int
+}
+
+type MachinesAffectedArray struct {
+	MachinesIds []int
 }
 
 // @Title PostUserMemberships
