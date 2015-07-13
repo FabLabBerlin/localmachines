@@ -5,7 +5,6 @@ String.prototype.toHHMMSS = function() {
   var h = Math.floor(d / 3600);
   var m = Math.floor(d % 3600 / 60);
   var s = Math.floor(d % 3600 % 60);
-  console.log(d);
   return ((h > 0 ? h + ':' + (m < 10 ? "0" : "") : "") + m + ":" + (s < 10 ? "0" : "") + s);
 }
 
