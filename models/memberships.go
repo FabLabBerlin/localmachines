@@ -168,16 +168,6 @@ func GetUserMemberships(userId int64) (membs *[]MembershipResponse, err error) {
 	membs = &membershipsResponse
 	beego.Trace("Got num user memberships:", num)
 	return
-
-	// --- OLD ---
-	// o := orm.NewOrm()
-	// num, err := o.QueryTable("user_membership").Filter("user_id", userId).All(&ums)
-	// if err != nil {
-	// 	beego.Error("Failed to get user memberships")
-	// 	return nil, errors.New("Failed to get user memberships")
-	// }
-	// beego.Trace("Got num user memberships:", num)
-	// return
 }
 
 // Delete membership from the database
