@@ -87,7 +87,6 @@ var UserPage = React.createClass({
    */
   componentDidMount() {
     UserStore.onChangeLogout = this.onChangeLogout;
-    console.log(this.state.infoBill);
   },
 
   /*

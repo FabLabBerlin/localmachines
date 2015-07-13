@@ -33,7 +33,7 @@ var UserStore = {
     rawInfoUser: {},
     rawInfoMachine: [],
     rawInfoBill: {},
-    rawInfoMembership:{}
+    rawInfoMembership: []
   },
 
   /*
@@ -155,7 +155,6 @@ var UserStore = {
       type: 'GET',
       success: function(data) {
         this._state.rawInfoBill = data;
-        console.log(data);
         this.getMembershipFromServer(uid);
       }.bind(this),
       error: function(xhr, status, err) {

@@ -36,6 +36,12 @@ var App = React.createClass({
                     onClick={UserActions.logout}>
                     <i className="fa fa-sign-out"></i>
                   </button>
+                  <a href="/machines"
+                    className="btn btn-info linkToPanel"
+                    role="button" >
+                    Switch to <br/>
+                    machine panel
+                  </a>
                 </div>
               ):('')}
             </div>
