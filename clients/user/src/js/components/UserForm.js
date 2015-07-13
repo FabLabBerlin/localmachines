@@ -19,6 +19,7 @@ var UserForm = React.createClass({
    * User function passed by props
    */
   handleChangeForm(event) {
+    event.preventDefault();
     this.props.func(event);
   },
 
@@ -26,7 +27,8 @@ var UserForm = React.createClass({
    * Ask the UserPage the send the form to the server
    * Use function passed by props
    */
-  handleSubmit() {
+  handleSubmit(event) {
+    event.preventDefault();
     this.props.submit();
   },
 
@@ -35,7 +37,8 @@ var UserForm = React.createClass({
    * make syntax verification
    * if all good, give the upper hand to the UserPage
    */
-  updatePassword() {
+  updatePassword(event) {
+    event.preventDefault();
     var minPassLength = 3;
     var password = document.getElementById('password');
     if(password.value !== document.getElementById('repeat').value){
