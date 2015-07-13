@@ -67,7 +67,8 @@ var UserPage = React.createClass({
   },
 
   /*
-   * TODO: commentary
+   * Send an action to update the password
+   * @password: your new password
    */
   updatePassword(password) {
     UserActions.updatePassword(password);
