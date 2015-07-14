@@ -6,7 +6,7 @@ import Router from 'react-router';
 import {DefaultRoute, Route, Routes, NotFoundRoute} from 'react-router';
 
 /*
- * The style dependencies for webpack
+ * Style dependencies for webpack
  */
 require('bootstrap-less');
 require('../assets/less/main.less');
