@@ -14,7 +14,7 @@ require('font-awesome-webpack');
 require('toastr/build/toastr.min.css');
 
 /*
- * Defined all the routes the router has
+ * Defined all the routes of the panel
  */
 let routes = (
   <Route name="app" path="/" handler={App} >
