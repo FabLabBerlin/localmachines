@@ -20,8 +20,8 @@ var Login = React.createClass({
    */
   getInitialState() {
     return {
-      username: '',
-      password: ''
+      username: 'a',
+      password: 'b'
     };
   },
 
@@ -31,7 +31,7 @@ var Login = React.createClass({
    */
   handleSubmit(event) {
     event.preventDefault();
-    LoginActions.submitLoginForm(this.state);
+    //LoginActions.submitLoginForm(this.state);
     this.clearAndFocus();
   },
 
@@ -51,25 +51,27 @@ var Login = React.createClass({
     this.setState({username: '', password: ''}, function() {
       React.findDOMNode(this.refs.name).focus();
     });
+    this.onChange();
   },
 
   /*
    * Replace the login page url by the user page url
    */
   onChange() {
-    if( UserStore.getIsLogged ) {
+    // if( UserStore.getIsLogged ) {
       this.replaceWith('machine');
-    }
+      //}
   },
 
   /*
    * If you are already connected, will skip the page
    * listen to the onChange event from the UserStore
-   */
+   *
   componentDidMount() {
     LoginActions.submitLoginForm(this.state);
     UserStore.onChange = this.onChange;
   },
+  */
 
   /*
    * Render the form and the button inside of the App component
