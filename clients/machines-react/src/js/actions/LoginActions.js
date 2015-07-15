@@ -1,8 +1,8 @@
-import UserStore from '../stores/UserStore';
+import MachineStore from '../stores/MachineStore';
 
 var LoginActions = {
     submitLoginForm: function(content) {
-        UserStore.submitLoginFormToServer(content);
+        MachineStore.submitLoginFormToServer(content);
     }
 };
 

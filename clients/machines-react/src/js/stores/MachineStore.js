@@ -1,11 +1,17 @@
+import $ from 'jquery';
+
+/*
+ * Import toastr and set position
+ */
+import toastr from 'toastr';
+toastr.options.positionClass = 'toast-bottom-left';
+
 var MachineStore = {
 
   state: {
-    userInfo: {
-      uid: 3,
-      FirstName: 'test',
-      LastName: 'test'
-    },
+    isLogged: false,
+    firstTry: true,
+    userInfo: {},
     activationInfo: [
       {
         Id: 1,
@@ -45,6 +51,33 @@ var MachineStore = {
     ]
   },
 
+  /*
+   * Login
+   * submit the login form and try to connect to the back-end
+   */
+  submitLoginFormToServer(loginInfo){
+    console.log(loginInfo);
+    $.ajax({
+      url: '/api/users/login',
+      dataType: 'json',
+      type: 'POST',
+      data: loginInfo,
+      success: function(data) {
+        this.state.userInfo.UserId = data.UserId;
+        console.log(this.state.userInfo);
+        this.state.firstTry = true;
+      }.bind(this),
+      error: function(xhr, status, err) {
+        if(this.state.firstTry === true) {
+          this.state.firstTry = false;
+        } else {
+          toastr.error('Wrong password or username');
+        }
+        console.error('/users/login', status, err.toString());
+      }.bind(this),
+    });
+  },
+
   endActivation(aid) {
     /*
     console.log('end activation');
@@ -78,6 +111,8 @@ var MachineStore = {
   getMachineInfo() {
     return this.state.machineInfo;
   },
+
+  onChange() {},
 
   onChangeActivation() {}
 

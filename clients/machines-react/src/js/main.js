@@ -20,7 +20,7 @@ let routes = (
   <Route name="app" path="/" handler={App} >
     <Route name="machine" handler={MachinePage} />
     <Route name="login" handler={Login} />
-    <DefaultRoute handler={MachinePage} />
+    <DefaultRoute handler={Login} />
   </Route>
 );
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import {Navigation} from 'react-router';
-import UserStore from '../stores/UserStore';
+import MachineStore from '../stores/MachineStore';
 import LoginActions from '../actions/LoginActions';
 
 /*
@@ -20,8 +20,8 @@ var Login = React.createClass({
    */
   getInitialState() {
     return {
-      username: 'a',
-      password: 'b'
+      username: '',
+      password: ''
     };
   },
 
@@ -31,7 +31,7 @@ var Login = React.createClass({
    */
   handleSubmit(event) {
     event.preventDefault();
-    //LoginActions.submitLoginForm(this.state);
+    LoginActions.submitLoginForm(this.state);
     this.clearAndFocus();
   },
 
@@ -58,20 +58,19 @@ var Login = React.createClass({
    * Replace the login page url by the user page url
    */
   onChange() {
-    // if( UserStore.getIsLogged ) {
+    if( MachineStore.getIsLogged ) {
       this.replaceWith('machine');
-      //}
+    }
   },
 
   /*
    * If you are already connected, will skip the page
    * listen to the onChange event from the UserStore
-   *
+   */
   componentDidMount() {
     LoginActions.submitLoginForm(this.state);
-    UserStore.onChange = this.onChange;
+    MachineStore.onChange = this.onChange();
   },
-  */
 
   /*
    * Render the form and the button inside of the App component
