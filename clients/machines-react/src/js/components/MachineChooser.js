@@ -9,6 +9,12 @@ import FreeMachine from './FreeMachine';
  */
 var MachineChooser = React.createClass({
   render() {
+    /*
+    console.log('busy ?');
+    console.log(this.props.busy);
+    console.log('sameUser ?');
+    console.log(this.props.sameUser);
+    */
     return (
       <div>
         { this.props.busy ?
@@ -26,7 +32,6 @@ var MachineChooser = React.createClass({
           ) :
             (
         <FreeMachine
-          activation={this.props.activation}
           info={this.props.info}
         />
         )}

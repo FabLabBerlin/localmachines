@@ -12,6 +12,7 @@ var MachineList = React.createClass({
    */
   render() {
     var activation = this.props.activation;
+    var activationProps = false;
     if(this.props.info.length != 0) {
       var MachineNode = this.props.info.map(function(machine) {
         var isMachineBusy = false;
@@ -20,6 +21,7 @@ var MachineList = React.createClass({
           if( machine.Id == activation[i].MachineId ) {
             isMachineBusy = true;
             isSameUser = this.props.uid == activation[i].UserId;
+            activationProps = activation[i];
             break;
           }
         }
@@ -30,7 +32,7 @@ var MachineList = React.createClass({
             uid={this.props.uid}
             busy={isMachineBusy}
             sameUser={isSameUser}
-            activation={this.props.activation}
+            activation={activationProps}
           />
         );
       }.bind(this));
