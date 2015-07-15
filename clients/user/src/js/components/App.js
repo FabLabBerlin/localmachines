@@ -3,8 +3,20 @@ import UserActions from '../actions/UserActions';
 import React from 'react';
 import {Link, RouteHandler} from 'react-router';
 
-
+/*
+ * App
+ * @component: 
+ * manage the router
+ * it is in every page
+ * navigation bar and footer are in this component
+ */
 var App = React.createClass({
+  /*
+   * Render:
+   *  - navBar
+   *  - all the component which are under the router control
+   *  - footer
+   */
   render: function() {
     return (
       <div className="app">
@@ -24,6 +36,12 @@ var App = React.createClass({
                     onClick={UserActions.logout}>
                     <i className="fa fa-sign-out"></i>
                   </button>
+                  <a href="/machines"
+                    className="btn btn-info linkToPanel"
+                    role="button" >
+                    Switch to <br/>
+                    machine panel
+                  </a>
                 </div>
               ):('')}
             </div>

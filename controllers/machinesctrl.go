@@ -357,3 +357,63 @@ func (this *MachinesController) PostImage() {
 func imageFilename(machineId string, fileExt string) string {
 	return "machine-" + machineId + fileExt
 }
+
+const (
+	ON = iota
+	OFF
+)
+
+func (this *MachinesController) switchMachine(onOrOff int) {
+	var machineId int64
+	var err error
+	machineId, err = this.GetInt64(":mid")
+	if err != nil {
+		beego.Error("Failed to get :mid variable")
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	if !this.IsAdmin() {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	var machine *models.Machine
+	machine, err = models.GetMachine(machineId)
+	if err != nil {
+		beego.Error("Failed to get machine", err)
+		this.CustomAbort(403, "Failed to get machine")
+	}
+
+	if onOrOff == ON {
+		machine.On()
+	} else {
+		machine.Off()
+	}
+
+	//this.Data["json"] = machine
+	//this.ServeJson()
+}
+
+// @Title TurnOn
+// @Description Turn On Machine Switch
+// @Param	mid	path	int	true	"Machine ID"
+// @Success 200 string ok
+// @Failure	400	Bad Request
+// @Failure	401	Not authorized
+// @Failure	500 Internal Server Error
+// @router /:mid/turn_on [post]
+func (this *MachinesController) TurnOn() {
+	this.switchMachine(ON)
+}
+
+// @Title TurnOff
+// @Description Turn On Machine Switch
+// @Param	mid	path	int	true	"Machine ID"
+// @Success 200 string ok
+// @Failure	400	Bad Request
+// @Failure	401	Not authorized
+// @Failure	500 Internal Server Error
+// @router /:mid/turn_off [post]
+func (this *MachinesController) TurnOff() {
+	this.switchMachine(OFF)
+}

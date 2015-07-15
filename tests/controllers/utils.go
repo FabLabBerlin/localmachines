@@ -8,6 +8,9 @@ import (
 	"github.com/kr15h/fabsmith/models"
 )
 
+var AdminUID int64
+var RegularUID int64
+
 // LoginAsAdmin : Create an admin user and login
 func LoginAsAdmin() *http.Cookie {
 	u := models.User{
@@ -16,6 +19,7 @@ func LoginAsAdmin() *http.Cookie {
 		UserRole: models.ADMIN,
 	}
 	uid, _ := models.CreateUser(&u)
+	AdminUID = uid
 	models.AuthSetPassword(uid, "admin")
 
 	r, _ := http.NewRequest("POST", "/api/users/login?username=admin&password=admin", nil)
@@ -34,6 +38,7 @@ func LoginAsRegular() *http.Cookie {
 		Email:    "user@easylab.io",
 	}
 	uid, _ := models.CreateUser(&u)
+	RegularUID = uid
 	models.AuthSetPassword(uid, "user")
 
 	r, _ := http.NewRequest("POST", "/api/users/login?username=user&password=user", nil)

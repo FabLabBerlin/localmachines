@@ -1,7 +1,7 @@
 node_modules
 *swp
 *swo
-bundle.js
+dev/bundle.js
 dev/*.woff2
 dev/*.woff
 dev/*.ttf

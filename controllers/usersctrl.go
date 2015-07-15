@@ -316,8 +316,6 @@ func (this *UsersController) Put() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	beego.Trace("req.User.Id:", req.User.Id)
-	beego.Trace("sessUserId:", sessUserId)
 	if req.User.Id != sessUserId {
 		if !this.IsAdmin() {
 			beego.Error("Unauthorized attempt update user")
@@ -499,6 +497,144 @@ func (this *UsersController) GetUserMachines() {
 	// Serve machines
 	this.Data["json"] = machines
 	this.ServeJson()
+}
+
+// @Title GetUserBill
+// @Description Get a user PayAsYouGo data (Machines, usage and price per machine and total price)
+// @Param	uid		path 	int	true		"User ID"
+// @Success 200 {object} models.Machine
+// @Failure	401	Unauthorized
+// @Failure	500	Internal Server Error
+// @router /:uid/bill [get]
+func (this *UsersController) GetUserBill() {
+
+	// Get requested user ID
+	var err error
+	var ruid int64
+	ruid, err = this.GetInt64(":uid")
+	if err != nil {
+		beego.Error("Failed to get :uid", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	// Check if logged in
+	suid := this.GetSession(SESSION_FIELD_NAME_USER_ID)
+	if suid == nil {
+		beego.Info("Not logged in")
+		this.CustomAbort(401, "Unauthorized")
+	}
+
+	suidInt64, ok := suid.(int64)
+	if !ok {
+		beego.Error("Could not get session user ID as int64")
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	if !this.IsAdmin() && suidInt64 != ruid {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Unauthorized")
+	}
+
+	firstDayOfThisMonth := time.Date(time.Now().Year(), time.Now().Month(), 0, 0, 0, 0, 0, time.Now().Location())
+	tomorrow := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day()+1, 0, 0, 0, 0, time.Now().Location())
+	activations, err := models.GetUserActivations(firstDayOfThisMonth, tomorrow, ruid)
+	if err != nil {
+		beego.Error(err.Error())
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	memberships, _ := models.GetUserMemberships(ruid)
+
+	var total = TotalUsage{
+		TotalTime:  0,
+		TotalPrice: 0,
+		Details:    []MachineUsage{},
+	}
+
+	updateDetails := func(machine *models.Machine, activation models.Activation, membs *[]models.MembershipResponse, total *TotalUsage, ratio float64) {
+		reduction := float64(1)
+		for _, memb := range *membs {
+			var machinesAffected MachinesAffectedArray
+			err := json.Unmarshal([]byte(`{"MachinesIds":`+memb.AffectedMachines+`}`), &machinesAffected)
+			if err != nil {
+				beego.Critical(err.Error())
+			}
+			beego.Debug(memb.AffectedMachines)
+			beego.Debug(machinesAffected.MachinesIds)
+
+			reductionOnThisMachine := false
+			for _, item := range machinesAffected.MachinesIds {
+				if int64(item) == machine.Id {
+					reductionOnThisMachine = true
+				}
+			}
+
+			if reductionOnThisMachine {
+				reduction *= float64((float64(100) - float64(memb.MachinePriceDeduction)) / float64(100))
+			}
+		}
+
+		detailIndex := -1
+		for index, item := range total.Details {
+			if int64(item.MachineId) == machine.Id {
+				detailIndex = index
+			}
+		}
+		beego.Debug(reduction)
+		actualPrice := float64(activation.TimeTotal) / ratio * (float64(machine.Price) * float64(reduction))
+
+		total.TotalPrice += actualPrice
+		if detailIndex != -1 {
+			total.Details[detailIndex].Price += actualPrice
+			total.Details[detailIndex].Time += activation.TimeTotal
+		} else {
+			total.Details = append(total.Details, MachineUsage{
+				MachineId:   int64(activation.MachineId),
+				MachineName: machine.Name,
+				Price:       actualPrice,
+				Time:        activation.TimeTotal,
+			})
+		}
+	}
+
+	for index := 0; index < len(*activations); index++ {
+		activation := (*activations)[index]
+		if !activation.Active {
+			total.TotalTime += activation.TimeTotal
+			machine, _ := models.GetMachine(int64(activation.MachineId))
+			switch machine.PriceUnit {
+			case "day":
+				updateDetails(machine, activation, memberships, &total, float64(24*3600))
+			case "hour":
+				updateDetails(machine, activation, memberships, &total, float64(3600))
+			case "minute":
+				updateDetails(machine, activation, memberships, &total, float64(60))
+			default:
+				updateDetails(machine, activation, memberships, &total, float64(1))
+			}
+		}
+	}
+
+	// Serve activations
+	this.Data["json"] = total
+	this.ServeJson()
+}
+
+type TotalUsage struct {
+	TotalTime  int
+	TotalPrice float64
+	Details    []MachineUsage
+}
+
+type MachineUsage struct {
+	MachineId   int64
+	MachineName string
+	Price       float64
+	Time        int
+}
+
+type MachinesAffectedArray struct {
+	MachinesIds []int
 }
 
 // @Title PostUserMemberships
@@ -702,6 +838,9 @@ func (this *UsersController) PostUserPassword() {
 		beego.Error("Unable to update password: ", err)
 		this.CustomAbort(403, "Unable to update password")
 	}
+
+	this.Data["json"] = models.StatusResponse{"Password changed successfully!"}
+	this.ServeJson()
 }
 
 // @Title UpdateNfcUid

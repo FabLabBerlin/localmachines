@@ -411,6 +411,31 @@ app.controller('MachinesCtrl',
 
   };
 
+  function switchMachine(machineId, onOrOff) {
+    $scope.showGlobalLoader();
+    $http({
+      method: 'POST',
+      url: '/api/machines/' + machineId + '/turn_' + onOrOff,
+      params: { ac: new Date().getTime() }
+    })
+    .success(function(data) {
+      $scope.hideGlobalLoader();
+      window.location.reload();
+    })
+    .error(function() {
+      $scope.hideGlobalLoader();
+      toastr.error('Failed to turn ' + onOrOff);
+    });
+  }
+
+  $scope.turnOn = function(machineId) {
+    switchMachine(machineId, 'on');
+  };
+
+  $scope.turnOff = function(machineId) {
+    switchMachine(machineId, 'off');
+  };
+
   $scope.deactivatePrompt = function(machine) {
     vex.dialog.buttons.YES.text = 'Yes';
     vex.dialog.buttons.NO.text = 'No';
@@ -530,6 +555,7 @@ app.directive('fsMachineBodyOccupied', function() {
       // As we are using this scope for more than one directive
       if ($scope.machine.occupied) {
         $scope.user = getUser($cookieStore);
+
         // Activate occupied machine timer if user is admin or staff
         if (user.Admin) {
           console.log('fsMachineBodyOccupied: machine.activationInterval before: ' + $scope.machine.activationInterval);
