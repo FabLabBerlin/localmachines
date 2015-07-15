@@ -1,7 +1,7 @@
-import UserStore from '../stores/UserStore';
-import UserActions from '../actions/UserActions';
+import MachineStore from '../stores/MachineStore';
+import LoginActions from '../actions/LoginActions';
 import React from 'react';
-import {Link, RouteHandler} from 'react-router';
+import {RouteHandler} from 'react-router';
 
 /*
  * App
@@ -11,6 +11,15 @@ import {Link, RouteHandler} from 'react-router';
  * navigation bar and footer are in this component
  */
 var App = React.createClass({
+
+  statics: {
+    WillTransitionTo(transiton) {
+      if(!MachineStore.getIsLogged()) {
+        transition.redirect('login');
+      }
+    }
+  },
+
   /*
    * Render:
    *  - navBar
@@ -29,11 +38,11 @@ var App = React.createClass({
                 <img src="img/logo_fablab_berlin.svg" 
                      className="brand-image"/>
               </div>
-              {UserStore.getIsLogged() ? (
+              {MachineStore.getIsLogged() ? (
                 <div className="col-xs-6 text-right">
                   <button 
                     className="btn btn-danger btn-logout pull-right" 
-                    onClick={UserActions.logout}>
+                    onClick={LoginActions.logout}>
                     <i className="fa fa-sign-out"></i>
                   </button>
                   <a href="/user"

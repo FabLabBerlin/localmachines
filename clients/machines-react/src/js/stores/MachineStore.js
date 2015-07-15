@@ -1,4 +1,3 @@
-import $ from 'jquery';
 
 /*
  * Import toastr and set position
@@ -56,7 +55,6 @@ var MachineStore = {
    * submit the login form and try to connect to the back-end
    */
   submitLoginFormToServer(loginInfo){
-    console.log(loginInfo);
     $.ajax({
       url: '/api/users/login',
       dataType: 'json',
@@ -66,6 +64,8 @@ var MachineStore = {
         this.state.userInfo.UserId = data.UserId;
         console.log(this.state.userInfo);
         this.state.firstTry = true;
+        this.state.isLogged = true;
+        this.onChangeLogin();
       }.bind(this),
       error: function(xhr, status, err) {
         if(this.state.firstTry === true) {
@@ -75,6 +75,23 @@ var MachineStore = {
         }
         console.error('/users/login', status, err.toString());
       }.bind(this),
+    });
+  },
+
+  logout() {
+    $.ajax({
+      url: '/api/users/logout',
+      type: 'GET',
+      dataType: 'json',
+      cache: false,
+      success: function() {
+        toastr.success('logout');
+        this.state.isLogged = false;
+        this.onChangeLogout();
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error('/users/logout', status, err.toString());
+      }.bind(this)
     });
   },
 
@@ -100,6 +117,10 @@ var MachineStore = {
     this.onChangeActivation();
   },
 
+  getIsLogged() {
+    return this.state.isLogged;
+  },
+
   getUserInfo() {
     return this.state.userInfo;
   },
@@ -112,7 +133,9 @@ var MachineStore = {
     return this.state.machineInfo;
   },
 
-  onChange() {},
+  onChangeLogin() {},
+
+  onChangeLogout() {},
 
   onChangeActivation() {}
 

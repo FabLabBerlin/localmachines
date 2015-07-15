@@ -51,15 +51,14 @@ var Login = React.createClass({
     this.setState({username: '', password: ''}, function() {
       React.findDOMNode(this.refs.name).focus();
     });
-    this.onChange();
   },
 
   /*
    * Replace the login page url by the user page url
    */
-  onChange() {
-    if( MachineStore.getIsLogged ) {
-      this.replaceWith('machine');
+  onChangeLogin() {
+    if( MachineStore.getIsLogged() ) {
+      this.replaceWith('/machine');
     }
   },
 
@@ -69,7 +68,7 @@ var Login = React.createClass({
    */
   componentDidMount() {
     LoginActions.submitLoginForm(this.state);
-    MachineStore.onChange = this.onChange();
+    MachineStore.onChangeLogin = this.onChangeLogin;
   },
 
   /*
