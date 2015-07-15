@@ -155,13 +155,19 @@ func (this *UsersController) Signup() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
+	token, err := models.CreatePaymillUser(&data.User)
+	if err != nil {
+		beego.Error("Failed to create user on paymill:", err)
+		this.CustomAbort(500, "Internal Server Error")
+	} else {
+		data.User.Token = token
+	}
+
 	// Attempt to create the user
 	if userId, err = models.CreateUser(&data.User); err != nil {
 		beego.Error("Failed to create user:", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
-
-	models.CreatePaymillUser(&data.User)
 
 	// Set the password
 	if err = models.AuthSetPassword(userId, data.Password); err != nil {

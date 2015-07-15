@@ -47,6 +47,7 @@ type User struct {
 	UserRole    string    `orm:"size(100)"`
 	Created     time.Time `orm:"type(datetime)"`
 	Comments    string    `orm:"type(text)"`
+	Token       string    `orm:"size(100)"`
 }
 
 func (this *User) TableName() string {
