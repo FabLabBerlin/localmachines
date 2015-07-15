@@ -1,6 +1,9 @@
 # FabSmith
 Internal machine activation software for Fab Labs. Build with [BeeGo](http://beego.me) framework for [GoLang](https://golang.org) and [Angular.js](https://angularjs.org).
 
+# PAYMILL
+LEL
+
 ## Table of contents
 - [Quick-start](#quick-start)
   - [Configuration](#configuration)
@@ -19,7 +22,7 @@ Internal machine activation software for Fab Labs. Build with [BeeGo](http://bee
 - [API Documentation](#api-documentation)
 
 ## Quick-Start
-This section will show you how to get it working as fast as possible. 
+This section will show you how to get it working as fast as possible.
 
 If you have [GoLang](https://golang.org), [Bee](https://github.com/beego/bee) and [Beego](http://beego.me), use the follwing to clone the repo:  
 ```
@@ -61,10 +64,10 @@ To run compile and run use `bee run`. It should spawn a local web server accessi
 If you are not able to compile and run at this point - check your config file and whether you are not missing GoLang or Beego.
 
 ### Compiling and Installing Go
-You will need to compile GoLang from source on the Raspberry Pi. Takes about 2 hours. 
+You will need to compile GoLang from source on the Raspberry Pi. Takes about 2 hours.
 
  1. Memory split. You should give more for the CPU of the Pi. Open `sudo raspi-config`, go to **Advanced Settings**, select **Memory Split** and enter **128**. On a 512M Raspberry Pi 128M will be given to the GPU and the rest to CPU. This should be enough.
- 
+
  2. Swap space. Do this if you have less than 512MB of RAM. Raspberry Pi Model B or B+ is recomended - it has 512 MB of RAM and if you assign only 64MB to the GPU, the rest should be enough to compile Go. Do the following to create some swap space:  
  ```
  % sudo dd if=/dev/zero of=/import/nas/swap bs=1024 count=1048576
@@ -83,12 +86,12 @@ Mem:           232   78  153      0       0     24
 Swap:         1123   15 1108
  ```  
  Create `/import/nas/swap` if needed with `touch /import/nas/swap`. Use sudo if necessary.
- 
+
  3. Pre-requisites  
  ```
  % sudo apt-get install -y mercurial gcc libc6-dev
  ```
- 
+
  4. Clone source  
  ```
  % hg clone -u default https://code.google.com/p/go $HOME/go
@@ -102,14 +105,14 @@ added 14430 changesets with 52478 changes to 7406 files (+5 heads)
 updating to branch default
 3520 files updated, 0 files merged, 0 files removed, 0 files unresolved
  ```
- 
+
  5. Build
  ```
  % cd $HOME/go/src
 % ./all.bash
  ```
  When done, move `~/go` to `/opt/go`. This is where user programs that are more or less self-contained should go.
- 
+
  6. Setup. Open your shell config file (`.bashrc` or `.zshrc` - depends on what are you using) and add the following:  
  ```
  export GOROOT=/opt/go
@@ -117,7 +120,7 @@ export GOPATH=$HOME/go-workspace
 export PATH="/usr/local/bin:/usr/bin:/bin:/usr/bin/X11:/usr/games:$GOROOT/bin:$GOPATH/bin"
  ```
  Create `~/go-workspace` directory. Name it as you wish, but remember to change the path to it in the lines above added to the shell config file.
- 
+
 These instructions have been adapted from [Dave Cheney's](http://dave.cheney.net/2012/09/25/installing-go-on-the-raspberry-pi) blog article. If something goes wrong - refer to it.
 
 ###Installing Beego
@@ -138,7 +141,7 @@ Create a database with the `mysql` tool (`mysql -u root -p`):
 CREATE DATABASE fabsmith DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
 ```
 
-Create a safe MySQL user (replace username and password): 
+Create a safe MySQL user (replace username and password):
 ```
 GRANT ALL PRIVILEGES ON fabsmith.* To 'fabsmith'@'localhost' IDENTIFIED BY 'fabsmith';
 SET PASSWORD FOR 'fabsmith'@'localhost' =  PASSWORD('fabsmith');
@@ -156,7 +159,7 @@ Dump database:
 mysqldump -u user -p fabsmith > fabsmith.sql
 ```
 
-Create a safe MySQL user: 
+Create a safe MySQL user:
 ```
 GRANT ALL PRIVILEGES ON fabsmith.* To 'fabsmith'@'localhost' IDENTIFIED BY 'fabsmith';
 ```
@@ -299,7 +302,7 @@ It seems that it works also with plain:
 bee run
 ```
 
-Then access API documentation via: 
+Then access API documentation via:
 
 ```
 http://localhost:8080/swagger
@@ -307,7 +310,7 @@ http://localhost:8080/swagger
 
 The port number and host is the same you have set in your `config/app.conf` file.
 
-After you have done some changes to the code, run the following to update API documentation: 
+After you have done some changes to the code, run the following to update API documentation:
 
 ```
 bee generate docs
