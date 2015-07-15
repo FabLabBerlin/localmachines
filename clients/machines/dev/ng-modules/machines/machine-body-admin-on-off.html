@@ -1,8 +1,10 @@
-<div>
-	<button class="btn btn-lg btn-primary btn-block"
-	        ng-click="turnOn(machine.Id)"
-	        ng-show="!machine.SwitchRefCount">On</button>
-	<button class="btn btn-lg btn-danger btn-block"
-	        ng-click="turnOff(machine.Id)"
-	        ng-show="machine.SwitchRefCount">Off</button>
+<div class="pull-right">
+  Force Switch: 
+  <button class="btn btn-lg btn-primary"
+          ng-click="turnOn(machine.Id)">
+    On
+  </button><button class="btn btn-lg btn-danger"
+          ng-click="turnOff(machine.Id)">
+    Off
+  </button>
 </div>
