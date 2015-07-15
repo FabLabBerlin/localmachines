@@ -420,7 +420,6 @@ app.controller('MachinesCtrl',
     })
     .success(function(data) {
       $scope.hideGlobalLoader();
-      window.location.reload();
     })
     .error(function() {
       $scope.hideGlobalLoader();
