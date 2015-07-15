@@ -35,6 +35,18 @@ func (this *UserMembership) TableName() string {
 	return "user_membership"
 }
 
+type MembershipResponse struct {
+	Id                    int64  `orm:"auto";"pk"`
+	Title                 string `orm:"size(100)"`
+	ShortName             string `orm:"size(100)"`
+	Duration              int
+	Unit                  string `orm:"size(100)"`
+	Price                 float32
+	MachinePriceDeduction int
+	AffectedMachines      string `orm:"type(text)"`
+	StartDate             time.Time
+}
+
 func init() {
 	orm.RegisterModel((new(Membership)), new(UserMembership))
 }
@@ -135,13 +147,25 @@ func CreateUserMembership(userMembership *UserMembership) (umid int64, err error
 	}
 }
 
-func GetUserMemberships(userId int64) (ums []*UserMembership, err error) {
+func GetUserMemberships(userId int64) (membs *[]MembershipResponse, err error) {
 	o := orm.NewOrm()
-	num, err := o.QueryTable("user_membership").Filter("user_id", userId).All(&ums)
+	membershipsResponse := []MembershipResponse{}
+	mem := Membership{}
+	usr_mem := UserMembership{}
+
+	query := fmt.Sprintf("SELECT m.*, um.start_date FROM %s m JOIN %s um ON um.membership_id=m.id "+
+		"WHERE um.user_id=?",
+		mem.TableName(),
+		usr_mem.TableName())
+
+	beego.Trace(query)
+
+	num, err := o.Raw(query, userId).QueryRows(&membershipsResponse)
 	if err != nil {
-		beego.Error("Failed to get user memberships")
+		beego.Error(err.Error())
 		return nil, errors.New("Failed to get user memberships")
 	}
+	membs = &membershipsResponse
 	beego.Trace("Got num user memberships:", num)
 	return
 }
