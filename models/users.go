@@ -573,37 +573,6 @@ type UserObject struct {
 }
 
 func CreatePaymillUser(user *User) (token string, err error) {
-	// paymill_url := beego.AppConfig.String("paymillurl")
-	// paymill_private := beego.AppConfig.String("paymillprivate")
-	// params := url.Values{
-	// 	"email":       []string{user.Email},
-	// 	"description": []string{user.Company},
-	// }
-	//
-	// beego.Debug(paymill_url + "?" + params.Encode())
-	//
-	// req, _ := http.NewRequest("POST", paymill_url+"?"+params.Encode(), nil)
-	// req.SetBasicAuth(paymill_private, "")
-	//
-	// resp, _ := http.DefaultClient.Do(req)
-	// body, _ := ioutil.ReadAll(resp.Body)
-	// defer resp.Body.Close()
-	// var user_response UserResponseObject
-	// err = json.Unmarshal(body, &user_response)
-	// if err != nil {
-	// 	beego.Critical(err.Error())
-	// }
-	//
-	// beego.Debug(user_response.data.id)
-	// beego.Debug("response Body:", string(body))
-	//
-	// if err != nil {
-	// 	beego.Critical(err.Error())
-	// 	return "", err
-	// } else {
-	// 	return "token", nil
-	// }
-
 	paymill_private := beego.AppConfig.String("paymillprivate")
 	pm := &paymill.Paymill{
 		PrivateKey: paymill_private,
