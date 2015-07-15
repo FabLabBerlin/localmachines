@@ -49,12 +49,14 @@ func configClients() {
 		beego.SetStaticPath("/machines", "clients/machines/dev")
 		beego.SetStaticPath("/admin", "clients/admin/dev")
 		beego.SetStaticPath("/signup", "clients/signup/dev")
-        beego.SetStaticPath("/user", "clients/user/dev")
+		beego.SetStaticPath("/user", "clients/user/dev")
+		beego.SetStaticPath("/mreact", "clients/machines-react/dev")
 	} else { // prod and any other runmode
 		beego.SetStaticPath("/machines", "clients/machines/prod")
 		beego.SetStaticPath("/admin", "clients/admin/prod")
 		beego.SetStaticPath("/signup", "clients/signup/prod")
-        beego.SetStaticPath("/user", "clients/user/prod")
+		beego.SetStaticPath("/user", "clients/user/prod")
+		beego.SetStaticPath("/mreact", "clients/machines-react/prod")
 	}
 }
 
