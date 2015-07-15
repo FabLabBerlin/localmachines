@@ -556,7 +556,7 @@ app.directive('fsMachineBodyOccupied', function() {
         $scope.user = getUser($cookieStore);
 
         // Activate occupied machine timer if user is admin or staff
-        if (user.Admin) {
+        if ($scope.user.Admin) {
           console.log('fsMachineBodyOccupied: machine.activationInterval before: ' + $scope.machine.activationInterval);
           
           if ($scope.machine.activationInterval !== 0) {
