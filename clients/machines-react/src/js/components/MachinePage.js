@@ -18,6 +18,12 @@ var MachinePage = React.createClass({
         MachineId: 1,
         TimeStart: "2015-07-14T18:17:28+02:00"
       },
+      {
+        Id: 2,
+        UserId: 2,
+        MachineId: 3,
+        TimeStart: "2015-07-14T18:17:28+02:00"
+      }
     ]
   },
 
@@ -26,32 +32,21 @@ var MachinePage = React.createClass({
       {
         Id: 1,
         Name: "Laydrop 3D Printer",
-        Shortname: "MB3DP",
-        Description: "NYC 3D printer 4 real and 4 life.",
         Image: "",
-        Available: true,
-        UnavailMsg: "",
-        UnavailTill: "0001-01-01T00:00:00Z",
-        Price: 16,
-        PriceUnit: "hour",
-        Comments: "",
-        Visible: true,
         ConnectedMachines: "[3]",
+        SwitchRefCount: 0
+      },
+      {
+        Id: 3,
+        Name: "Shitty Machine I dunno the name",
+        Image: "",
+        ConnectedMachines: "[2]",
         SwitchRefCount: 0
       },
       {
         Id: 2,
         Name: "MakerBot 3D Printer",
-        Shortname: "MB3DP",
-        Description: "NYC 3D printer 4 real and 4 life.",
         Image: "machine-2.svg",
-        Available: true,
-        UnavailMsg: "",
-        UnavailTill: "0001-01-01T00:00:00Z",
-        Price: 16,
-        PriceUnit: "hour",
-        Comments: "",
-        Visible: true,
         ConnectedMachines: "",
         SwitchRefCount: 0
       }
@@ -66,6 +61,10 @@ var MachinePage = React.createClass({
     };
   },
 
+  getUserId() {
+    return this.state.userInfo.uid;
+  },
+
   render() {
     return (
       <div className="container-fluid" >
@@ -74,6 +73,7 @@ var MachinePage = React.createClass({
         </div>
         <div>
           <MachineList 
+            uid={this.getUserId()}
             info={this.state.machineInfo} 
             activation={this.state.activationInfo}
           />

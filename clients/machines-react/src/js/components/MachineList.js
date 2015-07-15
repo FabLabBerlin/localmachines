@@ -1,5 +1,5 @@
 import React from 'react';
-import Machine from './Machine';
+import MachineChooser from './MachineChooser';
 
 /*
  *  MachineList component:
@@ -11,14 +11,27 @@ var MachineList = React.createClass({
    * Create the row of the table for each machine its get by props
    */
   render() {
+    var activation = this.props.activation;
     if(this.props.info.length != 0) {
       var MachineNode = this.props.info.map(function(machine) {
+        var isMachineBusy = false;
+        var isSameUser = false;
+        for( var i in activation ) {
+          if( machine.Id == activation[i].MachineId ) {
+            isMachineBusy = true;
+            isSameUser = this.props.uid == activation[i].UserId;
+            break;
+          }
+        }
         return (
-          <Machine 
+          <MachineChooser
             key={machine.Id}
             info={machine}
+            uid={this.props.uid}
+            busy={isMachineBusy}
+            sameUser={isSameUser}
             activation={this.props.activation}
-            />
+          />
         );
       }.bind(this));
     } else {
