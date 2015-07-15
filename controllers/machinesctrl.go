@@ -363,7 +363,7 @@ const (
 	OFF
 )
 
-func (this *MachinesController) switchMachine(onOrOff int) {
+func (this *MachinesController) switchMachine(onOrOff int) error {
 	var machineId int64
 	var err error
 	machineId, err = this.GetInt64(":mid")
@@ -385,13 +385,12 @@ func (this *MachinesController) switchMachine(onOrOff int) {
 	}
 
 	if onOrOff == ON {
-		machine.On()
+		return machine.On()
 	} else {
-		machine.Off()
+		return machine.Off()
 	}
 
-	//this.Data["json"] = machine
-	//this.ServeJson()
+	return nil
 }
 
 // @Title TurnOn
@@ -403,7 +402,12 @@ func (this *MachinesController) switchMachine(onOrOff int) {
 // @Failure	500 Internal Server Error
 // @router /:mid/turn_on [post]
 func (this *MachinesController) TurnOn() {
-	this.switchMachine(ON)
+	err := this.switchMachine(ON)
+	if err != nil {
+		this.CustomAbort(500, "Internal Server Error")
+	}
+	this.Data["json"] = "ok"
+	this.ServeJson()
 }
 
 // @Title TurnOff
@@ -415,5 +419,10 @@ func (this *MachinesController) TurnOn() {
 // @Failure	500 Internal Server Error
 // @router /:mid/turn_off [post]
 func (this *MachinesController) TurnOff() {
-	this.switchMachine(OFF)
+	err := this.switchMachine(OFF)
+	if err != nil {
+		this.CustomAbort(500, "Internal Server Error")
+	}
+	this.Data["json"] = "ok"
+	this.ServeJson()
 }
