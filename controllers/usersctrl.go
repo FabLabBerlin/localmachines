@@ -161,6 +161,8 @@ func (this *UsersController) Signup() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
+	models.CreatePaymillUser(&data.User)
+
 	// Set the password
 	if err = models.AuthSetPassword(userId, data.Password); err != nil {
 		beego.Error("Failed to set password for user ID", userId)
