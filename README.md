@@ -1,9 +1,6 @@
 # FabSmith
 Internal machine activation software for Fab Labs. Build with [BeeGo](http://beego.me) framework for [GoLang](https://golang.org) and [Angular.js](https://angularjs.org).
 
-# PAYMILL
-LEL
-
 ## Table of contents
 - [Quick-start](#quick-start)
   - [Configuration](#configuration)
