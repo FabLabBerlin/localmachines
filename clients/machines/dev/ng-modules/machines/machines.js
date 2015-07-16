@@ -420,7 +420,6 @@ app.controller('MachinesCtrl',
     })
     .success(function(data) {
       $scope.hideGlobalLoader();
-      window.location.reload();
     })
     .error(function() {
       $scope.hideGlobalLoader();
@@ -554,10 +553,10 @@ app.directive('fsMachineBodyOccupied', function() {
 
       // As we are using this scope for more than one directive
       if ($scope.machine.occupied) {
-        var user = getUser($cookieStore);
-        $scope.user = user;
+        $scope.user = getUser($cookieStore);
+
         // Activate occupied machine timer if user is admin or staff
-        if (user.Admin) {
+        if ($scope.user.Admin) {
           console.log('fsMachineBodyOccupied: machine.activationInterval before: ' + $scope.machine.activationInterval);
           
           if ($scope.machine.activationInterval !== 0) {
