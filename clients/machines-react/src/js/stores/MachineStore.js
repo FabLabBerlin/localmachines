@@ -55,27 +55,10 @@ var MachineStore = {
           toastr.error(toastrMessage);
         }
         errorFunction();
-        console.log(url, status, err);
+        console.error(url, status, err);
       }.bind(this),
     });
   },
-
-  /*
-   * API CALL TO DO
-   * login
-   *  - getname
-   *  - get users/uid/machines
-   *  - get activations/active
-   *  - post activations
-   *  - POST machines/mid/turn_onOrOff
-   *  - put activation/aid
-   *  - get name from user using machine
-   * logout
-   * 
-   *
-   */
-
-
 
   /*
    * Use POST call to login to the server
@@ -118,7 +101,7 @@ var MachineStore = {
   },
 
   /*
-   * To activate a machine
+   * Turn on a machine
    * Create an activation
    */
   postActivation(mid){
@@ -128,6 +111,24 @@ var MachineStore = {
     this.postAPICall('/api/activations', dataToSend, this.postActivationSuccess, 'Can not activate the machine');
   },
 
+  /*
+   * Turn off a machine
+   */
+  putActivation(aid) {
+    $.ajax({
+      url: '/api/activations/' + aid,
+      method: 'PUT',
+      data: {
+        ac: new Date().getTime()
+      },
+      success: function(data) {
+        this.postActivationSuccess(data, 'Machine desactivated');
+      }.bind(this),
+      error: function(xhr, status, err){
+        console.error('/api/activation/uid', status, err.toString());
+      }.bind(this),
+    });
+  },
 
   /*
    *  Activated when getLogout succed
@@ -179,6 +180,23 @@ var MachineStore = {
     MachineStore.onChangeLogin();
   },
 
+  /*
+   * Activated when postActivation succeed
+   */
+  postActivationSuccess(data, toastrMessage = 'Machine activated') {
+    toastr.success(toastrMessage);
+    var successFunction = function(data) {
+      var shortActivation = MachineStore.formatActivation(data);
+      MachineStore.state.activationInfo = shortActivation;
+      MachineStore.onChangeActivation();
+    }
+    MachineStore.getAPICall('/api/activations/active', successFunction, '');
+  },
+
+  /*
+   * Format rawActivation to have only useful information
+   * @rawActivation: response send by the server
+   */
   formatActivation(rawActivation) {
     var shortActivation = [];
     var wantedInformation = ['Id', 'UserId', 'MachineId', 'TimeStart'];
@@ -202,18 +220,6 @@ var MachineStore = {
     } else {
       toastr.error('Wrong password');
     }
-  },
-
-  endActivation(aid) {
-    /*
-    console.log('end activation');
-    console.log(aid);
-    */
-  },
-
-  postActivationSuccess(data) {
-    toastr.success('activation done');
-    MachineStore.onChangeActivation();
   },
 
   getIsLogged() {
