@@ -42,3 +42,8 @@ type UserNameResponse struct {
 	FirstName string
 	LastName  string
 }
+
+// Used to return the public key from Paymill
+type GetPublicKeyResponse struct {
+	PublicKey string
+}
