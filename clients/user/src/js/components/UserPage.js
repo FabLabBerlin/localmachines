@@ -109,7 +109,7 @@ var UserPage = React.createClass({
         <h3>Machines you can use</h3>
         <MachineList info={this.state.infoMachine} />
           
-        <h3>Your Spendings</h3>
+        <h3>Your Monthly Spendings</h3>
         <BillTable info={this.state.infoBill} />
 
         <h3>Your Memberships</h3>
