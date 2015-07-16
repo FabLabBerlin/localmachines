@@ -29,9 +29,9 @@ var BusyMachine = React.createClass({
           {this.props.activation}
         </div>
         <button 
-          className="btn btn-danger"
+          className="btn btn-lg btn-danger btn-block"
           onClick={this.endActivation}
-          >stop</button>
+          >Stop</button>
       </div>
     );
   }
