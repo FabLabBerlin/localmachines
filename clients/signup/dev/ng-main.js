@@ -6,6 +6,7 @@
 var app = angular.module('fabsmith.signup', [
   'ngRoute',
   'fabsmith.signup.form',
+  'fabsmith.signup.payment',
   'fabsmith.signup.thanks'
 ]);
 
