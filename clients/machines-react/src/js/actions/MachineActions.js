@@ -7,7 +7,7 @@ var MachineActions = {
   },
 
   startActivation(mid) {
-    MachineStore.startActivation(mid);
+    MachineStore.postActivation(mid);
   }
 
 }

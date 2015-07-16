@@ -54,6 +54,7 @@ var MachinePage = React.createClass({
   },
 
   render() {
+    console.log(this.state.activationInfo);
     return (
       <div className="container-fluid" >
         <div>
