@@ -12,14 +12,6 @@ import {RouteHandler} from 'react-router';
  */
 var App = React.createClass({
 
-  statics: {
-    WillTransitionTo(transiton) {
-      if(!MachineStore.getIsLogged()) {
-        transition.redirect('login');
-      }
-    }
-  },
-
   /*
    * Render:
    *  - navBar

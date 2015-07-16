@@ -27,7 +27,7 @@ var MachinePage = React.createClass({
   },
 
   getUserId() {
-    return this.state.userInfo.uid;
+    return this.state.userInfo.UserId;
   },
 
   onChangeActivation() {

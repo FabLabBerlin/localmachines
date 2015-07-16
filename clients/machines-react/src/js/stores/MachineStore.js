@@ -51,48 +51,97 @@ var MachineStore = {
   },
 
   /*
-   * Login
-   * submit the login form and try to connect to the back-end
+   * POST call to the API
+   * Make POST call cutomisable
    */
-  submitLoginFormToServer(loginInfo){
+  postAPICall(url, dataToSend, successFunction, errorFunction) {
     $.ajax({
-      url: '/api/users/login',
+      url: url,
       dataType: 'json',
-      type: 'POST',
-      data: loginInfo,
+      type:'POST',
+      data: dataToSend,
       success: function(data) {
-        this.state.userInfo.UserId = data.UserId;
-        console.log(this.state.userInfo);
-        this.state.firstTry = true;
-        this.state.isLogged = true;
-        this.onChangeLogin();
+        successFunction(data);
       }.bind(this),
       error: function(xhr, status, err) {
-        if(this.state.firstTry === true) {
-          this.state.firstTry = false;
-        } else {
-          toastr.error('Wrong password or username');
-        }
-        console.error('/users/login', status, err.toString());
+        errorFunction(xhr, status, err);
       }.bind(this),
     });
   },
 
-  logout() {
+  /*
+   * GET call to the API
+   * Make GET call cutomisable
+   */
+  getAPICall(url, successFunction, errorFunction) {
     $.ajax({
-      url: '/api/users/logout',
-      type: 'GET',
+      url: url,
       dataType: 'json',
+      type: 'GET',
       cache: false,
-      success: function() {
-        toastr.success('logout');
-        this.state.isLogged = false;
-        this.onChangeLogout();
+      success: function(data) {
+        successFunction(data);
       }.bind(this),
       error: function(xhr, status, err) {
-        console.error('/users/logout', status, err.toString());
-      }.bind(this)
+        errorFunction(xhr, status, err);
+      }.bind(this),
     });
+  },
+
+  /*
+   * Use POST call to login to the server
+   * callback are defined below
+   */
+  submitLoginFormToServer(loginInfo){
+    this.postAPICall('/api/users/login', loginInfo, this.LoginSuccessCallback, this.LoginErrorCallback);
+  },
+
+  /*
+   * Activated when login succeed
+   * MachineStore instead of this otherwise it doesn't work
+   */
+  LoginSuccessCallback(data) {
+    MachineStore.state.userInfo.UserId = data.UserId;
+    MachineStore.state.firstTry = true;
+    MachineStore.state.isLogged = true;
+    MachineStore.onChangeLogin();
+  },
+
+  /*
+   * Activated when login failed
+   * MachineStore instead of this otherwise it doesn't work
+   */
+  LoginErrorCallback(xhr, status, err) {
+    if(MachineStore.state.firstTry === true) {
+      MachineStore.state.firstTry = false;
+    } else {
+      toastr.error('Wrong password');
+    }
+    console.error('/users/login', status, err.toString());
+  },
+
+  /*
+   * Use GET call to logout from the server
+   * callback are defined below
+   */
+  logout() {
+    getAPICall('/api/users/logou', logoutSuccessCallback, logoutErrorCallback);
+  },
+
+  /*
+   * Callback for logout if succeed
+   */
+  logoutSuccessCallback(data) {
+    toastr.success('logout');
+    MachineStore.state.isLogged = false;
+    MachineState.onChangeLogout();
+  },
+
+  /*
+   * Callback for logout if failed
+   */
+  logoutErrorCallBack(xhr, status, err) {
+    console.log('/users/logout', status, err.toString());
   },
 
   endActivation(aid) {
