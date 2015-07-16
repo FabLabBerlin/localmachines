@@ -55,6 +55,11 @@ func init() {
 				&controllers.NetSwitchController{},
 			),
 		),
+		beego.NSNamespace("/paymill",
+			beego.NSInclude(
+				&controllers.PaymillController{},
+			),
+		),
 	)
 	beego.AddNamespace(ns)
 }
