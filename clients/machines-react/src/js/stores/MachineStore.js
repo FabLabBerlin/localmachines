@@ -19,7 +19,7 @@ var MachineStore = {
    * POST call to the API
    * Make POST call cutomisable
    */
-  postAPICall(url, dataToSend, successFunction, errorFunction) {
+  postAPICall(url, dataToSend, successFunction,toastrMessage, errorFunction = function() {}) {
     $.ajax({
       url: url,
       dataType: 'json',
@@ -29,7 +29,10 @@ var MachineStore = {
         successFunction(data);
       }.bind(this),
       error: function(xhr, status, err) {
-        errorFunction(xhr, status, err);
+        if(toastrMessage != '') {
+          toastr.error(toastrMessage);
+        }
+        errorFunction();
       }.bind(this),
     });
   },
@@ -49,8 +52,9 @@ var MachineStore = {
       }.bind(this),
       error: function(xhr, status, err) {
         if(toastrMessage != '') {
-          toastr.error(toastrMessage)
+          toastr.error(toastrMessage);
         }
+        errorFunction();
         console.log(url, status, err);
       }.bind(this),
     });
@@ -112,6 +116,18 @@ var MachineStore = {
   getActivationActive() {
     this.getAPICall('/api/activations/active', this.getActivationSuccess, '');
   },
+
+  /*
+   * To activate a machine
+   * Create an activation
+   */
+  postActivation(mid){
+    var dataToSend = {
+      mid: mid
+    };
+    this.postAPICall('/api/activations', dataToSend, this.postActivationSuccess, 'Can not activate the machine');
+  },
+
 
   /*
    *  Activated when getLogout succed
@@ -193,13 +209,6 @@ var MachineStore = {
     console.log('end activation');
     console.log(aid);
     */
-  },
-
-  postActivation(mid){
-    var dataToSend = {
-      mid: mid
-    };
-    this.postAPICall('/api/activations', dataToSend, this.postActivationSuccess, 'Can not activate the machine');
   },
 
   postActivationSuccess(data) {
