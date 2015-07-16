@@ -20,17 +20,28 @@ var FreeMachine = React.createClass ({
    * TODO: real commentaries
    */
   render() {
+    console.log('props:', this.props);
+    var imageUrl;
+    if (this.props.info && this.props.info.machine && this.props.info.machine.Image) {
+      imageUrl = this.props.info.machine.Image;
+    } else {
+      imageUrl = '/machines/assets/img/img-machine-placeholder.svg';
+    }
     return (
-      <div>
-        <div className="container-fluid" >
-          {this.props.info.Name}
-          <br/>
+      <div className="container-fluid">
+        <div className="col-xs-6">
           {this.props.activation}
+          <div className="machine-action-info">
+            <img className="machine-image" 
+                 src={imageUrl}/>
+          </div>
         </div>
-        <button
-          className="btn btn-primary"
-          onClick={this.startActivation}
-          >start </button>
+        <div className="col-xs-6">
+          <button
+            className="btn btn-lg btn-primary btn-block"
+            onClick={this.startActivation}
+            >Start </button>
+        </div>
       </div>
     );
   }
