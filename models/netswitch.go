@@ -83,11 +83,6 @@ func (this *NetSwitchMapping) On() error {
 	beego.Info("Attempt to turn NetSwitch on, machine ID", this.MachineId)
 	resp, err := http.Get(this.UrlOn)
 
-	if resp.StatusCode != 200 {
-		beego.Error("Bad Status Code:", resp.StatusCode)
-		return errors.New("Bad Status Code")
-	}
-
 	if err != nil {
 		// Work around custom HTTP status code the switch returns: "AhmaSwitch"
 		matched, _ := regexp.MatchString("malformed HTTP status code", err.Error())
@@ -97,8 +92,11 @@ func (this *NetSwitchMapping) On() error {
 		}
 	}
 
-	if resp != nil {
-		defer resp.Body.Close()
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		beego.Error("Bad Status Code:", resp.StatusCode)
+		return errors.New("Bad Status Code")
 	}
 
 	return nil
@@ -107,11 +105,6 @@ func (this *NetSwitchMapping) On() error {
 func (this *NetSwitchMapping) Off() error {
 	beego.Info("Attempt to turn NetSwitch off, machine ID", this.MachineId)
 	resp, err := http.Get(this.UrlOff)
-
-	if resp.StatusCode != 200 {
-		beego.Error("Bad Status Code:", resp.StatusCode)
-		return errors.New("Bad Status Code")
-	}
 
 	if err != nil {
 		// Work around custom HTTP status code the switch returns: "AhmaSwitch"
@@ -122,8 +115,11 @@ func (this *NetSwitchMapping) Off() error {
 		}
 	}
 
-	if resp != nil {
-		defer resp.Body.Close()
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		beego.Error("Bad Status Code:", resp.StatusCode)
+		return errors.New("Bad Status Code")
 	}
 
 	return nil
