@@ -92,11 +92,13 @@ func (this *NetSwitchMapping) On() error {
 		}
 	}
 
-	defer resp.Body.Close()
-
-	if resp.StatusCode != 200 {
-		beego.Error("Bad Status Code:", resp.StatusCode)
-		return errors.New("Bad Status Code")
+	beego.Trace(resp)
+	if resp != nil {
+		defer resp.Body.Close()
+		if resp.StatusCode != 200 {
+			beego.Error("Bad Status Code:", resp.StatusCode)
+			return errors.New("Bad Status Code")
+		}
 	}
 
 	return nil
@@ -115,11 +117,13 @@ func (this *NetSwitchMapping) Off() error {
 		}
 	}
 
-	defer resp.Body.Close()
-
-	if resp.StatusCode != 200 {
-		beego.Error("Bad Status Code:", resp.StatusCode)
-		return errors.New("Bad Status Code")
+	beego.Trace(resp)
+	if resp != nil {
+		defer resp.Body.Close()
+		if resp.StatusCode != 200 {
+			beego.Error("Bad Status Code:", resp.StatusCode)
+			return errors.New("Bad Status Code")
+		}
 	}
 
 	return nil
