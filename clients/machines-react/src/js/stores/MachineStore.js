@@ -43,6 +43,7 @@ var MachineStore = {
           toastr.error(toastrMessage);
         }
         errorFunction();
+        console.error(url, status, err);
       }.bind(this),
     });
   },
@@ -191,7 +192,11 @@ var MachineStore = {
   getActivationSuccess(data) {
     var shortActivation = MachineStore.formatActivation(data);
     MachineStore.state.activationInfo = shortActivation;
-    MachineStore.onChangeLogin();
+    if(shortActivation.length != 0) {
+      MachineStore.nameInAllActivations();
+    } else {
+      MachineStore.onChangeLogin();
+    }
   },
 
   /*
@@ -234,6 +239,30 @@ var MachineStore = {
       shortActivation.push(tmpItem);
     }
     return shortActivation;
+  },
+
+  /*
+   * TODO: documentation
+   */
+  nameInAllActivations() {
+    for( var index in this.state.activationInfo ) {
+      var uid = this.state.activationInfo[index].UserId;
+      this.nameInOneActivation(uid, index);
+    }
+  },
+
+  /*
+   * TODO: documentation
+   */
+  nameInOneActivation(uid, index) {
+    console.log('nameinoneactivation');
+    var successFunction = function(data) {
+      MachineStore.state.activationInfo[index]['FirstName'] = data.FirstName;
+      MachineStore.state.activationInfo[index]['LastName'] = data.LastName;
+      console.log('1 in function tmp');
+      MachineStore.onChangeLogin();
+    };
+    this.getAPICall('/api/users/' + uid + '/name', successFunction);
   },
 
   getIsLogged() {
