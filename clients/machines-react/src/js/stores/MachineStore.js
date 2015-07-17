@@ -255,11 +255,9 @@ var MachineStore = {
    * TODO: documentation
    */
   nameInOneActivation(uid, index) {
-    console.log('nameinoneactivation');
     var successFunction = function(data) {
       MachineStore.state.activationInfo[index]['FirstName'] = data.FirstName;
       MachineStore.state.activationInfo[index]['LastName'] = data.LastName;
-      console.log('1 in function tmp');
       MachineStore.onChangeLogin();
     };
     this.getAPICall('/api/users/' + uid + '/name', successFunction);

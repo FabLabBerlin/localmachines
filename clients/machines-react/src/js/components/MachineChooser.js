@@ -20,12 +20,17 @@ var MachineChooser = React.createClass({
     console.log('sameUser ?');
     console.log(this.props.sameUser);
     */
+    var st_date = this.props.activation.TimeStart;
+    console.log(st_date);
+    var datedate = new Date(st_date).getTime();
+    console.log(datedate);
+    console.log(new Date());
     return (
       <div className="machine available">
         <div className="machine-header">
           <div className="machine-title pull-left">{this.props.info.Name}</div>
           <div className="machine-info-btn pull-right">
-            
+
             <a className="machine-info-toggle" onClick={this.toggleInfo}>
               <span className="glyphicon glyphicon-info-sign" ng-class="{hidden: infoVisible}"></span>
               <span className="glyphicon glyphicon-remove-circle" ng-class="{hidden: !infoVisible}"></span>
@@ -37,8 +42,7 @@ var MachineChooser = React.createClass({
         </div>
         <div className="machine-body">
           { this.props.busy ?
-            this.props.sameUser ? (
-            <BusyMachine
+            this.props.sameUser ? (<BusyMachine
               activation={this.props.activation}
               info={this.props.info}
             />
@@ -48,12 +52,11 @@ var MachineChooser = React.createClass({
               info={this.props.info}
               user={this.props.user}
             />
-            ) :
-              (
-          <FreeMachine
-            info={this.props.info}
-          />
-          )}
+            ) :(
+            <FreeMachine
+              info={this.props.info}
+            />
+            )}
         </div>
       </div>
     );

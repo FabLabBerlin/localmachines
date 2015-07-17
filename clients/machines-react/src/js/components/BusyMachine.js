@@ -1,5 +1,6 @@
 import React from 'react';
 import MachineActions from '../actions/MachineActions';
+import Timer from './Timer';
 
 /*
  * Div displayed when a machine is busy
@@ -24,7 +25,7 @@ var BusyMachine = React.createClass({
     return(
       <div className="container-fluid" >
         <div className="col-xs-6">
-          <label>timer soon</label>
+          <Timer time={this.props.activation.TimeStart} />
         </div>
         <div className="col-xs-6" >
           <button 
