@@ -22,16 +22,16 @@ var BusyMachine = React.createClass({
    */
   render() {
     return(
-      <div>
-        <div className="container-fluid" >
-          {this.props.info.Name}
-          <br/>
-          {this.props.activation}
+      <div className="container-fluid" >
+        <div className="col-xs-6">
+          <label>timer soon</label>
         </div>
-        <button 
-          className="btn btn-lg btn-danger btn-block"
-          onClick={this.endActivation}
-          >Stop</button>
+        <div className="col-xs-6" >
+          <button 
+            className="btn btn-lg btn-danger btn-block"
+            onClick={this.endActivation}
+            >Stop</button>
+        </div>
       </div>
     );
   }
