@@ -17,22 +17,24 @@ var OccupiedMachine = React.createClass({
    */
   render() {
     return (
-      <div>
-        <div className="container-fluid">
-          {this.props.info.Name}
-          <br/>
-          {this.props.activation}
+      <div className="container-fluid">
+        <div className="col-xs-6" >
+          <p>Occupied by</p>
+          <label>{this.props.activation.FirstName + this.props.activation.LastName}</label>
         </div>
-        { this.props.user.Role == 'admin' ? (
-          <button
-            className="btn btn-lg btn-warning btn-block"
-            onClick={this.endActivation}
-           >
-            Stop
-          </button>
-        ): (
-          <div className="indicator indicator-occupied" >occupied</div>
-        )}
+
+        <div className="col-xs-6" >
+          { this.props.user.Role == 'admin' ? (
+            <button
+              className="btn btn-lg btn-warning btn-block"
+              onClick={this.endActivation}
+              >
+              Stop
+            </button>
+            ): (
+            <div className="indicator indicator-occupied" >occupied</div>
+            )}
+        </div>
       </div>
     );
   }
