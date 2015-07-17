@@ -20,7 +20,7 @@ var MachineList = React.createClass({
         for( var i in activation ) {
           if( machine.Id == activation[i].MachineId ) {
             isMachineBusy = true;
-            isSameUser = this.props.uid == activation[i].UserId;
+            isSameUser = this.props.user.Id == activation[i].UserId;
             activationProps = activation[i];
             break;
           }
@@ -29,7 +29,7 @@ var MachineList = React.createClass({
           <MachineChooser
             key={machine.Id}
             info={machine}
-            uid={this.props.uid}
+            user={this.props.user}
             busy={isMachineBusy}
             sameUser={isSameUser}
             activation={activationProps}

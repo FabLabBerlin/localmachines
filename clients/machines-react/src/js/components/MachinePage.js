@@ -1,6 +1,7 @@
 import React from 'react'
 import MachineList from './MachineList';
 import MachineStore from '../stores/MachineStore';
+import LoginActions from '../actions/LoginActions';
 import {Navigation} from 'react-router';
 
 var MachinePage = React.createClass({
@@ -26,10 +27,24 @@ var MachinePage = React.createClass({
     };
   },
 
-  getUserId() {
-    return this.state.userInfo.UserId;
+  getUserInfoToPassInProps() {
+    var User = {
+      Id: this.state.userInfo.Id,
+      Role: this.state.userInfo.UserRole
+    }
+    return User;
   },
 
+  /*
+   * Logout with the exit button
+   */
+  handleLogout() {
+    LoginActions.logout();
+  },
+
+  /*
+   *
+   */
   onChangeActivation() {
     this.setState({
       activationInfo: MachineStore.getActivationInfo()
@@ -59,13 +74,16 @@ var MachinePage = React.createClass({
         <div>
           coucou {this.state.userInfo.FirstName} {this.state.userInfo.LastName}
         </div>
-        <div>
+        <div className="container-fluid">
           <MachineList 
-            uid={this.getUserId()}
+            user={this.getUserInfoToPassInProps()}
             info={this.state.machineInfo} 
             activation={this.state.activationInfo}
           />
         </div>
+        <button 
+          onClick={this.handleLogout}
+          className="btn btn-danger" > Exit </button>
       </div>
     );
   }

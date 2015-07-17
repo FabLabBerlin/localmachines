@@ -5,6 +5,16 @@
 import toastr from 'toastr';
 toastr.options.positionClass = 'toast-bottom-left';
 
+/*
+ * Call order:
+ *  - logout
+ *  - login
+ *  - userInfo
+ *  - machineInfo
+ *  - getActivationInfo
+ *  - postActivationInfo
+ *  - putActivation
+ */
 var MachineStore = {
 
   state: {
@@ -19,7 +29,7 @@ var MachineStore = {
    * POST call to the API
    * Make POST call cutomisable
    */
-  postAPICall(url, dataToSend, successFunction,toastrMessage, errorFunction = function() {}) {
+  postAPICall(url, dataToSend, successFunction, toastrMessage = '', errorFunction = function() {}) {
     $.ajax({
       url: url,
       dataType: 'json',
@@ -41,7 +51,7 @@ var MachineStore = {
    * GET call to the API
    * Make GET call cutomisable
    */
-  getAPICall(url, successFunction, toastrMessage, errorFunction = function() {}) {
+  getAPICall(url, successFunction, toastrMessage = '', errorFunction = function() {}) {
     $.ajax({
       url: url,
       dataType: 'json',
@@ -61,6 +71,14 @@ var MachineStore = {
   },
 
   /*
+   * Use GET call to logout from the server
+   * callback are defined below
+   */
+  getLogout() {
+    this.getAPICall('/api/users/logout', this.logoutSuccess);
+  },
+
+  /*
    * Use POST call to login to the server
    * callback are defined below
    */
@@ -69,19 +87,11 @@ var MachineStore = {
   },
 
   /*
-   * Use GET call to logout from the server
-   * callback are defined below
-   */
-  getLogout() {
-    this.getAPICall('/api/users/logout', this.logoutSuccess, '');
-  },
-
-  /*
    * Use GET call to get the name of the user
    * callback are defined below
    */
-  getNameLogin(uid) {
-    this.getAPICall('/api/users/' + uid + '/name', this.nameLoginSuccess, '');
+  getUserInfoLogin(uid) {
+    this.getAPICall('/api/users/' + uid, this.userInfoSuccess);
   },
 
   /*
@@ -89,7 +99,7 @@ var MachineStore = {
    * callback are defined below
    */
   getUserMachines(uid) {
-    this.getAPICall('/api/users/' + uid + '/machines', this.userMachineSuccess, '');
+    this.getAPICall('/api/users/' + uid + '/machines', this.userMachineSuccess);
   },
 
   /*
@@ -97,7 +107,7 @@ var MachineStore = {
    * callback are defined below
    */
   getActivationActive() {
-    this.getAPICall('/api/activations/active', this.getActivationSuccess, '');
+    this.getAPICall('/api/activations/active', this.getActivationSuccess);
   },
 
   /*
@@ -149,17 +159,21 @@ var MachineStore = {
     MachineStore.state.userInfo.UserId = uid;
     MachineStore.state.firstTry = true;
     MachineStore.state.isLogged = true;
-    MachineStore.getNameLogin(uid);
+    MachineStore.getUserInfoLogin(uid);
   },
 
   /*
    * Activated when getNameLogin succeed
    * MachineStore instead of this otherwe it doesn't work
    */
-  nameLoginSuccess(data) {
-    var uid = data.UserId;
-    MachineStore.state.userInfo.FirstName = data.FirstName;
-    MachineStore.state.userInfo.LastName = data.LastName;
+  userInfoSuccess(data) {
+    var uid = data.Id;
+    var usefulInformation = ['Id', 'FirstName', 'LastName', 'UserRole'];
+    var tmpInfo = {};
+    for(var index in usefulInformation) {
+      tmpInfo[usefulInformation[index]] = data[usefulInformation[index]];
+    }
+    MachineStore.state.userInfo = tmpInfo;
     MachineStore.getUserMachines(uid)
   },
 
@@ -194,6 +208,18 @@ var MachineStore = {
   },
 
   /*
+   * Activated when login failed
+   * MachineStore instead of this otherwise it doesn't work
+   */
+  LoginError(xhr, status, err) {
+    if(MachineStore.state.firstTry === true) {
+      MachineStore.state.firstTry = false;
+    } else {
+      toastr.error('Wrong password');
+    }
+  },
+
+  /*
    * Format rawActivation to have only useful information
    * @rawActivation: response send by the server
    */
@@ -208,18 +234,6 @@ var MachineStore = {
       shortActivation.push(tmpItem);
     }
     return shortActivation;
-  },
-
-  /*
-   * Activated when login failed
-   * MachineStore instead of this otherwise it doesn't work
-   */
-  LoginError(xhr, status, err) {
-    if(MachineStore.state.firstTry === true) {
-      MachineStore.state.firstTry = false;
-    } else {
-      toastr.error('Wrong password');
-    }
   },
 
   getIsLogged() {
@@ -238,10 +252,22 @@ var MachineStore = {
     return this.state.machineInfo;
   },
 
+  /*
+   * Event triggered when login
+   * See Login page
+   */
   onChangeLogin() {},
 
+  /*
+   * Event triggered when logout
+   * See MachinePage
+   */
   onChangeLogout() {},
 
+  /*
+   * Event triggered when activation is send or get
+   * See MachinePage
+   */
   onChangeActivation() {}
 
 }

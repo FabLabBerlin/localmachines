@@ -8,6 +8,11 @@ import FreeMachine from './FreeMachine';
  * Has to be connected to activation store
  */
 var MachineChooser = React.createClass({
+
+  toggleInfo() {
+    alert('toggleInfo()');
+  },
+
   render() {
     /*
     console.log('busy ?');
@@ -16,7 +21,7 @@ var MachineChooser = React.createClass({
     console.log(this.props.sameUser);
     */
     return (
-      <div>
+      <div className="machine available">
         <div className="machine-header">
           <div className="machine-title pull-left">{this.props.info.Name}</div>
           <div className="machine-info-btn pull-right">
@@ -41,7 +46,7 @@ var MachineChooser = React.createClass({
             <OccupiedMachine
               activation={this.props.activation}
               info={this.props.info}
-              uid={this.props.uid}
+              user={this.props.user}
             />
             ) :
               (
@@ -52,10 +57,6 @@ var MachineChooser = React.createClass({
         </div>
       </div>
     );
-  },
-
-  toggleInfo() {
-    alert('toggleInfo()');
   }
 });
 
