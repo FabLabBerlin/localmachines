@@ -40,7 +40,7 @@ var MachineList = React.createClass({
       var MachineNode = <p>You do not have access to any machines</p>;
     }
     return (
-      <div className="container-fluid" >
+      <div className="machines">
         {MachineNode}
       </div>
     );
