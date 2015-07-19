@@ -3,7 +3,6 @@ import React from 'react';
 var Timer = React.createClass({
 
   getInitialState() {
-    console.log(this.props.time + 1);
     return {secondsElapsed: this.props.time};
   },
 

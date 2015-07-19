@@ -12,9 +12,9 @@ var MachineList = React.createClass({
    */
   render() {
     var activation = this.props.activation;
-    var activationProps = false;
     if(this.props.info.length != 0) {
       var MachineNode = this.props.info.map(function(machine) {
+        var activationProps = false;
         var isMachineBusy = false;
         var isSameUser = false;
         for( var i in activation ) {

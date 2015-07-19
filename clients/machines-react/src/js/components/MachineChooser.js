@@ -13,13 +13,14 @@ var MachineChooser = React.createClass({
     alert('toggleInfo()');
   },
 
+  /*
+   * Not render the component when the props doesn't change;
+   */
+  shouldComponentUpdate(nextProps) {
+    return nextProps.activation.Id !== this.props.activation.Id;
+  },
+
   render() {
-    /*
-    console.log('busy ?');
-    console.log(this.props.busy);
-    console.log('sameUser ?');
-    console.log(this.props.sameUser);
-    */
     return (
       <div className="machine available">
         <div className="machine-header">
