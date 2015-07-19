@@ -80,6 +80,16 @@ var MachineStore = {
   },
 
   /*
+   *  Activated when getLogout succed
+   *  MachineStore instead of this otherwise it doesn't work
+   */
+  logoutSuccess(data) {
+    toastr.success('logout');
+    MachineStore.state.isLogged = false;
+    MachineStore.onChangeLogout();
+  },
+
+  /*
    * Use POST call to login to the server
    * callback are defined below
    */
@@ -88,11 +98,36 @@ var MachineStore = {
   },
 
   /*
+   * Activated when postLogin succeed
+   * MachineStore instead of this otherwise it doesn't work
+   */
+  LoginSuccess(data) {
+    var uid = data.UserId;
+    MachineStore.state.userInfo.UserId = uid;
+    MachineStore.getUserInfoLogin(uid);
+  },
+
+ /*
    * Use GET call to get the name of the user
    * callback are defined below
    */
   getUserInfoLogin(uid) {
     this.getAPICall('/api/users/' + uid, this.userInfoSuccess);
+  },
+
+  /*
+   * Activated when getNameLogin succeed
+   * MachineStore instead of this otherwe it doesn't work
+   */
+  userInfoSuccess(data) {
+    var uid = data.Id;
+    var usefulInformation = ['Id', 'FirstName', 'LastName', 'UserRole'];
+    var tmpInfo = {};
+    for(var index in usefulInformation) {
+      tmpInfo[usefulInformation[index]] = data[usefulInformation[index]];
+    }
+    MachineStore.state.userInfo = tmpInfo;
+    MachineStore.getUserMachines(uid)
   },
 
   /*
@@ -104,11 +139,34 @@ var MachineStore = {
   },
 
   /*
+   * Activated when getUserMachines succeed
+   */
+  userMachineSuccess(data) {
+    MachineStore.state.machineInfo = data;
+    MachineStore.getActivationActive();
+  },
+
+  /*
    * Use GET call to get all the activations
    * callback are defined below
    */
   getActivationActive() {
     this.getAPICall('/api/activations/active', this.getActivationSuccess);
+  },
+
+  /*
+   * Activated when getActivationActive succeed
+   */
+  getActivationSuccess(data) {
+    var shortActivation = MachineStore.formatActivation(data);
+    MachineStore.state.activationInfo = shortActivation;
+    if(shortActivation.length != 0) {
+      MachineStore.nameInAllActivations();
+    } else if(MachineStore.state.isLogged === false){
+      MachineStore.putLoginState();
+    } else {
+      MachineStore.onChangeActivation();
+    }
   },
 
   /*
@@ -120,6 +178,19 @@ var MachineStore = {
       mid: mid
     };
     this.postAPICall('/api/activations', dataToSend, this.postActivationSuccess, 'Can not activate the machine');
+  },
+
+  /*
+   * Activated when postActivation succeed
+   */
+  postActivationSuccess(data, toastrMessage = 'Machine activated') {
+    toastr.success(toastrMessage);
+    var successFunction = function(data) {
+      var shortActivation = MachineStore.formatActivation(data);
+      MachineStore.state.activationInfo = shortActivation;
+      MachineStore.onChangeActivation();
+    }
+    MachineStore.getAPICall('/api/activations/active', successFunction, '');
   },
 
   /*
@@ -139,77 +210,6 @@ var MachineStore = {
         console.error('/api/activation/uid', status, err.toString());
       }.bind(this),
     });
-  },
-
-  /*
-   *  Activated when getLogout succed
-   *  MachineStore instead of this otherwise it doesn't work
-   */
-  logoutSuccess(data) {
-    toastr.success('logout');
-    MachineStore.state.isLogged = false;
-    MachineStore.onChangeLogout();
-  },
-
-  /*
-   * Activated when postLogin succeed
-   * MachineStore instead of this otherwise it doesn't work
-   */
-  LoginSuccess(data) {
-    var uid = data.UserId;
-    MachineStore.state.userInfo.UserId = uid;
-    MachineStore.state.firstTry = true;
-    MachineStore.state.isLogged = true;
-    MachineStore.getUserInfoLogin(uid);
-  },
-
-  /*
-   * Activated when getNameLogin succeed
-   * MachineStore instead of this otherwe it doesn't work
-   */
-  userInfoSuccess(data) {
-    var uid = data.Id;
-    var usefulInformation = ['Id', 'FirstName', 'LastName', 'UserRole'];
-    var tmpInfo = {};
-    for(var index in usefulInformation) {
-      tmpInfo[usefulInformation[index]] = data[usefulInformation[index]];
-    }
-    MachineStore.state.userInfo = tmpInfo;
-    MachineStore.getUserMachines(uid)
-  },
-
-  /*
-   * Activated when getUserMachines succeed
-   */
-  userMachineSuccess(data) {
-    MachineStore.state.machineInfo = data;
-    MachineStore.getActivationActive();
-  },
-
-  /*
-   * Activated when getActivationActive succeed
-   */
-  getActivationSuccess(data) {
-    var shortActivation = MachineStore.formatActivation(data);
-    MachineStore.state.activationInfo = shortActivation;
-    if(shortActivation.length != 0) {
-      MachineStore.nameInAllActivations();
-    } else {
-      MachineStore.onChangeLogin();
-    }
-  },
-
-  /*
-   * Activated when postActivation succeed
-   */
-  postActivationSuccess(data, toastrMessage = 'Machine activated') {
-    toastr.success(toastrMessage);
-    var successFunction = function(data) {
-      var shortActivation = MachineStore.formatActivation(data);
-      MachineStore.state.activationInfo = shortActivation;
-      MachineStore.onChangeActivation();
-    }
-    MachineStore.getAPICall('/api/activations/active', successFunction, '');
   },
 
   /*
@@ -258,7 +258,11 @@ var MachineStore = {
     var successFunction = function(data) {
       MachineStore.state.activationInfo[index]['FirstName'] = data.FirstName;
       MachineStore.state.activationInfo[index]['LastName'] = data.LastName;
-      MachineStore.onChangeLogin();
+      if(MachineStore.state.isLogged === false){
+        MachineStore.putLoginState();
+      } else {
+        MachineStore.onChangeActivation();
+      }
     };
     this.getAPICall('/api/users/' + uid + '/name', successFunction);
   },
@@ -277,6 +281,15 @@ var MachineStore = {
 
   getMachineInfo() {
     return this.state.machineInfo;
+  },
+
+  /*
+   * Change the state before login in
+   */
+  putLoginState() {
+    this.state.isLogged = true;
+    this.state.firstTry = true;
+    this.onChangeLogin();
   },
 
   /*

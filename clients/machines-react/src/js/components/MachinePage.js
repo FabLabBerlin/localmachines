@@ -1,6 +1,7 @@
 import React from 'react'
 import MachineList from './MachineList';
 import MachineStore from '../stores/MachineStore';
+import MachineActions from '../actions/MachineActions';
 import LoginActions from '../actions/LoginActions';
 import {Navigation} from 'react-router';
 
@@ -66,6 +67,7 @@ var MachinePage = React.createClass({
   componentDidMount() {
     MachineStore.onChangeActivation = this.onChangeActivation;
     MachineStore.onChangeLogout = this.onChangeLogout;
+    MachineActions.pollActivations();
   },
 
   render() {
