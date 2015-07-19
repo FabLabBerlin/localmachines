@@ -20,11 +20,6 @@ var MachineChooser = React.createClass({
     console.log('sameUser ?');
     console.log(this.props.sameUser);
     */
-    var st_date = this.props.activation.TimeStart;
-    console.log(st_date);
-    var datedate = new Date(st_date).getTime();
-    console.log(datedate);
-    console.log(new Date());
     return (
       <div className="machine available">
         <div className="machine-header">

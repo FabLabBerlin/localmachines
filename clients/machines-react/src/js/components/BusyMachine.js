@@ -25,7 +25,7 @@ var BusyMachine = React.createClass({
     return(
       <div className="container-fluid" >
         <div className="col-xs-6">
-          <Timer time={this.props.activation.TimeStart} />
+          <Timer time={this.props.activation.TimeTotal} />
         </div>
         <div className="col-xs-6" >
           <button 

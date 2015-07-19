@@ -1,5 +1,6 @@
 import React from 'react';
 import MachineActions from '../actions/MachineActions';
+import Timer from './Timer';
 
 var OccupiedMachine = React.createClass({
 
@@ -21,6 +22,7 @@ var OccupiedMachine = React.createClass({
         <div className="col-xs-6" >
           <p>Occupied by</p>
           <label>{this.props.activation.FirstName + this.props.activation.LastName}</label>
+          <Timer time={this.props.activation.TimeTotal} />
         </div>
 
         <div className="col-xs-6" >

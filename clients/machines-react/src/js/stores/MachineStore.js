@@ -230,7 +230,7 @@ var MachineStore = {
    */
   formatActivation(rawActivation) {
     var shortActivation = [];
-    var wantedInformation = ['Id', 'UserId', 'MachineId', 'TimeStart'];
+    var wantedInformation = ['Id', 'UserId', 'MachineId', 'TimeTotal'];
     for( var i in rawActivation ) {
       var tmpItem = {};
       for( var indexWI in wantedInformation ) {

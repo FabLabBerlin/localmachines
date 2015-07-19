@@ -3,15 +3,13 @@ import React from 'react';
 var Timer = React.createClass({
 
   getInitialState() {
-    var now = new Date().getTime();
-    var startTime = new Date(this.props.time).getTime();
-    var initialTime = ( now - startTime )/ 1000;
-    return {secondsElpased: initialTime};
+    console.log(this.props.time + 1);
+    return {secondsElapsed: this.props.time};
   },
 
   tick() {
     this.setState({
-      secondsElapsed: this.state.secondsElpased + 1
+      secondsElapsed: this.state.secondsElapsed + 1
     });
   },
 
