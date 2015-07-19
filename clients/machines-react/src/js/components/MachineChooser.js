@@ -20,6 +20,9 @@ var MachineChooser = React.createClass({
     return nextProps.activation.Id !== this.props.activation.Id;
   },
 
+  /*
+   * Render a machine component depending of the props
+   */
   render() {
     return (
       <div className="machine available">
