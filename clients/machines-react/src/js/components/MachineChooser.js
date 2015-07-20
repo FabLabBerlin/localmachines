@@ -46,7 +46,7 @@ var MachineChooser = React.createClass({
             <OccupiedMachine
               activation={this.props.activation}
               info={this.props.info}
-              uid={this.props.uid}
+              user={this.props.user}
             />
             ) :
               (

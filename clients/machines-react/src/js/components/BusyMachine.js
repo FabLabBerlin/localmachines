@@ -13,9 +13,7 @@ var BusyMachine = React.createClass({
    */
   endActivation(event) {
     event.preventDefault();
-    var aid = this.props.activation.Id;
-    var mid = this.props.info.Id;
-    MachineActions.endActivation(mid, aid);
+    MachineActions.endActivation(this.props.activation.Id);
   },
 
   /*

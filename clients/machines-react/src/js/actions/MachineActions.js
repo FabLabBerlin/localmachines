@@ -4,11 +4,10 @@ var MachineActions = {
 
   /*
    * To end an activation
-   * @mid: machine id you want to turn off
    * @aid: id of the activation you want to shut down
    */
-  endActivation(mid, aid) {
-    MachineStore.apiPostSwitchMachine(mid, 'off', aid);
+  endActivation(aid) {
+    MachineStore.apiPutActivation(aid);
   },
 
   /*
@@ -16,7 +15,21 @@ var MachineActions = {
    * @mid: id of the machine you want to activate
    */
   startActivation(mid) {
-    MachineStore.apiPostSwitchMachine(mid, 'on');
+    MachineStore.apiPostActivation(mid);
+  },
+
+  /*
+   * When an admin want to force on a machine
+   */
+  adminTurnOnMachine(mid) {
+    MachineStore.apiPostSwitchMachine(mid, 'on', aid);
+  },
+
+  /*
+   * When an admin want to force off a machine
+   */
+  adminTurnOffMachine(mid) {
+    MachineStore.apiPostSwitchMachine(mid, 'off');
   },
 
   /*
@@ -24,9 +37,6 @@ var MachineActions = {
    */
   pollActivations() {
     MachineStore.apiGetActivationActive();
-    setTimeout(function() {
-      this.pollActivations();
-    }.bind(this), 1000);
   }
 
 }

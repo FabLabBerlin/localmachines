@@ -62,12 +62,20 @@ var MachinePage = React.createClass({
   },
 
   /*
+   * Destructor
+   * Stop the polling
+   */
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  },
+
+  /*
    * Synchronize invent from store to machinepage
    */
   componentDidMount() {
     MachineStore.onChangeActivation = this.onChangeActivation;
     MachineStore.onChangeLogout = this.onChangeLogout;
-    MachineActions.pollActivations();
+    this.interval = setInterval(MachineActions.pollActivations, 1000);
   },
 
   render() {

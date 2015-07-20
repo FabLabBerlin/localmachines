@@ -209,7 +209,7 @@ var MachineStore = {
         this.postActivationSuccess(data, 'Machine desactivated');
       }.bind(this),
       error: function(xhr, status, err){
-        console.error('/api/activation/uid', status, err.toString());
+        console.error('/api/activation/aid', status, err.toString());
       }.bind(this),
     });
   },
@@ -223,26 +223,33 @@ var MachineStore = {
    */
   apiPostSwitchMachine(mid, onOrOff, aid = '') {
     //start animation
-    if(aid !== '' && onOrOff === 'off') {
-      var successFunction = function(data) {
-        //end animation
-        MachineStore.apiPutActivation(aid);
-      };
+    if( onOrOff === 'off') {
+      if(aid === '') {
+        var successFunction = function(data) {
+          //end animation
+          toastr.success('machine off');
+        };
+      } else {
+        var successFunction = function(data) {
+          //end animation
+          MachineStore.apiPutActivation(aid);
+        };
+      }
     } else {
       var successFunction = function(data) {
         //end animation
-        MachineStore.apiPostActivation(mid);
+        toastr.success('machine On');
       };
     }
     var errorFunction = function() {
       //end animation
     };
     this.postAPICall('/api/machines/' + mid + '/turn_' + onOrOff, 
-                { ac: new Date().getTime() },
-                successFunction,
-                'Fail to turn ' + onOrOff,
-                errorFunction
-               );
+                     { ac: new Date().getTime() },
+                     successFunction,
+                     'Fail to turn ' + onOrOff,
+                     errorFunction
+                    );
   },
 
   /*

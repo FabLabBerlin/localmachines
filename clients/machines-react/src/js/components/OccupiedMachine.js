@@ -9,6 +9,7 @@ var OccupiedMachine = React.createClass({
    */
   endActivation(event) {
     event.preventDefault();
+    console.log(this.props.activation.Id);
     MachineActions.endActivation(this.props.activation.Id);
   },
 
