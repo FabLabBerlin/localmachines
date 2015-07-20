@@ -76,7 +76,7 @@ var MachinePage = React.createClass({
         <div>
           coucou {this.state.userInfo.FirstName} {this.state.userInfo.LastName}
         </div>
-        <div className="container-fluid">
+        <div >
           <MachineList 
             user={this.getUserInfoToPassInProps()}
             info={this.state.machineInfo} 
@@ -85,7 +85,7 @@ var MachinePage = React.createClass({
         </div>
         <button 
           onClick={this.handleLogout}
-          className="btn btn-danger" > Exit </button>
+          className="btn btn-lg btn-block btn-danger" > Exit </button>
       </div>
     );
   }

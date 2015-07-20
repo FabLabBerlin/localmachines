@@ -4,10 +4,11 @@ var MachineActions = {
 
   /*
    * To end an activation
+   * @mid: machine id you want to turn off
    * @aid: id of the activation you want to shut down
    */
-  endActivation(aid) {
-    MachineStore.putActivation(aid);
+  endActivation(mid, aid) {
+    MachineStore.apiPostSwitchMachine(mid, 'off', aid);
   },
 
   /*
@@ -15,14 +16,14 @@ var MachineActions = {
    * @mid: id of the machine you want to activate
    */
   startActivation(mid) {
-    MachineStore.postActivation(mid);
+    MachineStore.apiPostSwitchMachine(mid, 'on');
   },
 
   /*
    * To continue to refresh the view each seconds
    */
   pollActivations() {
-    MachineStore.getActivationActive();
+    MachineStore.apiGetActivationActive();
     setTimeout(function() {
       this.pollActivations();
     }.bind(this), 1000);

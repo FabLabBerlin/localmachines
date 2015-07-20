@@ -75,7 +75,7 @@ var MachineStore = {
    * Use GET call to logout from the server
    * callback are defined below
    */
-  getLogout() {
+  apiGetLogout() {
     this.getAPICall('/api/users/logout', this.logoutSuccess);
   },
 
@@ -93,7 +93,7 @@ var MachineStore = {
    * Use POST call to login to the server
    * callback are defined below
    */
-  postLogin(loginInfo){
+  apiPostLogin(loginInfo){
     this.postAPICall('/api/users/login', loginInfo, this.LoginSuccess, '', this.LoginError);
   },
 
@@ -104,14 +104,14 @@ var MachineStore = {
   LoginSuccess(data) {
     var uid = data.UserId;
     MachineStore.state.userInfo.UserId = uid;
-    MachineStore.getUserInfoLogin(uid);
+    MachineStore.apiGetUserInfoLogin(uid);
   },
 
  /*
    * Use GET call to get the name of the user
    * callback are defined below
    */
-  getUserInfoLogin(uid) {
+  apiGetUserInfoLogin(uid) {
     this.getAPICall('/api/users/' + uid, this.userInfoSuccess);
   },
 
@@ -127,14 +127,14 @@ var MachineStore = {
       tmpInfo[usefulInformation[index]] = data[usefulInformation[index]];
     }
     MachineStore.state.userInfo = tmpInfo;
-    MachineStore.getUserMachines(uid)
+    MachineStore.apiGetUserMachines(uid)
   },
 
   /*
    * Use GET call to get the machines the user can use
    * callback are defined below
    */
-  getUserMachines(uid) {
+  apiGetUserMachines(uid) {
     this.getAPICall('/api/users/' + uid + '/machines', this.userMachineSuccess);
   },
 
@@ -143,14 +143,14 @@ var MachineStore = {
    */
   userMachineSuccess(data) {
     MachineStore.state.machineInfo = data;
-    MachineStore.getActivationActive();
+    MachineStore.apiGetActivationActive();
   },
 
   /*
    * Use GET call to get all the activations
    * callback are defined below
    */
-  getActivationActive() {
+  apiGetActivationActive() {
     this.getAPICall('/api/activations/active', this.getActivationSuccess);
   },
 
@@ -173,7 +173,7 @@ var MachineStore = {
    * Turn on a machine
    * Create an activation
    */
-  postActivation(mid){
+  apiPostActivation(mid){
     var dataToSend = {
       mid: mid
     };
@@ -190,13 +190,15 @@ var MachineStore = {
       MachineStore.state.activationInfo = shortActivation;
       MachineStore.onChangeActivation();
     }
-    MachineStore.getAPICall('/api/activations/active', successFunction, '');
+    MachineStore.getAPICall('/api/activations/active', successFunction);
   },
 
   /*
-   * Turn off a machine
+   * End an activation
+   * activation become unactive
+   * @aid: activation id you want to shut down
    */
-  putActivation(aid) {
+  apiPutActivation(aid) {
     $.ajax({
       url: '/api/activations/' + aid,
       method: 'PUT',
@@ -210,6 +212,37 @@ var MachineStore = {
         console.error('/api/activation/uid', status, err.toString());
       }.bind(this),
     });
+  },
+
+  /*
+   * Turn or or off a machine
+   * Create or end an activation
+   * @mid: machine you want to turn on or off
+   * @onOrOff: action you want to do
+   * @aid: activation id in case of turning off a machine
+   */
+  apiPostSwitchMachine(mid, onOrOff, aid = '') {
+    //start animation
+    if(aid !== '' && onOrOff === 'off') {
+      var successFunction = function(data) {
+        //end animation
+        MachineStore.apiPutActivation(aid);
+      };
+    } else {
+      var successFunction = function(data) {
+        //end animation
+        MachineStore.apiPostActivation(mid);
+      };
+    }
+    var errorFunction = function() {
+      //end animation
+    };
+    this.postAPICall('/api/machines/' + mid + '/turn_' + onOrOff, 
+                { ac: new Date().getTime() },
+                successFunction,
+                'Fail to turn ' + onOrOff,
+                errorFunction
+               );
   },
 
   /*

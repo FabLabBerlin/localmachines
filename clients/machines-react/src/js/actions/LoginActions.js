@@ -2,11 +2,11 @@ import MachineStore from '../stores/MachineStore';
 
 var LoginActions = {
     submitLoginForm: function(content) {
-        MachineStore.postLogin(content);
+        MachineStore.apiPostLogin(content);
     },
 
     logout() {
-      MachineStore.getLogout();
+      MachineStore.apiGetLogout();
     }
 };
 
