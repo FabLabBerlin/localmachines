@@ -21,15 +21,15 @@ var MachineActions = {
   /*
    * When an admin want to force on a machine
    */
-  adminTurnOnMachine(mid) {
-    MachineStore.apiPostSwitchMachine(mid, 'on', aid);
+  adminTurnOffMachine(mid, aid) {
+    MachineStore.apiPostSwitchMachine(mid, 'off', aid);
   },
 
   /*
    * When an admin want to force off a machine
    */
-  adminTurnOffMachine(mid) {
-    MachineStore.apiPostSwitchMachine(mid, 'off');
+  adminTurnOnMachine(mid) {
+    MachineStore.apiPostSwitchMachine(mid, 'on');
   },
 
   /*
