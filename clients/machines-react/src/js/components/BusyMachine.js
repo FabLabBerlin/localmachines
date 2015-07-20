@@ -9,11 +9,25 @@ import Timer from './Timer';
 var BusyMachine = React.createClass({
 
   /*
+   * Force the switch to turn on
+   */
+  handleForceSwitchOn() {
+    this.props.force('on');
+  },
+
+  /*
+   * Force the switch to trun off
+   */
+  handleForceSwitchOff() {
+    this.props.force('off');
+  },
+
+  /*
    * Send an action to the store to end the activation
    */
   endActivation(event) {
     event.preventDefault();
-    MachineActions.endActivation(this.props.activation.Id);
+    this.props.func(this.props.activation.Id);
   },
 
   /*
@@ -31,6 +45,17 @@ var BusyMachine = React.createClass({
             className="btn btn-lg btn-danger btn-block"
             onClick={this.endActivation}
             >Stop</button>
+          { this.props.isAdmin ? (
+            <div className="pull-right" >
+              <label>Force Switch</label>
+              <button 
+                onClick={this.handleForceSwitchOn}
+                className="btn btn-lg btn-primary" >On</button>
+              <button 
+                onClick={this.handleForceSwitchOff}
+                className="btn btn-lg btn-danger" >Off</button>
+            </div>
+          ):('') }
         </div>
       </div>
     );

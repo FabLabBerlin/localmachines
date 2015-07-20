@@ -5,12 +5,25 @@ import Timer from './Timer';
 var OccupiedMachine = React.createClass({
 
   /*
+   * Force the switch to turn on
+   */
+  handleForceSwitchOn() {
+    this.props.force('on');
+  },
+
+  /*
+   * Force the switch to trun off
+   */
+  handleForceSwitchOff() {
+    this.props.force('off');
+  },
+
+  /*
    * Send an action to the store to end the activation
    */
   endActivation(event) {
     event.preventDefault();
-    console.log(this.props.activation.Id);
-    MachineActions.endActivation(this.props.activation.Id);
+    this.props.func(this.props.activation.Id);
   },
 
   /*
@@ -18,6 +31,7 @@ var OccupiedMachine = React.createClass({
    * Become a button if the user is an admin
    */
   render() {
+    console.log(this.props.isAdmin);
     return (
       <div className="container-fluid">
         <div className="col-xs-6" >
@@ -26,18 +40,29 @@ var OccupiedMachine = React.createClass({
           <Timer time={this.props.activation.TimeTotal} />
         </div>
 
-        <div className="col-xs-6" >
-          { this.props.user.Role == 'admin' ? (
+        { this.props.isAdmin ? (
+          <div className="col-xs-6" >
             <button
               className="btn btn-lg btn-warning btn-block"
               onClick={this.endActivation}
               >
               Stop
             </button>
-            ): (
-            <div className="indicator indicator-occupied" >occupied</div>
+            <div className="pull-right" >
+              <label>Force Switch</label>
+              <button 
+                onClick={this.handleForceSwitchOn}
+                className="btn btn-lg btn-primary" >On</button>
+              <button 
+                onClick={this.handleForceSwitchOff}
+                className="btn btn-lg btn-danger" >Off</button>
+            </div>
+          </div>
+            ) : (
+            <div className="col-xs-6" >
+              <div className="indicator indicator-occupied" >occupied</div>
+            </div>
             )}
-        </div>
       </div>
     );
   }

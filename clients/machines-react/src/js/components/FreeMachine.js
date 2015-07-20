@@ -8,6 +8,20 @@ import MachineActions from '../actions/MachineActions';
 var FreeMachine = React.createClass ({
 
   /*
+   * Force the switch to turn on
+   */
+  handleForceSwitchOn() {
+    this.props.func('on');
+  },
+
+  /*
+   * Force the switch to trun off
+   */
+  handleForceSwitchOff() {
+    this.props.func('off');
+  },
+
+  /*
    * Try to activate the machine
    */
   startActivation() {
@@ -21,6 +35,7 @@ var FreeMachine = React.createClass ({
    */
   render() {
     console.log('props:', this.props);
+    console.log('qq');
     var imageUrl;
     if (this.props.info && this.props.info.machine && this.props.info.machine.Image) {
       imageUrl = this.props.info.machine.Image;
@@ -41,6 +56,17 @@ var FreeMachine = React.createClass ({
             className="btn btn-lg btn-primary btn-block"
             onClick={this.startActivation}
             >Start </button>
+          { this.props.isAdmin ? (
+            <div className="pull-right" >
+              <label>Force Switch</label>
+              <button 
+                onClick={this.handleForceSwitchOn}
+                className="btn btn-lg btn-primary" >On</button>
+              <button 
+                onClick={this.handleForceSwitchOff}
+                className="btn btn-lg btn-danger" >Off</button>
+            </div>
+          ):('') }
         </div>
       </div>
     );
