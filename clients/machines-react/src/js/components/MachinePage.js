@@ -1,3 +1,4 @@
+import $ from 'jquery';
 import React from 'react'
 import MachineList from './MachineList';
 import MachineStore from '../stores/MachineStore';
@@ -62,6 +63,26 @@ var MachinePage = React.createClass({
   },
 
   /*
+   * Create a table of the Id from an array
+   * Used in shouldComponentUpdate to know get the id from previous state and next one
+   */
+  createCompareTable(state) {
+    let table = [];
+    for(let i in state) {
+      table.push(state[i].Id);
+    }
+    return table;
+  },
+
+  shouldComponentUpdate(nextProps, nextState) {
+    let shouldUpdate = false;
+    let previousId = this.createCompareTable(this.state.activationInfo);
+    let nextId = this.createCompareTable(nextState.activationInfo);
+    shouldUpdate = $(previousId).not(nextId).length === 0 && $(nextId).not(previousId).length === 0;
+    return !shouldUpdate;
+  },
+
+  /*
    * Destructor
    * Stop the polling
    */
@@ -79,6 +100,7 @@ var MachinePage = React.createClass({
   },
 
   render() {
+    console.log('coucou');
     return (
       <div className="container-fluid" >
         <div>
