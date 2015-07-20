@@ -11,6 +11,8 @@ import FreeMachine from './FreeMachine';
 var MachineChooser = React.createClass({
 
   forceSwitch(onOrOff) {
+    let mid = this.props.info.Id;
+    let aid = this.props.activation.Id;
     if(onOrOff === 'off') {
       MachineActions.adminTurnOffMachine(mid, aid)
     } else if (onOrOff === 'on') {
@@ -41,7 +43,7 @@ var MachineChooser = React.createClass({
    */
   //<div className="machine-info-content">{this.props.info.Description}</div>
   render() {
-    var isAdmin = this.props.user.Role === 'admin';
+    let isAdmin = this.props.user.Role === 'admin';
     return (
       <div className="machine available">
         <div className="container-fluid" >
