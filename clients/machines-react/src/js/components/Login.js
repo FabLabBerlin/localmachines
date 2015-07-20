@@ -20,8 +20,8 @@ var Login = React.createClass({
    */
   getInitialState() {
     return {
-      username: 'admin',
-      password: 'admin'
+      username: '',
+      password: ''
     };
   },
 
