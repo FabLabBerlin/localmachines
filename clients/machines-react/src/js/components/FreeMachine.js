@@ -11,22 +11,21 @@ var FreeMachine = React.createClass ({
    * Force the switch to turn on
    */
   handleForceSwitchOn() {
-    this.props.func('on');
+    this.props.force('on');
   },
 
   /*
    * Force the switch to trun off
    */
   handleForceSwitchOff() {
-    this.props.func('off');
+    this.props.force('off');
   },
 
   /*
    * Try to activate the machine
    */
   startActivation() {
-    var mid = this.props.info.Id;
-    MachineActions.startActivation(mid);
+    this.props.func();
   },
 
   /*
@@ -35,7 +34,6 @@ var FreeMachine = React.createClass ({
    */
   render() {
     console.log('props:', this.props);
-    console.log('qq');
     var imageUrl;
     if (this.props.info && this.props.info.machine && this.props.info.machine.Image) {
       imageUrl = this.props.info.machine.Image;

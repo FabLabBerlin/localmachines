@@ -1,4 +1,5 @@
 import React from 'react';
+import MachineActions from '../actions/MachineActions';
 import OccupiedMachine from './OccupiedMachine';
 import BusyMachine from './BusyMachine';
 import FreeMachine from './FreeMachine';
@@ -9,8 +10,23 @@ import FreeMachine from './FreeMachine';
  */
 var MachineChooser = React.createClass({
 
-  toggleInfo() {
-    alert('toggleInfo()');
+  forceSwitch(onOrOff) {
+    if(onOrOff === 'off') {
+      MachineActions.adminTurnOffMachine(mid, aid)
+    } else if (onOrOff === 'on') {
+      MachineActions.adminTurnOnMachine(mid)
+    }
+    //adminTurnOnMachine(mid)
+  },
+
+  endActivation() {
+    let aid = this.props.activation.Id
+    MachineActions.endActivation(aid);
+  },
+
+  startActivation() {
+    let mid = this.props.info.Id;
+    MachineActions.startActivation(mid)
   },
 
   /*
@@ -25,6 +41,7 @@ var MachineChooser = React.createClass({
    */
   //<div className="machine-info-content">{this.props.info.Description}</div>
   render() {
+    var isAdmin = this.props.user.Role === 'admin';
     return (
       <div className="machine available">
         <div className="container-fluid" >
@@ -41,17 +58,25 @@ var MachineChooser = React.createClass({
                 <BusyMachine
                   activation={this.props.activation}
                   info={this.props.info}
+                  isAdmin={isAdmin}
+                  func={this.endActivation}
+                  force={this.forceSwitch}
                 />
             ) : (
             <OccupiedMachine
               activation={this.props.activation}
               info={this.props.info}
-              user={this.props.user}
+              isAdmin={isAdmin}
+              func={this.endActivation}
+              force={this.forceSwitch}
             />
             ) :
               (
                 <FreeMachine
                   info={this.props.info}
+                  isAdmin={isAdmin}
+                  func={this.startActivation}
+                  force={this.forceSwitch}
                 />
             )}
           </div>

@@ -23,7 +23,7 @@ var OccupiedMachine = React.createClass({
    */
   endActivation(event) {
     event.preventDefault();
-    this.props.func(this.props.activation.Id);
+    this.props.func();
   },
 
   /*
@@ -31,7 +31,6 @@ var OccupiedMachine = React.createClass({
    * Become a button if the user is an admin
    */
   render() {
-    console.log(this.props.isAdmin);
     return (
       <div className="container-fluid">
         <div className="col-xs-6" >
