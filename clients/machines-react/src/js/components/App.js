@@ -17,6 +17,8 @@ var App = React.createClass({
    *  - navBar
    *  - all the component which are under the router control
    *  - footer
+   * If user is logged, display a exit button
+   * If he's logged and there is no nfc port, can switch to user interface
    */
   render: function() {
     return (
@@ -37,12 +39,14 @@ var App = React.createClass({
                     onClick={LoginActions.logout}>
                     <i className="fa fa-sign-out"></i>
                   </button>
-                  <a href="/user"
-                    className="btn btn-info linkToPanel"
-                    role="button" >
-                    Switch to <br/>
-                    user panel
+                  {!window.libnfc ? (
+                    <a href="/user"
+                      className="btn btn-info linkToPanel"
+                      role="button" >
+                      Switch to <br/>
+                      user panel
                   </a>
+                  ):('')}
                 </div>
               ):('')}
             </div>

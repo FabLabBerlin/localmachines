@@ -2,22 +2,32 @@ import React from 'react';
 import MachineChooser from './MachineChooser';
 
 /*
- *  MachineList component:
- *  make a table where all the machine the user can access
+ * MachineList component:
+ * Create a list of MachineChooser
+ * Prepare the props for the MachineChooser to display the right MachineDiv
  */
 var MachineList = React.createClass({
 
   /*
-   * Create the row of the table for each machine its get by props
+   * Render a list of MachineChooser
+   * Prepare props for each MachineChooser
+   * Parse the activation array and the machine array
+   *    and distribute the information concerning a machine
+   *    in only a child component
+   * @activationProps: false is no activation (ie FreeMachine)
+   *    activation object of the machine otherwise
+   * @isMachineBusy: true if busy, false otherwise
+   * @sameUser: true if the user of the machine and the one on the activation are the same
+   *    false otherwise
    */
   render() {
-    var activation = this.props.activation;
+    let activation = this.props.activation;
     if(this.props.info.length != 0) {
       var MachineNode = this.props.info.map(function(machine) {
-        var activationProps = false;
-        var isMachineBusy = false;
-        var isSameUser = false;
-        for( var i in activation ) {
+        let activationProps = false;
+        let isMachineBusy = false;
+        let isSameUser = false;
+        for( let i in activation ) {
           if( machine.Id == activation[i].MachineId ) {
             isMachineBusy = true;
             isSameUser = this.props.user.Id == activation[i].UserId;

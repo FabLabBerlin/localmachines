@@ -29,11 +29,11 @@ var FreeMachine = React.createClass ({
   },
 
   /*
-   * Render stuff
-   * TODO: real commentaries
+   * Render Free machine div
+   * If the machine is free, the component will be displayed
+   * If is admin, two button will also be displayed
    */
   render() {
-    console.log('props:', this.props);
     var imageUrl;
     if (this.props.info && this.props.info.machine && this.props.info.machine.Image) {
       imageUrl = this.props.info.machine.Image;

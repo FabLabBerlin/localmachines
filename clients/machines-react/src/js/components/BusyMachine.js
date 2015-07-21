@@ -31,10 +31,11 @@ var BusyMachine = React.createClass({
   },
 
   /*
-   * Render stuff
-   * TODO: make commentaries
+   * Render Busy div
+   * If the machine is occupied by the user it will be displayed
+   * Admin have two more button to force switch
    */
-  render() {
+   render() {
     return(
       <div className="row" >
         <div className="col-xs-6">

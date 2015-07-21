@@ -6,17 +6,35 @@ import toastr from 'toastr';
 toastr.options.positionClass = 'toast-bottom-left';
 
 /*
- * Call order:
- *  - logout
- *  - login
- *  - userInfo
- *  - machineInfo
- *  - getActivationInfo
- *  - postActivationInfo
- *  - putActivation
+ * Store the data
+ * summary:
+ * state (:34)
+ * postAPI template function (:46)
+ * getAPI template function (:69)
+ * Call order (callback are define below or inside the apicall):
+ *  - logout (:92)
+ *  - login (:110)
+ *  - userInfo (:128)
+ *  - machineInfo (:151)
+ *  - getActivationInfo (:167)
+ *  - postActivationInfo (:190)
+ *  - putActivation (:215)
+ *  - postSwitchMachine (:238)
+ * LoginError (:273)
+ * utils:
+ *  - formatActivation (:285)
+ *  - nameInAllActivation (:301)
+ *  - nameInOneActivation (:311)
+ *  - getter (:324)
+ *  - putLoginState (:343)
+ *  - onChange (:353)
  */
 var MachineStore = {
 
+  /*
+   * State of MachineStore
+   * Information needed by the components
+   */
   state: {
     isLogged: false,
     firstTry: true,
@@ -80,8 +98,9 @@ var MachineStore = {
   },
 
   /*
-   *  Activated when getLogout succed
-   *  MachineStore instead of this otherwise it doesn't work
+   * Success Callback
+   * Activated when getLogout succed
+   * MachineStore instead of this otherwise it doesn't work
    */
   logoutSuccess(data) {
     toastr.success('logout');
@@ -98,6 +117,7 @@ var MachineStore = {
   },
 
   /*
+   * Success Callback
    * Activated when postLogin succeed
    * MachineStore instead of this otherwise it doesn't work
    */
@@ -116,6 +136,7 @@ var MachineStore = {
   },
 
   /*
+   * Success Callback
    * Activated when getNameLogin succeed
    * MachineStore instead of this otherwe it doesn't work
    */
@@ -139,6 +160,7 @@ var MachineStore = {
   },
 
   /*
+   * SuccessCallback
    * Activated when getUserMachines succeed
    */
   userMachineSuccess(data) {
@@ -155,6 +177,7 @@ var MachineStore = {
   },
 
   /*
+   * Success Callback
    * Activated when getActivationActive succeed
    */
   getActivationSuccess(data) {
@@ -181,6 +204,7 @@ var MachineStore = {
   },
 
   /*
+   * Success Callback
    * Activated when postActivation succeed
    */
   postActivationSuccess(data, toastrMessage = 'Machine activated') {
@@ -215,11 +239,12 @@ var MachineStore = {
   },
 
   /*
-   * Turn or or off a machine
-   * Create or end an activation
+   * Force a machine to be turned on or off
+   * If the machine is active (activation) end the activation
    * @mid: machine you want to turn on or off
    * @onOrOff: action you want to do
    * @aid: activation id in case of turning off a machine
+   * TODO: add animation
    */
   apiPostSwitchMachine(mid, onOrOff, aid = '') {
     //start animation
@@ -232,6 +257,7 @@ var MachineStore = {
       } else {
         var successFunction = function(data) {
           //end animation
+          toastr.success('machine off and activation closed');
           MachineStore.apiPutActivation(aid);
         };
       }
@@ -282,7 +308,8 @@ var MachineStore = {
   },
 
   /*
-   * TODO: documentation
+   * For each activation
+   * Call nameInOneActivation
    */
   nameInAllActivations() {
     for( var index in this.state.activationInfo ) {
@@ -292,7 +319,8 @@ var MachineStore = {
   },
 
   /*
-   * TODO: documentation
+   * Put the name of the activation (identified by the index)
+   * and put inside the json the name of the one who activates it
    */
   nameInOneActivation(uid, index) {
     var successFunction = function(data) {

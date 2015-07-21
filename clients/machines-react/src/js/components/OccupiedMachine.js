@@ -27,8 +27,10 @@ var OccupiedMachine = React.createClass({
   },
 
   /*
-   * Render the occupied div
-   * Become a button if the user is an admin
+   * Render Busy div
+   * If the machine is occupied by someone else it will be displayed
+   * Admin have a button to stop a machine use by an other user
+   * Admin have two more button to force switch
    */
   render() {
     return (

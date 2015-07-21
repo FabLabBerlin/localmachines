@@ -5,11 +5,16 @@ import BusyMachine from './BusyMachine';
 import FreeMachine from './FreeMachine';
 
 /*
- * Multiple button available there !!
- * Has to be connected to activation store
+ * Multiple machine div available here
+ * The component choose which div fit for the situation
+ * The choice is made looking at the props
  */
 var MachineChooser = React.createClass({
 
+  /*
+   * To force a switch
+   * Only admin have to be able to use this function
+   */
   forceSwitch(onOrOff) {
     let mid = this.props.info.Id;
     let aid = this.props.activation.Id;
@@ -18,28 +23,40 @@ var MachineChooser = React.createClass({
     } else if (onOrOff === 'on') {
       MachineActions.adminTurnOnMachine(mid)
     }
-    //adminTurnOnMachine(mid)
   },
 
+  /*
+   * Function pass by props to children
+   * End an activation
+   */
   endActivation() {
     let aid = this.props.activation.Id
     MachineActions.endActivation(aid);
   },
 
+  /*
+   * Function pass by props to children
+   * Start an activation
+   */
   startActivation() {
     let mid = this.props.info.Id;
     MachineActions.startActivation(mid)
   },
 
   /*
-   * Not render the component when the props doesn't change;
+   * If the id of the activation is the same, doesn't render the component
+   * To not rerender each component at each polling
    */
   shouldComponentUpdate(nextProps) {
     return nextProps.activation.Id !== this.props.activation.Id;
   },
 
   /*
-   * Render a machine component depending of the props
+   * Render component
+   * Can choose what component will be display depending on the props
+   * @busy + @sameUser => BusyMachine
+   * @busy => OccupiedMachine
+   * @nothing => FreeMachine
    */
   //<div className="machine-info-content">{this.props.info.Description}</div>
   render() {

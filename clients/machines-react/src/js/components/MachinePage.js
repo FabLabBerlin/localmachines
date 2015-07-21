@@ -6,8 +6,18 @@ import MachineActions from '../actions/MachineActions';
 import LoginActions from '../actions/LoginActions';
 import {Navigation} from 'react-router';
 
+/*
+ * MachinePage:
+ * Root component
+ * Fetch the information from the store
+ * Give it to its children to display the interface
+ */
 var MachinePage = React.createClass({
 
+  /*
+   * Enable some React router function as:
+   *  ReplaceWith
+   */
   mixins: [ Navigation ],
 
   /*
@@ -21,6 +31,10 @@ var MachinePage = React.createClass({
     }
   },
 
+  /*
+   * Initial State
+   * fetch data from MachineStore
+   */
   getInitialState() {
     return {
       userInfo: MachineStore.getUserInfo(),
@@ -29,6 +43,10 @@ var MachinePage = React.createClass({
     };
   },
 
+  /*
+   * Return an object with information
+   * Which are useful for MachineChooser
+   */
   getUserInfoToPassInProps() {
     var User = {
       Id: this.state.userInfo.Id,
@@ -45,7 +63,7 @@ var MachinePage = React.createClass({
   },
 
   /*
-   *
+   * When a new activation is fetch in the store
    */
   onChangeActivation() {
     this.setState({
@@ -74,6 +92,11 @@ var MachinePage = React.createClass({
     return table;
   },
 
+  /*
+   * Do not update (render) the component when false
+   * Compare the activation id from the previous state with the new one
+   * If they are the same, do not update
+   */
   shouldComponentUpdate(nextProps, nextState) {
     let shouldUpdate = false;
     let previousId = this.createCompareTable(this.state.activationInfo);
@@ -91,16 +114,22 @@ var MachinePage = React.createClass({
   },
 
   /*
+   * Call when the component is mounted in DOM
    * Synchronize invent from store to machinepage
+   * Activate a polling (1,5s)
    */
   componentDidMount() {
     MachineStore.onChangeActivation = this.onChangeActivation;
     MachineStore.onChangeLogout = this.onChangeLogout;
-    this.interval = setInterval(MachineActions.pollActivations, 1000);
+    this.interval = setInterval(MachineActions.pollActivations, 1500);
   },
 
+  /*
+   * Render the user name
+   * MachinList
+   * exit button
+   */
   render() {
-    console.log('coucou');
     return (
       <div className="container-fluid" >
         <div>
