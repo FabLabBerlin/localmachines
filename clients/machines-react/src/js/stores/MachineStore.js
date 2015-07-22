@@ -1,19 +1,18 @@
 
 /*
- * Import toastr and set position
+ * import toastr and set position
  */
 import toastr from 'toastr';
-toastr.options.positionClass = 'toast-bottom-left';
+toastr.options.positionclass = 'toast-bottom-left';
 
 /*
+ * TODO: refactoring some comments and function
  * Store the data
  * summary:
  * state (:34)
  * postAPI template function (:46)
  * getAPI template function (:69)
  * Call order (callback are define below or inside the apicall):
- *  - logout (:92)
- *  - login (:110)
  *  - userInfo (:128)
  *  - machineInfo (:151)
  *  - getActivationInfo (:167)
@@ -87,44 +86,6 @@ var MachineStore = {
         console.error(url, status, err);
       }.bind(this),
     });
-  },
-
-  /*
-   * Use GET call to logout from the server
-   * callback are defined below
-   */
-  apiGetLogout() {
-    this.getAPICall('/api/users/logout', this.logoutSuccess);
-  },
-
-  /*
-   * Success Callback
-   * Activated when getLogout succed
-   * MachineStore instead of this otherwise it doesn't work
-   */
-  logoutSuccess(data) {
-    toastr.success('logout');
-    MachineStore.state.isLogged = false;
-    MachineStore.onChangeLogout();
-  },
-
-  /*
-   * Use POST call to login to the server
-   * callback are defined below
-   */
-  apiPostLogin(loginInfo){
-    this.postAPICall('/api/users/login', loginInfo, this.LoginSuccess, '', this.LoginError);
-  },
-
-  /*
-   * Success Callback
-   * Activated when postLogin succeed
-   * MachineStore instead of this otherwise it doesn't work
-   */
-  LoginSuccess(data) {
-    var uid = data.UserId;
-    MachineStore.state.userInfo.UserId = uid;
-    MachineStore.apiGetUserInfoLogin(uid);
   },
 
  /*
@@ -279,18 +240,6 @@ var MachineStore = {
   },
 
   /*
-   * Activated when login failed
-   * MachineStore instead of this otherwise it doesn't work
-   */
-  LoginError(xhr, status, err) {
-    if(MachineStore.state.firstTry === true) {
-      MachineStore.state.firstTry = false;
-    } else {
-      toastr.error('Wrong password');
-    }
-  },
-
-  /*
    * Format rawActivation to have only useful information
    * @rawActivation: response send by the server
    */
@@ -335,10 +284,6 @@ var MachineStore = {
     this.getAPICall('/api/users/' + uid + '/name', successFunction);
   },
 
-  getIsLogged() {
-    return this.state.isLogged;
-  },
-
   getUserInfo() {
     return this.state.userInfo;
   },
@@ -357,6 +302,7 @@ var MachineStore = {
   putLoginState() {
     this.state.isLogged = true;
     this.state.firstTry = true;
+    console.log(this.state);
     this.onChangeLogin();
   },
 
