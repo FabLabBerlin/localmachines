@@ -1,6 +1,7 @@
 import $ from 'jquery';
 import React from 'react'
 import MachineList from './MachineList';
+import LoginStore from '../stores/LoginStore';
 import MachineStore from '../stores/MachineStore';
 import MachineActions from '../actions/MachineActions';
 import LoginActions from '../actions/LoginActions';
@@ -11,6 +12,7 @@ import {Navigation} from 'react-router';
  * Root component
  * Fetch the information from the store
  * Give it to its children to display the interface
+ * TODO: reorganize and documente some function
  */
 var MachinePage = React.createClass({
 
@@ -25,10 +27,19 @@ var MachinePage = React.createClass({
    */
   statics: {
     willTransitionTo(transition) {
-      if(!MachineStore.getIsLogged()) {
+      if(!LoginStore.getIsLogged()) {
         transition.redirect('login');
       }
     }
+  },
+
+  /*
+   * Start fetching the data 
+   * before the component is mounted
+   */
+  componentWillMount() {
+    let uid = LoginStore.getUid();
+    MachineActions.fetchData(uid);
   },
 
   /*
@@ -37,6 +48,19 @@ var MachinePage = React.createClass({
    */
   getInitialState() {
     return {
+      attemptToLog: true,
+      userInfo: MachineStore.getUserInfo(),
+      machineInfo: MachineStore.getMachineInfo(),
+      activationInfo: MachineStore.getActivationInfo()
+    };
+  },
+
+  /*
+   * Fetch data to change the state after the initial render
+   */
+  fetchDataFromStore() {
+    return {
+      attemptToLog: false,
       userInfo: MachineStore.getUserInfo(),
       machineInfo: MachineStore.getMachineInfo(),
       activationInfo: MachineStore.getActivationInfo()
@@ -53,6 +77,18 @@ var MachinePage = React.createClass({
       Role: this.state.userInfo.UserRole
     }
     return User;
+  },
+
+  /*
+   * Create a table of the Id from an array
+   * Used in shouldComponentUpdate to know get the id from previous state and next one
+   */
+  createCompareTable(state) {
+    let table = [];
+    for(let i in state) {
+      table.push(state[i].Id);
+    }
+    return table;
   },
 
   /*
@@ -75,21 +111,17 @@ var MachinePage = React.createClass({
    * To logout and redirect to login page
    */
   onChangeLogout() {
-    if( !MachineStore.getIsLogged() ) {
+    if( !LoginStore.getIsLogged() ) {
       this.replaceWith('login');
     }
   },
 
   /*
-   * Create a table of the Id from an array
-   * Used in shouldComponentUpdate to know get the id from previous state and next one
+   * When the fectching is done
+   * Set state from the new data
    */
-  createCompareTable(state) {
-    let table = [];
-    for(let i in state) {
-      table.push(state[i].Id);
-    }
-    return table;
+  onChangeLogin() {
+    this.setState(this.fetchDataFromStore());
   },
 
   /*
@@ -98,11 +130,15 @@ var MachinePage = React.createClass({
    * If they are the same, do not update
    */
   shouldComponentUpdate(nextProps, nextState) {
-    let shouldUpdate = false;
-    let previousId = this.createCompareTable(this.state.activationInfo);
-    let nextId = this.createCompareTable(nextState.activationInfo);
-    shouldUpdate = $(previousId).not(nextId).length === 0 && $(nextId).not(previousId).length === 0;
-    return !shouldUpdate;
+    if( this.state.attemptToLog ) {
+      return true;
+    } else {
+      let shouldUpdate = false;
+      let previousId = this.createCompareTable(this.state.activationInfo);
+      let nextId = this.createCompareTable(nextState.activationInfo);
+      shouldUpdate = $(previousId).not(nextId).length === 0 && $(nextId).not(previousId).length === 0;
+      return !shouldUpdate;
+    }
   },
 
   /*
@@ -115,12 +151,13 @@ var MachinePage = React.createClass({
 
   /*
    * Call when the component is mounted in DOM
-   * Synchronize invent from store to machinepage
+   * Synchronize invent from stores
    * Activate a polling (1,5s)
    */
   componentDidMount() {
     MachineStore.onChangeActivation = this.onChangeActivation;
-    MachineStore.onChangeLogout = this.onChangeLogout;
+    LoginStore.onChangeLogout = this.onChangeLogout;
+    MachineStore.onChangeLogin = this.onChangeLogin;
     this.interval = setInterval(MachineActions.pollActivations, 1500);
   },
 
