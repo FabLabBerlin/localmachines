@@ -2,6 +2,10 @@ import MachineStore from '../stores/MachineStore';
 
 var MachineActions = {
 
+  fetchData(uid) {
+    MachineStore.apiGetUserInfoLogin(uid);
+  },
+
   /*
    * To end an activation
    * @aid: id of the activation you want to shut down
