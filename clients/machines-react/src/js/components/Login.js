@@ -1,5 +1,6 @@
 import React from 'react';
 import {Navigation} from 'react-router';
+import LoginStore from '../stores/LoginStore';
 import MachineStore from '../stores/MachineStore';
 import LoginActions from '../actions/LoginActions';
 
@@ -57,7 +58,7 @@ var Login = React.createClass({
    * Replace the login page url by the user page url
    */
   onChangeLogin() {
-    if( MachineStore.getIsLogged() ) {
+    if( LoginStore.getIsLogged() ) {
       this.replaceWith('/machine');
     }
   },
@@ -68,7 +69,7 @@ var Login = React.createClass({
    */
   componentDidMount() {
     LoginActions.submitLoginForm(this.state);
-    MachineStore.onChangeLogin = this.onChangeLogin;
+    LoginStore.onChangeLogin = this.onChangeLogin;
   },
 
   /*
