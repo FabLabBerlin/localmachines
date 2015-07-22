@@ -3,8 +3,18 @@
  * import toastr and set position
  */
 import toastr from 'toastr';
-toastr.options.positionclass = 'toast-bottom-left';
+toastr.options.positionClass = 'toast-bottom-left';
 
+/*
+ * Login Store:
+ * The goal of this file is to handle all login related actions
+ * state
+ * apitGetLogout
+ * apitPostLogin
+ * getter
+ * cleanState
+ * onChange
+ */
 var LoginStore = {
   state: {
     firstTry: true,
@@ -22,6 +32,7 @@ var LoginStore = {
       cache: false,
       success: function(data) {
         this.cleanState();
+        console.log(toastr.options);
       }.bind(this),
       error: function(xhr, status, err) {
         console.error('/users/logout', status, err);
@@ -67,6 +78,7 @@ var LoginStore = {
   cleanState() {
     this.state.isLogged = false;
     this.state.userInfo = {};
+    console.log(toastr.success);
     toastr.success('Bye');
     this.onChangeLogout();
   },

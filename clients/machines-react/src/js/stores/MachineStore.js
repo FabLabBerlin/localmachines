@@ -3,7 +3,7 @@
  * import toastr and set position
  */
 import toastr from 'toastr';
-toastr.options.positionclass = 'toast-bottom-left';
+toastr.options.positionClass = 'toast-bottom-left';
 
 /*
  * TODO: refactoring some comments and function
@@ -302,7 +302,6 @@ var MachineStore = {
   putLoginState() {
     this.state.isLogged = true;
     this.state.firstTry = true;
-    console.log(this.state);
     this.onChangeLogin();
   },
 
