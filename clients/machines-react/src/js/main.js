@@ -1,5 +1,5 @@
 import App from './components/App';
-import Login from './components/Login';
+import LoginChooser from './components/LoginChooser';
 import MachinePage from './components/MachinePage';
 import React from 'react';
 import Router from 'react-router';
@@ -19,8 +19,8 @@ require('toastr/build/toastr.min.css');
 let routes = (
   <Route name="app" path="/" handler={App} >
     <Route name="machine" handler={MachinePage} />
-    <Route name="login" handler={Login} />
-    <DefaultRoute handler={Login} />
+    <Route name="login" handler={LoginChooser} />
+    <DefaultRoute handler={MachinePage} />
   </Route>
 );
 
