@@ -1,7 +1,6 @@
 import React from 'react';
 import {Navigation} from 'react-router';
 import LoginStore from '../stores/LoginStore';
-import MachineStore from '../stores/MachineStore';
 import LoginActions from '../actions/LoginActions';
 
 /*

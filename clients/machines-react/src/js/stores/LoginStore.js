@@ -68,7 +68,6 @@ var LoginStore = {
     this.state.isLogged = false;
     this.state.userInfo = {};
     toastr.success('Bye');
-    console.log('avant onchangelgout');
     this.onChangeLogout();
   },
 
