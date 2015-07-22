@@ -1,4 +1,4 @@
-import MachineStore from '../stores/MachineStore';
+import LoginStore from '../stores/LoginStore';
 import LoginActions from '../actions/LoginActions';
 import React from 'react';
 import {RouteHandler} from 'react-router';
@@ -32,7 +32,7 @@ var App = React.createClass({
                 <img src="img/logo_fablab_berlin.svg" 
                      className="brand-image"/>
               </div>
-              {MachineStore.getIsLogged() ? (
+              {LoginStore.getIsLogged() ? (
                 <div className="col-xs-6 text-right">
                   <button 
                     className="btn btn-danger btn-logout pull-right" 
