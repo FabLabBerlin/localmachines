@@ -58,6 +58,9 @@ var LoginStore = {
     });
   },
 
+  /*
+   * To login with nfc card
+   */
   apitPostLoginNFC(uid) {
     $.ajax({
       url: '/api/users/loginuid',
@@ -75,6 +78,10 @@ var LoginStore = {
     });
   },
 
+  /*
+   * Success to the login functions
+   * if data is corrupted, say it to putLoginState
+   */
   successLogin(data) {
     if( data.UserId ) {
       LoginStore.state.uid = data.UserId;
@@ -85,6 +92,9 @@ var LoginStore = {
     }
   },
 
+  /*
+   * Error callback of the login functions
+   */
   errorLogin() {
     if(LoginStore.state.firstTry === true) {
       LoginStore.state.firstTry = false;
@@ -104,16 +114,19 @@ var LoginStore = {
     return this.state.isLogged;
   },
 
+  /*
+   * Clean the store before logout
+   */
   cleanState() {
     this.state.isLogged = false;
     this.state.userInfo = {};
-    console.log(toastr.success);
     toastr.success('Bye');
     this.onChangeLogout();
   },
 
   /*
    * Change state before login
+   * If fail to log, don't change the store
    */
   putLoginState(log = true) {
     if( log === true ) {
