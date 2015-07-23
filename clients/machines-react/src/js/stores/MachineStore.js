@@ -297,6 +297,19 @@ var MachineStore = {
   },
 
   /*
+   * Clean State before login out
+   */
+  clearState() {
+    this.state = {
+      isLogged: false,
+      firstTry: true,
+      userInfo: {},
+      activationInfo:[],
+      machineInfo: []
+    };
+  },
+
+  /*
    * Change the state before login in
    */
   putLoginState() {

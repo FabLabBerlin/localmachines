@@ -48,7 +48,11 @@ var MachineChooser = React.createClass({
    * To not rerender each component at each polling
    */
   shouldComponentUpdate(nextProps) {
-    return nextProps.activation.Id !== this.props.activation.Id;
+    var shouldUpdate = true;
+    if( nextProps.activation.Id === this.props.activation.Id && !this.props.activation.FirstName ) {
+      shouldUpdate = false;
+    }
+    return shouldUpdate;
   },
 
   /*
