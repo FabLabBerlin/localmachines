@@ -37,6 +37,13 @@ var MachineActions = {
   },
 
   /*
+   * Clear store state while logout
+   */
+  clearState() {
+    MachineStore.clearState();
+  },
+
+  /*
    * To continue to refresh the view each seconds
    */
   pollActivations() {
