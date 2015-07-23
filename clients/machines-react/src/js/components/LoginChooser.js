@@ -11,7 +11,7 @@ var LoginChooser = React.createClass({
   render() {
     return (
       <div className="container-fluid" >
-        { window.libnfc ? (
+        { !window.libnfc ? (
           <Login />
           ):(
           <LoginNfc />

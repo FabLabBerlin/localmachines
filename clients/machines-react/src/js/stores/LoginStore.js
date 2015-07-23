@@ -19,7 +19,7 @@ var LoginStore = {
   state: {
     firstTry: true,
     isLogged: false,
-    userInfo: {}
+    uid: {}
   },
 
   /*
@@ -32,7 +32,6 @@ var LoginStore = {
       cache: false,
       success: function(data) {
         this.cleanState();
-        console.log(toastr.options);
       }.bind(this),
       error: function(xhr, status, err) {
         console.error('/users/logout', status, err);
@@ -50,25 +49,55 @@ var LoginStore = {
       type: 'POST',
       data: loginInfo,
       success: function(data) {
-        this.state.userInfo.UserId = data.UserId;
-        this.putLoginState();
+        this.successLogin(data);
       }.bind(this),
       error: function(xhr, status, err) {
-        if(this.state.firstTry === true) {
-          this.state.firstTry = false;
-        } else {
-          toastr.error('Wrong password');
-        }
+        this.errorLogin();
         console.error('/users/login', status, err);
       }.bind(this),
     });
+  },
+
+  apitPostLoginNFC(uid) {
+    $.ajax({
+      url: '/api/users/loginuid',
+      method: 'POST',
+      data: {
+        uid: uid
+      },
+      success: function(data) {
+        this.successLogin(data);
+      }.bind(this),
+      error: function(xhr, status, err) {
+        this.errorLogin();
+        console.error('/users/loginuid', status, err);
+      }.bind(this),
+    });
+  },
+
+  successLogin(data) {
+    if( data.UserId ) {
+      LoginStore.state.uid = data.UserId;
+      LoginStore.putLoginState();
+    } else {
+      toastr.error('Failed to log in');
+      LoginStore.putLoginState(false);
+    }
+  },
+
+  errorLogin() {
+    if(LoginStore.state.firstTry === true) {
+      LoginStore.state.firstTry = false;
+    } else {
+      toastr.error('Wrong password');
+    }
   },
 
   /*
    * Return the uid of the user
    */
   getUid() {
-    return this.state.userInfo.UserId;
+    return this.state.uid;
   },
 
   getIsLogged() {
@@ -86,9 +115,11 @@ var LoginStore = {
   /*
    * Change state before login
    */
-  putLoginState() {
-    this.state.isLogged = true;
-    this.state.firstTry = true;
+  putLoginState(log = true) {
+    if( log === true ) {
+      this.state.isLogged = true;
+      this.state.firstTry = true;
+    }
     this.onChangeLogin();
   },
 
