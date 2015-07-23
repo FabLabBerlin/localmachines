@@ -56,6 +56,16 @@ var MachinePage = React.createClass({
   },
 
   /*
+   * Callback called when nfc reader error occure
+   */
+  errorNFCCallback(error) {
+    window.libnfc.cardRead.disconnect(this.nfcLogin);
+    window.libnfc.cardReaderError.disconnect(this.errorNFCCallback);
+    toastr.error(error);
+    setTimeout(this.connectJsToQt, 2000);
+  },
+
+  /*
    * Fetch data to change the state after the initial render
    */
   fetchDataFromStore() {
@@ -180,6 +190,10 @@ var MachinePage = React.createClass({
    * Stop the polling
    */
   componentWillUnmount() {
+    if(window.libnfc){
+      window.libnfc.cardRead.disconnect(this.handleLogout);
+      window.libnfc.cardRead.disconnect(this.errorNFCCallback);
+    }
     this.clearState();
     clearInterval(this.interval);
   },
@@ -190,10 +204,18 @@ var MachinePage = React.createClass({
    * Activate a polling (1,5s)
    */
   componentDidMount() {
+    if(window.libnfc) {
+      setTimeout(this.connectJsToQt, 5000);
+    }
     MachineStore.onChangeActivation = this.onChangeActivation;
     LoginStore.onChangeLogout = this.onChangeLogout;
     MachineStore.onChangeLogin = this.onChangeLogin;
     this.interval = setInterval(MachineActions.pollActivations, 1500);
+  },
+
+  connectJsToQt() {
+    window.libnfc.cardRead.connect(this.handleLogout);
+    window.libnfc.cardReaderError.connect(this.errorNFCCallback);
   },
 
   /*
