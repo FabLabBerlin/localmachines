@@ -92,6 +92,32 @@ var MachinePage = React.createClass({
   },
 
   /*
+   * Look if the activations have a name
+   * if they all have one, return true
+   */
+  hasNameInto(activation) {
+    for( i in activation ) {
+      if(!activation.FirstName) {
+        return false;
+      }
+    }
+    return true;
+  },
+
+  /*
+   * Clear state while logout
+   */
+  clearState() {
+    this.setState({
+      attemptToLog: true,
+      UserInfo: {},
+      machineInfo: [],
+      activationInfo: []
+    });
+    MachineActions.clearState();
+  },
+
+  /*
    * Logout with the exit button
    */
   handleLogout() {
@@ -126,17 +152,25 @@ var MachinePage = React.createClass({
 
   /*
    * Do not update (render) the component when false
+   * If the data aren't not all loaded, return true
+   * If some activation doesn't have a name loaded yet return true
    * Compare the activation id from the previous state with the new one
    * If they are the same, do not update
+   *
+   * WARNING: This function is really complicated BECAUSE the api call is badly
+   * and the name is loaded in the store state asynchronously
    */
   shouldComponentUpdate(nextProps, nextState) {
     if( this.state.attemptToLog ) {
+      return true;
+    } else if(!this.hasNameInto(this.state.activation)){
       return true;
     } else {
       let shouldUpdate = false;
       let previousId = this.createCompareTable(this.state.activationInfo);
       let nextId = this.createCompareTable(nextState.activationInfo);
       shouldUpdate = $(previousId).not(nextId).length === 0 && $(nextId).not(previousId).length === 0;
+      console.log(shouldUpdate);
       return !shouldUpdate;
     }
   },
@@ -146,6 +180,7 @@ var MachinePage = React.createClass({
    * Stop the polling
    */
   componentWillUnmount() {
+    this.clearState();
     clearInterval(this.interval);
   },
 
@@ -167,6 +202,7 @@ var MachinePage = React.createClass({
    * exit button
    */
   render() {
+    console.log('yuhou coucou');
     return (
       <div className="container-fluid" >
         <div>
