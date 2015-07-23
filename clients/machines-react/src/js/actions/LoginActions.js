@@ -13,6 +13,15 @@ var LoginActions = {
   },
 
   /*
+   * Try to connect with nfc card
+   * @uid: unique id from the card
+   */
+  nfcLogin(uid) {
+    console.log(uid);
+    LoginStore.apiPostLoginNFC(uid);
+  },
+
+  /*
    * Logout
    */
   logout() {
