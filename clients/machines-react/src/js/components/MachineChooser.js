@@ -62,7 +62,6 @@ var MachineChooser = React.createClass({
    * @busy => OccupiedMachine
    * @nothing => FreeMachine
    */
-  //<div className="machine-info-content">{this.props.info.Description}</div>
   render() {
     let isAdmin = this.props.user.Role === 'admin';
     return (

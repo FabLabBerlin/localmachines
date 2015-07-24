@@ -37,7 +37,7 @@ var OccupiedMachine = React.createClass({
       <div className="container-fluid">
         <div className="col-xs-6" >
           <p>Occupied by</p>
-          <label>{this.props.activation.FirstName + this.props.activation.LastName}</label>
+          <label>{this.props.activation.FirstName} {this.props.activation.LastName}</label>
           <Timer time={this.props.activation.TimeTotal} />
         </div>
 

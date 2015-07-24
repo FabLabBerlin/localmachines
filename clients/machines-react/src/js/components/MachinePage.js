@@ -7,6 +7,9 @@ import MachineActions from '../actions/MachineActions';
 import LoginActions from '../actions/LoginActions';
 import {Navigation} from 'react-router';
 
+import toastr from 'toastr';
+toastr.options.positionClass = 'toast-bottom-left';
+
 /*
  * MachinePage:
  * Root component
@@ -106,7 +109,7 @@ var MachinePage = React.createClass({
    * if they all have one, return true
    */
   hasNameInto(activation) {
-    for( i in activation ) {
+    for(let i in activation ) {
       if(!activation.FirstName) {
         return false;
       }
@@ -173,14 +176,13 @@ var MachinePage = React.createClass({
   shouldComponentUpdate(nextProps, nextState) {
     if( this.state.attemptToLog ) {
       return true;
-    } else if(!this.hasNameInto(this.state.activation)){
+    } else if(this.hasNameInto(this.state.activationInfo) === false){
       return true;
     } else {
       let shouldUpdate = false;
       let previousId = this.createCompareTable(this.state.activationInfo);
       let nextId = this.createCompareTable(nextState.activationInfo);
       shouldUpdate = $(previousId).not(nextId).length === 0 && $(nextId).not(previousId).length === 0;
-      console.log(shouldUpdate);
       return !shouldUpdate;
     }
   },
@@ -192,7 +194,7 @@ var MachinePage = React.createClass({
   componentWillUnmount() {
     if(window.libnfc){
       window.libnfc.cardRead.disconnect(this.handleLogout);
-      window.libnfc.cardRead.disconnect(this.errorNFCCallback);
+      window.libnfc.cardReaderError.disconnect(this.errorNFCCallback);
     }
     this.clearState();
     clearInterval(this.interval);
@@ -205,7 +207,7 @@ var MachinePage = React.createClass({
    */
   componentDidMount() {
     if(window.libnfc) {
-      setTimeout(this.connectJsToQt, 5000);
+      setTimeout(this.connectJsToQt, 1500);
     }
     MachineStore.onChangeActivation = this.onChangeActivation;
     LoginStore.onChangeLogout = this.onChangeLogout;
@@ -214,8 +216,11 @@ var MachinePage = React.createClass({
   },
 
   connectJsToQt() {
+    toastr.info('You can now log out with your nfc card');
     window.libnfc.cardRead.connect(this.handleLogout);
     window.libnfc.cardReaderError.connect(this.errorNFCCallback);
+    window.libnfc.asyncScan();
+    setTimeout(this.handleLogout, 30000);
   },
 
   /*
@@ -224,7 +229,6 @@ var MachinePage = React.createClass({
    * exit button
    */
   render() {
-    console.log('yuhou coucou');
     return (
       <div className="container-fluid" >
         <div>
