@@ -33,7 +33,6 @@ var OccupiedMachine = React.createClass({
    * Admin have two more button to force switch
    */
   render() {
-    console.log(this.props.activation);
     return (
       <div className="container-fluid">
         <div className="col-xs-6" >
