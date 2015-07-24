@@ -33,11 +33,12 @@ var OccupiedMachine = React.createClass({
    * Admin have two more button to force switch
    */
   render() {
+    console.log(this.props.activation);
     return (
       <div className="container-fluid">
         <div className="col-xs-6" >
           <p>Occupied by</p>
-          <label>{this.props.activation.FirstName + this.props.activation.LastName}</label>
+          <label>{this.props.activation.FirstName} {this.props.activation.LastName}</label>
           <Timer time={this.props.activation.TimeTotal} />
         </div>
 
