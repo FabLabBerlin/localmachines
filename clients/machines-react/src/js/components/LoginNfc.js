@@ -3,6 +3,8 @@ import {Navigation} from 'react-router';
 import LoginStore from '../stores/LoginStore';
 import LoginActions from '../actions/LoginActions';
 
+import toastr from 'toastr';
+toastr.options.positionClass = 'toast-bottom-left';
 /*
  * LoginNfc
  * Component to Login if there is window.libnfc
@@ -43,7 +45,7 @@ var LoginNfc = React.createClass({
    */
   onChangeLoginNFC() {
     if( LoginStore.getIsLogged() ) {
-      this.replaceWith('/machine');
+      this.replaceWith('machine');
     } else {
       setTimeout(this.connectJsToQt, 1000);
     }
@@ -64,7 +66,7 @@ var LoginNfc = React.createClass({
    */
   componentDidMount() {
     setTimeout(this.connectJsToQt, 1000);
-    LoginStore.onChangeLoginNFC = this.onChangeLogin;
+    LoginStore.onChangeLogin = this.onChangeLoginNFC;
   },
 
   /*

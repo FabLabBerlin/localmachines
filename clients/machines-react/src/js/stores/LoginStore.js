@@ -61,7 +61,7 @@ var LoginStore = {
   /*
    * To login with nfc card
    */
-  apitPostLoginNFC(uid) {
+  apiPostLoginNFC(uid) {
     $.ajax({
       url: '/api/users/loginuid',
       method: 'POST',

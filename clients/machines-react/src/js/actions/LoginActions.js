@@ -1,4 +1,6 @@
 import LoginStore from '../stores/LoginStore';
+import toastr from 'toastr';
+toastr.options.positionClass = 'toast-bottom-left';
 
 /*
  * Action made by the login page
@@ -17,7 +19,6 @@ var LoginActions = {
    * @uid: unique id from the card
    */
   nfcLogin(uid) {
-    console.log(uid);
     LoginStore.apiPostLoginNFC(uid);
   },
 
