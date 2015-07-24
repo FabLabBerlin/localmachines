@@ -4,6 +4,12 @@ import OccupiedMachine from './OccupiedMachine';
 import BusyMachine from './BusyMachine';
 import FreeMachine from './FreeMachine';
 
+// https://github.com/HubSpot/vex/issues/72
+var vex = require('vex-js'),
+VexDialog = require('vex-js/js/vex.dialog.js');
+
+vex.defaultOptions.className = 'vex-theme-custom';
+
 /*
  * Multiple machine div available here
  * The component choose which div fit for the situation
@@ -30,8 +36,20 @@ var MachineChooser = React.createClass({
    * End an activation
    */
   endActivation() {
-    let aid = this.props.activation.Id
-    MachineActions.endActivation(aid);
+    VexDialog.buttons.YES.text = 'Yes';
+    VexDialog.buttons.NO.text = 'No';
+
+    VexDialog.confirm({
+      message: 'Do you really want to stop the activation for <b>' +
+        this.props.info.Name + '</b>?',
+      callback: function(confirmed) {
+        if (confirmed) {
+          let aid = this.props.activation.Id
+          MachineActions.endActivation(aid);
+        }
+        $('.vex').remove();
+      }.bind(this)
+    });
   },
 
   /*
