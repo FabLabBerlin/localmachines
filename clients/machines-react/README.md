@@ -2,18 +2,57 @@
 
 ##Convention used:
 
+###General
+
+- The achitecture of the src files are :
+  - src/
+    - js/
+     - JsFiles.js
+    - assets/
+      - css/scss/less
+      - img/..
+- All function are in **lowerCamelCase**
+- All component **name** and **const** are in **UpperCamelCase**
+- Test directories are "__test__"
+- Test file are : *NameOfYourFile*-**test**.js
+
 ###Components
 
 Here an idea how the code is organize:
  - mixins
  - static
+ - componentWillMount
  - getInitialState
  - *stuff*
  - onChange
+ - componentWillUnmount
  - componentDidMount
  - Render
 
 The function in *stuff* aren't organize in a special way, up to you to specify your convention here
+
+###Stores
+
+There are 2 stores in this interface:
+ - LoginStore
+ - MachineStore
+
+The **Loginstore** manages the **login phase**, and is used essentialy by Login and LoginNfc component
+
+The **MachineStore** manages the data the main page needs to be display correctly.
+
+Some convention are done for the store because it's a really complicate file. It needs to be respected for making the editing easier:
+ - On top, in commentary, put all the main functions
+ - This is how the file should be organized: 
+   - state
+   - api call
+   - function related to api call (for formating the state for example)
+   - getter
+   - onChange
+ - This organisation will be kept until a real flux is implemented
+ - Function name for **api call** are to be : **apiMETHODFunctionName**
+  - For example: *apiGetActivationActive*
+ - **getter** name has to start with get and follow by the Information you get(for example: *getIsLogged*).
 
 ###Flux
 
@@ -25,4 +64,38 @@ For this there is some rules:
  - Make as stateless component as possible
  - Try to regroup the state in some major component to debug easily
  - All the interaction with the back-end is done in the store
- - We try to make it a circle: **actions =>** *dispatcher* **=> store => view => action **
+ - We try to make it a circle: **actions =>** *dispatcher* **=> store => view => action**
+
+##Architecture
+
+  LoginStore                MachineStore
+      |     \________________      |
+      |                      \     |
+ LoginChooser                 MachinePage
+      |                            |
+      |                       MachineList
+     / \                           |
+Login   LoginNfc              MachineChooser
+                                   |
+                                   |
+                                  /|\
+                                 / | \
+                                /  |  \
+                         Occupied Busy Free
+                            \    /
+                             \  /
+                             Timer
+                             
+###Directories
+
+- Components are in component folder
+- Components are calling actions
+- Actions are in actions folder
+- Actions are calling store methods
+- Stores are in store folder
+- Store changes components state(at least Top component state) to update the view
+- Test folder are in each folder you want to test (if you want to test store: src/js/store/__test__)
+
+##Thank
+
+Thank you for reading it and try your best to write clean code and stick to the convention (you can change it to fit the team better).
