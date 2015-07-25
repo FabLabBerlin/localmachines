@@ -10,6 +10,7 @@ function getOutputDevOrProd() {
 }
 
 module.exports = {
+  devtool: 'source-map',
   entry: './src/js/main.js',
   output: {
     path: __dirname + getOutputDevOrProd(),
@@ -34,5 +35,10 @@ module.exports = {
       "window.jQuery": "jquery",
       "root.jQuery": "jquery"
     })
-  ]
+  ],
+  resolve: {
+    alias: {
+      vex: 'vex-js'
+    }
+  }
 };
