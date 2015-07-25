@@ -132,6 +132,7 @@ module.exports = function (grunt) {
 						'dev/ng-modules/machines/machine-body-occupied.html',
 						'dev/ng-modules/machines/machine-body-unavailable.html',
 						'dev/ng-modules/machines/machine-body-used.html',
+						'dev/ng-modules/machines/machine-body-admin-on-off.html',
 						'dev/ng-modules/machines/machine-item.html'
 					],
 					dest: 'prod/ng-modules/machines/',

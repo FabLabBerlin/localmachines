@@ -224,9 +224,9 @@ var UserStore = {
       'FirstName',
       'LastName', 
       'Username',
-      'Email',
-      'InvoiceAddr',
-      'ShipAddr'
+      'Email'
+      //'InvoiceAddr',
+      //'ShipAddr'
     ];
     var lightState = {};
     for(var index in infoWhichMatter) {
