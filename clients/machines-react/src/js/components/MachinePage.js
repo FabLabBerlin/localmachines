@@ -230,17 +230,19 @@ var MachinePage = React.createClass({
    */
   render() {
     return (
-      <div className="container-fluid" >
-        <div>
-          coucou {this.state.userInfo.FirstName} {this.state.userInfo.LastName}
+      <div>
+        <div className="logged-user-name">
+          <div className="text-center ng-binding">
+            <i className="fa fa-user-secret"></i>&nbsp;
+            {this.state.userInfo.FirstName} {this.state.userInfo.LastName}
+          </div>
+          
         </div>
-        <div >
-          <MachineList 
-            user={this.getUserInfoToPassInProps()}
-            info={this.state.machineInfo} 
-            activation={this.state.activationInfo}
-          />
-        </div>
+        <MachineList 
+          user={this.getUserInfoToPassInProps()}
+          info={this.state.machineInfo} 
+          activation={this.state.activationInfo}
+        />
         <button 
           onClick={this.handleLogout}
           className="btn btn-lg btn-block btn-danger" > Exit </button>

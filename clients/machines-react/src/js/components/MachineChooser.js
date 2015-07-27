@@ -84,7 +84,7 @@ var MachineChooser = React.createClass({
     let isAdmin = this.props.user.Role === 'admin';
     return (
       <div className="machine available">
-        <div className="container-fluid" >
+        <div className="container-fluid">
           <div className="machine-header">
             <div className="machine-title pull-left">{this.props.info.Name}</div>
             <div className="machine-info-btn pull-right">
@@ -93,32 +93,34 @@ var MachineChooser = React.createClass({
             <div className="clearfix"></div>
           </div>
           <div className="machine-body">
-            { this.props.busy ?
-              this.props.sameUser ? (
-                <BusyMachine
-                  activation={this.props.activation}
-                  info={this.props.info}
-                  isAdmin={isAdmin}
-                  func={this.endActivation}
-                  force={this.forceSwitch}
-                />
-            ) : (
-            <OccupiedMachine
-              activation={this.props.activation}
-              info={this.props.info}
-              isAdmin={isAdmin}
-              func={this.endActivation}
-              force={this.forceSwitch}
-            />
-            ) :
-              (
-                <FreeMachine
-                  info={this.props.info}
-                  isAdmin={isAdmin}
-                  func={this.startActivation}
-                  force={this.forceSwitch}
-                />
-            )}
+            <div className="row">
+              { this.props.busy ?
+                this.props.sameUser ? (
+                  <BusyMachine
+                    activation={this.props.activation}
+                    info={this.props.info}
+                    isAdmin={isAdmin}
+                    func={this.endActivation}
+                    force={this.forceSwitch}
+                  />
+              ) : (
+              <OccupiedMachine
+                activation={this.props.activation}
+                info={this.props.info}
+                isAdmin={isAdmin}
+                func={this.endActivation}
+                force={this.forceSwitch}
+              />
+              ) :
+                (
+                  <FreeMachine
+                    info={this.props.info}
+                    isAdmin={isAdmin}
+                    func={this.startActivation}
+                    force={this.forceSwitch}
+                  />
+              )}
+            </div>
           </div>
         </div>
       </div>
