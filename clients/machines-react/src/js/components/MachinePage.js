@@ -243,9 +243,11 @@ var MachinePage = React.createClass({
           info={this.state.machineInfo} 
           activation={this.state.activationInfo}
         />
-        <button 
-          onClick={this.handleLogout}
-          className="btn btn-lg btn-block btn-danger" > Exit </button>
+        <div className="container-fluid">
+          <button 
+            onClick={this.handleLogout}
+            className="btn btn-lg btn-block btn-danger btn-logout-bottom" > Exit </button>
+        </div>
       </div>
     );
   }

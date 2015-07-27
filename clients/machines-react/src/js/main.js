@@ -10,6 +10,7 @@ import {DefaultRoute, Route, Routes, NotFoundRoute} from 'react-router';
  */
 require('bootstrap-less');
 require('../assets/less/main.less');
+require('../assets/less/common.less');
 require('font-awesome-webpack');
 require('toastr/build/toastr.min.css');
 

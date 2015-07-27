@@ -20,7 +20,7 @@ var ForceSwitch = React.createClass({
 		if (this.props.isAdmin) {
 			return (
 	            <div className="pull-right" >
-	              <label>Force Switch</label>
+	              <span>Force Switch: </span>
 	              <button
 	                onClick={this.handleForceSwitchOn}
 	                className="btn btn-lg btn-primary">On</button>
