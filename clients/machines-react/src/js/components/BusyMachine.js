@@ -10,20 +10,6 @@ import Timer from './Timer';
 var BusyMachine = React.createClass({
 
   /*
-   * Force the switch to turn on
-   */
-  handleForceSwitchOn() {
-    this.props.force('on');
-  },
-
-  /*
-   * Force the switch to trun off
-   */
-  handleForceSwitchOff() {
-    this.props.force('off');
-  },
-
-  /*
    * Send an action to the store to end the activation
    */
   endActivation(event) {
