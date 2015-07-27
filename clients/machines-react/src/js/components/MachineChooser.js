@@ -93,34 +93,32 @@ var MachineChooser = React.createClass({
             <div className="clearfix"></div>
           </div>
           <div className="machine-body">
-            <div className="row">
-              { this.props.busy ?
-                this.props.sameUser ? (
-                  <BusyMachine
-                    activation={this.props.activation}
-                    info={this.props.info}
-                    isAdmin={isAdmin}
-                    func={this.endActivation}
-                    force={this.forceSwitch}
-                  />
-              ) : (
-              <OccupiedMachine
-                activation={this.props.activation}
-                info={this.props.info}
-                isAdmin={isAdmin}
-                func={this.endActivation}
-                force={this.forceSwitch}
-              />
-              ) :
-                (
-                  <FreeMachine
-                    info={this.props.info}
-                    isAdmin={isAdmin}
-                    func={this.startActivation}
-                    force={this.forceSwitch}
-                  />
-              )}
-            </div>
+            { this.props.busy ?
+              this.props.sameUser ? (
+                <BusyMachine
+                  activation={this.props.activation}
+                  info={this.props.info}
+                  isAdmin={isAdmin}
+                  func={this.endActivation}
+                  force={this.forceSwitch}
+                />
+            ) : (
+            <OccupiedMachine
+              activation={this.props.activation}
+              info={this.props.info}
+              isAdmin={isAdmin}
+              func={this.endActivation}
+              force={this.forceSwitch}
+            />
+            ) :
+              (
+                <FreeMachine
+                  info={this.props.info}
+                  isAdmin={isAdmin}
+                  func={this.startActivation}
+                  force={this.forceSwitch}
+                />
+            )}
           </div>
         </div>
       </div>

@@ -21,7 +21,7 @@ var OccupiedMachine = React.createClass({
    */
   render() {
     return (
-      <div className="container-fluid">
+      <div className="row">
         <div className="col-xs-6" >
           <p>Occupied by</p>
           <label>{this.props.activation.FirstName} {this.props.activation.LastName}</label>

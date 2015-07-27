@@ -28,7 +28,7 @@ var FreeMachine = React.createClass ({
       imageUrl = '/machines/assets/img/img-machine-placeholder.svg';
     }
     return (
-      <div>
+      <div className="row">
         <div className="col-xs-6">
           {this.props.activation}
           <div className="machine-action-info">
