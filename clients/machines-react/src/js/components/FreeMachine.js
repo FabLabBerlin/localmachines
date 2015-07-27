@@ -1,4 +1,5 @@
 import React from 'react';
+import ForceSwitch from './ForceSwitch';
 import MachineActions from '../actions/MachineActions';
 
 /*
@@ -6,20 +7,6 @@ import MachineActions from '../actions/MachineActions';
  * Can activate an activation
  */
 var FreeMachine = React.createClass ({
-
-  /*
-   * Force the switch to turn on
-   */
-  handleForceSwitchOn() {
-    this.props.force('on');
-  },
-
-  /*
-   * Force the switch to trun off
-   */
-  handleForceSwitchOff() {
-    this.props.force('off');
-  },
 
   /*
    * Try to activate the machine
@@ -54,17 +41,7 @@ var FreeMachine = React.createClass ({
             className="btn btn-lg btn-primary btn-block"
             onClick={this.startActivation}
             >Start </button>
-          { this.props.isAdmin ? (
-            <div className="pull-right" >
-              <label>Force Switch</label>
-              <button 
-                onClick={this.handleForceSwitchOn}
-                className="btn btn-lg btn-primary" >On</button>
-              <button 
-                onClick={this.handleForceSwitchOff}
-                className="btn btn-lg btn-danger" >Off</button>
-            </div>
-          ):('') }
+            <ForceSwitch isAdmin={this.props.isAdmin} force={this.props.force}/>
         </div>
       </div>
     );

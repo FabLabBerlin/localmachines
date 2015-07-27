@@ -1,4 +1,5 @@
 import React from 'react';
+import ForceSwitch from './ForceSwitch';
 import MachineActions from '../actions/MachineActions';
 import Timer from './Timer';
 
@@ -49,15 +50,7 @@ var OccupiedMachine = React.createClass({
               >
               Stop
             </button>
-            <div className="pull-right" >
-              <label>Force Switch</label>
-              <button 
-                onClick={this.handleForceSwitchOn}
-                className="btn btn-lg btn-primary" >On</button>
-              <button 
-                onClick={this.handleForceSwitchOff}
-                className="btn btn-lg btn-danger" >Off</button>
-            </div>
+            <ForceSwitch isAdmin={this.props.isAdmin} force={this.props.force}/>
           </div>
             ) : (
             <div className="col-xs-6" >
