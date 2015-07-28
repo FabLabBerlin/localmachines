@@ -35,8 +35,8 @@ type User struct {
 	LastName    string `orm:"size(100)"`
 	Username    string `orm:"size(100)"`
 	Email       string `orm:"size(100)"`
-	InvoiceAddr int
-	ShipAddr    int
+	InvoiceAddr string `orm:"type(text)"`
+	ShipAddr    string `orm:"type(text)"`
 	ClientId    int
 	B2b         bool
 	Company     string `orm:"size(100)"`
