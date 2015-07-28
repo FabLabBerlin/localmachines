@@ -60,6 +60,16 @@
                     ng-model="username">
           </div>
         </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="phone">Phone</label>
+            <input type="text" 
+              class="form-control"
+              id="phone" 
+              placeholder="Phone Number"
+              ng-model="phone">
+          </div>
+        </div>
       </div>
 
       <div class="row">
@@ -87,6 +97,24 @@
         </div>
       </div>
 
+      <!-- Billing Address -->
+      <div class="row">
+        <div class="col-md-6">
+          <label for="password">Billing Address</label>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <textarea 
+            class="form-control"
+            placeholder="Your Billing Address"
+            ng-model="invoiceAddr">
+          </textarea>
+        </div>
+      </div>
+
+      <!-- Legal agreements -->
       <div class="row">
         <div class="col-md-12">
           <div class="checkbox">

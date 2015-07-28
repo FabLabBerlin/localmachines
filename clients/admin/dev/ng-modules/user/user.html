@@ -41,6 +41,26 @@
 
   </div> <!-- /.row -->
 
+  <!-- Billing Address -->
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="invoice-addr">Billing Address</label>
+        <textarea id="invoice-addr"
+          class="form-control"
+          placeholder="Billing Address"
+          ng-model="user.InvoiceAddr">
+        </textarea>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <label for="phone">Phone</label>
+      <input type="text" class="form-control"
+        id="phone" placeholder="+371 9998888777"
+        ng-model="user.Phone">
+    </div>
+  </div>
+
   <div>
     <label for="user-password">User Password</label>
   </div>

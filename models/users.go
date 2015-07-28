@@ -35,8 +35,8 @@ type User struct {
 	LastName    string `orm:"size(100)"`
 	Username    string `orm:"size(100)"`
 	Email       string `orm:"size(100)"`
-	InvoiceAddr int
-	ShipAddr    int
+	InvoiceAddr string `orm:"type(text)"`
+	ShipAddr    string `orm:"type(text)"`
 	ClientId    int
 	B2b         bool
 	Company     string `orm:"size(100)"`
@@ -45,6 +45,7 @@ type User struct {
 	UserRole    string    `orm:"size(100)"`
 	Created     time.Time `orm:"type(datetime)"`
 	Comments    string    `orm:"type(text)"`
+	Phone       string    `orm:"size(50)"`
 }
 
 func (this *User) TableName() string {
