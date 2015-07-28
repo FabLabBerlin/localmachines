@@ -20,12 +20,6 @@ angular.module('fabsmith.signup.form', ['ngRoute'])
 
   $scope.submitForm = function() {
 
-    // Check if AGB and Data Protection Agreement is checked
-    if(!$scope.agb_dpa_agreed){
-      toastr.error('You have to agree to the AGB and Data Protection Agreement');
-      return;
-    }
-
     // Check if email is empty
     if(!$scope.email || $scope.email === ''){
       toastr.error('Please enter an e-mail');
@@ -80,6 +74,17 @@ angular.module('fabsmith.signup.form', ['ngRoute'])
       return;
     }
 
+    // Check if invoice address is added
+    if (!$scope.invoiceAddr || $scope.invoiceAddr === '') {
+      toastr.error('Please provide your billing address');
+      return;
+    }
+
+    // Check if AGB and Data Protection Agreement is checked
+    if(!$scope.agb_dpa_agreed){
+      toastr.error('You have to agree to the AGB and Data Protection Agreement');
+      return;
+    }
 
     $http({
       method: 'POST',
