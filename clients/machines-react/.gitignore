@@ -4,5 +4,8 @@ node_modules
 dev/*
 !dev/index.html
 !dev/img
+prod/*
+!prod/index.html
+!prod/img
 *swp
 *swo
