@@ -18,16 +18,22 @@
 
 ###Components
 
+A component is a class with a `render()` function.  The class has a state
+and the render function is only called when the state changes.
+
 Here an idea how the code is organize:
- - mixins
- - static
- - componentWillMount
- - getInitialState
- - *stuff*
- - onChange
- - componentWillUnmount
- - componentDidMount
- - Render
+
+ - Common parts
+   - [mixins](https://facebook.github.io/react/docs/component-specs.html#mixins)
+   - [static](https://facebook.github.io/react/docs/component-specs.html#statics)
+   - [`getInitialState()`](https://facebook.github.io/react/docs/component-specs.html#getinitialstate)
+   - *stuff*
+   - `onChange`
+   - `render()`: required method
+ - Lifecycle methods (needed for low-level DOM access)
+   - [`componentWillMount()`](https://facebook.github.io/react/docs/component-specs.html#mounting-componentwillmount): called before DOM is built
+   - [`componentDidMount()`](https://facebook.github.io/react/docs/component-specs.html#mounting-componentdidmount): called after DOM is built
+   - [`componentWillUnmount()`](https://facebook.github.io/react/docs/component-specs.html#unmounting-componentwillunmount)
 
 The function in *stuff* aren't organize in a special way, up to you to specify your convention here
 
@@ -68,6 +74,7 @@ For this there is some rules:
 
 ##Architecture
 
+```
   LoginStore                MachineStore
       |     \________________      |
       |                      \     |
@@ -85,7 +92,9 @@ Login   LoginNfc              MachineChooser
                             \    /
                              \  /
                              Timer
-                             
+
+```
+                        
 ###Directories
 
 - Components are in component folder
