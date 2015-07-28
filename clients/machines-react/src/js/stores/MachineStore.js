@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import _ from 'lodash';
 
 /*
  * import toastr and set position
@@ -145,9 +146,9 @@ var MachineStore = {
   _getActivationSuccess(data) {
     var shortActivation = MachineStore._formatActivation(data);
     MachineStore.state.activationInfo = shortActivation;
-    if(shortActivation.length != 0) {
+    if (shortActivation.length != 0) {
       MachineStore._nameInAllActivations();
-    } else if(MachineStore.state.isLogged === false){
+    } else if (!MachineStore.state.isLogged){
       MachineStore.putLoginState();
     } else {
       MachineStore.onChangeActivation();
@@ -192,7 +193,7 @@ var MachineStore = {
         ac: new Date().getTime()
       },
       success: function(data) {
-        this.postActivationSuccess(data, 'Machine desactivated');
+        this._postActivationSuccess(data, 'Machine desactivated');
       }.bind(this),
       error: function(xhr, status, err){
         console.error('/api/activation/aid', status, err.toString());
@@ -262,27 +263,24 @@ var MachineStore = {
    * Call nameInOneActivation
    */
   _nameInAllActivations() {
-    for( var index in this.state.activationInfo ) {
-      var uid = this.state.activationInfo[index].UserId;
-      this._nameInOneActivation(uid, index);
-    }
+    this.state.activationInfo.forEach(function(activation, i) {
+      this._nameInOneActivation(activation, i);
+    }.bind(this));
   },
 
   /*
    * Put the name of the activation (identified by the index)
    * and put inside the json the name of the one who activates it
    */
-  _nameInOneActivation(uid, index) {
-    var successFunction = function(data) {
-      MachineStore.state.activationInfo[index]['FirstName'] = data.FirstName;
-      MachineStore.state.activationInfo[index]['LastName'] = data.LastName;
-      if(MachineStore.state.isLogged === false){
+  _nameInOneActivation(activation, index) {
+    this._getAPICall('/api/users/' + activation.UserId + '/name', function(userData) {
+      _.merge(activation, userData);
+      if (!MachineStore.state.isLogged) {
         MachineStore.putLoginState();
       } else {
         MachineStore.onChangeActivation();
       }
-    };
-    this._getAPICall('/api/users/' + uid + '/name', successFunction);
+    });
   },
 
   getUserInfo() {
