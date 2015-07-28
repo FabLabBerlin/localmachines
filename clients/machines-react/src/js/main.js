@@ -13,6 +13,7 @@ require('../assets/less/main.less');
 require('../assets/less/common.less');
 require('font-awesome-webpack');
 require('toastr/build/toastr.min.css');
+require('vex/css/vex.css');
 
 /*
  * Defined all the routes of the panel
