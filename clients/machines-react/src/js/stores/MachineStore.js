@@ -1,3 +1,4 @@
+import $ from 'jquery';
 
 /*
  * import toastr and set position
@@ -46,7 +47,7 @@ var MachineStore = {
    * POST call to the API
    * Make POST call cutomisable
    */
-  postAPICall(url, dataToSend, successFunction, toastrMessage = '', errorFunction = function() {}) {
+  _postAPICall(url, dataToSend, successFunction, toastrMessage = '', errorFunction = function() {}) {
     $.ajax({
       url: url,
       dataType: 'json',
@@ -69,7 +70,7 @@ var MachineStore = {
    * GET call to the API
    * Make GET call cutomisable
    */
-  getAPICall(url, successFunction, toastrMessage = '', errorFunction = function() {}) {
+  _getAPICall(url, successFunction, toastrMessage = '', errorFunction = function() {}) {
     $.ajax({
       url: url,
       dataType: 'json',
@@ -93,7 +94,7 @@ var MachineStore = {
    * callback are defined below
    */
   apiGetUserInfoLogin(uid) {
-    this.getAPICall('/api/users/' + uid, this.userInfoSuccess);
+    this._getAPICall('/api/users/' + uid, this._userInfoSuccess);
   },
 
   /*
@@ -101,7 +102,7 @@ var MachineStore = {
    * Activated when getNameLogin succeed
    * MachineStore instead of this otherwe it doesn't work
    */
-  userInfoSuccess(data) {
+  _userInfoSuccess(data) {
     var uid = data.Id;
     var usefulInformation = ['Id', 'FirstName', 'LastName', 'UserRole'];
     var tmpInfo = {};
@@ -117,14 +118,14 @@ var MachineStore = {
    * callback are defined below
    */
   apiGetUserMachines(uid) {
-    this.getAPICall('/api/users/' + uid + '/machines', this.userMachineSuccess);
+    this._getAPICall('/api/users/' + uid + '/machines', this._userMachineSuccess);
   },
 
   /*
    * SuccessCallback
    * Activated when getUserMachines succeed
    */
-  userMachineSuccess(data) {
+  _userMachineSuccess(data) {
     MachineStore.state.machineInfo = data;
     MachineStore.apiGetActivationActive();
   },
@@ -134,18 +135,18 @@ var MachineStore = {
    * callback are defined below
    */
   apiGetActivationActive() {
-    this.getAPICall('/api/activations/active', this.getActivationSuccess);
+    this._getAPICall('/api/activations/active', this._getActivationSuccess);
   },
 
   /*
    * Success Callback
    * Activated when getActivationActive succeed
    */
-  getActivationSuccess(data) {
-    var shortActivation = MachineStore.formatActivation(data);
+  _getActivationSuccess(data) {
+    var shortActivation = MachineStore._formatActivation(data);
     MachineStore.state.activationInfo = shortActivation;
     if(shortActivation.length != 0) {
-      MachineStore.nameInAllActivations();
+      MachineStore._nameInAllActivations();
     } else if(MachineStore.state.isLogged === false){
       MachineStore.putLoginState();
     } else {
@@ -161,21 +162,21 @@ var MachineStore = {
     var dataToSend = {
       mid: mid
     };
-    this.postAPICall('/api/activations', dataToSend, this.postActivationSuccess, 'Can not activate the machine');
+    this._postAPICall('/api/activations', dataToSend, this._postActivationSuccess, 'Can not activate the machine');
   },
 
   /*
    * Success Callback
    * Activated when postActivation succeed
    */
-  postActivationSuccess(data, toastrMessage = 'Machine activated') {
+  _postActivationSuccess(data, toastrMessage = 'Machine activated') {
     toastr.success(toastrMessage);
     var successFunction = function(data) {
-      var shortActivation = MachineStore.formatActivation(data);
+      var shortActivation = MachineStore._formatActivation(data);
       MachineStore.state.activationInfo = shortActivation;
       MachineStore.onChangeActivation();
     }
-    MachineStore.getAPICall('/api/activations/active', successFunction);
+    MachineStore._getAPICall('/api/activations/active', successFunction);
   },
 
   /*
@@ -231,7 +232,7 @@ var MachineStore = {
     var errorFunction = function() {
       //end animation
     };
-    this.postAPICall('/api/machines/' + mid + '/turn_' + onOrOff, 
+    this._postAPICall('/api/machines/' + mid + '/turn_' + onOrOff, 
                      { ac: new Date().getTime() },
                      successFunction,
                      'Fail to turn ' + onOrOff,
@@ -243,7 +244,7 @@ var MachineStore = {
    * Format rawActivation to have only useful information
    * @rawActivation: response send by the server
    */
-  formatActivation(rawActivation) {
+  _formatActivation(rawActivation) {
     var shortActivation = [];
     var wantedInformation = ['Id', 'UserId', 'MachineId', 'TimeTotal'];
     for( var i in rawActivation ) {
@@ -260,10 +261,10 @@ var MachineStore = {
    * For each activation
    * Call nameInOneActivation
    */
-  nameInAllActivations() {
+  _nameInAllActivations() {
     for( var index in this.state.activationInfo ) {
       var uid = this.state.activationInfo[index].UserId;
-      this.nameInOneActivation(uid, index);
+      this._nameInOneActivation(uid, index);
     }
   },
 
@@ -271,7 +272,7 @@ var MachineStore = {
    * Put the name of the activation (identified by the index)
    * and put inside the json the name of the one who activates it
    */
-  nameInOneActivation(uid, index) {
+  _nameInOneActivation(uid, index) {
     var successFunction = function(data) {
       MachineStore.state.activationInfo[index]['FirstName'] = data.FirstName;
       MachineStore.state.activationInfo[index]['LastName'] = data.LastName;
@@ -281,7 +282,7 @@ var MachineStore = {
         MachineStore.onChangeActivation();
       }
     };
-    this.getAPICall('/api/users/' + uid + '/name', successFunction);
+    this._getAPICall('/api/users/' + uid + '/name', successFunction);
   },
 
   getUserInfo() {

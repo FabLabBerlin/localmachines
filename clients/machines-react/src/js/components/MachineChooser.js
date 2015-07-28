@@ -48,6 +48,7 @@ var MachineChooser = React.createClass({
           MachineActions.endActivation(aid);
         }
         $('.vex').remove();
+        $('body').removeClass('vex-open');
       }.bind(this)
     });
   },

@@ -18,4 +18,36 @@ describe('LoginStore', function() {
       });
     });
   });
+
+  describe('apiPostLogin', function() {
+    it('sends a login POST request', function() {
+      var loginInfo = {
+        foo: 'bar'
+      };
+      LoginStore.apiPostLogin(loginInfo);
+      expect($.ajax).toBeCalledWith({
+        url: '/api/users/login',
+        dataType: 'json',
+        type: 'POST',
+        data: loginInfo,
+        success: jasmine.any(Function),
+        error: jasmine.any(Function)
+      })
+    });
+  });
+
+  describe('apiPostLoginNFC', function() {
+    it('sends a login(uid) POST request', function() {
+      LoginStore.apiPostLoginNFC(123);
+      expect($.ajax).toBeCalledWith({
+        url: '/api/users/loginuid',
+        method: 'POST',
+        data: {
+          uid: 123
+        },
+        success: jasmine.any(Function),
+        error: jasmine.any(Function),
+      });
+    });
+  });
 });
