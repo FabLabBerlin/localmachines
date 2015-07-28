@@ -392,5 +392,48 @@ footer div {
 }
 
 @media (min-width: 768px) {
+  .login-heading {
+    font-size: 30px;
+  }
 
+  .login-form input[type="text"] {
+    height: @lg-height;
+    font-size: 18px;
+  }
+  .login-form input[type="password"] {
+    height: @lg-height;
+    font-size: 18px;
+  }
+
+  .btn-login {
+    height: @lg-height;
+    font-size: 22px;
+    font-weight: bold;
+  }
+
+  .absolute-bottom {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+  }
+
+  .login {
+    position: absolute;
+    top: 52%;
+    transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    -webkit-transform: translateY(-50%);
+    width: 100%;
+  }
 }/* @media (min-width: 768px) */
+
+.signup-link {
+  padding: 10px;
+  margin-top: 20px;
+  text-align: center;
+}
+
+.signup-link i {
+  margin-right: 5px;
+}

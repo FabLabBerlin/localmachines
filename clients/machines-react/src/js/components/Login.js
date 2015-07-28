@@ -25,6 +25,11 @@ var Login = React.createClass({
     };
   },
 
+  goToSignUp(event) {
+    event.preventDefault();
+    window.location = '/signup';
+  },
+
   /*
    * Submit the form
    * Clear the input
@@ -105,6 +110,14 @@ var Login = React.createClass({
               />
               <button className="btn btn-primary btn-block btn-login"
                 type="submit">Log In</button>
+
+              <div className="signup-link">
+                <button className="btn btn-lg btn-info"
+                  onClick={this.goToSignUp}>
+                  <i className="fa fa-sign-in"></i>
+                  Sign up
+                </button>
+              </div>
             </form>
           </div>
         </div>
