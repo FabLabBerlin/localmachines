@@ -246,16 +246,13 @@ var MachineStore = {
    * @rawActivation: response send by the server
    */
   _formatActivation(rawActivation) {
-    var shortActivation = [];
-    var wantedInformation = ['Id', 'UserId', 'MachineId', 'TimeTotal'];
-    for( var i in rawActivation ) {
+    return _.map(rawActivation, function(rawActivationItem) {
       var tmpItem = {};
-      for( var indexWI in wantedInformation ) {
-        tmpItem[wantedInformation[indexWI]] = rawActivation[i][wantedInformation[indexWI]];
-      }
-      shortActivation.push(tmpItem);
-    }
-    return shortActivation;
+      ['Id', 'UserId', 'MachineId', 'TimeTotal'].forEach(function(key){
+        tmpItem[key] = rawActivationItem[key];
+      });
+      return tmpItem;
+    });
   },
 
   /*
