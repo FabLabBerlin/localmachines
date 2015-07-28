@@ -96,7 +96,8 @@ angular.module('fabsmith.signup.form', ['ngRoute'])
           "FirstName": $scope.firstName,
           "LastName": $scope.lastName,
           "Username": $scope.username,
-          "InvoiceAddr": $scope.invoiceAddr
+          "InvoiceAddr": $scope.invoiceAddr,
+          "Phone": $scope.phone
         },
         "Password": $scope.password,
         "RegistrationDate" : Date.now()
