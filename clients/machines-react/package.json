@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "pretest": "eslint src",
     "test": "jest",
     "dev": "webpack --watch --progress --colors",
     "prod": "NODE_ENV=production webpack -p --progress --colors"
@@ -11,10 +12,12 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "babel-eslint": "^4.0.5",
     "babel-jest": "^5.3.0",
     "babel-loader": "^5.1.4",
     "bootstrap-less": "^3.3.8",
     "css-loader": "^0.15.3",
+    "eslint": "^0.24.1",
     "file-loader": "^0.8.4",
     "font-awesome": "^4.3.0",
     "font-awesome-webpack": "0.0.3",
@@ -39,5 +42,29 @@
     "unmockedModulePathPatterns": [
       "react"
     ]
+  },
+  "eslintConfig": {
+    "parser": "babel-eslint",
+    "ecmaFeatures": {
+      "modules": true
+    },
+    "env": {
+      "es6": true
+    },
+    "rules": {
+      "no-console": 0,
+      "no-extra-bind": 0,
+      "no-undef": 0,
+      "no-underscore-dangle": 0,
+      "no-unused-vars": 0,
+      "quotes": [
+        1,
+        "single"
+      ],
+      "strict": [
+        2,
+        "never"
+      ]
+    }
   }
 }
