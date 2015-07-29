@@ -45,6 +45,9 @@ type InvoiceActivation struct {
 	Username            string
 	UserEmail           string
 	UserDebitorNumber   string
+	UserInvoiceAddr     string
+	UserPhone           string
+	UserComments        string
 	Memberships         []*Membership
 	TotalPrice          float64
 	DiscountedTotal     float64
@@ -57,6 +60,9 @@ type UserSummary struct {
 	UserEmail     string
 	DebitorNumber string
 	Activations   []*InvoiceActivation
+	InvoiceAddr   string
+	Phone         string
+	Comments      string
 }
 
 type InvoiceSummary struct {
@@ -281,6 +287,27 @@ func (this *Invoice) createXlsxFile(filePath string,
 		cell = row.AddCell()
 		cell.Value = userSummary.UserEmail
 
+		// User Billing Address
+		row = sheet.AddRow()
+		cell = row.AddCell()
+		cell.Value = "Billing Address"
+		cell = row.AddCell()
+		cell.Value = userSummary.InvoiceAddr
+
+		// User Phone
+		row = sheet.AddRow()
+		cell = row.AddCell()
+		cell.Value = "Phone"
+		cell = row.AddCell()
+		cell.Value = userSummary.Phone
+
+		// User Comments
+		row = sheet.AddRow()
+		cell = row.AddCell()
+		cell.Value = "Comments"
+		cell = row.AddCell()
+		cell.Value = userSummary.Comments
+
 		row = sheet.AddRow()
 		cell = row.AddCell()
 		cell.Value = "Debitor Number"
@@ -504,6 +531,9 @@ func (this *Invoice) getUserSummaries(
 			newSummary.Username = iActivation.Username
 			newSummary.UserEmail = iActivation.UserEmail
 			newSummary.DebitorNumber = "Undefined"
+			newSummary.InvoiceAddr = iActivation.UserInvoiceAddr
+			newSummary.Phone = iActivation.UserPhone
+			newSummary.Comments = iActivation.UserComments
 			userSummaries = append(userSummaries, &newSummary)
 			summary = userSummaries[len(userSummaries)-1]
 		}
@@ -556,7 +586,8 @@ func (this *Invoice) enhanceActivation(activation *Activation) (*InvoiceActivati
 
 	// Get activation user data
 	user := &User{}
-	query = fmt.Sprintf("SELECT first_name, last_name, username, email "+
+	query = fmt.Sprintf("SELECT first_name, last_name, username, email, "+
+		"invoice_addr, phone, comments "+
 		"FROM %s WHERE id = ?", user.TableName())
 	err = o.Raw(query, activation.UserId).QueryRow(user)
 	if err != nil {
@@ -568,6 +599,9 @@ func (this *Invoice) enhanceActivation(activation *Activation) (*InvoiceActivati
 	invActivation.Username = user.Username
 	invActivation.UserEmail = user.Email
 	invActivation.UserDebitorNumber = "Undefined"
+	invActivation.UserInvoiceAddr = user.InvoiceAddr
+	invActivation.UserPhone = user.Phone
+	invActivation.UserComments = user.Comments
 
 	// Get user memberships
 	m := &UserMembership{} // Use just for the TableName func
