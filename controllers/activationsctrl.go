@@ -2,9 +2,7 @@ package controllers
 
 import (
 	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/orm"
 	"github.com/kr15h/fabsmith/models"
-	"github.com/kr15h/fabsmith/plugins/hexaswitch"
 	"time"
 )
 
@@ -236,30 +234,6 @@ func (this *ActivationsController) Create() {
 		this.CustomAbort(403, "Failed to create activation")
 	}
 
-	// Check if there is mapping between switch and machine
-	var switchMappingExists bool
-	_, err = hexaswitch.GetSwitchIp(int(machineId))
-	if err != nil {
-		beego.Warning("Machine / switch mapping does not exist")
-		switchMappingExists = false
-	} else {
-		switchMappingExists = true
-	}
-
-	if switchMappingExists {
-		hexaswitch.Install() // TODO: remove this from here in an elegant way
-		// TODO: use switch IP for the SwitchOn method
-		err = hexaswitch.SwitchOn(int(machineId))
-		if err != nil {
-			beego.Error("Failed to turn on the switch")
-			err = models.DeleteActivation(activationId)
-			if err != nil {
-				beego.Error("Failed to delete activation")
-			}
-			this.CustomAbort(403, "Failed to create activation")
-		}
-	}
-
 	response := models.ActivationCreateResponse{}
 	response.ActivationId = activationId
 	this.Data["json"] = response
@@ -319,16 +293,6 @@ func (this *ActivationsController) Close() {
 		this.CustomAbort(403, "Failed to close activation")
 	}
 
-	// Launch go routine to switch off the machine after some time
-	var deactivateTimeout int64
-	deactivateTimeout, err = beego.AppConfig.Int64("deactivatetimeout")
-	if err != nil {
-		beego.Error("Failed to get deactivate timeout from config:", err)
-		deactivateTimeout = 30
-	}
-
-	go deactivateMachineAfterTimeout(machineId, deactivateTimeout)
-
 	statusResponse := models.StatusResponse{}
 	statusResponse.Status = "ok"
 	this.Data["json"] = statusResponse
@@ -363,36 +327,4 @@ func (this *ActivationsController) Delete() {
 
 	this.Data["json"] = "ok"
 	this.ServeJson()
-}
-
-// Deativates a machine after timeout if no activation with the machine ID
-// has been made.
-func deactivateMachineAfterTimeout(machineId int64, timeoutSeconds int64) {
-
-	// Timeout
-	time.Sleep(time.Duration(timeoutSeconds) * time.Second)
-
-	// Check if activation with the machine ID exists
-	o := orm.NewOrm()
-	activationModel := models.Activation{Id: 0}
-	beego.Info("Attempt to get an active activation with the machine ID", machineId)
-	err := o.Raw("SELECT id FROM activations WHERE active=true AND machine_id=?",
-		machineId).QueryRow(&activationModel)
-	if err != nil {
-		beego.Error("There was an error while getting activation:", err)
-		// Here we assume that there is no activation
-		// and switch off the machine anyway
-	}
-	beego.Trace("Got activation ID", activationModel.Id)
-	if activationModel.Id > 0 {
-		beego.Info("There is an activation for the machine, keep it on")
-		return
-	}
-
-	// Attempt to switch off the machine
-	hexaswitch.Install()                       // TODO: remove this from here in an elegant way
-	err = hexaswitch.SwitchOff(int(machineId)) // This will take some time
-	if err != nil {
-		beego.Error("Failed to turn the switch off", err)
-	}
 }

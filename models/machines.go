@@ -162,16 +162,6 @@ func DeleteMachine(machineId int64) error {
 	}
 	beego.Trace("Deleted num machines:", num)
 
-	// delete switch mapping
-	swch := HexabusMapping{}
-	num, err = o.QueryTable(swch.TableName()).Filter("machine_id",
-		machineId).Delete()
-	if err != nil {
-		return errors.New(
-			fmt.Sprintf("Failed to delete switch mapping: %v", err))
-	}
-	beego.Trace("Deleted num switch mappings:", num)
-
 	// Delete activations assigned to machine
 	act := Activation{}
 	num, err = o.QueryTable(act.TableName()).Filter("machine_id",
