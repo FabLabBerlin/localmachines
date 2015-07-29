@@ -1,15 +1,14 @@
 import React from 'react';
 
 /*
- * Methode to string to be display in hour format
+ * Methode to int to be display in hour format
  * Use in timer to display the time you spend
  */
-String.prototype.toHHMMSS = function() {
-  var d = parseInt(this,10);
+function toHHMMSS(d) {
   var h = Math.floor(d / 3600);
   var m = Math.floor(d % 3600 / 60);
   var s = Math.floor(d % 3600 % 60);
-  return ((h > 0 ? h + ':' + (m < 10 ? "0" : "") : "") + m + ":" + (s < 10 ? "0" : "") + s);
+  return ((h > 0 ? h + ':' + (m < 10 ? '0' : '') : '') + m + ':' + (s < 10 ? '0' : '') + s);
 }
 
 /*
@@ -56,7 +55,7 @@ var Timer = React.createClass({
    */
   render() {
     return (
-      <div className="machine-time-value">{this.state.secondsElapsed.toString().toHHMMSS()}</div>
+      <div className="machine-time-value">{toHHMMSS(this.state.secondsElapsed)}</div>
     );
   }
 });

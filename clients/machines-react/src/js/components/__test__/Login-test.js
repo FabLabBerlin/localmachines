@@ -24,10 +24,10 @@ describe('Login', function() {
     );
     var form = TestUtils.findRenderedDOMComponentWithTag(login, 'form');
     var username = TestUtils.findAllInRenderedTree(login, function(c) {
-      return 'username' == c.getDOMNode().getAttribute('name');
+      return c.getDOMNode().getAttribute('name') === 'username';
     })[0];
     var password = TestUtils.findAllInRenderedTree(login, function(c) {
-      return 'password' == c.getDOMNode().getAttribute('name');
+      return c.getDOMNode().getAttribute('name') === 'password';
     })[0];
     var button = TestUtils.findRenderedDOMComponentWithClass(login, 'btn-login');
     expect(button.props.children).toEqual('Log In');

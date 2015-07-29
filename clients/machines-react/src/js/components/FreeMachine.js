@@ -6,7 +6,7 @@ import MachineActions from '../actions/MachineActions';
  * Div displayed the machine is free
  * Can activate an activation
  */
-var FreeMachine = React.createClass ({
+var FreeMachine = React.createClass({
 
   /*
    * Try to activate the machine
@@ -32,7 +32,7 @@ var FreeMachine = React.createClass ({
         <div className="col-xs-6">
           {this.props.activation}
           <div className="machine-action-info">
-            <img className="machine-image" 
+            <img className="machine-image"
                  src={imageUrl}/>
           </div>
         </div>

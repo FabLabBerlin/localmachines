@@ -50,6 +50,6 @@ var MachineActions = {
     MachineStore.apiGetActivationActive();
   }
 
-}
+};
 
 module.exports = MachineActions;

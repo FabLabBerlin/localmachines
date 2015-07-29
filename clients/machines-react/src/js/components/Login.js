@@ -81,31 +81,31 @@ var Login = React.createClass({
    */
   render() {
     return (
-      <div className="app" > 
+      <div className="app" >
         <div className="container-fluid">
           <div className="regular-login" >
             <form className="login-form"
               onSubmit={this.handleSubmit} >
               <h2 className="login-heading">Please log in</h2>
-              <input 
-                ref="name" 
+              <input
+                ref="name"
                 type="text"
                 name="username"
                 className="form-control"
                 value={this.state.username}
                 onChange={this.handleChange}
-                placeholder="Username" 
+                placeholder="Username"
                 required
                 autofocus
               />
               <input
-                type="password" 
+                type="password"
                 name="password"
                 className="form-control"
-                ref="Password" 
+                ref="Password"
                 value={this.state.password}
                 onChange={this.handleChange}
-                placeholder="password" 
+                placeholder="password"
                 required
               />
               <button className="btn btn-primary btn-block btn-login"

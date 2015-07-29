@@ -36,7 +36,7 @@ var LoginNfc = React.createClass({
    */
   connectJsToQt() {
     window.libnfc.cardRead.connect(this.nfcLogin);
-    window.libnfc.cardReaderError.connect(this.errorNFCCallback)
+    window.libnfc.cardReaderError.connect(this.errorNFCCallback);
     window.libnfc.asyncScan();
   },
 

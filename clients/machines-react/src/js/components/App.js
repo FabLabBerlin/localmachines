@@ -5,7 +5,7 @@ import {RouteHandler} from 'react-router';
 
 /*
  * App
- * @component: 
+ * @component:
  * manage the router
  * it is in every page
  * navigation bar and footer are in this component
@@ -29,13 +29,13 @@ var App = React.createClass({
 
             <div className="row">
               <div className="col-xs-6">
-                <img src="img/logo_fablab_berlin.svg" 
+                <img src="img/logo_fablab_berlin.svg"
                      className="brand-image"/>
               </div>
               {LoginStore.getIsLogged() ? (
                 <div className="col-xs-6 text-right">
-                  <button 
-                    className="btn btn-danger btn-logout pull-right" 
+                  <button
+                    className="btn btn-danger btn-logout pull-right"
                     onClick={LoginActions.logout}>
                     <i className="fa fa-sign-out"></i>
                   </button>
@@ -46,9 +46,9 @@ var App = React.createClass({
                       Switch to <br/>
                       user panel
                   </a>
-                  ):('')}
+                  ) : ('')}
                 </div>
-              ):('')}
+              ) : ('')}
             </div>
 
           </div>

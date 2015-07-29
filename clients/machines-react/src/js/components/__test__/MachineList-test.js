@@ -13,7 +13,7 @@ function machines() {
       Name: 'Form1'
     }
   ];
-};
+}
 
 
 describe('MachineList', function() {

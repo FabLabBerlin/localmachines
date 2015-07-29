@@ -23,13 +23,13 @@ var BusyMachine = React.createClass({
    * Admin have two more button to force switch
    */
    render() {
-    return(
+    return (
       <div className="row" >
         <div className="col-xs-6">
           <Timer time={this.props.activation.TimeTotal} />
         </div>
         <div className="col-xs-6" >
-          <button 
+          <button
             className="btn btn-lg btn-danger btn-block"
             onClick={this.endActivation}
             >Stop</button>

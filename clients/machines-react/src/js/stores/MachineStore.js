@@ -40,7 +40,7 @@ var MachineStore = {
     isLogged: false,
     firstTry: true,
     userInfo: {},
-    activationInfo:[],
+    activationInfo: [],
     machineInfo: []
   },
 
@@ -52,18 +52,18 @@ var MachineStore = {
     $.ajax({
       url: url,
       dataType: 'json',
-      type:'POST',
+      type: 'POST',
       data: dataToSend,
       success: function(data) {
         successFunction(data);
-      }.bind(this),
+      },
       error: function(xhr, status, err) {
-        if(toastrMessage != '') {
+        if (toastrMessage) {
           toastr.error(toastrMessage);
         }
         errorFunction();
         console.error(url, status, err);
-      }.bind(this),
+      }
     });
   },
 
@@ -79,14 +79,14 @@ var MachineStore = {
       cache: false,
       success: function(data) {
         successFunction(data);
-      }.bind(this),
+      },
       error: function(xhr, status, err) {
-        if(toastrMessage != '') {
+        if (toastrMessage) {
           toastr.error(toastrMessage);
         }
         errorFunction();
         console.error(url, status, err);
-      }.bind(this),
+      }
     });
   },
 
@@ -111,7 +111,7 @@ var MachineStore = {
       tmpInfo[usefulInformation[index]] = data[usefulInformation[index]];
     }
     MachineStore.state.userInfo = tmpInfo;
-    MachineStore.apiGetUserMachines(uid)
+    MachineStore.apiGetUserMachines(uid);
   },
 
   /*
@@ -146,7 +146,7 @@ var MachineStore = {
   _getActivationSuccess(data) {
     var shortActivation = MachineStore._formatActivation(data);
     MachineStore.state.activationInfo = shortActivation;
-    if (shortActivation.length != 0) {
+    if (shortActivation.length !== 0) {
       MachineStore._nameInAllActivations();
     } else if (!MachineStore.state.isLogged){
       MachineStore.putLoginState();
@@ -172,11 +172,11 @@ var MachineStore = {
    */
   _postActivationSuccess(data, toastrMessage = 'Machine activated') {
     toastr.success(toastrMessage);
-    var successFunction = function(data) {
-      var shortActivation = MachineStore._formatActivation(data);
+    var successFunction = function(getData) {
+      var shortActivation = MachineStore._formatActivation(getData);
       MachineStore.state.activationInfo = shortActivation;
       MachineStore.onChangeActivation();
-    }
+    };
     MachineStore._getAPICall('/api/activations/active', successFunction);
   },
 
@@ -195,9 +195,9 @@ var MachineStore = {
       success: function(data) {
         this._postActivationSuccess(data, 'Machine desactivated');
       }.bind(this),
-      error: function(xhr, status, err){
+      error: function(xhr, status, err) {
         console.error('/api/activation/aid', status, err.toString());
-      }.bind(this),
+      }.bind(this)
     });
   },
 
@@ -210,22 +210,23 @@ var MachineStore = {
    * TODO: add animation
    */
   apiPostSwitchMachine(mid, onOrOff, aid = '') {
+    var successFunction;
     //start animation
     if( onOrOff === 'off') {
       if(aid === '') {
-        var successFunction = function(data) {
+        successFunction = function(data) {
           //end animation
           toastr.success('machine off');
         };
       } else {
-        var successFunction = function(data) {
+        successFunction = function(data) {
           //end animation
           toastr.success('machine off and activation closed');
           MachineStore.apiPutActivation(aid);
         };
       }
     } else {
-      var successFunction = function(data) {
+      successFunction = function(data) {
         //end animation
         toastr.success('machine On');
       };
@@ -233,7 +234,7 @@ var MachineStore = {
     var errorFunction = function() {
       //end animation
     };
-    this._postAPICall('/api/machines/' + mid + '/turn_' + onOrOff, 
+    this._postAPICall('/api/machines/' + mid + '/turn_' + onOrOff,
                      { ac: new Date().getTime() },
                      successFunction,
                      'Fail to turn ' + onOrOff,
@@ -300,7 +301,7 @@ var MachineStore = {
       isLogged: false,
       firstTry: true,
       userInfo: {},
-      activationInfo:[],
+      activationInfo: [],
       machineInfo: []
     };
   },
@@ -332,6 +333,6 @@ var MachineStore = {
    */
   onChangeActivation() {}
 
-}
+};
 
 module.exports = MachineStore;

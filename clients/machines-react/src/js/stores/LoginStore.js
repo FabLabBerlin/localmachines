@@ -36,7 +36,7 @@ var LoginStore = {
       }.bind(this),
       error: function(xhr, status, err) {
         console.error('/users/logout', status, err);
-      }.bind(this),
+      }.bind(this)
     });
   },
 
@@ -55,7 +55,7 @@ var LoginStore = {
       error: function(xhr, status, err) {
         this.errorLogin();
         console.error('/users/login', status, err);
-      }.bind(this),
+      }.bind(this)
     });
   },
 
@@ -75,7 +75,7 @@ var LoginStore = {
       error: function(xhr, status, err) {
         this.errorLogin();
         console.error('/users/loginuid', status, err);
-      }.bind(this),
+      }.bind(this)
     });
   },
 
@@ -145,6 +145,6 @@ var LoginStore = {
 
   onChangeLogout() {}
 
-}
+};
 
 module.exports = LoginStore;

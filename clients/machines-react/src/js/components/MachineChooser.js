@@ -25,9 +25,9 @@ var MachineChooser = React.createClass({
     let mid = this.props.info.Id;
     let aid = this.props.activation.Id;
     if(onOrOff === 'off') {
-      MachineActions.adminTurnOffMachine(mid, aid)
+      MachineActions.adminTurnOffMachine(mid, aid);
     } else if (onOrOff === 'on') {
-      MachineActions.adminTurnOnMachine(mid)
+      MachineActions.adminTurnOnMachine(mid);
     }
   },
 
@@ -44,7 +44,7 @@ var MachineChooser = React.createClass({
         this.props.info.Name + '</b>?',
       callback: function(confirmed) {
         if (confirmed) {
-          let aid = this.props.activation.Id
+          let aid = this.props.activation.Id;
           MachineActions.endActivation(aid);
         }
         $('.vex').remove();
@@ -59,7 +59,7 @@ var MachineChooser = React.createClass({
    */
   startActivation() {
     let mid = this.props.info.Id;
-    MachineActions.startActivation(mid)
+    MachineActions.startActivation(mid);
   },
 
   /*

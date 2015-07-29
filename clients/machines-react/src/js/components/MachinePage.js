@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import React from 'react'
+import React from 'react';
 import MachineList from './MachineList';
 import LoginStore from '../stores/LoginStore';
 import MachineStore from '../stores/MachineStore';
@@ -37,7 +37,7 @@ var MachinePage = React.createClass({
   },
 
   /*
-   * Start fetching the data 
+   * Start fetching the data
    * before the component is mounted
    */
   componentWillMount() {
@@ -88,7 +88,7 @@ var MachinePage = React.createClass({
     var User = {
       Id: this.state.userInfo.Id,
       Role: this.state.userInfo.UserRole
-    }
+    };
     return User;
   },
 
@@ -236,15 +236,14 @@ var MachinePage = React.createClass({
             <i className="fa fa-user-secret"></i>&nbsp;
             {this.state.userInfo.FirstName} {this.state.userInfo.LastName}
           </div>
-          
         </div>
-        <MachineList 
+        <MachineList
           user={this.getUserInfoToPassInProps()}
-          info={this.state.machineInfo} 
+          info={this.state.machineInfo}
           activation={this.state.activationInfo}
         />
         <div className="container-fluid">
-          <button 
+          <button
             onClick={this.handleLogout}
             className="btn btn-lg btn-block btn-danger btn-logout-bottom" > Exit </button>
         </div>

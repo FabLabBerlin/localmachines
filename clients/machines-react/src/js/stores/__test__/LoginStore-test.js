@@ -32,7 +32,7 @@ describe('LoginStore', function() {
         data: loginInfo,
         success: jasmine.any(Function),
         error: jasmine.any(Function)
-      })
+      });
     });
   });
 
@@ -46,7 +46,7 @@ describe('LoginStore', function() {
           uid: 123
         },
         success: jasmine.any(Function),
-        error: jasmine.any(Function),
+        error: jasmine.any(Function)
       });
     });
   });

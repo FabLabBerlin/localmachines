@@ -22,15 +22,16 @@ var MachineList = React.createClass({
    */
   render() {
     let activation = this.props.activation;
-    if(this.props.info.length != 0) {
-      var MachineNode = this.props.info.map(function(machine) {
+    var MachineNode;
+    if(this.props.info.length !== 0) {
+      MachineNode = this.props.info.map(function(machine) {
         let activationProps = false;
         let isMachineBusy = false;
         let isSameUser = false;
         for( let i in activation ) {
-          if( machine.Id == activation[i].MachineId ) {
+          if( machine.Id === activation[i].MachineId ) {
             isMachineBusy = true;
-            isSameUser = this.props.user.Id == activation[i].UserId;
+            isSameUser = this.props.user.Id === activation[i].UserId;
             activationProps = activation[i];
             break;
           }
@@ -47,7 +48,7 @@ var MachineList = React.createClass({
         );
       }.bind(this));
     } else {
-      var MachineNode = <p>You do not have access to any machines</p>;
+      MachineNode = <p>You do not have access to any machines</p>;
     }
     return (
       <div className="machines">

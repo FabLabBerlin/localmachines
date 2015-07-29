@@ -20,7 +20,7 @@ describe('MachineStore', function() {
     return {
       url: url || jasmine.any(String),
       dataType: 'json',
-      type:'POST',
+      type: 'POST',
       data: data || jasmine.any(Object),
       success: jasmine.any(Function),
       error: jasmine.any(Function)
@@ -30,7 +30,7 @@ describe('MachineStore', function() {
   function apiPut(url, data) {
     return {
       url: url || jasmine.any(String),
-      method:'PUT',
+      method: 'PUT',
       data: data || jasmine.any(Object),
       success: jasmine.any(Function),
       error: jasmine.any(Function)
@@ -62,7 +62,7 @@ describe('MachineStore', function() {
     it('should POST /api/activations', function() {
       MachineStore.apiPostActivation(123);
       expect($.ajax).toBeCalledWith(apiPost('/api/activations'));
-    })
+    });
   });
 
   describe('apiPutActivation', function() {
