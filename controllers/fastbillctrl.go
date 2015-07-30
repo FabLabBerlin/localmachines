@@ -27,10 +27,12 @@ func (this *FastBillController) GetCustomers() {
 	fb.Email = beego.AppConfig.String("fastbillemail")
 	fb.APIKey = beego.AppConfig.String("fastbillapikey")
 
-	filter := models.FastBillCustomerGetFilter{}
-	filter.CUSTOMER_ID = "1556512"
+	/*
+		filter := models.FastBillCustomerGetFilter{}
+		filter.CUSTOMER_ID = "1556512"
+	*/
 
-	fastBillCustomers, err := fb.GetCustomers(&filter)
+	fastBillCustomers, err := fb.GetCustomers()
 	if err != nil {
 		beego.Error("Failed to get FastBill customers:", err)
 		this.CustomAbort(500, "Internal Server Error")

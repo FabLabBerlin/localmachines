@@ -77,7 +77,7 @@ type FastBillCustomerGetFilter struct {
 	CUSTOMER_NUMBER string
 	COUNTRY_CODE    string
 	CITY            string
-	TERM            string
+	TERM            string //Search term in one of the given fields: ORGANIZATION, FIRST_NAME, LAST_NAME, ADDRESS, ADDRESS_2, ZIPCODE, EMAIL, TAGS.
 }
 
 type FastBillCustomerGetResponse struct {
@@ -85,46 +85,59 @@ type FastBillCustomerGetResponse struct {
 	Response FastBillCustomerList
 }
 
-func (this *FastBill) GetCustomers(filter *FastBillCustomerGetFilter) (*FastBillCustomerList, error) {
+func (this *FastBill) GetCustomers(filters ...*FastBillCustomerGetFilter) (*FastBillCustomerList, error) {
+
+	request := FastBillGetRequest{}
+	request.Service = "customer.get"
+	if len(filters) > 0 {
+		request.Filter = filters[0]
+	}
+	customerGetResponse := FastBillCustomerGetResponse{}
+
+	err := this.execGetRequest(&request, &customerGetResponse)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to execute get request: %v", err)
+	}
+
+	return &customerGetResponse.Response, nil
+}
+
+func (this *FastBill) execGetRequest(request *FastBillGetRequest, response interface{}) error {
 
 	var err error
 	var req *http.Request
 	var resp *http.Response
 	var jsonBytes []byte
 
-	gcReq := FastBillGetRequest{}
-	gcReq.Service = "customer.get"
-	gcReq.Filter = filter
-	jsonBytes, err = json.Marshal(gcReq)
+	jsonBytes, err = json.Marshal(request)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to marshal JSON: %v", err)
+		return fmt.Errorf("Failed to marshal JSON: %v", err)
 	}
 	beego.Trace(string(jsonBytes))
 
 	req, err = http.NewRequest("GET", FASTBILL_API_URL, bytes.NewBuffer(jsonBytes))
 	if err != nil {
-		return nil, fmt.Errorf("Failed to create request: %v", err)
+		return fmt.Errorf("Failed to create request: %v", err)
 	}
 	req.Header.Add("Content-Type", "application/json")
 	req.SetBasicAuth(this.Email, this.APIKey)
 	client := &http.Client{}
 	resp, err = client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to get response: %v", err)
+		return fmt.Errorf("Failed to get response: %v", err)
 	}
 	defer resp.Body.Close()
 
 	var body []byte
 	body, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to read response body: %v", err)
+		return fmt.Errorf("Failed to read response body: %v", err)
 	}
 
-	customerGetResponse := FastBillCustomerGetResponse{}
-	err = json.Unmarshal(body, &customerGetResponse)
+	err = json.Unmarshal(body, response)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to unmarshal json: %v", err)
+		return fmt.Errorf("Failed to unmarshal json: %v", err)
 	}
 
-	return &customerGetResponse.Response, nil
+	return nil
 }
