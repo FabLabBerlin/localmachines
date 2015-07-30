@@ -12,16 +12,31 @@ import (
 // API endpoint - all requests go here
 const FASTBILL_API_URL = "https://my.fastbill.com/api/1.0/api.php"
 
-// Main FastBill object
+// Main FastBill object. All the functionality goes through this object.
 type FastBill struct {
 	Email  string
 	APIKey string
 }
 
-// Basic FastBill API get request
-type FastBillGetRequest struct {
-	Service string
-	Filter  interface{}
+// Base FastBill API request model
+type FastBillRequest struct {
+	LIMIT    int64
+	OFFSET   int64
+	SERVICE  string
+	REQUEST  interface{}
+	FILTER   interface{}
+	DATA     interface{}
+	RESPONSE interface{}
+	ERRORS   interface{}
+}
+
+// customer.get response model
+// For now define a response per request. The interface{} thing
+// does not work well with the JSON unmarshal thing for some reason.
+// But this is more clear in a way.
+type FastBillCustomerGetResponse struct {
+	REQUEST  FastBillRequest
+	RESPONSE FastBillCustomerList
 }
 
 // FastBill customer model
@@ -66,7 +81,7 @@ type FastBillCustomer struct {
 	TAGS                           string
 }
 
-// Customer list
+// Customer list model
 type FastBillCustomerList struct {
 	Customers []FastBillCustomer
 }
@@ -77,32 +92,30 @@ type FastBillCustomerGetFilter struct {
 	CUSTOMER_NUMBER string
 	COUNTRY_CODE    string
 	CITY            string
-	TERM            string //Search term in one of the given fields: ORGANIZATION, FIRST_NAME, LAST_NAME, ADDRESS, ADDRESS_2, ZIPCODE, EMAIL, TAGS.
+	TERM            string // Search term in one of the given fields: ORGANIZATION, FIRST_NAME, LAST_NAME, ADDRESS, ADDRESS_2, ZIPCODE, EMAIL, TAGS.
 }
 
-type FastBillCustomerGetResponse struct {
-	Request  FastBillGetRequest
-	Response FastBillCustomerList
-}
+// Get customers with support for limit and offset
+func (this *FastBill) GetCustomers(filter *FastBillCustomerGetFilter,
+	limit int64, offset int64) (*FastBillCustomerList, error) {
 
-func (this *FastBill) GetCustomers(filters ...*FastBillCustomerGetFilter) (*FastBillCustomerList, error) {
+	request := FastBillRequest{}
+	request.SERVICE = "customer.get"
+	request.LIMIT = limit
+	request.OFFSET = offset
+	request.FILTER = filter
 
-	request := FastBillGetRequest{}
-	request.Service = "customer.get"
-	if len(filters) > 0 {
-		request.Filter = filters[0]
-	}
-	customerGetResponse := FastBillCustomerGetResponse{}
-
-	err := this.execGetRequest(&request, &customerGetResponse)
+	response := FastBillCustomerGetResponse{}
+	err := this.execGetRequest(&request, &response)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to execute get request: %v", err)
 	}
 
-	return &customerGetResponse.Response, nil
+	return &response.RESPONSE, nil
 }
 
-func (this *FastBill) execGetRequest(request *FastBillGetRequest, response interface{}) error {
+// Reusable helper function for the
+func (this *FastBill) execGetRequest(request *FastBillRequest, response *FastBillCustomerGetResponse) error {
 
 	var err error
 	var req *http.Request
