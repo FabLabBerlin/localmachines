@@ -113,3 +113,37 @@ func (this *FastBillController) CreateCustomer() {
 	this.Data["json"] = response
 	this.ServeJson()
 }
+
+// @Title DeleteCustomer
+// @Description Delete existing FastBill customer
+// @Param customerid	path	int	true	"Customer ID"
+// @Success 200	ok
+// @Failure 500 Internal Server Error
+// @Failure 401 Not authorized
+// @router  /customer/:customerid [delete]
+func (this *FastBillController) DeleteCustomer() {
+
+	if !this.IsAdmin() {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	fb := models.FastBill{}
+	fb.Email = beego.AppConfig.String("fastbillemail")
+	fb.APIKey = beego.AppConfig.String("fastbillapikey")
+
+	customerId, err := this.GetInt64(":customerid")
+	if err != nil {
+		beego.Error("Failed to get :customerid")
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	err = fb.DeleteCustomer(customerId)
+	if err != nil {
+		beego.Error("Failed to delete customer:", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	this.Data["json"] = "ok"
+	this.ServeJson()
+}

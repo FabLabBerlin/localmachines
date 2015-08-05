@@ -8,6 +8,7 @@ import (
 	"github.com/astaxie/beego"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 )
 
 // API endpoint - all requests go here
@@ -15,6 +16,7 @@ const (
 	FASTBILL_API_URL                 = "https://my.fastbill.com/api/1.0/api.php"
 	FASTBILL_SERVICE_CUSTOMER_GET    = "customer.get"
 	FASTBILL_SERVICE_CUSTOMER_CREATE = "customer.create"
+	FASTBILL_SERVICE_CUSTOMER_DELETE = "customer.delete"
 	FASTBILL_CUSTOMER_TYPE_BUSINESS  = "business"
 	FASTBILL_CUSTOMER_TYPE_CONSUMER  = "consumer"
 )
@@ -56,6 +58,14 @@ type FastBillCustomerCreateResponse struct {
 	}
 }
 
+// FastBill customer.delete response model
+type FastBillCustomerDeleteResponse struct {
+	REQUEST  FastBillRequest
+	RESPONSE struct {
+		STATUS string
+	}
+}
+
 // Response model for the JSON that will be returned to this API clients
 type FastBillCreateCustomerResponse struct {
 	CUSTOMER_ID int64
@@ -90,7 +100,7 @@ type FastBillCustomer struct {
 	ADDRESS_2                      string
 	ZIPCODE                        string
 	CITY                           string
-	COUNTRY_CODE                   string
+	COUNTRY_CODE                   interface{}
 	SECONDARY_ADDRESS              string
 	PHONE                          string
 	PHONE_2                        string
@@ -155,6 +165,26 @@ func (this *FastBill) CreateCustomer(customer *FastBillCustomer) (int64, error) 
 		beego.Error(response.RESPONSE.STATUS)
 		return 0, errors.New("There was an error while creating a customer")
 	}
+}
+
+func (this *FastBill) DeleteCustomer(customerId int64) error {
+
+	request := FastBillRequest{}
+	request.SERVICE = FASTBILL_SERVICE_CUSTOMER_DELETE
+	request.DATA = FastBillCustomer{CUSTOMER_ID: strconv.FormatInt(customerId, 10)}
+
+	response := FastBillCustomerDeleteResponse{}
+	err := this.execGetRequest(&request, &response)
+	if err != nil {
+		return fmt.Errorf("Failed to execute get request: %v", err)
+	}
+
+	if response.RESPONSE.STATUS == "success" {
+		return nil
+	} else {
+		return errors.New("There was an error while deleting a customer")
+	}
+
 }
 
 // Reusable helper function for the
