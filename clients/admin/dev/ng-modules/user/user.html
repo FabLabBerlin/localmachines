@@ -43,14 +43,44 @@
 
   <!-- Billing Address -->
   <div class="row">
-    <div class="col-sm-6">
+    <div class="col-sm-3">
       <div class="form-group">
         <label for="invoice-addr">Billing Address</label>
-        <textarea id="invoice-addr"
+        <input id="invoice-addr"
           class="form-control"
           placeholder="Billing Address"
           ng-model="user.InvoiceAddr">
-        </textarea>
+      </div>
+    </div>
+    <div class="col-sm-1">
+      <div class="form-group">
+        <label for="zip-code">ZIP</label>
+        <input id="zip-code"
+          class="form-control"
+          placeholder="ZIP"
+          ng-model="user.ZipCode">
+      </div>
+    </div>
+    <div class="col-sm-2">
+      <div class="form-group">
+        <label for="city">City</label>
+        <input id="city"
+          class="form-control"
+          placeholder="City"
+          ng-model="user.City">
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="form-group">
+        <label for="country">Country</label>
+        <select id="country"
+          class="form-control" 
+          ng-model="user.CountryCode">
+          <option value="" selected disabled>Select Country</option>
+          <option ng-repeat="country in countryCodes" value={{country.Code}}>
+            {{country.Name}}
+          </option>
+        </select>
       </div>
     </div>
     <div class="col-sm-3">
@@ -59,7 +89,30 @@
         id="phone" placeholder="+371 9998888777"
         ng-model="user.Phone">
     </div>
+  </div> <!-- /.row -->
+
+  <div>
+    <label for="fastbill-customer-number">FastBill Customer Number</label>
   </div>
+
+  <div class="row">
+    <div class="col-sm-3">
+      <div class="form-group">
+        <input id="fastbill-customer-number"
+          class="form-control"
+          ng-model="user.ClientId">
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="form-group">
+        <button 
+          ng-click="syncWithFastBill()"
+          class="btn btn-primary btn-block">
+          Sync with FastBill
+        </button>  
+      </div>
+    </div>
+  </div> <!-- /.row -->
 
   <div>
     <label for="user-password">User Password</label>
