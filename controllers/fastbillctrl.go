@@ -65,7 +65,7 @@ func (this *FastBillController) GetCustomers() {
 // @Param email         query   string  true     "Customer email"
 // @Param address       query   string  true     "Customer billing address"
 // @Param city          query   string  true     "Customer city"
-// @Param countrycode   query   string  true     "Customer country code (FastBill specific - they use their own custom codes)"
+// @Param countrycode   query   string  true     "Customer ISO 3166 ALPHA-2"
 // @Param zipcode       query   string  true     "Customer zip code"
 // @Param phone         query   string  false    "Customer phone number"
 // @Param organization  query   string  false    "Organization of the customer"
