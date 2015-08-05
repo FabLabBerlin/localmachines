@@ -2,6 +2,7 @@ package controllers
 
 import (
 	//"encoding/json"
+	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/kr15h/fabsmith/models"
 )
@@ -12,9 +13,11 @@ type FastBillController struct {
 
 // @Title GetCustomers
 // @Description Get FastBill customers
-// @Param limit     query   int     false    "Limit of the number of records returned"
-// @Param offset    query   int     false    "Offset of the records returned"
-// @Param term      query   string  false    "Filter term in one of the given fields: ORGANIZATION, FIRST_NAME, LAST_NAME, ADDRESS, ADDRESS_2, ZIPCODE, EMAIL, TAGS."
+// @Param limit     					query   int     false    "Limit of the number of records returned"
+// @Param offset    					query   int     false    "Offset of the records returned"
+// @Param term      					query   string  false    "Filter term in one of the given fields: ORGANIZATION, FIRST_NAME, LAST_NAME, ADDRESS, ADDRESS_2, ZIPCODE, EMAIL, TAGS."
+// @Param customerid      		query   int  		false    "Customer ID"
+// @Param customernumber      query   int  		false    "Customer Number"
 // @Success 200 {object} models.FastBillCustomerList
 // @Failure 500 Internal Server Error
 // @Failure 401 Not authorized
@@ -32,8 +35,25 @@ func (this *FastBillController) GetCustomers() {
 
 	filter := models.FastBillCustomerGetFilter{}
 	filter.TERM = this.GetString("term")
+	beego.Trace(filter.TERM)
 
 	var err error
+	var customerId int64
+	customerId, err = this.GetInt64("customerid")
+	if err != nil {
+		beego.Warning("Failed to get customer ID.")
+	} else {
+		filter.CUSTOMER_ID = fmt.Sprintf("%d", customerId)
+	}
+
+	var customerNumber int64
+	customerNumber, err = this.GetInt64("customernumber")
+	if err != nil {
+		beego.Warning("Failed to get customer number.")
+	} else {
+		filter.CUSTOMER_NUMBER = fmt.Sprintf("%d", customerNumber)
+	}
+
 	var limit int64
 	limit, err = this.GetInt64("limit")
 	if err != nil {
