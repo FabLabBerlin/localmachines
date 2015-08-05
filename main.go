@@ -44,6 +44,8 @@ func configClients() {
 	// Allow access index.html file
 	beego.DirectoryIndex = true
 
+	beego.Trace(beego.RunMode)
+
 	// Serve self-contained Angular JS applications depending on runmode
 	if beego.RunMode == "dev" {
 		beego.SetStaticPath("/machines", "clients/machines/dev")
