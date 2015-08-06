@@ -44,6 +44,14 @@
   <!-- Billing Address -->
   <div class="row">
     <div class="col-sm-3">
+      <label for="phone">Phone</label>
+      <input 
+        type="text" 
+        class="form-control"
+        id="phone"
+        ng-model="user.Phone">
+    </div>
+    <div class="col-sm-3">
       <div class="form-group">
         <label for="invoice-addr">Billing Address</label>
         <input id="invoice-addr"
@@ -52,16 +60,16 @@
           ng-model="user.InvoiceAddr">
       </div>
     </div>
-    <div class="col-sm-1">
+    <div class="col-sm-3">
       <div class="form-group">
-        <label for="zip-code">ZIP</label>
+        <label for="zip-code">ZIP Code</label>
         <input id="zip-code"
           class="form-control"
           placeholder="ZIP"
           ng-model="user.ZipCode">
       </div>
     </div>
-    <div class="col-sm-2">
+    <div class="col-sm-3">
       <div class="form-group">
         <label for="city">City</label>
         <input id="city"
@@ -70,6 +78,9 @@
           ng-model="user.City">
       </div>
     </div>
+  </div> <!-- /.row -->
+
+  <div class="row">
     <div class="col-sm-3">
       <div class="form-group">
         <label for="country">Country</label>
@@ -84,27 +95,30 @@
       </div>
     </div>
     <div class="col-sm-3">
-      <label for="phone">Phone</label>
-      <input type="text" class="form-control"
-        id="phone" placeholder="+371 9998888777"
-        ng-model="user.Phone">
-    </div>
-  </div> <!-- /.row -->
-
-  <div>
-    <label for="fastbill-customer-number">FastBill Customer Number</label>
-  </div>
-
-  <div class="row">
-    <div class="col-sm-3">
       <div class="form-group">
-        <input id="fastbill-customer-number"
+        <label for="fastbill-customer-number">FastBill Customer Number</label>
+        <input 
+          id="fastbill-customer-number"
           class="form-control"
           ng-model="user.ClientId">
       </div>
     </div>
     <div class="col-sm-3">
       <div class="form-group">
+        <label for="fastbill-action">FastBill Action</label>
+        <select 
+          id="fastbill-action"
+          class="form-control"
+          ng-model="fastBillAction">
+          <option value="1">Get customer number</option>
+          <option value="2">Load data from FastBill</option>
+          <option value="3">Update FastBill data</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="form-group">
+        <label>Sync</label>
         <button 
           ng-click="syncWithFastBill()"
           class="btn btn-primary btn-block">
