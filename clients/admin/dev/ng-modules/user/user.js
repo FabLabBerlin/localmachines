@@ -86,6 +86,9 @@ app.controller('UserCtrl',
       }
     })
     .success(function(user) {
+      if (user.ClientId <= 0) {
+        user.ClientId = '';
+      }
       $scope.user = user;
       if (user.UserRole === 'admin') {
         user.Admin = true;
