@@ -552,14 +552,60 @@ app.controller('UserCtrl',
     }
   };
 
+  // FastBill variables
+  var FASTBILL_ACTION_GET_CUSTOMER_NUMBER = 1;
+  var FASTBILL_ACTION_LOAD_FROM = 2;
+  var FASTBILL_ACTION_UPDATE = 3;
+  $scope.fastBillAction = FASTBILL_ACTION_GET_CUSTOMER_NUMBER;
+
+  $scope.readFastBillCustomerNumber = function(data) {
+    $scope.user.ClientId = parseInt(data.Customers[0].CUSTOMER_NUMBER);
+    $scope.saveUser();
+  };
+
+  $scope.readFastBillUserData = function(data) {
+    var customer = data.Customers[0];
+
+    $scope.user.FirstName = customer.FIRST_NAME;
+    $scope.user.LastName = customer.LAST_NAME;
+    $scope.user.InvoiceAddr = customer.ADDRESS;
+    $scope.user.ZipCode = customer.ZIPCODE;
+    $scope.user.City = customer.CITY;
+    $scope.user.CountryCode = customer.COUNTRY_CODE;
+    $scope.user.Phone = customer.PHONE;
+    $scope.user.ClientId = parseInt(customer.CUSTOMER_NUMBER);
+
+    $scope.saveUser();
+  };
+
   // Sync user data with FastBill account
   $scope.syncWithFastBill = function() {
 
-    // 1. Try to get FastBill customer with the email address of the user
-    $scope.getFastBillUserByEmail({
-      onSuccess: $scope.readFastBillUser, 
-      onFailure: $scope.createFastBillUser
-    });
+    console.log($scope.fastBillAction);
+    console.log(FASTBILL_ACTION_LOAD_FROM);
+
+    // Check what action the user wants to make
+    if (parseInt($scope.fastBillAction) === parseInt(FASTBILL_ACTION_GET_CUSTOMER_NUMBER)) {
+      console.log('get customer nr');
+      $scope.getFastBillUserByEmail({
+        onSuccess: $scope.readFastBillCustomerNumber, 
+        onFailure: $scope.createFastBillUser
+      });
+    }
+
+    if (parseInt($scope.fastBillAction) === parseInt(FASTBILL_ACTION_LOAD_FROM)) {
+      console.log('load fb data');
+      $scope.getFastBillUserByEmail({
+        onSuccess: $scope.readFastBillUserData, 
+        onFailure: $scope.createFastBillUser
+      });
+    }
+
+    /*
+    if ($scope.fastBillAction === FASTBILL_ACTION_UPDATE) {
+      
+    }
+    */
 
   };
 
@@ -580,6 +626,9 @@ app.controller('UserCtrl',
     })
     .success(function(data) {
       if (data.Customers.length) {
+        if (data.Customers.length > 1) {
+          toastr.warning('More than one FastBill user with the same email address exists.');
+        }
         instructions.onSuccess(data);
       } else {
         instructions.onFailure();
@@ -611,18 +660,6 @@ app.controller('UserCtrl',
     });
   };
 
-  $scope.readFastBillUser = function(data) {
-
-    if (data.Customers.length > 1) {
-      toastr.warning('More than one FastBill user with the same email address exists.');
-    }
-
-    // We only need to get the Customer Number back
-    $scope.user.ClientId = parseInt(data.Customers[0].CUSTOMER_NUMBER);
-    $scope.saveUser();
-
-  };
-
   $scope.createFastBillUser = function() {
     toastr.info('Creating new FastBill user.');
 
@@ -645,7 +682,7 @@ app.controller('UserCtrl',
       console.log('Fastbill customer created.');
       console.log(data);
       $scope.getFastBillUserByCustomerId(data.CUSTOMER_ID, {
-        onSuccess: $scope.readFastBillUser, 
+        onSuccess: $scope.readFastBillCustomerNumber, 
         onFailure: function() {
           toastr.error('Failed to get newly created FastBill customer.');
         }
