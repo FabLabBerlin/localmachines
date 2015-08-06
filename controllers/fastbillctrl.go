@@ -134,6 +134,128 @@ func (this *FastBillController) CreateCustomer() {
 	this.ServeJson()
 }
 
+// @Title UpdateCustomer
+// @Description Update FastBill customer
+// @Param customerid   path    int     true      "Customer ID"
+// @Param firstname     query   string  false     "First name of the customer"
+// @Param lastname      query   string  false     "Last name of the customer"
+// @Param email         query   string  false     "Customer email"
+// @Param address       query   string  false     "Customer billing address"
+// @Param city          query   string  false     "Customer city"
+// @Param countrycode   query   string  false     "Customer ISO 3166 ALPHA-2"
+// @Param zipcode       query   string  false     "Customer zip code"
+// @Param phone         query   string  false     "Customer phone number"
+// @Param organization  query   string  false     "Organization of the customer"
+// @Success 200 {object} models.FastBillUpdateCustomerResponse
+// @Failure 500 Internal Server Error
+// @Failure 401 Not authorized
+// @router  /customer/:customerid [put]
+func (this *FastBillController) UpdateCustomer() {
+
+	if !this.IsAdmin() {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	fb := models.FastBill{}
+	fb.Email = beego.AppConfig.String("fastbillemail")
+	fb.APIKey = beego.AppConfig.String("fastbillapikey")
+
+	customerId, err := this.GetInt64(":customerid")
+	if err != nil {
+		beego.Error("Failed to get :customerid")
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	// Get existing customer
+	filter := models.FastBillCustomerGetFilter{}
+	filter.CUSTOMER_ID = fmt.Sprintf("%d", customerId)
+	beego.Trace(filter.CUSTOMER_ID)
+
+	var fastBillCustomers *models.FastBillCustomerList
+	fastBillCustomers, err = fb.GetCustomers(&filter, 0, 0)
+	if err != nil {
+		beego.Error("Failed to get FastBill customers:", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	numCustomersGot := len(fastBillCustomers.Customers)
+	if numCustomersGot <= 0 {
+		beego.Error("Failed to get customer")
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	// Update only the fields that have new values
+	customer := fastBillCustomers.Customers[0]
+
+	newFirstName := this.GetString("firstname")
+	if customer.FIRST_NAME != newFirstName && newFirstName != "" {
+		customer.FIRST_NAME = newFirstName
+	}
+
+	newLastName := this.GetString("lastname")
+	if customer.LAST_NAME != newLastName && newLastName != "" {
+		customer.LAST_NAME = newLastName
+	}
+
+	// TODO: Check email address.
+	newEmail := this.GetString("email")
+	if customer.EMAIL != newEmail && newEmail != "" {
+		customer.EMAIL = this.GetString("email")
+	}
+
+	newPhone := this.GetString("phone")
+	if customer.PHONE != newPhone && newPhone != "" {
+		customer.PHONE = newPhone
+	}
+
+	newAddress := this.GetString("address")
+	if customer.ADDRESS != newAddress && newAddress != "" {
+		customer.ADDRESS = newAddress
+	}
+
+	newCity := this.GetString("city")
+	if customer.CITY != newCity && newCity != "" {
+		customer.CITY = newCity
+	}
+
+	newZipcode := this.GetString("zipcode")
+	if customer.ZIPCODE != newZipcode && newZipcode != "" {
+		customer.ZIPCODE = newZipcode
+	}
+
+	newOrganization := this.GetString("organization")
+	// The organization can be empty
+	if customer.ORGANIZATION != newOrganization {
+		customer.ORGANIZATION = newOrganization
+	}
+
+	newCountryCode := this.GetString("countrycode")
+	if customer.COUNTRY_CODE != newCountryCode && newCountryCode != "" {
+		customer.COUNTRY_CODE = newCountryCode
+	}
+
+	// If there is no organization - customer can be considered a plain consumer
+	if customer.ORGANIZATION == "" {
+		customer.CUSTOMER_TYPE = models.FASTBILL_CUSTOMER_TYPE_CONSUMER
+	} else {
+		customer.CUSTOMER_TYPE = models.FASTBILL_CUSTOMER_TYPE_BUSINESS
+	}
+
+	var customerIdUpd int64
+	customerIdUpd, err = fb.UpdateCustomer(&customer)
+	if err != nil {
+		beego.Error("Failed to update FastBill customer:", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	response := models.FastBillUpdateCustomerResponse{}
+	response.CUSTOMER_ID = customerIdUpd
+
+	this.Data["json"] = response
+	this.ServeJson()
+}
+
 // @Title DeleteCustomer
 // @Description Delete existing FastBill customer
 // @Param customerid	path	int	true	"Customer ID"

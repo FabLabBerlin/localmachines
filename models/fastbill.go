@@ -16,6 +16,7 @@ const (
 	FASTBILL_API_URL                 = "https://my.fastbill.com/api/1.0/api.php"
 	FASTBILL_SERVICE_CUSTOMER_GET    = "customer.get"
 	FASTBILL_SERVICE_CUSTOMER_CREATE = "customer.create"
+	FASTBILL_SERVICE_CUSTOMER_UPDATE = "customer.update"
 	FASTBILL_SERVICE_CUSTOMER_DELETE = "customer.delete"
 	FASTBILL_CUSTOMER_TYPE_BUSINESS  = "business"
 	FASTBILL_CUSTOMER_TYPE_CONSUMER  = "consumer"
@@ -58,6 +59,15 @@ type FastBillCustomerCreateResponse struct {
 	}
 }
 
+// Model received from FastBill on customer.update
+type FastBillCustomerUpdateResponse struct {
+	REQUEST  FastBillRequest
+	RESPONSE struct {
+		STATUS      string
+		CUSTOMER_ID string
+	}
+}
+
 // FastBill customer.delete response model
 type FastBillCustomerDeleteResponse struct {
 	REQUEST  FastBillRequest
@@ -66,8 +76,13 @@ type FastBillCustomerDeleteResponse struct {
 	}
 }
 
-// Response model for the JSON that will be returned to this API clients
+// Create customer response model returned to THIS API clients
 type FastBillCreateCustomerResponse struct {
+	CUSTOMER_ID int64
+}
+
+// Update customer response model returned to THIS API clients
+type FastBillUpdateCustomerResponse struct {
 	CUSTOMER_ID int64
 }
 
@@ -167,6 +182,34 @@ func (this *FastBill) CreateCustomer(customer *FastBillCustomer) (int64, error) 
 	}
 }
 
+// Update FastBill customer
+func (this *FastBill) UpdateCustomer(customer *FastBillCustomer) (int64, error) {
+
+	request := FastBillRequest{}
+	request.SERVICE = FASTBILL_SERVICE_CUSTOMER_UPDATE
+	request.DATA = customer
+
+	response := FastBillCustomerUpdateResponse{}
+	err := this.execGetRequest(&request, &response)
+	if err != nil {
+		beego.Error("Failed to execute get request:", err)
+		return 0, fmt.Errorf("Failed to execute get request")
+	}
+
+	if response.RESPONSE.STATUS == "success" {
+		var idInt int64
+		idInt, err = strconv.ParseInt(response.RESPONSE.CUSTOMER_ID, 10, 64)
+		if err != nil {
+			beego.Error("Failed to parse int:", err)
+			return 0, fmt.Errorf("Failed to parse int")
+		}
+		return idInt, nil
+	} else {
+		beego.Error(response.RESPONSE.STATUS)
+		return 0, errors.New("There was an error while updating customer")
+	}
+}
+
 func (this *FastBill) DeleteCustomer(customerId int64) error {
 
 	request := FastBillRequest{}
@@ -210,19 +253,22 @@ func (this *FastBill) execGetRequest(request *FastBillRequest, response interfac
 	client := &http.Client{}
 	resp, err = client.Do(req)
 	if err != nil {
-		return fmt.Errorf("Failed to get response: %v", err)
+		beego.Error("Failed to get response:", err)
+		return fmt.Errorf("Failed to get response")
 	}
 	defer resp.Body.Close()
 
 	var body []byte
 	body, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return fmt.Errorf("Failed to read response body: %v", err)
+		beego.Error("Failed to read response body:", err)
+		return fmt.Errorf("Failed to read response body")
 	}
 
 	err = json.Unmarshal(body, response)
 	if err != nil {
-		return fmt.Errorf("Failed to unmarshal json: %v", err)
+		beego.Error("Failed to unmarshal JSON:", err)
+		return fmt.Errorf("Failed to unmarshal json")
 	}
 
 	return nil
