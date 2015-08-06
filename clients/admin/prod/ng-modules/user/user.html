@@ -88,7 +88,7 @@
           class="form-control" 
           ng-model="user.CountryCode">
           <option value="" selected disabled>Select Country</option>
-          <option ng-repeat="country in countryCodes" value={{country.Code}}>
+          <option ng-repeat="country in countryCodes" value="{{country.Code}}">
             {{country.Name}}
           </option>
         </select>
