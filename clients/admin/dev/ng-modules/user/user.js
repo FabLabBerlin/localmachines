@@ -601,11 +601,59 @@ app.controller('UserCtrl',
       });
     }
 
-    /*
-    if ($scope.fastBillAction === FASTBILL_ACTION_UPDATE) {
-      
+    if (parseInt($scope.fastBillAction) === parseInt(FASTBILL_ACTION_UPDATE)) {
+      console.log('update fb data');
+      $scope.updateFastBillUser({
+        onSuccess: function(){},
+        onFailure: function(){}
+      });
     }
-    */
+
+  };
+
+  $scope.updateFastBillUser = function(instructions) {
+
+    // Attempt to get fastbill customer ID
+    $scope.getFastBillUserByEmail({
+      
+      // Got the id, use it to update the user
+      onSuccess: function(data) {
+        var customer = data.Customers[0];
+
+        $http({
+          method: 'PUT',
+          url: '/api/fastbill/customer/' + customer.CUSTOMER_ID,
+          params: {
+            firstname: $scope.user.FirstName,
+            lastname: $scope.user.LastName,
+            //email: 
+            address: $scope.user.InvoiceAddr,
+            city: $scope.user.City,
+            countrycode: $scope.user.CountryCode,
+            zipcode: $scope.user.ZipCode,
+            phone: $scope.user.Phone,
+            //organization:
+            ac: new Date().getTime()
+          }
+        })
+        .success(function(data) {
+          console.log(data);
+          toastr.success('FastBill customer updated.');
+          instructions.onSuccess();
+        })
+        .error(function(data) {
+          console.log(data);
+          toastr.error('Failed to update FastBill customer.');
+          instructions.onFailure();
+        });
+      },
+
+      // Failed to get FastBill customer id
+      onFailure: function() {
+        console.log('Failed to get FastBill customer by email.');
+        toastr.error('Failed to update FastBill user.');
+      }
+    });
 
   };
 
@@ -637,6 +685,7 @@ app.controller('UserCtrl',
     .error(function() {
       toastr.error('An error happened while getting user\'s FastBill customer data.');
     });
+
   };
 
   $scope.getFastBillUserByCustomerId = function(customerId, instructions) {
