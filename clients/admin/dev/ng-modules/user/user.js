@@ -94,6 +94,7 @@ app.controller('UserCtrl',
         user.Admin = true;
       }
       $scope.loadAvailableMachines();
+      $scope.getUserMemberships(); // This part can happen assync
     })
     .error(function(data, status) {
       toastr.error('Failed to load user data');
@@ -185,6 +186,7 @@ app.controller('UserCtrl',
   }
 
   $scope.getAvailableMemberships = function() {
+    console.log('Getting available memberships...');
     $http({
       method: 'GET',
       url: '/api/memberships',
@@ -194,12 +196,6 @@ app.controller('UserCtrl',
     })
     .success(function(data) {
       $scope.memberships = data;
-      $scope.membershipsById = {};
-      _.each($scope.memberships, function(m) {
-        $scope.membershipsById[m.Id] = m;
-      });
-
-      $scope.getUserMemberships();
     })
     .error(function(data, status) {
       console.log('Could not get memberships');
@@ -222,11 +218,7 @@ app.controller('UserCtrl',
         _.merge(userMembership, {
           EndDate: new Date(userMembership.StartDate)
         });
-        //console.log('userMembership.Id: ', userMembership.Id);
-        var membership = $scope.membershipsById[userMembership.MembershipId];
-        //console.log('membership: ', membership);
-        userMembership.EndDate.setDate(userMembership.StartDate.getDate() +
-         membership.Duration);
+        userMembership.EndDate.setDate(userMembership.StartDate.getDate() + userMembership.Duration);
         userMembership.StartDate = formatDate(userMembership.StartDate);
         userMembership.EndDate = formatDate(userMembership.EndDate);
         return userMembership;
