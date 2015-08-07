@@ -46,6 +46,9 @@ type User struct {
 	Created     time.Time `orm:"type(datetime)"`
 	Comments    string    `orm:"type(text)"`
 	Phone       string    `orm:"size(50)"`
+	ZipCode     string    `orm:"size(100)"`
+	City        string    `orm:"size(100)"`
+	CountryCode string    `orm:"size(2)"`
 }
 
 func (this *User) TableName() string {

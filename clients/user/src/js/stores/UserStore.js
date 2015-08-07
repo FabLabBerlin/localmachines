@@ -224,7 +224,12 @@ var UserStore = {
       'FirstName',
       'LastName', 
       'Username',
-      'Email'
+      'Email',
+      'Phone',
+      'InvoiceAddr',
+      'ZipCode',
+      'City',
+      'CountryCode'
       //'InvoiceAddr',
       //'ShipAddr'
     ];

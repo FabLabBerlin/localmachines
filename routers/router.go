@@ -50,6 +50,11 @@ func init() {
 				&controllers.NetSwitchController{},
 			),
 		),
+		beego.NSNamespace("/fastbill",
+			beego.NSInclude(
+				&controllers.FastBillController{},
+			),
+		),
 	)
 	beego.AddNamespace(ns)
 }

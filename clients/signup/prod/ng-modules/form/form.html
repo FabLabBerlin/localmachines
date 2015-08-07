@@ -97,20 +97,53 @@
         </div>
       </div>
 
-      <!-- Billing Address -->
       <div class="row">
         <div class="col-md-6">
-          <label for="password">Billing Address</label>
+          <div class="form-group">
+            <label for="billing-address">Billing Address</label>
+            <input
+              type="text" 
+              id="billing-address"
+              class="form-control"
+              placeholder="Your Billing Address"
+              ng-model="invoiceAddr">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="billing-address">Country</label>
+            <select id="country"
+              class="form-control" 
+              ng-model="countryCode">
+              <option value="" selected disabled>Select Country</option>
+              <option ng-repeat="country in countryCodes" value="{{country.Code}}">
+                {{country.Name}}
+              </option>
+            </select>
+          </div>
         </div>
       </div>
 
       <div class="row">
-        <div class="col-md-12">
-          <textarea 
-            class="form-control"
-            placeholder="Your Billing Address"
-            ng-model="invoiceAddr">
-          </textarea>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="zip-code">ZIP Code</label>
+            <input 
+              class="form-control"
+              id="zip-code"
+              ng-model="zipCode"
+              placeholder="Your ZIP Code">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="city">City</label>
+            <input
+              class="form-control"
+              id="city"
+              ng-model="city"
+              placeholder="Your City">
+          </div>
         </div>
       </div>
 
