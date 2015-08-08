@@ -212,7 +212,10 @@ app.controller('UserCtrl',
         ac: new Date().getTime()
       }
     })
-    .success(function(data) {
+    .success(function(userMembershipList) {
+      console.log('Got user membership list:');
+      console.log(userMembershipList);
+      var data = userMembershipList.Data;
       $scope.userMemberships = _.map(data, function(userMembership) {
         userMembership.StartDate = new Date(Date.parse(userMembership.StartDate));
         _.merge(userMembership, {
@@ -346,6 +349,7 @@ app.controller('UserCtrl',
   };
 
   $scope.deleteUserMembership = function(userMembershipId) {
+    console.log('Delete user membership ID: ' + userMembershipId);
     $http({
       method: 'DELETE',
       url: '/api/users/' + $scope.user.Id + '/memberships/' + userMembershipId,
@@ -353,9 +357,8 @@ app.controller('UserCtrl',
         ac: new Date().getTime()
       }
     })
-    .success(function(data) {
-      toastr.success('Membership deleted');
-      //window.location.reload(true);
+    .success(function() {
+      toastr.success('Membership deleted.');
       $scope.getUserMemberships();
     })
     .error(function() {
