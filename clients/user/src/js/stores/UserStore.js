@@ -169,12 +169,17 @@ var UserStore = {
    * call onChange if successful to alert UserPage
    */
   getMembershipFromServer(uid) {
+
     $.ajax({
       url: '/api/users/'+ uid +'/memberships',
       dataType: 'json',
       type: 'GET',
-      success: function(data) {
-        this._state.rawInfoMembership = data;
+      success: function(userMembershipList) {
+        if (userMembershipList.Data) {
+          this._state.rawInfoMembership = userMembershipList.Data;
+        } else {
+          this._state.rawInfoMembership = [];
+        }
         this._state.isLogged = true;
         this.onChange();
       }.bind(this),
@@ -183,6 +188,7 @@ var UserStore = {
         console.error('/users/{uid}/memberships', status, err.toString());
       }.bind(this),
     });
+
   },
 
   /*
