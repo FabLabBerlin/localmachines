@@ -265,6 +265,9 @@
       </tr>
     </thead>
     <tbody>
+      <tr ng-hide="userMemberships.length">
+        <td colspan="4">User has no memberships</td>
+      </tr>
       <tr ng-repeat="userMembership in userMemberships">
         <td>{{userMembership.Title}}</td>
         <td>{{userMembership.StartDate}}</td>
