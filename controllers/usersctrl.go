@@ -551,9 +551,9 @@ func (this *UsersController) GetUserBill() {
 		Details:    []MachineUsage{},
 	}
 
-	updateDetails := func(machine *models.Machine, activation models.Activation, membs *[]models.MembershipResponse, total *TotalUsage, ratio float64) {
+	updateDetails := func(machine *models.Machine, activation models.Activation, membs *models.UserMembershipList, total *TotalUsage, ratio float64) {
 		reduction := float64(1)
-		for _, memb := range *membs {
+		for _, memb := range membs.Data {
 			var machinesAffected MachinesAffectedArray
 			err := json.Unmarshal([]byte(`{"MachinesIds":`+memb.AffectedMachines+`}`), &machinesAffected)
 			if err != nil {
@@ -694,7 +694,7 @@ func (this *UsersController) PostUserMemberships() {
 // @Title GetUserMemberships
 // @Description Get user memberships
 // @Param	uid		path 	int	true		"User ID"
-// @Success 200 {object} models.UserMembership
+// @Success 200 {object} models.UserMembershipList
 // @Failure	403	Failed to get user memberships
 // @Failure	401	Not authorized
 // @router /:uid/memberships [get]
@@ -719,8 +719,14 @@ func (this *UsersController) GetUserMemberships() {
 	// We need the user roles in order to understand
 	// whether we are allowed to access other user machines
 
-	if suid.(int64) != ruid {
-		if !this.IsAdmin() && !this.IsStaff() {
+	suidInt64, ok := suid.(int64)
+	if !ok {
+		beego.Error("Failed to get int64 value out of session ID")
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	if suidInt64 != ruid {
+		if !this.IsAdmin() {
 
 			// The currently logged in user is not allowed to access
 			// other user machines
@@ -731,7 +737,8 @@ func (this *UsersController) GetUserMemberships() {
 
 	// If the requested user roles is not admin and staff
 	// we need to get machine permissions first and then the machines
-	ums, err := models.GetUserMemberships(ruid)
+	var ums *models.UserMembershipList
+	ums, err = models.GetUserMemberships(ruid)
 	if err != nil {
 		beego.Error("Failed to get user machine permissions")
 		this.CustomAbort(403, "Failed to get user machines")
@@ -761,11 +768,16 @@ func (this *UsersController) DeleteUserMembership() {
 		beego.Error("Failed to get :umid")
 		this.CustomAbort(403, "Failed to get :umid")
 	}
+	beego.Trace("User membership ID:", umid)
 
-	if err := models.DeleteUserMembership(umid); err != nil {
+	err = models.DeleteUserMembership(umid)
+	if err != nil {
 		beego.Error("Failed to delete user membership")
-		this.CustomAbort(403, "Failed to :umid")
+		this.CustomAbort(500, "Internal Server Error")
 	}
+
+	this.Data["json"] = "ok"
+	this.ServeJson()
 }
 
 // @Title GetUserName
