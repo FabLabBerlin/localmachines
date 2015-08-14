@@ -1,53 +1,44 @@
+jest.dontMock('../../flux');
+import actionTypes from '../../actionTypes';
+import Flux from '../../flux';
+import getters from '../../getters';
 jest.mock('jquery');
+jest.mock('toastr');
 jest.dontMock('../LoginStore.js');
 
 describe('LoginStore', function() {
   var $ = require('jquery');
   var LoginStore = require('../LoginStore');
 
+  Flux.registerStores({
+    loginStore: LoginStore
+  });
 
-  describe('apiGetLogout', function() {
-    it('sends a logout API request', function() {
-      LoginStore.apiGetLogout();
-      expect($.ajax).toBeCalledWith({
-        cache: false,
-        type: 'GET',
-        url: '/api/users/logout',
-        success: jasmine.any(Function),
-        error: jasmine.any(Function)
-      });
+
+  describe('SUCCESS_LOGOUT', function() {
+    it('sets store into logout state', function() {
+      Flux.dispatch(actionTypes.SUCCESS_LOGOUT);
+      const isLogged = Flux.evaluateToJS(getters.getIsLogged);
+      expect(isLogged).toBe(false);
     });
   });
 
-  describe('apiPostLogin', function() {
-    it('sends a login POST request', function() {
-      var loginInfo = {
-        foo: 'bar'
+  describe('SUCCESS_LOGIN', function() {
+    it('sets store into logged in state', function() {
+      var data = {
+        UserId: 123
       };
-      LoginStore.apiPostLogin(loginInfo);
-      expect($.ajax).toBeCalledWith({
-        url: '/api/users/login',
-        dataType: 'json',
-        type: 'POST',
-        data: loginInfo,
-        success: jasmine.any(Function),
-        error: jasmine.any(Function)
-      });
+      Flux.dispatch(actionTypes.SUCCESS_LOGIN, { data });
+      const uid = Flux.evaluateToJS(getters.getUid);
+      expect(uid).toBe(123);
     });
   });
 
-  describe('apiPostLoginNFC', function() {
-    it('sends a login(uid) POST request', function() {
-      LoginStore.apiPostLoginNFC(123);
-      expect($.ajax).toBeCalledWith({
-        url: '/api/users/loginuid',
-        method: 'POST',
-        data: {
-          uid: 123
-        },
-        success: jasmine.any(Function),
-        error: jasmine.any(Function)
-      });
+  describe('ERROR_LOGIN', function() {
+    it('sets firstTry to false', function() {
+      Flux.dispatch(actionTypes.ERROR_LOGIN);
+      const firstTry = Flux.evaluateToJS(getters.getFirstTry);
+      expect(firstTry).toBe(false);
     });
   });
 });

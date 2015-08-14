@@ -2,6 +2,8 @@ import LoginStore from '../stores/LoginStore';
 import LoginActions from '../actions/LoginActions';
 import React from 'react';
 import {RouteHandler} from 'react-router';
+import Flux from '../flux';
+import getters from '../getters';
 
 /*
  * App
@@ -10,8 +12,7 @@ import {RouteHandler} from 'react-router';
  * it is in every page
  * navigation bar and footer are in this component
  */
-var App = React.createClass({
-
+ var App = React.createClass({
   /*
    * Render:
    *  - navBar
@@ -21,6 +22,7 @@ var App = React.createClass({
    * If he's logged and there is no nfc port, can switch to user interface
    */
   render: function() {
+    const isLogged = Flux.evaluateToJS(getters.getIsLogged);
     return (
       <div className="app">
 
@@ -32,7 +34,7 @@ var App = React.createClass({
                 <img src="img/logo_fablab_berlin.svg"
                      className="brand-image"/>
               </div>
-              {LoginStore.getIsLogged() ? (
+              {isLogged ? (
                 <div className="col-xs-6 text-right">
                   <button
                     className="btn btn-danger btn-logout pull-right"

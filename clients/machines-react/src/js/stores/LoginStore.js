@@ -1,10 +1,21 @@
 import $ from 'jquery';
+import actionTypes from '../actionTypes';
+import Nuclear from 'nuclear-js';
+import { Store, toImmutable } from 'nuclear-js';
+
+// https://github.com/optimizely/nuclear-js/blob/master/examples/rest-api/src/modules/form/stores/form-store.js
 
 /*
  * import toastr and set position
  */
 import toastr from 'toastr';
 toastr.options.positionClass = 'toast-bottom-left';
+
+const initialState = toImmutable({
+  firstTry: true,
+  isLogged: false,
+  uid: {}
+});
 
 /*
  * Login Store:
@@ -16,135 +27,84 @@ toastr.options.positionClass = 'toast-bottom-left';
  * cleanState
  * onChange
  */
-var LoginStore = {
-  state: {
-    firstTry: true,
-    isLogged: false,
-    uid: {}
+var LoginStore = new Nuclear.Store({
+  getInitialState() {
+    return initialState;
   },
 
-  /*
-   * To logout
-   */
-  apiGetLogout() {
-    $.ajax({
-      url: '/api/users/logout',
-      type: 'GET',
-      cache: false,
-      success: function(data) {
-        this.cleanState();
-      }.bind(this),
-      error: function(xhr, status, err) {
-        console.error('/users/logout', status, err);
-      }.bind(this)
-    });
-  },
+  initialize() {
+    this.on(actionTypes.SUCCESS_LOGIN, successLogin);
+    this.on(actionTypes.ERROR_LOGIN, errorLogin);
+    this.on(actionTypes.SUCCESS_LOGOUT, successLogout);
+  }
+});
 
-  /*
-   * To login
-   */
-  apiPostLogin(loginInfo) {
-    $.ajax({
-      url: '/api/users/login',
-      dataType: 'json',
-      type: 'POST',
-      data: loginInfo,
-      success: function(data) {
-        this.successLogin(data);
-      }.bind(this),
-      error: function(xhr, status, err) {
-        this.errorLogin();
-        console.error('/users/login', status, err);
-      }.bind(this)
-    });
-  },
+/*
+ * Success to the login functions
+ * if data is corrupted, say it to putLoginState
+ */
+function successLogin(state, { data }) {
+  if( data.UserId ) {
+    return putLoginState(state.set('uid', data.UserId));
+  } else {
+    toastr.error('Failed to log in');
+    return putLoginState(state, false);
+  }
+}
 
-  /*
-   * To login with nfc card
-   */
-  apiPostLoginNFC(uid) {
-    $.ajax({
-      url: '/api/users/loginuid',
-      method: 'POST',
-      data: {
-        uid: uid
-      },
-      success: function(data) {
-        this.successLogin(data);
-      }.bind(this),
-      error: function(xhr, status, err) {
-        this.errorLogin();
-        console.error('/users/loginuid', status, err);
-      }.bind(this)
-    });
-  },
+/*
+ * Error callback of the login functions
+ */
+function errorLogin(state) {
+  if (state.get('firstTry')) {
+    return state.set('firstTry', false);
+  } else {
+    toastr.error('Wrong password');
+    return state;
+  }
+}
 
-  /*
-   * Success to the login functions
-   * if data is corrupted, say it to putLoginState
-   */
-  successLogin(data) {
-    if( data.UserId ) {
-      LoginStore.state.uid = data.UserId;
-      LoginStore.putLoginState();
-    } else {
-      toastr.error('Failed to log in');
-      LoginStore.putLoginState(false);
-    }
-  },
+/*
+ * Return the uid of the user
+ */
+function getUid() {
+  return this.state.uid;
+}
 
-  /*
-   * Error callback of the login functions
-   */
-  errorLogin() {
-    if(LoginStore.state.firstTry === true) {
-      LoginStore.state.firstTry = false;
-    } else {
-      toastr.error('Wrong password');
-    }
-  },
+function getIsLogged() {
+  return this.state.isLogged;
+}
 
-  /*
-   * Return the uid of the user
-   */
-  getUid() {
-    return this.state.uid;
-  },
+/*
+ * Clean the store before logout
+ */
+function successLogout(state) {
+  toastr.success('Bye');
+  onChangeLogout();
+  return state.set('isLogged', false)
+              .set('userInfo', {});
+}
 
-  getIsLogged() {
-    return this.state.isLogged;
-  },
+/*
+ * Change state before login
+ * If fail to log, don't change the store
+ */
+function putLoginState(state, log = true) {
+  onChangeLogin();
+  if( log === true ) {
+    return state.set('isLogged', true)
+                .set('firstTry', true);
+  } else {
+    return state;
+  }
+}
 
-  /*
-   * Clean the store before logout
-   */
-  cleanState() {
-    this.state.isLogged = false;
-    this.state.userInfo = {};
-    toastr.success('Bye');
-    this.onChangeLogout();
-  },
+/*
+ * Event triggered when login
+ * See Login page
+ */
+function onChangeLogin() {}
 
-  /*
-   * Change state before login
-   * If fail to log, don't change the store
-   */
-  putLoginState(log = true) {
-    if( log === true ) {
-      this.state.isLogged = true;
-      this.state.firstTry = true;
-    }
-    this.onChangeLogin();
-  },
-
-  /*
-   * Event triggered when login
-   * See Login page
-   */
-  onChangeLogin() {},
-
-  onChangeLogout() {}
-
-};
+function onChangeLogout() {}
 
 module.exports = LoginStore;

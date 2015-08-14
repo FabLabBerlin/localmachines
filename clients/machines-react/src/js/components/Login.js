@@ -1,4 +1,6 @@
 import React from 'react';
+import Flux from '../flux';
+import getters from '../getters';
 import {Navigation} from 'react-router';
 import LoginStore from '../stores/LoginStore';
 import LoginActions from '../actions/LoginActions';
@@ -62,7 +64,8 @@ var Login = React.createClass({
    * Replace the login page url by the user page url
    */
   onChangeLogin() {
-    if( LoginStore.getIsLogged() ) {
+    const isLogged = Flux.evaluateToJS(getters.getIsLogged);
+    if (isLogged) {
       this.replaceWith('/machine');
     }
   },
@@ -74,6 +77,10 @@ var Login = React.createClass({
   componentDidMount() {
     LoginActions.submitLoginForm(this.state);
     LoginStore.onChangeLogin = this.onChangeLogin;
+
+    Flux.observe(getters.getIsLogged, isLogged => {
+      this.onChangeLogin();
+    }.bind(this));
   },
 
   /*

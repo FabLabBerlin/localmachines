@@ -1,5 +1,7 @@
 import $ from 'jquery';
 import React from 'react';
+import Flux from '../flux';
+import getters from '../getters';
 import MachineList from './MachineList';
 import LoginStore from '../stores/LoginStore';
 import MachineStore from '../stores/MachineStore';
@@ -30,7 +32,8 @@ var MachinePage = React.createClass({
    */
   statics: {
     willTransitionTo(transition) {
-      if(!LoginStore.getIsLogged()) {
+      const isLogged = Flux.evaluateToJS(getters.getIsLogged);
+      if(!isLogged) {
         transition.redirect('login');
       }
     }
@@ -41,7 +44,7 @@ var MachinePage = React.createClass({
    * before the component is mounted
    */
   componentWillMount() {
-    let uid = LoginStore.getUid();
+    const uid = Flux.evaluateToJS(getters.getUid);
     MachineActions.fetchData(uid);
   },
 
@@ -150,7 +153,8 @@ var MachinePage = React.createClass({
    * To logout and redirect to login page
    */
   onChangeLogout() {
-    if( !LoginStore.getIsLogged() ) {
+    const isLogged = Flux.evaluateToJS(getters.getIsLogged);
+    if (!isLogged) {
       this.replaceWith('login');
     }
   },
@@ -213,6 +217,10 @@ var MachinePage = React.createClass({
     LoginStore.onChangeLogout = this.onChangeLogout;
     MachineStore.onChangeLogin = this.onChangeLogin;
     this.interval = setInterval(MachineActions.pollActivations, 1500);
+
+    Flux.observe(getters.getIsLogged, isLogged => {
+      this.onChangeLogout();
+    }.bind(this));
   },
 
   connectJsToQt() {

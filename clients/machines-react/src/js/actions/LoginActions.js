@@ -1,17 +1,31 @@
-import LoginStore from '../stores/LoginStore';
+import $ from 'jquery';
+import actionTypes from '../actionTypes';
+import Flux from '../flux';
 import toastr from 'toastr';
 toastr.options.positionClass = 'toast-bottom-left';
 
 /*
  * Action made by the login page
  */
-var LoginActions = {
+export default {
 
   /*
    * Submit login form to log in
    */
   submitLoginForm(content) {
-    LoginStore.apiPostLogin(content);
+    $.ajax({
+      url: '/api/users/login',
+      dataType: 'json',
+      type: 'POST',
+      data: content,
+      success: function(data) {
+        Flux.dispatch(actionTypes.SUCCESS_LOGIN, { data });
+      }.bind(this),
+      error: function(xhr, status, err) {
+        Flux.dispatch(actionTypes.ERROR_LOGIN);
+        console.error('/users/login', status, err);
+      }.bind(this)
+    });
   },
 
   /*
@@ -19,15 +33,37 @@ var LoginActions = {
    * @uid: unique id from the card
    */
   nfcLogin(uid) {
-    LoginStore.apiPostLoginNFC(uid);
+    $.ajax({
+      url: '/api/users/loginuid',
+      method: 'POST',
+      data: {
+        uid: uid
+      },
+      success: function(data) {
+        Flux.dispatch(actionTypes.SUCCESS_LOGIN, { data });
+      }.bind(this),
+      error: function(xhr, status, err) {
+        Flux.dispatch(actionTypes.ERROR_LOGIN);
+        console.error('/users/loginuid', status, err);
+      }.bind(this)
+    });
   },
 
   /*
    * Logout
    */
   logout() {
-    LoginStore.apiGetLogout();
+    $.ajax({
+      url: '/api/users/logout',
+      type: 'GET',
+      cache: false,
+      success: function(data) {
+        Flux.dispatch(actionTypes.SUCCESS_LOGOUT);
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error('/users/logout', status, err);
+      }.bind(this)
+    });
   }
-};
 
-module.exports = LoginActions;
+};

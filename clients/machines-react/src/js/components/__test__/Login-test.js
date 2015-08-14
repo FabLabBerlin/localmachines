@@ -1,7 +1,7 @@
 jest.mock('jquery');
-jest.mock('../../stores/LoginStore.js');
+jest.mock('../../actions/LoginActions.js');
 jest.dontMock('../Login.js');
-jest.dontMock('../../actions/LoginActions.js');
+
 
 
 describe('Login', function() {
@@ -18,7 +18,7 @@ describe('Login', function() {
     var React = require('react/addons');
     var TestUtils = React.addons.TestUtils;
     var Login = require('../Login');
-    var LoginStore = require('../../stores/LoginStore.js');
+    var LoginActions = require('../../actions/LoginActions.js');
     var login = TestUtils.renderIntoDocument(
       <Login />
     );
@@ -44,7 +44,7 @@ describe('Login', function() {
       }
     });
     TestUtils.Simulate.submit(form);
-    expect(LoginStore.apiPostLogin).toBeCalledWith({
+    expect(LoginActions.submitLoginForm).toBeCalledWith({
       username: 'joe',
       password: '123456'
     });

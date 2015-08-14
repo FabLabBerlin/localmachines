@@ -1,9 +1,12 @@
+import Flux from './flux';
 import App from './components/App';
 import LoginChooser from './components/LoginChooser';
 import MachinePage from './components/MachinePage';
 import React from 'react';
 import Router from 'react-router';
 import {DefaultRoute, Route, Routes, NotFoundRoute} from 'react-router';
+import LoginStore from './stores/LoginStore';
+import getters from './getters';
 
 /*
  * Style dependencies for webpack
@@ -25,6 +28,14 @@ let routes = (
     <DefaultRoute handler={MachinePage} />
   </Route>
 );
+
+/*
+ * Define the stores
+ */
+
+Flux.registerStores({
+  loginStore: LoginStore
+});
 
 /*
  * Render everything in the the body of index.html
