@@ -4,5 +4,10 @@ export default keyMirror({
   API_GET_LOGOUT: null,
   SUCCESS_LOGIN: null,
   ERROR_LOGIN: null,
-  SUCCESS_LOGOUT: null
+  SUCCESS_LOGOUT: null,
+
+  MACHINE_STORE_CLEAR_STATE: null,
+  SET_ACTIVATION_INFO: null,
+  SET_USER_INFO: null,
+  SET_MACHINE_INFO: null
 });

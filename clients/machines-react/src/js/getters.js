@@ -1,22 +1,46 @@
 const getIsLogged = [
-	['loginStore'],
-	(loginStore) => {
-		return loginStore.get('isLogged');
-	}
+  ['loginStore'],
+  (loginStore) => {
+    return loginStore.get('isLogged');
+  }
 ];
 
 const getUid = [
-	['loginStore'],
-	(loginStore) => {
-		return loginStore.get('uid');
-	}
+  ['loginStore'],
+  (loginStore) => {
+    return loginStore.get('uid');
+  }
 ];
 
 const getFirstTry = [
-	['loginStore'],
-	(loginStore) => {
-		return loginStore.get('firstTry');
-	}
+  ['loginStore'],
+  (loginStore) => {
+    return loginStore.get('firstTry');
+  }
 ];
 
-export default { getIsLogged, getUid, getFirstTry };
+const getUserInfo = [
+  ['machineStore'],
+  (machineStore) => {
+    return machineStore.get('userInfo');
+  }
+];
+
+const getActivationInfo = [
+  ['machineStore'],
+  (machineStore) => {
+    return machineStore.get('activationInfo');
+  }
+];
+
+const getMachineInfo = [
+  ['machineStore'],
+  (machineStore) => {
+    return machineStore.get('machineInfo') || [];
+  }
+];
+
+export default {
+  getIsLogged, getUid, getFirstTry,
+  getUserInfo, getActivationInfo, getMachineInfo
+};

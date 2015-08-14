@@ -1,83 +1,88 @@
+jest.dontMock('../../flux');
+import actionTypes from '../../actionTypes';
+import Flux from '../../flux';
+import getters from '../../getters';
 jest.mock('jquery');
 jest.dontMock('../MachineStore.js');
 
+function activation() {
+  return [
+    {
+      FirstName: 'Regular',
+      Id: 227,
+      LastName: 'Admin',
+      MachineId: 2,
+      TimeTotal: 1,
+      UserId: 2
+    }
+  ];
+}
+
+function machines() {
+  return [
+    {
+      Id: 1,
+      Name: 'Printer5000'
+    },
+    {
+      Id: 2,
+      Name: 'Form1'
+    }
+  ];
+}
+
+function user() {
+  return {
+    FirstName: 'Regular',
+    Id: 2,
+    LastName: 'Admin',
+    UserRole: 'admin'
+  };
+}
+
 describe('MachineStore', function() {
   var $ = require('jquery');
+  var LoginStore = require('../LoginStore');
   var MachineStore = require('../MachineStore');
 
-  function apiGet(url) {
-    return {
-      url: url || jasmine.any(String),
-      dataType: 'json',
-      type: 'GET',
-      cache: false,
-      success: jasmine.any(Function),
-      error: jasmine.any(Function)
-    };
-  }
+  Flux.registerStores({
+    loginStore: LoginStore,
+    machineStore: MachineStore
+  });
 
-  function apiPost(url, data) {
-    return {
-      url: url || jasmine.any(String),
-      dataType: 'json',
-      type: 'POST',
-      data: data || jasmine.any(Object),
-      success: jasmine.any(Function),
-      error: jasmine.any(Function)
-    };
-  }
-
-  function apiPut(url, data) {
-    return {
-      url: url || jasmine.any(String),
-      method: 'PUT',
-      data: data || jasmine.any(Object),
-      success: jasmine.any(Function),
-      error: jasmine.any(Function)
-    };
-  }
-
-  describe('apiGetUserInfoLogin', function() {
-    it('should GET /api/users/:uid', function() {
-      MachineStore.apiGetUserInfoLogin(123);
-      expect($.ajax).toBeCalledWith(apiGet('/api/users/123'));
+  describe('SET_ACTIVATION_INFO', function() {
+    it('does changes visible via getActivationInfo', function() {
+      var activationInfo = activation();
+      Flux.dispatch(actionTypes.SET_ACTIVATION_INFO, { activationInfo });
+      var actual = Flux.evaluateToJS(getters.getActivationInfo);
+      expect(actual).toEqual(activation());
     });
   });
 
-  describe('apiGetUserMachines', function() {
-    it('should GET /api/users/:uid/machines', function() {
-      MachineStore.apiGetUserMachines(123);
-      expect($.ajax).toBeCalledWith(apiGet('/api/users/123/machines'));
+  describe('SET_USER_INFO', function() {
+    it('does changes visible via getUserInfo', function() {
+      var userInfo = user();
+      Flux.dispatch(actionTypes.SET_USER_INFO, { userInfo });
+      var actual = Flux.evaluateToJS(getters.getUserInfo);
+      expect(actual).toEqual(user());
     });
   });
 
-  describe('apiGetActivationActive', function() {
-    it('should GET /api/activations/active', function() {
-      MachineStore.apiGetActivationActive();
-      expect($.ajax).toBeCalledWith(apiGet('/api/activations/active'));
+  describe('SET_MACHINE_INFO', function() {
+    it('does changes visible via getMachineInfo', function() {
+      var machineInfo = machines();
+      Flux.dispatch(actionTypes.SET_MACHINE_INFO, { machineInfo });
+      var actual = Flux.evaluateToJS(getters.getMachineInfo);
+      expect(actual).toEqual(machines());
     });
   });
 
-  describe('apiPostActivation', function() {
-    it('should POST /api/activations', function() {
-      MachineStore.apiPostActivation(123);
-      expect($.ajax).toBeCalledWith(apiPost('/api/activations'));
-    });
-  });
-
-  describe('apiPutActivation', function() {
-    it('should PUT /api/activations/:aid', function() {
-      MachineStore.apiPutActivation(123);
-      expect($.ajax).toBeCalledWith(apiPut('/api/activations/123'));
-    });
-  });
-
-  describe('apiPostSwitchMachine', function() {
-    describe('on', function() {
-      it('should POST /api/machines/:mid/turn_on', function() {
-        MachineStore.apiPostSwitchMachine(123, 'on');
-        expect($.ajax).toBeCalledWith(apiPost('/api/machines/123/turn_on'));
-      });
+  describe('MACHINE_STORE_CLEAR_STATE', function() {
+    it('clears the state', function() {
+      Flux.dispatch(actionTypes.MACHINE_STORE_CLEAR_STATE);
+      expect(Flux.evaluateToJS(getters.getUserInfo)).toEqual({});
+      expect(Flux.evaluateToJS(getters.getActivationInfo)).toEqual([]);
+      expect(Flux.evaluateToJS(getters.getMachineInfo)).toEqual([]);
     });
   });
 });

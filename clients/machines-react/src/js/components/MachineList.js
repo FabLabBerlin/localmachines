@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React from 'react';
 import MachineChooser from './MachineChooser';
 
@@ -28,14 +29,14 @@ var MachineList = React.createClass({
         let activationProps = false;
         let isMachineBusy = false;
         let isSameUser = false;
-        for( let i in activation ) {
+        _.each(activation, function(a, i) {
           if( machine.Id === activation[i].MachineId ) {
             isMachineBusy = true;
             isSameUser = this.props.user.Id === activation[i].UserId;
             activationProps = activation[i];
-            break;
+            return false;
           }
-        }
+        }.bind(this));
         return (
           <MachineChooser
             key={machine.Id}

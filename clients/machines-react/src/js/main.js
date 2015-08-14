@@ -6,6 +6,7 @@ import React from 'react';
 import Router from 'react-router';
 import {DefaultRoute, Route, Routes, NotFoundRoute} from 'react-router';
 import LoginStore from './stores/LoginStore';
+import MachineStore from './stores/MachineStore';
 import getters from './getters';
 
 /*
@@ -34,7 +35,8 @@ let routes = (
  */
 
 Flux.registerStores({
-  loginStore: LoginStore
+  loginStore: LoginStore,
+  machineStore: MachineStore
 });
 
 /*

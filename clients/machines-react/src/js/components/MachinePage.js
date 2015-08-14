@@ -25,7 +25,7 @@ var MachinePage = React.createClass({
    * Enable some React router function as:
    *  ReplaceWith
    */
-  mixins: [ Navigation ],
+  mixins: [ Navigation, Flux.ReactMixin ],
 
   /*
    * If not logged then redirect to the login page
@@ -52,12 +52,11 @@ var MachinePage = React.createClass({
    * Initial State
    * fetch data from MachineStore
    */
-  getInitialState() {
+  getDataBindings() {
     return {
-      attemptToLog: true,
-      userInfo: MachineStore.getUserInfo(),
-      machineInfo: MachineStore.getMachineInfo(),
-      activationInfo: MachineStore.getActivationInfo()
+      userInfo: getters.getUserInfo,
+      machineInfo: getters.getMachineInfo,
+      activationInfo: getters.getActivationInfo
     };
   },
 
@@ -69,18 +68,6 @@ var MachinePage = React.createClass({
     window.libnfc.cardReaderError.disconnect(this.errorNFCCallback);
     toastr.error(error);
     setTimeout(this.connectJsToQt, 2000);
-  },
-
-  /*
-   * Fetch data to change the state after the initial render
-   */
-  fetchDataFromStore() {
-    return {
-      attemptToLog: false,
-      userInfo: MachineStore.getUserInfo(),
-      machineInfo: MachineStore.getMachineInfo(),
-      activationInfo: MachineStore.getActivationInfo()
-    };
   },
 
   /*
@@ -124,12 +111,6 @@ var MachinePage = React.createClass({
    * Clear state while logout
    */
   clearState() {
-    this.setState({
-      attemptToLog: true,
-      UserInfo: {},
-      machineInfo: [],
-      activationInfo: []
-    });
     MachineActions.clearState();
   },
 
@@ -141,53 +122,12 @@ var MachinePage = React.createClass({
   },
 
   /*
-   * When a new activation is fetch in the store
-   */
-  onChangeActivation() {
-    this.setState({
-      activationInfo: MachineStore.getActivationInfo()
-    });
-  },
-
-  /*
    * To logout and redirect to login page
    */
   onChangeLogout() {
     const isLogged = Flux.evaluateToJS(getters.getIsLogged);
     if (!isLogged) {
       this.replaceWith('login');
-    }
-  },
-
-  /*
-   * When the fectching is done
-   * Set state from the new data
-   */
-  onChangeLogin() {
-    this.setState(this.fetchDataFromStore());
-  },
-
-  /*
-   * Do not update (render) the component when false
-   * If the data aren't not all loaded, return true
-   * If some activation doesn't have a name loaded yet return true
-   * Compare the activation id from the previous state with the new one
-   * If they are the same, do not update
-   *
-   * WARNING: This function is really complicated BECAUSE the api call is badly
-   * and the name is loaded in the store state asynchronously
-   */
-  shouldComponentUpdate(nextProps, nextState) {
-    if( this.state.attemptToLog ) {
-      return true;
-    } else if(this.hasNameInto(this.state.activationInfo) === false){
-      return true;
-    } else {
-      let shouldUpdate = false;
-      let previousId = this.createCompareTable(this.state.activationInfo);
-      let nextId = this.createCompareTable(nextState.activationInfo);
-      shouldUpdate = $(previousId).not(nextId).length === 0 && $(nextId).not(previousId).length === 0;
-      return !shouldUpdate;
     }
   },
 
@@ -237,6 +177,7 @@ var MachinePage = React.createClass({
    * exit button
    */
   render() {
+    var machineInfo = Flux.evaluateToJS(getters.getMachineInfo);
     return (
       <div>
         <div className="logged-user-name">
@@ -247,7 +188,7 @@ var MachinePage = React.createClass({
         </div>
         <MachineList
           user={this.getUserInfoToPassInProps()}
-          info={this.state.machineInfo}
+          info={machineInfo}
           activation={this.state.activationInfo}
         />
         <div className="container-fluid">
