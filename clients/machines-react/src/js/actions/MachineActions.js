@@ -85,7 +85,6 @@ function apiGetUserInfoLogin(uid) {
  */
 function apiGetUserMachines(uid) {
   _getAPICall('/api/users/' + uid + '/machines', function(machineInfo) {
-    console.log('apiGetUserMachines: callback: machineInfo=', machineInfo);
     Flux.dispatch(actionTypes.SET_MACHINE_INFO, { machineInfo });
     apiGetActivationActive();
   });
