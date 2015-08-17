@@ -1,3 +1,4 @@
+import $ from 'jquery';
 import actionTypes from '../actionTypes';
 import Flux from '../flux';
 import getters from '../getters';
@@ -12,7 +13,7 @@ toastr.options.positionClass = 'toast-bottom-left';
 var MachineActions = {
 
   fetchData(uid) {
-    _getAPICall('/api/users/' + uid, this._userInfoSuccess);
+    _getAPICall('/api/users/' + uid, _userInfoSuccess);
   },
 
   /*
@@ -66,22 +67,6 @@ var MachineActions = {
         _nameInAllActivations();
       }
     });
-  },
-
-  /*
-   * Success Callback
-   * Activated when getNameLogin succeed
-   * MachineStore instead of this otherwe it doesn't work
-   */
-  _userInfoSuccess(data) {
-    var uid = data.Id;
-    var usefulInformation = ['Id', 'FirstName', 'LastName', 'UserRole'];
-    var userInfo = {};
-    for(var index in usefulInformation) {
-      userInfo[usefulInformation[index]] = data[usefulInformation[index]];
-    }
-    Flux.dispatch(actionTypes.SET_USER_INFO, { userInfo });
-    apiGetUserMachines(uid);
   }
 
 };
@@ -274,6 +259,22 @@ function _postActivationSuccess(data, toastrMessage = 'Machine activated') {
     Flux.dispatch(actionTypes.SET_ACTIVATION_INFO, { activationInfo });
   };
   _getAPICall('/api/activations/active', successFunction);
+}
+
+/*
+ * Success Callback
+ * Activated when getNameLogin succeed
+ * MachineStore instead of this otherwe it doesn't work
+ */
+function _userInfoSuccess(data) {
+  var uid = data.Id;
+  var usefulInformation = ['Id', 'FirstName', 'LastName', 'UserRole'];
+  var userInfo = {};
+  for(var index in usefulInformation) {
+    userInfo[usefulInformation[index]] = data[usefulInformation[index]];
+  }
+  Flux.dispatch(actionTypes.SET_USER_INFO, { userInfo });
+  apiGetUserMachines(uid);
 }
 
 module.exports = MachineActions;
