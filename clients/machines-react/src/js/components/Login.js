@@ -1,3 +1,4 @@
+var $ = require('jquery');
 var React = require('react');
 var Flux = require('../flux');
 var getters = require('../getters');
@@ -40,7 +41,6 @@ var Login = React.createClass({
   handleSubmit(event) {
     event.preventDefault();
     LoginActions.submitLoginForm(this.state);
-    this.clearAndFocus();
   },
 
   /*
@@ -57,8 +57,15 @@ var Login = React.createClass({
    */
   clearAndFocus() {
     this.setState({username: '', password: ''}, function() {
-      React.findDOMNode(this.refs.name).focus();
-    });
+      this.focus();
+    }.bind(this));
+  },
+
+  focus() {
+    var n = $(this.refs.name.getDOMNode());
+    if (n) {
+      n.focus();
+    }
   },
 
   /*
@@ -78,6 +85,8 @@ var Login = React.createClass({
   componentDidMount() {
     LoginActions.submitLoginForm(this.state);
     LoginStore.onChangeLogin = this.onChangeLogin;
+
+    this.focus();
 
     Flux.observe(getters.getIsLogged, isLogged => {
       this.onChangeLogin();
