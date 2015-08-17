@@ -1,21 +1,19 @@
-import $ from 'jquery';
-import React from 'react';
-import Flux from '../flux';
-import getters from '../getters';
-import MachineList from './MachineList';
-import LoginStore from '../stores/LoginStore';
-import MachineStore from '../stores/MachineStore';
-import MachineActions from '../actions/MachineActions';
-import LoginActions from '../actions/LoginActions';
-import {Navigation} from 'react-router';
-
-import toastr from 'toastr';
-toastr.options.positionClass = 'toast-bottom-left';
+var $ = require('jquery');
+var React = require('react');
+var Flux = require('../flux');
+var getters = require('../getters');
+var MachineList = require('./MachineList');
+var LoginStore = require('../stores/LoginStore');
+var MachineStore = require('../stores/MachineStore');
+var MachineActions = require('../actions/MachineActions');
+var LoginActions = require('../actions/LoginActions');
+var Navigation = require('react-router').Navigation;
+var toastr = require('../toastr');
 
 /*
  * MachinePage:
  * Root component
- * Fetch the information from the store
+ * Fetch the information = require(the store
  * Give it to its children to display the interface
  * TODO: reorganize and documente some function
  */
@@ -50,7 +48,7 @@ var MachinePage = React.createClass({
 
   /*
    * Initial State
-   * fetch data from MachineStore
+   * fetch data = require(MachineStore
    */
   getDataBindings() {
     return {
@@ -83,8 +81,8 @@ var MachinePage = React.createClass({
   },
 
   /*
-   * Create a table of the Id from an array
-   * Used in shouldComponentUpdate to know get the id from previous state and next one
+   * Create a table of the Id = require(an array
+   * Used in shouldComponentUpdate to know get the id = require(previous state and next one
    */
   createCompareTable(state) {
     let table = [];
@@ -146,7 +144,7 @@ var MachinePage = React.createClass({
 
   /*
    * Call when the component is mounted in DOM
-   * Synchronize invent from stores
+   * Synchronize invent = require(stores
    * Activate a polling (1,5s)
    */
   componentDidMount() {
@@ -201,4 +199,4 @@ var MachinePage = React.createClass({
   }
 });
 
-module.exports = MachinePage;
+export default MachinePage;

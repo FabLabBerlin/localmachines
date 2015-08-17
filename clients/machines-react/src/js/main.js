@@ -1,13 +1,13 @@
-import Flux from './flux';
-import App from './components/App';
-import LoginChooser from './components/LoginChooser';
-import MachinePage from './components/MachinePage';
-import React from 'react';
-import Router from 'react-router';
-import {DefaultRoute, Route, Routes, NotFoundRoute} from 'react-router';
-import LoginStore from './stores/LoginStore';
-import MachineStore from './stores/MachineStore';
-import getters from './getters';
+var Flux = require('./flux');
+var App = require('./components/App');
+var LoginChooser = require('./components/LoginChooser');
+var MachinePage = require('./components/MachinePage');
+var React = require('react');
+var Router = require('react-router');
+var {DefaultRoute, Route, Routes, NotFoundRoute} = require('react-router');
+var LoginStore = require('./stores/LoginStore');
+var MachineStore = require('./stores/MachineStore');
+var getters = require('./getters');
 
 /*
  * Style dependencies for webpack
@@ -18,6 +18,7 @@ require('../assets/less/common.less');
 require('font-awesome-webpack');
 require('toastr/build/toastr.min.css');
 require('vex/css/vex.css');
+
 
 /*
  * Defined all the routes of the panel

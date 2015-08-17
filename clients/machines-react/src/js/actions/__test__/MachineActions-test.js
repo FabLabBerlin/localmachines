@@ -1,9 +1,11 @@
 jest.mock('jquery');
 jest.mock('../../flux');
+
 var $ = require('jquery');
 var actionTypes = require('../../actionTypes');
 var MachineActions = require('../MachineActions');
 var Flux = require('../../flux');
+
 
 describe('MachineActions', function() {
   describe('fetchData', function() {

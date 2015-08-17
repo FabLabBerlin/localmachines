@@ -1,9 +1,10 @@
-import React from 'react';
-import Flux from '../flux';
-import getters from '../getters';
-import {Navigation} from 'react-router';
-import LoginStore from '../stores/LoginStore';
-import LoginActions from '../actions/LoginActions';
+var React = require('react');
+var Flux = require('../flux');
+var getters = require('../getters');
+var {Navigation} = require('react-router');
+var LoginStore = require('../stores/LoginStore');
+var LoginActions = require('../actions/LoginActions');
+
 
 /*
  * Login component
@@ -133,4 +134,4 @@ var Login = React.createClass({
   }
 });
 
-module.exports = Login;
+export default Login;

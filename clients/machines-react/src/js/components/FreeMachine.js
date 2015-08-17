@@ -1,6 +1,7 @@
-import React from 'react';
-import ForceSwitch from './ForceSwitch';
-import MachineActions from '../actions/MachineActions';
+var React = require('react');
+var ForceSwitch = require('./ForceSwitch');
+var MachineActions = require('../actions/MachineActions');
+
 
 /*
  * Div displayed the machine is free
@@ -48,4 +49,4 @@ var FreeMachine = React.createClass({
   }
 });
 
-module.exports = FreeMachine;
+export default FreeMachine;

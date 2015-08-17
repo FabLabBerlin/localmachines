@@ -3,7 +3,6 @@ jest.mock('../../actions/LoginActions.js');
 jest.dontMock('../Login.js');
 
 
-
 describe('Login', function() {
   it('renders Log In and Sign Up', function() {
     var React = require('react');

@@ -1,9 +1,10 @@
-import LoginStore from '../stores/LoginStore';
-import LoginActions from '../actions/LoginActions';
-import React from 'react';
-import {RouteHandler} from 'react-router';
-import Flux from '../flux';
-import getters from '../getters';
+var Flux = require('../flux');
+var getters = require('../getters');
+var LoginStore = require('../stores/LoginStore');
+var LoginActions = require('../actions/LoginActions');
+var React = require('react');
+var RouteHandler = require('react-router').RouteHandler;
+
 
 /*
  * App
@@ -69,4 +70,4 @@ import getters from '../getters';
   }
 });
 
-module.exports = App;
+export default App;

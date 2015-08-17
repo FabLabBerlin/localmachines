@@ -1,4 +1,4 @@
-import React from 'react';
+var React = require('react');
 
 /*
  * Methode to int to be display in hour format
@@ -60,4 +60,4 @@ var Timer = React.createClass({
   }
 });
 
-module.exports = Timer;
+export default Timer;

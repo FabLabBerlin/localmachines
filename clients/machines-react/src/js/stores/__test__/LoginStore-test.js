@@ -1,19 +1,19 @@
 jest.dontMock('../../flux');
-import actionTypes from '../../actionTypes';
-import Flux from '../../flux';
-import getters from '../../getters';
 jest.mock('jquery');
 jest.mock('toastr');
 jest.dontMock('../LoginStore.js');
 
-describe('LoginStore', function() {
-  var $ = require('jquery');
-  var LoginStore = require('../LoginStore');
+var $ = require('jquery');
+var actionTypes = require('../../actionTypes');
+var Flux = require('../../flux');
+var getters = require('../../getters');
+var LoginStore = require('../LoginStore');
 
+
+describe('LoginStore', function() {
   Flux.registerStores({
     loginStore: LoginStore
   });
-
 
   describe('SUCCESS_LOGOUT', function() {
     it('sets store into logout state', function() {

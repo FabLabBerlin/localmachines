@@ -1,8 +1,8 @@
-import React from 'react';
-import MachineActions from '../actions/MachineActions';
-import OccupiedMachine from './OccupiedMachine';
-import BusyMachine from './BusyMachine';
-import FreeMachine from './FreeMachine';
+var React = require('react');
+var MachineActions = require('../actions/MachineActions');
+var OccupiedMachine = require('./OccupiedMachine');
+var BusyMachine = require('./BusyMachine');
+var FreeMachine = require('./FreeMachine');
 
 // https://github.com/HubSpot/vex/issues/72
 var vex = require('vex-js'),
@@ -127,4 +127,4 @@ var MachineChooser = React.createClass({
   }
 });
 
-module.exports = MachineChooser;
+export default MachineChooser;

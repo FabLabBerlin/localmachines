@@ -1,6 +1,7 @@
-import React from 'react';
-import LoginNfc from './LoginNfc';
-import Login from './Login';
+var Login = require('./Login');
+var LoginNfc = require('./LoginNfc');
+var React = require('react');
+
 
 /*
  * LoginChooser
@@ -21,4 +22,4 @@ var LoginChooser = React.createClass({
   }
 });
 
-module.exports = LoginChooser;
+export default LoginChooser;

@@ -1,8 +1,8 @@
-import $ from 'jquery';
-import actionTypes from '../actionTypes';
-import Flux from '../flux';
-import toastr from 'toastr';
-toastr.options.positionClass = 'toast-bottom-left';
+var $ = require('jquery');
+var actionTypes = require('../actionTypes');
+var Flux = require('../flux');
+var toastr = require('../toastr');
+
 
 /*
  * Action made by the login page

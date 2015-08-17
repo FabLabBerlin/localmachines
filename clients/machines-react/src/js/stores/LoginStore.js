@@ -1,15 +1,9 @@
-import $ from 'jquery';
-import actionTypes from '../actionTypes';
-import Nuclear from 'nuclear-js';
-import { Store, toImmutable } from 'nuclear-js';
+var $ = require('jquery');
+var actionTypes = require('../actionTypes');
+var Nuclear = require('nuclear-js');
+var toImmutable = Nuclear.toImmutable;
+var toastr = require('../toastr');
 
-// https://github.com/optimizely/nuclear-js/blob/master/examples/rest-api/src/modules/form/stores/form-store.js
-
-/*
- * import toastr and set position
- */
-import toastr from 'toastr';
-toastr.options.positionClass = 'toast-bottom-left';
 
 const initialState = toImmutable({
   firstTry: true,
@@ -44,7 +38,7 @@ var LoginStore = new Nuclear.Store({
  * if data is corrupted, say it to putLoginState
  */
 function successLogin(state, { data }) {
-  if( data.UserId ) {
+  if (data.UserId) {
     return putLoginState(state.set('uid', data.UserId));
   } else {
     toastr.error('Failed to log in');
@@ -91,7 +85,7 @@ function successLogout(state) {
  */
 function putLoginState(state, log = true) {
   onChangeLogin();
-  if( log === true ) {
+  if (log) {
     return state.set('isLogged', true)
                 .set('firstTry', true);
   } else {
@@ -107,4 +101,4 @@ function onChangeLogin() {}
 
 function onChangeLogout() {}
 
-module.exports = LoginStore;
+export default LoginStore;

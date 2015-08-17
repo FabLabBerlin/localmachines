@@ -1,7 +1,8 @@
-import React from 'react';
-import ForceSwitch from './ForceSwitch';
-import MachineActions from '../actions/MachineActions';
-import Timer from './Timer';
+var ForceSwitch = require('./ForceSwitch');
+var MachineActions = require('../actions/MachineActions');
+var React = require('react');
+var Timer = require('./Timer');
+
 
 /*
  * Div displayed when a machine is busy
@@ -40,4 +41,4 @@ var BusyMachine = React.createClass({
   }
 });
 
-module.exports = BusyMachine;
+export default BusyMachine;

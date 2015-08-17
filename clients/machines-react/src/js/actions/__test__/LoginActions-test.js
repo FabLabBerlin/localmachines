@@ -1,4 +1,5 @@
 jest.mock('jquery');
+
 var $ = require('jquery');
 var LoginActions = require('../LoginActions');
 

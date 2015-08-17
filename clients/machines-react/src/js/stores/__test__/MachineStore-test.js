@@ -1,9 +1,11 @@
 jest.dontMock('../../flux');
-import actionTypes from '../../actionTypes';
-import Flux from '../../flux';
-import getters from '../../getters';
 jest.mock('jquery');
 jest.dontMock('../MachineStore.js');
+
+var actionTypes = require('../../actionTypes');
+var Flux = require('../../flux');
+var getters = require('../../getters');
+
 
 function activation() {
   return [

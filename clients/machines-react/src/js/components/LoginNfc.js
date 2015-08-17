@@ -1,10 +1,10 @@
-import React from 'react';
-import {Navigation} from 'react-router';
-import LoginStore from '../stores/LoginStore';
-import LoginActions from '../actions/LoginActions';
+var React = require('react');
+var Navigation = require('react-router').Navigation;
+var LoginStore = require('../stores/LoginStore');
+var LoginActions = require('../actions/LoginActions');
+var toastr = require('toastr');
 
-import toastr from 'toastr';
-toastr.options.positionClass = 'toast-bottom-left';
+
 /*
  * LoginNfc
  * Component to Login if there is window.libnfc
@@ -83,4 +83,4 @@ var LoginNfc = React.createClass({
   }
 });
 
-module.exports = LoginNfc;
+export default LoginNfc;

@@ -1,7 +1,8 @@
-import React from 'react';
-import ForceSwitch from './ForceSwitch';
-import MachineActions from '../actions/MachineActions';
-import Timer from './Timer';
+var ForceSwitch = require('./ForceSwitch');
+var MachineActions = require('../actions/MachineActions');
+var React = require('react');
+var Timer = require('./Timer');
+
 
 var OccupiedMachine = React.createClass({
 
@@ -48,4 +49,4 @@ var OccupiedMachine = React.createClass({
   }
 });
 
-module.exports = OccupiedMachine;
+export default OccupiedMachine;

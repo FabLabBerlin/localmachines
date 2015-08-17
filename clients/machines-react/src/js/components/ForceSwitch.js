@@ -1,4 +1,4 @@
-import React from 'react';
+var React = require('react');
 
 
 var ForceSwitch = React.createClass({
@@ -35,4 +35,4 @@ var ForceSwitch = React.createClass({
   }
 });
 
-module.exports = ForceSwitch;
+export default ForceSwitch;

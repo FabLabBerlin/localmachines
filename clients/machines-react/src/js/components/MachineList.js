@@ -1,6 +1,7 @@
-import _ from 'lodash';
-import React from 'react';
-import MachineChooser from './MachineChooser';
+var _ = require('lodash');
+var React = require('react');
+var MachineChooser = require('./MachineChooser');
+
 
 /*
  * MachineList component:
@@ -59,4 +60,4 @@ var MachineList = React.createClass({
   }
 });
 
-module.exports = MachineList;
+export default MachineList;

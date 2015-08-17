@@ -1,14 +1,10 @@
-import $ from 'jquery';
-import actionTypes from '../actionTypes';
-import Flux from '../flux';
-import getters from '../getters';
-import MachineStore from '../stores/MachineStore';
+var $ = require('jquery');
+var actionTypes = require('../actionTypes');
+var Flux = require('../flux');
+var getters = require('../getters');
+var MachineStore = require('../stores/MachineStore');
+var toastr = require('../toastr');
 
-/*
- * import toastr and set position
- */
-import toastr from 'toastr';
-toastr.options.positionClass = 'toast-bottom-left';
 
 var MachineActions = {
 
@@ -276,4 +272,4 @@ function _userInfoSuccess(data) {
   apiGetUserMachines(uid);
 }
 
-module.exports = MachineActions;
+export default MachineActions;

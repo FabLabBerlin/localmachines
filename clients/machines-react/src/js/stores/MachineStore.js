@@ -1,8 +1,9 @@
-import $ from 'jquery';
-import _ from 'lodash';
-import actionTypes from '../actionTypes';
-import Nuclear from 'nuclear-js';
-import { Store, toImmutable } from 'nuclear-js';
+var $ = require('jquery');
+var _ = require('lodash');
+var actionTypes = require('../actionTypes');
+var Nuclear = require('nuclear-js');
+var toImmutable = Nuclear.toImmutable;
+
 
 const initialState = toImmutable({
   userInfo: {},
@@ -73,4 +74,4 @@ function setUserInfo(state, { userInfo }) {
   return state.set('userInfo', userInfo);
 }
 
-module.exports = MachineStore;
+export default MachineStore;
