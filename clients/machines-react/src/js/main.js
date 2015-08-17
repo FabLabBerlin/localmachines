@@ -43,6 +43,6 @@ Flux.registerStores({
 /*
  * Render everything in the the body of index.html
  */
-Router.run(routes, Router.HashLocalion, function(Handler) {
+Router.run(routes, Router.HashLocation, function(Handler) {
   React.render(<Handler />, document.body);
 });
