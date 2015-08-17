@@ -150,9 +150,9 @@ function apiPostSwitchMachine(mid, onOrOff, aid = '') {
 
 function apiGetActivationActive() {
   _getAPICall('/api/activations/active', function(data) {
-    var shortActivation = _formatActivation(data);
-    Flux.dispatch(actionTypes.SET_ACTIVATION_INFO, shortActivation);
-    if (shortActivation.length !== 0) {
+    var activationInfo = _formatActivation(data);
+    Flux.dispatch(actionTypes.SET_ACTIVATION_INFO, { activationInfo });
+    if (activationInfo.length !== 0) {
       _nameInAllActivations();
     }
   });
