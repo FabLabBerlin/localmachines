@@ -176,26 +176,30 @@ var MachinePage = React.createClass({
    */
   render() {
     var machineInfo = Flux.evaluateToJS(getters.getMachineInfo);
-    return (
-      <div>
-        <div className="logged-user-name">
-          <div className="text-center ng-binding">
-            <i className="fa fa-user-secret"></i>&nbsp;
-            {this.state.userInfo.FirstName} {this.state.userInfo.LastName}
+    if (this.state.activationInfo) {
+      return (
+        <div>
+          <div className="logged-user-name">
+            <div className="text-center ng-binding">
+              <i className="fa fa-user-secret"></i>&nbsp;
+              {this.state.userInfo.FirstName} {this.state.userInfo.LastName}
+            </div>
+          </div>
+          <MachineList
+            user={this.getUserInfoToPassInProps()}
+            info={machineInfo}
+            activation={this.state.activationInfo}
+          />
+          <div className="container-fluid">
+            <button
+              onClick={this.handleLogout}
+              className="btn btn-lg btn-block btn-danger btn-logout-bottom" > Exit </button>
           </div>
         </div>
-        <MachineList
-          user={this.getUserInfoToPassInProps()}
-          info={machineInfo}
-          activation={this.state.activationInfo}
-        />
-        <div className="container-fluid">
-          <button
-            onClick={this.handleLogout}
-            className="btn btn-lg btn-block btn-danger btn-logout-bottom" > Exit </button>
-        </div>
-      </div>
-    );
+      );
+    } else {
+      return <div/>;
+    }
   }
 });
 
