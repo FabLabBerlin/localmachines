@@ -1,5 +1,7 @@
 #User client
 
+Please use `io.js`. At the time of writing this the latest version of io.js is `3.0.0`.
+
 ##Quickstart
 
 - `npm test` to run unit tests
