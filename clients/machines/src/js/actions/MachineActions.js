@@ -102,6 +102,7 @@ function apiPutActivation(aid) {
       _postActivationSuccess(data, 'Machine deactivated');
     }.bind(this),
     error: function(xhr, status, err) {
+      toastr.error('Failed to deactivate');
       console.error('/api/activation/aid', status, err.toString());
     }.bind(this)
   });
