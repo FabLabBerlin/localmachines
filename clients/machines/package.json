@@ -1,20 +1,72 @@
 {
-  "name": "fabsmith-office",
-  "version": "0.1.0",
-  "description": "Office tools for FabSmith",
-  "author": "Krisjanis Rijnieks <krisjanis@rijnieks.lv>",
+  "name": "webpack-test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "pretest": "eslint src",
+    "test": "jest",
+    "dev": "webpack --watch --progress --colors",
+    "prod": "NODE_ENV=production webpack -p --progress --colors"
+  },
+  "author": "",
+  "license": "ISC",
   "devDependencies": {
-    "grunt": "^0.4.5",
-    "grunt-contrib-clean": "^0.6.0",
-    "grunt-contrib-concat": "^0.5.0",
-    "grunt-contrib-copy": "^0.5.0",
-    "grunt-contrib-jshint": "^0.10.0",
-    "grunt-contrib-less": "^0.11.4",
-    "grunt-contrib-uglify": "^0.5.1",
-    "grunt-contrib-watch": "^0.6.1",
-    "grunt-notify": "^0.3.1",
-    "grunt-text-replace": "^0.4.0",
-    "grunt-processhtml": "^0.3.3",
-    "bower": "*"
+    "babel-eslint": "^4.0.5",
+    "babel-jest": "^5.3.0",
+    "babel-loader": "^5.1.4",
+    "bootstrap-less": "^3.3.8",
+    "css-loader": "^0.15.3",
+    "eslint": "^0.24.1",
+    "file-loader": "^0.8.4",
+    "font-awesome": "^4.3.0",
+    "font-awesome-webpack": "0.0.3",
+    "jest-cli": "git://github.com/facebook/jest.git#0.5.x",
+    "jquery": "^2.1.4",
+    "less": "^2.5.1",
+    "less-loader": "^2.2.0",
+    "lodash": "^3.10.0",
+    "node-libs-browser": "^0.5.2",
+    "nuclear-js": "^1.1.1",
+    "react": "^0.13.3",
+    "react-router": "^0.13.3",
+    "style-loader": "^0.12.3",
+    "toastr": "^2.1.0",
+    "url-loader": "^0.5.6",
+    "vex-js": "^2.3.2",
+    "webpack": "^1.9.10"
+  },
+  "jest": {
+    "rootDir": ".",
+    "testDirectoryName": "__test__",
+    "scriptPreprocessor": "<rootDir>/preprocessor",
+    "unmockedModulePathPatterns": [
+      "react"
+    ]
+  },
+  "eslintConfig": {
+    "parser": "babel-eslint",
+    "ecmaFeatures": {
+      "modules": true
+    },
+    "env": {
+      "es6": true
+    },
+    "rules": {
+      "no-console": 0,
+      "no-extra-bind": 0,
+      "no-undef": 0,
+      "no-underscore-dangle": 0,
+      "no-use-before-define": 0,
+      "no-unused-vars": 0,
+      "quotes": [
+        1,
+        "single"
+      ],
+      "strict": [
+        2,
+        "never"
+      ]
+    }
   }
 }

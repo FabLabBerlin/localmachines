@@ -115,9 +115,7 @@ describe('UserStore test', function() {
     FirstName: "Regular",
     LastName: "User",
     Username: "user",
-    Email: "user@example.com",
-    InvoiceAddr: 0,
-    ShipAddr: 0
+    Email: "user@example.com"
   };
 
   var emptyState = {
