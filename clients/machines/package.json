@@ -21,7 +21,7 @@
     "file-loader": "^0.8.4",
     "font-awesome": "^4.3.0",
     "font-awesome-webpack": "0.0.3",
-    "jest-cli": "git://github.com/facebook/jest.git#0.5.x",
+    "jest-cli": "git://github.com/facebook/jest.git#v0.5.0",
     "jquery": "^2.1.4",
     "less": "^2.5.1",
     "less-loader": "^2.2.0",
