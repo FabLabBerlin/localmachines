@@ -98,44 +98,62 @@ var Login = React.createClass({
    */
   render() {
     return (
-      <div className="app" >
-        <div className="container-fluid">
-          <div className="regular-login" >
-            <form className="login-form"
-              onSubmit={this.handleSubmit} >
-              <h2 className="login-heading">Please log in</h2>
-              <input
-                ref="name"
-                type="text"
-                name="username"
-                className="form-control"
-                value={this.state.username}
-                onChange={this.handleChange}
-                placeholder="Username"
-                required
-                autofocus
-              />
-              <input
-                type="password"
-                name="password"
-                className="form-control"
-                ref="Password"
-                value={this.state.password}
-                onChange={this.handleChange}
-                placeholder="password"
-                required
-              />
-              <button className="btn btn-primary btn-block btn-login"
-                type="submit">Log In</button>
+      <div className="app">
+        <div className="login">
+          <div className="container-fluid">
 
-              <div className="signup-link">
-                <button className="btn btn-lg btn-info"
-                  onClick={this.goToSignUp}>
-                  <i className="fa fa-sign-in"></i>
-                  Sign up
-                </button>
-              </div>
+            <form className="login-form" onSubmit={this.handleSubmit}>
+
+              {window.libnfc ? (
+                <div className="nfc-login">
+                  <div className="nfc-login-info-icon">
+                    <i className="fa fa-credit-card"></i>
+                  </div>
+                  <div className="nfc-login-info-text">
+                    <p>Use your NFC card to log in</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="regular-login">
+                  <h2 className="login-heading">Please log in</h2>
+                  <input
+                    ref="name"
+                    type="text"
+                    name="username"
+                    className="form-control"
+                    value={this.state.username}
+                    onChange={this.handleChange}
+                    placeholder="Username"
+                    required
+                    autofocus
+                  />
+                  <input
+                    type="password"
+                    name="password"
+                    className="form-control"
+                    ref="Password"
+                    value={this.state.password}
+                    onChange={this.handleChange}
+                    placeholder="password"
+                    required
+                  />
+                  <button className="btn btn-primary btn-block btn-login"
+                    type="submit">Log In</button>
+                  
+                  {window.libnfc ? ('') : (
+                    <div className="signup-link">
+                      Do not have an account yet? <a href="#" 
+                        onClick={this.goToSignUp}>
+                        Sign up
+                      </a> now!
+                    </div>
+                  )}
+
+                </div>
+              )}
+
             </form>
+
           </div>
         </div>
       </div>

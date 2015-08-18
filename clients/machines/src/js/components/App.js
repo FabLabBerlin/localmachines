@@ -59,7 +59,7 @@ var RouteHandler = require('react-router').RouteHandler;
 
         <RouteHandler />
 
-        <footer>
+        <footer className="absolute-bottom">
           <div className="container-fluid">
             <i className="fa fa-copyright"></i> Fab Lab Berlin 2015
           </div>
