@@ -61,12 +61,10 @@ function clearState(state) {
 }
 
 function setActivationInfo(state, { activationInfo }) {
-  console.log('MachineStore.js#setActivationInfo: activationInfo=', activationInfo);
   return state.set('activationInfo', activationInfo);
 }
 
 function setMachineInfo(state, { machineInfo }) {
-  console.log('MachineStore.js#setMachineInfo, machineInfo=', machineInfo);
   return state.set('machineInfo', machineInfo);
 }
 

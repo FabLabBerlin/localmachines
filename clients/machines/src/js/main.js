@@ -1,13 +1,13 @@
-var Flux = require('./flux');
 var App = require('./components/App');
+var getters = require('./getters');
 var LoginChooser = require('./components/LoginChooser');
+var LoginStore = require('./stores/LoginStore');
 var MachinePage = require('./components/MachinePage');
+var MachineStore = require('./stores/MachineStore');
 var React = require('react');
+var reactor = require('./reactor');
 var Router = require('react-router');
 var {DefaultRoute, Route, Routes, NotFoundRoute} = require('react-router');
-var LoginStore = require('./stores/LoginStore');
-var MachineStore = require('./stores/MachineStore');
-var getters = require('./getters');
 
 /*
  * Style dependencies for webpack
@@ -35,7 +35,7 @@ let routes = (
  * Define the stores
  */
 
-Flux.registerStores({
+reactor.registerStores({
   loginStore: LoginStore,
   machineStore: MachineStore
 });

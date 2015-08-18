@@ -1,4 +1,4 @@
-var Flux = require('../flux');
+var reactor = require('../reactor');
 var getters = require('../getters');
 var LoginStore = require('../stores/LoginStore');
 var LoginActions = require('../actions/LoginActions');
@@ -23,7 +23,7 @@ var RouteHandler = require('react-router').RouteHandler;
    * If he's logged and there is no nfc port, can switch to user interface
    */
   render: function() {
-    const isLogged = Flux.evaluateToJS(getters.getIsLogged);
+    const isLogged = reactor.evaluateToJS(getters.getIsLogged);
     return (
       <div className="app">
 

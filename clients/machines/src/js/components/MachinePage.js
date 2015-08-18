@@ -1,6 +1,4 @@
 var $ = require('jquery');
-var React = require('react');
-var Flux = require('../flux');
 var getters = require('../getters');
 var MachineList = require('./MachineList');
 var LoginStore = require('../stores/LoginStore');
@@ -8,6 +6,8 @@ var MachineStore = require('../stores/MachineStore');
 var MachineActions = require('../actions/MachineActions');
 var LoginActions = require('../actions/LoginActions');
 var Navigation = require('react-router').Navigation;
+var React = require('react');
+var reactor = require('../reactor');
 var toastr = require('../toastr');
 
 /*
@@ -23,14 +23,14 @@ var MachinePage = React.createClass({
    * Enable some React router function as:
    *  ReplaceWith
    */
-  mixins: [ Navigation, Flux.ReactMixin ],
+  mixins: [ Navigation, reactor.ReactMixin ],
 
   /*
    * If not logged then redirect to the login page
    */
   statics: {
     willTransitionTo(transition) {
-      const isLogged = Flux.evaluateToJS(getters.getIsLogged);
+      const isLogged = reactor.evaluateToJS(getters.getIsLogged);
       if(!isLogged) {
         transition.redirect('login');
       }
@@ -42,7 +42,7 @@ var MachinePage = React.createClass({
    * before the component is mounted
    */
   componentWillMount() {
-    const uid = Flux.evaluateToJS(getters.getUid);
+    const uid = reactor.evaluateToJS(getters.getUid);
     MachineActions.fetchData(uid);
   },
 
@@ -123,7 +123,7 @@ var MachinePage = React.createClass({
    * To logout and redirect to login page
    */
   onChangeLogout() {
-    const isLogged = Flux.evaluateToJS(getters.getIsLogged);
+    const isLogged = reactor.evaluateToJS(getters.getIsLogged);
     if (!isLogged) {
       this.replaceWith('login');
     }
@@ -156,7 +156,7 @@ var MachinePage = React.createClass({
     MachineStore.onChangeLogin = this.onChangeLogin;
     this.interval = setInterval(MachineActions.pollActivations, 1500);
 
-    Flux.observe(getters.getIsLogged, isLogged => {
+    reactor.observe(getters.getIsLogged, isLogged => {
       this.onChangeLogout();
     }.bind(this));
   },
@@ -175,7 +175,7 @@ var MachinePage = React.createClass({
    * exit button
    */
   render() {
-    var machineInfo = Flux.evaluateToJS(getters.getMachineInfo);
+    var machineInfo = reactor.evaluateToJS(getters.getMachineInfo);
     if (this.state.activationInfo) {
       return (
         <div>

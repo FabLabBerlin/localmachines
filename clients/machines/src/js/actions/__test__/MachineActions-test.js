@@ -2,12 +2,12 @@ jest.dontMock('../../actionTypes');
 jest.dontMock('../MachineActions');
 jest.dontMock('nuclear-js');
 jest.mock('jquery');
-jest.mock('../../flux');
+jest.mock('../../reactor');
 
 var $ = require('jquery');
 var actionTypes = require('../../actionTypes');
 var MachineActions = require('../MachineActions');
-var Flux = require('../../flux');
+var reactor = require('../../reactor');
 
 
 describe('MachineActions', function() {
@@ -85,7 +85,7 @@ describe('MachineActions', function() {
   describe('clearState', function() {
     it('triggers action MACHINE_STORE_CLEAR_STATE', function() {
       MachineActions.clearState();
-      expect(Flux.dispatch).toBeCalledWith(actionTypes.MACHINE_STORE_CLEAR_STATE);
+      expect(reactor.dispatch).toBeCalledWith(actionTypes.MACHINE_STORE_CLEAR_STATE);
     });
   });
 

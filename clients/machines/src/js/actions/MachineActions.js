@@ -1,8 +1,8 @@
 var $ = require('jquery');
 var actionTypes = require('../actionTypes');
-var Flux = require('../flux');
 var getters = require('../getters');
 var MachineStore = require('../stores/MachineStore');
+var reactor = require('../reactor');
 var toastr = require('../toastr');
 
 
@@ -49,7 +49,7 @@ var MachineActions = {
    * Clear store state while logout
    */
   clearState() {
-    Flux.dispatch(actionTypes.MACHINE_STORE_CLEAR_STATE);
+    reactor.dispatch(actionTypes.MACHINE_STORE_CLEAR_STATE);
   },
 
   /*
@@ -58,7 +58,7 @@ var MachineActions = {
   pollActivations() {
     _getAPICall('/api/activations/active', function(data) {
       var activationInfo = _formatActivation(data);
-      Flux.dispatch(actionTypes.SET_ACTIVATION_INFO, { activationInfo });
+      reactor.dispatch(actionTypes.SET_ACTIVATION_INFO, { activationInfo });
       if (activationInfo.length !== 0) {
         _nameInAllActivations();
       }
@@ -81,7 +81,7 @@ function apiGetUserInfoLogin(uid) {
  */
 function apiGetUserMachines(uid) {
   _getAPICall('/api/users/' + uid + '/machines', function(machineInfo) {
-    Flux.dispatch(actionTypes.SET_MACHINE_INFO, { machineInfo });
+    reactor.dispatch(actionTypes.SET_MACHINE_INFO, { machineInfo });
     apiGetActivationActive();
   });
 }
@@ -151,7 +151,7 @@ function apiPostSwitchMachine(mid, onOrOff, aid = '') {
 function apiGetActivationActive() {
   _getAPICall('/api/activations/active', function(data) {
     var activationInfo = _formatActivation(data);
-    Flux.dispatch(actionTypes.SET_ACTIVATION_INFO, { activationInfo });
+    reactor.dispatch(actionTypes.SET_ACTIVATION_INFO, { activationInfo });
     if (activationInfo.length !== 0) {
       _nameInAllActivations();
     }
@@ -223,7 +223,7 @@ function _formatActivation(rawActivation) {
  * Call nameInOneActivation
  */
 function _nameInAllActivations() {
-  const activationInfo = Flux.evaluateToJS(getters.getActivationInfo);
+  const activationInfo = reactor.evaluateToJS(getters.getActivationInfo);
   _.forEach(activationInfo, function(activation, i) {
     _nameInOneActivation(activation, i);
   }.bind(this));
@@ -236,7 +236,7 @@ function _nameInAllActivations() {
 function _nameInOneActivation(activation, index) {
   _getAPICall('/api/users/' + activation.UserId + '/name', function(userData) {
     _.merge(activation, userData);
-    const isLogged = Flux.evaluateToJS(getters.getIsLogged);
+    const isLogged = reactor.evaluateToJS(getters.getIsLogged);
     if (!isLogged) {
       MachineStore.onChangeActivation();
     }
@@ -251,7 +251,7 @@ function _postActivationSuccess(data, toastrMessage = 'Machine activated') {
   toastr.success(toastrMessage);
   var successFunction = function(getData) {
     var activationInfo = _formatActivation(getData);
-    Flux.dispatch(actionTypes.SET_ACTIVATION_INFO, { activationInfo });
+    reactor.dispatch(actionTypes.SET_ACTIVATION_INFO, { activationInfo });
   };
   _getAPICall('/api/activations/active', successFunction);
 }
@@ -268,7 +268,7 @@ function _userInfoSuccess(data) {
   for(var index in usefulInformation) {
     userInfo[usefulInformation[index]] = data[usefulInformation[index]];
   }
-  Flux.dispatch(actionTypes.SET_USER_INFO, { userInfo });
+  reactor.dispatch(actionTypes.SET_USER_INFO, { userInfo });
   apiGetUserMachines(uid);
 }
 

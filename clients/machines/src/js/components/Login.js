@@ -1,10 +1,10 @@
 var $ = require('jquery');
-var React = require('react');
-var Flux = require('../flux');
 var getters = require('../getters');
-var {Navigation} = require('react-router');
 var LoginStore = require('../stores/LoginStore');
 var LoginActions = require('../actions/LoginActions');
+var {Navigation} = require('react-router');
+var React = require('react');
+var reactor = require('../reactor');
 
 
 /*
@@ -72,7 +72,7 @@ var Login = React.createClass({
    * Replace the login page url by the user page url
    */
   onChangeLogin() {
-    const isLogged = Flux.evaluateToJS(getters.getIsLogged);
+    const isLogged = reactor.evaluateToJS(getters.getIsLogged);
     if (isLogged) {
       this.replaceWith('/machine');
     }
@@ -88,7 +88,7 @@ var Login = React.createClass({
 
     this.focus();
 
-    Flux.observe(getters.getIsLogged, isLogged => {
+    reactor.observe(getters.getIsLogged, isLogged => {
       this.onChangeLogin();
     }.bind(this));
   },

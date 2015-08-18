@@ -1,6 +1,6 @@
 var $ = require('jquery');
 var actionTypes = require('../actionTypes');
-var Flux = require('../flux');
+var reactor = require('../reactor');
 var toastr = require('../toastr');
 
 
@@ -19,10 +19,10 @@ export default {
       type: 'POST',
       data: content,
       success: function(data) {
-        Flux.dispatch(actionTypes.SUCCESS_LOGIN, { data });
+        reactor.dispatch(actionTypes.SUCCESS_LOGIN, { data });
       }.bind(this),
       error: function(xhr, status, err) {
-        Flux.dispatch(actionTypes.ERROR_LOGIN);
+        reactor.dispatch(actionTypes.ERROR_LOGIN);
         console.error('/users/login', status, err);
       }.bind(this)
     });
@@ -40,10 +40,10 @@ export default {
         uid: uid
       },
       success: function(data) {
-        Flux.dispatch(actionTypes.SUCCESS_LOGIN, { data });
+        reactor.dispatch(actionTypes.SUCCESS_LOGIN, { data });
       }.bind(this),
       error: function(xhr, status, err) {
-        Flux.dispatch(actionTypes.ERROR_LOGIN);
+        reactor.dispatch(actionTypes.ERROR_LOGIN);
         console.error('/users/loginuid', status, err);
       }.bind(this)
     });
@@ -58,7 +58,7 @@ export default {
       type: 'GET',
       cache: false,
       success: function(data) {
-        Flux.dispatch(actionTypes.SUCCESS_LOGOUT);
+        reactor.dispatch(actionTypes.SUCCESS_LOGOUT);
       }.bind(this),
       error: function(xhr, status, err) {
         console.error('/users/logout', status, err);
