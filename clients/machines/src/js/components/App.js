@@ -42,14 +42,14 @@ var RouteHandler = require('react-router').RouteHandler;
                     onClick={LoginActions.logout}>
                     <i className="fa fa-sign-out"></i>
                   </button>
-                  {!window.libnfc ? (
+                  {/*!window.libnfc ? (
                     <a href="/user"
                       className="btn btn-info linkToPanel"
                       role="button" >
                       Switch to <br/>
                       user panel
-                  </a>
-                  ) : ('')}
+                    </a>
+                  ) : ('')*/}
                 </div>
               ) : ('')}
             </div>
