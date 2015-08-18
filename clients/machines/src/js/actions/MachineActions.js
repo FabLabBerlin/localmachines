@@ -123,19 +123,19 @@ function apiPostSwitchMachine(mid, onOrOff, aid = '') {
     if(aid === '') {
       successFunction = function(data) {
         //end animation
-        toastr.success('machine off');
+        toastr.success('Machine off');
       };
     } else {
       successFunction = function(data) {
         //end animation
-        toastr.success('machine off and activation closed');
+        toastr.success('Machine off and activation closed');
         apiPutActivation(aid);
       };
     }
   } else {
     successFunction = function(data) {
       //end animation
-      toastr.success('machine On');
+      toastr.success('Machine on');
     };
   }
   var errorFunction = function() {
@@ -144,7 +144,7 @@ function apiPostSwitchMachine(mid, onOrOff, aid = '') {
   _postAPICall('/api/machines/' + mid + '/turn_' + onOrOff,
                    { ac: new Date().getTime() },
                    successFunction,
-                   'Fail to turn ' + onOrOff,
+                   'Failed to turn ' + onOrOff,
                    errorFunction
                   );
 }
