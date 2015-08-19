@@ -23,9 +23,9 @@ require('vex/css/vex.css');
 var debugNfc = false;
 if (debugNfc) {
   window.libnfc = {
-    debug:true,
-    cardRead:{ connect: function() {} },
-    cardReaderError:{ connect: function() {} },
+    debug: true,
+    cardRead: { connect: function() {} },
+    cardReaderError: { connect: function() {} },
     asyncScan: function() {}
   };
 }

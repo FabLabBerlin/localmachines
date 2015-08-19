@@ -100,7 +100,7 @@ var Login = React.createClass({
     return (
       <form className="login-form" onSubmit={this.handleSubmit}>
         <div className="regular-login">
-        
+
           <h2 className="login-heading">Please log in</h2>
           <input
             ref="name"
