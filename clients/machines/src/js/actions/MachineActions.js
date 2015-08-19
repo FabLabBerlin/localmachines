@@ -59,9 +59,6 @@ var MachineActions = {
     _getAPICall('/api/activations/active', function(data) {
       var activationInfo = _formatActivation(data);
       reactor.dispatch(actionTypes.SET_ACTIVATION_INFO, { activationInfo });
-      if (activationInfo.length !== 0) {
-        _nameInAllActivations();
-      }
     });
   }
 
@@ -153,9 +150,6 @@ function apiGetActivationActive() {
   _getAPICall('/api/activations/active', function(data) {
     var activationInfo = _formatActivation(data);
     reactor.dispatch(actionTypes.SET_ACTIVATION_INFO, { activationInfo });
-    if (activationInfo.length !== 0) {
-      _nameInAllActivations();
-    }
   });
 }
 
@@ -216,31 +210,6 @@ function _formatActivation(rawActivation) {
       tmpItem[key] = rawActivationItem[key];
     });
     return tmpItem;
-  });
-}
-
-/*
- * For each activation
- * Call nameInOneActivation
- */
-function _nameInAllActivations() {
-  const activationInfo = reactor.evaluateToJS(getters.getActivationInfo);
-  _.forEach(activationInfo, function(activation, i) {
-    _nameInOneActivation(activation, i);
-  }.bind(this));
-}
-
-/*
- * Put the name of the activation (identified by the index)
- * and put inside the json the name of the one who activates it
- */
-function _nameInOneActivation(activation, index) {
-  _getAPICall('/api/users/' + activation.UserId + '/name', function(userData) {
-    _.merge(activation, userData);
-    const isLogged = reactor.evaluateToJS(getters.getIsLogged);
-    if (!isLogged) {
-      MachineStore.onChangeActivation();
-    }
   });
 }
 

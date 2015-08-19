@@ -64,7 +64,7 @@ var RouteHandler = require('react-router').RouteHandler;
             <i className="fa fa-copyright"></i> Fab Lab Berlin 2015
           </div>
         </footer>
-        
+
       </div>
     );
   }

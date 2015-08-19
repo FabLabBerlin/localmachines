@@ -139,10 +139,10 @@ var Login = React.createClass({
                   />
                   <button className="btn btn-primary btn-block btn-login"
                     type="submit">Log In</button>
-                  
+
                   {window.libnfc ? ('') : (
                     <div className="signup-link">
-                      Do not have an account yet? <a href="#" 
+                      Do not have an account yet? <a href="#"
                         onClick={this.goToSignUp}>
                         Sign up
                       </a> now!
