@@ -98,52 +98,43 @@ var Login = React.createClass({
    */
   render() {
     return (
-      <div className="app">
-        <div className="login">
-          <div className="container-fluid">
+      <form className="login-form" onSubmit={this.handleSubmit}>
+        <div className="regular-login">
+        
+          <h2 className="login-heading">Please log in</h2>
+          <input
+            ref="name"
+            type="text"
+            name="username"
+            className="form-control"
+            value={this.state.username}
+            onChange={this.handleChange}
+            placeholder="Username"
+            required
+            autofocus
+          />
+          <input
+            type="password"
+            name="password"
+            className="form-control"
+            ref="Password"
+            value={this.state.password}
+            onChange={this.handleChange}
+            placeholder="password"
+            required
+          />
+          <button className="btn btn-primary btn-block btn-login"
+            type="submit">Log In</button>
 
-            <form className="login-form" onSubmit={this.handleSubmit}>
-
-              <div className="regular-login">
-                <h2 className="login-heading">Please log in</h2>
-                <input
-                  ref="name"
-                  type="text"
-                  name="username"
-                  className="form-control"
-                  value={this.state.username}
-                  onChange={this.handleChange}
-                  placeholder="Username"
-                  required
-                  autofocus
-                />
-                <input
-                  type="password"
-                  name="password"
-                  className="form-control"
-                  ref="Password"
-                  value={this.state.password}
-                  onChange={this.handleChange}
-                  placeholder="password"
-                  required
-                />
-                <button className="btn btn-primary btn-block btn-login"
-                  type="submit">Log In</button>
-
-                <div className="signup-link">
-                  Do not have an account yet? <a href="#"
-                    onClick={this.goToSignUp}>
-                    Sign up
-                  </a> now!
-                </div>
-
-              </div>
-
-            </form>
-
+          <div className="signup-link">
+            Do not have an account yet? <a href="#"
+              onClick={this.goToSignUp}>
+              Sign up
+            </a> now!
           </div>
+
         </div>
-      </div>
+      </form>
     );
   }
 });

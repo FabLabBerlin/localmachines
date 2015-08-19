@@ -74,9 +74,12 @@ var LoginNfc = React.createClass({
    */
   render() {
     return (
-      <form className="login-form" >
+      <form className="login-form">
         <div className="nfc-login-info-icon">
-          <i className="fa fa-credit-card" ></i>
+          <i className="fa fa-credit-card"></i>
+        </div>
+        <div className="nfc-login-info-text">
+          <p>Use your NFC card to log in</p>
         </div>
       </form>
     );

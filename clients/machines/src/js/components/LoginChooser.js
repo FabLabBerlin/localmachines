@@ -11,12 +11,16 @@ var React = require('react');
 var LoginChooser = React.createClass({
   render() {
     return (
-      <div className="container-fluid" >
+      <div className="login">
+        <div className="container-fluid">
+
         { !window.libnfc ? (
           <Login />
-          ) : (
+        ) : (
           <LoginNfc />
-          )}
+        )}
+
+        </div>
       </div>
     );
   }
