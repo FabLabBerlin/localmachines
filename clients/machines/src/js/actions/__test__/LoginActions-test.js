@@ -4,7 +4,6 @@ jest.mock('jquery');
 var $ = require('jquery');
 var LoginActions = require('../LoginActions');
 
-
 describe('LoginActions', function() {
   describe('submitLoginForm', function() {
     it('POSTs to /api/users/login', function() {

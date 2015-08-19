@@ -9,7 +9,6 @@ var actionTypes = require('../../actionTypes');
 var MachineActions = require('../MachineActions');
 var reactor = require('../../reactor');
 
-
 describe('MachineActions', function() {
   describe('fetchData', function() {
     it('should GET /api/users/:uid', function() {
