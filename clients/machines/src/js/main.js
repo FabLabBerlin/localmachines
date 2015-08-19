@@ -19,6 +19,16 @@ require('font-awesome-webpack');
 require('toastr/build/toastr.min.css');
 require('vex/css/vex.css');
 
+// Use this to simulate NFC browswer
+var debugNfc = false;
+if (debugNfc) {
+  window.libnfc = {
+    debug:true,
+    cardRead:{ connect: function() {} },
+    cardReaderError:{ connect: function() {} },
+    asyncScan: function() {}
+  };
+}
 
 /*
  * Defined all the routes of the panel
