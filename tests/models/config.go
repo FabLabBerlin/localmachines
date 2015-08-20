@@ -2,8 +2,6 @@ package modelTest
 
 import (
 	"fmt"
-	"path/filepath"
-	"runtime"
 
 	_ "github.com/go-sql-driver/mysql"
 
@@ -14,14 +12,7 @@ import (
 
 // ConfigDB : Configure database for tests
 func ConfigDB() {
-	_, file, _, _ := runtime.Caller(1)
-
-	apppath, _ := filepath.Abs(filepath.Dir(filepath.Join(file, ".."+string(filepath.Separator)+".."+string(filepath.Separator))))
-	beego.TestBeegoInit(apppath)
-
 	beego.SetLevel(beego.LevelError)
-
-	beego.RunMode = "test"
 
 	runmodetest, err := beego.AppConfig.Bool("runmodtest")
 	if !runmodetest || err != nil {
@@ -64,12 +55,6 @@ func ConfigDB() {
 // ResetDB : Reset the database after each test
 func ResetDB() {
 	o := orm.NewOrm()
-
-	var hexabuses []models.HexabusMapping
-	o.QueryTable("hexaswitch").All(&hexabuses)
-	for _, item := range hexabuses {
-		o.Delete(&item)
-	}
 
 	var machines []models.Machine
 	o.QueryTable("machines").All(&machines)

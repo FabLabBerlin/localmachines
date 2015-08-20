@@ -12,3 +12,4 @@ files/*
 !files/README.md
 cert/
 tests/controllers/routers/
+tests/models/conf/app.conf
