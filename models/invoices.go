@@ -9,6 +9,7 @@ import (
 	"github.com/tealeg/xlsx"
 	"math/rand"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -352,22 +353,20 @@ func (this *Invoice) createXlsxFile(filePath string,
 
 			cell = row.AddCell()
 			//beego.Trace(activation.MachineUsage)
-			cell.Value = strconv.FormatFloat(activation.MachineUsage,
-				'f', 4, 64)
+			cell.Value = this.formatFloat(activation.MachineUsage, 4)
 
 			cell = row.AddCell()
 			cell.Value = activation.MachineUsageUnit
 
 			cell = row.AddCell()
-			cell.Value = strconv.FormatFloat(activation.MachinePricePerUnit,
-				'f', 2, 64)
+			cell.Value = this.formatFloat(activation.MachinePricePerUnit, 2)
 
 			// Calculate total
 			priceTotal := activation.MachineUsage *
 				activation.MachinePricePerUnit
 			sumTotal += priceTotal
 			cell = row.AddCell()
-			cell.Value = strconv.FormatFloat(priceTotal, 'f', 2, 64)
+			cell.Value = this.formatFloat(priceTotal, 2)
 
 			// Memberships
 			membershipStr := ""
@@ -395,7 +394,7 @@ func (this *Invoice) createXlsxFile(filePath string,
 			cell.Value = membershipStr
 
 			cell = row.AddCell()
-			cell.Value = strconv.FormatFloat(priceTotal, 'f', 2, 64)
+			cell.Value = this.formatFloat(priceTotal, 2)
 		} // for userSummary activations
 
 		row = sheet.AddRow()
@@ -407,11 +406,11 @@ func (this *Invoice) createXlsxFile(filePath string,
 		cell = row.AddCell()
 		cell.Value = "Subtotal €"
 		cell = row.AddCell()
-		cell.Value = strconv.FormatFloat(sumTotal, 'f', 2, 64)
+		cell.Value = this.formatFloat(sumTotal, 2)
 		cell = row.AddCell()
 		cell.Value = "Discounted €"
 		cell = row.AddCell()
-		cell.Value = strconv.FormatFloat(sumTotalDisc, 'f', 2, 64)
+		cell.Value = this.formatFloat(sumTotalDisc, 2)
 
 		_ = sheet.AddRow() // extra row after each user summary
 	} // for userSummaries
@@ -423,6 +422,12 @@ func (this *Invoice) createXlsxFile(filePath string,
 
 	this.FilePath = filePath
 	return nil
+}
+
+func (this *Invoice) formatFloat(f float64, prec int) (s string) {
+	s = strconv.FormatFloat(f, 'f', prec, 64)
+	s = strings.Replace(s, ".", ",", 1)
+	return
 }
 
 func (this *Invoice) getActivations(startTime,
