@@ -8,6 +8,7 @@ import (
 	"github.com/astaxie/beego/orm"
 	"github.com/tealeg/xlsx"
 	"math/rand"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -52,6 +53,21 @@ type InvoiceActivation struct {
 	Memberships         []*Membership
 	TotalPrice          float64
 	DiscountedTotal     float64
+	TimeStart           time.Time
+}
+
+type InvoiceActivations []*InvoiceActivation
+
+func (this InvoiceActivations) Len() int {
+	return len(this)
+}
+
+func (this InvoiceActivations) Less(i, j int) bool {
+	return (*this[i]).TimeStart.Before((*this[j]).TimeStart)
+}
+
+func (this InvoiceActivations) Swap(i, j int) {
+	*this[i], *this[j] = *this[j], *this[i]
 }
 
 type UserSummary struct {
@@ -60,7 +76,7 @@ type UserSummary struct {
 	Username      string
 	UserEmail     string
 	DebitorNumber string
-	Activations   []*InvoiceActivation
+	Activations   InvoiceActivations
 	InvoiceAddr   string
 	Phone         string
 	Comments      string
@@ -326,6 +342,8 @@ func (this *Invoice) createXlsxFile(filePath string,
 		cell = row.AddCell()
 		cell.Value = "Product ID"
 		cell = row.AddCell()
+		cell.Value = "Start Time"
+		cell = row.AddCell()
 		cell.Value = "Usage"
 		cell = row.AddCell()
 		cell.Value = "Usage Unit"
@@ -341,6 +359,7 @@ func (this *Invoice) createXlsxFile(filePath string,
 		sumTotal := 0.0
 		sumTotalDisc := 0.0
 
+		sort.Stable(userSummary.Activations)
 		for actIter := 0; actIter < len(userSummary.Activations); actIter++ {
 			activation := (*userSummary).Activations[actIter]
 			row = sheet.AddRow()
@@ -350,6 +369,9 @@ func (this *Invoice) createXlsxFile(filePath string,
 
 			cell = row.AddCell()
 			cell.Value = activation.MachineProductId
+
+			cell = row.AddCell()
+			cell.Value = activation.TimeStart.Format(time.RFC1123)
 
 			cell = row.AddCell()
 			//beego.Trace(activation.MachineUsage)
@@ -694,6 +716,8 @@ func (this *Invoice) enhanceActivation(activation *Activation) (*InvoiceActivati
 			invActivation.Memberships = append(invActivation.Memberships, mem)
 		}
 	}
+
+	invActivation.TimeStart = activation.TimeStart
 
 	return invActivation, nil
 }
