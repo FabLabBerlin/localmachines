@@ -19,10 +19,10 @@ const getFirstTry = [
   }
 ];
 
-const getLoginFailure = [
+const getLoginSuccess = [
   ['loginStore'],
   (loginStore) => {
-    return loginStore.get('loginFailure');
+    return loginStore.get('loginSuccess');
   }
 ];
 
@@ -48,6 +48,6 @@ const getMachineInfo = [
 ];
 
 export default {
-  getIsLogged, getUid, getFirstTry, getLoginFailure,
+  getIsLogged, getUid, getFirstTry, getLoginSuccess,
   getUserInfo, getActivationInfo, getMachineInfo
 };

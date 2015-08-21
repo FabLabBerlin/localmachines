@@ -8,7 +8,7 @@ var toastr = require('../toastr');
 const initialState = toImmutable({
   firstTry: true,
   isLogged: false,
-  loginFailure: true,
+  loginSuccess: true,
   uid: {}
 });
 
@@ -53,12 +53,12 @@ function successLogin(state, { data }) {
  */
 function errorLogin(state) {
   if (state.get('firstTry')) {
-    toastr.error('Failed to log in the first time');
+    toastr.error('Failed to log in');
     return state.set('firstTry', false)
-                .set('loginFailure', false);
+                .set('loginSuccess', false);
   } else {
     toastr.error('Failed to log in');
-    return state.set('loginFailure', false);
+    return state.set('loginSuccess', false);
   }
 }
 
@@ -84,8 +84,8 @@ function successLogout(state) {
 }
 
 function onLoginFailureHandled(state) {
-  console.log('onLoginFailureHandled');
-  return state.set('loginFailure', true);
+  //console.log('onLoginFailureHandled');
+  return state.set('loginSuccess', true);
 }
 
 /*

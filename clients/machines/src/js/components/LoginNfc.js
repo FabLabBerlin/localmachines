@@ -23,6 +23,8 @@ var LoginNfc = React.createClass({
    * Callback called when nfc reader error occure
    */
   errorNFCCallback(error) {
+    console.log('errorNFCCallback');
+
     try {
       window.libnfc.cardRead.disconnect(this.nfcLogin);
       window.libnfc.cardReaderError.disconnect(this.errorNFCCallback);
@@ -52,7 +54,7 @@ var LoginNfc = React.createClass({
    * start the nfc polling
    */
   connectJsToQt() {
-    toastr.info('connectJsToQt');
+    //toastr.info('connectJsToQt');
     try {
       window.libnfc.cardRead.connect(this.nfcLogin);
       window.libnfc.cardReaderError.connect(this.errorNFCCallback);
@@ -106,12 +108,16 @@ var LoginNfc = React.createClass({
       this.onChangeLoginNFC();
     }.bind(this));
 
-    reactor.observe(getters.getLoginFailure, loginFailure => {
-      console.log('loginFailure observer');
-      setTimeout(function() {
-        this.connectJsToQt();
-        reactor.dispatch(actionTypes.LOGIN_FAILURE_HANDLED);
-      }.bind(this), 1000);
+    reactor.observe(getters.getLoginSuccess, loginSuccess => {
+      console.log('loginSuccess observer');
+      //const loginFailure = reactor.evaluateToJS(getters.getLoginFailure);
+      console.log('loginSuccess: ' + loginSuccess);
+      if (!loginSuccess) {
+        setTimeout(function() {
+          this.connectJsToQt();
+          reactor.dispatch(actionTypes.LOGIN_FAILURE_HANDLED);
+        }.bind(this), 1000);
+      }
     }.bind(this));
   },
 
