@@ -222,8 +222,8 @@ func AuthenticateUserUid(uid string) (string, int64, error) {
 	// Get user ID
 	err = o.Read(&auth, "NfcKey")
 	if err != nil {
-		return "", 0, errors.New(
-			fmt.Sprintf("Failed to read auth table: %v", err))
+		beego.Error(err)
+		return "", 0, errors.New("Failed to read auth table")
 	}
 
 	// Get user name
