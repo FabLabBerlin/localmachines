@@ -44,7 +44,7 @@ export default {
       }.bind(this),
       error: function(xhr, status, err) {
         reactor.dispatch(actionTypes.ERROR_LOGIN);
-        console.error('/users/loginuid', status, err);
+        //console.error('/users/loginuid', status, err);
       }.bind(this)
     });
   },

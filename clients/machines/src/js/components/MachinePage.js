@@ -19,6 +19,8 @@ var toastr = require('../toastr');
  */
 var MachinePage = React.createClass({
 
+  nfcLogoutTimeout: {},
+
   /*
    * Enable some React router function as:
    *  ReplaceWith
@@ -116,6 +118,9 @@ var MachinePage = React.createClass({
    * Logout with the exit button
    */
   handleLogout() {
+    clearTimeout(this.nfcLogoutTimeout);
+    this.nfcLogoutTimeout = {};
+
     LoginActions.logout();
   },
 
@@ -148,6 +153,10 @@ var MachinePage = React.createClass({
    * Activate a polling (1,5s)
    */
   componentDidMount() {
+
+    // For debugging through the console
+    window.nfcLogout = this.handleLogout;
+
     if(window.libnfc) {
       setTimeout(this.connectJsToQt, 1500);
     }
@@ -166,7 +175,7 @@ var MachinePage = React.createClass({
     window.libnfc.cardRead.connect(this.handleLogout);
     window.libnfc.cardReaderError.connect(this.errorNFCCallback);
     window.libnfc.asyncScan();
-    setTimeout(this.handleLogout, 30000);
+    this.nfcLogoutTimeout = setTimeout(this.handleLogout, 30000);
   },
 
   /*

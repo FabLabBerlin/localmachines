@@ -8,6 +8,7 @@ var toastr = require('../toastr');
 const initialState = toImmutable({
   firstTry: true,
   isLogged: false,
+  loginFailure: true,
   uid: {}
 });
 
@@ -30,6 +31,7 @@ var LoginStore = new Nuclear.Store({
     this.on(actionTypes.SUCCESS_LOGIN, successLogin);
     this.on(actionTypes.ERROR_LOGIN, errorLogin);
     this.on(actionTypes.SUCCESS_LOGOUT, successLogout);
+    this.on(actionTypes.LOGIN_FAILURE_HANDLED, onLoginFailureHandled);
   }
 });
 
@@ -51,10 +53,12 @@ function successLogin(state, { data }) {
  */
 function errorLogin(state) {
   if (state.get('firstTry')) {
-    return state.set('firstTry', false);
+    toastr.error('Failed to log in the first time');
+    return state.set('firstTry', false)
+                .set('loginFailure', false);
   } else {
-    toastr.error('Wrong password');
-    return state;
+    toastr.error('Failed to log in');
+    return state.set('loginFailure', false);
   }
 }
 
@@ -77,6 +81,11 @@ function successLogout(state) {
   onChangeLogout();
   return state.set('isLogged', false)
               .set('userInfo', {});
+}
+
+function onLoginFailureHandled(state) {
+  console.log('onLoginFailureHandled');
+  return state.set('loginFailure', true);
 }
 
 /*

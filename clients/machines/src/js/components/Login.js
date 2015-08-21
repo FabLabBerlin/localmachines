@@ -19,9 +19,6 @@ var Login = React.createClass({
    */
   mixins: [ Navigation ],
 
-  /*
-   * Set the initial state
-   */
   getInitialState() {
     return {
       username: '',
