@@ -10,7 +10,11 @@ import (
 )
 
 func init() {
+	Init()
+}
 
+// Init must be exportable for out controller tests
+func Init() {
 	// Set main redirect in the MainController
 	beego.Router("/", &controllers.MainController{})
 	beego.Router("/crossdomain.xml", &controllers.CrossdomainController{})
