@@ -8,6 +8,7 @@ var LoginActions = require('../actions/LoginActions');
 var Navigation = require('react-router').Navigation;
 var React = require('react');
 var reactor = require('../reactor');
+var ScrollNav = require('./ScrollNav');
 var toastr = require('../toastr');
 
 /*
@@ -204,6 +205,7 @@ var MachinePage = React.createClass({
               onClick={this.handleLogout}
               className="btn btn-lg btn-block btn-danger btn-logout-bottom" > Exit </button>
           </div>
+          <ScrollNav/>
         </div>
       );
     } else {

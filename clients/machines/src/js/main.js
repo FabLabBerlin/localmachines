@@ -7,6 +7,7 @@ var MachineStore = require('./stores/MachineStore');
 var React = require('react');
 var reactor = require('./reactor');
 var Router = require('react-router');
+var ScrollNavStore = require('./stores/ScrollNavStore');
 var {DefaultRoute, Route, Routes, NotFoundRoute} = require('react-router');
 
 /*
@@ -53,7 +54,8 @@ let routes = (
 
 reactor.registerStores({
   loginStore: LoginStore,
-  machineStore: MachineStore
+  machineStore: MachineStore,
+  scrollNavStore: ScrollNavStore
 });
 
 /*
