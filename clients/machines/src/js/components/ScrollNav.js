@@ -38,7 +38,10 @@ var ScrollNav = React.createClass({
   mixins: [ reactor.ReactMixin ],
 
   componentDidMount() {
-    ScrollNavActions.setScrollStep($(window).height() / 2);
+    window.setTimeout(function() {
+      var scrollStep = $(window).height() / 2;
+      ScrollNavActions.setScrollStep(scrollStep);
+    }, 200);
   },
 
   getDataBindings() {
