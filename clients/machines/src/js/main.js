@@ -24,13 +24,13 @@ var debugNfc = false;
 if (debugNfc) {
   window.libnfc = {
     debug: true,
-    cardRead: { 
-      connect: function() {} ,
+    cardRead: {
+      connect: function() {},
       disconnect: function() {}
     },
-    cardReaderError: { 
+    cardReaderError: {
       connect: function() {},
-      disconnect: function() {} 
+      disconnect: function() {}
     },
     asyncScan: function() {}
   };

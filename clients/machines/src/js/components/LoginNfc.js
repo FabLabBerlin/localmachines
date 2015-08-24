@@ -31,7 +31,7 @@ var LoginNfc = React.createClass({
     } catch (e) {
       console.log(e.message);
     }
-    
+
     setTimeout(this.connectJsToQt, 1000);
   },
 
@@ -42,7 +42,7 @@ var LoginNfc = React.createClass({
     try {
       window.libnfc.cardRead.disconnect(this.nfcLogin);
       window.libnfc.cardReaderError.disconnect(this.errorNFCCallback);
-    } catch (e) {  
+    } catch (e) {
       console.log(e.message);
     }
 
@@ -102,7 +102,7 @@ var LoginNfc = React.createClass({
     setTimeout(this.connectJsToQt, 1000);
 
     reactor.reset(); // Otherwise we get observer clones
-    
+
     reactor.observe(getters.getIsLogged, isLogged => {
       console.log('isLogged observer');
       this.onChangeLoginNFC();

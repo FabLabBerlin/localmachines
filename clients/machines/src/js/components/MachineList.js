@@ -25,7 +25,7 @@ var MachineList = React.createClass({
   render() {
     let activation = this.props.activation;
     var MachineNode;
-    if(this.props.info.size !== 0) {
+    if(this.props.info.length !== 0) {
       MachineNode = this.props.info.map(function(machine) {
         let activationProps = false;
         let isMachineBusy = false;
