@@ -390,11 +390,13 @@ app.controller('UserCtrl',
         User: $scope.user
       },
       transformRequest: function(data) {
-        var transformed = _.extend({}, data);
+        var transformed = {
+          User: _.extend({}, data.User)
+        };
         _.each(['ClientId', 'VatRate'], function(field) {
-          transformed[field] = parseInt(transformed[field]);
-          if (_.isNaN(transformed[field])) {
-            transformed[field] = 0;
+          transformed.User[field] = parseInt(transformed.User[field]);
+          if (_.isNaN(transformed.User[field])) {
+            transformed.User[field] = 0;
           }
         });
         return JSON.stringify(transformed);
