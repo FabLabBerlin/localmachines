@@ -96,6 +96,7 @@ function onLoginFailureHandled(state) {
  */
 function putLoginState(state, log = true) {
   onChangeLogin();
+  state = keepAlive(state);
   if (log) {
     return state.set('isLogged', true)
                 .set('firstTry', true);
