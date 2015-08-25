@@ -55,7 +55,8 @@ var MachinePage = React.createClass({
     return {
       userInfo: getters.getUserInfo,
       machineInfo: getters.getMachineInfo,
-      activationInfo: getters.getActivationInfo
+      activationInfo: getters.getActivationInfo,
+      isLoading: getters.getIsLoading
     };
   },
 
@@ -200,6 +201,17 @@ var MachinePage = React.createClass({
               className="btn btn-lg btn-block btn-danger btn-logout-bottom" > Exit </button>
           </div>
           <ScrollNav/>
+          {
+            this.state.isLoading ?
+            (
+              <div id="loader-global">
+                <div className="spinner">
+                  <i className="fa fa-cog fa-spin"></i>
+                </div>
+              </div>
+            )
+            : ''
+          }
         </div>
       );
     } else {

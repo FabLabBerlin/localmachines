@@ -94,6 +94,7 @@ function apiGetUserMachines(uid) {
  * @aid: activation id you want to shut down
  */
 function apiPutActivation(aid) {
+  showGlobalLoader();
   $.ajax({
     url: '/api/activations/' + aid,
     method: 'PUT',
@@ -101,9 +102,11 @@ function apiPutActivation(aid) {
       ac: new Date().getTime()
     },
     success: function(data) {
+      hideGlobalLoader();
       _postActivationSuccess(data, 'Machine deactivated');
     }.bind(this),
     error: function(xhr, status, err) {
+      hideGlobalLoader();
       toastr.error('Failed to deactivate');
       console.error('/api/activation/aid', status, err.toString());
     }.bind(this)
@@ -120,28 +123,23 @@ function apiPutActivation(aid) {
  */
 function apiPostSwitchMachine(mid, onOrOff, aid = '') {
   var successFunction;
-  //start animation
   if( onOrOff === 'off') {
     if(aid === '') {
       successFunction = function(data) {
-        //end animation
         toastr.success('Machine off');
       };
     } else {
       successFunction = function(data) {
-        //end animation
         toastr.success('Machine off and activation closed');
         apiPutActivation(aid);
       };
     }
   } else {
     successFunction = function(data) {
-      //end animation
       toastr.success('Machine on');
     };
   }
   var errorFunction = function() {
-    //end animation
   };
   _postAPICall('/api/machines/' + mid + '/turn_' + onOrOff,
                    { ac: new Date().getTime() },
@@ -193,15 +191,18 @@ function _getAPICall(url, successFunction, toastrMessage = '', errorFunction = f
  * Make POST call cutomisable
  */
 function _postAPICall(url, dataToSend, successFunction, toastrMessage = '', errorFunction = function() {}) {
+  showGlobalLoader();
   $.ajax({
     url: url,
     dataType: 'json',
     type: 'POST',
     data: dataToSend,
     success: function(data) {
+      hideGlobalLoader();
       successFunction(data);
     },
     error: function(xhr, status, err) {
+      hideGlobalLoader();
       if (toastrMessage) {
         toastr.error(toastrMessage);
       }
@@ -253,6 +254,14 @@ function _userInfoSuccess(data) {
   }
   reactor.dispatch(actionTypes.SET_USER_INFO, { userInfo });
   apiGetUserMachines(uid);
+}
+
+function showGlobalLoader() {
+  reactor.dispatch(actionTypes.SET_LOADING);
+}
+
+function hideGlobalLoader() {
+  reactor.dispatch(actionTypes.UNSET_LOADING);
 }
 
 export default MachineActions;
