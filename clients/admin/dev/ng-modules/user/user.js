@@ -390,7 +390,14 @@ app.controller('UserCtrl',
         User: $scope.user
       },
       transformRequest: function(data) {
-        return JSON.stringify(data);
+        var transformed = _.extend({}, data);
+        _.each(['ClientId', 'VatRate'], function(field) {
+          transformed[field] = parseInt(transformed[field]);
+          if (_.isNaN(transformed[field])) {
+            transformed[field] = 0;
+          }
+        });
+        return JSON.stringify(transformed);
       },
       params: {
         ac: new Date().getTime()

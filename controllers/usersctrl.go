@@ -303,7 +303,7 @@ func (this *UsersController) Put() {
 	if err := dec.Decode(&req); err == nil {
 		beego.Info("req: ", req)
 	} else {
-		beego.Error("Failed to decode json")
+		beego.Error("Failed to decode json", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
