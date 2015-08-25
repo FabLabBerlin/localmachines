@@ -43,11 +43,16 @@ type InvoiceActivation struct {
 	MachineUsageUnit    string
 	MachinePricePerUnit float64
 	UserId              int64 // User info
-	UserFullName        string
+	UserClientId        int
+	UserFirstName       string
+	UserLastName        string
 	Username            string
 	UserEmail           string
 	UserDebitorNumber   string
 	UserInvoiceAddr     string
+	UserZipCode         string
+	UserCity            string
+	UserCountryCode     string
 	UserPhone           string
 	UserComments        string
 	Memberships         []*Membership
@@ -72,12 +77,17 @@ func (this InvoiceActivations) Swap(i, j int) {
 
 type UserSummary struct {
 	UserId        int64
-	UserFullName  string
+	UserClientId  int
+	UserFirstName string
+	UserLastName  string
 	Username      string
 	UserEmail     string
 	DebitorNumber string
 	Activations   InvoiceActivations
 	InvoiceAddr   string
+	ZipCode       string
+	City          string
+	CountryCode   string
 	Phone         string
 	Comments      string
 }
@@ -299,10 +309,17 @@ func (this *Invoice) createXlsxFile(filePath string,
 		cell = row.AddCell()
 		cell.Value = "User"
 		cell = row.AddCell()
-		cell.Value = fmt.Sprintf("%s (%s)",
-			userSummary.UserFullName, userSummary.Username)
+		cell.Value = userSummary.UserFirstName
+		cell = row.AddCell()
+		cell.Value = userSummary.UserLastName
 		cell = row.AddCell()
 		cell.Value = userSummary.UserEmail
+
+		row = sheet.AddRow()
+		cell = row.AddCell()
+		cell.Value = "Fallbill User Id"
+		cell = row.AddCell()
+		cell.Value = strconv.Itoa(userSummary.UserClientId)
 
 		// User Billing Address
 		row = sheet.AddRow()
@@ -310,6 +327,27 @@ func (this *Invoice) createXlsxFile(filePath string,
 		cell.Value = "Billing Address"
 		cell = row.AddCell()
 		cell.Value = userSummary.InvoiceAddr
+
+		// User Zip Code
+		row = sheet.AddRow()
+		cell = row.AddCell()
+		cell.Value = "Zip Code"
+		cell = row.AddCell()
+		cell.Value = userSummary.ZipCode
+
+		// User City
+		row = sheet.AddRow()
+		cell = row.AddCell()
+		cell.Value = "City"
+		cell = row.AddCell()
+		cell.Value = userSummary.City
+
+		// User Country
+		row = sheet.AddRow()
+		cell = row.AddCell()
+		cell.Value = "Country"
+		cell = row.AddCell()
+		cell.Value = userSummary.CountryCode
 
 		// User Phone
 		row = sheet.AddRow()
@@ -554,11 +592,16 @@ func (this *Invoice) getUserSummaries(
 		if !uSummaryExists {
 			newSummary := UserSummary{}
 			newSummary.UserId = iActivation.UserId
-			newSummary.UserFullName = iActivation.UserFullName
+			newSummary.UserClientId = iActivation.UserClientId
+			newSummary.UserFirstName = iActivation.UserFirstName
+			newSummary.UserLastName = iActivation.UserLastName
 			newSummary.Username = iActivation.Username
 			newSummary.UserEmail = iActivation.UserEmail
 			newSummary.DebitorNumber = "Undefined"
 			newSummary.InvoiceAddr = iActivation.UserInvoiceAddr
+			newSummary.ZipCode = iActivation.UserZipCode
+			newSummary.City = iActivation.UserCity
+			newSummary.CountryCode = iActivation.UserCountryCode
 			newSummary.Phone = iActivation.UserPhone
 			newSummary.Comments = iActivation.UserComments
 			userSummaries = append(userSummaries, &newSummary)
@@ -612,21 +655,22 @@ func (this *Invoice) enhanceActivation(activation *Activation) (*InvoiceActivati
 	}
 
 	// Get activation user data
-	user := &User{}
-	query = fmt.Sprintf("SELECT first_name, last_name, username, email, "+
-		"invoice_addr, phone, comments "+
-		"FROM %s WHERE id = ?", user.TableName())
-	err = o.Raw(query, activation.UserId).QueryRow(user)
+	user, err := GetUser(activation.UserId)
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("Failed to get user: %v", err))
 	}
 
 	invActivation.UserId = activation.UserId
-	invActivation.UserFullName = fmt.Sprintf("%s %s", user.FirstName, user.LastName)
+	invActivation.UserClientId = user.ClientId
+	invActivation.UserFirstName = user.FirstName
+	invActivation.UserLastName = user.LastName
 	invActivation.Username = user.Username
 	invActivation.UserEmail = user.Email
 	invActivation.UserDebitorNumber = "Undefined"
 	invActivation.UserInvoiceAddr = user.InvoiceAddr
+	invActivation.UserZipCode = user.ZipCode
+	invActivation.UserCity = user.City
+	invActivation.UserCountryCode = user.CountryCode
 	invActivation.UserPhone = user.Phone
 	invActivation.UserComments = user.Comments
 

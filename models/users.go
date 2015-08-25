@@ -37,6 +37,7 @@ type User struct {
 	Email       string `orm:"size(100)"`
 	InvoiceAddr string `orm:"type(text)"`
 	ShipAddr    string `orm:"type(text)"`
+	// ClientId is the Fastbill User Id
 	ClientId    int
 	B2b         bool
 	Company     string `orm:"size(100)"`
