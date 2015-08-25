@@ -20,8 +20,6 @@ var toastr = require('../toastr');
  */
 var MachinePage = React.createClass({
 
-  nfcLogoutTimeout: {},
-
   /*
    * Enable some React router function as:
    *  ReplaceWith
@@ -119,9 +117,6 @@ var MachinePage = React.createClass({
    * Logout with the exit button
    */
   handleLogout() {
-    clearTimeout(this.nfcLogoutTimeout);
-    this.nfcLogoutTimeout = {};
-
     LoginActions.logout();
   },
 
@@ -164,7 +159,7 @@ var MachinePage = React.createClass({
     MachineStore.onChangeActivation = this.onChangeActivation;
     LoginStore.onChangeLogout = this.onChangeLogout;
     MachineStore.onChangeLogin = this.onChangeLogin;
-    this.interval = setInterval(MachineActions.pollActivations, 1500);
+    this.interval = setInterval(this.update, 1500);
 
     reactor.observe(getters.getIsLogged, isLogged => {
       this.onChangeLogout();
@@ -176,7 +171,6 @@ var MachinePage = React.createClass({
     window.libnfc.cardRead.connect(this.handleLogout);
     window.libnfc.cardReaderError.connect(this.errorNFCCallback);
     window.libnfc.asyncScan();
-    this.nfcLogoutTimeout = setTimeout(this.handleLogout, 30000);
   },
 
   /*
@@ -210,6 +204,18 @@ var MachinePage = React.createClass({
       );
     } else {
       return <div/>;
+    }
+  },
+
+  update() {
+    MachineActions.pollActivations();
+    var lastActivity = reactor.evaluateToJS(getters.getLastActivity);
+    if (lastActivity) {
+      var t = new Date();
+      var idle = t - lastActivity;
+      if (window.libnfc && idle > 30000) {
+        this.handleLogout();
+      }
     }
   }
 });

@@ -1,4 +1,5 @@
 var React = require('react');
+var LoginActions = require('../actions/LoginActions');
 var MachineActions = require('../actions/MachineActions');
 var OccupiedMachine = require('./OccupiedMachine');
 var BusyMachine = require('./BusyMachine');
@@ -51,6 +52,8 @@ var MachineChooser = React.createClass({
         $('body').removeClass('vex-open');
       }.bind(this)
     });
+
+    LoginActions.keepAlive();
   },
 
   /*
@@ -60,6 +63,7 @@ var MachineChooser = React.createClass({
   startActivation() {
     let mid = this.props.info.Id;
     MachineActions.startActivation(mid);
+    LoginActions.keepAlive();
   },
 
   /*

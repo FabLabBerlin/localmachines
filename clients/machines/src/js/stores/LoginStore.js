@@ -9,7 +9,8 @@ const initialState = toImmutable({
   firstTry: true,
   isLogged: false,
   loginSuccess: true,
-  uid: {}
+  uid: {},
+  lastActivity: new Date()
 });
 
 /*
@@ -32,6 +33,7 @@ var LoginStore = new Nuclear.Store({
     this.on(actionTypes.ERROR_LOGIN, errorLogin);
     this.on(actionTypes.SUCCESS_LOGOUT, successLogout);
     this.on(actionTypes.LOGIN_FAILURE_HANDLED, onLoginFailureHandled);
+    this.on(actionTypes.KEEP_ALIVE, keepAlive);
   }
 });
 
@@ -100,6 +102,10 @@ function putLoginState(state, log = true) {
   } else {
     return state;
   }
+}
+
+function keepAlive(state) {
+  return state.set('lastActivity', new Date());
 }
 
 /*

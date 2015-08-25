@@ -26,6 +26,13 @@ const getLoginSuccess = [
   }
 ];
 
+const getLastActivity = [
+  ['loginStore'],
+  (loginStore) => {
+    return loginStore.get('lastActivity');
+  }
+];
+
 const getUserInfo = [
   ['machineStore'],
   (machineStore) => {
@@ -76,7 +83,7 @@ const getScrollPosition = [
 ];
 
 export default {
-  getIsLogged, getUid, getFirstTry, getLoginSuccess,
+  getIsLogged, getUid, getFirstTry, getLoginSuccess, getLastActivity,
   getUserInfo, getActivationInfo, getMachineInfo, getMachineUsers,
   getScrollUpEnabled, getScrollDownEnabled, getScrollPosition
 };

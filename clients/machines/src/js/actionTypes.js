@@ -6,6 +6,7 @@ export default keyMirror({
   ERROR_LOGIN: null,
   SUCCESS_LOGOUT: null,
   LOGIN_FAILURE_HANDLED: null,
+  KEEP_ALIVE: null,
 
   MACHINE_STORE_CLEAR_STATE: null,
   SET_ACTIVATION_INFO: null,

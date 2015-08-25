@@ -1,6 +1,7 @@
 var $ = require('jquery');
 var actionTypes = require('../actionTypes');
 var getters = require('../getters');
+var LoginActions = require('../actions/LoginActions');
 var MachineStore = require('../stores/MachineStore');
 var reactor = require('../reactor');
 var toastr = require('../toastr');
@@ -18,6 +19,7 @@ var MachineActions = {
    */
   endActivation(aid) {
     apiPutActivation(aid);
+    LoginActions.keepAlive();
   },
 
   /*
@@ -29,6 +31,7 @@ var MachineActions = {
       mid: mid
     };
     _postAPICall('/api/activations', dataToSend, _postActivationSuccess, 'Can not activate the machine');
+    LoginActions.keepAlive();
   },
 
   /*
@@ -36,6 +39,7 @@ var MachineActions = {
    */
   adminTurnOffMachine(mid, aid) {
     apiPostSwitchMachine(mid, 'off', aid);
+    LoginActions.keepAlive();
   },
 
   /*
@@ -43,6 +47,7 @@ var MachineActions = {
    */
   adminTurnOnMachine(mid) {
     apiPostSwitchMachine(mid, 'on');
+    LoginActions.keepAlive();
   },
 
   /*
