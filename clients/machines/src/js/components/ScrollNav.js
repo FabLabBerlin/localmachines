@@ -1,4 +1,5 @@
 var getters = require('../getters');
+var LoginActions = require('../actions/LoginActions');
 var React = require('react');
 var reactor = require('../reactor');
 var ScrollNavActions = require('../actions/ScrollNavActions');
@@ -8,6 +9,7 @@ const BOTTOM = 'bottom';
 
 var Button = React.createClass({
   handleClick() {
+    LoginActions.keepAlive();
     switch (this.props.topOrBottom) {
     case TOP:
       ScrollNavActions.scrollUp();
