@@ -369,6 +369,52 @@ func (this *Invoice) createXlsxFile(filePath string,
 		cell = row.AddCell()
 		cell.Value = userSummary.DebitorNumber
 
+		memberships, err := GetUserMemberships(userSummary.UserId)
+		if err != nil {
+			return fmt.Errorf("GetUserMemberships: %v", err)
+		}
+		if memberships != nil {
+			sheet.AddRow()
+			sheet.AddRow()
+			row = sheet.AddRow()
+			cell = row.AddCell()
+			cell.Value = "Memberships"
+			row = sheet.AddRow()
+			row.AddCell()
+			cell = row.AddCell()
+			cell.Value = "Title"
+			cell = row.AddCell()
+			cell.Value = "Start Date"
+			cell = row.AddCell()
+			cell.Value = "End Date"
+			cell = row.AddCell()
+			cell.Value = "Price / €"
+			cell = row.AddCell()
+			cell.Value = "Price Unit"
+			cell = row.AddCell()
+			cell.Value = "Machine Price Deduction"
+			for _, m := range memberships.Data {
+				row = sheet.AddRow()
+				row.AddCell()
+				cell = row.AddCell()
+				cell.Value = m.Title
+				cell = row.AddCell()
+				cell.Value = m.StartDate.Format(time.RFC1123)
+				cell = row.AddCell()
+				duration := time.Duration(24*m.Duration) * time.Hour
+				fmt.Printf("duration: %v\n", duration)
+				cell.Value = m.StartDate.Add(duration).Format(time.RFC1123)
+				cell = row.AddCell()
+				cell.Value = this.formatFloat(float64(m.Price), 2)
+				cell = row.AddCell()
+				cell.Value = m.Unit
+				cell = row.AddCell()
+				cell.Value = strconv.Itoa(m.MachinePriceDeduction) + "%"
+			}
+			sheet.AddRow()
+			sheet.AddRow()
+		}
+
 		row = sheet.AddRow()
 		cell = row.AddCell()
 		cell.Value = "Activations"
