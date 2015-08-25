@@ -149,7 +149,14 @@ function apiPostSwitchMachine(mid, onOrOff, aid = '') {
 function apiGetActivationActive() {
   _getAPICall('/api/activations/active', function(data) {
     var activationInfo = _formatActivation(data);
+    _.each(activationInfo, apiLoadMachineUser);
     reactor.dispatch(actionTypes.SET_ACTIVATION_INFO, { activationInfo });
+  });
+}
+
+function apiLoadMachineUser(activation) {
+  _getAPICall('/api/users/' + activation.UserId + '/name', function(userData) {
+    reactor.dispatch(actionTypes.REGISTER_MACHINE_USER, { userData });
   });
 }
 
@@ -222,6 +229,7 @@ function _postActivationSuccess(data, toastrMessage = 'Machine activated') {
   var successFunction = function(getData) {
     var activationInfo = _formatActivation(getData);
     reactor.dispatch(actionTypes.SET_ACTIVATION_INFO, { activationInfo });
+    _.each(activationInfo, apiLoadMachineUser);
   };
   _getAPICall('/api/activations/active', successFunction);
 }

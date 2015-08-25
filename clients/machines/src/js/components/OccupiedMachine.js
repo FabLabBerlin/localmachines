@@ -1,10 +1,19 @@
 var ForceSwitch = require('./ForceSwitch');
+var getters = require('../getters');
 var MachineActions = require('../actions/MachineActions');
 var React = require('react');
+var reactor = require('../reactor');
 var Timer = require('./Timer');
 
 
 var OccupiedMachine = React.createClass({
+  mixins: [ reactor.ReactMixin ],
+
+  getDataBindings() {
+    return {
+      machineUsers: getters.getMachineUsers
+    };
+  },
 
   /*
    * Send an action to the store to end the activation
@@ -21,11 +30,13 @@ var OccupiedMachine = React.createClass({
    * Admin have two more button to force switch
    */
   render() {
+    var users = this.state.machineUsers;
+    var user = users.get(this.props.activation.UserId) || {};
     return (
       <div className="row">
         <div className="col-xs-6" >
           <p>Occupied by</p>
-          <label>{this.props.activation.FirstName} {this.props.activation.LastName}</label>
+          <label>{user.FirstName} {user.LastName}</label>
           <Timer time={this.props.activation.TimeTotal} />
         </div>
 

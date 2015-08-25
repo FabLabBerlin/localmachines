@@ -8,7 +8,8 @@ var toImmutable = Nuclear.toImmutable;
 const initialState = toImmutable({
   userInfo: {},
   activationInfo: [],
-  machineInfo: []
+  machineInfo: [],
+  machineUsers: {}
 });
 
 /*
@@ -46,6 +47,7 @@ var MachineStore = new Nuclear.Store({
 
   initialize() {
     this.on(actionTypes.MACHINE_STORE_CLEAR_STATE, clearState);
+    this.on(actionTypes.REGISTER_MACHINE_USER, registerMachineUser);
     this.on(actionTypes.SET_ACTIVATION_INFO, setActivationInfo);
     this.on(actionTypes.SET_USER_INFO, setUserInfo);
     this.on(actionTypes.SET_MACHINE_INFO, setMachineInfo);
@@ -58,6 +60,10 @@ var MachineStore = new Nuclear.Store({
  */
 function clearState(state) {
   return initialState;
+}
+
+function registerMachineUser(state, { userData }) {
+  return state.set('machineUsers', state.get('machineUsers').set(userData.UserId, userData));
 }
 
 function setActivationInfo(state, { activationInfo }) {

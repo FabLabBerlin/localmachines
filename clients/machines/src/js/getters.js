@@ -47,6 +47,13 @@ const getMachineInfo = [
   }
 ];
 
+const getMachineUsers = [
+  ['machineStore'],
+  (machineStore) => {
+    return machineStore.get('machineUsers') || {};
+  }
+];
+
 const getScrollUpEnabled = [
   ['scrollNavStore'],
   (scrollNavStore) => {
@@ -70,6 +77,6 @@ const getScrollPosition = [
 
 export default {
   getIsLogged, getUid, getFirstTry, getLoginSuccess,
-  getUserInfo, getActivationInfo, getMachineInfo,
+  getUserInfo, getActivationInfo, getMachineInfo, getMachineUsers,
   getScrollUpEnabled, getScrollDownEnabled, getScrollPosition
 };
