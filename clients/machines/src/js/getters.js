@@ -1,3 +1,6 @@
+/*
+ * Login state related getters
+ */
 const getIsLogged = [
   ['loginStore'],
   (loginStore) => {
@@ -33,13 +36,36 @@ const getLastActivity = [
   }
 ];
 
-const getUserInfo = [
-  ['machineStore'],
-  (machineStore) => {
-    return machineStore.get('userInfo');
+
+/*
+ * User (Page) related getters
+ */
+ const getBillInfo = [
+  ['userStore'],
+  (userStore) => {
+    return userStore.get('billInfo');
+  }
+ ];
+
+ const getMembership = [
+  ['userStore'],
+  (userStore) => {
+    return userStore.get('membershipInfo');
+  }
+ ];
+
+
+ const getUserInfo = [
+  ['userStore'],
+  (userStore) => {
+    return userStore.get('userInfo');
   }
 ];
 
+
+/*
+ * Machine (Page) related getters
+ */
 const getActivationInfo = [
   ['machineStore'],
   (machineStore) => {
@@ -68,6 +94,10 @@ const getIsLoading = [
   }
 ];
 
+
+/*
+ * Scroll Navigation related getters
+ */
 const getScrollUpEnabled = [
   ['scrollNavStore'],
   (scrollNavStore) => {
@@ -91,6 +121,6 @@ const getScrollPosition = [
 
 export default {
   getIsLogged, getUid, getFirstTry, getLoginSuccess, getLastActivity,
-  getUserInfo, getActivationInfo, getMachineInfo, getMachineUsers, getIsLoading,
+  getUserInfo, getActivationInfo, getMachineInfo, getMachineUsers, getIsLoading, getBillInfo, getMembership,
   getScrollUpEnabled, getScrollDownEnabled, getScrollPosition
 };

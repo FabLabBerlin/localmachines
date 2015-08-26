@@ -1,11 +1,13 @@
-import React from 'react';
-import {Navigation} from 'react-router';
-import UserForm from './UserForm';
-import MachineList from './MachineList';
-import BillTable from './BillTable';
-import Membership from './Membership';
-import UserActions from '../actions/UserActions';
-import UserStore from '../stores/UserStore'
+var BillTable = require('./BillTable');
+var getters = require('../../getters');
+var MachineActions = require('../../actions/MachineActions');
+var MachineList = require('./MachineList');
+var Membership = require('./Membership');
+var {Navigation} = require('react-router');
+var React = require('react');
+var reactor = require('../../reactor');
+var UserActions = require('../../actions/UserActions');
+var UserForm = require('./UserForm');
 
 /*
  * UserPage component:
@@ -20,14 +22,15 @@ var UserPage = React.createClass({
   /*
    * to use transitionTo/replaceWith/redirect and some function related to the router
    */
-  mixins: [ Navigation ],
+  mixins: [ Navigation, reactor.ReactMixin ],
 
   /*
    * If not logged then redirect to the login page
    */
   statics: {
     willTransitionTo(transition) {
-      if(!UserStore.getIsLogged()) {
+      const isLogged = reactor.evaluateToJS(getters.getIsLogged);
+      if(!isLogged) {
         transition.redirect('login');
       }
     }
@@ -36,20 +39,30 @@ var UserPage = React.createClass({
   /*
    * Fetching the user state from the store
    */
-  getInitialState() {
+  getDataBindings() {
     return {
-      infoUser: UserStore.getInfoUser(),
-      infoMachine: UserStore.getInfoMachine(),
-      infoBill: UserStore.getInfoBill(),
-      infoMembership: UserStore.getMembership()
+      userInfo: getters.getUserInfo,
+      machineInfo: getters.getMachineInfo,
+      billInfo: getters.getBillInfo,
+      membershipInfo: getters.getMembership
     };
+  },
+
+  componentDidMount() {
+    const uid = reactor.evaluateToJS(getters.getUid);
+    MachineActions.apiGetUserMachines(uid);
+    UserActions.getUserInfoFromServer(uid);
+    UserActions.getInfoBillFromServer(uid);
+    UserActions.getMembershipFromServer(uid);
   },
 
   /*
    * Submit the user information to the store via the action
    */
   handleSubmit() {
-    UserActions.submitState(this.state.infoUser);
+    const uid = reactor.evaluateToJS(getters.getUid);
+    var userInfo = reactor.evaluateToJS(getters.getUserInfo);
+    UserActions.submitState(uid, userInfo);
   },
 
   /*
@@ -58,12 +71,15 @@ var UserPage = React.createClass({
    * change the state to be coherent with the input values
    */
   handleChangeForm(event) {
-    // Create a temporary state to replace the old one
+    /*// Create a temporary state to replace the old one
     var tmpState = this.state.infoUser;
     tmpState[event.target.id] = event.target.value;
     this.setState({
       infoUser: tmpState
-    });
+    });*/
+    var key = event.target.id;
+    var value = event.target.value;
+    UserActions.setUserInfoProperty({ key, value });
   },
 
   /*
@@ -71,7 +87,8 @@ var UserPage = React.createClass({
    * @password: your new password
    */
   updatePassword(password) {
-    UserActions.updatePassword(password);
+    const uid = reactor.evaluateToJS(getters.getUid);
+    UserActions.updatePassword(uid, password);
   },
 
   /*
@@ -84,13 +101,6 @@ var UserPage = React.createClass({
   },
 
   /*
-   * To synchronize the logout call with the logout event
-   */
-  componentDidMount() {
-    UserStore.onChangeLogout = this.onChangeLogout;
-  },
-
-  /*
    * Render:
    *  - UserForm: form to update the user information
    *  - MachineList: machines the user can access
@@ -100,20 +110,20 @@ var UserPage = React.createClass({
     return (
       <div className="container">
         <h3>Your information</h3>
-          <UserForm info={this.state.infoUser} 
+          <UserForm info={this.state.userInfo}
             func={this.handleChangeForm}
             passwordFunc={this.updatePassword}
             submit={this.handleSubmit}
           />
-          
+
         <h3>Machines you can use</h3>
-        <MachineList info={this.state.infoMachine} />
-          
+        <MachineList info={this.state.machineInfo} />
+
         <h3>Your Monthly Spendings</h3>
-        <BillTable info={this.state.infoBill} />
+        {<BillTable info={this.state.billInfo} />}
 
         <h3>Your Memberships</h3>
-        <Membership info={this.state.infoMembership} />
+        {<Membership info={this.state.membershipInfo} />}
       </div>
     );
   }

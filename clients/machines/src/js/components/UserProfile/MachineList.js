@@ -10,8 +10,9 @@ var MachineList = React.createClass({
    * Create the row of the table for each machine its get by props
    */
   render() {
-    if(this.props.info.length != 0) {
-      var MachineNode = this.props.info.map(function(machine) {
+    var MachineNode;
+    if (this.props.info.length !== 0) {
+      MachineNode = this.props.info.map(function(machine) {
         return (
           <tr key={machine.Id}>
             <td>{machine.Name}</td>
@@ -21,7 +22,7 @@ var MachineList = React.createClass({
         );
       });
     } else {
-      var MachineNode = <p>You do not have access to any machines</p>;
+      return <p>You do not have access to any machines</p>;
     }
     return (
       <table className="table table-striped table-hover" >

@@ -11,6 +11,7 @@ export default keyMirror({
   MACHINE_STORE_CLEAR_STATE: null,
   SET_ACTIVATION_INFO: null,
   SET_USER_INFO: null,
+  SET_USER_INFO_PROPERTY: null,
   SET_MACHINE_INFO: null,
   REGISTER_MACHINE_USER: null,
   SET_LOADING: null,
@@ -18,5 +19,8 @@ export default keyMirror({
 
   SCROLL_UP: null,
   SCROLL_DOWN: null,
-  SET_SCROLL_STEP: null
+  SET_SCROLL_STEP: null,
+
+  SET_BILL_INFO: null,
+  SET_MEMBERSHIP_INFO: null
 });

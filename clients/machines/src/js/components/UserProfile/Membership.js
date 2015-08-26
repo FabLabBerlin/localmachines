@@ -11,13 +11,9 @@ var Membership = React.createClass({
    * Display it
    */
   render() {
-    var MembershipNode = ( 
-      <tr>
-        <td colSpan="4">You do not have any memberships</td>
-      </tr> 
-    );
-    if(this.props.info.length != 0) {
-      var MembershipNode = this.props.info.map(function(membership) {
+    var MembershipNode;
+    if (this.props.info && this.props.info.length !== 0) {
+      MembershipNode = this.props.info.map(function(membership) {
         return (
         <tr key={membership.Id} >
             <td>{membership.Title}</td>
@@ -27,6 +23,8 @@ var Membership = React.createClass({
           </tr>
         );
       });
+    } else {
+      return <p>You do not have any memberships</p>;
     }
     return (
       <table className="table table-striped table-hover">

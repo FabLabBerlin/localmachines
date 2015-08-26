@@ -55,11 +55,9 @@ function successLogin(state, { data }) {
  */
 function errorLogin(state) {
   if (state.get('firstTry')) {
-    toastr.error('Failed to log in');
     return state.set('firstTry', false)
                 .set('loginSuccess', false);
   } else {
-    toastr.error('Failed to log in');
     return state.set('loginSuccess', false);
   }
 }

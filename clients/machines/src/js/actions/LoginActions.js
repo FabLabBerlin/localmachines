@@ -22,6 +22,9 @@ export default {
         reactor.dispatch(actionTypes.SUCCESS_LOGIN, { data });
       }.bind(this),
       error: function(xhr, status, err) {
+        if (content.username !== '' && content.password !== '') {
+          toastr.error('Failed to log in');
+        }
         reactor.dispatch(actionTypes.ERROR_LOGIN);
         console.error('/users/login', status, err);
       }.bind(this)

@@ -33,7 +33,7 @@ var MachineList = React.createClass({
         _.each(activation, function(a, i) {
           if( machine.Id === activation[i].MachineId ) {
             isMachineBusy = true;
-            isSameUser = this.props.user.Id === activation[i].UserId;
+            isSameUser = this.props.user.get('Id') === activation[i].UserId;
             activationProps = activation[i];
             return false;
           }

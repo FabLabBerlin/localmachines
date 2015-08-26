@@ -10,6 +10,7 @@ var React = require('react');
 var reactor = require('../reactor');
 var ScrollNav = require('./ScrollNav');
 var toastr = require('../toastr');
+var UserActions = require('../actions/UserActions');
 
 /*
  * MachinePage:
@@ -44,7 +45,8 @@ var MachinePage = React.createClass({
    */
   componentWillMount() {
     const uid = reactor.evaluateToJS(getters.getUid);
-    MachineActions.fetchData(uid);
+    UserActions.getUserInfoFromServer(uid);
+    MachineActions.apiGetUserMachines(uid);
   },
 
   /*
@@ -68,18 +70,6 @@ var MachinePage = React.createClass({
     window.libnfc.cardReaderError.disconnect(this.errorNFCCallback);
     toastr.error(error);
     setTimeout(this.connectJsToQt, 2000);
-  },
-
-  /*
-   * Return an object with information
-   * Which are useful for MachineChooser
-   */
-  getUserInfoToPassInProps() {
-    var User = {
-      Id: this.state.userInfo.Id,
-      Role: this.state.userInfo.UserRole
-    };
-    return User;
   },
 
   /*
@@ -187,11 +177,11 @@ var MachinePage = React.createClass({
           <div className="logged-user-name">
             <div className="text-center ng-binding">
               <i className="fa fa-user-secret"></i>&nbsp;
-              {this.state.userInfo.FirstName} {this.state.userInfo.LastName}
+              {this.state.userInfo.get('FirstName')} {this.state.userInfo.get('LastName')}
             </div>
           </div>
           <MachineList
-            user={this.getUserInfoToPassInProps()}
+            user={this.state.userInfo}
             info={machineInfo}
             activation={this.state.activationInfo}
           />

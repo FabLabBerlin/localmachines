@@ -1,5 +1,6 @@
 var $ = require('jquery');
 var actionTypes = require('../actionTypes');
+var ApiActions = require('./ApiActions');
 var getters = require('../getters');
 var LoginActions = require('../actions/LoginActions');
 var MachineStore = require('../stores/MachineStore');
@@ -8,10 +9,6 @@ var toastr = require('../toastr');
 
 
 var MachineActions = {
-
-  fetchData(uid) {
-    _getAPICall('/api/users/' + uid, _userInfoSuccess);
-  },
 
   /*
    * To end an activation
@@ -30,7 +27,7 @@ var MachineActions = {
     var dataToSend = {
       mid: mid
     };
-    _postAPICall('/api/activations', dataToSend, _postActivationSuccess, 'Can not activate the machine');
+    ApiActions.postCall('/api/activations', dataToSend, _postActivationSuccess, 'Can not activate the machine');
     LoginActions.keepAlive();
   },
 
@@ -51,6 +48,17 @@ var MachineActions = {
   },
 
   /*
+   * Use GET call to get the machines the user can use
+   * callback are defined below
+   */
+  apiGetUserMachines(uid) {
+    ApiActions.getCall('/api/users/' + uid + '/machines', function(machineInfo) {
+      reactor.dispatch(actionTypes.SET_MACHINE_INFO, { machineInfo });
+      apiGetActivationActive();
+    });
+  },
+
+  /*
    * Clear store state while logout
    */
   clearState() {
@@ -61,7 +69,7 @@ var MachineActions = {
    * To continue to refresh the view each seconds
    */
   pollActivations() {
-    _getAPICall('/api/activations/active', function(data) {
+    ApiActions.getCall('/api/activations/active', function(data) {
       var activationInfo = _formatActivation(data);
       reactor.dispatch(actionTypes.SET_ACTIVATION_INFO, { activationInfo });
     });
@@ -70,31 +78,12 @@ var MachineActions = {
 };
 
 /*
- * Use GET call to get the name of the user
- * callback are defined below
- */
-function apiGetUserInfoLogin(uid) {
-  _getAPICall('/api/users/' + uid, _userInfoSuccess);
-}
-
-/*
- * Use GET call to get the machines the user can use
- * callback are defined below
- */
-function apiGetUserMachines(uid) {
-  _getAPICall('/api/users/' + uid + '/machines', function(machineInfo) {
-    reactor.dispatch(actionTypes.SET_MACHINE_INFO, { machineInfo });
-    apiGetActivationActive();
-  });
-}
-
-/*
  * End an activation
  * activation become unactive
  * @aid: activation id you want to shut down
  */
 function apiPutActivation(aid) {
-  showGlobalLoader();
+  ApiActions.showGlobalLoader();
   $.ajax({
     url: '/api/activations/' + aid,
     method: 'PUT',
@@ -102,11 +91,11 @@ function apiPutActivation(aid) {
       ac: new Date().getTime()
     },
     success: function(data) {
-      hideGlobalLoader();
+      ApiActions.hideGlobalLoader();
       _postActivationSuccess(data, 'Machine deactivated');
     }.bind(this),
     error: function(xhr, status, err) {
-      hideGlobalLoader();
+      ApiActions.hideGlobalLoader();
       toastr.error('Failed to deactivate');
       console.error('/api/activation/aid', status, err.toString());
     }.bind(this)
@@ -141,7 +130,7 @@ function apiPostSwitchMachine(mid, onOrOff, aid = '') {
   }
   var errorFunction = function() {
   };
-  _postAPICall('/api/machines/' + mid + '/turn_' + onOrOff,
+  ApiActions.postCall('/api/machines/' + mid + '/turn_' + onOrOff,
                    { ac: new Date().getTime() },
                    successFunction,
                    'Failed to turn ' + onOrOff,
@@ -150,7 +139,7 @@ function apiPostSwitchMachine(mid, onOrOff, aid = '') {
 }
 
 function apiGetActivationActive() {
-  _getAPICall('/api/activations/active', function(data) {
+  ApiActions.getCall('/api/activations/active', function(data) {
     var activationInfo = _formatActivation(data);
     _.each(activationInfo, apiLoadMachineUser);
     reactor.dispatch(actionTypes.SET_ACTIVATION_INFO, { activationInfo });
@@ -158,57 +147,8 @@ function apiGetActivationActive() {
 }
 
 function apiLoadMachineUser(activation) {
-  _getAPICall('/api/users/' + activation.UserId + '/name', function(userData) {
+  ApiActions.getCall('/api/users/' + activation.UserId + '/name', function(userData) {
     reactor.dispatch(actionTypes.REGISTER_MACHINE_USER, { userData });
-  });
-}
-
-/*
- * GET call to the API
- * Make GET call cutomisable
- */
-function _getAPICall(url, successFunction, toastrMessage = '', errorFunction = function() {}) {
-  $.ajax({
-    url: url,
-    dataType: 'json',
-    type: 'GET',
-    cache: false,
-    success: function(data) {
-      successFunction(data);
-    },
-    error: function(xhr, status, err) {
-      if (toastrMessage) {
-        toastr.error(toastrMessage);
-      }
-      errorFunction();
-      console.error(url, status, err);
-    }
-  });
-}
-
-/*
- * POST call to the API
- * Make POST call cutomisable
- */
-function _postAPICall(url, dataToSend, successFunction, toastrMessage = '', errorFunction = function() {}) {
-  showGlobalLoader();
-  $.ajax({
-    url: url,
-    dataType: 'json',
-    type: 'POST',
-    data: dataToSend,
-    success: function(data) {
-      hideGlobalLoader();
-      successFunction(data);
-    },
-    error: function(xhr, status, err) {
-      hideGlobalLoader();
-      if (toastrMessage) {
-        toastr.error(toastrMessage);
-      }
-      errorFunction();
-      console.error(url, status, err);
-    }
   });
 }
 
@@ -237,31 +177,7 @@ function _postActivationSuccess(data, toastrMessage = 'Machine activated') {
     reactor.dispatch(actionTypes.SET_ACTIVATION_INFO, { activationInfo });
     _.each(activationInfo, apiLoadMachineUser);
   };
-  _getAPICall('/api/activations/active', successFunction);
-}
-
-/*
- * Success Callback
- * Activated when getNameLogin succeed
- * MachineStore instead of this otherwe it doesn't work
- */
-function _userInfoSuccess(data) {
-  var uid = data.Id;
-  var usefulInformation = ['Id', 'FirstName', 'LastName', 'UserRole'];
-  var userInfo = {};
-  for(var index in usefulInformation) {
-    userInfo[usefulInformation[index]] = data[usefulInformation[index]];
-  }
-  reactor.dispatch(actionTypes.SET_USER_INFO, { userInfo });
-  apiGetUserMachines(uid);
-}
-
-function showGlobalLoader() {
-  reactor.dispatch(actionTypes.SET_LOADING);
-}
-
-function hideGlobalLoader() {
-  reactor.dispatch(actionTypes.UNSET_LOADING);
+  ApiActions.getCall('/api/activations/active', successFunction);
 }
 
 export default MachineActions;

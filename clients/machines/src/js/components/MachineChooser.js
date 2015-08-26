@@ -86,7 +86,7 @@ var MachineChooser = React.createClass({
    * @nothing => FreeMachine
    */
   render() {
-    let isAdmin = this.props.user.Role === 'admin';
+    let isAdmin = this.props.user.get('UserRole') === 'admin';
     return (
       <div className="machine available">
         <div className="container-fluid">

@@ -1,4 +1,5 @@
 jest.dontMock('../../actionTypes');
+jest.dontMock('../ApiActions');
 jest.dontMock('../MachineActions');
 jest.dontMock('nuclear-js');
 jest.mock('jquery');
@@ -10,20 +11,6 @@ var MachineActions = require('../MachineActions');
 var reactor = require('../../reactor');
 
 describe('MachineActions', function() {
-  describe('fetchData', function() {
-    it('should GET /api/users/:uid', function() {
-      MachineActions.fetchData(123);
-      expect($.ajax).toBeCalledWith({
-        url: '/api/users/123',
-        dataType: 'json',
-        type: 'GET',
-        cache: false,
-        success: jasmine.any(Function),
-        error: jasmine.any(Function)
-      });
-    });
-  });
-
   describe('endActivation', function() {
     it('should PUT /api/activations/:aid', function() {
       MachineActions.endActivation(2);

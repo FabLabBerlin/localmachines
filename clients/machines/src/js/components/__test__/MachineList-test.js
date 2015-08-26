@@ -2,8 +2,13 @@ jest.dontMock('../ForceSwitch');
 jest.dontMock('../FreeMachine');
 jest.dontMock('../MachineChooser');
 jest.dontMock('../MachineList');
+jest.dontMock('nuclear-js');
+jest.dontMock('react');
+
 var React = require('react');
 var MachineList = React.createFactory(require('../MachineList'));
+var Nuclear = require('nuclear-js');
+var toImmutable = Nuclear.toImmutable;
 
 
 function machines() {
@@ -33,9 +38,9 @@ describe('MachineList', function() {
     it('renders the machines that are passed as parameter', function() {
       var ml = new MachineList({
         info: machines(),
-        user: {
-          Role: 'member'
-        }
+        user: toImmutable({
+          UserRole: 'member'
+        })
       });
       var s = React.renderToString(ml);
       expect(s).toContain('Printer5000');
@@ -46,9 +51,9 @@ describe('MachineList', function() {
       [false, true].forEach(function(isAdmin) {
         var ml = new MachineList({
           info: machines(),
-          user: {
-            Role: isAdmin ? 'admin' : 'member'
-          }
+          user: toImmutable({
+            UserRole: isAdmin ? 'admin' : 'member'
+          })
         });
         var s = React.renderToString(ml);
         expect(s).toContain('Printer5000');
