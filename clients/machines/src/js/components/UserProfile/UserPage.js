@@ -1,8 +1,6 @@
-var BillTable = require('./BillTable');
 var getters = require('../../getters');
 var MachineActions = require('../../actions/MachineActions');
 var MachineList = require('./MachineList');
-var Membership = require('./Membership');
 var {Navigation} = require('react-router');
 var React = require('react');
 var reactor = require('../../reactor');
@@ -115,18 +113,9 @@ var UserPage = React.createClass({
             passwordFunc={this.updatePassword}
             submit={this.handleSubmit}
           />
-
-        <h3>Machines you can use</h3>
-        <MachineList info={this.state.machineInfo} />
-
-        <h3>Your Monthly Spendings</h3>
-        {<BillTable info={this.state.billInfo} />}
-
-        <h3>Your Memberships</h3>
-        {<Membership info={this.state.membershipInfo} />}
       </div>
     );
   }
 });
 
-module.exports = UserPage;
+export default UserPage;

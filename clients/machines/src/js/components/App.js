@@ -1,5 +1,6 @@
 var reactor = require('../reactor');
 var getters = require('../getters');
+var HeaderNav = require('./HeaderNav');
 var LoginStore = require('../stores/LoginStore');
 var LoginActions = require('../actions/LoginActions');
 var React = require('react');
@@ -31,12 +32,15 @@ var RouteHandler = require('react-router').RouteHandler;
           <div className="container-fluid">
 
             <div className="row">
-              <div className="col-xs-6">
+              <div className="col-xs-3">
                 <img src="img/logo_fablab_berlin.svg"
                      className="brand-image"/>
               </div>
+              <div className="col-xs-7">
+                {isLogged ? <HeaderNav/> : ''}
+              </div>
               {isLogged ? (
-                <div className="col-xs-6 text-right">
+                <div className="col-xs-2 text-right">
                   <button
                     className="btn btn-danger btn-logout pull-right"
                     onClick={LoginActions.logout}>
