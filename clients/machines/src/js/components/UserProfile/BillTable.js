@@ -17,7 +17,7 @@ function formatTime(t) {
     if (h || m) {
       str += String(m) + ' m ';
     }
-    if (s) {
+    if (h || m || s) {
       str += String(s) + ' s ';
     }
     return str;
@@ -30,30 +30,49 @@ var BillTables = React.createClass({
       var activationsByMonth = _.groupBy(this.props.info.Activations, function(info) {
         return moment(info.TimeStart).format('MMM YYYY');
       });
-      return (
-        <div>
-          {_.map(activationsByMonth, function(activations, month) {
-            return <BillTable key={month} activations={activations} month={month}/>;
-          })}
-        </div>
-      );
-    } else {
-      return <p>You do not have any expenses.</p>;
-    }
-  }
-});
+      var nodes = [];
+      var lastMonth;
+      var sumPriceInclVAT;
+      var sumPriceExclVAT;
+      var sumPriceVAT;
+      var sumDurations;
+      var i = 0;
 
+      var getTotal = function() {
+        return (
+          <tr key={i++}>
+            <td><label>Total</label></td>
+            <td><label></label></td>
+            <td><label>{formatTime(sumDurations)}</label></td>
+            <td><label>{toEuro(sumPriceExclVAT)}</label> <i className="fa fa-eur"></i></td>
+            <td><label>{toEuro(sumPriceVAT)}</label> <i className="fa fa-eur"></i></td>
+            <td><label>{toEuro(sumPriceInclVAT)}</label> <i className="fa fa-eur"></i></td>
+          </tr>
+        );
+      };
 
-var BillTable = React.createClass({
-  render() {
-    var BillNode;
-    var sumPriceInclVAT = 0;
-    var sumPriceExclVAT = 0;
-    var sumPriceVAT = 0;
-    var sumDurations = 0;
-
-    if (this.props.activations && this.props.activations.length !== 0) {
-      BillNode = this.props.activations.map(function(info, i) {
+      _.each(this.props.info.Activations, function(info) {
+        var month = moment(info.TimeStart).format('MMM YYYY');
+        if (month !== lastMonth) {
+          if (lastMonth) {
+            nodes.push(getTotal());
+          }
+          nodes.push(<tr key={i++}><td colSpan={6}><h4>{month}</h4></td></tr>);
+          nodes.push(
+            <tr key={i++}>
+              <th>Machine</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Price excl. VAT</th>
+              <th>VAT (19%)</th>
+              <th>Total</th>
+            </tr>
+          );
+          sumPriceInclVAT = 0;
+          sumPriceExclVAT = 0;
+          sumPriceVAT = 0;
+          sumDurations = 0;
+        }
         var duration = moment.duration(moment(info.TimeEnd).diff(moment(info.TimeStart))).asSeconds();
         sumDurations += duration;
         var priceInclVAT = toCents(info.DiscountedTotal);
@@ -62,8 +81,8 @@ var BillTable = React.createClass({
         sumPriceInclVAT += priceInclVAT;
         sumPriceExclVAT += priceExclVAT;
         sumPriceVAT += priceVAT;
-        return (
-          <tr key={i} >
+        nodes.push(
+          <tr key={i++}>
             <td>{info.MachineName}</td>
             <td>{formatDate(moment(info.TimeStart))}</td>
             <td>{formatTime(duration)}</td>
@@ -72,37 +91,19 @@ var BillTable = React.createClass({
             <td>{toEuro(priceInclVAT)} <i className="fa fa-eur"></i></td>
           </tr>
         );
+        lastMonth = month;
       });
+      nodes.push(getTotal());
       return (
-        <div>
-          <h4>{this.props.month}</h4>
-          <table className="table table-striped table-hover" >
-            <thead>
-              <tr>
-                <th>Machine</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Price excl. VAT</th>
-                <th>VAT (19%)</th>
-                <th>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {BillNode}
-              <tr>
-                <td><label>Total</label></td>
-                <td><label></label></td>
-                <td><label>{formatTime(sumDurations)}</label></td>
-                <td><label>{toEuro(sumPriceExclVAT)}</label> <i className="fa fa-eur"></i></td>
-                <td><label>{toEuro(sumPriceVAT)}</label> <i className="fa fa-eur"></i></td>
-                <td><label>{toEuro(sumPriceInclVAT)}</label> <i className="fa fa-eur"></i></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <table className="table table-striped table-hover" >
+          <thead></thead>
+          <tbody>
+            {nodes}
+          </tbody>
+        </table>
       );
     } else {
-      return <p>You do not have any expenses for this month.</p>;
+      return <p>You do not have any expenses.</p>;
     }
   }
 });
