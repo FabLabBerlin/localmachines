@@ -75,6 +75,14 @@ func GetUserActivations(startTime time.Time,
 	return &activations, nil
 }
 
+// Get activations of a specific user
+func GetUserActivationsStartTime(userId int64) (startTime time.Time, err error) {
+	query := "SELECT min(time_start) FROM activations WHERE user_id = ?"
+	o := orm.NewOrm()
+	err = o.Raw(query, userId).QueryRow(&startTime)
+	return
+}
+
 // Get filtered activations in a paged manner
 func GetActivations(startTime time.Time,
 	endTime time.Time,

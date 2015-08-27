@@ -1,3 +1,5 @@
+var {formatDate, subtractVAT, toEuro, toCents} = require('./helpers');
+var moment = require('moment');
 var React = require('react');
 
 
@@ -24,15 +26,28 @@ function formatTime(t) {
 var BillTable = React.createClass({
   render() {
     var BillNode;
-    var VAT = 0.19;
-    if (this.props.info.Details && this.props.info.Details.length !== 0) {
-      BillNode = this.props.info.Details.map(function(info) {
+    var sumPriceInclVAT = 0;
+    var sumPriceExclVAT = 0;
+    var sumPriceVAT = 0;
+    var sumDurations = 0;
+    if (this.props.info.Activations && this.props.info.Activations.length !== 0) {
+      BillNode = this.props.info.Activations.map(function(info, i) {
+        var duration = moment.duration(moment(info.TimeEnd).diff(moment(info.TimeStart))).asSeconds();
+        sumDurations += duration;
+        var priceInclVAT = toCents(info.DiscountedTotal);
+        var priceExclVAT = toCents(subtractVAT(info.DiscountedTotal));
+        var priceVAT = priceInclVAT - priceExclVAT;
+        sumPriceInclVAT += priceInclVAT;
+        sumPriceExclVAT += priceExclVAT;
+        sumPriceVAT += priceVAT;
         return (
-          <tr key={info.MachineId} >
+          <tr key={i} >
             <td>{info.MachineName}</td>
-            <td>{formatTime(info.Time)}</td>
-            <td>{(info.Price * VAT).toFixed(2)} <i className="fa fa-eur"></i></td>
-            <td>{info.Price.toFixed(2)} <i className="fa fa-eur"></i></td>
+            <td>{formatDate(moment(info.TimeStart))}</td>
+            <td>{formatTime(duration)}</td>
+            <td>{toEuro(priceExclVAT)} <i className="fa fa-eur"></i></td>
+            <td>{toEuro(priceVAT)} <i className="fa fa-eur"></i></td>
+            <td>{toEuro(priceInclVAT)} <i className="fa fa-eur"></i></td>
           </tr>
         );
       });
@@ -44,18 +59,22 @@ var BillTable = React.createClass({
         <thead>
           <tr>
             <th>Machine</th>
+            <th>Date</th>
             <th>Time</th>
+            <th>Price excl. VAT</th>
             <th>VAT (19%)</th>
-            <th>Expenses <i className="fa fa-eur"></i> (VAT included)</th>
+            <th>Total</th>
           </tr>
         </thead>
         <tbody>
           {BillNode}
           <tr>
             <td><label>Total</label></td>
-            <td><label>{formatTime(this.props.info.TotalTime)}</label></td>
-            <td><label>{(this.props.info.TotalPrice * VAT).toFixed(2)}</label> <i className="fa fa-eur"></i></td>
-            <td><label>{this.props.info.TotalPrice.toFixed(2)}</label> <i className="fa fa-eur"></i></td>
+            <td><label></label></td>
+            <td><label>{formatTime(sumDurations)}</label></td>
+            <td><label>{toEuro(sumPriceExclVAT)}</label> <i className="fa fa-eur"></i></td>
+            <td><label>{toEuro(sumPriceVAT)}</label> <i className="fa fa-eur"></i></td>
+            <td><label>{toEuro(sumPriceInclVAT)}</label> <i className="fa fa-eur"></i></td>
           </tr>
         </tbody>
       </table>

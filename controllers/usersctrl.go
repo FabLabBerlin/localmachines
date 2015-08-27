@@ -507,7 +507,6 @@ func (this *UsersController) GetUserMachines() {
 // @Failure	500	Internal Server Error
 // @router /:uid/bill [get]
 func (this *UsersController) GetUserBill() {
-
 	// Get requested user ID
 	var err error
 	var ruid int64
@@ -535,88 +534,27 @@ func (this *UsersController) GetUserBill() {
 		this.CustomAbort(401, "Unauthorized")
 	}
 
-	firstDayOfThisMonth := time.Date(time.Now().Year(), time.Now().Month(), 0, 0, 0, 0, 0, time.Now().Location())
-	tomorrow := time.Date(time.Now().Year(), time.Now().Month(), time.Now().Day()+1, 0, 0, 0, 0, time.Now().Location())
-	activations, err := models.GetUserActivations(firstDayOfThisMonth, tomorrow, ruid)
+	startTime, err := models.GetUserActivationsStartTime(suidInt64)
 	if err != nil {
-		beego.Error(err.Error())
+		beego.Error("GetUserActivationsStartTime:", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	memberships, _ := models.GetUserMemberships(ruid)
-
-	var total = TotalUsage{
-		TotalTime:  0,
-		TotalPrice: 0,
-		Details:    []MachineUsage{},
+	endTime := time.Now().Add(86400 * time.Second)
+	_, invSummary, err := models.CalculateInvoiceSummary(startTime, endTime)
+	if err != nil {
+		beego.Error("CalculateInvoiceSummary:", err)
 	}
 
-	updateDetails := func(machine *models.Machine, activation models.Activation, membs *models.UserMembershipList, total *TotalUsage, ratio float64) {
-		reduction := float64(1)
-		for _, memb := range membs.Data {
-			var machinesAffected MachinesAffectedArray
-			err := json.Unmarshal([]byte(`{"MachinesIds":`+memb.AffectedMachines+`}`), &machinesAffected)
-			if err != nil {
-				beego.Critical(err.Error())
-			}
-			beego.Debug(memb.AffectedMachines)
-			beego.Debug(machinesAffected.MachinesIds)
+	var userSummary *models.UserSummary
 
-			reductionOnThisMachine := false
-			for _, item := range machinesAffected.MachinesIds {
-				if int64(item) == machine.Id {
-					reductionOnThisMachine = true
-				}
-			}
-
-			if reductionOnThisMachine {
-				reduction *= float64((float64(100) - float64(memb.MachinePriceDeduction)) / float64(100))
-			}
-		}
-
-		detailIndex := -1
-		for index, item := range total.Details {
-			if int64(item.MachineId) == machine.Id {
-				detailIndex = index
-			}
-		}
-		beego.Debug(reduction)
-		actualPrice := float64(activation.TimeTotal) / ratio * (float64(machine.Price) * float64(reduction))
-
-		total.TotalPrice += actualPrice
-		if detailIndex != -1 {
-			total.Details[detailIndex].Price += actualPrice
-			total.Details[detailIndex].Time += activation.TimeTotal
-		} else {
-			total.Details = append(total.Details, MachineUsage{
-				MachineId:   int64(activation.MachineId),
-				MachineName: machine.Name,
-				Price:       actualPrice,
-				Time:        activation.TimeTotal,
-			})
+	for _, us := range invSummary.UserSummaries {
+		if us.UserId == suid {
+			userSummary = us
 		}
 	}
 
-	for index := 0; index < len(*activations); index++ {
-		activation := (*activations)[index]
-		if !activation.Active {
-			total.TotalTime += activation.TimeTotal
-			machine, _ := models.GetMachine(int64(activation.MachineId))
-			switch machine.PriceUnit {
-			case "day":
-				updateDetails(machine, activation, memberships, &total, float64(24*3600))
-			case "hour":
-				updateDetails(machine, activation, memberships, &total, float64(3600))
-			case "minute":
-				updateDetails(machine, activation, memberships, &total, float64(60))
-			default:
-				updateDetails(machine, activation, memberships, &total, float64(1))
-			}
-		}
-	}
-
-	// Serve activations
-	this.Data["json"] = total
+	this.Data["json"] = userSummary
 	this.ServeJson()
 }
 

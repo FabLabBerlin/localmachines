@@ -1,4 +1,4 @@
-var {endDate, formatDate} = require('./helpers');
+var {endDate, formatDate, subtractVAT, toCents, toEuro} = require('./helpers');
 var moment = require('moment');
 import React from 'react';
 
@@ -17,17 +17,17 @@ var Membership = React.createClass({
     if (this.props.info && this.props.info.length !== 0) {
       MembershipNode = this.props.info.map(function(membership) {
         var startDate = moment(membership.StartDate);
-        var totalPrice = membership.Price;
-        var priceExclVat = (Math.round(totalPrice / 1.19 * 100) / 100).toFixed(2);
-        var vat = (totalPrice - priceExclVat).toFixed(2);
+        var totalPrice = toCents(membership.Price);
+        var priceExclVat = toCents(subtractVAT(membership.Price));
+        var vat = totalPrice - priceExclVat;
         return (
           <tr key={membership.Id} >
             <td>{membership.Title}</td>
             <td>{formatDate(startDate)}</td>
             <td>{formatDate(endDate(startDate, membership.Duration))}</td>
-            <td>{priceExclVat} €</td>
-            <td>{vat} €</td>
-            <td>{totalPrice} €</td>
+            <td>{toEuro(priceExclVat)} €</td>
+            <td>{toEuro(vat)} €</td>
+            <td>{toEuro(totalPrice)} €</td>
           </tr>
         );
       });
@@ -42,7 +42,7 @@ var Membership = React.createClass({
             <th>Start Date</th>
             <th>End Date</th>
             <th>Price/month excl. VAT</th>
-            <th>VAT</th>
+            <th>VAT (19%)</th>
             <th>Total</th>
           </tr>
         </thead>

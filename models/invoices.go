@@ -59,6 +59,7 @@ type InvoiceActivation struct {
 	TotalPrice          float64
 	DiscountedTotal     float64
 	TimeStart           time.Time
+	TimeEnd             time.Time
 }
 
 func (this *InvoiceActivation) priceTotalExclDisc() float64 {
@@ -216,7 +217,12 @@ func CalculateInvoiceSummary(startTime, endTime time.Time) (invoice Invoice, inv
 	}
 
 	for i := 0; i < len(*userSummaries); i++ {
+		sort.Stable((*userSummaries)[i].Activations)
 		beego.Trace((*userSummaries)[i].Activations)
+		for _, activation := range (*userSummaries)[i].Activations {
+			activation.TotalPrice = activation.priceTotalExclDisc()
+			activation.DiscountedTotal = activation.priceTotalDisc()
+		}
 	}
 
 	// Create invoice summary
@@ -475,7 +481,6 @@ func (this *Invoice) createXlsxFile(filePath string,
 		sumTotal := 0.0
 		sumTotalDisc := 0.0
 
-		sort.Stable(userSummary.Activations)
 		for actIter := 0; actIter < len(userSummary.Activations); actIter++ {
 			activation := (*userSummary).Activations[actIter]
 			row = sheet.AddRow()
@@ -834,6 +839,7 @@ func (this *Invoice) enhanceActivation(activation *Activation) (*InvoiceActivati
 	}
 
 	invActivation.TimeStart = activation.TimeStart
+	invActivation.TimeEnd = activation.TimeEnd
 
 	return invActivation, nil
 }
