@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var {formatDate, subtractVAT, toEuro, toCents} = require('./helpers');
 var moment = require('moment');
 var React = require('react');
@@ -23,6 +24,26 @@ function formatTime(t) {
   }
 }
 
+var BillTables = React.createClass({
+  render() {
+    if (this.props.info.Activations && this.props.info.Activations.length !== 0) {
+      var activationsByMonth = _.groupBy(this.props.info.Activations, function(info) {
+        return moment(info.TimeStart).format('MMM YYYY');
+      });
+      return (
+        <div>
+          {_.map(activationsByMonth, function(activations, month) {
+            return <BillTable key={month} activations={activations} month={month}/>;
+          })}
+        </div>
+      );
+    } else {
+      return <p>You do not have any expenses.</p>;
+    }
+  }
+});
+
+
 var BillTable = React.createClass({
   render() {
     var BillNode;
@@ -30,8 +51,9 @@ var BillTable = React.createClass({
     var sumPriceExclVAT = 0;
     var sumPriceVAT = 0;
     var sumDurations = 0;
-    if (this.props.info.Activations && this.props.info.Activations.length !== 0) {
-      BillNode = this.props.info.Activations.map(function(info, i) {
+
+    if (this.props.activations && this.props.activations.length !== 0) {
+      BillNode = this.props.activations.map(function(info, i) {
         var duration = moment.duration(moment(info.TimeEnd).diff(moment(info.TimeStart))).asSeconds();
         sumDurations += duration;
         var priceInclVAT = toCents(info.DiscountedTotal);
@@ -51,35 +73,38 @@ var BillTable = React.createClass({
           </tr>
         );
       });
+      return (
+        <div>
+          <h4>{this.props.month}</h4>
+          <table className="table table-striped table-hover" >
+            <thead>
+              <tr>
+                <th>Machine</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Price excl. VAT</th>
+                <th>VAT (19%)</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {BillNode}
+              <tr>
+                <td><label>Total</label></td>
+                <td><label></label></td>
+                <td><label>{formatTime(sumDurations)}</label></td>
+                <td><label>{toEuro(sumPriceExclVAT)}</label> <i className="fa fa-eur"></i></td>
+                <td><label>{toEuro(sumPriceVAT)}</label> <i className="fa fa-eur"></i></td>
+                <td><label>{toEuro(sumPriceInclVAT)}</label> <i className="fa fa-eur"></i></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      );
     } else {
-      return <p>You do not have any expenses</p>;
+      return <p>You do not have any expenses for this month.</p>;
     }
-    return (
-      <table className="table table-striped table-hover" >
-        <thead>
-          <tr>
-            <th>Machine</th>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Price excl. VAT</th>
-            <th>VAT (19%)</th>
-            <th>Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          {BillNode}
-          <tr>
-            <td><label>Total</label></td>
-            <td><label></label></td>
-            <td><label>{formatTime(sumDurations)}</label></td>
-            <td><label>{toEuro(sumPriceExclVAT)}</label> <i className="fa fa-eur"></i></td>
-            <td><label>{toEuro(sumPriceVAT)}</label> <i className="fa fa-eur"></i></td>
-            <td><label>{toEuro(sumPriceInclVAT)}</label> <i className="fa fa-eur"></i></td>
-          </tr>
-        </tbody>
-      </table>
-    );
   }
 });
 
-module.exports = BillTable;
+export default BillTables;
