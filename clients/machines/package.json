@@ -26,6 +26,7 @@
     "less": "^2.5.1",
     "less-loader": "^2.2.0",
     "lodash": "^3.10.0",
+    "moment": "^2.10.6",
     "node-libs-browser": "^0.5.2",
     "nuclear-js": "^1.1.1",
     "react": "^0.13.3",

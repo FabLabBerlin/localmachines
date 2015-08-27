@@ -50,11 +50,11 @@ var SpendingsPage = React.createClass({
   render() {
     return (
       <div className="container">
-        <h3>Your Monthly Spendings</h3>
-        {<BillTable info={this.state.billInfo} />}
-
         <h3>Your Memberships</h3>
         {<Membership info={this.state.membershipInfo} />}
+
+        <h3>Pay-As-You-Go (Machine Usage)</h3>
+        {<BillTable info={this.state.billInfo} />}
       </div>
     );
   }

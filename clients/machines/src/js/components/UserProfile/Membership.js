@@ -1,3 +1,5 @@
+var {endDate, formatDate} = require('./helpers');
+var moment = require('moment');
 import React from 'react';
 
 /*
@@ -14,12 +16,18 @@ var Membership = React.createClass({
     var MembershipNode;
     if (this.props.info && this.props.info.length !== 0) {
       MembershipNode = this.props.info.map(function(membership) {
+        var startDate = moment(membership.StartDate);
+        var totalPrice = membership.Price;
+        var priceExclVat = (Math.round(totalPrice / 1.19 * 100) / 100).toFixed(2);
+        var vat = (totalPrice - priceExclVat).toFixed(2);
         return (
-        <tr key={membership.Id} >
+          <tr key={membership.Id} >
             <td>{membership.Title}</td>
-            <td>{membership.Duration + ' ' + membership.Unit}</td>
-            <td>{membership.Price}</td>
-            <td>{membership.StartDate}</td>
+            <td>{formatDate(startDate)}</td>
+            <td>{formatDate(endDate(startDate, membership.Duration))}</td>
+            <td>{priceExclVat} €</td>
+            <td>{vat} €</td>
+            <td>{totalPrice} €</td>
           </tr>
         );
       });
@@ -31,9 +39,11 @@ var Membership = React.createClass({
         <thead>
           <tr>
             <th>Name</th>
-            <th>Duration</th>
-            <th>Price</th>
-            <th>Start date</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Price/month excl. VAT</th>
+            <th>VAT</th>
+            <th>Total</th>
           </tr>
         </thead>
         <tbody>
@@ -44,4 +54,4 @@ var Membership = React.createClass({
   }
 });
 
-module.exports = Membership;
+export default Membership;
