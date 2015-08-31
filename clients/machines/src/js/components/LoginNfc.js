@@ -126,14 +126,35 @@ var LoginNfc = React.createClass({
    */
   render() {
     return (
-      <form className="login-form">
-        <div className="nfc-login-info-icon">
-          <i className="fa fa-credit-card"></i>
+      <div>
+        <h3 id="login-own-device-text">You can use EasyLab on your own Smartphone or Laptop!</h3>
+        <div className="row">
+          <div className="col-xs-5">
+            <form className="login-form">
+              <div className="nfc-login-info-icon">
+                <i className="fa fa-credit-card"></i>
+              </div>
+              <div className="nfc-login-info-text">
+                <p>Use your NFC card to log in</p>
+              </div>
+            </form>
+          </div>
+          <div id="login-nfc-or-own" className="col-xs-2">
+            or
+          </div>
+          <div className="col-xs-5 login-own-device">
+            <div id="login-laptop-overlay">
+              <div>Username</div>
+              <div>Password</div>
+            </div>
+            <img className="login-laptop" src="/machines/img/Laptop1.svg"/>
+            <img className="login-phone" src="/machines/img/Phone1.svg"/>
+            <div>
+              Go to https://easylab.io on your Laptop or Phone
+            </div>
+          </div>
         </div>
-        <div className="nfc-login-info-text">
-          <p>Use your NFC card to log in</p>
-        </div>
-      </form>
+      </div>
     );
   }
 });

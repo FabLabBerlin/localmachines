@@ -1,5 +1,6 @@
 @import "~bootstrap-less/bootstrap/bootstrap.less";
 @import "common.less";
+@import "prefixer.less";
 @import "vex-theme.less";
 
 body {
@@ -336,7 +337,12 @@ footer div {
   text-align: center;
   font-size: 20px;
   line-height: 1;
-  margin-top: 15px;
+  margin-top: 42px;
+}
+
+#login-nfc-or-own {
+  font-size: 24px;
+  padding: 48px 0 0 20px;
 }
 
 .login {
@@ -394,6 +400,39 @@ footer div {
 
 .login-heading {
   font-size: 28px;
+}
+
+#login-own-device-text {
+  margin-top: -120px;
+  position: absolute;
+  text-align: center;
+  width: 100%;
+}
+
+.login-own-device {
+  font-size: 16px;
+  font-weight: bold;
+  padding-top: 10px;
+}
+
+.login-phone {
+  margin-left: 10px;
+  width: 50px;
+}
+
+.login-laptop {
+  margin: 0 10px 0 34px;
+  width: 225px;
+}
+
+#login-laptop-overlay {
+  line-height: 2.0;
+  margin: 26px 0 0 74px;
+  position: absolute;
+}
+
+.login-own-device img {
+  margin-bottom: 20px;
 }
 
 .brand-image {
