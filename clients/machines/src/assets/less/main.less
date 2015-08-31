@@ -64,16 +64,32 @@ ul, li {
   display: inline-block;
 }
 
+.header-nav a.header-nav-active {
+  background-color: #4d4d4d;
+}
+
 #header-nav-machines {
   background-image: url(/machines/img/header_nav/machines.svg);
+}
+
+#header-nav-machines.header-nav-active {
+  background-image: url(/machines/img/header_nav/machines_active.svg);
 }
 
 #header-nav-profile {
   background-image: url(/machines/img/header_nav/profile.svg);
 }
 
+#header-nav-profile.header-nav-active {
+  background-image: url(/machines/img/header_nav/profile_active.svg);
+}
+
 #header-nav-spendings {
   background-image: url(/machines/img/header_nav/spendings.svg);
+}
+
+#header-nav-spendings.header-nav-active {
+  background-image: url(/machines/img/header_nav/spendings_active.svg);
 }
 
 @media screen and (max-width: 900px) {
