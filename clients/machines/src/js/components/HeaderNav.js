@@ -1,3 +1,4 @@
+var LoginActions = require('../actions/LoginActions');
 var React = require('react');
 
 
@@ -23,6 +24,11 @@ var HeaderNav = React.createClass({
         <Button id="header-nav-machines" href="/machines/#/machine">Machines</Button>
         <Button id="header-nav-profile" href="/machines/#/profile">Profile</Button>
         <Button id="header-nav-spendings" href="/machines/#/spendings">Spendings</Button>
+        <button
+          className="btn btn-danger btn-logout pull-right"
+          onClick={LoginActions.logout}>
+          <i className="fa fa-sign-out"></i>
+        </button>
       </div>
     );
   }

@@ -2,7 +2,6 @@ var reactor = require('../reactor');
 var getters = require('../getters');
 var HeaderNav = require('./HeaderNav');
 var LoginStore = require('../stores/LoginStore');
-var LoginActions = require('../actions/LoginActions');
 var React = require('react');
 var RouteHandler = require('react-router').RouteHandler;
 
@@ -36,16 +35,9 @@ var RouteHandler = require('react-router').RouteHandler;
                 <img src="img/logo_small.svg"
                      className="brand-image"/>
               </div>
-              <div className="col-xs-8">
-                {isLogged ? <HeaderNav/> : ''}
-              </div>
               {isLogged ? (
-                <div className="col-xs-2 text-right">
-                  <button
-                    className="btn btn-danger btn-logout pull-right"
-                    onClick={LoginActions.logout}>
-                    <i className="fa fa-sign-out"></i>
-                  </button>
+                <div className="col-xs-10 text-right">
+                  <HeaderNav/>
                   {/*!window.libnfc ? (
                     <a href="/user"
                       className="btn btn-info linkToPanel"

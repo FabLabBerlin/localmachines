@@ -51,6 +51,8 @@ var BillTables = React.createClass({
         );
       };
 
+      this.props.info.Activations.reverse();
+
       _.each(this.props.info.Activations, function(info) {
         var month = moment(info.TimeStart).format('MMM YYYY');
         if (month !== lastMonth) {
