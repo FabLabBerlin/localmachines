@@ -32,11 +32,11 @@ var RouteHandler = require('react-router').RouteHandler;
           <div className="container-fluid">
 
             <div className="row">
-              <div className="col-xs-3">
-                <img src="img/logo_fablab_berlin.svg"
+              <div className="col-xs-2">
+                <img src="img/logo_small.svg"
                      className="brand-image"/>
               </div>
-              <div className="col-xs-7">
+              <div className="col-xs-8">
                 {isLogged ? <HeaderNav/> : ''}
               </div>
               {isLogged ? (

@@ -49,14 +49,43 @@ ul, li {
 
 .header-nav {
   overflow: hidden;
-  padding-top: 22px;
+  padding-top: 11px;
 }
 
 .header-nav a {
-  color: #4a4a4a;
+  background-color: #b1b1b1;
+  background-repeat: no-repeat;
+  background-size: 41px;
+  color: white;
   font-size: 18px;
   margin: 0 10px;
+  padding: 10px 14px 10px 46px;
+  background-position: 0px;
+  display: inline-block;
 }
+
+#header-nav-machines {
+  background-image: url(/machines/img/header_nav/machines.svg);
+}
+
+#header-nav-profile {
+  background-image: url(/machines/img/header_nav/profile.svg);
+}
+
+#header-nav-spendings {
+  background-image: url(/machines/img/header_nav/spendings.svg);
+}
+
+@media screen and (max-width: 900px) {
+  .header-nav a {
+    overflow: hidden;
+    padding: 12px 21px;
+    text-indent: 100%;
+    white-space: nowrap;
+    width: 0;
+  }
+}
+
 
 /* Bootstrap overrides */
 
