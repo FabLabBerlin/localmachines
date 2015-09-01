@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 // API endpoint - all requests go here
@@ -30,14 +31,11 @@ type FastBill struct {
 
 // Base FastBill API request model
 type FastBillRequest struct {
-	LIMIT    int64
-	OFFSET   int64
-	SERVICE  string
-	REQUEST  interface{}
-	FILTER   interface{}
-	DATA     interface{}
-	RESPONSE interface{}
-	ERRORS   interface{}
+	LIMIT   int64 `json:",omitempty"`
+	OFFSET  int64 `json:",omitempty"`
+	SERVICE string
+	FILTER  *FastBillCustomerGetFilter `json:",omitempty"`
+	DATA    interface{}
 }
 
 // customer.get response model
@@ -54,8 +52,9 @@ type FastBillCustomerGetResponse struct {
 type FastBillCustomerCreateResponse struct {
 	REQUEST  FastBillRequest
 	RESPONSE struct {
-		STATUS      string
-		CUSTOMER_ID int64
+		ERRORS      []string `json:",omitempty"`
+		STATUS      string   `json:",omitempty"`
+		CUSTOMER_ID int64    `json:",omitempty"`
 	}
 }
 
@@ -88,44 +87,44 @@ type FastBillUpdateCustomerResponse struct {
 
 // FastBill customer model
 type FastBillCustomer struct {
-	CUSTOMER_ID                    string
-	CUSTOMER_NUMBER                string
-	DAYS_FOR_PAYMENT               string
-	CREATED                        string
-	PAYMENT_TYPE                   string
-	BANK_NAME                      string
-	BANK_ACCOUNT_NUMBER            string
-	BANK_CODE                      string
-	BANK_ACCOUNT_OWNER             string
-	BANK_IBAN                      string
-	BANK_BIC                       string
-	BANK_ACCOUNT_MANDATE_REFERENCE string
-	SHOW_PAYMENT_NOTICE            string
-	ACCOUNT_RECEIVABLE             string
+	CUSTOMER_ID                    string `json:",omitempty"`
+	CUSTOMER_NUMBER                string `json:",omitempty"`
+	DAYS_FOR_PAYMENT               string `json:",omitempty"`
+	CREATED                        string `json:",omitempty"`
+	PAYMENT_TYPE                   string `json:",omitempty"`
+	BANK_NAME                      string `json:",omitempty"`
+	BANK_ACCOUNT_NUMBER            string `json:",omitempty"`
+	BANK_CODE                      string `json:",omitempty"`
+	BANK_ACCOUNT_OWNER             string `json:",omitempty"`
+	BANK_IBAN                      string `json:",omitempty"`
+	BANK_BIC                       string `json:",omitempty"`
+	BANK_ACCOUNT_MANDATE_REFERENCE string `json:",omitempty"`
+	SHOW_PAYMENT_NOTICE            string `json:",omitempty"`
+	ACCOUNT_RECEIVABLE             string `json:",omitempty"`
 	CUSTOMER_TYPE                  string // Required. Customer type: business | consumer
-	TOP                            string
-	NEWSLETTER_OPTIN               string
-	CONTACT_ID                     string
-	ORGANIZATION                   string // Company name [REQUIRED] when CUSTOMER_TYPE = business
-	POSITION                       string
-	SALUTATION                     string
-	FIRST_NAME                     string
+	TOP                            string `json:",omitempty"`
+	NEWSLETTER_OPTIN               string `json:",omitempty"`
+	CONTACT_ID                     string `json:",omitempty"`
+	ORGANIZATION                   string `json:",omitempty"` // Company name [REQUIRED] when CUSTOMER_TYPE = business
+	POSITION                       string `json:",omitempty"`
+	SALUTATION                     string `json:",omitempty"`
+	FIRST_NAME                     string `json:",omitempty"`
 	LAST_NAME                      string // Last name [REQUIRED] when CUSTOMER_TYPE = consumer
-	ADDRESS                        string
-	ADDRESS_2                      string
-	ZIPCODE                        string
-	CITY                           string
-	COUNTRY_CODE                   interface{}
-	SECONDARY_ADDRESS              string
-	PHONE                          string
-	PHONE_2                        string
-	FAX                            string
-	MOBILE                         string
-	EMAIL                          string
-	VAT_ID                         string
-	CURRENCY_CODE                  string
-	LASTUPDATE                     string
-	TAGS                           string
+	ADDRESS                        string `json:",omitempty"`
+	ADDRESS_2                      string `json:",omitempty"`
+	ZIPCODE                        string `json:",omitempty"`
+	CITY                           string `json:",omitempty"`
+	COUNTRY_CODE                   string `json:",omitempty"`
+	SECONDARY_ADDRESS              string `json:",omitempty"`
+	PHONE                          string `json:",omitempty"`
+	PHONE_2                        string `json:",omitempty"`
+	FAX                            string `json:",omitempty"`
+	MOBILE                         string `json:",omitempty"`
+	EMAIL                          string `json:",omitempty"`
+	VAT_ID                         string `json:",omitempty"`
+	CURRENCY_CODE                  string `json:",omitempty"`
+	LASTUPDATE                     string `json:",omitempty"`
+	TAGS                           string `json:",omitempty"`
 }
 
 // Customer list model
@@ -165,6 +164,7 @@ func (this *FastBill) GetCustomers(filter *FastBillCustomerGetFilter,
 func (this *FastBill) CreateCustomer(customer *FastBillCustomer) (int64, error) {
 
 	request := FastBillRequest{}
+
 	request.SERVICE = FASTBILL_SERVICE_CUSTOMER_CREATE
 	request.DATA = customer
 
@@ -177,8 +177,12 @@ func (this *FastBill) CreateCustomer(customer *FastBillCustomer) (int64, error) 
 	if response.RESPONSE.STATUS == "success" {
 		return response.RESPONSE.CUSTOMER_ID, nil
 	} else {
-		beego.Error(response.RESPONSE.STATUS)
-		return 0, errors.New("There was an error while creating a customer")
+		errInfo := fmt.Sprintf("%v", response.RESPONSE.STATUS)
+		if response.RESPONSE.ERRORS != nil && len(response.RESPONSE.ERRORS) > 0 {
+			errInfo += " " + strings.Join(response.RESPONSE.ERRORS, ",")
+		}
+		beego.Error(errInfo)
+		return 0, errors.New("There was an error while creating a customer: " + errInfo)
 	}
 }
 
@@ -268,6 +272,7 @@ func (this *FastBill) execGetRequest(request *FastBillRequest, response interfac
 	err = json.Unmarshal(body, response)
 	if err != nil {
 		beego.Error("Failed to unmarshal JSON:", err)
+		beego.Error("JSON was: ", string(body))
 		return fmt.Errorf("Failed to unmarshal json")
 	}
 
