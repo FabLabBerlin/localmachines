@@ -32,8 +32,10 @@ var RouteHandler = require('react-router').RouteHandler;
 
             <div className="row">
               <div className="col-xs-2">
-                <img src="img/logo_small.svg"
+                <img src="img/logo_easylab.svg"
                      className="brand-image"/>
+                <img src="img/logo_small.svg"
+                     className="brand-image brand-image-mobile"/>
               </div>
               {isLogged ? (
                 <div className="col-xs-10 text-right">

@@ -85,6 +85,15 @@ ul, li {
 }
 
 @media screen and (max-width: 750px) {
+  .brand-image {
+    display: none;
+  }
+
+  .brand-image.brand-image-mobile {
+    display: block;
+    margin-left: -20px;
+  }
+
   .header-nav a {
     color: transparent;
     overflow: hidden;
@@ -482,8 +491,12 @@ footer div {
 
 .brand-image {
   width: auto;
-  height: @lg-height;
-  margin-top: 8px;
+  height: 99px;
+  margin-top: -px;
+}
+
+.brand-image-mobile {
+  display: none;
 }
 
 .absolute-bottom {
