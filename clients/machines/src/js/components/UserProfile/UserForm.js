@@ -88,7 +88,7 @@ var UserForm = React.createClass({
                 key={key}
                 defaultValue={value}
                 onChange={this.handleChangeForm}>
-                <option value="" disabled>Select Coutry</option>
+                <option value="" disabled>Select Country</option>
                 {CountryCodeSelectOptions}
               </select>
             </div>

@@ -680,7 +680,7 @@ app.controller('UserCtrl',
       }
     })
     .success(function(data) {
-      if (data.Customers.length) {
+      if (data.Customers && data.Customers.length) {
         if (data.Customers.length > 1) {
           toastr.warning('More than one FastBill user with the same email address exists.');
         }

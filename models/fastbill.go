@@ -242,7 +242,7 @@ func (this *FastBill) execGetRequest(request *FastBillRequest, response interfac
 	if err != nil {
 		return fmt.Errorf("Failed to marshal JSON: %v", err)
 	}
-	beego.Trace(string(jsonBytes))
+	beego.Trace("execGetRequest: jsonBytes: " + string(jsonBytes))
 
 	req, err = http.NewRequest("GET", FASTBILL_API_URL, bytes.NewBuffer(jsonBytes))
 	if err != nil {

@@ -26,7 +26,7 @@ function formatTime(t) {
 
 var BillTables = React.createClass({
   render() {
-    if (this.props.info.Activations && this.props.info.Activations.length !== 0) {
+    if (this.props.info && this.props.info.Activations && this.props.info.Activations.length !== 0) {
       var activationsByMonth = _.groupBy(this.props.info.Activations, function(info) {
         return moment(info.TimeStart).format('MMM YYYY');
       });
@@ -97,7 +97,7 @@ var BillTables = React.createClass({
       });
       nodes.push(getTotal());
       return (
-        <table className="table table-striped table-hover" >
+        <table className="bill-table table table-striped table-hover" >
           <thead></thead>
           <tbody>
             {nodes}
