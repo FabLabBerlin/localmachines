@@ -54,7 +54,7 @@ var SpendingsPage = React.createClass({
         {<Membership info={this.state.membershipInfo} />}
 
         <h3>Pay-As-You-Go (Machine Usage)</h3>
-        {<BillTable info={this.state.billInfo} />}
+        {<BillTable info={this.state.billInfo} membershipInfo={this.state.membershipInfo} />}
       </div>
     );
   }

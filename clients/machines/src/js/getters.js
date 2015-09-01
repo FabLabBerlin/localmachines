@@ -1,3 +1,7 @@
+var _ = require('lodash');
+var moment = require('moment');
+
+
 /*
  * Login state related getters
  */
@@ -51,6 +55,25 @@ const getLastActivity = [
   ['userStore'],
   (userStore) => {
     return userStore.get('membershipInfo');
+  }
+ ];
+
+ const getMembershipsByMonth = [
+  ['userStore'],
+  (userStore) => {
+    var byMonths = {};
+    _.each(userStore.get('membershipInfo'), function(membership) {
+      var start = moment(membership.StartDate);
+      var end = moment(membership.StartDate).add(membership.Duration, 'd');
+      for (var t = start; t.isBefore(end); t = t.add(1, 'M')) {
+        var month = t.format('MMM YYYY');
+        if (!byMonths[month]) {
+          byMonths[month] = [];
+        }
+        byMonths[month].push(membership);
+      }
+    });
+    return byMonths;
   }
  ];
 
@@ -121,6 +144,6 @@ const getScrollPosition = [
 
 export default {
   getIsLogged, getUid, getFirstTry, getLoginSuccess, getLastActivity,
-  getUserInfo, getActivationInfo, getMachineInfo, getMachineUsers, getIsLoading, getBillInfo, getMembership,
+  getUserInfo, getActivationInfo, getMachineInfo, getMachineUsers, getIsLoading, getBillInfo, getMembership, getMembershipsByMonth,
   getScrollUpEnabled, getScrollDownEnabled, getScrollPosition
 };

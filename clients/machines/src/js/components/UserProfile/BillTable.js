@@ -1,10 +1,12 @@
 var _ = require('lodash');
-var {formatDate, subtractVAT, toEuro, toCents} = require('./helpers');
+var getters = require('../../getters');
 var moment = require('moment');
 var React = require('react');
+var reactor = require('../../reactor');
+var {formatDate, subtractVAT, toEuro, toCents} = require('./helpers');
 
 
-function formatTime(t) {
+function formatDuration(t) {
   if (t) {
     var d = parseInt(t.toString(), 10);
     var h = Math.floor(d / 3600);
@@ -25,77 +27,166 @@ function formatTime(t) {
 }
 
 var BillTables = React.createClass({
+  calculateMonthlyBills() {
+    var monthlyBills = [];
+    var activationsByMonth = _.groupBy(this.props.info.Activations, function(info) {
+      return moment(info.TimeStart).format('MMM YYYY');
+    });
+
+    var membershipsByMonth = reactor.evaluateToJS(getters.getMembershipsByMonth);
+
+    var userInfo = reactor.evaluateToJS(getters.getUserInfo);
+    for (var t = moment(userInfo.Created); t.isBefore(moment()); t.add(1, 'M')) {
+      var month = t.format('MMM YYYY');
+      monthlyBills.push(this.calculateMonthlyBill(activationsByMonth, membershipsByMonth, month));
+    }
+    monthlyBills.reverse();
+    return monthlyBills;
+  },
+
+  calculateMonthlyBill(activationsByMonth, membershipsByMonth, month) {
+    // All prices in Eurocent
+    var monthlyBill = {
+      month: month,
+      activations: [],
+      memberships: [],
+      sums: {
+        activations: {
+          priceInclVAT: 0,
+          priceExclVAT: 0,
+          priceVAT: 0,
+          durations: 0
+        },
+        memberships: {
+          priceInclVAT: 0,
+          priceExclVAT: 0,
+          priceVAT: 0
+        },
+        total: {}
+      }
+    };
+
+    _.each(activationsByMonth[month], function(info) {
+      var duration = moment.duration(moment(info.TimeEnd).diff(moment(info.TimeStart))).asSeconds();
+      monthlyBill.sums.durations += duration;
+      var priceInclVAT = toCents(info.DiscountedTotal);
+      var priceExclVAT = toCents(subtractVAT(info.DiscountedTotal));
+      var priceVAT = priceInclVAT - priceExclVAT;
+      monthlyBill.sums.activations.priceInclVAT += priceInclVAT;
+      monthlyBill.sums.activations.priceExclVAT += priceExclVAT;
+      monthlyBill.sums.activations.priceVAT += priceVAT;
+      monthlyBill.activations.push({
+        MachineName: info.MachineName,
+        TimeStart: moment(info.TimeStart),
+        duration: duration,
+        priceExclVAT: priceExclVAT,
+        priceVAT: priceVAT,
+        priceInclVAT: priceInclVAT
+      });
+    });
+
+    _.each(membershipsByMonth[month], function(membership) {
+      var totalPrice = toCents(membership.MonthlyPrice);
+      var priceExclVat = toCents(subtractVAT(membership.MonthlyPrice));
+      var vat = totalPrice - priceExclVat;
+      monthlyBill.memberships.push({
+        startDate: moment(membership.StartDate),
+        endDate: moment(membership.StartDate).add(membership.Duration, 'd'),
+        priceExclVAT: priceExclVat,
+        priceVAT: vat,
+        priceInclVAT: totalPrice
+      });
+      monthlyBill.sums.memberships.priceInclVAT += totalPrice;
+      monthlyBill.sums.memberships.priceExclVAT += priceExclVat;
+      monthlyBill.sums.memberships.priceVAT += vat;
+    });
+
+    monthlyBill.sums.total = {
+      priceInclVAT: monthlyBill.sums.activations.priceInclVAT + monthlyBill.sums.memberships.priceInclVAT,
+      priceExclVAT: monthlyBill.sums.activations.priceExclVAT + monthlyBill.sums.memberships.priceExclVAT,
+      priceVAT: monthlyBill.sums.activations.priceVAT + monthlyBill.sums.memberships.priceVAT
+    };
+
+    return monthlyBill;
+  },
+
   render() {
     if (this.props.info && this.props.info.Activations && this.props.info.Activations.length !== 0) {
-      var activationsByMonth = _.groupBy(this.props.info.Activations, function(info) {
-        return moment(info.TimeStart).format('MMM YYYY');
-      });
-      var nodes = [];
-      var lastMonth;
-      var sumPriceInclVAT;
-      var sumPriceExclVAT;
-      var sumPriceVAT;
-      var sumDurations;
-      var i = 0;
 
-      var getTotal = function() {
-        return (
-          <tr key={i++}>
-            <td><label>Total</label></td>
-            <td><label></label></td>
-            <td><label>{formatTime(sumDurations)}</label></td>
-            <td><label>{toEuro(sumPriceExclVAT)}</label> <i className="fa fa-eur"></i></td>
-            <td><label>{toEuro(sumPriceVAT)}</label> <i className="fa fa-eur"></i></td>
-            <td><label>{toEuro(sumPriceInclVAT)}</label> <i className="fa fa-eur"></i></td>
-          </tr>
-        );
-      };
+      var i = 0;
+      var nodes = [];
 
       this.props.info.Activations.reverse();
 
-      _.each(this.props.info.Activations, function(info) {
-        var month = moment(info.TimeStart).format('MMM YYYY');
-        if (month !== lastMonth) {
-          if (lastMonth) {
-            nodes.push(getTotal());
-          }
-          nodes.push(<tr key={i++}><td colSpan={6}><h4>{month}</h4></td></tr>);
-          nodes.push(
-            <tr key={i++}>
-              <th>Machine</th>
-              <th>Date</th>
-              <th>Time</th>
-              <th>Price excl. VAT</th>
-              <th>VAT (19%)</th>
-              <th>Total</th>
-            </tr>
-          );
-          sumPriceInclVAT = 0;
-          sumPriceExclVAT = 0;
-          sumPriceVAT = 0;
-          sumDurations = 0;
+      _.each(this.calculateMonthlyBills(), function(bill) {
+        if (i > 0) {
+          nodes.push(<tr key={i++}><td colSpan={6}></td></tr>);
         }
-        var duration = moment.duration(moment(info.TimeEnd).diff(moment(info.TimeStart))).asSeconds();
-        sumDurations += duration;
-        var priceInclVAT = toCents(info.DiscountedTotal);
-        var priceExclVAT = toCents(subtractVAT(info.DiscountedTotal));
-        var priceVAT = priceInclVAT - priceExclVAT;
-        sumPriceInclVAT += priceInclVAT;
-        sumPriceExclVAT += priceExclVAT;
-        sumPriceVAT += priceVAT;
         nodes.push(
           <tr key={i++}>
-            <td>{info.MachineName}</td>
-            <td>{formatDate(moment(info.TimeStart))}</td>
-            <td>{formatTime(duration)}</td>
-            <td>{toEuro(priceExclVAT)} <i className="fa fa-eur"></i></td>
-            <td>{toEuro(priceVAT)} <i className="fa fa-eur"></i></td>
-            <td>{toEuro(priceInclVAT)} <i className="fa fa-eur"></i></td>
+            <td colSpan={6}>
+              <h4 className="text-left">{bill.month}</h4>
+              <h5 className="text-left">({toEuro(bill.sums.total.priceInclVAT)} <i className="fa fa-eur"/> total incl. VAT)</h5>
+            </td>
           </tr>
         );
-        lastMonth = month;
+
+        nodes.push(
+          <tr key={i++}>
+            <th>Machine</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Price excl. VAT</th>
+            <th>VAT (19%)</th>
+            <th>Total</th>
+          </tr>
+        );
+
+        _.each(bill.activations, function(info) {
+          nodes.push(
+            <tr key={i++}>
+              <td>{info.MachineName}</td>
+              <td>{formatDate(info.TimeStart)}</td>
+              <td>{formatDuration(info.duration)}</td>
+              <td>{toEuro(info.priceExclVAT)} <i className="fa fa-eur"></i></td>
+              <td>{toEuro(info.priceVAT)} <i className="fa fa-eur"></i></td>
+              <td>{toEuro(info.priceInclVAT)} <i className="fa fa-eur"></i></td>
+            </tr>
+          );
+        });
+
+        nodes.push(
+          <tr key={i++}>
+            <td><label>Total Pay-As-You-Go</label></td>
+            <td><label></label></td>
+            <td><label>{formatDuration(bill.sums.activations.durations)}</label></td>
+            <td><label>{toEuro(bill.sums.activations.priceExclVAT)}</label> <i className="fa fa-eur"></i></td>
+            <td><label>{toEuro(bill.sums.activations.priceVAT)}</label> <i className="fa fa-eur"></i></td>
+            <td><label>{toEuro(bill.sums.activations.priceInclVAT)}</label> <i className="fa fa-eur"></i></td>
+          </tr>
+        );
+        nodes.push(
+          <tr key={i++}>
+            <td><label>Total Memberships</label></td>
+            <td><label></label></td>
+            <td><label></label></td>
+            <td><label>{toEuro(bill.sums.memberships.priceExclVAT)}</label> <i className="fa fa-eur"></i></td>
+            <td><label>{toEuro(bill.sums.memberships.priceVAT)}</label> <i className="fa fa-eur"></i></td>
+            <td><label>{toEuro(bill.sums.memberships.priceInclVAT)}</label> <i className="fa fa-eur"></i></td>
+          </tr>
+        );
+        nodes.push(
+          <tr key={i++}>
+            <td><label>Total</label></td>
+            <td><label></label></td>
+            <td><label></label></td>
+            <td><label>{toEuro(bill.sums.total.priceExclVAT)}</label> <i className="fa fa-eur"></i></td>
+            <td><label>{toEuro(bill.sums.total.priceVAT)}</label> <i className="fa fa-eur"></i></td>
+            <td><label>{toEuro(bill.sums.total.priceInclVAT)}</label> <i className="fa fa-eur"></i></td>
+          </tr>
+        );
       });
-      nodes.push(getTotal());
+
       return (
         <table className="bill-table table table-striped table-hover" >
           <thead></thead>
