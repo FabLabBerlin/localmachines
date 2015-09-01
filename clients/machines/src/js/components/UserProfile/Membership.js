@@ -17,8 +17,8 @@ var Membership = React.createClass({
     if (this.props.info && this.props.info.length !== 0) {
       MembershipNode = this.props.info.map(function(membership) {
         var startDate = moment(membership.StartDate);
-        var totalPrice = toCents(membership.Price);
-        var priceExclVat = toCents(subtractVAT(membership.Price));
+        var totalPrice = toCents(membership.MonthlyPrice);
+        var priceExclVat = toCents(subtractVAT(membership.MonthlyPrice));
         var vat = totalPrice - priceExclVat;
         return (
           <tr key={membership.Id} >

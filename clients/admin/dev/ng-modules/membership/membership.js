@@ -64,8 +64,8 @@ app.controller('MembershipCtrl',
       }
 
       // Filter as currency
-      $scope.membership.Price = 
-       $filter('currency')($scope.membership.Price,'',2);
+      $scope.membership.MonthlyPrice = 
+       $filter('currency')($scope.membership.MonthlyPrice,'',2);
     })
     .error(function() {
       toastr.error('Failed to get membership');
@@ -87,7 +87,7 @@ app.controller('MembershipCtrl',
     var membership = _.clone($scope.membership);
 
     membership.AffectedMachines = affectedMachines;
-    membership.Price = parseFloat(membership.Price);
+    membership.MonthlyPrice = parseFloat(membership.MonthlyPrice);
     membership.Duration = parseInt(membership.Duration);
     membership.MachinePriceDeduction = 
      parseInt(membership.MachinePriceDeduction);

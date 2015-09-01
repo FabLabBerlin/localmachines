@@ -15,7 +15,7 @@ type Membership struct {
 	ShortName             string `orm:"size(100)"`
 	Duration              int
 	Unit                  string `orm:"size(100)"`
-	Price                 float32
+	MonthlyPrice          float32
 	MachinePriceDeduction int
 	AffectedMachines      string `orm:"type(text)"`
 }
@@ -50,7 +50,7 @@ type UserMembershipCombo struct {
 	ShortName             string
 	Duration              int
 	Unit                  string
-	Price                 float32
+	MonthlyPrice          float32
 	MachinePriceDeduction int
 	AffectedMachines      string
 }
@@ -173,7 +173,7 @@ func GetUserMemberships(userId int64) (*UserMembershipList, error) {
 	// Joint query, select user memberships and expands them with
 	// membership base information.
 	sql := fmt.Sprintf("SELECT um.*, m.title, m.short_name, m.duration, m.unit, "+
-		"m.price, m.machine_price_deduction, m.affected_machines "+
+		"m.monthly_price, m.machine_price_deduction, m.affected_machines "+
 		"FROM %s AS um "+
 		"JOIN %s m ON um.membership_id=m.id "+
 		"WHERE um.user_id=?",

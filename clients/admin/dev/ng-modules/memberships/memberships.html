@@ -11,7 +11,7 @@
         <th>Short Name</th>
         <th>Duration</th>
         <th>Unit</th>
-        <th>Price (€)</th>
+        <th>Monthly Price / €</th>
         <th>&nbsp;</th>
       </tr>
     </thead>
@@ -21,7 +21,7 @@
         <td>{{membership.ShortName}}</td>
         <td>{{membership.Duration}}</td>
         <td>{{membership.Unit}}</td>
-        <td>{{membership.Price | currency:''}}</td>
+        <td>{{membership.MonthlyPrice | currency:''}}</td>
         <td>
           <button type="button" class="btn btn-primary btn-ico pull-right"
                   ng-click="editMembership(membership.Id)">

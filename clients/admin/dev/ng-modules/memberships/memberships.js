@@ -29,20 +29,6 @@ app.controller('MembershipsCtrl', ['$scope', '$http', '$location',
     toastr.error('Failed to load memberships');
   });
 
-  /*
-  $scope.memberships = [
-    {
-      Id: 1,
-      Title: 'My Membership',
-      ShortName: 'MM',
-      Duration: 1,
-      Unit: 'day',
-      Price: 30,
-      MachinePriceDeduction: 50
-    }
-  ];
-  */
-
   $scope.addMembershipPrompt = function() {
     vex.dialog.prompt({
       message: 'Enter membership name',

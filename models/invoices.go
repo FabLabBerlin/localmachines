@@ -521,9 +521,9 @@ func (this *Invoice) createXlsxFile(filePath string,
 			cell = row.AddCell()
 			cell.Value = "End Date"
 			cell = row.AddCell()
-			cell.Value = "Price / €"
+			cell.Value = "Monthly Price / €"
 			cell = row.AddCell()
-			cell.Value = "Price Unit"
+			cell.Value = "Duration Unit"
 			cell = row.AddCell()
 			cell.Value = "Machine Price Deduction"
 			for _, m := range memberships.Data {
@@ -538,7 +538,7 @@ func (this *Invoice) createXlsxFile(filePath string,
 				fmt.Printf("duration: %v\n", duration)
 				cell.Value = m.StartDate.Add(duration).Format(time.RFC1123)
 				cell = row.AddCell()
-				cell.Value = formatFloat(float64(m.Price), 2)
+				cell.Value = formatFloat(float64(m.MonthlyPrice), 2)
 				cell = row.AddCell()
 				cell.Value = m.Unit
 				cell = row.AddCell()
