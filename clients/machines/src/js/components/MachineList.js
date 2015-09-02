@@ -26,7 +26,10 @@ var MachineList = React.createClass({
     let activation = this.props.activation;
     var MachineNode;
     if(this.props.info.length !== 0) {
-      MachineNode = this.props.info.map(function(machine) {
+      var machines = _.filter(this.props.info, function(machine) {
+        return machine.Visible;
+      });
+      MachineNode = machines.map(function(machine) {
         let activationProps = false;
         let isMachineBusy = false;
         let isSameUser = false;
