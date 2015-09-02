@@ -1,7 +1,9 @@
 var BillTable = require('./BillTable');
 var getters = require('../../getters');
+var LoginActions = require('../../actions/LoginActions');
 var MachineActions = require('../../actions/MachineActions');
 var Membership = require('./Membership');
+var NfcLogoutMixin = require('../NfcLogoutMixin');
 var {Navigation} = require('react-router');
 var React = require('react');
 var reactor = require('../../reactor');
@@ -13,7 +15,7 @@ var SpendingsPage = React.createClass({
   /*
    * to use transitionTo/replaceWith/redirect and some function related to the router
    */
-  mixins: [ Navigation, reactor.ReactMixin ],
+  mixins: [ Navigation, reactor.ReactMixin, NfcLogoutMixin ],
 
   /*
    * If not logged then redirect to the login page
@@ -40,11 +42,23 @@ var SpendingsPage = React.createClass({
   },
 
   componentDidMount() {
+    this.nfcOnDidMount();
     const uid = reactor.evaluateToJS(getters.getUid);
     MachineActions.apiGetUserMachines(uid);
     UserActions.getUserInfoFromServer(uid);
     UserActions.getInfoBillFromServer(uid);
     UserActions.getMembershipFromServer(uid);
+  },
+
+  componentWillUnmount() {
+    this.nfcOnWillUnmount();
+  },
+
+  /*
+   * Logout with the exit button
+   */
+  handleLogout() {
+    LoginActions.logout();
   },
 
   render() {

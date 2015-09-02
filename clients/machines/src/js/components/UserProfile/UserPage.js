@@ -2,6 +2,8 @@ var getters = require('../../getters');
 var MachineActions = require('../../actions/MachineActions');
 var MachineList = require('./MachineList');
 var {Navigation} = require('react-router');
+var LoginActions = require('../../actions/LoginActions');
+var NfcLogoutMixin = require('../NfcLogoutMixin');
 var React = require('react');
 var reactor = require('../../reactor');
 var UserActions = require('../../actions/UserActions');
@@ -20,7 +22,7 @@ var UserPage = React.createClass({
   /*
    * to use transitionTo/replaceWith/redirect and some function related to the router
    */
-  mixins: [ Navigation, reactor.ReactMixin ],
+  mixins: [ Navigation, reactor.ReactMixin, NfcLogoutMixin ],
 
   /*
    * If not logged then redirect to the login page
@@ -47,11 +49,23 @@ var UserPage = React.createClass({
   },
 
   componentDidMount() {
+    this.nfcOnDidMount();
     const uid = reactor.evaluateToJS(getters.getUid);
     MachineActions.apiGetUserMachines(uid);
     UserActions.getUserInfoFromServer(uid);
     UserActions.getInfoBillFromServer(uid);
     UserActions.getMembershipFromServer(uid);
+  },
+
+  componentWillUnmount() {
+    this.nfcOnWillUnmount();
+  },
+
+  /*
+   * Logout with the exit button
+   */
+  handleLogout() {
+    LoginActions.logout();
   },
 
   /*
@@ -87,15 +101,6 @@ var UserPage = React.createClass({
   updatePassword(password) {
     const uid = reactor.evaluateToJS(getters.getUid);
     UserActions.updatePassword(uid, password);
-  },
-
-  /*
-   * When logout, redirect to the login page
-   */
-  onChangeLogout() {
-    if( !UserStore.getIsLogged() ){
-      this.replaceWith('login');
-    }
   },
 
   /*
