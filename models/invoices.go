@@ -175,6 +175,26 @@ func (this InvoiceActivations) summarizedByMachine() InvoiceActivations {
 	return sumActivations
 }
 
+type InvoiceActivationsXlsx []*InvoiceActivation
+
+func (this InvoiceActivationsXlsx) Len() int {
+	return len(this)
+}
+
+func (this InvoiceActivationsXlsx) Less(i, j int) bool {
+	if (*this[i]).MachineName < (*this[j]).MachineName {
+		return true
+	} else if (*this[j]).MachineName < (*this[i]).MachineName {
+		return false
+	} else {
+		return (*this[i]).TimeStart.Before((*this[j]).TimeStart)
+	}
+}
+
+func (this InvoiceActivationsXlsx) Swap(i, j int) {
+	*this[i], *this[j] = *this[j], *this[i]
+}
+
 type UserSummary struct {
 	UserId        int64
 	UserClientId  int
@@ -556,7 +576,9 @@ func (this *Invoice) createXlsxFile(filePath string,
 		sumTotal := 0.0
 		sumTotalDisc := 0.0
 
-		for _, activation := range userSummary.Activations {
+		activations := InvoiceActivationsXlsx(userSummary.Activations)
+		sort.Stable(activations)
+		for _, activation := range activations {
 			activation.addRowXlsx(sheet)
 			sumTotal += activation.priceTotalExclDisc()
 			sumTotalDisc += activation.priceTotalDisc()
