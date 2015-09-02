@@ -16,6 +16,8 @@ var NfcLogoutMixin = {
     reactor.observe(getters.getIsLogged, isLogged => {
       this.onChangeLogout();
     }.bind(this));
+
+    this.idleLogoutInterval = setInterval(this.checkIdle, 2000);
   },
 
   nfcOnWillUnmount() {
@@ -23,6 +25,8 @@ var NfcLogoutMixin = {
       window.libnfc.cardRead.disconnect(this.handleLogout);
       window.libnfc.cardReaderError.disconnect(this.errorNFCCallback);
     }
+
+    clearInterval(this.idleLogoutInterval);
   },
 
   /*
@@ -52,8 +56,18 @@ var NfcLogoutMixin = {
     window.libnfc.cardReaderError.disconnect(this.errorNFCCallback);
     toastr.error(error);
     setTimeout(this.connectJsToQt, 2000);
-  }
+  },
 
+  checkIdle() {
+    var lastActivity = reactor.evaluateToJS(getters.getLastActivity);
+    if (lastActivity) {
+      var t = new Date();
+      var idle = t - lastActivity;
+      if (window.libnfc && idle > 30000) {
+        this.handleLogout();
+      }
+    }
+  }
 };
 
 export default NfcLogoutMixin;

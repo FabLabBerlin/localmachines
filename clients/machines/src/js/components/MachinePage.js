@@ -176,14 +176,6 @@ var MachinePage = React.createClass({
 
   update() {
     MachineActions.pollActivations();
-    var lastActivity = reactor.evaluateToJS(getters.getLastActivity);
-    if (lastActivity) {
-      var t = new Date();
-      var idle = t - lastActivity;
-      if (window.libnfc && idle > 30000) {
-        this.handleLogout();
-      }
-    }
   }
 });
 
