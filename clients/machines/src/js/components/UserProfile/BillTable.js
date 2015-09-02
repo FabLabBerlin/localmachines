@@ -35,11 +35,10 @@ var BillTables = React.createClass({
 
     var membershipsByMonth = reactor.evaluateToJS(getters.getMembershipsByMonth);
 
-    var userInfo = reactor.evaluateToJS(getters.getUserInfo);
-    for (var t = moment(userInfo.Created); t.isBefore(moment()); t.add(1, 'M')) {
-      var month = t.format('MMM YYYY');
-      monthlyBills.push(this.calculateMonthlyBill(activationsByMonth, membershipsByMonth, month));
-    }
+    var months = this.months();
+    _.each(months, function(month) {
+      monthlyBills.push(this.calculateMonthlyBill(activationsByMonth, membershipsByMonth, month.format('MMM YYYY')));
+    }.bind(this));
     monthlyBills.reverse();
     return monthlyBills;
   },
@@ -108,6 +107,18 @@ var BillTables = React.createClass({
     };
 
     return monthlyBill;
+  },
+
+  months() {
+    var userInfo = reactor.evaluateToJS(getters.getUserInfo);
+    var months = [];
+    for (var t = moment(userInfo.Created); t.isBefore(moment()); t.add(1, 'd')) {
+      months.push(t.clone());
+    }
+    months = _.uniq(months, function(month) {
+      return month.format('MMM YYYY');
+    });
+    return months;
   },
 
   render() {
