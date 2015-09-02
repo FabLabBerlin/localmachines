@@ -2,6 +2,7 @@ jest.dontMock('../ForceSwitch');
 jest.dontMock('../FreeMachine');
 jest.dontMock('../MachineChooser');
 jest.dontMock('../MachineList');
+jest.dontMock('lodash');
 jest.dontMock('nuclear-js');
 jest.dontMock('react');
 
@@ -15,11 +16,13 @@ function machines() {
   return [
     {
       Id: 1,
-      Name: 'Printer5000'
+      Name: 'Printer5000',
+      Visible: true
     },
     {
       Id: 2,
-      Name: 'Form1'
+      Name: 'Form1',
+      Visible: true
     }
   ];
 }
