@@ -7,6 +7,7 @@ var NfcLogoutMixin = require('../NfcLogoutMixin');
 var {Navigation} = require('react-router');
 var React = require('react');
 var reactor = require('../../reactor');
+var ScrollNav = require('../ScrollNav');
 var UserActions = require('../../actions/UserActions');
 
 
@@ -68,7 +69,8 @@ var SpendingsPage = React.createClass({
         {<Membership info={this.state.membershipInfo} />}
 
         <h3>Pay-As-You-Go (Machine Usage)</h3>
-        {<BillTable info={this.state.billInfo} membershipInfo={this.state.membershipInfo} />}
+        <BillTable info={this.state.billInfo} membershipInfo={this.state.membershipInfo}/>
+        <ScrollNav/>
       </div>
     );
   }
