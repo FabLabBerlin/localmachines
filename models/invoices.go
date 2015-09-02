@@ -16,6 +16,11 @@ import (
 const (
 	FORMAT_2_DIGIT = "#,##0.00"
 	FORMAT_4_DIGIT = "#,####0.0000"
+
+	BLUE   = "FF63C5E5"
+	RED    = "FFEA535D"
+	YELLOW = "FFFBE16B"
+	GREEN  = "FF92D050"
 )
 
 // Invoice entry that is saved in the database.
@@ -130,6 +135,7 @@ func (this *InvoiceActivation) addRowXlsx(sheet *xlsx.Sheet) {
 
 	cell = row.AddCell()
 	cell.SetFloatWithFormat(this.priceTotalDisc(), FORMAT_2_DIGIT)
+	cell.SetStyle(boldStyle())
 }
 
 type InvoiceActivations []*InvoiceActivation
@@ -425,8 +431,7 @@ func (this *Invoice) addRowActivationsHeaderXlsx(sheet *xlsx.Sheet) {
 
 func (this *Invoice) addSeparationRowXlsx(sheet *xlsx.Sheet) {
 	row := sheet.AddRow()
-	style := xlsx.NewStyle()
-	style.Fill = *xlsx.NewFill("solid", "FFFFFFFF", "FF00FF00")
+	style := colorStyle(YELLOW)
 	for i := 0; i < 11; i++ {
 		cell := row.AddCell()
 		cell.SetStyle(style)
@@ -487,6 +492,7 @@ func (this *Invoice) createXlsxFile(filePath string,
 		cell = row.AddCell()
 		cell.Value = "Fastbill User Id"
 		cell = row.AddCell()
+		cell.SetStyle(colorStyle(RED))
 		cell.Value = strconv.Itoa(userSummary.UserClientId)
 
 		// User Billing Address
@@ -541,6 +547,7 @@ func (this *Invoice) createXlsxFile(filePath string,
 		if err != nil {
 			return fmt.Errorf("GetUserMemberships: %v", err)
 		}
+
 		if memberships != nil {
 			sheet.AddRow()
 			sheet.AddRow()
@@ -550,12 +557,14 @@ func (this *Invoice) createXlsxFile(filePath string,
 			row = sheet.AddRow()
 			row.AddCell()
 			cell = row.AddCell()
+			cell.SetStyle(boldStyle())
 			cell.Value = "Title"
 			cell = row.AddCell()
 			cell.Value = "Start Date"
 			cell = row.AddCell()
 			cell.Value = "End Date"
 			cell = row.AddCell()
+			cell.SetStyle(boldStyle())
 			cell.Value = "Monthly Price / €"
 			cell = row.AddCell()
 			cell.Value = "Duration Unit"
@@ -565,15 +574,16 @@ func (this *Invoice) createXlsxFile(filePath string,
 				row = sheet.AddRow()
 				row.AddCell()
 				cell = row.AddCell()
+				cell.SetStyle(colorStyle(BLUE))
 				cell.Value = m.Title
 				cell = row.AddCell()
 				cell.Value = m.StartDate.Format(time.RFC1123)
 				cell = row.AddCell()
 				duration := time.Duration(24*m.Duration) * time.Hour
-				fmt.Printf("duration: %v\n", duration)
 				cell.Value = m.StartDate.Add(duration).Format(time.RFC1123)
 				cell = row.AddCell()
 				cell.SetFloatWithFormat(float64(m.MonthlyPrice), FORMAT_2_DIGIT)
+				cell.SetStyle(colorStyle(GREEN))
 				cell = row.AddCell()
 				cell.Value = m.Unit
 				cell = row.AddCell()
@@ -614,9 +624,11 @@ func (this *Invoice) createXlsxFile(filePath string,
 			cell = row.AddCell()
 			cell.SetFloatWithFormat(sumTotal, FORMAT_2_DIGIT)
 			cell = row.AddCell()
+			cell.SetStyle(boldStyle())
 			cell.Value = "Discounted €"
 			cell = row.AddCell()
 			cell.SetFloatWithFormat(sumTotalDisc, FORMAT_2_DIGIT)
+			cell.SetStyle(colorStyle(GREEN))
 		}
 		printTotal()
 
@@ -641,6 +653,23 @@ func (this *Invoice) createXlsxFile(filePath string,
 
 	this.FilePath = filePath
 	return nil
+}
+
+func boldStyle() *xlsx.Style {
+	font := xlsx.DefaultFont()
+	font.Bold = true
+	style := xlsx.NewStyle()
+	style.Font = *font
+	return style
+}
+
+func colorStyle(color string) *xlsx.Style {
+	font := xlsx.DefaultFont()
+	font.Bold = true
+	style := xlsx.NewStyle()
+	style.Fill = *xlsx.NewFill("solid", color, "FF00FF00")
+	style.Font = *font
+	return style
 }
 
 func (this *Invoice) getActivations(startTime,
