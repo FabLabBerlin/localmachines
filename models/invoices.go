@@ -10,8 +10,12 @@ import (
 	"math/rand"
 	"sort"
 	"strconv"
-	"strings"
 	"time"
+)
+
+const (
+	FORMAT_2_DIGIT = "#,##0.00"
+	FORMAT_4_DIGIT = "#,####0.0000"
 )
 
 // Invoice entry that is saved in the database.
@@ -110,22 +114,22 @@ func (this *InvoiceActivation) addRowXlsx(sheet *xlsx.Sheet) {
 	}
 
 	cell = row.AddCell()
-	cell.Value = formatFloat(this.MachineUsage, 4)
+	cell.SetFloatWithFormat(this.MachineUsage, FORMAT_4_DIGIT)
 
 	cell = row.AddCell()
 	cell.Value = this.MachineUsageUnit
 
 	cell = row.AddCell()
-	cell.Value = formatFloat(this.MachinePricePerUnit, 2)
+	cell.SetFloatWithFormat(this.MachinePricePerUnit, FORMAT_2_DIGIT)
 
 	cell = row.AddCell()
-	cell.Value = formatFloat(this.priceTotalExclDisc(), 2)
+	cell.SetFloatWithFormat(this.priceTotalExclDisc(), FORMAT_2_DIGIT)
 
 	cell = row.AddCell()
 	cell.Value = this.membershipStr()
 
 	cell = row.AddCell()
-	cell.Value = formatFloat(this.priceTotalDisc(), 2)
+	cell.SetFloatWithFormat(this.priceTotalDisc(), FORMAT_2_DIGIT)
 }
 
 type InvoiceActivations []*InvoiceActivation
@@ -419,6 +423,16 @@ func (this *Invoice) addRowActivationsHeaderXlsx(sheet *xlsx.Sheet) {
 	cell.Value = "Discounted €"
 }
 
+func (this *Invoice) addSeparationRowXlsx(sheet *xlsx.Sheet) {
+	row := sheet.AddRow()
+	style := xlsx.NewStyle()
+	style.Fill = *xlsx.NewFill("solid", "FFFFFFFF", "FF00FF00")
+	for i := 0; i < 11; i++ {
+		cell := row.AddCell()
+		cell.SetStyle(style)
+	}
+}
+
 func (this *Invoice) createXlsxFile(filePath string,
 	invSummarry *InvoiceSummary) error {
 
@@ -458,6 +472,7 @@ func (this *Invoice) createXlsxFile(filePath string,
 	for usrSumIter := 0; usrSumIter < len(*userSummaries); usrSumIter++ {
 		userSummary := (*userSummaries)[usrSumIter]
 
+		this.addSeparationRowXlsx(sheet)
 		row = sheet.AddRow()
 		cell = row.AddCell()
 		cell.Value = "User"
@@ -558,7 +573,7 @@ func (this *Invoice) createXlsxFile(filePath string,
 				fmt.Printf("duration: %v\n", duration)
 				cell.Value = m.StartDate.Add(duration).Format(time.RFC1123)
 				cell = row.AddCell()
-				cell.Value = formatFloat(float64(m.MonthlyPrice), 2)
+				cell.SetFloatWithFormat(float64(m.MonthlyPrice), FORMAT_2_DIGIT)
 				cell = row.AddCell()
 				cell.Value = m.Unit
 				cell = row.AddCell()
@@ -568,20 +583,22 @@ func (this *Invoice) createXlsxFile(filePath string,
 			sheet.AddRow()
 		}
 
-		row = sheet.AddRow()
-		cell = row.AddCell()
-		cell.Value = "Activations"
-		this.addRowActivationsHeaderXlsx(sheet)
-
 		sumTotal := 0.0
 		sumTotalDisc := 0.0
-
 		activations := InvoiceActivationsXlsx(userSummary.Activations)
 		sort.Stable(activations)
 		for _, activation := range activations {
-			activation.addRowXlsx(sheet)
 			sumTotal += activation.priceTotalExclDisc()
 			sumTotalDisc += activation.priceTotalDisc()
+		}
+
+		row = sheet.AddRow()
+		cell = row.AddCell()
+		cell.Value = "Activations By Machine"
+		this.addRowActivationsHeaderXlsx(sheet)
+
+		for _, summed := range userSummary.Activations.summarizedByMachine() {
+			summed.addRowXlsx(sheet)
 		}
 
 		printTotal := func() {
@@ -595,25 +612,23 @@ func (this *Invoice) createXlsxFile(filePath string,
 			cell = row.AddCell()
 			cell.Value = "Subtotal €"
 			cell = row.AddCell()
-			cell.Value = formatFloat(sumTotal, 2)
+			cell.SetFloatWithFormat(sumTotal, FORMAT_2_DIGIT)
 			cell = row.AddCell()
 			cell.Value = "Discounted €"
 			cell = row.AddCell()
-			cell.Value = formatFloat(sumTotalDisc, 2)
+			cell.SetFloatWithFormat(sumTotalDisc, FORMAT_2_DIGIT)
 		}
 		printTotal()
 
 		sheet.AddRow()
-		sheet.AddRow()
 		row = sheet.AddRow()
 		cell = row.AddCell()
-		cell.Value = "Activations By Machine"
+		cell.Value = "Activations"
 		this.addRowActivationsHeaderXlsx(sheet)
 
-		for _, summed := range userSummary.Activations.summarizedByMachine() {
-			summed.addRowXlsx(sheet)
+		for _, activation := range activations {
+			activation.addRowXlsx(sheet)
 		}
-
 		printTotal()
 
 		sheet.AddRow()
@@ -903,10 +918,4 @@ func (this *Invoice) enhanceActivation(activation *Activation) (*InvoiceActivati
 	invActivation.TimeEnd = activation.TimeEnd
 
 	return invActivation, nil
-}
-
-func formatFloat(f float64, prec int) (s string) {
-	s = strconv.FormatFloat(f, 'f', prec, 64)
-	s = strings.Replace(s, ".", ",", 1)
-	return
 }
