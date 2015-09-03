@@ -71,7 +71,7 @@ type InvoiceActivation struct {
 	TimeEnd             time.Time
 }
 
-func (this *InvoiceActivation) membershipStr() string {
+func (this *InvoiceActivation) MembershipStr() string {
 	membershipStr := ""
 	for _, membership := range this.Memberships {
 		memStr := fmt.Sprintf("%s (%d%%)",
@@ -90,12 +90,12 @@ func (this *InvoiceActivation) membershipStr() string {
 	return membershipStr
 }
 
-func (this *InvoiceActivation) priceTotalExclDisc() float64 {
+func (this *InvoiceActivation) PriceTotalExclDisc() float64 {
 	return this.MachineUsage * this.MachinePricePerUnit
 }
 
-func (this *InvoiceActivation) priceTotalDisc() float64 {
-	priceTotal := this.priceTotalExclDisc()
+func (this *InvoiceActivation) PriceTotalDisc() float64 {
+	priceTotal := this.PriceTotalExclDisc()
 	for _, membership := range this.Memberships {
 		// Discount total price
 		priceTotal = priceTotal - (priceTotal *
@@ -104,7 +104,7 @@ func (this *InvoiceActivation) priceTotalDisc() float64 {
 	return priceTotal
 }
 
-func (this *InvoiceActivation) addRowXlsx(sheet *xlsx.Sheet) {
+func (this *InvoiceActivation) AddRowXlsx(sheet *xlsx.Sheet) {
 	row := sheet.AddRow()
 	row.AddCell()
 	cell := row.AddCell()
@@ -128,13 +128,13 @@ func (this *InvoiceActivation) addRowXlsx(sheet *xlsx.Sheet) {
 	cell.SetFloatWithFormat(this.MachinePricePerUnit, FORMAT_2_DIGIT)
 
 	cell = row.AddCell()
-	cell.SetFloatWithFormat(this.priceTotalExclDisc(), FORMAT_2_DIGIT)
+	cell.SetFloatWithFormat(this.PriceTotalExclDisc(), FORMAT_2_DIGIT)
 
 	cell = row.AddCell()
-	cell.Value = this.membershipStr()
+	cell.Value = this.MembershipStr()
 
 	cell = row.AddCell()
-	cell.SetFloatWithFormat(this.priceTotalDisc(), FORMAT_2_DIGIT)
+	cell.SetFloatWithFormat(this.PriceTotalDisc(), FORMAT_2_DIGIT)
 	cell.SetStyle(boldStyle())
 }
 
@@ -158,7 +158,7 @@ func (this InvoiceActivations) Swap(i, j int) {
 	*this[i], *this[j] = *this[j], *this[i]
 }
 
-func (this InvoiceActivations) summarizedByMachine() InvoiceActivations {
+func (this InvoiceActivations) SummarizedByMachine() InvoiceActivations {
 	byMachine := make(map[string]*InvoiceActivation)
 	for _, activation := range this {
 		summary, ok := byMachine[activation.MachineName]
@@ -172,8 +172,8 @@ func (this InvoiceActivations) summarizedByMachine() InvoiceActivations {
 			byMachine[activation.MachineName] = summary
 		}
 		summary.MachineUsage += activation.MachineUsage
-		summary.TotalPrice += activation.TotalPrice
-		summary.DiscountedTotal += activation.DiscountedTotal
+		summary.TotalPrice += activation.PriceTotalExclDisc()
+		summary.DiscountedTotal += activation.PriceTotalDisc()
 	}
 
 	sumActivations := make(InvoiceActivations, 0, len(byMachine))
@@ -322,8 +322,8 @@ func CalculateInvoiceSummary(startTime, endTime time.Time) (invoice Invoice, inv
 		sort.Stable((*userSummaries)[i].Activations)
 		beego.Trace((*userSummaries)[i].Activations)
 		for _, activation := range (*userSummaries)[i].Activations {
-			activation.TotalPrice = activation.priceTotalExclDisc()
-			activation.DiscountedTotal = activation.priceTotalDisc()
+			activation.TotalPrice = activation.PriceTotalExclDisc()
+			activation.DiscountedTotal = activation.PriceTotalDisc()
 		}
 	}
 
@@ -406,7 +406,7 @@ func DeleteInvoice(invoiceId int64) error {
 	return nil
 }
 
-func (this *Invoice) addRowActivationsHeaderXlsx(sheet *xlsx.Sheet) {
+func (this *Invoice) AddRowActivationsHeaderXlsx(sheet *xlsx.Sheet) {
 	row := sheet.AddRow()
 	row.AddCell()
 	cell := row.AddCell()
@@ -598,17 +598,17 @@ func (this *Invoice) createXlsxFile(filePath string,
 		activations := InvoiceActivationsXlsx(userSummary.Activations)
 		sort.Stable(activations)
 		for _, activation := range activations {
-			sumTotal += activation.priceTotalExclDisc()
-			sumTotalDisc += activation.priceTotalDisc()
+			sumTotal += activation.PriceTotalExclDisc()
+			sumTotalDisc += activation.PriceTotalDisc()
 		}
 
 		row = sheet.AddRow()
 		cell = row.AddCell()
 		cell.Value = "Activations By Machine"
-		this.addRowActivationsHeaderXlsx(sheet)
+		this.AddRowActivationsHeaderXlsx(sheet)
 
-		for _, summed := range userSummary.Activations.summarizedByMachine() {
-			summed.addRowXlsx(sheet)
+		for _, summed := range userSummary.Activations.SummarizedByMachine() {
+			summed.AddRowXlsx(sheet)
 		}
 
 		printTotal := func() {
@@ -636,10 +636,10 @@ func (this *Invoice) createXlsxFile(filePath string,
 		row = sheet.AddRow()
 		cell = row.AddCell()
 		cell.Value = "Activations"
-		this.addRowActivationsHeaderXlsx(sheet)
+		this.AddRowActivationsHeaderXlsx(sheet)
 
 		for _, activation := range activations {
-			activation.addRowXlsx(sheet)
+			activation.AddRowXlsx(sheet)
 		}
 		printTotal()
 
