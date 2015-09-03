@@ -19,11 +19,15 @@ var Button = React.createClass({
 
 var HeaderNav = React.createClass({
   render() {
+    var buttons;
+    if (!window.libnfc) {
+      buttons.push(<Button id="header-nav-machines" href="/machines/#/machine">Machines</Button>);
+      buttons.push(<Button id="header-nav-profile" href="/machines/#/profile">Profile</Button>);
+      buttons.push(<Button id="header-nav-spendings" href="/machines/#/spendings">Spendings</Button>);
+    }
     return (
       <div className="header-nav">
-        <Button id="header-nav-machines" href="/machines/#/machine">Machines</Button>
-        <Button id="header-nav-profile" href="/machines/#/profile">Profile</Button>
-        <Button id="header-nav-spendings" href="/machines/#/spendings">Spendings</Button>
+        {buttons}
         <button
           className="btn btn-danger btn-logout pull-right"
           onClick={LoginActions.logout}>
