@@ -70,7 +70,7 @@ var Login = React.createClass({
    * listen to the onChange event from the UserStore
    */
   componentDidMount() {
-    LoginActions.submitLoginForm(this.state);
+    LoginActions.submitLoginForm(this.state, this.context.router);
 
     this.focus();
 
