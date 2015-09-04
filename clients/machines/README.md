@@ -24,6 +24,10 @@ Please use `io.js`. At the time of writing this the latest version of io.js is `
 - Test directories are "__test__"
 - Test file are : *NameOfYourFile*-**test**.js
 
+###Router
+
+We use react-router.  Refer to https://github.com/rackt/react-router/blob/0.13.x/docs/guides/flux.md for details on how to use it in our Flux architecture.
+
 ###Components
 
 A component is a class with a `render()` function.  The class has a state
