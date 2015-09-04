@@ -85,9 +85,13 @@ var Login = React.createClass({
 
     this.focus();
 
-    reactor.observe(getters.getIsLogged, isLogged => {
-      this.onChangeLogin();
-    }.bind(this));
+    if (reactor.evaluateToJS(getters.getIsLogged)) {
+      this.replaceWith('/machine');
+    } else {
+      reactor.observe(getters.getIsLogged, isLogged => {
+        this.onChangeLogin();
+      }.bind(this));
+    }
   },
 
   /*
