@@ -13,10 +13,6 @@ var NfcLogoutMixin = {
       setTimeout(this.connectJsToQt, 1500);
     }
 
-    reactor.observe(getters.getIsLogged, isLogged => {
-      this.onChangeLogout();
-    }.bind(this));
-
     this.idleLogoutInterval = setInterval(this.checkIdle, 2000);
   },
 
@@ -27,16 +23,6 @@ var NfcLogoutMixin = {
     }
 
     clearInterval(this.idleLogoutInterval);
-  },
-
-  /*
-   * To logout and redirect to login page
-   */
-  onChangeLogout() {
-    const isLogged = reactor.evaluateToJS(getters.getIsLogged);
-    if (!isLogged) {
-      this.replaceWith('login');
-    }
   },
 
   connectJsToQt() {

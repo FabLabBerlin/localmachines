@@ -12,7 +12,7 @@ export default {
   /*
    * Submit login form to log in
    */
-  submitLoginForm(content) {
+  submitLoginForm(content, router) {
     $.ajax({
       url: '/api/users/login',
       dataType: 'json',
@@ -20,6 +20,7 @@ export default {
       data: content,
       success: function(data) {
         reactor.dispatch(actionTypes.SUCCESS_LOGIN, { data });
+        router.transitionTo('/machine');
       }.bind(this),
       error: function(xhr, status, err) {
         if (content.username !== '' && content.password !== '') {
@@ -35,7 +36,7 @@ export default {
    * Try to connect with nfc card
    * @uid: unique id from the card
    */
-  nfcLogin(uid) {
+  nfcLogin(uid, router) {
     $.ajax({
       url: '/api/users/loginuid',
       method: 'POST',
@@ -44,6 +45,7 @@ export default {
       },
       success: function(data) {
         reactor.dispatch(actionTypes.SUCCESS_LOGIN, { data });
+        router.transitionTo('/machine');
       }.bind(this),
       error: function(xhr, status, err) {
         reactor.dispatch(actionTypes.ERROR_LOGIN);
@@ -59,13 +61,18 @@ export default {
   /*
    * Logout
    */
-  logout() {
+  logout(router) {
     $.ajax({
       url: '/api/users/logout',
       type: 'GET',
       cache: false,
       success: function(data) {
         reactor.dispatch(actionTypes.SUCCESS_LOGOUT);
+        if (router) {
+          router.transitionTo('/login');
+        } else {
+          toastr.info('router not defined');
+        }
       }.bind(this),
       error: function(xhr, status, err) {
         console.error('/users/logout', status, err);

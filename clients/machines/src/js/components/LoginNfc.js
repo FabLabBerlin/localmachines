@@ -46,7 +46,7 @@ var LoginNfc = React.createClass({
       console.log(e.message);
     }
 
-    LoginActions.nfcLogin(uid);
+    LoginActions.nfcLogin(uid, this.context.router);
   },
 
   /*
@@ -100,25 +100,6 @@ var LoginNfc = React.createClass({
     window.nfcLogin = this.nfcLogin;
 
     setTimeout(this.connectJsToQt, 1000);
-
-    reactor.reset(); // Otherwise we get observer clones
-
-    reactor.observe(getters.getIsLogged, isLogged => {
-      console.log('isLogged observer');
-      this.onChangeLoginNFC();
-    }.bind(this));
-
-    reactor.observe(getters.getLoginSuccess, loginSuccess => {
-      console.log('loginSuccess observer');
-      //const loginFailure = reactor.evaluateToJS(getters.getLoginFailure);
-      console.log('loginSuccess: ' + loginSuccess);
-      if (!loginSuccess) {
-        setTimeout(function() {
-          this.connectJsToQt();
-          reactor.dispatch(actionTypes.LOGIN_FAILURE_HANDLED);
-        }.bind(this), 1000);
-      }
-    }.bind(this));
   },
 
   /*

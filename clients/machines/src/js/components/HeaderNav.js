@@ -1,4 +1,5 @@
 var LoginActions = require('../actions/LoginActions');
+var {Navigation} = require('react-router');
 var React = require('react');
 
 
@@ -18,6 +19,12 @@ var Button = React.createClass({
 
 
 var HeaderNav = React.createClass({
+  mixins: [ Navigation ],
+
+  handleClick() {
+    LoginActions.logout(this.context.router);
+  },
+
   render() {
     var buttons = [];
     if (!window.libnfc) {
@@ -30,7 +37,7 @@ var HeaderNav = React.createClass({
         {buttons}
         <button
           className="btn btn-danger btn-logout pull-right"
-          onClick={LoginActions.logout}>
+          onClick={this.handleClick}>
           <i className="fa fa-sign-out"></i>
         </button>
       </div>

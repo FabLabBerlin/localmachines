@@ -64,7 +64,7 @@ describe('LoginChooser', function() {
     expect(LoginActions.submitLoginForm).toBeCalledWith({
       username: 'joe',
       password: '123456'
-    });
+    }, undefined);
   });
 
 });

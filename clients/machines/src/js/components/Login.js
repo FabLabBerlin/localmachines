@@ -37,7 +37,7 @@ var Login = React.createClass({
    */
   handleSubmit(event) {
     event.preventDefault();
-    LoginActions.submitLoginForm(this.state);
+    LoginActions.submitLoginForm(this.state, this.context.router);
   },
 
   /*
@@ -66,31 +66,16 @@ var Login = React.createClass({
   },
 
   /*
-   * Replace the login page url by the user page url
-   */
-  onChangeLogin() {
-    const isLogged = reactor.evaluateToJS(getters.getIsLogged);
-    if (isLogged) {
-      this.replaceWith('/machine');
-    }
-  },
-
-  /*
    * If you are already connected, will skip the page
    * listen to the onChange event from the UserStore
    */
   componentDidMount() {
     LoginActions.submitLoginForm(this.state);
-    LoginStore.onChangeLogin = this.onChangeLogin;
 
     this.focus();
 
     if (reactor.evaluateToJS(getters.getIsLogged)) {
       this.replaceWith('/machine');
-    } else {
-      reactor.observe(getters.getIsLogged, isLogged => {
-        this.onChangeLogin();
-      }.bind(this));
     }
   },
 

@@ -99,7 +99,7 @@ var MachinePage = React.createClass({
    * Logout with the exit button
    */
   handleLogout() {
-    LoginActions.logout();
+    LoginActions.logout(this.context.router);
   },
 
 
