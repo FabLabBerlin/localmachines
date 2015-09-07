@@ -3,6 +3,8 @@ package models
 import (
 	"errors"
 	"fmt"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/astaxie/beego"
@@ -18,6 +20,37 @@ type Membership struct {
 	MonthlyPrice          float32
 	MachinePriceDeduction int
 	AffectedMachines      string `orm:"type(text)"`
+}
+
+func (this *Membership) AffectedMachineIds() ([]int64, error) {
+	parseErr := fmt.Errorf("cannot parse AffectedMachines property: '%v'", this.AffectedMachines)
+	l := len(this.AffectedMachines)
+	if l < 2 || this.AffectedMachines[0:1] != "[" || this.AffectedMachines[l-1:l] != "]" {
+		return nil, parseErr
+	}
+	idStrings := strings.Split(this.AffectedMachines[1:l-1], ",")
+	ids := make([]int64, 0, len(idStrings))
+	for _, idString := range idStrings {
+		if id, err := strconv.ParseInt(idString, 10, 64); err == nil {
+			ids = append(ids, id)
+		} else {
+			return nil, fmt.Errorf("ParseInt: %v", err)
+		}
+	}
+	return ids, nil
+}
+
+func (this *Membership) IsMachineAffected(machineId int64) (bool, error) {
+	if machineIds, err := this.AffectedMachineIds(); err == nil {
+		for _, id := range machineIds {
+			if id == machineId {
+				return true, nil
+			}
+		}
+		return false, nil
+	} else {
+		return false, err
+	}
 }
 
 func (this *Membership) TableName() string {
