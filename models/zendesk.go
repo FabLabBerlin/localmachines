@@ -27,12 +27,13 @@ func (this ZenDesk) SubmitTicket(ticket ZenDeskTicket) error {
 	if err != nil {
 		return fmt.Errorf("Failed to marshal JSON: %v", err)
 	}
-	req, err := http.NewRequest("POST", this.ApiUrl("tickets.json"), bytes.NewBuffer(jsonBytes))
+	url := this.ApiUrl("tickets.json")
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonBytes))
 	if err != nil {
 		return fmt.Errorf("Failed to create request: %v", err)
 	}
 	req.Header.Add("Content-Type", "application/json")
-	req.SetBasicAuth(this.Email, this.ApiToken)
+	req.SetBasicAuth(this.Email+"/token", this.ApiToken)
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {

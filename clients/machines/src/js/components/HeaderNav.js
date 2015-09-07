@@ -31,6 +31,7 @@ var HeaderNav = React.createClass({
       buttons.push(<Button id="header-nav-machines" href="/machines/#/machine">Machines</Button>);
       buttons.push(<Button id="header-nav-profile" href="/machines/#/profile">Profile</Button>);
       buttons.push(<Button id="header-nav-spendings" href="/machines/#/spendings">Spendings</Button>);
+      buttons.push(<Button id="header-nav-feedback" href="/machines/#/feedback">Feedback</Button>);
     }
     return (
       <div className="header-nav">

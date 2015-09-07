@@ -18,7 +18,7 @@ type FeedbackController struct {
 // @Success 200 {object} models.FastBillCreateCustomerResponse
 // @Failure 500 Internal Server Error
 // @Failure 401 Not authorized
-// @router  /feedback [post]
+// @router  / [post]
 func (this *FeedbackController) PostFeedback() {
 	zd := models.ZenDesk{
 		Email:    beego.AppConfig.String("zendeskemail"),
