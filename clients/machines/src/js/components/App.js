@@ -28,31 +28,7 @@ var RouteHandler = require('react-router').RouteHandler;
       <div className="app">
 
         <header>
-          <div className="container-fluid">
-
-            <div className="row">
-              <div className="col-xs-2">
-                <img src="img/logo_easylab.svg"
-                     className="brand-image"/>
-                <img src="img/logo_small.svg"
-                     className="brand-image brand-image-mobile"/>
-              </div>
-              {isLogged ? (
-                <div className="col-xs-10 text-right">
-                  <HeaderNav/>
-                  {/*!window.libnfc ? (
-                    <a href="/user"
-                      className="btn btn-info linkToPanel"
-                      role="button" >
-                      Switch to <br/>
-                      user panel
-                    </a>
-                  ) : ('')*/}
-                </div>
-              ) : ('')}
-            </div>
-
-          </div>
+          {isLogged ? (<HeaderNav/>) : ('')}
         </header>
 
         <RouteHandler />

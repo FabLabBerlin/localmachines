@@ -1,3 +1,22 @@
+/*
+
+http://www.network-science.de/ascii/ 
+font: basic
+
+db   d8b   db  .d8b.  d8888b. d8b   db d888888b d8b   db  d888b  
+88   I8I   88 d8' `8b 88  `8D 888o  88   `88'   888o  88 88' Y8b 
+88   I8I   88 88ooo88 88oobY' 88V8o 88    88    88V8o 88 88      
+Y8   I8I   88 88~~~88 88`8b   88 V8o88    88    88 V8o88 88  ooo 
+`8b d8'8b d8' 88   88 88 `88. 88  V888   .88.   88  V888 88. ~8~ 
+ `8b8' `8d8'  YP   YP 88   YD VP   V8P Y888888P VP   V8P  Y888P 
+
+MOBILE FIRST!
+
+Design the CSS in a mobile-first way. The default styles should be for the 
+small screens (winWidth < 728px). For the big screens search for the media 
+query at the bottom: @media (min-width: 768px) { ...
+
+*/
 @import "~bootstrap-less/bootstrap/bootstrap.less";
 @import "common.less";
 @import "prefixer.less";
@@ -45,65 +64,25 @@ ul, li {
   margin-top: -25px;
 }
 
-/* Header Nav */
+/* 
 
-.header-nav {
-  overflow: hidden;
-  padding-top: 11px;
+http://www.network-science.de/ascii/ 
+font: basic
+
+db   db d88888b  .d8b.  d8888b. d88888b d8888b. 
+88   88 88'     d8' `8b 88  `8D 88'     88  `8D 
+88ooo88 88ooooo 88ooo88 88   88 88ooooo 88oobY' 
+88~~~88 88~~~~~ 88~~~88 88   88 88~~~~~ 88`8b   
+88   88 88.     88   88 88  .8D 88.     88 `88. 
+YP   YP Y88888P YP   YP Y8888D' Y88888P 88   YD
+
+Header Nav 
+
+*/
+
+nav.navbar .navbar-nav > li > a {
+  color: @text-color-default !important;
 }
-
-.header-nav a {
-  background-color: #b1b1b1;
-  background-repeat: no-repeat;
-  background-size: 41px;
-  color: white;
-  font-size: 18px;
-  margin: 7px 10px 0;
-  padding: 17px 14px 16px 46px;
-  background-position: 0px;
-  display: inline-block;
-}
-
-.header-nav a.header-nav-active {
-  background-color: #4d4d4d;
-}
-
-#header-nav-machines {
-  background-image: url(/machines/img/header_nav/machines.svg);
-}
-
-#header-nav-profile {
-  background-image: url(/machines/img/header_nav/profile.svg);
-}
-
-#header-nav-spendings {
-  background-image: url(/machines/img/header_nav/spendings.svg);
-}
-
-.header-nav .btn-logout {
-  margin-left: 10px;
-}
-
-@media screen and (max-width: 750px) {
-  .brand-image {
-    display: none;
-  }
-
-  .brand-image.brand-image-mobile {
-    display: block;
-    margin-left: -20px;
-  }
-
-  .header-nav a {
-    color: transparent;
-    overflow: hidden;
-    padding: 12px 21px;
-    text-indent: 100%;
-    white-space: nowrap;
-    width: 0;
-  }
-}
-
 
 /* Bootstrap overrides */
 
@@ -478,16 +457,6 @@ footer div {
   margin-bottom: 20px;
 }
 
-.brand-image {
-  width: auto;
-  height: 99px;
-  margin-top: -px;
-}
-
-.brand-image-mobile {
-  display: none;
-}
-
 .absolute-bottom {
   width: 100%;
 }
@@ -525,7 +494,26 @@ footer div {
   border-top: 2px solid darken(@bg-color-default, 10%);
 }
 
+/* 
+
+http://www.network-science.de/ascii/ 
+font: basic
+
+db   db d88888b d8888b. d88888b 
+88   88 88'     88  `8D 88'     
+88ooo88 88ooooo 88oobY' 88ooooo 
+88~~~88 88~~~~~ 88`8b   88~~~~~ 
+88   88 88.     88 `88. 88.     
+YP   YP Y88888P 88   YD Y88888P
+
+This is for the big screens "Mobile First" 
+
+*/
 @media (min-width: 768px) {
+  
+  /* Header */
+
+  /* Login Form */
   .login-heading {
     font-size: 30px;
   }
@@ -560,7 +548,8 @@ footer div {
     -webkit-transform: translateY(-50%);
     width: 100%;
   }
-}/* @media (min-width: 768px) */
+
+} /* @media (min-width: 768px) */
 
 .signup-link {
   padding: 10px;
