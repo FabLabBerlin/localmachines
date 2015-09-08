@@ -43,6 +43,13 @@ var BurgerMenuToggle = React.createClass({
 });
 
 var MainMenu = React.createClass({
+
+  mixins: [ Navigation ],
+
+  signOut() {
+    LoginActions.logout(this.context.router);
+  },
+
   render() {
     var buttons = [];
 
@@ -71,7 +78,7 @@ var MainMenu = React.createClass({
         <ul className="nav navbar-nav navbar-right">
           {buttons}
           <li>
-            <a href="#" onClick={this.handleClick} className="sign-out">
+            <a href="#" onClick={this.signOut} className="sign-out">
               <i className="fa fa-sign-out"></i> Sign out
             </a>
           </li>
@@ -82,13 +89,6 @@ var MainMenu = React.createClass({
 });
 
 var HeaderNav = React.createClass({
-  
-  mixins: [ Navigation ],
-
-  handleClick() {
-    LoginActions.logout(this.context.router);
-  },
-
   render() {
     const isLogged = Reactor.evaluateToJS(Getters.getIsLogged);
 
@@ -117,7 +117,6 @@ var HeaderNav = React.createClass({
       </div>
     );
   }
-
 });
 
 export default HeaderNav;
