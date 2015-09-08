@@ -20,6 +20,8 @@ type Membership struct {
 	MonthlyPrice          float32
 	MachinePriceDeduction int
 	AffectedMachines      string `orm:"type(text)"`
+	AutoExtend            bool
+	AutoExtendDuration    int64
 }
 
 func (this *Membership) AffectedMachineIds() ([]int64, error) {
