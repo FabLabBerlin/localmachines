@@ -109,7 +109,10 @@ func GetAllMemberships() (memberships []*Membership, err error) {
 // Creates a new membership in the database
 func CreateMembership(membershipName string) (int64, error) {
 	o := orm.NewOrm()
-	membership := Membership{Title: membershipName}
+	membership := Membership{}
+	membership.Title = membershipName
+	membership.AutoExtend = true
+	membership.AutoExtendDuration = 30
 	membership.Unit = "days"
 	id, err := o.Insert(&membership)
 	if err == nil {
