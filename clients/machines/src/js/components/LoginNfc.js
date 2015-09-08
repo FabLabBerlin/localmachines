@@ -99,6 +99,8 @@ var LoginNfc = React.createClass({
     // For debugging through the console
     window.nfcLogin = this.nfcLogin;
 
+    reactor.reset();
+
     setTimeout(this.connectJsToQt, 1000);
   },
 
