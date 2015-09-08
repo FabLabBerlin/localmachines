@@ -1,6 +1,8 @@
 var LoginActions = require('../actions/LoginActions');
 var {Navigation} = require('react-router');
 var React = require('react');
+var Reactor = require('../reactor');
+var Getters = require('../getters');
 
 
 var MenuItem = React.createClass({
@@ -22,24 +24,35 @@ var MenuItem = React.createClass({
   }
 });
 
+var BurgerMenuToggle = React.createClass({
+  render() {
+    return (
+      <button type="button" 
+        className="navbar-toggle collapsed" 
+        data-toggle="collapse" 
+        data-target="#burger-menu" 
+        aria-expanded="false">
+        
+        <span className="sr-only">Burger Menu</span>
+        <span className="icon-bar"></span>
+        <span className="icon-bar"></span>
+        <span className="icon-bar"></span>
+      </button>
+    );
+  }
+});
 
-var HeaderNav = React.createClass({
-  mixins: [ Navigation ],
-
-  handleClick() {
-    LoginActions.logout(this.context.router);
-  },
-
+var MainMenu = React.createClass({
   render() {
     var buttons = [];
-    
+
     if (!window.libnfc) {
       buttons.push(
         <MenuItem href="/machines/#/machine"
           faIconClass="fa-wrench"
           label="Machines">
         </MenuItem>);
-
+  
       buttons.push(
         <MenuItem href="/machines/#/profile"
           faIconClass="fa-user"
@@ -54,53 +67,57 @@ var HeaderNav = React.createClass({
     }
 
     return (
-      <div>
-
-<nav className="navbar navbar-default">
-  <div className="container-fluid">
-    
-    <div className="navbar-header">
-      <button type="button" 
-        className="navbar-toggle collapsed" 
-        data-toggle="collapse" 
-        data-target="#machines-navbar" 
-        aria-expanded="false">
-        
-        <span className="sr-only">Toggle navigation</span>
-        <span className="icon-bar"></span>
-        <span className="icon-bar"></span>
-        <span className="icon-bar"></span>
-      </button>
-      
-      <div className="navbar-brand">
-        <img src="img/logo_easylab.svg" className="brand-image"/>
-        <img src="img/logo_small.svg" className="brand-image brand-image-mobile"/>
+      <div className="collapse navbar-collapse" id="burger-menu">
+        <ul className="nav navbar-nav navbar-right">
+          {buttons}
+          <li>
+            <a href="#" onClick={this.handleClick} className="sign-out">
+              <i className="fa fa-sign-out"></i> Sign Out
+            </a>
+          </li>
+        </ul>  
       </div>
-    </div>
-
-    <div className="collapse navbar-collapse" id="machines-navbar">
-      
-      <ul className="nav navbar-nav navbar-right">
-        
-        {buttons}
-        
-        <li>
-          <a href="#"
-            onClick={this.handleClick}>
-            <i className="fa fa-sign-out"></i> Sign Out
-          </a>
-        </li>
-
-      </ul>
-      
-    </div>
-  </div>
-</nav>
-
-</div>
-
     );
   }
+});
+
+var HeaderNav = React.createClass({
+  
+  mixins: [ Navigation ],
+
+  handleClick() {
+    LoginActions.logout(this.context.router);
+  },
+
+  render() {
+    const isLogged = Reactor.evaluateToJS(Getters.getIsLogged);
+
+    return (
+      <div>
+
+        <nav className="navbar navbar-default">
+          <div className="container-fluid">
+            
+            <div className="navbar-header">
+              
+              {isLogged ? (<BurgerMenuToggle />) : ('')}
+              
+              <div className="navbar-brand">
+                <img src="img/logo-easylab.svg" className="brand-image hidden-xs"/>
+                <img src="img/logo-small.svg" className="brand-image visible-xs-block"/>
+              </div>
+
+            </div>
+        
+            {isLogged ? (<MainMenu />) : ('')}
+
+          </div>
+        </nav>
+
+      </div>
+    );
+  }
+
 });
 
 export default HeaderNav;
