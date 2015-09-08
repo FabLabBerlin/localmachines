@@ -14,8 +14,8 @@ var MachineActions = {
    * To end an activation
    * @aid: id of the activation you want to shut down
    */
-  endActivation(aid) {
-    apiPutActivation(aid);
+  endActivation(aid, cb) {
+    apiPutActivation(aid, cb);
     LoginActions.keepAlive();
   },
 
@@ -82,7 +82,7 @@ var MachineActions = {
  * activation become unactive
  * @aid: activation id you want to shut down
  */
-function apiPutActivation(aid) {
+function apiPutActivation(aid, cb) {
   ApiActions.showGlobalLoader();
   $.ajax({
     url: '/api/activations/' + aid,
@@ -93,6 +93,9 @@ function apiPutActivation(aid) {
     success: function(data) {
       ApiActions.hideGlobalLoader();
       _postActivationSuccess(data, 'Machine deactivated');
+      if (cb) {
+        cb();
+      }
     }.bind(this),
     error: function(xhr, status, err) {
       ApiActions.hideGlobalLoader();

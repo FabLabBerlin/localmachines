@@ -71,6 +71,12 @@ var MainMenu = React.createClass({
           faIconClass="fa-money"
           label="Spendings">
         </MenuItem>);
+
+      buttons.push(
+        <MenuItem href="/machines/#/feedback"
+          faIconClass="fa-paper-plane"
+          label="Feedback">
+        </MenuItem>);
     }
 
     return (

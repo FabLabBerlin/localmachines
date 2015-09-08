@@ -22,5 +22,8 @@ export default keyMirror({
   SET_SCROLL_STEP: null,
 
   SET_BILL_INFO: null,
-  SET_MEMBERSHIP_INFO: null
+  SET_MEMBERSHIP_INFO: null,
+
+  SET_FEEDBACK_PROPERTY: null,
+  RESET_FEEDBACK_FORM: null
 });

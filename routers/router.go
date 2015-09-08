@@ -59,6 +59,11 @@ func Init() {
 				&controllers.FastBillController{},
 			),
 		),
+		beego.NSNamespace("/feedback",
+			beego.NSInclude(
+				&controllers.FeedbackController{},
+			),
+		),
 	)
 	beego.AddNamespace(ns)
 }

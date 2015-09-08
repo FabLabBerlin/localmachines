@@ -119,6 +119,42 @@ const getIsLoading = [
 
 
 /*
+ * Feedback related getters
+ */
+const getFeedbackSubject = [
+  ['feedbackStore'],
+  (feedbackStore) => {
+    if (feedbackStore.get('subject-dropdown') === 'Other') {
+      return feedbackStore.get('subject-other-text');
+    } else {
+      return feedbackStore.get('subject-dropdown');
+    }
+  }
+];
+
+const getFeedbackSubjectDropdown = [
+  ['feedbackStore'],
+  (feedbackStore) => {
+    return feedbackStore.get('subject-dropdown');
+  }
+];
+
+const getFeedbackSubjectOtherText = [
+  ['feedbackStore'],
+  (feedbackStore) => {
+    return feedbackStore.get('subject-other-text');
+  }
+];
+
+const getFeedbackMessage = [
+  ['feedbackStore'],
+  (feedbackStore) => {
+    return feedbackStore.get('message');
+  }
+];
+
+
+/*
  * Scroll Navigation related getters
  */
 const getScrollUpEnabled = [
@@ -145,5 +181,6 @@ const getScrollPosition = [
 export default {
   getIsLogged, getUid, getFirstTry, getLoginSuccess, getLastActivity,
   getUserInfo, getActivationInfo, getMachineInfo, getMachineUsers, getIsLoading, getBillInfo, getMembership, getMembershipsByMonth,
+  getFeedbackSubject, getFeedbackSubjectDropdown, getFeedbackSubjectOtherText, getFeedbackMessage,
   getScrollUpEnabled, getScrollDownEnabled, getScrollPosition
 };

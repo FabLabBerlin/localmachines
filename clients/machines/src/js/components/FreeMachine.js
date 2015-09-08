@@ -1,6 +1,7 @@
 var React = require('react');
 var ForceSwitch = require('./ForceSwitch');
 var MachineActions = require('../actions/MachineActions');
+var RepairButton = require('./Feedback/RepairButton');
 
 
 /*
@@ -35,6 +36,7 @@ var FreeMachine = React.createClass({
           <div className="machine-action-info">
             <img className="machine-image"
                  src={imageUrl}/>
+            <RepairButton/>
           </div>
         </div>
         <div className="col-xs-6">

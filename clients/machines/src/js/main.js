@@ -1,4 +1,6 @@
 var App = require('./components/App');
+var FeedbackPage = require('./components/FeedbackPage');
+var FeedbackStore = require('./stores/FeedbackStore');
 var getters = require('./getters');
 var LoginChooser = require('./components/LoginChooser');
 var LoginStore = require('./stores/LoginStore');
@@ -49,6 +51,7 @@ let routes = (
     <Route name="machine" handler={MachinePage} />
     <Route name="profile" handler={UserPage} />
     <Route name="spendings" handler={SpendingsPage} />
+    <Route name="feedback" handler={FeedbackPage} />
     <DefaultRoute handler={MachinePage} />
   </Route>
 );
@@ -58,6 +61,7 @@ let routes = (
  */
 
 reactor.registerStores({
+  feedbackStore: FeedbackStore,
   loginStore: LoginStore,
   machineStore: MachineStore,
   scrollNavStore: ScrollNavStore,
