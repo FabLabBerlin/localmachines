@@ -112,7 +112,11 @@ var BillTables = React.createClass({
   months() {
     var userInfo = reactor.evaluateToJS(getters.getUserInfo);
     var months = [];
-    for (var t = moment(userInfo.Created); t.isBefore(moment()); t.add(1, 'd')) {
+    var created = moment(userInfo.Created);
+    if (created.unix() <= 0) {
+      created = moment('2015-07-01');
+    }
+    for (var t = created; t.isBefore(moment()); t.add(1, 'd')) {
       months.push(t.clone());
     }
     months = _.uniq(months, function(month) {
