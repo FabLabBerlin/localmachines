@@ -50,9 +50,11 @@ app.controller('MembershipCtrl',
     .success(function(membershipModel) {
       $scope.membership = membershipModel;
       
-      // Parse affected machines JSON as it is passed here as string
-      $scope.membership.AffectedMachines = 
-       JSON.parse($scope.membership.AffectedMachines);
+      if ($scope.membership.AffectedMachines !== '') {
+        // Parse affected machines JSON as it is passed here as string
+        $scope.membership.AffectedMachines = 
+          JSON.parse($scope.membership.AffectedMachines);
+      }
 
       // Search for machines with the same IDs as the AffectedMachines
       // and set them as checked
