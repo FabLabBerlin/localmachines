@@ -328,3 +328,30 @@ func (this *ActivationsController) Delete() {
 	this.Data["json"] = "ok"
 	this.ServeJson()
 }
+
+// @Title PostFeedback
+// @Description Post feedback
+// @Param	mid	path	int	true	"Machine ID"
+// @Success 200 string ok
+// @Failure	400	Bad Request
+// @Failure	400	Client Error
+// @Failure	500 Internal Server Error
+// @router /:aid/feedback [post]
+func (this *ActivationsController) PostFeedback() {
+	aid, err := this.GetInt64(":aid")
+	if err != nil {
+		beego.Error("Failed to get :aid from the request:", err)
+		this.CustomAbort(400, "Failed to save activation feedback")
+	}
+
+	satisfaction := this.GetString("satisfaction")
+
+	_, err = models.CreateActivationFeedback(aid, satisfaction)
+	if err != nil {
+		beego.Error("Failed to save activation feedback:", err)
+		this.CustomAbort(403, "Failed to save activation feedback")
+	}
+
+	this.Data["json"] = "ok"
+	this.ServeJson()
+}

@@ -103,12 +103,12 @@ var LoginNfc = React.createClass({
   },
 
   /*
-   * Render NFC terminal welcome screen with info 
+   * Render NFC terminal welcome screen with info
    * about ways to log in to the system.
    */
   render() {
     return (
-     
+
 
         <div className="row">
 
@@ -122,13 +122,13 @@ var LoginNfc = React.createClass({
               <p>Use your NFC card to log in</p>
             </div>
           </div>
-          
+
           <div className="col-xs-1">
             <div className="nfc-login-info-text">
               <p>or</p>
             </div>
           </div>
-          
+
           <div className="col-xs-5">
             <div className="nfc-login-icon">
               <i className="fa fa-laptop"></i>
@@ -139,7 +139,7 @@ var LoginNfc = React.createClass({
           </div>
 
           <div className="col-xs-1"></div>
-        
+
         </div>
 
 

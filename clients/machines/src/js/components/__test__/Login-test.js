@@ -25,7 +25,7 @@ describe('LoginChooser', function() {
     var LoginChooser = React.createFactory(require('../LoginChooser'));
     var loginChooser = new LoginChooser({});
     var s = React.renderToString(loginChooser);
-    expect(s).toContain('class="nfc-login-info-icon"');
+    expect(s).toContain('class="nfc-login-icon"');
     expect(s).toContain('class="nfc-login-info-text"');
     expect(s).toContain('Use your NFC card to log in');
     window.libnfc = null;

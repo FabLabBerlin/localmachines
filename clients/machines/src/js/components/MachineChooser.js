@@ -1,3 +1,4 @@
+var FeedbackDialogs = require('./Feedback/FeedbackDialogs');
 var React = require('react');
 var LoginActions = require('../actions/LoginActions');
 var MachineActions = require('../actions/MachineActions');
@@ -46,7 +47,9 @@ var MachineChooser = React.createClass({
       callback: function(confirmed) {
         if (confirmed) {
           let aid = this.props.activation.Id;
-          MachineActions.endActivation(aid);
+          MachineActions.endActivation(aid, function() {
+            FeedbackDialogs.checkSatisfaction(aid);
+          }.bind(this));
         }
         $('.vex').remove();
         $('body').removeClass('vex-open');

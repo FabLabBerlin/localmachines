@@ -8,6 +8,24 @@ var toastr = require('../toastr');
 
 var FeedbackActions = {
 
+  reportSatisfaction({ activationId, satisfaction }) {
+    var url = '/api/activations/' + activationId + '/feedback';
+    $.ajax({
+      url: url,
+      dataType: 'json',
+      type: 'POST',
+      data: {
+        satisfaction: satisfaction
+      },
+      success: function() {
+        toastr.info('Feedback submitted');
+      },
+      error: function(xhr, status, err) {
+        console.error(url, status, err.toString());
+      }
+    });
+  },
+
   setFeedbackProperty({ key, value }) {
     reactor.dispatch(actionTypes.SET_FEEDBACK_PROPERTY, { key, value });
   },
