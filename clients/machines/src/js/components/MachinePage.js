@@ -153,7 +153,9 @@ var MachinePage = React.createClass({
           <div className="container-fluid">
             <button
               onClick={this.handleLogout}
-              className="btn btn-lg btn-block btn-danger btn-logout-bottom" > Exit </button>
+              className="btn btn-lg btn-block btn-danger btn-logout-bottom">
+              Sign out
+            </button>
           </div>
           <ScrollNav/>
           {

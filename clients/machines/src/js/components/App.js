@@ -22,49 +22,22 @@ var RouteHandler = require('react-router').RouteHandler;
    * If user is logged, display a exit button
    * If he's logged and there is no nfc port, can switch to user interface
    */
-  render: function() {
+  render() {
+    
     const isLogged = reactor.evaluateToJS(getters.getIsLogged);
+    
     return (
       <div className="app">
-
-        <header>
-          <div className="container-fluid">
-
-            <div className="row">
-              <div className="col-xs-2">
-                <img src="img/logo_easylab.svg"
-                     className="brand-image"/>
-                <img src="img/logo_small.svg"
-                     className="brand-image brand-image-mobile"/>
-              </div>
-              {isLogged ? (
-                <div className="col-xs-10 text-right">
-                  <HeaderNav/>
-                  {/*!window.libnfc ? (
-                    <a href="/user"
-                      className="btn btn-info linkToPanel"
-                      role="button" >
-                      Switch to <br/>
-                      user panel
-                    </a>
-                  ) : ('')*/}
-                </div>
-              ) : ('')}
-            </div>
-
-          </div>
-        </header>
-
+        <HeaderNav />
         <RouteHandler />
-
         <footer className={isLogged ? '' : 'absolute-bottom'}>
           <div className="container-fluid">
             <i className="fa fa-copyright"></i> Fab Lab Berlin 2015
           </div>
         </footer>
-
       </div>
     );
+
   }
 });
 
