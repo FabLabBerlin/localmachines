@@ -72,7 +72,7 @@ var MainMenu = React.createClass({
           {buttons}
           <li>
             <a href="#" onClick={this.handleClick} className="sign-out">
-              <i className="fa fa-sign-out"></i> Sign Out
+              <i className="fa fa-sign-out"></i> Sign out
             </a>
           </li>
         </ul>  
