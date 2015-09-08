@@ -104,7 +104,8 @@
             id="membership-extend-duration"
             class="form-control"
             value="membership.AutoExtendDuration"
-            ng-model="membership.AutoExtendDuration">
+            ng-model="membership.AutoExtendDuration"
+            ng-disabled="!membership.AutoExtend">
           <div class="input-group-addon">days</div>
         </div>
       </div>

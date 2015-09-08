@@ -93,6 +93,8 @@ app.controller('MembershipCtrl',
     membership.Duration = parseInt(membership.Duration);
     membership.MachinePriceDeduction = 
      parseInt(membership.MachinePriceDeduction);
+    membership.AutoExtendDuration = 
+     parseInt(membership.AutoExtendDuration);
 
     $http({
       method: 'PUT',
