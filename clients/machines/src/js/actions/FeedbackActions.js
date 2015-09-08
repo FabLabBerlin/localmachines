@@ -8,6 +8,33 @@ var toastr = require('../toastr');
 
 var FeedbackActions = {
 
+  reportMachineBroken({ machineId }) {
+    var machine = getters.getMachine(machineId);
+    var userInfo = reactor.evaluateToJS(getters.getUserInfo);
+    var fullName = userInfo.FirstName + ' ' + userInfo.LastName;
+    ApiActions.showGlobalLoader();
+    $.ajax({
+      url: '/api/feedback',
+      dataType: 'json',
+      type: 'POST',
+      data: {
+        subject: 'Machine Broken',
+        message: 'Hi friends,\n\nThe following machine seems broken: ' + machine.Name + '\n\nEasyLab on behalf of ' + fullName,
+        email: userInfo.Email,
+        name: fullName
+      },
+      success: function() {
+        toastr.info('Thank you for the report 😀 We will have a look at it asap.');
+        ApiActions.hideGlobalLoader();
+      },
+      error: function(xhr, status, err) {
+        toastr.error('Error submitting report.  Please try again later.');
+        console.error('/feedback', status, err.toString());
+        ApiActions.hideGlobalLoader();
+      }
+    });
+  },
+
   reportSatisfaction({ activationId, satisfaction }) {
     var url = '/api/activations/' + activationId + '/feedback';
     $.ajax({

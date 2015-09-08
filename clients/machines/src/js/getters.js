@@ -1,5 +1,6 @@
 var _ = require('lodash');
 var moment = require('moment');
+var reactor = require('./reactor');
 
 
 /*
@@ -103,6 +104,23 @@ const getMachineInfo = [
   }
 ];
 
+const getMachine = function(id) {
+  return reactor.evaluate([
+    ['machineStore'],
+    (machineStore) => {
+      var machines = machineStore.get('machineInfo') || [];
+      var machine;
+      _.each(machines, function(m) {
+        if (m.Id === id) {
+          machine = m;
+          return false;
+        }
+      });
+      return machine;
+    }
+  ]);
+};
+
 const getMachineUsers = [
   ['machineStore'],
   (machineStore) => {
@@ -180,7 +198,7 @@ const getScrollPosition = [
 
 export default {
   getIsLogged, getUid, getFirstTry, getLoginSuccess, getLastActivity,
-  getUserInfo, getActivationInfo, getMachineInfo, getMachineUsers, getIsLoading, getBillInfo, getMembership, getMembershipsByMonth,
+  getUserInfo, getActivationInfo, getMachineInfo, getMachine, getMachineUsers, getIsLoading, getBillInfo, getMembership, getMembershipsByMonth,
   getFeedbackSubject, getFeedbackSubjectDropdown, getFeedbackSubjectOtherText, getFeedbackMessage,
   getScrollUpEnabled, getScrollDownEnabled, getScrollPosition
 };

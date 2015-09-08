@@ -36,7 +36,7 @@ var FreeMachine = React.createClass({
           <div className="machine-action-info">
             <img className="machine-image"
                  src={imageUrl}/>
-            <RepairButton/>
+            <RepairButton machineId={this.props.info.Id}/>
           </div>
         </div>
         <div className="col-xs-6">

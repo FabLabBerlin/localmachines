@@ -1,9 +1,10 @@
+var FeedbackDialogs = require('./FeedbackDialogs');
 var React = require('react');
 
 
 var RepairButton = React.createClass({
   handleClick() {
-    console.log('Click!');
+    FeedbackDialogs.machineIssue(this.props.machineId);
   },
 
   render() {
