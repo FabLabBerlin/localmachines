@@ -219,10 +219,13 @@ app.controller('UserCtrl',
       var data = userMembershipList.Data;
       $scope.userMemberships = _.map(data, function(userMembership) {
         userMembership.StartDate = new Date(Date.parse(userMembership.StartDate));
+        userMembership.EndDate = new Date(Date.parse(userMembership.EndDate));
+        /*
         _.merge(userMembership, {
           EndDate: new Date(userMembership.StartDate)
         });
-        userMembership.EndDate.setDate(userMembership.StartDate.getDate() + userMembership.Duration);
+        */
+        //userMembership.EndDate.setDate(userMembership.StartDate.getDate() + userMembership.Duration);
         userMembership.StartDate = formatDate(userMembership.StartDate);
         userMembership.EndDate = formatDate(userMembership.EndDate);
         return userMembership;
@@ -238,6 +241,7 @@ app.controller('UserCtrl',
   // Adds user membership to the database and updates the UI
   $scope.addUserMembership = function() {
     var startDate = $('#adm-add-user-membership-start-date').val();
+    console.log(startDate);
     if (!startDate) {
       toastr.error('Please select a Start Date');
       return;
