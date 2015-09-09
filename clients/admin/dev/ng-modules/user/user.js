@@ -196,6 +196,7 @@ app.controller('UserCtrl',
     })
     .success(function(data) {
       $scope.memberships = data;
+      console.log($scope.memberships);
     })
     .error(function(data, status) {
       console.log('Could not get memberships');
@@ -234,6 +235,7 @@ app.controller('UserCtrl',
     });
   };
 
+  // Adds user membership to the database and updates the UI
   $scope.addUserMembership = function() {
     var startDate = $('#adm-add-user-membership-start-date').val();
     if (!startDate) {
@@ -246,8 +248,8 @@ app.controller('UserCtrl',
       return;
     }
 
-    var userMembershipId = $('#user-select-membership').val();
-    if (!userMembershipId) {
+    var selectedMembershipId = $('#user-select-membership').val();
+    if (!selectedMembershipId) {
       toastr.error('Please select a Membership');
       return;
     }
@@ -256,7 +258,7 @@ app.controller('UserCtrl',
       url: '/api/users/' + $scope.user.Id + '/memberships',
       data: {
         StartDate: startDate,
-        UserMembershipId: userMembershipId
+        MembershipId: selectedMembershipId
       },
       params: {
         ac: new Date().getTime()
