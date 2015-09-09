@@ -611,7 +611,10 @@ func (this *UsersController) PostUserMemberships() {
 	}
 
 	// Get requested start date
-	startDate, err := time.Parse("2006-01-02", this.GetString("startDate"))
+	startDate, err := time.ParseInLocation("2006-01-02",
+		this.GetString("startDate"),
+		time.UTC)
+
 	if err != nil {
 		beego.Error("Failed to parse startDate")
 		this.CustomAbort(400, "Failed to obtain start date")
@@ -633,6 +636,13 @@ func (this *UsersController) PostUserMemberships() {
 	// Set the user membership auto extend to the value of
 	// the actual membership
 	um.AutoExtend = m.AutoExtend
+	// Calculate end date, we need the start date and the duration of
+	// the membership here
+	var endDate time.Time
+	var duration time.Duration
+	duration = time.Duration(m.Duration) * time.Hour * 24 // duration in days
+	endDate = startDate.Add(duration)
+	um.EndDate = endDate
 
 	var userMembershipId int64
 	userMembershipId, err = models.CreateUserMembership(&um)

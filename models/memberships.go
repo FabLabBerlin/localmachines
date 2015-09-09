@@ -15,7 +15,7 @@ type Membership struct {
 	Id                    int64  `orm:"auto";"pk"`
 	Title                 string `orm:"size(100)"`
 	ShortName             string `orm:"size(100)"`
-	Duration              int
+	Duration              int64
 	Unit                  string `orm:"size(100)"`
 	MonthlyPrice          float32
 	MachinePriceDeduction int
@@ -63,8 +63,8 @@ type UserMembership struct {
 	Id           int64 `orm:"auto";"pk"`
 	UserId       int64
 	MembershipId int64
-	StartDate    time.Time
-	EndDate      time.Time
+	StartDate    time.Time `orm:"type(datetime)"`
+	EndDate      time.Time `orm:"type(datetime)"`
 	AutoExtend   bool
 }
 
@@ -83,6 +83,7 @@ type UserMembershipCombo struct {
 	UserId                int64
 	MembershipId          int64
 	StartDate             time.Time
+	EndDate               time.Time
 	Title                 string
 	ShortName             string
 	Duration              int
@@ -185,6 +186,7 @@ func CreateUserMembership(userMembership *UserMembership) (umid int64, err error
 	if userMembership != nil {
 		o := orm.NewOrm()
 
+		beego.Trace("userMembership.StartDate before:", userMembership.StartDate)
 		if umid, err := o.Insert(userMembership); err != nil {
 			beego.Error("Error creating new user membership: ", err)
 			return umid, err
@@ -229,6 +231,33 @@ func GetUserMemberships(userId int64) (*UserMembershipList, error) {
 		return nil, fmt.Errorf("Failed to get user memberships")
 	}
 	beego.Trace("Got num user memberships:", num)
+
+	// Loop through all of the user memberships and get the right time
+	// by using raw queries. Convert start time and end time to UTC.
+	type Dates struct {
+		StartDate string
+		EndDate   string
+	}
+	parseLayout := "2006-01-02 15:04:05"
+	for i := 0; i < len(userMemberships); i++ {
+		beego.Trace("---")
+		beego.Trace(userMemberships[i].StartDate, userMemberships[i].EndDate)
+		sql = fmt.Sprintf("SELECT start_date, end_date FROM %s WHERE id=?",
+			um.TableName())
+		var dates Dates
+		err = o.Raw(sql, userMemberships[i].Id).QueryRow(&dates)
+		if err != nil {
+			beego.Error("Failed to execute raw query:", err)
+		} else {
+			userMemberships[i].StartDate, _ = time.ParseInLocation(parseLayout,
+				dates.StartDate,
+				time.UTC)
+			userMemberships[i].EndDate, _ = time.ParseInLocation(parseLayout,
+				dates.EndDate,
+				time.UTC)
+			beego.Trace(userMemberships[i].StartDate, userMemberships[i].EndDate)
+		}
+	}
 
 	userMembershipList := UserMembershipList{}
 	userMembershipList.Data = userMemberships
