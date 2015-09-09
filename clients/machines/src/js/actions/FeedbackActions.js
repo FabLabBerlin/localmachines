@@ -9,7 +9,8 @@ var toastr = require('../toastr');
 var FeedbackActions = {
 
   reportMachineBroken({ machineId }) {
-    var machine = getters.getMachine(machineId);
+    const machinesById = reactor.evaluateToJS(getters.getMachinesById);
+    const machine = machinesById[machineId] || {};
     var userInfo = reactor.evaluateToJS(getters.getUserInfo);
     var fullName = userInfo.FirstName + ' ' + userInfo.LastName;
     ApiActions.showGlobalLoader();
@@ -59,27 +60,34 @@ var FeedbackActions = {
 
   submit() {
     var userInfo = reactor.evaluateToJS(getters.getUserInfo);
+    var subject = reactor.evaluateToJS(getters.getFeedbackSubject);
+    var message = reactor.evaluateToJS(getters.getFeedbackMessage);
     ApiActions.showGlobalLoader();
-    $.ajax({
-      url: '/api/feedback',
-      dataType: 'json',
-      type: 'POST',
-      data: {
-        subject: reactor.evaluateToJS(getters.getFeedbackSubject),
-        message: reactor.evaluateToJS(getters.getFeedbackMessage),
-        email: userInfo.Email,
-        name: userInfo.FirstName + ' ' + userInfo.LastName
-      },
-      success: function() {
-        reactor.dispatch(actionTypes.RESET_FEEDBACK_FORM);
-        ApiActions.hideGlobalLoader();
-      },
-      error: function(xhr, status, err) {
-        toastr.error('Error submitting feedback.  Please try again later.');
-        console.error('/feedback', status, err.toString());
-        ApiActions.hideGlobalLoader();
-      }
-    });
+    if (subject && message) {
+      $.ajax({
+        url: '/api/feedback',
+        dataType: 'json',
+        type: 'POST',
+        data: {
+          subject: subject,
+          message: message,
+          email: userInfo.Email,
+          name: userInfo.FirstName + ' ' + userInfo.LastName
+        },
+        success: function() {
+          reactor.dispatch(actionTypes.RESET_FEEDBACK_FORM);
+          ApiActions.hideGlobalLoader();
+          toastr.info('Thank you for your feedback 😀');
+        },
+        error: function(xhr, status, err) {
+          toastr.error('Error submitting feedback.  Please try again later.');
+          console.error('/feedback', status, err.toString());
+          ApiActions.hideGlobalLoader();
+        }
+      });
+    } else {
+      toastr.error('Please fill out all fields');
+    }
   }
 
 };

@@ -59,7 +59,8 @@ export default {
   },
 
   machineIssue(machineId) {
-    const machine = getters.getMachine(machineId);
+    const machinesById = reactor.evaluateToJS(getters.getMachinesById);
+    const machine = machinesById[machineId] || {};
     VexDialog.buttons.YES.text = 'Yes';
     VexDialog.buttons.NO.text = 'No';
 

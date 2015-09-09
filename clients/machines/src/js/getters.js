@@ -199,22 +199,16 @@ const getMachineInfo = [
   }
 ];
 
-const getMachine = function(id) {
-  return reactor.evaluate([
-    ['machineStore'],
-    (machineStore) => {
-      var machines = machineStore.get('machineInfo') || [];
-      var machine;
-      _.each(machines, function(m) {
-        if (m.Id === id) {
-          machine = m;
-          return false;
-        }
-      });
-      return machine;
-    }
-  ]);
-};
+const getMachinesById = [
+  ['machineStore'],
+  (machineStore) => {
+    var machinesById = {};
+    _.each(machineStore.get('machineInfo'), function(m) {
+      machinesById[m.Id] = m;
+    });
+    return machinesById;
+  }
+];
 
 const getMachineUsers = [
   ['machineStore'],
@@ -293,7 +287,7 @@ const getScrollPosition = [
 
 export default {
   getIsLogged, getUid, getFirstTry, getLoginSuccess, getLastActivity,
-  getUserInfo, getActivationInfo, getMachineInfo, getMachine, getMachineUsers, getIsLoading, getBillInfo, getBillMonths, getMonthlyBills, getMembership, getMembershipsByMonth,
+  getUserInfo, getActivationInfo, getMachineInfo, getMachinesById, getMachineUsers, getIsLoading, getBillInfo, getBillMonths, getMonthlyBills, getMembership, getMembershipsByMonth,
   getFeedbackSubject, getFeedbackSubjectDropdown, getFeedbackSubjectOtherText, getFeedbackMessage,
   getScrollUpEnabled, getScrollDownEnabled, getScrollPosition
 };
