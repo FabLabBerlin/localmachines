@@ -64,6 +64,8 @@ type UserMembership struct {
 	UserId       int64
 	MembershipId int64
 	StartDate    time.Time
+	EndDate      time.Time
+	AutoExtend   bool
 }
 
 func (this *UserMembership) TableName() string {
@@ -88,6 +90,7 @@ type UserMembershipCombo struct {
 	MonthlyPrice          float32
 	MachinePriceDeduction int
 	AffectedMachines      string
+	AutoExtend            bool
 }
 
 type UserMembershipList struct {
@@ -202,7 +205,7 @@ func GetUserMemberships(userId int64) (*UserMembershipList, error) {
 	um := UserMembership{}
 
 	/*
-			Id           int64 `orm:"auto";"pk"`
+		Id           int64 `orm:"auto";"pk"`
 		UserId       int64
 		MembershipId int64
 		StartDate    time.Time

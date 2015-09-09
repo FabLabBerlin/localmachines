@@ -577,7 +577,8 @@ type MachinesAffectedArray struct {
 
 // @Title PostUserMemberships
 // @Description Post user membership
-// @Param	uid		path 	int	true		"User ID"
+// @Param	uid							path 		int	true		"User ID"
+// @Param	membershipId		query 	int	true		"Membership ID"
 // @Success 200 {object} models.UserMembership
 // @Failure	403	Failed to get user memberships
 // @Failure	401	Not authorized
@@ -603,7 +604,7 @@ func (this *UsersController) PostUserMemberships() {
 	}
 
 	// Get requested user membership Id
-	userMembershipId, err := this.GetInt64("UserMembershipId")
+	membershipId, err := this.GetInt64("MembershipId")
 	if err != nil {
 		beego.Error("Failed to get :uid")
 		this.CustomAbort(403, "Failed to get :uid")
@@ -617,14 +618,26 @@ func (this *UsersController) PostUserMemberships() {
 	}
 
 	o := orm.NewOrm()
-	um := models.UserMembership{
-		UserId:       ruid,
-		MembershipId: userMembershipId,
-		StartDate:    startDate,
+	um := models.UserMembership{}
+	um.UserId = ruid
+	um.MembershipId = membershipId
+	um.StartDate = startDate
+
+	// We need to get settings from the original membership entry,
+	// as the AutoExtend setting
+	var m *models.Membership
+	m, err = models.GetMembership(um.MembershipId)
+	if err != nil {
+		beego.Error("Error getting membership:", err)
+		this.CustomAbort(500, "Internal Server Error")
 	}
 
+	// Set the user membership auto extend to the value of
+	// the actual membership.
+	um.AutoExtend = m.AutoExtend
+
 	if _, err := o.Insert(&um); err != nil {
-		beego.Error("Error creating new user membership: ", err)
+		beego.Error("Error creating new user membership:", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
 }
