@@ -1,6 +1,8 @@
 var _ = require('lodash');
 var { toCents, subtractVAT } = require('./components/UserProfile/helpers');
 var moment = require('moment');
+var Nuclear = require('nuclear-js');
+var toImmutable = Nuclear.toImmutable;
 
 
 /*
@@ -192,21 +194,17 @@ const getActivationInfo = [
   }
 ];
 
-const getMachineInfo = [
-  ['machineStore'],
-  (machineStore) => {
-    return machineStore.get('machineInfo') || [];
-  }
-];
-
 const getMachinesById = [
   ['machineStore'],
   (machineStore) => {
-    var machinesById = {};
-    _.each(machineStore.get('machineInfo'), function(m) {
-      machinesById[m.Id] = m;
-    });
-    return machinesById;
+    return machineStore.get('machinesById') || toImmutable({});
+  }
+];
+
+const getMachineInfo = [
+  getMachinesById,
+  (machinesById) => {
+    return machinesById.sortBy(m => m.Name);
   }
 ];
 

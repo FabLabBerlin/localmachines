@@ -1,5 +1,6 @@
 var ForceSwitch = require('./ForceSwitch');
 var MachineActions = require('../actions/MachineActions');
+var MaintenanceSwitch = require('./MaintenanceSwitch');
 var React = require('react');
 var RepairButton = require('./Feedback/RepairButton');
 var Timer = require('./Timer');
@@ -36,6 +37,7 @@ var BusyMachine = React.createClass({
             className="btn btn-lg btn-danger btn-block"
             onClick={this.endActivation}
             >Stop</button>
+          <MaintenanceSwitch machineId={this.props.info.Id}/>
           <ForceSwitch isAdmin={this.props.isAdmin} force={this.props.force}/>
         </div>
       </div>

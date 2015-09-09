@@ -50,6 +50,7 @@ var MachineStore = new Nuclear.Store({
     this.on(actionTypes.REGISTER_MACHINE_USER, registerMachineUser);
     this.on(actionTypes.SET_ACTIVATION_INFO, setActivationInfo);
     this.on(actionTypes.SET_MACHINE_INFO, setMachineInfo);
+    this.on(actionTypes.SET_UNDER_MAINTENANCE, setUnderMaintenance);
     this.on(actionTypes.SET_LOADING, setLoading);
     this.on(actionTypes.UNSET_LOADING, unsetLoading);
   }
@@ -72,7 +73,17 @@ function setActivationInfo(state, { activationInfo }) {
 }
 
 function setMachineInfo(state, { machineInfo }) {
-  return state.set('machineInfo', machineInfo);
+  const machinesById = toImmutable(machineInfo)
+    .toMap()
+    .mapKeys((k, v) => v.get('Id'));
+  return state.set('machinesById', machinesById);
+}
+
+function setUnderMaintenance(state, { mid, onOrOff }) {
+  var m = state.get('machinesById').get(mid)
+                                   .set('UnderMaintenance', onOrOff === 'on');
+  return state.set('machinesById', state.get('machinesById')
+                                        .set(mid, m));
 }
 
 function setLoading(state) {

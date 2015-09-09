@@ -24,11 +24,11 @@ var MaintenanceSwitch = React.createClass({
   render() {
     const isAdmin = this.state.userInfo.get('UserRole') === 'admin';
     if (isAdmin) {
-      const machine = this.state.machinesById[this.props.machineId];
+      const machine = this.state.machinesById.get(this.props.machineId);
       return (
         <div className="machine-maintenance-switch">
           Under Maintenance: 
-          {machine.UnderMaintenance ?
+          {machine.get('UnderMaintenance') ?
             (
               <i className="fa fa-toggle-on"
                  onClick={this.handleClick.bind(this, 'off')}/>

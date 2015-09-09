@@ -27,16 +27,16 @@ function activation() {
 }
 
 function machines() {
-  return [
-    {
+  return {
+    1: {
       Id: 1,
       Name: 'Printer5000'
     },
-    {
+    2: {
       Id: 2,
       Name: 'Form1'
     }
-  ];
+  };
 }
 
 describe('MachineStore', function() {
