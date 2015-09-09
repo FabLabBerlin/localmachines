@@ -1,6 +1,7 @@
 var React = require('react');
 var ForceSwitch = require('./ForceSwitch');
 var MachineActions = require('../actions/MachineActions');
+var MaintenanceSwitch = require('./MaintenanceSwitch');
 var RepairButton = require('./Feedback/RepairButton');
 
 
@@ -44,6 +45,7 @@ var FreeMachine = React.createClass({
             className="btn btn-lg btn-primary btn-block"
             onClick={this.startActivation}
             >Start </button>
+            <MaintenanceSwitch machineId={this.props.info.Id}/>
             <ForceSwitch isAdmin={this.props.isAdmin} force={this.props.force}/>
         </div>
       </div>

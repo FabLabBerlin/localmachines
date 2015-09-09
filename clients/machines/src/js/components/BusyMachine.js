@@ -1,6 +1,7 @@
 var ForceSwitch = require('./ForceSwitch');
 var MachineActions = require('../actions/MachineActions');
 var React = require('react');
+var RepairButton = require('./Feedback/RepairButton');
 var Timer = require('./Timer');
 
 
@@ -28,6 +29,7 @@ var BusyMachine = React.createClass({
       <div className="row" >
         <div className="col-xs-6">
           <Timer time={this.props.activation.TimeTotal} />
+          <RepairButton machineId={this.props.info.Id}/>
         </div>
         <div className="col-xs-6" >
           <button

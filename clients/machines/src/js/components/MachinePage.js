@@ -176,8 +176,14 @@ var MachinePage = React.createClass({
     }
   },
 
+  /*
+   * update
+   *
+   * Need polling for activation status and maintenance status
+   */
   update() {
     MachineActions.pollActivations();
+    MachineActions.pollMachines();
   }
 });
 

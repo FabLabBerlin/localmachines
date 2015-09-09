@@ -2,6 +2,7 @@ var ForceSwitch = require('./ForceSwitch');
 var getters = require('../getters');
 var MachineActions = require('../actions/MachineActions');
 var React = require('react');
+var RepairButton = require('./Feedback/RepairButton');
 var reactor = require('../reactor');
 var Timer = require('./Timer');
 
@@ -38,6 +39,7 @@ var OccupiedMachine = React.createClass({
           <p>Occupied by</p>
           <label>{user.FirstName} {user.LastName}</label>
           <Timer time={this.props.activation.TimeTotal} />
+          <RepairButton machineId={this.props.info.Id}/>
         </div>
 
         { this.props.isAdmin ? (

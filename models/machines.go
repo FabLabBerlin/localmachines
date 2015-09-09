@@ -29,6 +29,7 @@ type Machine struct {
 	Visible           bool
 	ConnectedMachines string `orm:"size(255)"`
 	SwitchRefCount    int64
+	UnderMaintenance  bool
 }
 
 // Define custom table name as for SQL table with a name "machines"

@@ -363,6 +363,66 @@ const (
 	OFF
 )
 
+func (this *MachinesController) underMaintenanceOnOrOff(onOrOff int) error {
+	var machineId int64
+	var err error
+	machineId, err = this.GetInt64(":mid")
+	if err != nil {
+		beego.Error("Failed to get :mid variable")
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	if !this.IsAdmin() {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	var machine *models.Machine
+	machine, err = models.GetMachine(machineId)
+	if err != nil {
+		beego.Error("Failed to get machine", err)
+		this.CustomAbort(403, "Failed to get machine")
+	}
+
+	machine.UnderMaintenance = onOrOff == ON
+
+	return models.UpdateMachine(machine)
+}
+
+// @Title UnderMaintenanceOn
+// @Description Turn On Under Maintenance
+// @Param	mid	path	int	true	"Machine ID"
+// @Success 200 string ok
+// @Failure	400	Bad Request
+// @Failure	401	Not authorized
+// @Failure	500 Internal Server Error
+// @router /:mid/under_maintenance/on [post]
+func (this *MachinesController) UnderMaintenanceOn() {
+	err := this.underMaintenanceOnOrOff(ON)
+	if err != nil {
+		this.CustomAbort(500, "Internal Server Error")
+	}
+	this.Data["json"] = "ok"
+	this.ServeJson()
+}
+
+// @Title UnderMaintenanceOff
+// @Description Turn Off Under Maintenance
+// @Param	mid	path	int	true	"Machine ID"
+// @Success 200 string ok
+// @Failure	400	Bad Request
+// @Failure	401	Not authorized
+// @Failure	500 Internal Server Error
+// @router /:mid/under_maintenance/off [post]
+func (this *MachinesController) UnderMaintenanceOff() {
+	err := this.underMaintenanceOnOrOff(OFF)
+	if err != nil {
+		this.CustomAbort(500, "Internal Server Error")
+	}
+	this.Data["json"] = "ok"
+	this.ServeJson()
+}
+
 func (this *MachinesController) switchMachine(onOrOff int) error {
 	var machineId int64
 	var err error

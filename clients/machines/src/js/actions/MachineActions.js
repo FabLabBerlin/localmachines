@@ -73,6 +73,29 @@ var MachineActions = {
       var activationInfo = _formatActivation(data);
       reactor.dispatch(actionTypes.SET_ACTIVATION_INFO, { activationInfo });
     });
+  },
+
+  pollMachines() {
+    const uid = reactor.evaluateToJS(getters.getUid);
+    ApiActions.getCall('/api/users/' + uid + '/machines', function(machineInfo) {
+      reactor.dispatch(actionTypes.SET_MACHINE_INFO, { machineInfo });
+    });
+  },
+
+  setUnderMaintenance({ mid, onOrOff }) {
+    ApiActions.postCall('/api/machines/' + mid + '/under_maintenance/' + onOrOff,
+                    {},
+                    function(data) {
+                      if (onOrOff === 'on') {
+                        toastr.info('Machine set as Under Maintenance');
+                      } else {
+                        toastr.info('Machine not Under Maintenance anymoer');
+                      }
+                    },
+                    function() {
+                      toastr.error('Error: could not change Under Maintenance');
+                    }
+    );
   }
 
 };
