@@ -2,12 +2,10 @@ package controllers
 
 import (
 	"encoding/json"
+	"github.com/astaxie/beego"
+	"github.com/kr15h/fabsmith/models"
 	"strings"
 	"time"
-
-	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/orm"
-	"github.com/kr15h/fabsmith/models"
 )
 
 type UsersController struct {
@@ -577,13 +575,15 @@ type MachinesAffectedArray struct {
 
 // @Title PostUserMemberships
 // @Description Post user membership
-// @Param	uid							path 		int	true		"User ID"
-// @Param	membershipId		query 	int	true		"Membership ID"
+// @Param	uid							path 		int			true		"User ID"
+// @Param	membershipId		query 	int			true		"Membership ID"
+// @Param	startDate				query 	string	true		"Membership ID"
 // @Success 200 {object} models.UserMembership
 // @Failure	403	Failed to get user memberships
 // @Failure	401	Not authorized
 // @router /:uid/memberships [post]
 func (this *UsersController) PostUserMemberships() {
+
 	// Check if logged in
 	suid := this.GetSession(SESSION_FIELD_NAME_USER_ID)
 	if suid == nil {
@@ -603,43 +603,50 @@ func (this *UsersController) PostUserMemberships() {
 		this.CustomAbort(403, "Failed to get :uid")
 	}
 
-	// Get requested user membership Id
-	membershipId, err := this.GetInt64("MembershipId")
+	// Get requested user membership ID
+	membershipId, err := this.GetInt64("membershipId")
 	if err != nil {
-		beego.Error("Failed to get :uid")
-		this.CustomAbort(403, "Failed to get :uid")
+		beego.Error("Failed to get membership ID")
+		this.CustomAbort(403, "Failed to get membership ID")
 	}
 
 	// Get requested start date
-	startDate, err := time.Parse("2006-01-02", this.GetString("StartDate"))
+	startDate, err := time.Parse("2006-01-02", this.GetString("startDate"))
 	if err != nil {
 		beego.Error("Failed to parse startDate")
 		this.CustomAbort(400, "Failed to obtain start date")
 	}
 
-	o := orm.NewOrm()
-	um := models.UserMembership{}
-	um.UserId = ruid
-	um.MembershipId = membershipId
-	um.StartDate = startDate
-
 	// We need to get settings from the original membership entry,
 	// as the AutoExtend setting
 	var m *models.Membership
-	m, err = models.GetMembership(um.MembershipId)
+	m, err = models.GetMembership(membershipId)
 	if err != nil {
 		beego.Error("Error getting membership:", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
+	um := models.UserMembership{}
+	um.UserId = ruid
+	um.MembershipId = membershipId
+	um.StartDate = startDate
 	// Set the user membership auto extend to the value of
-	// the actual membership.
+	// the actual membership
 	um.AutoExtend = m.AutoExtend
 
-	if _, err := o.Insert(&um); err != nil {
-		beego.Error("Error creating new user membership:", err)
+	var userMembershipId int64
+	userMembershipId, err = models.CreateUserMembership(&um)
+	if err != nil {
+		beego.Error("Error creating user membership:", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
+
+	// We need to update the existing (u)ser (m)embership data structure
+	// with the user membership ID we just got back
+	um.Id = userMembershipId
+
+	this.Data["json"] = um
+	this.ServeJson()
 }
 
 // @Title GetUserMemberships

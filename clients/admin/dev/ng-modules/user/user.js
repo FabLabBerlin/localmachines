@@ -257,8 +257,8 @@ app.controller('UserCtrl',
       method: 'POST',
       url: '/api/users/' + $scope.user.Id + '/memberships',
       data: {
-        StartDate: startDate,
-        MembershipId: selectedMembershipId
+        startDate: startDate,
+        membershipId: selectedMembershipId
       },
       params: {
         ac: new Date().getTime()
