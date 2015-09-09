@@ -384,9 +384,7 @@ func (this *MachinesController) underMaintenanceOnOrOff(onOrOff int) error {
 		this.CustomAbort(403, "Failed to get machine")
 	}
 
-	machine.UnderMaintenance = onOrOff == ON
-
-	return models.UpdateMachine(machine)
+	return machine.SetUnderMaintenance(onOrOff == ON)
 }
 
 // @Title UnderMaintenanceOn
@@ -400,6 +398,7 @@ func (this *MachinesController) underMaintenanceOnOrOff(onOrOff int) error {
 func (this *MachinesController) UnderMaintenanceOn() {
 	err := this.underMaintenanceOnOrOff(ON)
 	if err != nil {
+		beego.Error("Failed to set UnderMaintenance: ", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
 	this.Data["json"] = "ok"
@@ -417,6 +416,7 @@ func (this *MachinesController) UnderMaintenanceOn() {
 func (this *MachinesController) UnderMaintenanceOff() {
 	err := this.underMaintenanceOnOrOff(OFF)
 	if err != nil {
+		beego.Error("Failed to unset UnderMaintenance: ", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
 	this.Data["json"] = "ok"

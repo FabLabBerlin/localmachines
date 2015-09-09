@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/ChimeraCoder/anaconda"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"sort"
@@ -305,6 +306,34 @@ func (this *Machine) On() error {
 	beego.Trace("Num affected rows during switch ref update:", num)
 
 	return nil
+}
+
+func (this *Machine) SetUnderMaintenance(underMaintenance bool) error {
+	this.UnderMaintenance = underMaintenance
+
+	if err := UpdateMachine(this); err != nil {
+		return err
+	}
+
+	consumerKey := beego.AppConfig.String("maintenancetwitterconsumerkey")
+	consumerSecret := beego.AppConfig.String("maintenancetwitterconsumersecret")
+	key := beego.AppConfig.String("maintenancetwitteraccesskey")
+	secret := beego.AppConfig.String("maintenancetwitteraccesssecret")
+
+	anaconda.SetConsumerKey(consumerKey)
+	anaconda.SetConsumerSecret(consumerSecret)
+	api := anaconda.NewTwitterApi(key, secret)
+	defer api.Close()
+
+	var msg string
+	if underMaintenance {
+		msg = "The " + this.Name + " is undergoing maintenance works right now 😟"
+	} else {
+		msg = "The " + this.Name + " works again!!! 😀"
+	}
+	_, err := api.PostTweet(msg, nil)
+
+	return err
 }
 
 func (this *Machine) Off() error {
