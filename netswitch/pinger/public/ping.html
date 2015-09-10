@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Julius Webpage</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/JSXTransformer.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <!-- <script src="/public/script.js"></script> -->
+	<!-- CSS: -->
+	<style>
+	#main {
+		border-width: 1px;
+		border-color: black;
+	}
+	</style>
+</head>
+
+<body>
+
+	<div id="content"></div>
+
+	<script type="text/jsx">
+/*
+if (foo) { console.log('bla'); } console.log('bla');
+*/
+		var PingerComponent = React.createClass({
+			getInitialState: function() {
+				return {
+					response: undefined
+				};
+			},
+			// "init"
+			componentWillMount() {
+				setInterval(function() {
+						$.ajax({
+							url: 'http://localhost:5000/get_list',
+							type: 'GET',
+							success: function(response){
+								console.log(response);
+								this.setState({
+									data: response
+								});
+							}.bind(this),
+							error: function(error){
+								console.log(error);
+							}
+						});
+				}.bind(this), 20000);
+			},
+			doSomething: function() {
+				alert("The text displaying is: " + this.props.children);
+			},
+			render: function() {
+				return(
+					<div id="main">
+						<h3>{this.state.response} likes to eat {this.props.food}</h3>
+						<p>{this.props.children}</p>
+						<a onClick={this.doSomething} href="#" >Click me</a>
+					</div>
+				);
+			}
+		});
+
+		React.render(
+			<div>
+				<PingerComponent user="gerd">This guy is cool</PingerComponent>
+				<PingerComponent user="alte" food="kekse">this guy is nice</PingerComponent>
+			</div>, 
+
+			document.getElementById('content'));
+
+	</script>
+
+</body>
+</html>
