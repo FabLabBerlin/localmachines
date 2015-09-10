@@ -12,10 +12,11 @@ import (
 
 // ConfigDB : Configure database for tests
 func ConfigDB() {
-	beego.SetLevel(beego.LevelError)
+	beego.SetLevel(beego.LevelDebug)
 
 	runmodetest, err := beego.AppConfig.Bool("runmodtest")
 	if !runmodetest || err != nil {
+		fmt.Println(err)
 		panic("Your configuration file is wrong for testing, see app.example.conf")
 	}
 
@@ -77,6 +78,12 @@ func ResetDB() {
 	var users []models.User
 	o.QueryTable("user").All(&users)
 	for _, item := range users {
+		o.Delete(&item)
+	}
+
+	var user_memberships []models.UserMembership
+	o.QueryTable("user_membership").All(&user_memberships)
+	for _, item := range user_memberships {
 		o.Delete(&item)
 	}
 
