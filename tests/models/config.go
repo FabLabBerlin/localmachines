@@ -57,6 +57,8 @@ func ConfigDB() {
 func ResetDB() {
 	o := orm.NewOrm()
 
+	// TODO: Use model.TableName() for table names
+
 	var machines []models.Machine
 	o.QueryTable("machines").All(&machines)
 	for _, item := range machines {
