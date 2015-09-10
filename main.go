@@ -5,8 +5,10 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
 	"github.com/astaxie/beego/orm"
+	"github.com/astaxie/beego/toolbox"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/kr15h/fabsmith/docs"
+	"github.com/kr15h/fabsmith/models"
 	_ "github.com/kr15h/fabsmith/routers"
 )
 
@@ -15,6 +17,9 @@ func main() {
 
 	configClients()
 	configDatabase()
+	setupTasks()
+	toolbox.StartTask()
+	defer toolbox.StopTask()
 
 	// Config automatic API docs
 	beego.DirectoryIndex = true
@@ -27,6 +32,7 @@ func main() {
 	beego.InsertFilter("/", beego.BeforeRouter, RedirectHttp) // for http://mysite
 
 	beego.Run()
+
 }
 
 var RedirectHttp = func(ctx *context.Context) {
@@ -95,4 +101,13 @@ func configDatabase() {
 	// Register MySQL driver and default database for beego ORM
 	orm.RegisterDriver("mysql", orm.DR_MySQL)
 	orm.RegisterDataBase("default", "mysql", mysqlConnString)
+}
+
+// Setup Beego toolbox tasks. They are kind of cron jobs.
+func setupTasks() {
+	fmt.Println("Starting tasks")
+	extUsrMemberships := toolbox.NewTask("Extend User Memberships",
+		"0/10 * * * * *",
+		models.AutoExtendUserMemberships)
+	toolbox.AddTask("Extend User Memberships", extUsrMemberships)
 }

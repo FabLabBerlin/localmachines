@@ -295,3 +295,83 @@ func DeleteUserMembership(userMembershipId int64) error {
 	beego.Trace("Deleted num rows:", num)
 	return nil
 }
+
+// Automatically extend user membership end date if auto_extend for the specific
+// membership is true and the end_date is before current date.
+func AutoExtendUserMemberships() error {
+
+	beego.Info("Running AutoExtendUserMemberships Task")
+	currentTime := time.Now().UTC()
+
+	// Get user memberships for all users
+	um := UserMembership{} // Use this for the TableName() func only
+	m := Membership{}      // Same goes for this one
+	sql := fmt.Sprintf("SELECT id, membership_id, auto_extend FROM %s", um.TableName())
+	var userMembershipsArr []UserMembership
+	o := orm.NewOrm()
+	num, err := o.Raw(sql).QueryRows(&userMembershipsArr)
+	if err != nil {
+		beego.Error("Failed to execute raw query:", err)
+		return fmt.Errorf("Failed to exec raw query")
+	}
+	beego.Trace("Total number of user memberships:", num)
+
+	// Loop through the user memberships and check the end date
+	for i := 0; i < len(userMembershipsArr); i++ {
+		userMembership := userMembershipsArr[i]
+		if userMembership.AutoExtend == true {
+
+			// Get the end_date as string from the user membership
+			var endDateStr string
+			sql = fmt.Sprintf("SELECT end_date FROM %s WHERE id=?", um.TableName())
+			err = o.Raw(sql, userMembership.Id).QueryRow(&endDateStr)
+			if err != nil {
+				beego.Trace("Failed to exec raw query:", err)
+				return fmt.Errorf("Failed to exec raw query")
+			}
+
+			// Parse the time
+			userMembershipEndTime, err := time.ParseInLocation("2006-01-02 15:04:05",
+				endDateStr,
+				time.UTC)
+			if err != nil {
+				beego.Trace("Failed to parse user membership end time")
+				return fmt.Errorf("Failed to parse user membership end time")
+			}
+			userMembership.EndDate = userMembershipEndTime
+
+			// Check whether we need to extend the membership after all
+			// by comparing membership end date with current date.
+			if userMembership.EndDate.Before(currentTime) {
+				beego.Trace("Extending user membership with ID:", userMembership.Id)
+				beego.Trace("Base membership ID:", userMembership.MembershipId)
+				beego.Trace("Current user membership end date:", userMembership.EndDate)
+
+				// Get the amount of days we should extend from the base membership
+				sql = fmt.Sprintf("SELECT auto_extend_duration FROM %s WHERE id=?",
+					m.TableName())
+				var autoExtendDuration int64
+				err = o.Raw(sql, userMembership.MembershipId).QueryRow(&autoExtendDuration)
+				if err != nil {
+					beego.Error("Failed to exec raw query:", err)
+					return fmt.Errorf("Failed to exec raw query")
+				}
+				beego.Trace("Auto extend duration in days:", autoExtendDuration)
+
+				// Extend the user membership end date by number of days stored
+				// in the base membership
+				userMembership.EndDate = userMembership.EndDate.AddDate(0, 0, int(autoExtendDuration))
+				beego.Trace("Extended user membership end date:", userMembership.EndDate)
+				_, err = o.Update(&userMembership, "end_date")
+				if err != nil {
+					beego.Error("Failed to update user membership end date:", err)
+					return fmt.Errorf("Failed to update user membership end date")
+				}
+				beego.Trace("Done extending user membership. Saved in the database.")
+			}
+
+		}
+	}
+
+	return nil
+}
