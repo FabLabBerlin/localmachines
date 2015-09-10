@@ -41,7 +41,7 @@ var FeedbackPage = React.createClass({
     this.nfcOnWillUnmount();
   },
 
-  handleChange(e) {
+  handleChange(event) {
     var key = event.target.id;
     var value = event.target.value;
     FeedbackActions.setFeedbackProperty({ key, value });
