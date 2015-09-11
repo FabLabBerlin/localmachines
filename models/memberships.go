@@ -103,7 +103,7 @@ func GetAllMemberships() (memberships []*Membership, err error) {
 	o := orm.NewOrm()
 	num, err := o.QueryTable("membership").All(&memberships)
 	if err != nil {
-		beego.Error("Failed to get all memberships")
+		beego.Error("Failed to get all memberships:", err)
 		return nil, errors.New("Failed to get all memberships")
 	}
 	beego.Trace("Got num memberships:", num)
@@ -119,22 +119,25 @@ func CreateMembership(membershipName string) (int64, error) {
 	membership.AutoExtendDuration = 30
 	membership.Unit = "days"
 	id, err := o.Insert(&membership)
+	beego.Trace("Created membershipId:", id)
 	if err == nil {
 		return id, nil
 	} else {
-		return 0, err
+		return 0, fmt.Errorf("Failed to create membership")
 	}
 }
 
 // Get single membership from database using membership unique ID
 func GetMembership(membershipId int64) (*Membership, error) {
-	membership := &Membership{Id: membershipId}
+	membership := Membership{}
+	sql := fmt.Sprintf("SELECT * FROM %s WHERE id=?", membership.TableName())
 	o := orm.NewOrm()
-	err := o.Read(membership)
+	err := o.Raw(sql, membershipId).QueryRow(&membership)
 	if err != nil {
-		return membership, err
+		beego.Error("Failed to get membership:", err, membershipId)
+		return nil, fmt.Errorf("Failed to get membership")
 	}
-	return membership, nil
+	return &membership, nil
 }
 
 // Updates membership in the database
@@ -182,22 +185,67 @@ func DeleteMembership(membershipId int64) error {
 	return nil
 }
 
-func CreateUserMembership(userMembership *UserMembership) (umid int64, err error) {
-	if userMembership != nil {
-		o := orm.NewOrm()
+// Create user membership from an existing user membership struct.
+func CreateUserMembership(
+	userId int64,
+	membershipId int64,
+	startDate time.Time) (userMembershipId int64, err error) {
 
-		beego.Trace("userMembership.StartDate before:", userMembership.StartDate)
-		if umid, err := o.Insert(userMembership); err != nil {
-			beego.Error("Error creating new user membership: ", err)
-			return umid, err
-		}
+	userMembershipId = 0
+	err = nil
 
-		return umid, nil
-	} else {
-		return 0, errors.New("userMembership is nil")
+	beego.Trace("membershipId:", membershipId)
+
+	userMembership := UserMembership{}
+	userMembership.UserId = userId
+	userMembership.MembershipId = membershipId
+	userMembership.StartDate = startDate
+
+	// We need to get base membership data first to calc some stuff
+	var baseMembership *Membership
+	baseMembership, err = GetMembership(membershipId)
+	if err != nil {
+		beego.Error("Error getting membership:", err)
+
+		userMembershipId = 0
+		err = fmt.Errorf("Failed to get membership")
+		return
 	}
+
+	// Set the auto extend flag of user membership to the one of base membership
+	userMembership.AutoExtend = baseMembership.AutoExtend
+
+	// Calculate end date by using base membership
+	userMembership.EndDate = startDate.AddDate(0, 0, int(baseMembership.Duration))
+
+	// Store the user membership to database
+	o := orm.NewOrm()
+	userMembershipId, err = o.Insert(&userMembership)
+	if err != nil {
+		beego.Error("Error creating new user membership: ", err)
+
+		userMembershipId = 0
+		err = fmt.Errorf("Failed to create user membership")
+		return
+	}
+
+	return
 }
 
+// Get single user membership by using ID
+func GetUserMembership(userMembershipId int64) (*UserMembership, error) {
+	userMembership := UserMembership{}
+	userMembership.Id = userMembershipId
+	o := orm.NewOrm()
+	err := o.Read(&userMembership)
+	if err != nil {
+		beego.Error("Failed to read user membership:", err)
+		return nil, fmt.Errorf("Failed to read user membership")
+	}
+	return &userMembership, nil
+}
+
+// Get all user memberships for a user
 func GetUserMemberships(userId int64) (*UserMembershipList, error) {
 
 	o := orm.NewOrm()
@@ -271,8 +319,7 @@ func DeleteUserMembership(userMembershipId int64) error {
 	var err error
 	o := orm.NewOrm()
 
-	beego.Trace("models.DeleteUserMembership: userMembershipId:",
-		userMembershipId)
+	beego.Trace("models.DeleteUserMembership: userMembershipId:", userMembershipId)
 
 	userMembership := &UserMembership{}
 	userMembership.Id = userMembershipId
@@ -280,17 +327,13 @@ func DeleteUserMembership(userMembershipId int64) error {
 	num, err = o.QueryTable(userMembership.TableName()).
 		Filter("id", userMembershipId).Delete()
 	if err != nil {
-		beego.Error("Failed to delete user membership")
+		beego.Error("Failed to delete user membership:", err)
 		return errors.New("Failed to delete user membership")
 	}
-
-	/*
-		num, err = o.Delete(userMembership)
-		if err != nil {
-			return errors.New(
-				fmt.Sprintf("Failed to delete user membership: %v", err))
-		}
-	*/
+	if num <= 0 {
+		beego.Error("Nothing deleted")
+		return fmt.Errorf("Nothing deleted")
+	}
 
 	beego.Trace("Deleted num rows:", num)
 	return nil
@@ -351,6 +394,7 @@ func AutoExtendUserMemberships() error {
 				sql = fmt.Sprintf("SELECT auto_extend_duration FROM %s WHERE id=?",
 					m.TableName())
 				var autoExtendDuration int64
+				beego.Trace("userMembership.MembershipId:", userMembership.MembershipId)
 				err = o.Raw(sql, userMembership.MembershipId).QueryRow(&autoExtendDuration)
 				if err != nil {
 					beego.Error("Failed to exec raw query:", err)
