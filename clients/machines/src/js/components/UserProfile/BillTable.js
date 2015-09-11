@@ -36,7 +36,7 @@ var BillTables = React.createClass({
   },
 
   render() {
-    if (this.props.info && this.props.info.Activations && this.props.info.Activations.length !== 0) {
+    if (this.state.monthlyBills && this.state.monthlyBills.length > 0) {
 
       var i = 0;
       var nodes = [];
