@@ -602,6 +602,10 @@ func (this *UsersController) PostUserMemberships() {
 		beego.Error("Failed to get :uid")
 		this.CustomAbort(403, "Failed to get :uid")
 	}
+	if ruid <= 0 {
+		beego.Error("Bad :uid")
+		this.CustomAbort(500, "Bad uid")
+	}
 
 	// Get requested user membership ID
 	membershipId, err := this.GetInt64("membershipId")
@@ -614,48 +618,28 @@ func (this *UsersController) PostUserMemberships() {
 	startDate, err := time.ParseInLocation("2006-01-02",
 		this.GetString("startDate"),
 		time.UTC)
-
 	if err != nil {
 		beego.Error("Failed to parse startDate")
-		this.CustomAbort(400, "Failed to obtain start date")
-	}
-
-	// We need to get settings from the original membership entry,
-	// as the AutoExtend setting
-	var m *models.Membership
-	m, err = models.GetMembership(membershipId)
-	if err != nil {
-		beego.Error("Error getting membership:", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	um := models.UserMembership{}
-	um.UserId = ruid
-	um.MembershipId = membershipId
-	um.StartDate = startDate
-	// Set the user membership auto extend to the value of
-	// the actual membership
-	um.AutoExtend = m.AutoExtend
-	// Calculate end date, we need the start date and the duration of
-	// the membership here
-	var endDate time.Time
-	var duration time.Duration
-	duration = time.Duration(m.Duration) * time.Hour * 24 // duration in days
-	endDate = startDate.Add(duration)
-	um.EndDate = endDate
-
+	// Create user membership by using the model function
 	var userMembershipId int64
-	userMembershipId, err = models.CreateUserMembership(&um)
+	userMembershipId, err = models.CreateUserMembership(ruid, membershipId, startDate)
 	if err != nil {
 		beego.Error("Error creating user membership:", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	// We need to update the existing (u)ser (m)embership data structure
-	// with the user membership ID we just got back
-	um.Id = userMembershipId
+	// Read the user membership back
+	var userMembership *models.UserMembership
+	userMembership, err = models.GetUserMembership(userMembershipId)
+	if err != nil {
+		beego.Error("Failed to get user membership:", err)
+		this.CustomAbort(500, "Failed to get user membership")
+	}
 
-	this.Data["json"] = um
+	this.Data["json"] = userMembership
 	this.ServeJson()
 }
 
