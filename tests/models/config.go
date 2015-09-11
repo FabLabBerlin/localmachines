@@ -12,7 +12,7 @@ import (
 
 // ConfigDB : Configure database for tests
 func ConfigDB() {
-	beego.SetLevel(beego.LevelDebug)
+	beego.SetLevel(beego.LevelCritical)
 
 	runmodetest, err := beego.AppConfig.Bool("runmodtest")
 	if !runmodetest || err != nil {
