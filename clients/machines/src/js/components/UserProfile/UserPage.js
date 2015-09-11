@@ -1,6 +1,5 @@
 var getters = require('../../getters');
 var MachineActions = require('../../actions/MachineActions');
-var MachineList = require('./MachineList');
 var {Navigation} = require('react-router');
 var LoginActions = require('../../actions/LoginActions');
 var NfcLogoutMixin = require('../NfcLogoutMixin');
