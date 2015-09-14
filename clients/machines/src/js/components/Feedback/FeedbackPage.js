@@ -1,10 +1,10 @@
-var FeedbackActions = require('../actions/FeedbackActions');
-var getters = require('../getters');
+var FeedbackActions = require('../../actions/FeedbackActions');
+var getters = require('../../getters');
 var {Navigation} = require('react-router');
-var NfcLogoutMixin = require('./NfcLogoutMixin');
+var NfcLogoutMixin = require('../NfcLogoutMixin');
 var React = require('react');
-var reactor = require('../reactor');
-var UserActions = require('../actions/UserActions');
+var reactor = require('../../reactor');
+var UserActions = require('../../actions/UserActions');
 
 
 var FeedbackPage = React.createClass({

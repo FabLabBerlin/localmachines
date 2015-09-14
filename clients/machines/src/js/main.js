@@ -1,5 +1,5 @@
 var App = require('./components/App');
-var FeedbackPage = require('./components/FeedbackPage');
+var FeedbackPage = require('./components/Feedback/FeedbackPage');
 var FeedbackStore = require('./stores/FeedbackStore');
 var getters = require('./getters');
 var LoginChooser = require('./components/LoginChooser');
