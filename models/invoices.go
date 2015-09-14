@@ -600,6 +600,7 @@ func (this *Invoice) createXlsxFile(filePath string,
 				cell.Value = m.StartDate.Format(time.RFC1123)
 				cell = row.AddCell()
 				duration := time.Duration(24*m.Duration) * time.Hour
+				// TODO: use the stored end date
 				cell.Value = m.StartDate.Add(duration).Format(time.RFC1123)
 				cell = row.AddCell()
 				cell.SetFloatWithFormat(float64(m.MonthlyPrice), FORMAT_2_DIGIT)
