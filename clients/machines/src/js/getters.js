@@ -54,6 +54,9 @@ const getUserInfo = [
   }
 ];
 
+/*
+ * Spendings (Page) related getters
+ */
 const getBillInfo = [
   ['userStore'],
   (userStore) => {
@@ -136,6 +139,9 @@ const getMonthlyBills = [
         }
       };
 
+      /*
+       * Collect activations and sum for the totals
+       */
       _.eachRight(activationsByMonth[month], function(info) {
         var duration = moment.duration(moment(info.TimeEnd).diff(moment(info.TimeStart))).asSeconds();
         monthlyBill.sums.durations += duration;
@@ -155,6 +161,9 @@ const getMonthlyBills = [
         });
       });
 
+      /*
+       * Collect memberships for each month
+       */
       _.each(membershipsByMonth[month], function(membership) {
         var totalPrice = toCents(membership.MonthlyPrice);
         var priceExclVat = toCents(subtractVAT(membership.MonthlyPrice));

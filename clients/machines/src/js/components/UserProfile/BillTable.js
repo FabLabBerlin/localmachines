@@ -39,13 +39,13 @@ var BillTables = React.createClass({
     if (this.state.monthlyBills && this.state.monthlyBills.length > 0) {
 
       var i = 0;
-      var nodes = [];
+      var tbody = [];
 
       _.each(this.state.monthlyBills, function(bill) {
         if (i > 0) {
-          nodes.push(<tr key={i++}><td colSpan={6}></td></tr>);
+          tbody.push(<tr key={i++}><td colSpan={6}></td></tr>);
         }
-        nodes.push(
+        tbody.push(
           <tr key={i++}>
             <td colSpan={6}>
               <h4 className="text-left">{bill.month}</h4>
@@ -54,7 +54,7 @@ var BillTables = React.createClass({
           </tr>
         );
 
-        nodes.push(
+        tbody.push(
           <tr key={i++}>
             <th>Machine</th>
             <th>Date</th>
@@ -66,7 +66,7 @@ var BillTables = React.createClass({
         );
 
         _.each(bill.activations, function(info) {
-          nodes.push(
+          tbody.push(
             <tr key={i++}>
               <td>{info.MachineName}</td>
               <td>{formatDate(info.TimeStart)}</td>
@@ -78,7 +78,7 @@ var BillTables = React.createClass({
           );
         });
 
-        nodes.push(
+        tbody.push(
           <tr key={i++}>
             <td><label>Total Pay-As-You-Go</label></td>
             <td><label></label></td>
@@ -88,7 +88,7 @@ var BillTables = React.createClass({
             <td><label>{toEuro(bill.sums.activations.priceInclVAT)}</label> <i className="fa fa-eur"></i></td>
           </tr>
         );
-        nodes.push(
+        tbody.push(
           <tr key={i++}>
             <td><label>Total Memberships</label></td>
             <td><label></label></td>
@@ -98,7 +98,7 @@ var BillTables = React.createClass({
             <td><label>{toEuro(bill.sums.memberships.priceInclVAT)}</label> <i className="fa fa-eur"></i></td>
           </tr>
         );
-        nodes.push(
+        tbody.push(
           <tr key={i++}>
             <td><label>Total</label></td>
             <td><label></label></td>
@@ -114,7 +114,7 @@ var BillTables = React.createClass({
         <table className="bill-table table table-striped table-hover" >
           <thead></thead>
           <tbody>
-            {nodes}
+            {tbody}
           </tbody>
         </table>
       );
