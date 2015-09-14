@@ -48,7 +48,7 @@ var MachineChooser = React.createClass({
         if (confirmed) {
           let aid = this.props.activation.Id;
           MachineActions.endActivation(aid, function() {
-            FeedbackDialogs.checkSatisfaction(aid);
+            //FeedbackDialogs.checkSatisfaction(aid);
           }.bind(this));
         }
         $('.vex').remove();
