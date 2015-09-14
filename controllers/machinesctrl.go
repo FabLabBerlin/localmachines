@@ -387,6 +387,41 @@ func (this *MachinesController) underMaintenanceOnOrOff(onOrOff int) error {
 	return machine.SetUnderMaintenance(onOrOff == ON)
 }
 
+// @Title ReportBroken
+// @Description Report machine as broken
+// @Param	mid	path	int	true	"Machine ID"
+// @Success 200 string ok
+// @Failure	400	Bad Request
+// @Failure	401	Not authorized
+// @Failure	500 Internal Server Error
+// @router /:mid/report_broken [post]
+func (this *MachinesController) ReportBroken() {
+	var machineId int64
+	var err error
+	machineId, err = this.GetInt64(":mid")
+	if err != nil {
+		beego.Error("Failed to get :mid variable")
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	var machine *models.Machine
+	machine, err = models.GetMachine(machineId)
+	if err != nil {
+		beego.Error("Failed to get machine", err)
+		this.CustomAbort(403, "Failed to get machine")
+	}
+
+	beego.Info("Now calling machine#ReportBroken:")
+	err = machine.ReportBroken()
+	if err != nil {
+		beego.Error("Failed to report machine", err)
+		this.CustomAbort(500, "Failed to report machine")
+	}
+	beego.Info("machine#ReportBroken called!")
+	this.Data["json"] = "ok"
+	this.ServeJson()
+}
+
 // @Title UnderMaintenanceOn
 // @Description Turn On Under Maintenance
 // @Param	mid	path	int	true	"Machine ID"

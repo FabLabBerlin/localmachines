@@ -15,7 +15,7 @@ var FeedbackActions = {
     var fullName = userInfo.FirstName + ' ' + userInfo.LastName;
     ApiActions.showGlobalLoader();
     $.ajax({
-      url: '/api/feedback',
+      url: '/api/machines/' + machine.Id + '/report_broken',
       dataType: 'json',
       type: 'POST',
       data: {

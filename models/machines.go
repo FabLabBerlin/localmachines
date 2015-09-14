@@ -102,7 +102,7 @@ func GetAllMachines() ([]*Machine, error) {
 		var numActivations int64
 		query := fmt.Sprintf("SELECT COUNT(*) FROM %s WHERE machine_id=?",
 			a.TableName())
-		beego.Trace("Counting activations for machine with ID", machines[i].Id)
+		//beego.Trace("Counting activations for machine with ID", machines[i].Id)
 		err = o.Raw(query, machines[i].Id).QueryRow(&numActivations)
 		if err != nil {
 			return nil, fmt.Errorf("Failed to read activations: %v", err)
@@ -306,6 +306,14 @@ func (this *Machine) On() error {
 	beego.Trace("Num affected rows during switch ref update:", num)
 
 	return nil
+}
+
+func (this *Machine) ReportBroken() error {
+	email := NewEmail()
+	to := beego.AppConfig.String("trelloemail")
+	subject := this.Name + " reported as broken"
+	message := "The machine " + this.Name + " seems to be broken."
+	return email.Send(to, subject, message)
 }
 
 func (this *Machine) SetUnderMaintenance(underMaintenance bool) error {
