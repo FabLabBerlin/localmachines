@@ -31,7 +31,7 @@ l=[Laser_Cutter_Epilog_Zing,CNC_Router,threeD_Printer_Vincent_1,threeD_Printers_
 def pingit(x):
     global counter
     address = "192.168.1." + str(x.ip_ending)
-    if os.system("ping -c 1 " + address) == 0:
+    if os.system("ping -c 1 -W 200 " + address) == 0:      #-W is waittime in ms
     #    if x.emailsent==1:
         #    server = smtplib.SMTP('smtp.gmail.com', 587)
        #     server.ehlo()
@@ -47,7 +47,7 @@ def pingit(x):
         counter=0
     else:           
         counter+=1
-        if counter<=0:  #counter digit in secs (+waittime=60secs)
+        if counter<=8:  #counter digit in secs (+waittime=60secs)
             pingit(x)
         else:
             if x.emailsent==0:
@@ -71,13 +71,13 @@ def jo():
     z=0
     for ping in l:
         pingit(ping)
-        for i in l:
-            if i.erreichbar ==0:
-                r.append("The machine * "+str(i.name) + " * with ip address " + "192.168.1." + str(i.ip_ending) + " is NOT working :-(")
-            else:
-                r.append("The machine * "+str(i.name) + " * with ip address " + "192.168.1." + str(i.ip_ending) + " is working :-)")
+    for i in l:
+        if i.erreichbar ==0:
+            r.append("The machine * "+str(i.name) + " * with ip address " + "192.168.1." + str(i.ip_ending) + " is NOT working :-(")
+        else:
+            r.append("The machine * "+str(i.name) + " * with ip address " + "192.168.1." + str(i.ip_ending) + " is working :-)")
         
-        return r    
+    return r
     #print(r)
      #   for i in l:
       #      print(i.emailsent)
@@ -108,7 +108,9 @@ def send_js(filename):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
+    
+  #  app.run(debug=True)
 
 #r=[]
 #while True:
