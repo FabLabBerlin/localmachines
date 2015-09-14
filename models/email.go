@@ -9,13 +9,14 @@ type Email struct {
 	auth smtp.Auth
 	host string
 	from string
+	pw   string
 }
 
 func NewEmail() (this Email) {
 	this.host = beego.AppConfig.String("smtphost")
 	this.from = beego.AppConfig.String("emailsenderaddr")
 	this.pw = beego.AppConfig.String("emailsenderpw")
-	this.auth = smtp.PlainAuth("", this.from, pw, this.host)
+	this.auth = smtp.PlainAuth("", this.from, this.pw, this.host)
 	return
 }
 
