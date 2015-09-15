@@ -2,6 +2,8 @@ package modelTest
 
 import (
 	"fmt"
+	"net/url"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 
@@ -10,9 +12,23 @@ import (
 	"github.com/kr15h/fabsmith/models"
 )
 
+// Beego ORM model used only for testing time
+type TimeTest struct {
+	Id   int64     `orm:"auto";"pk"`
+	Time time.Time `orm:"type(timestamp)"`
+}
+
+func (this *TimeTest) TableName() string {
+	return "time_test"
+}
+
+func init() {
+	orm.RegisterModel(new(TimeTest))
+}
+
 // ConfigDB : Configure database for tests
 func ConfigDB() {
-	beego.SetLevel(beego.LevelCritical)
+	beego.SetLevel(beego.LevelDebug)
 
 	runmodetest, err := beego.AppConfig.Bool("runmodtest")
 	if !runmodetest || err != nil {
@@ -46,8 +62,9 @@ func ConfigDB() {
 		panic("Please set mysqldb in app.conf")
 	}
 
-	mysqlConnString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8",
-		mysqlUser, mysqlPass, mysqlHost, mysqlPort, mysqlDb)
+	loc := url.QueryEscape("Europe/Berlin")
+	mysqlConnString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&loc=%s",
+		mysqlUser, mysqlPass, mysqlHost, mysqlPort, mysqlDb, loc)
 
 	orm.RegisterDriver("mysql", orm.DR_MySQL)
 	orm.RegisterDataBase("default", "mysql", mysqlConnString)
