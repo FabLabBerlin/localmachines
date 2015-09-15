@@ -1,8 +1,10 @@
 package modelTest
 
 import (
+	"github.com/astaxie/beego/orm"
 	"github.com/kr15h/fabsmith/models"
 	. "github.com/smartystreets/goconvey/convey"
+	//"os"
 	"testing"
 	"time"
 )
@@ -13,6 +15,22 @@ func init() {
 
 // TODO: The way go convey tests are supposed to be written is more
 // human readable than this. Improve on that.
+
+func CreateMembershipsActivation(userId, machineId int64, startTime time.Time, minutes float64) (activationId int64, err error) {
+
+	activation := models.Activation{}
+	activation.TimeStart = startTime
+	activation.TimeEnd = activation.TimeStart.Add(time.Duration(minutes) * time.Minute)
+	activation.UserId = userId
+	activation.MachineId = int(machineId)
+
+	o := orm.NewOrm()
+	id, e := o.Insert(&activation)
+
+	activationId = id
+	err = e
+	return
+}
 
 func TestMemberships(t *testing.T) {
 	Convey("Testing Membership model", t, func() {
@@ -47,6 +65,13 @@ func TestMemberships(t *testing.T) {
 
 					Convey("Title should equal the initially given one", func() {
 						So(membership.Title, ShouldEqual, membershipName)
+					})
+
+					Convey("The duration of the membership should be set "+
+						"to 30 days by default", func() {
+
+						So(membership.Duration, ShouldEqual, 30)
+						So(membership.Unit, ShouldEqual, "days")
 					})
 
 					Convey("AutoExtend should be set to true by default", func() {
@@ -186,17 +211,50 @@ func TestMemberships(t *testing.T) {
 		// User Memberships
 
 		Convey("Testing CreateUserMembership", func() {
+
 			baseMembership := &models.Membership{}
 			baseMembership.Title = "Test Membership"
+
 			baseMembershipId, _ := models.CreateMembership(baseMembership.Title)
+			baseMembership.Id = baseMembershipId
+			baseMembership.Duration = 30
+			baseMembership.Unit = "days"
+			baseMembership.MachinePriceDeduction = 50
+			baseMembership.AutoExtend = true
+			baseMembership.AutoExtendDuration = 30
+
+			models.UpdateMembership(baseMembership)
 			baseMembership, _ = models.GetMembership(baseMembershipId)
 
+			// Create a user
+			user := models.User{}
+			user.FirstName = "Amen"
+			user.LastName = "Hesus"
+			user.Email = "amen@example.com"
+			userId, _ := models.CreateUser(&user)
+
+			// Create machines for the activations
+			machineIdOne, _ := models.CreateMachine("Machine One")
+			machineIdTwo, _ := models.CreateMachine("Machine Two")
+
+			// Create user permissions for the created machines
+			models.CreateUserPermission(userId, machineIdOne)
+			models.CreateUserPermission(userId, machineIdTwo)
+
+			// Create some activations
+			timeNow := time.Date(2015, 6, 4, 0, 0, 0, 0, time.UTC)  // In membership
+			timeThen := time.Date(2015, 2, 1, 0, 0, 0, 0, time.UTC) // Out of membership
+			CreateMembershipsActivation(userId, machineIdOne, timeNow, 5.4)
+			CreateMembershipsActivation(userId, machineIdTwo, timeNow, 6.2)
+			CreateMembershipsActivation(userId, machineIdOne, timeThen, 54.5)
+			CreateMembershipsActivation(userId, machineIdTwo, timeThen, 12.2)
+
 			Convey("Try creating a user membership with non existend membership ID", func() {
-				fakeUserId := int64(1)
 				fakeMembershipId := int64(-23)
 				startDate := time.Now()
 				var userMembershipId int64
 				var err error
+				fakeUserId := int64(1)
 				userMembershipId, err = models.CreateUserMembership(
 					fakeUserId, fakeMembershipId, startDate)
 
@@ -209,11 +267,13 @@ func TestMemberships(t *testing.T) {
 				})
 			})
 
+			//os.Exit(111)
+
 			Convey("When creating user membership normally", func() {
-				fakeUserId := int64(1)
-				startDate := time.Now().UTC()
+				startDate := time.Date(2015, 6, 1, 0, 0, 0, 0, time.UTC)
 				var err error
 				var userMembershipId int64
+				fakeUserId := int64(1)
 				userMembershipId, err = models.CreateUserMembership(
 					fakeUserId, baseMembershipId, startDate)
 				var gotUserMembership *models.UserMembership
@@ -241,6 +301,34 @@ func TestMemberships(t *testing.T) {
 					So(gotUserMembership.AutoExtend, ShouldEqual, baseMembership.AutoExtend)
 				})
 
+				Convey("The activations made during the user membership period should be affected by the base membership discount rules", func() {
+
+					var invoiceSummary models.InvoiceSummary
+					invoiceStartTime := time.Date(2015, 1, 1, 0, 0, 0, 0, time.UTC)
+					invoiceEndTime := time.Date(2015, 12, 30, 0, 0, 0, 0, time.UTC)
+					_, invoiceSummary, _ = models.CalculateInvoiceSummary(
+						invoiceStartTime, invoiceEndTime)
+
+					// there should be 4 activations and 2 of them should be affected
+					numUserSummaries := len(invoiceSummary.UserSummaries)
+					So(numUserSummaries, ShouldEqual, 1)
+
+					numActivations := len(invoiceSummary.UserSummaries[0].Activations)
+					So(numActivations, ShouldEqual, 4)
+
+					// 2 of the activations should contain memberships
+					numAffectedActivations := 0
+					for i := 0; i < numActivations; i++ {
+
+						activation := invoiceSummary.UserSummaries[0].Activations[i]
+						memberships := activation.Memberships
+						if len(memberships) > 0 {
+							numAffectedActivations += 1
+						}
+					}
+					So(numAffectedActivations, ShouldEqual, 2)
+
+				})
 			})
 		})
 
@@ -252,6 +340,7 @@ func TestMemberships(t *testing.T) {
 					So(err, ShouldNotBeNil)
 				})
 			})
+
 		})
 
 		Convey("Testing DeleteUserMembership", func() {
@@ -292,30 +381,45 @@ func TestMemberships(t *testing.T) {
 
 			// Get the newly created base membership
 			baseMembership, _ := models.GetMembership(baseMembershipId)
+			//baseMembership.Duration
 
 			// Create user membership with a start and end date some time in the past
 			var userMembershipId int64
 			fakeUserId := int64(1)
-			startDate := time.Date(2009, time.November, 10, 23, 0, 0, 0, time.UTC)
+			loc, _ := time.LoadLocation("Europe/Berlin")
+			startTime := time.Date(2009, time.July, 10, 23, 0, 0, 0, loc)
+
 			userMembershipId, err = models.CreateUserMembership(
-				fakeUserId, baseMembershipId, startDate)
+				fakeUserId, baseMembershipId, startTime)
+
 			So(userMembershipId, ShouldBeGreaterThan, 0)
 			So(err, ShouldBeNil)
 
 			// Get the created membership for later comparison
-			userMembership, _ := models.GetUserMembership(userMembershipId)
+			var userMembership *models.UserMembership
+			userMembership, err = models.GetUserMembership(userMembershipId)
+			So(err, ShouldBeNil)
 			So(userMembership, ShouldNotBeNil)
+
+			So(userMembership.StartDate, ShouldHappenWithin,
+				time.Duration(1)*time.Second, startTime)
 
 			// Call user membership auto extend function and check the new end date
 			err = models.AutoExtendUserMemberships()
 			So(err, ShouldBeNil)
 
+			//os.Exit(111)
+
 			Convey("Check if it is extended by duration specified in the base membership", func() {
 
 				// Get the now extended user membership
 				extendedUserMembership, _ := models.GetUserMembership(userMembershipId)
-				validEndDate := userMembership.EndDate.AddDate(0, 0, int(baseMembership.AutoExtendDuration))
-				So(extendedUserMembership.EndDate.Equal(validEndDate), ShouldBeTrue)
+
+				validEndDate := userMembership.EndDate.AddDate(
+					0, 0, int(baseMembership.AutoExtendDuration))
+
+				So(extendedUserMembership.EndDate, ShouldHappenWithin,
+					time.Duration(1)*time.Second, validEndDate)
 
 			})
 		})
