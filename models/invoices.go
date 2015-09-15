@@ -97,10 +97,17 @@ func (this *InvoiceActivation) PriceTotalExclDisc() float64 {
 func (this *InvoiceActivation) PriceTotalDisc() (float64, error) {
 	priceTotal := this.PriceTotalExclDisc()
 	for _, membership := range this.Memberships {
+
+		// We need to know whether the machine is affected by the base membership
+		// as well as the individual activation is affected by the user membership
 		isAffected, err := membership.IsMachineAffected(this.MachineId)
 		if err != nil {
-			return 0, fmt.Errorf("membership: AffectedMachines: %v", err)
+			beego.Error(
+				"Failed to check whether machine is affected by membership:", err)
+			return 0, fmt.Errorf(
+				"Failed to check whether machine is affected by membership")
 		}
+
 		machinePriceDeduction := 0.0
 		if isAffected {
 			machinePriceDeduction = float64(membership.MachinePriceDeduction)
@@ -308,7 +315,10 @@ func CreateInvoice(startTime, endTime time.Time) (*Invoice, error) {
 	return &invoice, nil
 }
 
-func CalculateInvoiceSummary(startTime, endTime time.Time) (invoice Invoice, invSummary InvoiceSummary, err error) {
+func CalculateInvoiceSummary(
+	startTime, endTime time.Time) (
+	invoice Invoice, invSummary InvoiceSummary, err error) {
+
 	// Get all uninvoiced activations in the time range
 	var activations *[]Activation
 	activations, err = invoice.getActivations(startTime, endTime)
@@ -731,6 +741,35 @@ func (this *Invoice) getActivations(startTime,
 
 	this.Activations = "["
 	for actIter := 0; actIter < len(activations); actIter++ {
+
+		// For each activation get the correct start and end time
+		type ActivationTimes struct {
+			TimeStart string
+			TimeEnd   string
+		}
+		activationTimes := ActivationTimes{}
+		query = fmt.Sprintf(
+			"SELECT time_start, time_end FROM %s WHERE id=?", act.TableName())
+		err = o.Raw(query, activations[actIter].Id).QueryRow(&activationTimes)
+		if err != nil {
+			beego.Error("Could not get activation start and end time as string:", err)
+			return nil, fmt.Errorf(
+				"Could not get activation start and end time as string")
+		}
+		beego.Trace("Activation start time:", activationTimes.TimeStart)
+		beego.Trace("Activation end time:", activationTimes.TimeEnd)
+
+		// Parse the time strings correctly.
+		// For now the time is decoded taking into account that the time
+		// has been saved as if for the location of the server in Berlin.
+		// In the future the time should be saved as UTC time. This should be
+		// done with a clever migration.
+		parseLayout := "2006-01-02 15:04:05"
+		activations[actIter].TimeStart, _ = time.ParseInLocation(parseLayout,
+			activationTimes.TimeStart, time.Now().Location())
+		activations[actIter].TimeEnd, _ = time.ParseInLocation(parseLayout,
+			activationTimes.TimeEnd, time.Now().Location())
+
 		var format string
 		if actIter == 0 {
 			format = "%s%d"
@@ -834,7 +873,8 @@ func (this *Invoice) getUserSummaries(
 	return &userSummaries
 }
 
-func (this *Invoice) enhanceActivation(activation *Activation) (*InvoiceActivation, error) {
+func (this *Invoice) enhanceActivation(activation *Activation) (
+	*InvoiceActivation, error) {
 
 	invActivation := &InvoiceActivation{}
 	o := orm.NewOrm()
@@ -896,11 +936,12 @@ func (this *Invoice) enhanceActivation(activation *Activation) (*InvoiceActivati
 		Id           int64 `orm:"auto";"pk"`
 		UserId       int64
 		MembershipId int64
-		StartDate    string
+		StartTime    time.Time
+		EndTime      time.Time
 	}
 	usrMemberships := &[]CustomUserMembership{}
-	query = fmt.Sprintf("SELECT membership_id, start_date FROM %s "+
-		"WHERE user_id = ?", m.TableName())
+	query = fmt.Sprintf("SELECT id, membership_id, start_date, end_date FROM %s "+
+		"WHERE user_id=?", m.TableName())
 	_, err = o.Raw(query, invActivation.UserId).QueryRows(usrMemberships)
 	if err != nil {
 		return nil, errors.New(
@@ -914,65 +955,55 @@ func (this *Invoice) enhanceActivation(activation *Activation) (*InvoiceActivati
 
 		usrMem := &(*usrMemberships)[i]
 
-		// Parse user membership start time
-		var memStartTime time.Time
-		memStartTime, err = time.ParseInLocation("2006-01-02 15:04:05",
-			usrMem.StartDate,
-			time.Now().Location())
-		if err != nil {
-			return nil, errors.New(
-				fmt.Sprintf("Failed to parse user membership start time: %v",
-					err))
-		}
+		beego.Trace("usrMem.StartTime:", usrMem.StartTime)
 
-		// We also need to get the membership end time that is not yet saved
-		// in the database
-
-		// We need to get the actual membership to be able to do that
+		// Get membership
 		mem := &Membership{}
 		query = fmt.Sprintf("SELECT title, short_name, duration, unit, "+
 			"machine_price_deduction, affected_machines FROM %s "+
-			"WHERE id = ?", mem.TableName())
+			"WHERE id=?", mem.TableName())
 		err = o.Raw(query, usrMem.MembershipId).QueryRow(mem)
 		if err != nil {
 			return nil, errors.New(
 				fmt.Sprintf("Failed to get the actual membership: %v", err))
 		}
 
-		// From the membership we need the duration in days to calculate the
-		// membership end time.
-		var dur time.Duration
-		var durStr string
-		var durHours int64
+		// Calculate user membership end time
+		// depending on membership duration unit
 		if mem.Unit == "days" {
-			durHours = int64(mem.Duration) * 24
-			durStr = fmt.Sprintf("%dh", durHours)
+			usrMem.EndTime = usrMem.StartTime.AddDate(0, 0, int(mem.Duration))
+		} else if mem.Unit == "months" {
+			usrMem.EndTime = usrMem.StartTime.AddDate(0, int(mem.Duration), 0)
+		} else if mem.Unit == "years" {
+			usrMem.EndTime = usrMem.StartTime.AddDate(int(mem.Duration), 0, 0)
 		} else {
-			return nil, errors.New(
-				fmt.Sprintf("Unsupported membership duration unit: %s",
-					mem.Unit))
+			beego.Error("Membership duration unit not set")
+			return nil, fmt.Errorf("Membership duration unit not set")
 		}
 
-		// Parse the membership duration
-		//beego.Trace(durStr)
-		dur, err = time.ParseDuration(durStr)
+		// Update user membership with correct end date
+		userMembershipUpdate := UserMembership{}
+		userMembershipUpdate.Id = usrMem.Id
+		beego.Trace("userMembershipUpdate.Id:", userMembershipUpdate.Id)
+		userMembershipUpdate.EndDate = usrMem.EndTime
+		_, err = o.Update(&userMembershipUpdate, "EndDate")
 		if err != nil {
-			return nil, errors.New(
-				fmt.Sprintf("Failed to parse membership duration: %v", err))
+			beego.Error("Failed to update user membership end date:", err)
+			return nil, fmt.Errorf("Failed to update user membership end date")
 		}
 
-		// Calculate end time using user membership start time and
-		// membership duration
-		var memEndTime time.Time
-		memEndTime = memStartTime.Add(dur)
+		beego.Trace("usrMem.EndTime:", usrMem.EndTime)
+
+		beego.Trace("activation.TimeStart:", activation.TimeStart)
 
 		// Now that we have membership start and end time, let's check
 		// if this period of time overlaps with the activation
-		if activation.TimeStart.After(memStartTime) &&
-			activation.TimeStart.Before(memEndTime) {
+		if activation.TimeStart.After(usrMem.StartTime) &&
+			activation.TimeStart.Before(usrMem.EndTime) {
 
 			// Yes, this activation is within the range of a membership,
 			// add the membership to the activation
+			beego.Trace("Activation affected by membership")
 			invActivation.Memberships = append(invActivation.Memberships, mem)
 		}
 	}
