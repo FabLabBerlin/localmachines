@@ -65,18 +65,6 @@ var LoginNfc = React.createClass({
   },
 
   /*
-   * When LoginStore is done with his work
-   */
-  onChangeLoginNFC() {
-    const isLogged = reactor.evaluateToJS(getters.getIsLogged);
-    if (isLogged) {
-      this.replaceWith('/machine');
-    } else {
-      setTimeout(this.connectJsToQt, 1000);
-    }
-  },
-
-  /*
    * Destructor
    * disconnect the listener
    */
