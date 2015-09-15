@@ -339,9 +339,12 @@ func (this *Machine) SetUnderMaintenance(underMaintenance bool) error {
 	} else {
 		msg = "The " + this.Name + " works again!!! 😀"
 	}
-	_, err := api.PostTweet(msg, nil)
 
-	return err
+	// If the tweet fails, we should not worry.
+	// This should not abort the maintenance call.
+	api.PostTweet(msg, nil)
+
+	return nil
 }
 
 func (this *Machine) Off() error {
