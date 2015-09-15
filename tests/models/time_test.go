@@ -30,7 +30,7 @@ func TestTime(t *testing.T) {
 		currentTime := time.Now()
 
 		// Insert time as UTC time
-		myTime.Time = currentTime.UTC()
+		myTime.Time = currentTime
 		var id int64
 		id, err = o.Insert(&myTime)
 
@@ -49,7 +49,8 @@ func TestTime(t *testing.T) {
 		})
 
 		Convey("Compare the time that was inserted with the time read", func() {
-			So(retTime.Time, ShouldHappenWithin, time.Duration(1)*time.Second, currentTime)
+			So(retTime.Time, ShouldHappenWithin,
+				time.Duration(1)*time.Second, currentTime)
 		})
 
 		// Remove table from the database
