@@ -84,6 +84,7 @@ func TestInvoiceActivation(t *testing.T) {
 
 	Convey("Testing InvoiceActivations model", t, func() {
 		Reset(ResetDB)
+
 		Convey("Testing SummarizedByMachine", func() {
 			invs := models.InvoiceActivations{
 				CreateTestInvActivation(22, "Lasercutter", 12, 0.5),
@@ -92,6 +93,7 @@ func TestInvoiceActivation(t *testing.T) {
 				CreateTestInvActivation(23, "CNC Router", 12, 0.8),
 				CreateTestInvActivation(23, "CNC Router", 12, 0.8),
 			}
+
 			if invs, err := invs.SummarizedByMachine(); err == nil {
 				sort.Stable(invs)
 				So(len(invs), ShouldEqual, 2)
@@ -111,4 +113,5 @@ func TestInvoiceActivation(t *testing.T) {
 			}
 		})
 	})
+
 }
