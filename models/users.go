@@ -482,9 +482,9 @@ func CreateUserPermission(userId, machineId int64) error {
 	}
 
 	if created {
-		beego.Warning("User permission already exists:", id)
-	} else {
 		beego.Info("User permission created:", id)
+	} else {
+		beego.Warning("User permission already exists:", id)
 	}
 
 	return nil
