@@ -48,6 +48,10 @@ export default {
         router.transitionTo('/machine');
       }.bind(this),
       error: function(xhr, status, err) {
+        toastr.error('Problem with NFC login.  Try again later or talk to us if the problem persists.');
+        setTimeout(function() {
+          document.location.reload(true);
+        }, 2000);
         reactor.dispatch(actionTypes.ERROR_LOGIN);
         //console.error('/users/loginuid', status, err);
       }.bind(this)
