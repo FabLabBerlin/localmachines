@@ -425,11 +425,6 @@ footer div {
   padding-left: 15px;
 }
 
-.machine-report-problem {
-  float: right;
-  margin-left: 15px;
-}
-
 .machine.available .machine-action-info{
   border-left-color: @color-primary;
 }
@@ -479,9 +474,41 @@ footer div {
   margin-top: 5px;
 }
 
-.machine-maintenance-switch i {
-  cursor: pointer;
-  font-size: 32px;
+.machine-extra-actions {
+  margin-top: 10px;
+}
+
+.machine-extra-actions li {
+  margin-bottom: 5px;
+}
+.machine-extra-actions li:last-child {
+  margin-bottom: 0;
+}
+
+.machine-extra-actions .action-item a {
+  display: inline-block;
+  width: @lg-height / 2;
+  height: @lg-height / 2;
+  background: @color-primary;
+  color: @text-color-primary;
+  text-align: center;
+  font-size: 20px;
+}
+
+.machine-extra-actions .action-item a:hover {
+  background: darken(@color-primary, 10%);
+}
+
+.machine-extra-actions .action-item .fa {
+  line-height: @lg-height / 2;
+}
+
+.machine-maintenance-switch {
+  
+}
+
+.machine-report-problem {
+
 }
 
 .delete-prompt-token {

@@ -103,29 +103,28 @@ var MachineChooser = React.createClass({
           <div className="machine-body">
             { this.props.busy ?
               this.props.sameUser ? (
-                <BusyMachine
-                  activation={this.props.activation}
-                  info={this.props.info}
-                  isAdmin={isAdmin}
-                  func={this.endActivation}
-                  force={this.forceSwitch}
-                />
+              <BusyMachine
+                activation={this.props.activation}
+                info={this.props.info}
+                isAdmin={isAdmin}
+                func={this.endActivation}
+                force={this.forceSwitch}
+              />
             ) : (
-            <OccupiedMachine
-              activation={this.props.activation}
-              info={this.props.info}
-              isAdmin={isAdmin}
-              func={this.endActivation}
-              force={this.forceSwitch}
-            />
-            ) :
-              (
-                <FreeMachine
-                  info={this.props.info}
-                  isAdmin={isAdmin}
-                  func={this.startActivation}
-                  force={this.forceSwitch}
-                />
+              <OccupiedMachine
+                activation={this.props.activation}
+                info={this.props.info}
+                isAdmin={isAdmin}
+                func={this.endActivation}
+                force={this.forceSwitch}
+              />
+            ) : (
+              <FreeMachine
+                info={this.props.info}
+                isAdmin={isAdmin}
+                func={this.startActivation}
+                force={this.forceSwitch}
+              />
             )}
           </div>
         </div>

@@ -31,23 +31,31 @@ var FreeMachine = React.createClass({
       imageUrl = '/machines/img/img-machine-placeholder.svg';
     }
     return (
-      <div className="row">
-        <div className="col-xs-6">
-          {this.props.activation}
-          <div className="machine-action-info">
-            <img className="machine-image"
-                 src={imageUrl}/>
-            <RepairButton machineId={this.props.info.Id}/>
+      <div>
+        <div className="row">
+          <div className="col-xs-6">
+            {this.props.activation}
+            <div className="machine-action-info">
+              <img className="machine-image"
+                   src={imageUrl}/>
+            </div>
+          </div>
+          <div className="col-xs-6">
+            <button
+              className="btn btn-lg btn-primary btn-block"
+              onClick={this.startActivation}
+              >Start </button>
+              <ForceSwitch isAdmin={this.props.isAdmin} force={this.props.force}/>
           </div>
         </div>
-        <div className="col-xs-6">
-          <button
-            className="btn btn-lg btn-primary btn-block"
-            onClick={this.startActivation}
-            >Start </button>
+        <ul className="machine-extra-actions">
+          <li className="action-item">
             <MaintenanceSwitch machineId={this.props.info.Id}/>
-            <ForceSwitch isAdmin={this.props.isAdmin} force={this.props.force}/>
-        </div>
+          </li>
+          <li className="action-item">
+            <RepairButton machineId={this.props.info.Id}/>
+          </li>
+        </ul>
       </div>
     );
   }
