@@ -1,5 +1,5 @@
 jest.dontMock('jquery');
-jest.mock('../../actions/LoginActions.js');
+jest.mock('../../../actions/LoginActions.js');
 jest.dontMock('../Login.js');
 jest.dontMock('../LoginChooser.js');
 jest.dontMock('../LoginNfc.js');
@@ -35,7 +35,7 @@ describe('LoginChooser', function() {
     var React = require('react/addons');
     var TestUtils = React.addons.TestUtils;
     var Login = require('../Login');
-    var LoginActions = require('../../actions/LoginActions.js');
+    var LoginActions = require('../../../actions/LoginActions.js');
     var login = TestUtils.renderIntoDocument(
       <Login />
     );

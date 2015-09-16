@@ -10,7 +10,7 @@ function getOutputDevOrProd() {
 }
 
 module.exports = {
-  //devtool: 'source-map',
+  devtool: 'source-map',
   entry: './src/js/main.js',
   output: {
     path: __dirname + getOutputDevOrProd(),

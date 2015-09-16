@@ -1,6 +1,6 @@
-var getters = require('../getters');
-var reactor = require('../reactor');
-var toastr = require('../toastr');
+var getters = require('../../getters');
+var reactor = require('../../reactor');
+var toastr = require('../../toastr');
 
 
 var NfcLogoutMixin = {

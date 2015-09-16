@@ -1,10 +1,10 @@
 var $ = require('jquery');
-var getters = require('../getters');
-var LoginStore = require('../stores/LoginStore');
-var LoginActions = require('../actions/LoginActions');
+var getters = require('../../getters');
+var LoginStore = require('../../stores/LoginStore');
+var LoginActions = require('../../actions/LoginActions');
 var {Navigation} = require('react-router');
 var React = require('react');
-var reactor = require('../reactor');
+var reactor = require('../../reactor');
 
 
 /*
