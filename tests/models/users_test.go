@@ -194,6 +194,14 @@ func TestUsers(t *testing.T) {
 				err := models.AuthUpdateNfcUid(uid, "123456")
 				So(err, ShouldBeNil)
 			})
+			Convey("Creating a user and setting him a NFC UID without setting a password", func() {
+				user := models.User{}
+				user.Username = "test"
+				user.Email = "user@example.com"
+				uid, _ := models.CreateUser(&user)
+				err := models.AuthUpdateNfcUid(uid, "123456")
+				So(err, ShouldBeNil)
+			})
 			Convey("Setting NFC UID to non-existing user", func() {
 				err := models.AuthUpdateNfcUid(0, "123456")
 				So(err, ShouldNotBeNil)
@@ -204,7 +212,6 @@ func TestUsers(t *testing.T) {
 				user := models.User{}
 				user.Email = "user@example.com"
 				uid, err := models.CreateUser(&user)
-				err = models.AuthSetPassword(uid, "test")
 				err = models.AuthUpdateNfcUid(uid, "123456")
 				_, authUID, err := models.AuthenticateUserUid("123456")
 
