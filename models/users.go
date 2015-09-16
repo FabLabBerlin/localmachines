@@ -276,7 +276,7 @@ func AuthUpdateNfcUid(userId int64, nfcUid string) error {
 	err = o.Read(&auth)
 	authRecordMissing := err == orm.ErrNoRows
 	if err != nil && !authRecordMissing {
-		return fmt.Errorf("Missing auth record: %v", err)
+		return fmt.Errorf("Failure while checking for auth record: %v", err)
 	}
 
 	// No update required if the UIDs already match
@@ -295,11 +295,19 @@ func AuthUpdateNfcUid(userId int64, nfcUid string) error {
 	}
 
 	auth.NfcKey = nfcUid
-	num, err = o.Update(&auth, "NfcKey")
+	if authRecordMissing {
+		beego.Trace("Insert auth")
+		_, err = o.Insert(&auth)
+	} else {
+		beego.Trace("Update auth")
+		num, err = o.Update(&auth, "NfcKey")
+		if num != 1 {
+			return fmt.Errorf("Updated %v rows (expected 1)", num)
+		}
+	}
 	if err != nil {
 		return fmt.Errorf("Failed to update: %v", err)
 	}
-	beego.Trace("Update affected num rows:", num)
 	return nil
 }
 
