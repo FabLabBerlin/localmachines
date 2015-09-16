@@ -480,6 +480,7 @@ footer div {
 
 .machine-extra-actions li {
   margin-bottom: 5px;
+  line-height: @lg-height / 2;
 }
 .machine-extra-actions li:last-child {
   margin-bottom: 0;
@@ -493,6 +494,14 @@ footer div {
   color: @text-color-primary;
   text-align: center;
   font-size: 20px;
+}
+
+.machine-extra-actions .machine-force-switch-on a {
+  background: @color-warning;
+}
+
+.machine-extra-actions .machine-force-switch-off a {
+  background: @color-danger;
 }
 
 .machine-extra-actions .action-item a:hover {

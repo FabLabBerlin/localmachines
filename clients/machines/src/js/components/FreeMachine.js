@@ -1,9 +1,9 @@
 var React = require('react');
-var ForceSwitch = require('./ForceSwitch');
+var ForceSwitchOn = require('./ForceSwitchOn');
+var ForceSwitchOff = require('./ForceSwitchOff');
 var MachineActions = require('../actions/MachineActions');
 var MaintenanceSwitch = require('./MaintenanceSwitch');
 var RepairButton = require('./Feedback/RepairButton');
-
 
 /*
  * Div displayed the machine is free
@@ -30,6 +30,7 @@ var FreeMachine = React.createClass({
     } else {
       imageUrl = '/machines/img/img-machine-placeholder.svg';
     }
+
     return (
       <div>
         <div className="row">
@@ -45,10 +46,22 @@ var FreeMachine = React.createClass({
               className="btn btn-lg btn-primary btn-block"
               onClick={this.startActivation}
               >Start </button>
-              <ForceSwitch isAdmin={this.props.isAdmin} force={this.props.force}/>
           </div>
         </div>
         <ul className="machine-extra-actions">
+          
+          {this.props.isAdmin ? (
+            <li className="action-item">
+              <ForceSwitchOn force={this.props.force}/>
+            </li>
+          ) : ''}
+
+          {this.props.isAdmin ? (
+            <li className="action-item">
+              <ForceSwitchOff force={this.props.force}/>
+            </li>
+          ) : ''}
+
           <li className="action-item">
             <MaintenanceSwitch machineId={this.props.info.Id}/>
           </li>
