@@ -5,6 +5,8 @@ var MachineActions = require('../../actions/MachineActions');
 var OccupiedMachine = require('./OccupiedMachine');
 var BusyMachine = require('./BusyMachine');
 var FreeMachine = require('./FreeMachine');
+var MaintenanceSwitch = require('./MaintenanceSwitch');
+var RepairButton = require('../Feedback/RepairButton');
 
 // https://github.com/HubSpot/vex/issues/72
 var vex = require('vex-js'),
@@ -81,6 +83,8 @@ var MachineChooser = React.createClass({
     return shouldUpdate;
   },
 
+
+
   /*
    * Render component
    * Can choose what component will be display depending on the props
@@ -90,44 +94,51 @@ var MachineChooser = React.createClass({
    */
   render() {
     let isAdmin = this.props.user.get('UserRole') === 'admin';
+
     return (
-      <div className="machine available">
+      <div className="machine-container">
         <div className="container-fluid">
           <div className="machine-header">
             <div className="machine-title pull-left">{this.props.info.Name}</div>
-            <div className="machine-info-btn pull-right">
-
-            </div>
             <div className="clearfix"></div>
           </div>
           <div className="machine-body">
             { this.props.busy ?
               this.props.sameUser ? (
-                <BusyMachine
-                  activation={this.props.activation}
-                  info={this.props.info}
-                  isAdmin={isAdmin}
-                  func={this.endActivation}
-                  force={this.forceSwitch}
-                />
+              <BusyMachine
+                activation={this.props.activation}
+                info={this.props.info}
+                isAdmin={isAdmin}
+                func={this.endActivation}
+                force={this.forceSwitch}
+              />
             ) : (
-            <OccupiedMachine
-              activation={this.props.activation}
-              info={this.props.info}
-              isAdmin={isAdmin}
-              func={this.endActivation}
-              force={this.forceSwitch}
-            />
-            ) :
-              (
-                <FreeMachine
-                  info={this.props.info}
-                  isAdmin={isAdmin}
-                  func={this.startActivation}
-                  force={this.forceSwitch}
-                />
+              <OccupiedMachine
+                activation={this.props.activation}
+                info={this.props.info}
+                isAdmin={isAdmin}
+                func={this.endActivation}
+                force={this.forceSwitch}
+              />
+            ) : (
+              <FreeMachine
+                info={this.props.info}
+                isAdmin={isAdmin}
+                func={this.startActivation}
+                force={this.forceSwitch}
+              />
             )}
-          </div>
+
+            <ul className="machine-extra-actions">
+              <li className="action-item">
+                <MaintenanceSwitch machineId={this.props.info.Id}/>
+              </li>
+              <li className="action-item">
+                <RepairButton machineId={this.props.info.Id}/>
+              </li>
+            </ul>
+
+          </div>          
         </div>
       </div>
     );

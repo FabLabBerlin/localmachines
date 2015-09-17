@@ -88,13 +88,13 @@ var MachineActions = {
                     function(data) {
                       reactor.dispatch(actionTypes.SET_UNDER_MAINTENANCE, { mid, onOrOff });
                       if (onOrOff === 'on') {
-                        toastr.info('Machine set as Under Maintenance');
+                        toastr.info('Machine under maintenance');
                       } else {
-                        toastr.info('Machine not Under Maintenance anymoer');
+                        toastr.info('Machine is working again');
                       }
                     },
                     function() {
-                      toastr.error('Error: could not change Under Maintenance');
+                      toastr.error('Could not change maintenance mode');
                     }
     );
   }

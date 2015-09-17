@@ -1,9 +1,7 @@
 var React = require('react');
-var ForceSwitch = require('./ForceSwitch');
+var ForceSwitchOn = require('../ForceSwitchOn');
+var ForceSwitchOff = require('../ForceSwitchOff');
 var MachineActions = require('../../actions/MachineActions');
-var MaintenanceSwitch = require('./MaintenanceSwitch');
-var RepairButton = require('../Feedback/RepairButton');
-
 
 /*
  * Div displayed the machine is free
@@ -30,23 +28,59 @@ var FreeMachine = React.createClass({
     } else {
       imageUrl = '/machines/img/img-machine-placeholder.svg';
     }
+
     return (
-      <div className="row">
-        <div className="col-xs-6">
-          {this.props.activation}
-          <div className="machine-action-info">
-            <img className="machine-image"
-                 src={imageUrl}/>
-            <RepairButton machineId={this.props.info.Id}/>
+      <div className="machine available">
+        <div className="row">
+          <div className="col-xs-6">
+            
+            <div className="machine-options-toggle" />
+  
+            {this.props.activation}
+            <div className="machine-action-info">
+              <img className="machine-image" src={imageUrl}/>
+            </div>
+          
           </div>
-        </div>
-        <div className="col-xs-6">
-          <button
-            className="btn btn-lg btn-primary btn-block"
-            onClick={this.startActivation}
-            >Start </button>
-            <MaintenanceSwitch machineId={this.props.info.Id}/>
-            <ForceSwitch isAdmin={this.props.isAdmin} force={this.props.force}/>
+          <div className="col-xs-6">
+  
+            { this.props.isAdmin ? (
+  
+              <table className="machine-activation-table">
+                <tr>
+                  <td rowSpan="2">
+                    <button
+                      className="btn btn-lg btn-primary btn-block"
+                      onClick={this.startActivation}>
+                      Start
+                    </button>
+                  </td>
+                  <td className="force-button-table-cell">
+                    {this.props.isAdmin ? (
+                      <ForceSwitchOn force={this.props.force}/>
+                    ) : ''}
+                  </td>
+                </tr>
+                <tr>
+                  <td className="force-button-table-cell">
+                    {this.props.isAdmin ? (
+                      <ForceSwitchOff force={this.props.force}/>
+                    ) : ''}
+                  </td>
+                </tr>
+              </table>
+  
+            ) : (
+  
+              <button
+                className="btn btn-lg btn-primary btn-block"
+                onClick={this.startActivation}>
+                Start
+              </button>
+            
+            )}
+            
+          </div>
         </div>
       </div>
     );
