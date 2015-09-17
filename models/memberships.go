@@ -125,7 +125,7 @@ func CreateMembership(membershipName string) (int64, error) {
 	if err == nil {
 		return id, nil
 	} else {
-		return 0, fmt.Errorf("Failed to create membership")
+		return 0, fmt.Errorf("Failed to create membership: %v", err)
 	}
 }
 

@@ -547,7 +547,7 @@ func (this *UsersController) GetUserBill() {
 	var userSummary *models.UserSummary
 
 	for _, us := range invSummary.UserSummaries {
-		if us.UserId == suid {
+		if us.User.Id == suid {
 			userSummary = us
 		}
 	}
@@ -619,7 +619,7 @@ func (this *UsersController) PostUserMemberships() {
 		this.GetString("startDate"),
 		time.UTC)
 	if err != nil {
-		beego.Error("Failed to parse startDate")
+		beego.Error("Failed to parse startDate=%v", startDate)
 		this.CustomAbort(500, "Internal Server Error")
 	}
 

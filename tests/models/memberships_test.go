@@ -1,6 +1,7 @@
 package modelTest
 
 import (
+	"fmt"
 	"github.com/astaxie/beego/orm"
 	"github.com/kr15h/fabsmith/models"
 	. "github.com/smartystreets/goconvey/convey"
@@ -43,6 +44,9 @@ func TestMemberships(t *testing.T) {
 
 			Convey("When creating a single membership", func() {
 				membershipId, err := models.CreateMembership(membershipName)
+				if err != nil {
+					panic(err.Error())
+				}
 
 				Convey("There should be no errors and the ID should be valid", func() {
 					So(err, ShouldBeNil)
@@ -51,7 +55,9 @@ func TestMemberships(t *testing.T) {
 
 				Convey("When reading it back by using the ID", func() {
 					membership, err := models.GetMembership(membershipId)
-
+					if err != nil {
+						panic(fmt.Sprintf("%v ... membershipId: %v", err.Error(), membershipId))
+					}
 					Convey("It should return no error", func() {
 						So(err, ShouldBeNil)
 					})
@@ -64,7 +70,8 @@ func TestMemberships(t *testing.T) {
 					})
 
 					Convey("Title should equal the initially given one", func() {
-						So(membership.Title, ShouldEqual, membershipName)
+						title := membership.Title
+						So(title, ShouldEqual, membershipName)
 					})
 
 					Convey("The duration of the membership should be set "+
@@ -212,6 +219,10 @@ func TestMemberships(t *testing.T) {
 
 		Convey("Testing CreateUserMembership", func() {
 
+			// Create machines for the activations
+			machineIdOne, _ := models.CreateMachine("Machine One")
+			machineIdTwo, _ := models.CreateMachine("Machine Two")
+
 			baseMembership := &models.Membership{}
 			baseMembership.Title = "Test Membership"
 
@@ -222,6 +233,7 @@ func TestMemberships(t *testing.T) {
 			baseMembership.MachinePriceDeduction = 50
 			baseMembership.AutoExtend = true
 			baseMembership.AutoExtendDuration = 30
+			baseMembership.AffectedMachines = fmt.Sprintf("[%v,%v]", machineIdOne, machineIdTwo)
 
 			models.UpdateMembership(baseMembership)
 			baseMembership, _ = models.GetMembership(baseMembershipId)
@@ -232,10 +244,6 @@ func TestMemberships(t *testing.T) {
 			user.LastName = "Hesus"
 			user.Email = "amen@example.com"
 			userId, _ := models.CreateUser(&user)
-
-			// Create machines for the activations
-			machineIdOne, _ := models.CreateMachine("Machine One")
-			machineIdTwo, _ := models.CreateMachine("Machine Two")
 
 			// Create user permissions for the created machines
 			models.CreateUserPermission(userId, machineIdOne)
@@ -273,12 +281,16 @@ func TestMemberships(t *testing.T) {
 				startDate := time.Date(2015, 6, 1, 0, 0, 0, 0, time.UTC)
 				var err error
 				var userMembershipId int64
-				fakeUserId := int64(1)
 				userMembershipId, err = models.CreateUserMembership(
-					fakeUserId, baseMembershipId, startDate)
+					userId, baseMembershipId, startDate)
+				if err != nil {
+					panic(err.Error())
+				}
 				var gotUserMembership *models.UserMembership
 				gotUserMembership, err = models.GetUserMembership(userMembershipId)
-
+				if err != nil {
+					panic(err.Error())
+				}
 				Convey("There should be no error", func() {
 					So(err, ShouldBeNil)
 				})
@@ -306,8 +318,11 @@ func TestMemberships(t *testing.T) {
 					var invoiceSummary models.InvoiceSummary
 					invoiceStartTime := time.Date(2015, 1, 1, 0, 0, 0, 0, time.UTC)
 					invoiceEndTime := time.Date(2015, 12, 30, 0, 0, 0, 0, time.UTC)
-					_, invoiceSummary, _ = models.CalculateInvoiceSummary(
+					_, invoiceSummary, err = models.CalculateInvoiceSummary(
 						invoiceStartTime, invoiceEndTime)
+					if err != nil {
+						panic(err.Error())
+					}
 
 					// there should be 4 activations and 2 of them should be affected
 					numUserSummaries := len(invoiceSummary.UserSummaries)
@@ -327,7 +342,6 @@ func TestMemberships(t *testing.T) {
 						}
 					}
 					So(numAffectedActivations, ShouldEqual, 2)
-
 				})
 			})
 		})
