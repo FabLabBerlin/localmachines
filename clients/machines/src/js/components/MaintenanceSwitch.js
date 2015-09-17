@@ -51,14 +51,24 @@ var MaintenanceSwitch = React.createClass({
       return (
         <div className="machine-maintenance-switch">
           {machine.get('UnderMaintenance') ? (
-            <a href="#" onClick={this.handleClick.bind(this, 'off')}>
+            <a 
+              className="primary" 
+              href="#" 
+              onClick={this.handleClick.bind(this, 'off')}>
               <i className="fa fa-toggle-on"></i>
             </a>
           ) : (
-            <a href="#" onClick={this.handleClick.bind(this, 'on')}>
+            <a 
+              className="primary" 
+              href="#" 
+              onClick={this.handleClick.bind(this, 'on')}>
               <i className="fa fa-toggle-off"></i>
             </a>
-          )} Maintenance Mode ({machine.get('UnderMaintenance') ? 'On' : 'Off'})
+          )}Maintenance Mode ({
+            machine.get('UnderMaintenance') ? 
+            'currently on' : 
+            'currently off'
+          })
         </div>
       );
     } else {
