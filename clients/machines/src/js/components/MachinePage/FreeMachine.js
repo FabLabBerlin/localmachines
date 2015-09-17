@@ -1,8 +1,8 @@
 var React = require('react');
 var ForceSwitch = require('./ForceSwitch');
-var MachineActions = require('../actions/MachineActions');
+var MachineActions = require('../../actions/MachineActions');
 var MaintenanceSwitch = require('./MaintenanceSwitch');
-var RepairButton = require('./Feedback/RepairButton');
+var RepairButton = require('../Feedback/RepairButton');
 
 
 /*

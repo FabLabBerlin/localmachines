@@ -1,10 +1,10 @@
 var ForceSwitch = require('./ForceSwitch');
-var getters = require('../getters');
-var MachineActions = require('../actions/MachineActions');
+var getters = require('../../getters');
+var MachineActions = require('../../actions/MachineActions');
 var MaintenanceSwitch = require('./MaintenanceSwitch');
 var React = require('react');
-var RepairButton = require('./Feedback/RepairButton');
-var reactor = require('../reactor');
+var RepairButton = require('../Feedback/RepairButton');
+var reactor = require('../../reactor');
 var Timer = require('./Timer');
 
 
