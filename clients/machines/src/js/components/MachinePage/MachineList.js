@@ -1,5 +1,7 @@
 var _ = require('lodash');
+var getters = require('../../getters');
 var React = require('react');
+var reactor = require('../../reactor');
 var MachineChooser = require('./MachineChooser');
 
 
@@ -9,6 +11,14 @@ var MachineChooser = require('./MachineChooser');
  * Prepare the props for the MachineChooser to display the right MachineDiv
  */
 var MachineList = React.createClass({
+
+  mixins: [ reactor.ReactMixin ],
+
+  getDataBindings() {
+    return {
+      machineInfo: getters.getMachineInfo
+    };
+  },
 
   /*
    * Render a list of MachineChooser

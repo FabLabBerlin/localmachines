@@ -1,4 +1,5 @@
 var FeedbackDialogs = require('../Feedback/FeedbackDialogs');
+var getters = require('../../getters');
 var React = require('react');
 var LoginActions = require('../../actions/LoginActions');
 var MachineActions = require('../../actions/MachineActions');
@@ -6,6 +7,7 @@ var OccupiedMachine = require('./OccupiedMachine');
 var BusyMachine = require('./BusyMachine');
 var FreeMachine = require('./FreeMachine');
 var MaintenanceSwitch = require('./MaintenanceSwitch');
+var reactor = require('../../reactor');
 var RepairButton = require('../Feedback/RepairButton');
 var UnavailableMachine = require('./UnavailableMachine');
 
@@ -21,6 +23,14 @@ vex.defaultOptions.className = 'vex-theme-custom';
  * The choice is made looking at the props
  */
 var MachineChooser = React.createClass({
+
+  mixins: [ reactor.ReactMixin ],
+
+  getDataBindings() {
+    return {
+      machineInfo: getters.getMachineInfo
+    };
+  },
 
   /*
    * To force a switch
@@ -71,20 +81,6 @@ var MachineChooser = React.createClass({
     MachineActions.startActivation(mid);
     LoginActions.keepAlive();
   },
-
-  /*
-   * If the id of the activation is the same, doesn't render the component
-   * To not rerender each component at each polling
-   */
-  shouldComponentUpdate(nextProps) {
-    var shouldUpdate = true;
-    if( nextProps.activation.Id === this.props.activation.Id && !this.props.activation.FirstName ) {
-      shouldUpdate = false;
-    }
-    return shouldUpdate;
-  },
-
-
 
   /*
    * Render component
