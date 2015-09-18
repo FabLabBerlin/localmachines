@@ -102,9 +102,11 @@ var MachineChooser = React.createClass({
       machineBody = (
         <UnavailableMachine
           activation={this.props.activation}
+          busy={this.props.busy}
           info={this.props.info}
           isAdmin={isAdmin}
-          func={this.endActivation}
+          endActivation={this.endActivation}
+          startActivation={this.startActivation}
           force={this.forceSwitch}
         />
       );

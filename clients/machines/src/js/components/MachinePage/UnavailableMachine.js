@@ -16,12 +16,16 @@ var UnavailableMachine = React.createClass({
     };
   },
 
+  startActivation() {
+    this.props.startActivation();
+  },
+
   /*
    * Send an action to the store to end the activation
    */
   endActivation(event) {
     event.preventDefault();
-    this.props.func();
+    this.props.endActivation();
   },
 
   /*
@@ -31,6 +35,22 @@ var UnavailableMachine = React.createClass({
   render() {
     var users = this.state.machineUsers;
     var user = users.get(this.props.activation.UserId) || {};
+    var startStopButton;
+    if (this.props.busy) {
+      startStopButton = (
+        <button className="btn btn-lg btn-default btn-block"
+                onClick={this.endActivation}>
+          Stop
+        </button>
+      );
+    } else {
+      startStopButton = (
+        <button className="btn btn-lg btn-default btn-block"
+                onClick={this.startActivation}>
+          Start
+        </button>
+      );
+    }
     return (
       <div className="machine unavailable">
         <div className="row">
@@ -51,11 +71,11 @@ var UnavailableMachine = React.createClass({
               <table className="machine-activation-table">
                 <tr>
                   <td rowSpan="2">
+                    {startStopButton}
                     <div className="machine-action-info">
                       <div className="machine-info-content machine-info-unavailable">
                         Machine is unavailable due to maintenance works.
-                        Check <a href="https://twitter.com/FabLabBLNAI">@FabLabBLNAI</a> to see
-                        when it works again.
+                        Updates are automatically posted to <a href="https://twitter.com/FabLabBLNAI">@FabLabBLNAI</a>.
                       </div>
                     </div>
                   </td>
@@ -77,7 +97,9 @@ var UnavailableMachine = React.createClass({
             </div>
           ) : (
             <div className="col-xs-6">
-              <div className="indicator indicator-unavailable">Unavailable</div>
+              <div className="indicator indicator-unavailable">
+              Unavailable. Check <a href="https://twitter.com/FabLabBLNAI">@FabLabBLNAI</a> for updates.
+              </div>
             </div>
           )}
   
