@@ -31,8 +31,6 @@ var BusyMachine = React.createClass({
   
           <div className="col-xs-6">
   
-            <div className="machine-options-toggle" />
-  
             <div className="machine-action-info">
               <div className="machine-info-content">
                 <div className="machine-time-label">

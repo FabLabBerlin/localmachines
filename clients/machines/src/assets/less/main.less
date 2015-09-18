@@ -447,13 +447,6 @@ YP  YP  YP YP   YP  `Y88P' YP   YP Y888888P VP   V8P Y88888P
   margin-left: 10px;
 }
 
-.machine .machine-options-toggle {
-  display: inline-block;
-  width: @lg-height / 2;
-  height: @lg-height;
-  vertical-align: top;
-}
-
 .machine .machine-action-info {
   display: inline-block;
   min-height: 70px;
@@ -467,16 +460,14 @@ YP  YP  YP YP   YP  `Y88P' YP   YP Y888888P VP   V8P Y88888P
 
 /* Available machines */
 
-.machine.available .machine-options-toggle {
-  background: lighten(@color-primary, 10%);
-  color: lighten(@text-color-primary, 10%);
+.machine.available .machine-action-info {
+  border-left: (@lg-height / 2) solid lighten(@color-primary, 10%);
 }
 
 /* Used / busy machines */
 
-.machine.used .machine-options-toggle {
-  background: lighten(@color-danger, 10%);
-  color: lighten(@text-color-danger, 10%);
+.machine.used .machine-action-info {
+  border-left: (@lg-height / 2) solid lighten(@color-danger, 10%);
 }
 
 .machine.used .machine-time-label {
@@ -494,9 +485,8 @@ YP  YP  YP YP   YP  `Y88P' YP   YP Y888888P VP   V8P Y88888P
 
 /* Occupied machines */
 
-.machine.occupied .machine-options-toggle {
-  background: lighten(@color-warning, 10%);
-  color: lighten(@text-color-warning, 10%);
+.machine.occupied .machine-action-info {
+  border-left: (@lg-height / 2) solid lighten(@color-warning, 10%);
 }
 
 .machine.occupied .occupied-by-label {
@@ -518,46 +508,9 @@ YP  YP  YP YP   YP  `Y88P' YP   YP Y888888P VP   V8P Y88888P
   line-height: 1.3;
 }
 
-.machine-info-toggle {
-  color: @text-color-default;
-  cursor: pointer;
-}
-
-.machine-info-toggle:hover {
-  color: #6A6A6A;
-}
-
-.machine-unavailable-value {
-  font-size: 12px;
-  line-height: 17px;
-}
-
-.machine-action-label {
-  font-size: 9px;
-  line-height: 1;
-  margin-bottom: 15px;
-}
-
-.machine-price-value {
-  font-weight: bold;
-  font-size: 22px;
-  line-height: 1;
-}
-
-.machine-price-currency {
-  font-size: 12px;
-  line-height: 1;
-}
-
-.machine-occupied-value {
-  font-weight: bold;
-  font-size: 16px;
-  line-height: 1;
-}
-
-.machine-occupied-time-value {
-  margin-top: 5px;
-}
+/* Machine extra actions list.
+   Like the maintenance switch and service 
+   repair button. */
 
 .machine-extra-actions {
   margin-top: 10px;
@@ -612,6 +565,12 @@ YP  YP  YP YP   YP  `Y88P' YP   YP Y888888P VP   V8P Y88888P
   color: @text-color-danger;
 }
 
+.machine-extra-actions .action-item .fa {
+  line-height: @lg-height / 2;
+}
+
+/* */
+
 table.machine-activation-table {
   width: 100%;
 }
@@ -644,10 +603,6 @@ td .force-switch-off {
 td .force-switch-off:hover {
   background: @color-danger;
   color: darken(@text-color-danger, 10%); 
-}
-
-.machine-extra-actions .action-item .fa {
-  line-height: @lg-height / 2;
 }
 
 .delete-prompt-token {
