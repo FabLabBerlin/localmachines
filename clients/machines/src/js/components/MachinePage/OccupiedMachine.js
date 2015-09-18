@@ -82,7 +82,7 @@ var OccupiedMachine = React.createClass({
             </div>
           ) : (
             <div className="col-xs-6">
-              <div className="indicator indicator-occupied">Occupied</div>
+              <div className="indicator occupied">Occupied</div>
             </div>
           )}
   
