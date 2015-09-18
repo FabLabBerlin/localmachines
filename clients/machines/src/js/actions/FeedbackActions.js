@@ -3,12 +3,14 @@ var actionTypes = require('../actionTypes');
 var ApiActions = require('./ApiActions');
 var FeedbackStore = require('../stores/FeedbackStore');
 var getters = require('../getters');
+var LoginActions = require('../actions/LoginActions');
 var reactor = require('../reactor');
 var toastr = require('../toastr');
 
 var FeedbackActions = {
 
   reportMachineBroken({ machineId }) {
+    LoginActions.keepAlive();
     const machinesById = reactor.evaluateToJS(getters.getMachinesById);
     const machine = machinesById[machineId] || {};
     var userInfo = reactor.evaluateToJS(getters.getUserInfo);
@@ -37,6 +39,7 @@ var FeedbackActions = {
   },
 
   reportSatisfaction({ activationId, satisfaction }) {
+    LoginActions.keepAlive();
     var url = '/api/activations/' + activationId + '/feedback';
     $.ajax({
       url: url,
@@ -55,10 +58,12 @@ var FeedbackActions = {
   },
 
   setFeedbackProperty({ key, value }) {
+    LoginActions.keepAlive();
     reactor.dispatch(actionTypes.SET_FEEDBACK_PROPERTY, { key, value });
   },
 
   submit() {
+    LoginActions.keepAlive();
     var userInfo = reactor.evaluateToJS(getters.getUserInfo);
     var subject = reactor.evaluateToJS(getters.getFeedbackSubject);
     var message = reactor.evaluateToJS(getters.getFeedbackMessage);
