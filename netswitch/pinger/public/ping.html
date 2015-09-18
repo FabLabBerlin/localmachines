@@ -2,23 +2,29 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Julius Webpage</title>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/JSXTransformer.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <!-- <script src="/public/script.js"></script> -->
-	<!-- CSS: -->
+	<script src="jquery.min.js"></script>
+    <script src="JSXTransformer.js"></script>
+    <script src="react.js"></script>
+    <link rel="stylesheet" href="/public/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/public/css/bootstrap-theme.min.css">
+    <script src="/public/js/bootstrap.min.js"></script>
+		
 	<style>
-	#main {
-		border-width: 1px;
-		border-color: black;
+	
+	td.UP {
+	    background-color: green;
+	}
+	td.DOWN {
+		background-color: red;
 	}
 	</style>
 </head>
 
 <body>
 
-	<div id="content"></div>
+	<div className="container" id="content"></div>
 
 	<script type="text/jsx">
 /*
@@ -39,7 +45,7 @@ if (foo) { console.log('bla'); } console.log('bla');
 			},
 			update: function() {
 						$.ajax({
-							url: 'http://localhost:5000/get_list',
+							url: '/get_list',
 							type: 'GET',
 							dataType: 'json',
 							success: function(response){
@@ -54,23 +60,48 @@ if (foo) { console.log('bla'); } console.log('bla');
 						});
 			},
 			render: function() {
-				console.log(this.state)
-				return(
-					<div id="main">
-						
-						<p>{this.state.data}</p>
-					</div>
-				);
+				if (this.state.data && this.state.data[0]) {
+					return (
+							<table className="table table-striped">
+						  		<thead>
+							 		<tr>
+						    	 		<th>Name</th>
+						    	 		<th>Address</th>		
+						 		 		<th>Status</th>
+								 	</tr>
+								</thead>
+								<tbody>
+							  	{this.state.data.map(function(bla, i) {
+								 	return (
+										
+								  		<tr key={i}>
+									 		<td>{bla.name}</td>
+											<td>{bla.ip}</td>
+											<td className={bla.status}>{bla.status}</td>
+										</tr>
+									);
+								})}
+								</tbody>
+							</table>
+					
+					);
+				} else {
+					return (
+						<div className="container">
+							Loading...	
+						</div>
+					);
+				}
 			}
 		});
 		React.render(
-			<div>
+			<div className="container">
 				<h3>MACHINES STATUS</h3>
 				<PingerComponent></PingerComponent>
 			</div>, 
 
 			document.getElementById('content'));
-
+			
 	</script>
 
 </body>
