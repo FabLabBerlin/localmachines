@@ -22,16 +22,12 @@ Circle_Saw=Drucker(186,0,0,"Circle Saw")
 Heat_Press=Drucker(242,0,0,"Heat Press")
 PCB_CNC_Machine_LPKF=Drucker(132,0,0,"PCB CNC Machine (LPKF)")
 
-l=[Laser_Cutter_Epilog_Zing,CNC_Router,threeD_Printer_Vincent_1,threeD_Printers_2345678,Trotec_Laser,Electronic_Desk,Circle_Saw]
-#Heat Press is down und pcb cnc machine..
-#no internet.. in m network..
-#Laser_Cutter_Epilog_Zing,CNC_Router,threeD_Printer_Vincent_1,threeD_Printers_2345678,Trotec_Laser,Electronic_Desk,
-#erst ethernet, dann wlan
+l=[Laser_Cutter_Epilog_Zing,CNC_Router,threeD_Printer_Vincent_1,threeD_Printers_2345678,Trotec_Laser,Electronic_Desk,Circle_Saw,Heat_Press,PCB_CNC_Machine_LPKF]
 
 def pingit(x):
     global counter
     address = "192.168.1." + str(x.ip_ending)
-    if os.system("ping -c 1 -W 200 " + address) == 0:      #-W is waittime in ms
+    if os.system("ping -c 1 -W 100 " + address) == 0:      #-W is waittime in ms
     #    if x.emailsent==1:
         #    server = smtplib.SMTP('smtp.gmail.com', 587)
        #     server.ehlo()
@@ -47,7 +43,7 @@ def pingit(x):
         counter=0
     else:           
         counter+=1
-        if counter<=8:  #counter digit in secs (+waittime=60secs)
+        if counter<=5:  #counter digit in secs (+waittime=60secs)
             pingit(x)
         else:
             if x.emailsent==0:
@@ -68,39 +64,27 @@ counter=0
 
 def jo():
     r=[]
-    z=0
     for ping in l:
         pingit(ping)
     for i in l:
+        adr="192.168.1." + str(i.ip_ending)
+        dic={"name":str(i.name),"ip":str(adr),"status":"0"}
         if i.erreichbar ==0:
-            r.append("The machine * "+str(i.name) + " * with ip address " + "192.168.1." + str(i.ip_ending) + " is NOT working :-(")
+            dic["status"] = "DOWN"
+            r.append(dic)
         else:
-            r.append("The machine * "+str(i.name) + " * with ip address " + "192.168.1." + str(i.ip_ending) + " is working :-)")
-        
+            dic["status"]="UP"
+            r.append(dic)
     return r
-    #print(r)
-     #   for i in l:
-      #      print(i.emailsent)
-       # print(r)
-        #r=[]
-        #time.sleep(2)       #Time period for checking ping in secs
-#        if l[z].erreichbar ==0:
- #           r.append("The machine * "+str(l[z].name) + " * with ip address " + "192.168.1." + str(l[z].ip_ending) + " is NOT working :-(")
-  #      else:
-   #         r.append("The machine * "+str(l[z].name) + " * with ip address " + "192.168.1." + str(l[z].ip_ending) + " is working :-)")
-    #    z+=1
-    #return r    
-
-#x  print(str(er[0]))
 
 app = Flask(__name__, static_url_path='')
 
 @app.route("/get_list")
 def get_list():
     er=jo()
-    return json.dumps({'status': er});#str(er[0])});
+    return json.dumps({'status': er});
 
-@app.route('/public/<string:filename>')
+@app.route('/public/<path:filename>')
 def send_js(filename):
     app.logger.error('filename: ' + filename)
     print("filename: " + filename)
@@ -108,28 +92,9 @@ def send_js(filename):
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host="0.0.0.0")
     
-  #  app.run(debug=True)
-
-#r=[]
-#while True:
- #   for ping in l:
-  #      pingit(ping)
-   #     for i in l:
-    #        if i.erreichbar ==0:
-     #           r.append("The machine * "+str(i.name) + " * with ip address " + "192.168.1." + str(i.ip_ending) + " is NOT working :-(")
-      #      else:
-       #         r.append("The machine * "+str(i.name) + " * with ip address " + "192.168.1." + str(i.ip_ending) + " is working :-)")
-    # #   for i in l:
-     # #      print(i.emailsent)
-     #   print(r)
-      #  r=[]
-       # time.sleep(2)       #Time period for checking ping in secs
-
-
-
-
+    #app.run(debug=True)
 
 
 #changed print it, pingit 10 to 1,   6 times #server.sandmail, timeslep
