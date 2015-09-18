@@ -37,8 +37,6 @@ var OccupiedMachine = React.createClass({
       <div className="machine occupied">
         <div className="row">
           <div className="col-xs-6">
-            
-            <div className="machine-options-toggle" />
   
             <div className="machine-action-info">
               <div className="machine-info-content">

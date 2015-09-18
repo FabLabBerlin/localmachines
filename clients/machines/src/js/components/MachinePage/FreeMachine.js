@@ -33,8 +33,6 @@ var FreeMachine = React.createClass({
       <div className="machine available">
         <div className="row">
           <div className="col-xs-6">
-            
-            <div className="machine-options-toggle" />
   
             {this.props.activation}
             <div className="machine-action-info">
