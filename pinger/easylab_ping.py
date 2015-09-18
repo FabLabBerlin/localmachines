@@ -12,9 +12,9 @@ class Drucker(object):
         self.erreichbar=erreichbar
         self.name=name
  
-Laser_Cutter_Epilog_Zing=Drucker(231,0,0,"Laser Cutter Epilog Zing")
-CNC_Router=Drucker(180,0,0,"CNC Router")
-threeD_Printer_Vincent_1=Drucker(141,0,0,"3D Printer Vincent 1")
+Laser_Cutter_Epilog_Zing=Drucker(231,0,0,"Laser Cutter Epilog Zing")    #change first nr in brackets (ending of ip address of machine)
+CNC_Router=Drucker(180,0,0,"CNC Router")                                #also change names of machines accordingly
+threeD_Printer_Vincent_1=Drucker(141,0,0,"3D Printer Vincent 1")        #use these lines to remove/add machines
 threeD_Printers_2345678=Drucker(25,0,0,"3D Printers 2,3,4,5,6,7,8")
 Trotec_Laser=Drucker(109,0,0,"Trotec Laser")
 Electronic_Desk=Drucker(185,0,0,"Electronic Desk")
@@ -22,12 +22,14 @@ Circle_Saw=Drucker(186,0,0,"Circle Saw")
 Heat_Press=Drucker(242,0,0,"Heat Press")
 PCB_CNC_Machine_LPKF=Drucker(132,0,0,"PCB CNC Machine (LPKF)")
 
+#add/remove printers to this list l:
 l=[Laser_Cutter_Epilog_Zing,CNC_Router,threeD_Printer_Vincent_1,threeD_Printers_2345678,Trotec_Laser,Electronic_Desk,Circle_Saw,Heat_Press,PCB_CNC_Machine_LPKF]
 
 def pingit(x):
     global counter
-    address = "192.168.1." + str(x.ip_ending)
+    address = "192.168.1." + str(x.ip_ending)   #change ip adress here
     if os.system("ping -c 1 -W 100 " + address) == 0:      #-W is waittime in ms
+    #for enabling email notifications remove all hashtags from here to x.emailsent=0
     #    if x.emailsent==1:
         #    server = smtplib.SMTP('smtp.gmail.com', 587)
        #     server.ehlo()
@@ -35,7 +37,7 @@ def pingit(x):
      #       server.ehlo()
     #        server.login("machinepinger", "raspberrypi")
    #         msg = "\nHi! The machine * "+str(x.name) + " * with ip address " + str(address) + " is WORKING AGAIN! :-)"
-          #  server.sendmail("machinepinger@gmail.com", "julius@fablab.berlin", msg)
+          #  server.sendmail("machinepinger@gmail.com", "julius@fablab.berlin", msg)        #fill in your email address(es) for notification here
            # server.sendmail("machinepinger@gmail.com", "krisjanis.rijnieks@gmail.com", msg)
             #server.sendmail("machinepinger@gmail.com", "philip@fablab.berlin", msg)
         x.emailsent=0
@@ -47,13 +49,14 @@ def pingit(x):
             pingit(x)
         else:
             if x.emailsent==0:
+            #for enabling email notifications remove all hashtags from here to x.emailsent=1
             #    server = smtplib.SMTP('smtp.gmail.com', 587)
            #     server.ehlo()
           #      server.starttls()
         #        server.ehlo()
        #         server.login("machinepinger", "raspberrypi")
          #       msg = "\nHi! The machine * "+str(x.name) + " * with ip address " + str(address) + " is DOWN. (There is no network connection available.)"
-               # server.sendmail("machinepinger@gmail.com", "julius@fablab.berlin", msg)
+               # server.sendmail("machinepinger@gmail.com", "julius@fablab.berlin", msg)          #fill in your email address(es) for notification here
                 #server.sendmail("machinepinger@gmail.com", "krisjanis.rijnieks@gmail.com", msg)
                 #server.sendmail("machinepinger@gmail.com", "philip@fablab.berlin", msg)
                 x.emailsent=1
