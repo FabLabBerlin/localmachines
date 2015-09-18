@@ -96,8 +96,6 @@ var MachineChooser = React.createClass({
   render() {
     let isAdmin = this.props.user.get('UserRole') === 'admin';
     var machineBody;
-    console.log('this.props.info: ', this.props.info);
-    console.log('this.props.info.UnderMaintenance: ', this.props.info.UnderMaintenance);
     if (this.props.info.UnderMaintenance) {
       machineBody = (
         <UnavailableMachine
