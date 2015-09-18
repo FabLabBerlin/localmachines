@@ -60,7 +60,7 @@ var UnavailableMachine = React.createClass({
   
             <div className="machine-action-info">
               <div className="machine-info-content">
-                Check <a target="_blank" href="https://twitter.com/FabLabBLNAI">@FabLabBLNAI</a> for updates.
+                Undergoing maintenance. Check <a target="_blank" href="https://twitter.com/FabLabBLNAI">@FabLabBLNAI</a> for updates.
               </div>
             </div>
   
