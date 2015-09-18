@@ -118,6 +118,22 @@ Bootstrap overrides and custom button styles.
   color: darken(@text-color-warning, 10%);
 }
 
+.btn-default,
+.btn-default:active,
+.btn-default:focus,
+.btn-default:visited, {
+  background: lighten(@color-neutral, 10%);
+  color: @text-color-neutral;
+}
+
+.btn-default:hover,
+.btn-default:active:hover,
+.btn-default:focus:hover,
+.btn-default:visited:hover, {
+  background: lighten(@color-neutral, 0%);
+  color: darken(@text-color-neutral, 10%);
+}
+
 /* Add icon button missing in Bootstrap */
 
 .btn-ico,
@@ -426,6 +442,12 @@ YP  YP  YP YP   YP  `Y88P' YP   YP Y888888P VP   V8P Y88888P
   /* empty for now */ 
 }
 
+.indicator {
+  width: 100%;
+  text-align: center;
+  line-height: 70px;
+}
+
 .machine-header {
   border-bottom: 1px solid darken(#ffffff, 10%);
   padding-bottom: 10px;
@@ -507,6 +529,44 @@ YP  YP  YP YP   YP  `Y88P' YP   YP Y888888P VP   V8P Y88888P
   font-weight: normal;
   line-height: 1.3;
 }
+
+.indicator.occupied {
+  .indicator();
+  border: 1px solid #FAE451;
+  color: #FAE451;
+}
+
+/* Unavailable machines */
+
+.machine.unavailable .machine-action-info {
+  border-left: (@lg-height / 2) solid lighten(@color-neutral, 10%);
+}
+
+.machine.unavailable .machine-info-content {
+  font-size: 10px; 
+  line-height: 1.3;
+}
+
+.machine.unavailable .machine-info-content a,
+.machine.unavailable .machine-info-content a:focus,
+.machine.unavailable .machine-info-content a:active,
+.machine.unavailable .machine-info-content a:visited {
+  color: @color-primary;
+}
+
+.machine.unavailable .machine-info-content a:hover,
+.machine.unavailable .machine-info-content a:focus:hover,
+.machine.unavailable .machine-info-content a:active:hover,
+.machine.unavailable .machine-info-content a:visited:hover {
+  color: darken(@color-primary, 10%);
+}
+
+.machine.unavailable .indicator.unavailable {
+  .indicator();
+  border: 1px solid #A6A6A6;
+  color: #A6A6A6;
+}
+
 
 /* Machine extra actions list.
    Like the maintenance switch and service 
@@ -621,22 +681,6 @@ td .force-switch-off:hover {
   height: @lg-height;
   font-size: 18px;
   font-weight: bold;
-}
-
-.indicator {
-  width: 100%;
-  text-align: center;
-  line-height: 70px;
-}
-
-.indicator-occupied {
-  border: 1px solid #FAE451;
-  color: #FAE451;
-}
-
-.indicator-unavailable {
-  border: 1px solid #A6A6A6;
-  color: #A6A6A6;
 }
 
 .absolute-bottom {

@@ -38,15 +38,17 @@ var UnavailableMachine = React.createClass({
     var startStopButton;
     if (this.props.busy) {
       startStopButton = (
-        <button className="btn btn-lg btn-default btn-block"
-                onClick={this.endActivation}>
+        <button 
+          className="btn btn-lg btn-default btn-block"
+          onClick={this.endActivation}>
           Stop
         </button>
       );
     } else {
       startStopButton = (
-        <button className="btn btn-lg btn-default btn-block"
-                onClick={this.startActivation}>
+        <button 
+          className="btn btn-lg btn-default btn-block"
+          onClick={this.startActivation}>
           Start
         </button>
       );
@@ -55,53 +57,44 @@ var UnavailableMachine = React.createClass({
       <div className="machine unavailable">
         <div className="row">
           <div className="col-xs-6">
-            
-            <div className="machine-options-toggle" />
   
             <div className="machine-action-info">
               <div className="machine-info-content">
+                Check <a target="_blank" href="https://twitter.com/FabLabBLNAI">@FabLabBLNAI</a> for updates.
               </div>
             </div>
   
           </div>
   
+          <div className="col-xs-6">
+
           { this.props.isAdmin ? (
-            <div className="col-xs-6">
-  
-              <table className="machine-activation-table">
-                <tr>
-                  <td rowSpan="2">
-                    {startStopButton}
-                    <div className="machine-action-info">
-                      <div className="machine-info-content machine-info-unavailable">
-                        Machine is unavailable due to maintenance works.
-                        Updates are automatically posted to <a href="https://twitter.com/FabLabBLNAI">@FabLabBLNAI</a>.
-                      </div>
-                    </div>
-                  </td>
-                  <td className="force-button-table-cell">
-                    {this.props.isAdmin ? (
-                      <ForceSwitchOn force={this.props.force}/>
-                    ) : ''}
-                  </td>
-                </tr>
-                <tr>
-                  <td className="force-button-table-cell">
-                    {this.props.isAdmin ? (
-                      <ForceSwitchOff force={this.props.force}/>
-                    ) : ''}
-                  </td>
-                </tr>
-              </table>
-  
-            </div>
+            <table className="machine-activation-table">
+              <tr>
+                <td rowSpan="2">
+                  {startStopButton}
+                </td>
+                <td className="force-button-table-cell">
+                  {this.props.isAdmin ? (
+                    <ForceSwitchOn force={this.props.force}/>
+                  ) : ''}
+                </td>
+              </tr>
+              <tr>
+                <td className="force-button-table-cell">
+                  {this.props.isAdmin ? (
+                    <ForceSwitchOff force={this.props.force}/>
+                  ) : ''}
+                </td>
+              </tr>
+            </table>
           ) : (
-            <div className="col-xs-6">
-              <div className="indicator indicator-unavailable">
-              Unavailable. Check <a href="https://twitter.com/FabLabBLNAI">@FabLabBLNAI</a> for updates.
-              </div>
+            <div className="indicator unavailable">
+              Unavailable
             </div>
           )}
+
+          </div>
   
         </div>
       </div>
