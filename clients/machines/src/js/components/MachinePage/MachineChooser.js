@@ -7,6 +7,7 @@ var BusyMachine = require('./BusyMachine');
 var FreeMachine = require('./FreeMachine');
 var MaintenanceSwitch = require('./MaintenanceSwitch');
 var RepairButton = require('../Feedback/RepairButton');
+var UnavailableMachine = require('./UnavailableMachine');
 
 // https://github.com/HubSpot/vex/issues/72
 var vex = require('vex-js'),
@@ -94,6 +95,53 @@ var MachineChooser = React.createClass({
    */
   render() {
     let isAdmin = this.props.user.get('UserRole') === 'admin';
+    var machineBody;
+    console.log('this.props.info: ', this.props.info);
+    console.log('this.props.info.UnderMaintenance: ', this.props.info.UnderMaintenance);
+    if (this.props.info.UnderMaintenance) {
+      machineBody = (
+        <UnavailableMachine
+          activation={this.props.activation}
+          info={this.props.info}
+          isAdmin={isAdmin}
+          func={this.endActivation}
+          force={this.forceSwitch}
+        />
+      );
+    } else {
+      if (this.props.busy) {
+        if (this.props.sameUser) {
+          machineBody = (
+            <BusyMachine
+              activation={this.props.activation}
+              info={this.props.info}
+              isAdmin={isAdmin}
+              func={this.endActivation}
+              force={this.forceSwitch}
+            />
+          );
+        } else {
+          machineBody = (
+            <OccupiedMachine
+              activation={this.props.activation}
+              info={this.props.info}
+              isAdmin={isAdmin}
+              func={this.endActivation}
+              force={this.forceSwitch}
+            />
+          );
+        }
+      } else {
+        machineBody = (
+          <FreeMachine
+            info={this.props.info}
+            isAdmin={isAdmin}
+            func={this.startActivation}
+            force={this.forceSwitch}
+          />
+        );
+      }
+    }
 
     return (
       <div className="machine-container">
@@ -103,31 +151,7 @@ var MachineChooser = React.createClass({
             <div className="clearfix"></div>
           </div>
           <div className="machine-body">
-            { this.props.busy ?
-              this.props.sameUser ? (
-              <BusyMachine
-                activation={this.props.activation}
-                info={this.props.info}
-                isAdmin={isAdmin}
-                func={this.endActivation}
-                force={this.forceSwitch}
-              />
-            ) : (
-              <OccupiedMachine
-                activation={this.props.activation}
-                info={this.props.info}
-                isAdmin={isAdmin}
-                func={this.endActivation}
-                force={this.forceSwitch}
-              />
-            ) : (
-              <FreeMachine
-                info={this.props.info}
-                isAdmin={isAdmin}
-                func={this.startActivation}
-                force={this.forceSwitch}
-              />
-            )}
+            {machineBody}
 
             <ul className="machine-extra-actions">
               <li className="action-item">
