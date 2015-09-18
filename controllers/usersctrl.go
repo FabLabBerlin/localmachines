@@ -487,7 +487,7 @@ func (this *UsersController) GetUserMachines() {
 		// List all machines if the requested user is admin
 		machines, err = models.GetAllMachines()
 		if err != nil {
-			beego.Error("Failed to get all machines")
+			beego.Error("Failed to get all machines: ", err)
 			this.CustomAbort(500, "Internal Server Error")
 		}
 	}

@@ -1,10 +1,10 @@
 var $ = require('jquery');
-var getters = require('../getters');
-var LoginStore = require('../stores/LoginStore');
-var LoginActions = require('../actions/LoginActions');
+var getters = require('../../getters');
+var LoginStore = require('../../stores/LoginStore');
+var LoginActions = require('../../actions/LoginActions');
 var {Navigation} = require('react-router');
 var React = require('react');
-var reactor = require('../reactor');
+var reactor = require('../../reactor');
 
 
 /*
@@ -19,13 +19,6 @@ var Login = React.createClass({
    */
   mixins: [ Navigation ],
 
-  getInitialState() {
-    return {
-      username: '',
-      password: ''
-    };
-  },
-
   goToSignUp(event) {
     event.preventDefault();
     window.location = '/signup';
@@ -37,25 +30,18 @@ var Login = React.createClass({
    */
   handleSubmit(event) {
     event.preventDefault();
-    LoginActions.submitLoginForm(this.state, this.context.router);
-  },
-
-  /*
-   * Update the state when there are changes in the input
-   */
-  handleChange(e) {
-    this.setState({
-      [e.target.name]: e.target.value
-    });
+    var data = {
+      username: this.refs.name.getDOMNode().value,
+      password: this.refs.password.getDOMNode().value
+    };
+    LoginActions.submitLoginForm(data, this.context.router);
   },
 
   /*
    * Clear the state and input and do the focus on the name input
    */
   clearAndFocus() {
-    this.setState({username: '', password: ''}, function() {
-      this.focus();
-    }.bind(this));
+    this.focus();
   },
 
   focus() {
@@ -70,7 +56,11 @@ var Login = React.createClass({
    * listen to the onChange event from the UserStore
    */
   componentDidMount() {
-    LoginActions.submitLoginForm(this.state, this.context.router);
+    var data = {
+      username: '',
+      password: ''
+    };
+    LoginActions.submitLoginForm(data, this.context.router);
 
     this.focus();
 
@@ -93,19 +83,17 @@ var Login = React.createClass({
             type="text"
             name="username"
             className="form-control"
-            value={this.state.username}
-            onChange={this.handleChange}
             placeholder="Username"
             required
             autofocus
+            autoCorrect="off"
+            autoCapitalize="off"
           />
           <input
             type="password"
             name="password"
             className="form-control"
-            ref="Password"
-            value={this.state.password}
-            onChange={this.handleChange}
+            ref="password"
             placeholder="password"
             required
           />

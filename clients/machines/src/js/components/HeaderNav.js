@@ -56,7 +56,7 @@ var MainMenu = React.createClass({
     if (!window.libnfc) {
       buttons.push(
         <MenuItem href="/machines/#/machine"
-          faIconClass="fa-wrench"
+          faIconClass="fa-plug"
           label="Machines">
         </MenuItem>);
   

@@ -1,17 +1,17 @@
 var $ = require('jquery');
-var getters = require('../getters');
+var getters = require('../../getters');
 var MachineList = require('./MachineList');
-var LoginStore = require('../stores/LoginStore');
-var MachineStore = require('../stores/MachineStore');
-var MachineActions = require('../actions/MachineActions');
-var NfcLogoutMixin = require('./NfcLogoutMixin');
-var LoginActions = require('../actions/LoginActions');
+var LoginStore = require('../../stores/LoginStore');
+var MachineStore = require('../../stores/MachineStore');
+var MachineActions = require('../../actions/MachineActions');
+var NfcLogoutMixin = require('../Login/NfcLogoutMixin');
+var LoginActions = require('../../actions/LoginActions');
 var Navigation = require('react-router').Navigation;
 var React = require('react');
-var reactor = require('../reactor');
-var ScrollNav = require('./ScrollNav');
-var toastr = require('../toastr');
-var UserActions = require('../actions/UserActions');
+var reactor = require('../../reactor');
+var ScrollNav = require('../ScrollNav');
+var toastr = require('../../toastr');
+var UserActions = require('../../actions/UserActions');
 
 /*
  * MachinePage:
@@ -176,8 +176,14 @@ var MachinePage = React.createClass({
     }
   },
 
+  /*
+   * update
+   *
+   * Need polling for activation status and maintenance status
+   */
   update() {
     MachineActions.pollActivations();
+    MachineActions.pollMachines();
   }
 });
 

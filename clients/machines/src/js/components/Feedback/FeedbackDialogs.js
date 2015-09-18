@@ -1,4 +1,6 @@
 var FeedbackActions = require('../../actions/FeedbackActions');
+var getters = require('../../getters');
+var reactor = require('../../reactor');
 
 // https://github.com/HubSpot/vex/issues/72
 var vex = require('vex-js'),
@@ -52,6 +54,25 @@ export default {
           console.log('satisfaction:', satisfaction);
           FeedbackActions.reportSatisfaction({ activationId, satisfaction });
         }
+      }.bind(this)
+    });
+  },
+
+  machineIssue(machineId) {
+    const machinesById = reactor.evaluateToJS(getters.getMachinesById);
+    const machine = machinesById[machineId] || {};
+    VexDialog.buttons.YES.text = 'Yes';
+    VexDialog.buttons.NO.text = 'No';
+
+    VexDialog.confirm({
+      message: 'Do you really want to report machine <b>' +
+        machine.Name + '</b> as broken?',
+      callback: function(confirmed) {
+        if (confirmed) {
+          FeedbackActions.reportMachineBroken({ machineId });
+        }
+        $('.vex').remove();
+        $('body').removeClass('vex-open');
       }.bind(this)
     });
   }

@@ -82,17 +82,41 @@ Bootstrap overrides and custom button styles.
   border: none;
 }
 
-.btn-primary { background: @color-primary; }
+.btn-primary { 
+  background: @color-primary;
+  color: @text-color-primary; 
+}
 .btn-primary:hover,
 .btn-primary:active,
 .btn-primary:focus,
-.btn-primary:visited  { background: darken(@color-primary, 10%); }
+.btn-primary:visited  { 
+  background: darken(@color-primary, 10%);
+  color: darken(@text-color-primary, 10%);
+}
 
-.btn-danger { background: @color-danger; }
+.btn-danger { 
+  background: @color-danger; 
+  color: @text-color-danger;
+}
 .btn-danger:hover,
 .btn-danger:active,
 .btn-danger:focus,
-.btn-danger:visited { background: darken(@color-danger, 10%); }
+.btn-danger:visited { 
+  background: darken(@color-danger, 10%); 
+  color: darken(@text-color-danger, 10%);
+}
+
+.btn-warning {
+  background: @color-warning;
+  color: @text-color-warning;
+}
+.btn-warning:hover,
+.btn-warning:active,
+.btn-warning:focus,
+.btn-warning:visited {
+  background: darken(@color-warning, 10%);
+  color: darken(@text-color-warning, 10%);
+}
 
 /* Add icon button missing in Bootstrap */
 
@@ -374,19 +398,124 @@ footer div {
   cursor: pointer;
 }
 
+
+/*
+
+http://www.network-science.de/ascii/ 
+font: basic
+
+.88b  d88.  .d8b.   .o88b. db   db d888888b d8b   db d88888b 
+88'YbdP`88 d8' `8b d8P  Y8 88   88   `88'   888o  88 88'     
+88  88  88 88ooo88 8P      88ooo88    88    88V8o 88 88ooooo 
+88  88  88 88~~~88 8b      88~~~88    88    88 V8o88 88~~~~~ 
+88  88  88 88   88 Y8b  d8 88   88   .88.   88  V888 88.     
+YP  YP  YP YP   YP  `Y88P' YP   YP Y888888P VP   V8P Y88888P
+
+// Machine list item styling
+
+*/
+
+.machine-container {
+  background-image: linear-gradient(180deg, darken(#FFFFFF, 5%) 0%, #FFFFFF 100%);
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid darken(#ffffff, 10%);
+}
+
 .machine {
-  background-image: linear-gradient(180deg, #EEEEEE 0%, #FFFFFF 100%);
-  border-bottom: 2px solid #E6E6E6;
-  padding-top: 20px;
-  padding-bottom: 20px;
+  /* empty for now */ 
 }
 
 .machine-header {
-  border-bottom: 1px solid #E6E6E6;
-  padding-bottom: 15px;
-  font-size: 22px;
+  border-bottom: 1px solid darken(#ffffff, 10%);
+  padding-bottom: 10px;
+  padding-top: 10px;
+  font-size: 18px;
   line-height: 1;
   font-weight: bold;
+}
+
+.machine-body {
+  border-top: 1px solid #ffffff;
+  padding-top: 10px;
+}
+
+.machine-image {
+  height: @lg-height;
+  width: auto;
+  vertical-align: top;
+  margin-left: 10px;
+}
+
+.machine .machine-options-toggle {
+  display: inline-block;
+  width: @lg-height / 2;
+  height: @lg-height;
+  vertical-align: top;
+}
+
+.machine .machine-action-info {
+  display: inline-block;
+  min-height: 70px;
+  vertical-align: top;
+}
+
+.machine .machine-info-content {
+  padding-left: 10px;
+  padding-top: 5px;
+}
+
+/* Available machines */
+
+.machine.available .machine-options-toggle {
+  background: lighten(@color-primary, 10%);
+  color: lighten(@text-color-primary, 10%);
+}
+
+/* Used / busy machines */
+
+.machine.used .machine-options-toggle {
+  background: lighten(@color-danger, 10%);
+  color: lighten(@text-color-danger, 10%);
+}
+
+.machine.used .machine-time-label {
+  font-size: 10px;
+  line-height: 1.3;
+  font-weight: normal;
+  color: lighten(@text-color-default, 50%);
+}
+
+.machine.used .machine-time-value {
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 1.3;
+}
+
+/* Occupied machines */
+
+.machine.occupied .machine-options-toggle {
+  background: lighten(@color-warning, 10%);
+  color: lighten(@text-color-warning, 10%);
+}
+
+.machine.occupied .occupied-by-label {
+  font-size: 10px;
+  font-weight: normal;
+  color: lighten(@text-color-default, 50%);
+  line-height: 1.3;
+}
+
+.machine.occupied .occupied-by-value {
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 1.3;
+}
+
+.machine.occupied .machine-time-value {
+  font-size: 10px;
+  font-weight: normal;
+  line-height: 1.3;
 }
 
 .machine-info-toggle {
@@ -398,51 +527,9 @@ footer div {
   color: #6A6A6A;
 }
 
-.machine-info-content,
 .machine-unavailable-value {
   font-size: 12px;
   line-height: 17px;
-}
-
-.machine-body {
-  border-top: 1px solid #FFFFFF;
-  padding-top: 15px;
-}
-
-.machine-image {
-  height: @lg-height;
-  width: auto;
-}
-
-.machine-info-content {
-  padding-top: 15px;
-}
-
-.machine-action-info {
-  border-left-width: 3px;
-  border-left-style: solid;
-  min-height: 70px;
-  padding-left: 15px;
-}
-
-.machine-report-problem {
-  margin-left: 15px;
-}
-
-.machine.available .machine-action-info{
-  border-left-color: @color-primary;
-}
-
-.machine.used .machine-action-info {
-  border-left-color: @color-danger;
-}
-
-.machine.occupied .machine-action-info {
-  border-left-color: @color-warning;
-}
-
-.machine.unavailable .machine-action-info {
-  border-left-color: @color-neutral;
 }
 
 .machine-action-label {
@@ -462,12 +549,6 @@ footer div {
   line-height: 1;
 }
 
-.machine-time-value {
-  font-weight: bold;
-  font-size: 30px;
-  line-height: 1;
-}
-
 .machine-occupied-value {
   font-weight: bold;
   font-size: 16px;
@@ -476,6 +557,97 @@ footer div {
 
 .machine-occupied-time-value {
   margin-top: 5px;
+}
+
+.machine-extra-actions {
+  margin-top: 10px;
+}
+
+.machine-extra-actions li {
+  margin-bottom: 5px;
+  line-height: @lg-height / 2;
+}
+.machine-extra-actions li:last-child {
+  margin-bottom: 0;
+}
+
+.machine-extra-actions .action-item a {
+  display: inline-block;
+  width: @lg-height / 2;
+  height: @lg-height / 2;
+  text-align: center;
+  font-size: 20px;
+  margin-right: 10px;
+}
+
+.machine-extra-actions .action-item a.primary,
+.machine-extra-actions .action-item a.primary:focus,
+.machine-extra-actions .action-item a.primary:active,
+.machine-extra-actions .action-item a.primary:visited {
+  background: lighten(@color-primary, 10%);
+  color: lighten(@text-color-primary, 10%);
+}
+
+.machine-extra-actions .action-item a.primary:hover,
+.machine-extra-actions .action-item a.primary:focus:hover,
+.machine-extra-actions .action-item a.primary:active:hover,
+.machine-extra-actions .action-item a.primary:visited:hover {
+  background: @color-primary;
+  color: @text-color-primary;
+}
+
+.machine-extra-actions .action-item a.danger,
+.machine-extra-actions .action-item a.danger:focus,
+.machine-extra-actions .action-item a.danger:active,
+.machine-extra-actions .action-item a.danger:visited {
+  background: lighten(@color-danger, 10%);
+  color: lighten(@text-color-danger, 10%);
+}
+
+.machine-extra-actions .action-item a.danger:hover,
+.machine-extra-actions .action-item a.danger:focus:hover,
+.machine-extra-actions .action-item a.danger:active:hover,
+.machine-extra-actions .action-item a.danger:visited:hover {
+  background: @color-danger;
+  color: @text-color-danger;
+}
+
+table.machine-activation-table {
+  width: 100%;
+}
+
+td.force-button-table-cell {
+  width: @lg-height / 2;
+}
+
+td .force-switch {
+  width: @lg-height / 2;
+  height: @lg-height / 2;
+  line-height: @lg-height / 2;
+  text-align: center;
+  display: block; 
+}
+
+td .force-switch-on {
+  background: lighten(@color-primary, 10%);
+  color: @text-color-primary; 
+}
+td .force-switch-on:hover {
+  background: @color-primary;
+  color: darken(@text-color-primary, 10%); 
+}
+
+td .force-switch-off {
+  background: lighten(@color-danger, 10%);
+  color: @text-color-danger; 
+}
+td .force-switch-off:hover {
+  background: @color-danger;
+  color: darken(@text-color-danger, 10%); 
+}
+
+.machine-extra-actions .action-item .fa {
+  line-height: @lg-height / 2;
 }
 
 .delete-prompt-token {

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/ChimeraCoder/anaconda"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"sort"
@@ -29,6 +30,7 @@ type Machine struct {
 	Visible           bool
 	ConnectedMachines string `orm:"size(255)"`
 	SwitchRefCount    int64
+	UnderMaintenance  bool
 }
 
 // Define custom table name as for SQL table with a name "machines"
@@ -100,7 +102,7 @@ func GetAllMachines() ([]*Machine, error) {
 		var numActivations int64
 		query := fmt.Sprintf("SELECT COUNT(*) FROM %s WHERE machine_id=?",
 			a.TableName())
-		beego.Trace("Counting activations for machine with ID", machines[i].Id)
+		//beego.Trace("Counting activations for machine with ID", machines[i].Id)
 		err = o.Raw(query, machines[i].Id).QueryRow(&numActivations)
 		if err != nil {
 			return nil, fmt.Errorf("Failed to read activations: %v", err)
@@ -302,6 +304,45 @@ func (this *Machine) On() error {
 		return fmt.Errorf("Failed to update machine switch ref count: %v", err)
 	}
 	beego.Trace("Num affected rows during switch ref update:", num)
+
+	return nil
+}
+
+func (this *Machine) ReportBroken() error {
+	email := NewEmail()
+	to := beego.AppConfig.String("trelloemail")
+	subject := this.Name + " reported as broken"
+	message := "The machine " + this.Name + " seems to be broken."
+	return email.Send(to, subject, message)
+}
+
+func (this *Machine) SetUnderMaintenance(underMaintenance bool) error {
+	this.UnderMaintenance = underMaintenance
+
+	if err := UpdateMachine(this); err != nil {
+		return err
+	}
+
+	consumerKey := beego.AppConfig.String("maintenancetwitterconsumerkey")
+	consumerSecret := beego.AppConfig.String("maintenancetwitterconsumersecret")
+	key := beego.AppConfig.String("maintenancetwitteraccesskey")
+	secret := beego.AppConfig.String("maintenancetwitteraccesssecret")
+
+	anaconda.SetConsumerKey(consumerKey)
+	anaconda.SetConsumerSecret(consumerSecret)
+	api := anaconda.NewTwitterApi(key, secret)
+	defer api.Close()
+
+	var msg string
+	if underMaintenance {
+		msg = "The " + this.Name + " is undergoing maintenance works right now 😟"
+	} else {
+		msg = "The " + this.Name + " works again!!! 😀"
+	}
+
+	// If the tweet fails, we should not worry.
+	// This should not abort the maintenance call.
+	api.PostTweet(msg, nil)
 
 	return nil
 }

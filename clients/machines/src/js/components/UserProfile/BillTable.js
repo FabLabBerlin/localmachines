@@ -27,113 +27,25 @@ function formatDuration(t) {
 }
 
 var BillTables = React.createClass({
-  calculateMonthlyBills() {
-    var monthlyBills = [];
-    var activationsByMonth = _.groupBy(this.props.info.Activations, function(info) {
-      return moment(info.TimeStart).format('MMM YYYY');
-    });
+  mixins: [ reactor.ReactMixin ],
 
-    var membershipsByMonth = reactor.evaluateToJS(getters.getMembershipsByMonth);
-
-    var months = this.months();
-    _.each(months, function(month) {
-      monthlyBills.push(this.calculateMonthlyBill(activationsByMonth, membershipsByMonth, month.format('MMM YYYY')));
-    }.bind(this));
-    monthlyBills.reverse();
-    return monthlyBills;
-  },
-
-  calculateMonthlyBill(activationsByMonth, membershipsByMonth, month) {
-    // All prices in Eurocent
-    var monthlyBill = {
-      month: month,
-      activations: [],
-      memberships: [],
-      sums: {
-        activations: {
-          priceInclVAT: 0,
-          priceExclVAT: 0,
-          priceVAT: 0,
-          durations: 0
-        },
-        memberships: {
-          priceInclVAT: 0,
-          priceExclVAT: 0,
-          priceVAT: 0
-        },
-        total: {}
-      }
+  getDataBindings() {
+    return {
+      monthlyBills: getters.getMonthlyBills
     };
-
-    _.each(activationsByMonth[month], function(info) {
-      var duration = moment.duration(moment(info.TimeEnd).diff(moment(info.TimeStart))).asSeconds();
-      monthlyBill.sums.durations += duration;
-      var priceInclVAT = toCents(info.DiscountedTotal);
-      var priceExclVAT = toCents(subtractVAT(info.DiscountedTotal));
-      var priceVAT = priceInclVAT - priceExclVAT;
-      monthlyBill.sums.activations.priceInclVAT += priceInclVAT;
-      monthlyBill.sums.activations.priceExclVAT += priceExclVAT;
-      monthlyBill.sums.activations.priceVAT += priceVAT;
-      monthlyBill.activations.push({
-        MachineName: info.MachineName,
-        TimeStart: moment(info.TimeStart),
-        duration: duration,
-        priceExclVAT: priceExclVAT,
-        priceVAT: priceVAT,
-        priceInclVAT: priceInclVAT
-      });
-    });
-
-    _.each(membershipsByMonth[month], function(membership) {
-      var totalPrice = toCents(membership.MonthlyPrice);
-      var priceExclVat = toCents(subtractVAT(membership.MonthlyPrice));
-      var vat = totalPrice - priceExclVat;
-      monthlyBill.memberships.push({
-        startDate: moment(membership.StartDate),
-        endDate: moment(membership.StartDate).add(membership.Duration, 'd'),
-        priceExclVAT: priceExclVat,
-        priceVAT: vat,
-        priceInclVAT: totalPrice
-      });
-      monthlyBill.sums.memberships.priceInclVAT += totalPrice;
-      monthlyBill.sums.memberships.priceExclVAT += priceExclVat;
-      monthlyBill.sums.memberships.priceVAT += vat;
-    });
-
-    monthlyBill.sums.total = {
-      priceInclVAT: monthlyBill.sums.activations.priceInclVAT + monthlyBill.sums.memberships.priceInclVAT,
-      priceExclVAT: monthlyBill.sums.activations.priceExclVAT + monthlyBill.sums.memberships.priceExclVAT,
-      priceVAT: monthlyBill.sums.activations.priceVAT + monthlyBill.sums.memberships.priceVAT
-    };
-
-    return monthlyBill;
-  },
-
-  months() {
-    var userInfo = reactor.evaluateToJS(getters.getUserInfo);
-    var months = [];
-    for (var t = moment(userInfo.Created); t.isBefore(moment()); t.add(1, 'd')) {
-      months.push(t.clone());
-    }
-    months = _.uniq(months, function(month) {
-      return month.format('MMM YYYY');
-    });
-    return months;
   },
 
   render() {
-    if (this.props.info && this.props.info.Activations && this.props.info.Activations.length !== 0) {
+    if (this.state.monthlyBills && this.state.monthlyBills.length > 0) {
 
       var i = 0;
-      var nodes = [];
+      var tbody = [];
 
-      this.props.info.Activations.reverse();
-
-      _.each(this.calculateMonthlyBills(), function(bill) {
+      _.each(this.state.monthlyBills, function(bill) {
         if (i > 0) {
-          nodes.push(<tr key={i++}><td colSpan={6}></td></tr>);
+          tbody.push(<tr key={i++}><td colSpan={6}></td></tr>);
         }
-        nodes.push(
+        tbody.push(
           <tr key={i++}>
             <td colSpan={6}>
               <h4 className="text-left">{bill.month}</h4>
@@ -142,7 +54,7 @@ var BillTables = React.createClass({
           </tr>
         );
 
-        nodes.push(
+        tbody.push(
           <tr key={i++}>
             <th>Machine</th>
             <th>Date</th>
@@ -154,7 +66,7 @@ var BillTables = React.createClass({
         );
 
         _.each(bill.activations, function(info) {
-          nodes.push(
+          tbody.push(
             <tr key={i++}>
               <td>{info.MachineName}</td>
               <td>{formatDate(info.TimeStart)}</td>
@@ -166,7 +78,7 @@ var BillTables = React.createClass({
           );
         });
 
-        nodes.push(
+        tbody.push(
           <tr key={i++}>
             <td><label>Total Pay-As-You-Go</label></td>
             <td><label></label></td>
@@ -176,7 +88,7 @@ var BillTables = React.createClass({
             <td><label>{toEuro(bill.sums.activations.priceInclVAT)}</label> <i className="fa fa-eur"></i></td>
           </tr>
         );
-        nodes.push(
+        tbody.push(
           <tr key={i++}>
             <td><label>Total Memberships</label></td>
             <td><label></label></td>
@@ -186,7 +98,7 @@ var BillTables = React.createClass({
             <td><label>{toEuro(bill.sums.memberships.priceInclVAT)}</label> <i className="fa fa-eur"></i></td>
           </tr>
         );
-        nodes.push(
+        tbody.push(
           <tr key={i++}>
             <td><label>Total</label></td>
             <td><label></label></td>
@@ -202,7 +114,7 @@ var BillTables = React.createClass({
         <table className="bill-table table table-striped table-hover" >
           <thead></thead>
           <tbody>
-            {nodes}
+            {tbody}
           </tbody>
         </table>
       );

@@ -73,6 +73,30 @@ var MachineActions = {
       var activationInfo = _formatActivation(data);
       reactor.dispatch(actionTypes.SET_ACTIVATION_INFO, { activationInfo });
     });
+  },
+
+  pollMachines() {
+    const uid = reactor.evaluateToJS(getters.getUid);
+    ApiActions.getCall('/api/users/' + uid + '/machines', function(machineInfo) {
+      reactor.dispatch(actionTypes.SET_MACHINE_INFO, { machineInfo });
+    });
+  },
+
+  setUnderMaintenance({ mid, onOrOff }) {
+    ApiActions.postCall('/api/machines/' + mid + '/under_maintenance/' + onOrOff,
+                    {},
+                    function(data) {
+                      reactor.dispatch(actionTypes.SET_UNDER_MAINTENANCE, { mid, onOrOff });
+                      if (onOrOff === 'on') {
+                        toastr.info('Machine under maintenance');
+                      } else {
+                        toastr.info('Machine is working again');
+                      }
+                    },
+                    function() {
+                      toastr.error('Could not change maintenance mode');
+                    }
+    );
   }
 
 };

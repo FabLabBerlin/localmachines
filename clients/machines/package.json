@@ -56,6 +56,7 @@
     "rules": {
       "no-console": 0,
       "no-extra-bind": 0,
+      "no-trailing-spaces": 0,
       "no-undef": 0,
       "no-underscore-dangle": 0,
       "no-use-before-define": 0,

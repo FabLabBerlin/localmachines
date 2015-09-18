@@ -1,12 +1,12 @@
 var $ = require('jquery');
-var getters = require('../getters');
-var LoginStore = require('../stores/LoginStore');
-var LoginActions = require('../actions/LoginActions');
+var getters = require('../../getters');
+var LoginStore = require('../../stores/LoginStore');
+var LoginActions = require('../../actions/LoginActions');
 var {Navigation} = require('react-router');
 var React = require('react');
-var reactor = require('../reactor');
+var reactor = require('../../reactor');
 var toastr = require('toastr');
-var actionTypes = require('../actionTypes');
+var actionTypes = require('../../actionTypes');
 
 /*
  * LoginNfc
@@ -61,18 +61,6 @@ var LoginNfc = React.createClass({
       window.libnfc.asyncScan();
     } catch (e) {
       console.log(e.message);
-    }
-  },
-
-  /*
-   * When LoginStore is done with his work
-   */
-  onChangeLoginNFC() {
-    const isLogged = reactor.evaluateToJS(getters.getIsLogged);
-    if (isLogged) {
-      this.replaceWith('/machine');
-    } else {
-      setTimeout(this.connectJsToQt, 1000);
     }
   },
 
