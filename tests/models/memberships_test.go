@@ -85,8 +85,8 @@ func TestMemberships(t *testing.T) {
 						So(membership.AutoExtend, ShouldBeTrue)
 					})
 
-					Convey("AutoExtendDuration should be set to 30 by default", func() {
-						So(membership.AutoExtendDuration, ShouldEqual, 30)
+					Convey("AutoExtendDuration in months should be set to 1 by default", func() {
+						So(membership.AutoExtendDurationMonths, ShouldEqual, 1)
 					})
 
 					Convey("Unit should be set to `days`", func() {
@@ -232,7 +232,7 @@ func TestMemberships(t *testing.T) {
 			baseMembership.Unit = "days"
 			baseMembership.MachinePriceDeduction = 50
 			baseMembership.AutoExtend = true
-			baseMembership.AutoExtendDuration = 30
+			baseMembership.AutoExtendDurationMonths = 30
 			baseMembership.AffectedMachines = fmt.Sprintf("[%v,%v]", machineIdOne, machineIdTwo)
 
 			models.UpdateMembership(baseMembership)
@@ -401,7 +401,7 @@ func TestMemberships(t *testing.T) {
 			var userMembershipId int64
 			fakeUserId := int64(1)
 			loc, _ := time.LoadLocation("Europe/Berlin")
-			startTime := time.Date(2009, time.July, 10, 23, 0, 0, 0, loc)
+			startTime := time.Date(2015, time.July, 10, 23, 0, 0, 0, loc)
 
 			userMembershipId, err = models.CreateUserMembership(
 				fakeUserId, baseMembershipId, startTime)
@@ -430,7 +430,7 @@ func TestMemberships(t *testing.T) {
 				extendedUserMembership, _ := models.GetUserMembership(userMembershipId)
 
 				validEndDate := userMembership.EndDate.AddDate(
-					0, 0, int(baseMembership.AutoExtendDuration))
+					0, int(baseMembership.AutoExtendDurationMonths), 0)
 
 				So(extendedUserMembership.EndDate, ShouldHappenWithin,
 					time.Duration(1)*time.Second, validEndDate)
