@@ -186,7 +186,6 @@ app.controller('UserCtrl',
   }
 
   $scope.getAvailableMemberships = function() {
-    console.log('Getting available memberships...');
     $http({
       method: 'GET',
       url: '/api/memberships',
@@ -196,7 +195,7 @@ app.controller('UserCtrl',
     })
     .success(function(data) {
       $scope.memberships = data;
-      console.log($scope.memberships);
+      $('.adm-user-membership-end-date').pickadate({format: 'yyyy-mm-dd'});
     })
     .error(function(data, status) {
       console.log('Could not get memberships');
@@ -354,7 +353,6 @@ app.controller('UserCtrl',
       }
     });
     if (userMembership) {
-      console.log('userMembership:', userMembership);
       $http({
         method: 'PUT',
         url: '/api/users/' + $scope.user.Id + '/memberships/' + userMembershipId,
@@ -364,7 +362,10 @@ app.controller('UserCtrl',
           var transformed = _.extend({}, data);
           if (data.StartDate) {
             transformed.StartDate = new Date(data.StartDate);
-            transformed.EndDate = new Date(data.EndDate);
+          }
+          var endDate = $('.adm-user-membership-end-date[data-user-membership-id=' + userMembershipId + ']').val();
+          if (endDate) {
+            transformed.EndDate = new Date(endDate);
           }
           return JSON.stringify(transformed);
         },

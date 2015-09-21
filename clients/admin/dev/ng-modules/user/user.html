@@ -290,7 +290,18 @@
       <tr ng-repeat="userMembership in userMemberships">
         <td>{{userMembership.Title}}</td>
         <td>{{userMembership.StartDate}}</td>
-        <td>{{userMembership.EndDate}}</td>
+        <td>
+          <div class="input-group">
+            <input
+              class="adm-user-membership-end-date form-control datepicker"
+              data-user-membership-id="{{userMembership.Id}}"
+              placeholder="End Date"
+              value="{{userMembership.EndDate}}">
+            <div class="input-group-addon">
+              <i class="fa fa-calendar"></i>
+            </div>
+          </div>
+        </td>
         <td>
           <input type="checkbox" ng-model="userMembership.AutoExtend">
         </td>
