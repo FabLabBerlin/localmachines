@@ -280,6 +280,7 @@
         <th>Start Date</th>
         <th>End Date</th>
         <th>Extends Automatically</th>
+        <th>Status</th>
         <th style="min-width:60px">&nbsp;</th>
       </tr>
     </thead>
@@ -304,6 +305,11 @@
         </td>
         <td>
           <input type="checkbox" ng-model="userMembership.AutoExtend">
+        </td>
+        <td>
+          <div ng-show="userMembership.Active">Active</div>
+          <div ng-show="userMembership.Cancelled">Cancelled</div>
+          <div ng-show="userMembership.Inactive">Inactive</div>
         </td>
         <td>
           <button

@@ -217,6 +217,16 @@ app.controller('UserCtrl',
       $scope.userMemberships = _.map(data, function(userMembership) {
         userMembership.StartDate = new Date(Date.parse(userMembership.StartDate));
         userMembership.EndDate = new Date(Date.parse(userMembership.EndDate));
+        var today = new Date();
+        if (userMembership.StartDate <= today && today <= userMembership.EndDate) {
+          if (userMembership.AutoExtend) {
+            userMembership.Active = true;
+          } else {
+            userMembership.Cancelled = true;
+          }
+        } else {
+          userMembership.Inactive = true;
+        }
         userMembership.StartDate = formatDate(userMembership.StartDate);
         userMembership.EndDate = formatDate(userMembership.EndDate);
         return userMembership;
