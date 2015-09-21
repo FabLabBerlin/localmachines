@@ -413,11 +413,11 @@ func AutoExtendUserMemberships() error {
 					beego.Error("Failed to exec raw query:", err)
 					return fmt.Errorf("Failed to exec raw query")
 				}
-				beego.Trace("Auto extend duration in days:", autoExtendDuration)
+				beego.Trace("Auto extend duration in months:", autoExtendDuration)
 
 				// Extend the user membership end date by number of days stored
 				// in the base membership
-				userMembership.EndDate = userMembership.EndDate.AddDate(0, 0, int(autoExtendDuration))
+				userMembership.EndDate = userMembership.EndDate.AddDate(0, int(autoExtendDuration), 0)
 				beego.Trace("Extended user membership end date:", userMembership.EndDate)
 				_, err = o.Update(&userMembership, "end_date")
 				if err != nil {

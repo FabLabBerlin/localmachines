@@ -18,8 +18,8 @@ app.controller('MembershipCtrl',
   $scope.machines = [];
   $scope.membership = {
     Id: $routeParams.membershipId,
-    AutoExtend: true,      // default
-    AutoExtendDuration: 30 // values
+    AutoExtend: true,     // default
+    AutoExtendDuration: 1 // values
   };
 
   // Load machines first
