@@ -92,7 +92,7 @@ app.controller('MembershipCtrl',
 
     membership.AffectedMachines = affectedMachines;
     membership.MonthlyPrice = parseFloat(membership.MonthlyPrice);
-    membership.Duration = parseInt(membership.Duration);
+    membership.DurationMonths = parseInt(membership.DurationMonths);
     membership.MachinePriceDeduction = 
      parseInt(membership.MachinePriceDeduction);
     membership.AutoExtendDuration = 
