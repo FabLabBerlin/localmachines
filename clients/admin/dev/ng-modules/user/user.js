@@ -214,18 +214,10 @@ app.controller('UserCtrl',
       }
     })
     .success(function(userMembershipList) {
-      console.log('Got user membership list:');
-      console.log(userMembershipList);
       var data = userMembershipList.Data;
       $scope.userMemberships = _.map(data, function(userMembership) {
         userMembership.StartDate = new Date(Date.parse(userMembership.StartDate));
         userMembership.EndDate = new Date(Date.parse(userMembership.EndDate));
-        /*
-        _.merge(userMembership, {
-          EndDate: new Date(userMembership.StartDate)
-        });
-        */
-        //userMembership.EndDate.setDate(userMembership.StartDate.getDate() + userMembership.Duration);
         userMembership.StartDate = formatDate(userMembership.StartDate);
         userMembership.EndDate = formatDate(userMembership.EndDate);
         return userMembership;
@@ -352,6 +344,40 @@ app.controller('UserCtrl',
         }
       } // callback
     });
+  };
+
+  $scope.updateUserMembership = function(userMembershipId) {
+    var userMembership;
+    _.each($scope.userMemberships, function(um) {
+      if (um.Id && um.Id === userMembershipId) {
+        userMembership = um;
+      }
+    });
+    if (userMembership) {
+      console.log('userMembership:', userMembership);
+      $http({
+        method: 'PUT',
+        url: '/api/users/' + $scope.user.Id + '/memberships/' + userMembershipId,
+        headers: {'Content-Type': 'application/json' },
+        data: userMembership,
+        transformRequest: function(data) {
+          var transformed = _.extend({}, data);
+          if (data.StartDate) {
+            transformed.StartDate = new Date(data.StartDate);
+            transformed.EndDate = new Date(data.EndDate);
+          }
+          return JSON.stringify(transformed);
+        },
+      })
+      .success(function() {
+        toastr.success('Membership updated.');
+      })
+      .error(function() {
+        toastr.error('Error while trying to update user membership');
+      });
+    } else {
+      toastr.error('Fatal error.');
+    }
   };
 
   $scope.deleteUserMembership = function(userMembershipId) {

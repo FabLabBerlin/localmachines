@@ -341,6 +341,21 @@ func DeleteUserMembership(userMembershipId int64) error {
 	return nil
 }
 
+// Updates membership in the database
+func UpdateUserMembership(userMembership *UserMembership) error {
+	var err error
+	var num int64
+
+	o := orm.NewOrm()
+	num, err = o.Update(userMembership)
+	if err != nil {
+		return err
+	}
+
+	beego.Trace("Rows affected:", num)
+	return nil
+}
+
 // Automatically extend user membership end date if auto_extend for the specific
 // membership is true and the end_date is before current date.
 func AutoExtendUserMemberships() error {

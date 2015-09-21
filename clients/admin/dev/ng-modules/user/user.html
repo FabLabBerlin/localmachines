@@ -292,12 +292,15 @@
         <td>{{userMembership.StartDate}}</td>
         <td>{{userMembership.EndDate}}</td>
         <td>
-          <span ng-show="userMembership.AutoExtend">
-            <i class="fa fa-check"></i> Yes
-          </span>
-          <span ng-hide="userMembership.AutoExtend">
-            <i class="fa fa-ban"></i> No
-          </span>
+          <input type="checkbox" ng-model="userMembership.AutoExtend">
+        </td>
+        <td>
+          <button
+              type="button"
+              class="btn btn-warning btn-ico"
+              ng-click="updateUserMembership(userMembership.Id)">
+              <i class="fa fa-save"></i>
+            </button>
         </td>
         <td>
           <div class="pull-right">

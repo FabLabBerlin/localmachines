@@ -732,6 +732,39 @@ func (this *UsersController) DeleteUserMembership() {
 	this.ServeJson()
 }
 
+// @Title Put
+// @Description Update UserMembership
+// @Param	uid		path 	int	true						"User Membership Id"
+// @Param	body	body	models.UserMembership	true	"User Membership model"
+// @Success	200	ok
+// @Failure	400	Variable message
+// @Failure	401	Unauthorized
+// @Failure	403	Variable message
+// @router /:uid/memberships/:umid [put]
+func (this *UsersController) PutUserMembership() {
+	dec := json.NewDecoder(this.Ctx.Request.Body)
+	var userMembership models.UserMembership
+	if err := dec.Decode(&userMembership); err == nil {
+		beego.Info("userMembership: ", userMembership)
+	} else {
+		beego.Error("Failed to decode json", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	if !this.IsAdmin() {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	if err := models.UpdateUserMembership(&userMembership); err != nil {
+		beego.Error("UpdateMembership: ", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	this.Data["json"] = "ok"
+	this.ServeJson()
+}
+
 // @Title GetUserName
 // @Description Get user name data only
 // @Param	uid		path 	int	true		"User ID"
