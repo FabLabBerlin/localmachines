@@ -265,7 +265,7 @@ func GetUserMemberships(userId int64) (*UserMembershipList, error) {
 
 	// Joint query, select user memberships and expands them with
 	// membership base information.
-	sql := fmt.Sprintf("SELECT um.*, m.title, m.short_name, m.duration, m.unit, "+
+	sql := fmt.Sprintf("SELECT um.*, m.title, m.short_name, m.duration_months, "+
 		"m.monthly_price, m.machine_price_deduction, m.affected_machines "+
 		"FROM %s AS um "+
 		"JOIN %s m ON um.membership_id=m.id "+
