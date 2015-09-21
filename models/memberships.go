@@ -15,8 +15,7 @@ type Membership struct {
 	Id                       int64  `orm:"auto";"pk"`
 	Title                    string `orm:"size(100)"`
 	ShortName                string `orm:"size(100)"`
-	Duration                 int64
-	Unit                     string `orm:"size(100)"`
+	DurationMonths           int64
 	MonthlyPrice             float32
 	MachinePriceDeduction    int
 	AffectedMachines         string `orm:"type(text)"`
@@ -117,8 +116,7 @@ func CreateMembership(membershipName string) (int64, error) {
 	membership := Membership{}
 	membership.Title = membershipName
 	membership.AutoExtend = true
-	membership.Duration = 30
-	membership.Unit = "days"
+	membership.DurationMonths = 1
 	membership.AutoExtendDurationMonths = 1
 
 	id, err := o.Insert(&membership)
@@ -219,17 +217,8 @@ func CreateUserMembership(
 	userMembership.AutoExtend = baseMembership.AutoExtend
 
 	// Calculate end date by using base membership
-	if baseMembership.Unit == "days" {
-		userMembership.EndDate = startTime.AddDate(0, 0, int(baseMembership.Duration))
-	} else if baseMembership.Unit == "months" {
-		userMembership.EndDate = startTime.AddDate(0, int(baseMembership.Duration), 0)
-	} else if baseMembership.Unit == "years" {
-		userMembership.EndDate = startTime.AddDate(int(baseMembership.Duration), 0, 0)
-	} else {
-		userMembershipId = 0
-		err = fmt.Errorf("Incompatible base membership duration unit")
-		return
-	}
+	userMembership.EndDate = startTime.AddDate(
+		0, int(baseMembership.DurationMonths), 0)
 
 	// Store the user membership to database
 	o := orm.NewOrm()

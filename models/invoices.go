@@ -852,8 +852,8 @@ func (this *Invoice) enhanceActivation(activation *Activation) (
 
 	err := o.Raw(query, activation.MachineId).QueryRow(machine)
 	if err != nil {
-		//return nil, errors.New(fmt.Sprintf("Failed to get machine: %v", err))
-		beego.Info("Failed to get machine, ID: ", activation.MachineId)
+		beego.Error("Failed to get machine, ID: ", activation.MachineId, ":", err)
+		return nil, fmt.Errorf("Failed to get machine: %v", err)
 	}
 
 	invActivation.MachineId = int64(activation.MachineId)
@@ -905,7 +905,7 @@ func (this *Invoice) enhanceActivation(activation *Activation) (
 
 		// Get membership
 		mem := &Membership{}
-		query = fmt.Sprintf("SELECT title, short_name, duration, unit, "+
+		query = fmt.Sprintf("SELECT title, short_name, duration_months, "+
 			"machine_price_deduction, affected_machines FROM %s "+
 			"WHERE id=?", mem.TableName())
 		err = o.Raw(query, usrMem.MembershipId).QueryRow(mem)

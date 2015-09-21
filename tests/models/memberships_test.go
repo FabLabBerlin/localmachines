@@ -75,10 +75,9 @@ func TestMemberships(t *testing.T) {
 					})
 
 					Convey("The duration of the membership should be set "+
-						"to 30 days by default", func() {
+						"to 1 month by default", func() {
 
-						So(membership.Duration, ShouldEqual, 30)
-						So(membership.Unit, ShouldEqual, "days")
+						So(membership.DurationMonths, ShouldEqual, 1)
 					})
 
 					Convey("AutoExtend should be set to true by default", func() {
@@ -87,10 +86,6 @@ func TestMemberships(t *testing.T) {
 
 					Convey("AutoExtendDuration in months should be set to 1 by default", func() {
 						So(membership.AutoExtendDurationMonths, ShouldEqual, 1)
-					})
-
-					Convey("Unit should be set to `days`", func() {
-						So(membership.Unit, ShouldEqual, "days")
 					})
 				})
 			})
@@ -228,8 +223,7 @@ func TestMemberships(t *testing.T) {
 
 			baseMembershipId, _ := models.CreateMembership(baseMembership.Title)
 			baseMembership.Id = baseMembershipId
-			baseMembership.Duration = 30
-			baseMembership.Unit = "days"
+			baseMembership.DurationMonths = 1
 			baseMembership.MachinePriceDeduction = 50
 			baseMembership.AutoExtend = true
 			baseMembership.AutoExtendDurationMonths = 30
@@ -305,7 +299,8 @@ func TestMemberships(t *testing.T) {
 				})
 
 				Convey("The end date should be correct according to the base membership", func() {
-					validEndDate := gotUserMembership.StartDate.AddDate(0, 0, int(baseMembership.Duration))
+					validEndDate := gotUserMembership.StartDate.AddDate(
+						0, int(baseMembership.DurationMonths), 0)
 					So(gotUserMembership.EndDate.Equal(validEndDate), ShouldBeTrue)
 				})
 
