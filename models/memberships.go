@@ -12,16 +12,16 @@ import (
 )
 
 type Membership struct {
-	Id                    int64  `orm:"auto";"pk"`
-	Title                 string `orm:"size(100)"`
-	ShortName             string `orm:"size(100)"`
-	Duration              int64
-	Unit                  string `orm:"size(100)"`
-	MonthlyPrice          float32
-	MachinePriceDeduction int
-	AffectedMachines      string `orm:"type(text)"`
-	AutoExtend            bool
-	AutoExtendDuration    int64
+	Id                       int64  `orm:"auto";"pk"`
+	Title                    string `orm:"size(100)"`
+	ShortName                string `orm:"size(100)"`
+	Duration                 int64
+	Unit                     string `orm:"size(100)"`
+	MonthlyPrice             float32
+	MachinePriceDeduction    int
+	AffectedMachines         string `orm:"type(text)"`
+	AutoExtend               bool
+	AutoExtendDurationMonths int64
 }
 
 func (this *Membership) AffectedMachineIds() ([]int64, error) {
@@ -100,8 +100,9 @@ type UserMembershipList struct {
 
 // Get all memberships from database
 func GetAllMemberships() (memberships []*Membership, err error) {
+	m := Membership{} // Used only for the TableName() method
 	o := orm.NewOrm()
-	num, err := o.QueryTable("membership").All(&memberships)
+	num, err := o.QueryTable(m.TableName()).All(&memberships)
 	if err != nil {
 		beego.Error("Failed to get all memberships:", err)
 		return nil, errors.New("Failed to get all memberships")
@@ -118,7 +119,7 @@ func CreateMembership(membershipName string) (int64, error) {
 	membership.AutoExtend = true
 	membership.Duration = 30
 	membership.Unit = "days"
-	membership.AutoExtendDuration = 30
+	membership.AutoExtendDurationMonths = 1
 
 	id, err := o.Insert(&membership)
 	beego.Trace("Created membershipId:", id)
@@ -404,7 +405,7 @@ func AutoExtendUserMemberships() error {
 				beego.Trace("Current user membership end date:", userMembership.EndDate)
 
 				// Get the amount of days we should extend from the base membership
-				sql := fmt.Sprintf("SELECT auto_extend_duration FROM %s WHERE id=?",
+				sql := fmt.Sprintf("SELECT auto_extend_duration_months FROM %s WHERE id=?",
 					m.TableName())
 				var autoExtendDuration int64
 				beego.Trace("userMembership.MembershipId:", userMembership.MembershipId)
@@ -413,11 +414,11 @@ func AutoExtendUserMemberships() error {
 					beego.Error("Failed to exec raw query:", err)
 					return fmt.Errorf("Failed to exec raw query")
 				}
-				beego.Trace("Auto extend duration in days:", autoExtendDuration)
+				beego.Trace("Auto extend duration in months:", autoExtendDuration)
 
 				// Extend the user membership end date by number of days stored
 				// in the base membership
-				userMembership.EndDate = userMembership.EndDate.AddDate(0, 0, int(autoExtendDuration))
+				userMembership.EndDate = userMembership.EndDate.AddDate(0, int(autoExtendDuration), 0)
 				beego.Trace("Extended user membership end date:", userMembership.EndDate)
 				_, err = o.Update(&userMembership, "end_date")
 				if err != nil {
