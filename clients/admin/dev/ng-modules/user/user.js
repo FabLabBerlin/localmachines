@@ -227,9 +227,14 @@ app.controller('UserCtrl',
       var data = userMembershipList.Data;
       $scope.userMemberships = _.map(data, function(userMembership) {
         
+        console.log('User membership ID: ' + userMembership.Id);
+        console.log('User membership start date');
+        console.log(userMembership.StartDate);
         userMembership.StartDate = 
           new Date(Date.parse(userMembership.StartDate));
         
+        console.log('User membership end date');
+        console.log(userMembership.EndDate);
         userMembership.EndDate = new Date(Date.parse(userMembership.EndDate));
         var today = new Date();
         
