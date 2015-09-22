@@ -2,6 +2,7 @@ package modelTest
 
 import (
 	"testing"
+	"time"
 
 	"github.com/kr15h/fabsmith/models"
 	. "github.com/smartystreets/goconvey/convey"
@@ -80,7 +81,7 @@ func TestMachine(t *testing.T) {
 				user.Username = "hesus"
 				uid, _ := models.CreateUser(&user)
 
-				models.CreateActivation(mid, uid)
+				models.CreateActivation(mid, uid, time.Now())
 				allMachines, _ := models.GetAllMachines()
 
 				So(allMachines[0].Id, ShouldEqual, mid)

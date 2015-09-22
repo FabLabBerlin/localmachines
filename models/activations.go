@@ -1,7 +1,6 @@
 package models
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
 	"time"
@@ -10,19 +9,16 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
-func init() {
-	orm.RegisterModel(new(Activation))
-}
-
+// Activation type/model to hold information of single activation.
 type Activation struct {
-	Id               int `orm:"auto";"pk"`
-	InvoiceId        int `orm:"null"`
+	Id               int64 `orm:"auto";"pk"`
+	InvoiceId        int   `orm:"null"`
 	UserId           int64
-	MachineId        int
+	MachineId        int64
 	Active           bool
 	TimeStart        time.Time
 	TimeEnd          time.Time `orm:"null"`
-	TimeTotal        int
+	TimeTotal        int64
 	UsedKwh          float32
 	DiscountPercents float32
 	DiscountFixed    float32
@@ -32,16 +28,22 @@ type Activation struct {
 	Changed          bool
 }
 
+// Returns mysql table name of the table mapped to the Activation model.
 func (this *Activation) TableName() string {
 	return "activations"
 }
 
+func init() {
+	orm.RegisterModel(new(Activation))
+}
+
+// Type to be used as response model for the HTTP GET activations request.
 type GetActivationsResponse struct {
 	NumActivations  int64
 	ActivationsPage *[]Activation
 }
 
-// Get activations of a specific user
+// Gets activations of a specific user between specified start and end time.
 func GetUserActivations(startTime time.Time,
 	endTime time.Time,
 	userId int64) (*[]Activation, error) {
@@ -75,7 +77,7 @@ func GetUserActivations(startTime time.Time,
 	return &activations, nil
 }
 
-// Get activations of a specific user
+// Gets activations of a specific user by consuming user ID.
 func GetUserActivationsStartTime(userId int64) (startTime time.Time, err error) {
 	query := "SELECT min(time_start) FROM activations WHERE user_id = ?"
 	o := orm.NewOrm()
@@ -83,7 +85,9 @@ func GetUserActivationsStartTime(userId int64) (startTime time.Time, err error) 
 	return
 }
 
-// Get filtered activations in a paged manner
+// Gets filtered activations in a paged manner between start and end time.
+// Items per page and page number can be specified. Already invoiced
+// activations can be excluded.
 func GetActivations(startTime time.Time,
 	endTime time.Time,
 	userId int64,
@@ -128,7 +132,7 @@ func GetActivations(startTime time.Time,
 	return &activations, nil
 }
 
-// Get number of matching activations.
+// Gets number of matching activations.
 // Used together with GetActivations.
 func GetNumActivations(startTime time.Time,
 	endTime time.Time,
@@ -156,7 +160,7 @@ func GetNumActivations(startTime time.Time,
 	return cnt, nil
 }
 
-// Get only active activations (active meaning that users are using
+// Gets only active activations (active meaning that users are using
 // the machine/resource currently)
 func GetActiveActivations() ([]*Activation, error) {
 	var activations []*Activation
@@ -173,14 +177,14 @@ func GetActiveActivations() ([]*Activation, error) {
 	for i := 0; i < len(activations); i++ {
 		timeNow := time.Now()
 		activations[i].TimeTotal =
-			int(timeNow.Sub(activations[i].TimeStart).Seconds())
+			int64(timeNow.Sub(activations[i].TimeStart).Seconds())
 	}
 
 	return activations, nil
 }
 
-// Creates activation and returns activation ID
-func CreateActivation(machineId, userId int64) (int64, error) {
+// Creates activation and returns activation ID.
+func CreateActivation(machineId, userId int64, startTime time.Time) (activationId int64, err error) {
 
 	// Check if machine with machineId exists
 	o := orm.NewOrm()
@@ -188,7 +192,7 @@ func CreateActivation(machineId, userId int64) (int64, error) {
 	machineExists := o.QueryTable(mch.TableName()).Filter("Id", machineId).Exist()
 	beego.Trace("machineExists:", machineExists)
 	if !machineExists {
-		return 0, errors.New("Machine with provided ID does not exist")
+		return 0, fmt.Errorf("Machine with provided ID does not exist")
 	}
 
 	// Check for duplicate activations
@@ -199,12 +203,11 @@ func CreateActivation(machineId, userId int64) (int64, error) {
 	numDuplicates, err := o.Raw(query, machineId, userId).
 		QueryRows(&dupActivations)
 	if err != nil {
-		beego.Error("Could not get duplicate activations")
-		return 0, err
+		return 0, fmt.Errorf("Could not get duplicate activations: %v", err)
 	}
 	if numDuplicates > 0 {
 		beego.Error("Duplicate activations found:", numDuplicates)
-		return 0, errors.New("Duplicate activations found")
+		return 0, fmt.Errorf("Duplicate activations found")
 	}
 
 	// Check if the machine is available
@@ -222,26 +225,42 @@ func CreateActivation(machineId, userId int64) (int64, error) {
 	// Beego model time stuff is bad, here we use workaround that works.
 	// TODO: explore the beego ORM time management,
 	// try to fix or use as it should be used.
-	var res sql.Result
-	query = fmt.Sprintf("INSERT INTO %s VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-		act.TableName())
-	res, err = o.Raw(query,
-		nil, nil, userId, machineId, true,
-		time.Now().Format("2006-01-02 15:04:05"),
-		nil, 0, 0, 0, 0, 0, "", false, false).Exec()
-	if err != nil {
-		beego.Error("Failed to insert activation in to DB:", err)
-		return 0, err
-	}
+	/*
+		var res sql.Result
+		query = fmt.Sprintf("INSERT INTO %s VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+			act.TableName())
+		res, err = o.Raw(query,
+			nil, nil, userId, machineId, true,
+			time.Now().Format("2006-01-02 15:04:05"),
+			nil, 0, 0, 0, 0, 0, "", false, false).Exec()
+		if err != nil {
+			beego.Error("Failed to insert activation in to DB:", err)
+			return 0, err
+		}
+	*/
 
-	// Get the ID of the record we just inserted
-	var activationId int64
-	activationId, err = res.LastInsertId()
+	newActivation := Activation{}
+	newActivation.UserId = userId
+	newActivation.MachineId = machineId
+	newActivation.Active = true
+	newActivation.TimeStart = startTime
+	activationId, err = o.Insert(&newActivation)
 	if err != nil {
-		beego.Error("Failed to get insterted activation ID")
-		return 0, err
+		beego.Error("Failed to insert activation:", err)
+		return 0, fmt.Errorf("Failed to insert activation %v", err)
 	}
 	beego.Trace("Created activation with ID", activationId)
+
+	// Get the ID of the record we just inserted
+	/*
+		var activationId int64
+		activationId, err = res.LastInsertId()
+		if err != nil {
+			beego.Error("Failed to get insterted activation ID")
+			return 0, err
+		}
+		beego.Trace("Created activation with ID", activationId)
+	*/
 
 	// Update machine as unavailable
 	_, err = o.QueryTable(mch.TableName()).
@@ -254,53 +273,112 @@ func CreateActivation(machineId, userId int64) (int64, error) {
 	return activationId, nil
 }
 
-// Close running/active activation
-func CloseActivation(activationId int64) error {
+func GetActivation(activationId int64) (activation *Activation, err error) {
+	activation = &Activation{}
+	activation.Id = activationId
+
+	o := orm.NewOrm()
+	err = o.Read(activation)
+
+	if err != nil {
+		beego.Error("Failed to read activation:", err)
+		return nil, fmt.Errorf("Failed to read activation: %v", err)
+	}
+
+	return
+}
+
+// Close running/active activation.
+func CloseActivation(activationId int64, endTime time.Time) error {
 
 	// Get activation start time and machine id
-	var tempModel struct {
-		TimeStart string
-		MachineId int
-	}
-	o := orm.NewOrm()
-	act := Activation{}
-	query := fmt.Sprintf("SELECT time_start, machine_id FROM %s WHERE active = true AND id = ?", act.TableName())
-	err := o.Raw(query, activationId).QueryRow(&tempModel)
+	/*
+		var tempModel struct {
+			TimeStart string
+			MachineId int
+		}
+		o := orm.NewOrm()
+		act := Activation{}
+		query := fmt.Sprintf("SELECT time_start, machine_id FROM %s WHERE active = true AND id = ?", act.TableName())
+		err := o.Raw(query, activationId).QueryRow(&tempModel)
+		if err != nil {
+			beego.Error("Could not get activation:", err)
+			return err
+		}
+	*/
+
+	activation, err := GetActivation(activationId)
 	if err != nil {
-		beego.Error("Could not get activation:", err)
-		return err
+		beego.Error("Failed to get activation:", err)
+		return fmt.Errorf("Failed to get activation: %v", err)
 	}
 
 	// Calculate activation duration
-	const timeForm = "2006-01-02 15:04:05"
-	timeStart, _ := time.ParseInLocation(timeForm, tempModel.TimeStart, time.Now().Location())
-	timeNow := time.Now() // time.Now().Format("2006-01-02 15:04:05")
-	totalDuration := timeNow.Sub(timeStart)
+	activation.TimeEnd = endTime
+	activation.TimeTotal = int64(endTime.Sub(activation.TimeStart).Seconds())
 
-	// Update activation
-	query = fmt.Sprintf("UPDATE %s SET active=false, time_end=?, "+
-		"time_total=? WHERE id=?", act.TableName())
-	_, err = o.Raw(query,
-		timeNow.Format("2006-01-02 15:04:05"),
-		totalDuration.Seconds(), activationId).Exec()
+	err = UpdateActivation(activation)
 	if err != nil {
 		beego.Error("Failed to update activation:", err)
-		return err
+		return fmt.Errorf("Failed to update activation: %v", err)
+	}
+
+	// Update activation
+	/*
+		query = fmt.Sprintf("UPDATE %s SET active=false, time_end=?, "+
+			"time_total=? WHERE id=?", act.TableName())
+		_, err = o.Raw(query,
+			endTime.Format("2006-01-02 15:04:05"),
+			totalDuration.Seconds(), activationId).Exec()
+		if err != nil {
+			beego.Error("Failed to update activation:", err)
+			return err
+		}
+	*/
+
+	var machine *Machine
+	machine, err = GetMachine(activation.MachineId)
+	if err != nil {
+		beego.Error("Failed to get machine:", err)
+		return fmt.Errorf("Failed to get machine: %v", err)
+	}
+
+	machine.Available = true
+	err = UpdateMachine(machine)
+	if err != nil {
+		beego.Error("Failed to update machine:", err)
+		return fmt.Errorf("Failed to update machine: %v", err)
 	}
 
 	// Make the machine available
-	mch := Machine{}
-	_, err = o.QueryTable(mch.TableName()).Filter("Id", tempModel.MachineId).
-		Update(orm.Params{"available": true})
-	if err != nil {
-		beego.Error("Failed to available machine")
-		return err
-	}
+	/*
+		mch := Machine{}
+		_, err = o.QueryTable(mch.TableName()).Filter("Id", tempModel.MachineId).
+			Update(orm.Params{"available": true})
+		if err != nil {
+			beego.Error("Failed to available machine")
+			return err
+		}
+	*/
+
 	return nil
 }
 
-// Delete activation.
-// It might happen that an activation is created by accident.
+func UpdateActivation(activation *Activation) error {
+	o := orm.NewOrm()
+	num, err := o.Update(activation)
+
+	if err != nil {
+		beego.Error("Failed to update activation:", err)
+		return fmt.Errorf("Failed to update activation: %v", err)
+	}
+
+	beego.Trace("Affected num rows:", num)
+
+	return nil
+}
+
+// Delete activation matching an activation ID.
 func DeleteActivation(activationId int64) error {
 
 	// Set machine of the activation available
@@ -333,7 +411,7 @@ func DeleteActivation(activationId int64) error {
 	return nil
 }
 
-// Get the machine ID of a specific activation
+// Gets the machine ID of a specific activation defined by activation ID.
 func GetActivationMachineId(activationId int64) (int64, error) {
 	activationModel := Activation{}
 	o := orm.NewOrm()

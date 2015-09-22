@@ -23,7 +23,7 @@ func CreateMembershipsActivation(userId, machineId int64, startTime time.Time, m
 	activation.TimeStart = startTime
 	activation.TimeEnd = activation.TimeStart.Add(time.Duration(minutes) * time.Minute)
 	activation.UserId = userId
-	activation.MachineId = int(machineId)
+	activation.MachineId = machineId
 
 	o := orm.NewOrm()
 	id, e := o.Insert(&activation)
