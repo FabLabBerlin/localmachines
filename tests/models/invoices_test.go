@@ -59,7 +59,6 @@ func TestInvoiceActivation(t *testing.T) {
 			}
 		})
 		Convey("Testing AddRowXlsx", func() {
-			inv := models.Invoice{}
 			testTable := [][]interface{}{
 				[]interface{}{"", "Machine Name", "Product ID", "Start Time", "Usage", "Usage Unit", "€ per Unit", "Total €", "Memberships", "Discounted €"},
 				[]interface{}{"", "Lasercutter", "Undefined", TIME_START.Format(time.RFC1123), "12", "minute", "0.50", "6.00", "HP (50%)", "3.00"},
@@ -67,8 +66,8 @@ func TestInvoiceActivation(t *testing.T) {
 			invAct := CreateTestInvActivation(22, "Lasercutter", 12, 0.5)
 			file := xlsx.NewFile()
 			sheet := file.AddSheet("User Summaries")
-			inv.AddRowActivationsHeaderXlsx(sheet)
-			invAct.AddRowXlsx(sheet)
+			models.AddRowActivationsHeaderXlsx(sheet)
+			models.AddRowXlsx(sheet, invAct)
 			m := 2
 			So(len(sheet.Rows), ShouldEqual, m)
 			for i := 0; i < m; i++ {
