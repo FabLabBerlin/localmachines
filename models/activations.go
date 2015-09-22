@@ -187,6 +187,7 @@ func GetActiveActivations() ([]*Activation, error) {
 func CreateActivation(machineId, userId int64, startTime time.Time) (activationId int64, err error) {
 
 	// Check if machine with machineId exists
+	// TODO: Replace this with a more readable helper function
 	o := orm.NewOrm()
 	mch := Machine{}
 	machineExists := o.QueryTable(mch.TableName()).Filter("Id", machineId).Exist()
@@ -196,6 +197,7 @@ func CreateActivation(machineId, userId int64, startTime time.Time) (activationI
 	}
 
 	// Check for duplicate activations
+	// TODO: Replace this with a more readable helper function
 	var dupActivations []Activation
 	act := Activation{} // Used to get table name of the model
 	query := fmt.Sprintf("SELECT id FROM %s WHERE machine_id = ? "+
@@ -222,23 +224,6 @@ func CreateActivation(machineId, userId int64, startTime time.Time) (activationI
 		return 0, fmt.Errorf("Machine ID %s not available", machineId)
 	}
 
-	// Beego model time stuff is bad, here we use workaround that works.
-	// TODO: explore the beego ORM time management,
-	// try to fix or use as it should be used.
-	/*
-		var res sql.Result
-		query = fmt.Sprintf("INSERT INTO %s VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-			act.TableName())
-		res, err = o.Raw(query,
-			nil, nil, userId, machineId, true,
-			time.Now().Format("2006-01-02 15:04:05"),
-			nil, 0, 0, 0, 0, 0, "", false, false).Exec()
-		if err != nil {
-			beego.Error("Failed to insert activation in to DB:", err)
-			return 0, err
-		}
-	*/
-
 	newActivation := Activation{}
 	newActivation.UserId = userId
 	newActivation.MachineId = machineId
@@ -250,17 +235,6 @@ func CreateActivation(machineId, userId int64, startTime time.Time) (activationI
 		return 0, fmt.Errorf("Failed to insert activation %v", err)
 	}
 	beego.Trace("Created activation with ID", activationId)
-
-	// Get the ID of the record we just inserted
-	/*
-		var activationId int64
-		activationId, err = res.LastInsertId()
-		if err != nil {
-			beego.Error("Failed to get insterted activation ID")
-			return 0, err
-		}
-		beego.Trace("Created activation with ID", activationId)
-	*/
 
 	// Update machine as unavailable
 	_, err = o.QueryTable(mch.TableName()).
@@ -291,29 +265,13 @@ func GetActivation(activationId int64) (activation *Activation, err error) {
 // Close running/active activation.
 func CloseActivation(activationId int64, endTime time.Time) error {
 
-	// Get activation start time and machine id
-	/*
-		var tempModel struct {
-			TimeStart string
-			MachineId int
-		}
-		o := orm.NewOrm()
-		act := Activation{}
-		query := fmt.Sprintf("SELECT time_start, machine_id FROM %s WHERE active = true AND id = ?", act.TableName())
-		err := o.Raw(query, activationId).QueryRow(&tempModel)
-		if err != nil {
-			beego.Error("Could not get activation:", err)
-			return err
-		}
-	*/
-
 	activation, err := GetActivation(activationId)
 	if err != nil {
 		beego.Error("Failed to get activation:", err)
 		return fmt.Errorf("Failed to get activation: %v", err)
 	}
 
-	// Calculate activation duration
+	// Calculate activation duration and update activation.
 	activation.TimeEnd = endTime
 	activation.TimeTotal = int64(endTime.Sub(activation.TimeStart).Seconds())
 
@@ -323,19 +281,7 @@ func CloseActivation(activationId int64, endTime time.Time) error {
 		return fmt.Errorf("Failed to update activation: %v", err)
 	}
 
-	// Update activation
-	/*
-		query = fmt.Sprintf("UPDATE %s SET active=false, time_end=?, "+
-			"time_total=? WHERE id=?", act.TableName())
-		_, err = o.Raw(query,
-			endTime.Format("2006-01-02 15:04:05"),
-			totalDuration.Seconds(), activationId).Exec()
-		if err != nil {
-			beego.Error("Failed to update activation:", err)
-			return err
-		}
-	*/
-
+	// Make the machine available again.
 	var machine *Machine
 	machine, err = GetMachine(activation.MachineId)
 	if err != nil {
@@ -349,17 +295,6 @@ func CloseActivation(activationId int64, endTime time.Time) error {
 		beego.Error("Failed to update machine:", err)
 		return fmt.Errorf("Failed to update machine: %v", err)
 	}
-
-	// Make the machine available
-	/*
-		mch := Machine{}
-		_, err = o.QueryTable(mch.TableName()).Filter("Id", tempModel.MachineId).
-			Update(orm.Params{"available": true})
-		if err != nil {
-			beego.Error("Failed to available machine")
-			return err
-		}
-	*/
 
 	return nil
 }
