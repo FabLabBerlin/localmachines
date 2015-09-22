@@ -152,7 +152,7 @@ const getMonthlyBills = [
         monthlyBill.sums.activations.priceExclVAT += priceExclVAT;
         monthlyBill.sums.activations.priceVAT += priceVAT;
         monthlyBill.activations.push({
-          MachineName: info.MachineName,
+          MachineName: info.Machine.Name,
           TimeStart: moment(info.TimeStart),
           duration: duration,
           priceExclVAT: priceExclVAT,

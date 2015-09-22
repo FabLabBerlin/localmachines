@@ -22,10 +22,7 @@ func AddRowXlsx(sheet *xlsx.Sheet, invActivation *InvoiceActivation) error {
 	row := sheet.AddRow()
 	row.AddCell()
 	cell := row.AddCell()
-	cell.Value = invActivation.MachineName
-
-	cell = row.AddCell()
-	cell.Value = invActivation.MachineProductId
+	cell.Value = invActivation.Machine.Name
 
 	cell = row.AddCell()
 	if invActivation.TimeStart.Unix() > 0 {
@@ -36,10 +33,10 @@ func AddRowXlsx(sheet *xlsx.Sheet, invActivation *InvoiceActivation) error {
 	cell.SetFloatWithFormat(invActivation.MachineUsage, FORMAT_4_DIGIT)
 
 	cell = row.AddCell()
-	cell.Value = invActivation.MachineUsageUnit
+	cell.Value = invActivation.Machine.PriceUnit
 
 	cell = row.AddCell()
-	cell.SetFloatWithFormat(invActivation.MachinePricePerUnit, FORMAT_2_DIGIT)
+	cell.SetFloatWithFormat(float64(invActivation.Machine.Price), FORMAT_2_DIGIT)
 
 	cell = row.AddCell()
 	cell.SetFloatWithFormat(invActivation.PriceTotalExclDisc(), FORMAT_2_DIGIT)
@@ -62,8 +59,6 @@ func AddRowActivationsHeaderXlsx(sheet *xlsx.Sheet) {
 	row.AddCell()
 	cell := row.AddCell()
 	cell.Value = "Machine Name"
-	cell = row.AddCell()
-	cell.Value = "Product ID"
 	cell = row.AddCell()
 	cell.Value = "Start Time"
 	cell = row.AddCell()
