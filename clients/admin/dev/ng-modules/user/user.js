@@ -194,8 +194,19 @@ app.controller('UserCtrl',
       }
     })
     .success(function(data) {
+
       $scope.memberships = data;
-      $('.adm-user-membership-end-date').pickadate({format: 'yyyy-mm-dd'});
+      $('.adm-user-membership-end-date').each(function() {
+        var eachUserMembershipId = $(this).attr('data-user-membership-id');
+        eachUserMembershipId = parseInt(eachUserMembershipId);
+        $(this).pickadate({
+          format: 'yyyy-mm-dd',
+          onSet: function(setWhat) {
+            $scope.updateUserMembership(eachUserMembershipId);
+          }
+        });
+      });
+
     })
     .error(function(data, status) {
       console.log('Could not get memberships');
@@ -215,18 +226,26 @@ app.controller('UserCtrl',
     .success(function(userMembershipList) {
       var data = userMembershipList.Data;
       $scope.userMemberships = _.map(data, function(userMembership) {
-        userMembership.StartDate = new Date(Date.parse(userMembership.StartDate));
+        
+        userMembership.StartDate = 
+          new Date(Date.parse(userMembership.StartDate));
+        
         userMembership.EndDate = new Date(Date.parse(userMembership.EndDate));
         var today = new Date();
-        if (userMembership.StartDate <= today && today <= userMembership.EndDate) {
+        
+        if (userMembership.StartDate <= today && 
+          today <= userMembership.EndDate) {
+          
           if (userMembership.AutoExtend) {
             userMembership.Active = true;
           } else {
             userMembership.Cancelled = true;
           }
+
         } else {
           userMembership.Inactive = true;
         }
+
         userMembership.StartDate = formatDate(userMembership.StartDate);
         userMembership.EndDate = formatDate(userMembership.EndDate);
         return userMembership;
