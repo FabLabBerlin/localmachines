@@ -145,33 +145,6 @@ func GetUserMemberships(userId int64) (*UserMembershipList, error) {
 	}
 	beego.Trace("Got num user memberships:", num)
 
-	// Loop through all of the user memberships and get the right time
-	// by using raw queries. Convert start time and end time to UTC.
-	type Dates struct {
-		StartDate string
-		EndDate   string
-	}
-	parseLayout := "2006-01-02 15:04:05"
-	for i := 0; i < len(userMemberships); i++ {
-		beego.Trace("---")
-		beego.Trace(userMemberships[i].StartDate, userMemberships[i].EndDate)
-		sql = fmt.Sprintf("SELECT start_date, end_date FROM %s WHERE id=?",
-			um.TableName())
-		var dates Dates
-		err = o.Raw(sql, userMemberships[i].Id).QueryRow(&dates)
-		if err != nil {
-			beego.Error("Failed to execute raw query:", err)
-		} else {
-			userMemberships[i].StartDate, _ = time.ParseInLocation(parseLayout,
-				dates.StartDate,
-				time.UTC)
-			userMemberships[i].EndDate, _ = time.ParseInLocation(parseLayout,
-				dates.EndDate,
-				time.UTC)
-			beego.Trace(userMemberships[i].StartDate, userMemberships[i].EndDate)
-		}
-	}
-
 	userMembershipList := UserMembershipList{}
 	userMembershipList.Data = userMemberships
 
