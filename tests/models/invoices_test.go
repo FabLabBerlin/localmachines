@@ -170,9 +170,6 @@ func TestInvoiceActivation(t *testing.T) {
 			Convey("File path should be there", func() {
 				So(readbackInvoice.FilePath, ShouldEqual, invoice.FilePath)
 			})
-
-			// Remove temp files directory used for the invoice files
-			os.RemoveAll("files")
 		})
 
 		Convey("When trying to get all invoices", func() {
@@ -187,6 +184,8 @@ func TestInvoiceActivation(t *testing.T) {
 			})
 		})
 
+		// Remove temp files directory used for the invoice files
+		os.RemoveAll("files")
 	})
 
 }
