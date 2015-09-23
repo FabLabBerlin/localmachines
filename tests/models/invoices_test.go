@@ -167,7 +167,24 @@ func TestInvoiceActivation(t *testing.T) {
 					time.Duration(1)*time.Second, endTime)
 			})
 
+			Convey("File path should be there", func() {
+				So(readbackInvoice.FilePath, ShouldEqual, invoice.FilePath)
+			})
+
+			// Remove temp files directory used for the invoice files
 			os.RemoveAll("files")
+		})
+
+		Convey("When trying to get all invoices", func() {
+			invoices, err := models.GetAllInvoices()
+
+			Convey("There should be no error", func() {
+				So(err, ShouldBeNil)
+			})
+
+			Convey("The number of returned invoices should be more than 0", func() {
+				So(len(*invoices), ShouldBeGreaterThan, 0)
+			})
 		})
 
 	})

@@ -88,6 +88,12 @@ func ResetDB() {
 		o.Delete(&item)
 	}
 
+	var invoices []models.Invoice
+	o.QueryTable("invoices").All(&invoices)
+	for _, item := range invoices {
+		o.Delete(&item)
+	}
+
 	var netswitches []models.NetSwitchMapping
 	o.QueryTable("netswitch").All(&netswitches)
 	for _, item := range netswitches {

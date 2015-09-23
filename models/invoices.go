@@ -305,61 +305,20 @@ func CalculateInvoiceSummary(
 	return invoice, invSummary, err
 }
 
-func GetAllInvoices() (*[]Invoice, error) {
-
-	type CustomInvoice struct {
-		Id          int64
-		Activations string
-		FilePath    string
-		Created     string
-		PeriodFrom  string
-		PeriodTo    string
-	}
-
-	customInvoices := []CustomInvoice{}
+// Gets all invoices from the database
+func GetAllInvoices() (invoices *[]Invoice, err error) {
 	inv := Invoice{}
+	var readInvoices []Invoice
 	o := orm.NewOrm()
-
-	query := fmt.Sprintf("SELECT i.* FROM %s i ORDER BY i.id DESC",
-		inv.TableName())
-	num, err := o.Raw(query).QueryRows(&customInvoices)
-
+	var num int64
+	num, err = o.QueryTable(inv.TableName()).OrderBy("-Id").All(&readInvoices)
 	if err != nil {
-		return nil, errors.New(
-			fmt.Sprintf("Failed to get all invoices: %v", err))
+		beego.Error("Failed to get all invoices:", err)
+		return nil, fmt.Errorf("Failed to get all invoices: %v", err)
 	}
-	beego.Trace("Got num invoices:", num)
+	beego.Info("Got num invoices:", num)
 
-	invoices := []Invoice{}
-
-	for invIter := 0; invIter < len(customInvoices); invIter++ {
-		inv := Invoice{}
-		inv.Id = customInvoices[invIter].Id
-		inv.Activations = customInvoices[invIter].Activations
-		inv.FilePath = customInvoices[invIter].FilePath
-		inv.Created, err = time.ParseInLocation("2006-01-02 15:04:05",
-			customInvoices[invIter].Created, time.Now().Location())
-		if err != nil {
-			return nil, errors.New(
-				fmt.Sprintf("Failed to parse invoice: %v", err))
-		}
-		inv.PeriodFrom, err = time.ParseInLocation("2006-01-02 15:04:05",
-			customInvoices[invIter].PeriodFrom, time.Now().Location())
-		if err != nil {
-			return nil, errors.New(
-				fmt.Sprintf("Failed to parse invoice: %v", err))
-		}
-		inv.PeriodTo, err = time.ParseInLocation("2006-01-02 15:04:05",
-			customInvoices[invIter].PeriodTo, time.Now().Location())
-		if err != nil {
-			return nil, errors.New(
-				fmt.Sprintf("Failed to parse invoice: %v", err))
-		}
-
-		invoices = append(invoices, inv)
-	}
-
-	return &invoices, nil
+	return &readInvoices, nil
 }
 
 func DeleteInvoice(invoiceId int64) error {
