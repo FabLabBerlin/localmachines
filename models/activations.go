@@ -247,6 +247,7 @@ func CreateActivation(machineId, userId int64, startTime time.Time) (activationI
 	return activationId, nil
 }
 
+// Gets pointer to activation store by activation ID.
 func GetActivation(activationId int64) (activation *Activation, err error) {
 	activation = &Activation{}
 	activation.Id = activationId
@@ -299,6 +300,8 @@ func CloseActivation(activationId int64, endTime time.Time) error {
 	return nil
 }
 
+// Updates existing activation by consuming a pointer to
+// existing activation store.
 func UpdateActivation(activation *Activation) error {
 	o := orm.NewOrm()
 	num, err := o.Update(activation)
