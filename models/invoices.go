@@ -335,6 +335,7 @@ func DeleteInvoice(invoiceId int64) error {
 	return nil
 }
 
+// Gets activations that have happened between start and end dates
 func (this *Invoice) getActivations(startTime,
 	endTime time.Time) (activationsArr *[]Activation, err error) {
 
@@ -351,8 +352,8 @@ func (this *Invoice) getActivations(startTime,
 
 	activations := []Activation{}
 	_, err = o.Raw(query,
-		startTime.Format("2006-01-02"),
-		endTime.Format("2006-01-02")).QueryRows(&activations)
+		startTime.Format("2006-01-02 15:04:05"),
+		endTime.Format("2006-01-02 15:04:05")).QueryRows(&activations)
 	if err != nil {
 		return nil, err
 	}
