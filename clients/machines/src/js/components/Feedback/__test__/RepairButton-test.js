@@ -13,7 +13,8 @@ describe('RepairButton', function() {
       var repairButton = TestUtils.renderIntoDocument(
         <RepairButton/>
       );
-      var button = TestUtils.findRenderedDOMComponentWithTag(repairButton, 'button');
+      var button = TestUtils.findRenderedDOMComponentWithTag(
+        repairButton, 'a');
       TestUtils.Simulate.click(button);
       expect(FeedbackDialogs.machineIssue).toBeCalled();
     });
