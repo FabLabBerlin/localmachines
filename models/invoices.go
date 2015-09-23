@@ -1,12 +1,12 @@
 package models
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"math/rand"
+	"os"
 	"sort"
 	"time"
 )
@@ -110,7 +110,9 @@ func (this InvoiceActivations) Swap(i, j int) {
 	*this[i], *this[j] = *this[j], *this[i]
 }
 
-func (this InvoiceActivations) SummarizedByMachine() (InvoiceActivations, error) {
+func (this InvoiceActivations) SummarizedByMachine() (
+	InvoiceActivations, error) {
+
 	byMachine := make(map[string]*InvoiceActivation)
 	for _, activation := range this {
 		summary, ok := byMachine[activation.Machine.Name]
@@ -174,6 +176,19 @@ type InvoiceSummary struct {
 	UserSummaries   []*UserSummary
 }
 
+// exists returns whether the given file or directory exists or not
+func exists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return true, err
+}
+
+// Creates invoice entry in the database
 func CreateInvoice(startTime, endTime time.Time) (*Invoice, error) {
 
 	var err error
@@ -185,6 +200,19 @@ func CreateInvoice(startTime, endTime time.Time) (*Invoice, error) {
 
 	// Create *.xlsx file.
 	fileName := invoice.getInvoiceFileName(startTime, endTime)
+
+	// Make sure the files directory exists
+	exists, _ := exists("files")
+	if !exists {
+
+		// Create the files directory with permission to write
+		err = os.Mkdir("files", 0777)
+		if err != nil {
+			beego.Error("Failed to create files dir:", err)
+			return nil, fmt.Errorf("Failed to create files dir: %v", err)
+		}
+	}
+
 	filePath := fmt.Sprintf("files/%s.xlsx", fileName)
 	invoice.FilePath = filePath
 
@@ -200,42 +228,32 @@ func CreateInvoice(startTime, endTime time.Time) (*Invoice, error) {
 
 	// Store invoice entry
 	o := orm.NewOrm()
-
-	/*
-		invoiceId, err = o.Insert(&invoice)
-		if err != nil {
-			return nil, errors.New(
-				fmt.Sprintf("Failed to insert invoice into db: %v", err))
-		}
-		beego.Trace("Created invoice ID:", invoiceId)
-	*/
-
-	// Beego time management is very strange...
-	// Thinking of converting all datetime fields to string fields in models
-	query := fmt.Sprintf("INSERT INTO %s VALUES (?,?,?,?,?,?)",
-		invoice.TableName())
-
-	var res sql.Result
-	res, err = o.Raw(query,
-		nil, invoice.Activations, invoice.FilePath,
-		time.Now().Format("2006-01-02 15:04:05"),
-		invoice.PeriodFrom.Format("2006-01-02 15:04:05"),
-		invoice.PeriodTo.Format("2006-01-02 15:04:05")).Exec()
-
+	invoice.Id, err = o.Insert(&invoice)
 	if err != nil {
 		beego.Error("Failed to insert invoice into db:", err)
-		return nil, errors.New(
-			fmt.Sprintf("Failed to insert invoice into db: %v", err))
+		return nil, fmt.Errorf("Failed to insert invoice into db: %v", err)
 	}
 
-	invoice.Id, err = res.LastInsertId()
-	if err != nil {
-		return nil, errors.New(
-			fmt.Sprintf("Failed to acquire last inserted id: %v", err))
-	}
 	return &invoice, nil
 }
 
+// Gets existing invoice from db by invoice ID
+func GetInvoice(invoiceId int64) (invoice *Invoice, err error) {
+
+	invoice = &Invoice{}
+	invoice.Id = invoiceId
+
+	o := orm.NewOrm()
+	err = o.Read(invoice)
+	if err != nil {
+		beego.Error("Failed to read invoice:", err)
+		return nil, fmt.Errorf("Failed to read invoice: %v", err)
+	}
+
+	return
+}
+
+// Returns Invoice and InvoiceSummary objects, error otherwise
 func CalculateInvoiceSummary(
 	startTime, endTime time.Time) (
 	invoice Invoice, invSummary InvoiceSummary, err error) {

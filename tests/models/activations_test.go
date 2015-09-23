@@ -70,7 +70,8 @@ func TestActivations(t *testing.T) {
 
 					Convey("The total duration of the activation should be correct", func() {
 						totalTime := activation.TimeEnd.Sub(activation.TimeStart)
-						So(activation.TimeTotal, ShouldEqual, int64(totalTime.Seconds()))
+						So(activation.TimeTotal, ShouldAlmostEqual,
+							int64(totalTime.Seconds()), 1)
 					})
 				})
 			})

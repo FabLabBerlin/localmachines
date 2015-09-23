@@ -1,6 +1,7 @@
 package modelTest
 
 import (
+	"os"
 	"sort"
 	"testing"
 	"time"
@@ -130,6 +131,45 @@ func TestInvoiceActivation(t *testing.T) {
 				panic(err.Error())
 			}
 		})
+	})
+
+	Convey("When creating invoice with CreateInvoice", t, func() {
+
+		endTime := time.Now()
+		startTime := endTime.AddDate(0, -1, 0)
+
+		invoice, err := models.CreateInvoice(startTime, endTime)
+
+		Convey("It should not cause any error", func() {
+			So(err, ShouldBeNil)
+		})
+
+		Convey("The returned pointer to Invoice store should be valid", func() {
+			So(invoice, ShouldNotBeNil)
+		})
+
+		Convey("When reading back the created invoice from the db", func() {
+			var readbackInvoice *models.Invoice
+			readbackInvoice, err = models.GetInvoice(invoice.Id)
+
+			Convey("There should be no error", func() {
+				So(err, ShouldBeNil)
+			})
+
+			Convey("The pointer to the read invoice should be valid", func() {
+				So(readbackInvoice, ShouldNotBeNil)
+			})
+
+			Convey("The read back invoice start and end time should be correct", func() {
+				So(readbackInvoice.PeriodFrom, ShouldHappenWithin,
+					time.Duration(1)*time.Second, startTime)
+				So(readbackInvoice.PeriodTo, ShouldHappenWithin,
+					time.Duration(1)*time.Second, endTime)
+			})
+
+			os.RemoveAll("files")
+		})
+
 	})
 
 }
