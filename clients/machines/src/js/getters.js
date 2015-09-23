@@ -143,7 +143,10 @@ const getMonthlyBills = [
        * Collect activations and sum for the totals
        */
       _.eachRight(activationsByMonth[month], function(info) {
-        var duration = moment.duration(moment(info.TimeEnd).diff(moment(info.TimeStart))).asSeconds();
+        
+        var duration = moment.duration(moment(info.TimeEnd)
+          .diff(moment(info.TimeStart))).asSeconds();
+        
         monthlyBill.sums.durations += duration;
         var priceInclVAT = toCents(info.DiscountedTotal);
         var priceExclVAT = toCents(subtractVAT(info.DiscountedTotal));
@@ -151,6 +154,7 @@ const getMonthlyBills = [
         monthlyBill.sums.activations.priceInclVAT += priceInclVAT;
         monthlyBill.sums.activations.priceExclVAT += priceExclVAT;
         monthlyBill.sums.activations.priceVAT += priceVAT;
+        
         monthlyBill.activations.push({
           MachineName: info.Machine.Name,
           TimeStart: moment(info.TimeStart),
