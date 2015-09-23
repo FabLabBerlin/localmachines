@@ -321,6 +321,7 @@ func GetAllInvoices() (invoices *[]Invoice, err error) {
 	return &readInvoices, nil
 }
 
+// Deletes an invoice by ID
 func DeleteInvoice(invoiceId int64) error {
 	invoice := Invoice{}
 	invoice.Id = invoiceId
@@ -335,11 +336,10 @@ func DeleteInvoice(invoiceId int64) error {
 }
 
 func (this *Invoice) getActivations(startTime,
-	endTime time.Time) (*[]Activation, error) {
+	endTime time.Time) (activationsArr *[]Activation, err error) {
 
 	act := Activation{}
 	usr := User{}
-	var err error
 	o := orm.NewOrm()
 
 	query := fmt.Sprintf("SELECT a.* FROM %s a JOIN %s u ON a.user_id=u.id "+
@@ -357,37 +357,9 @@ func (this *Invoice) getActivations(startTime,
 		return nil, err
 	}
 
+	// Fill the Invoice store Activations string
 	this.Activations = "["
 	for actIter := 0; actIter < len(activations); actIter++ {
-
-		// For each activation get the correct start and end time
-		type ActivationTimes struct {
-			TimeStart string
-			TimeEnd   string
-		}
-		activationTimes := ActivationTimes{}
-		query = fmt.Sprintf(
-			"SELECT time_start, time_end FROM %s WHERE id=?", act.TableName())
-		err = o.Raw(query, activations[actIter].Id).QueryRow(&activationTimes)
-		if err != nil {
-			beego.Error("Could not get activation start and end time as string:", err)
-			return nil, fmt.Errorf(
-				"Could not get activation start and end time as string")
-		}
-		beego.Trace("Activation start time:", activationTimes.TimeStart)
-		beego.Trace("Activation end time:", activationTimes.TimeEnd)
-
-		// Parse the time strings correctly.
-		// For now the time is decoded taking into account that the time
-		// has been saved as if for the location of the server in Berlin.
-		// In the future the time should be saved as UTC time. This should be
-		// done with a clever migration.
-		parseLayout := "2006-01-02 15:04:05"
-		activations[actIter].TimeStart, _ = time.ParseInLocation(parseLayout,
-			activationTimes.TimeStart, time.Now().Location())
-		activations[actIter].TimeEnd, _ = time.ParseInLocation(parseLayout,
-			activationTimes.TimeEnd, time.Now().Location())
-
 		var format string
 		if actIter == 0 {
 			format = "%s%d"
