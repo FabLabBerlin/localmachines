@@ -25,9 +25,9 @@ var Membership = React.createClass({
             <td>{membership.Title}</td>
             <td>{formatDate(startDate)}</td>
             <td>{formatDate(endDate(startDate, membership.Duration))}</td>
-            <td>{toEuro(priceExclVat)} €</td>
-            <td>{toEuro(vat)} €</td>
-            <td>{toEuro(totalPrice)} €</td>
+            <td>{toEuro(priceExclVat)}€</td>
+            <td>{toEuro(vat)}€</td>
+            <td>{toEuro(totalPrice)}€</td>
           </tr>
         );
       });
@@ -35,21 +35,23 @@ var Membership = React.createClass({
       return <p>You do not have any memberships</p>;
     }
     return (
-      <table className="table table-striped table-hover">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Start Date</th>
-            <th>End Date</th>
-            <th>Price/month excl. VAT</th>
-            <th>VAT/month (19%)</th>
-            <th>Total/month</th>
-          </tr>
-        </thead>
-        <tbody>
-          {MembershipNode}
-        </tbody>
-      </table>
+      <div className="table-responsive">
+        <table className="table table-stripped table-hover">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Start Date</th>
+              <th>End Date</th>
+              <th>Price/month excl. VAT</th>
+              <th>VAT/month (19%)</th>
+              <th>Total/month</th>
+            </tr>
+          </thead>
+          <tbody>
+            {MembershipNode}
+          </tbody>
+        </table>
+      </div>
     );
   }
 });
