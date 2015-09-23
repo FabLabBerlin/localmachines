@@ -21,8 +21,13 @@ const (
 func AddRowXlsx(sheet *xlsx.Sheet, invActivation *InvoiceActivation) error {
 	row := sheet.AddRow()
 	row.AddCell()
+
 	cell := row.AddCell()
 	cell.Value = invActivation.Machine.Name
+
+	// TODO: Implement FastBill product ID
+	cell = row.AddCell()
+	cell.Value = "Undefined"
 
 	cell = row.AddCell()
 	if invActivation.TimeStart.Unix() > 0 {
@@ -59,6 +64,8 @@ func AddRowActivationsHeaderXlsx(sheet *xlsx.Sheet) {
 	row.AddCell()
 	cell := row.AddCell()
 	cell.Value = "Machine Name"
+	cell = row.AddCell()
+	cell.Value = "Product ID"
 	cell = row.AddCell()
 	cell.Value = "Start Time"
 	cell = row.AddCell()

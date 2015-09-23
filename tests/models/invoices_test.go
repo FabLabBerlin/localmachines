@@ -16,16 +16,20 @@ func init() {
 	ConfigDB()
 }
 
-func CreateTestInvActivation(machineId int64, machineName string, minutes, pricePerMinute float64) *models.InvoiceActivation {
+func CreateTestInvActivation(machineId int64, machineName string,
+	minutes, pricePerMinute float64) *models.InvoiceActivation {
+
+	machine := models.Machine{}
+	machine.Id = machineId
+	machine.Name = machineName
+	machine.PriceUnit = "minute"
+	machine.Price = pricePerMinute
+
 	invAct := &models.InvoiceActivation{
-		TimeStart:           TIME_START,
-		TimeEnd:             TIME_START.Add(time.Minute * time.Duration(minutes)),
-		MachineId:           machineId,
-		MachineName:         machineName,
-		MachineProductId:    "Undefined",
-		MachineUsage:        minutes,
-		MachineUsageUnit:    "minute",
-		MachinePricePerUnit: pricePerMinute,
+		TimeStart:    TIME_START,
+		TimeEnd:      TIME_START.Add(time.Minute * time.Duration(minutes)),
+		Machine:      &machine,
+		MachineUsage: minutes,
 		Memberships: []*models.Membership{
 			&models.Membership{
 				Id:                    42,
@@ -60,24 +64,39 @@ func TestInvoiceActivation(t *testing.T) {
 		})
 		Convey("Testing AddRowXlsx", func() {
 			testTable := [][]interface{}{
-				[]interface{}{"", "Machine Name", "Product ID", "Start Time", "Usage", "Usage Unit", "€ per Unit", "Total €", "Memberships", "Discounted €"},
-				[]interface{}{"", "Lasercutter", "Undefined", TIME_START.Format(time.RFC1123), "12", "minute", "0.50", "6.00", "HP (50%)", "3.00"},
+				[]interface{}{"", "Machine Name", "Product ID",
+					"Start Time", "Usage", "Usage Unit", "€ per Unit",
+					"Total €", "Memberships", "Discounted €"},
+
+				[]interface{}{"", "Lasercutter", "Undefined",
+					TIME_START.Format(time.RFC1123), "12", "minute",
+					"0.50", "6.00", "HP (50%)", "3.00"},
 			}
+
 			invAct := CreateTestInvActivation(22, "Lasercutter", 12, 0.5)
 			file := xlsx.NewFile()
 			sheet := file.AddSheet("User Summaries")
 			models.AddRowActivationsHeaderXlsx(sheet)
 			models.AddRowXlsx(sheet, invAct)
-			m := 2
-			So(len(sheet.Rows), ShouldEqual, m)
-			for i := 0; i < m; i++ {
-				cells := sheet.Rows[i].Cells
-				n := 10
-				So(len(cells), ShouldEqual, n)
-				for j := 0; j < n; j++ {
-					So(cells[j].String(), ShouldEqual, testTable[i][j])
+			numRows := 2
+
+			Convey("Number of rows in xlsx sheed should be correct", func() {
+				So(len(sheet.Rows), ShouldEqual, numRows)
+			})
+
+			Convey("The number and content of cells should be correct", func() {
+				for i := 0; i < numRows; i++ {
+					cells := sheet.Rows[i].Cells
+					numCells := 10
+
+					So(len(cells), ShouldEqual, numCells)
+
+					for j := 0; j < numCells; j++ {
+						So(cells[j].String(), ShouldEqual, testTable[i][j])
+					}
 				}
-			}
+			})
+
 		})
 	})
 
@@ -96,7 +115,7 @@ func TestInvoiceActivation(t *testing.T) {
 			if invs, err := invs.SummarizedByMachine(); err == nil {
 				sort.Stable(invs)
 				So(len(invs), ShouldEqual, 2)
-				So(invs[0].MachineName, ShouldEqual, "CNC Router")
+				So(invs[0].Machine.Name, ShouldEqual, "CNC Router")
 				So(invs[0].TotalPrice, ShouldAlmostEqual, 36*0.8, 0.000001)
 				So(invs[0].TotalPrice, ShouldAlmostEqual, invs[0].PriceTotalExclDisc(), 0.000001)
 				So(invs[0].DiscountedTotal, ShouldAlmostEqual, 36*0.8, 0.000001)
@@ -106,7 +125,7 @@ func TestInvoiceActivation(t *testing.T) {
 				} else {
 					panic(err.Error())
 				}
-				So(invs[1].MachineName, ShouldEqual, "Lasercutter")
+				So(invs[1].Machine.Name, ShouldEqual, "Lasercutter")
 			} else {
 				panic(err.Error())
 			}
