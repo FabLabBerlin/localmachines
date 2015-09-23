@@ -104,6 +104,11 @@ func TestUserMemberships(t *testing.T) {
 					So(gotUserMembership, ShouldNotBeNil)
 				})
 
+				Convey("The start date should be correct", func() {
+					So(gotUserMembership.StartDate, ShouldHappenWithin,
+						time.Duration(1)*time.Second, startDate)
+				})
+
 				Convey("The end date should be correct according to the base membership", func() {
 					validEndDate := gotUserMembership.StartDate.AddDate(
 						0, int(baseMembership.DurationMonths), 0)
