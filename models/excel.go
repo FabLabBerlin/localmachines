@@ -18,6 +18,8 @@ const (
 	GREEN  = "FF92D050"
 )
 
+// Adds a row to xlsx sheet by consuming a pointer to
+// InvoiceActivation model based store.
 func AddRowXlsx(sheet *xlsx.Sheet, invActivation *InvoiceActivation) error {
 	row := sheet.AddRow()
 	row.AddCell()
@@ -59,6 +61,7 @@ func AddRowXlsx(sheet *xlsx.Sheet, invActivation *InvoiceActivation) error {
 	}
 }
 
+// Adds header row to existing xlsx sheet.
 func AddRowActivationsHeaderXlsx(sheet *xlsx.Sheet) {
 	row := sheet.AddRow()
 	row.AddCell()
@@ -82,6 +85,7 @@ func AddRowActivationsHeaderXlsx(sheet *xlsx.Sheet) {
 	cell.Value = "Discounted €"
 }
 
+// Adds an empty row.
 func addSeparationRowXlsx(sheet *xlsx.Sheet) {
 	row := sheet.AddRow()
 	style := colorStyle(YELLOW)
@@ -91,7 +95,9 @@ func addSeparationRowXlsx(sheet *xlsx.Sheet) {
 	}
 }
 
-func createXlsxFile(filePath string, invoice *Invoice, invSummarry *InvoiceSummary) error {
+// Creates a xlsx file.
+func createXlsxFile(filePath string, invoice *Invoice,
+	invSummarry *InvoiceSummary) error {
 
 	userSummaries := &(*invSummarry).UserSummaries
 
@@ -306,6 +312,7 @@ func createXlsxFile(filePath string, invoice *Invoice, invSummarry *InvoiceSumma
 	return file.Save(filePath)
 }
 
+// Returns xlsx bold style.
 func boldStyle() *xlsx.Style {
 	font := xlsx.DefaultFont()
 	font.Bold = true
@@ -314,6 +321,7 @@ func boldStyle() *xlsx.Style {
 	return style
 }
 
+// Returns xlsx colored style.
 func colorStyle(color string) *xlsx.Style {
 	font := xlsx.DefaultFont()
 	font.Bold = true
