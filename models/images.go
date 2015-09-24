@@ -10,7 +10,7 @@ func UploadImage(name string, data []byte) (err error) {
 	if err = checkFilename(name); err != nil {
 		return
 	}
-	f, err := os.OpenFile("files/"+name, os.O_CREATE|os.O_WRONLY, 0644)
+	f, err := os.OpenFile("files/"+name, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 	if err != nil {
 		return
 	}
