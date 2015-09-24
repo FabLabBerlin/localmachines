@@ -146,7 +146,7 @@ func UpdateMachine(machine *Machine) error {
 		return err
 	}
 
-	beego.Trace("Rows affected:", num)
+	beego.Trace("UpdateMachine: Rows affected:", num)
 	return nil
 }
 

@@ -265,7 +265,6 @@ func GetActivation(activationId int64) (activation *Activation, err error) {
 
 // Close running/active activation.
 func CloseActivation(activationId int64, endTime time.Time) error {
-
 	activation, err := GetActivation(activationId)
 	if err != nil {
 		beego.Error("Failed to get activation:", err)
@@ -273,6 +272,7 @@ func CloseActivation(activationId int64, endTime time.Time) error {
 	}
 
 	// Calculate activation duration and update activation.
+	activation.Active = false
 	activation.TimeEnd = endTime
 	activation.TimeTotal = int64(endTime.Sub(activation.TimeStart).Seconds())
 
@@ -311,7 +311,7 @@ func UpdateActivation(activation *Activation) error {
 		return fmt.Errorf("Failed to update activation: %v", err)
 	}
 
-	beego.Trace("Affected num rows:", num)
+	beego.Trace("UpdateActivation: Affected num rows:", num)
 
 	return nil
 }

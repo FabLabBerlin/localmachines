@@ -56,6 +56,10 @@ func TestActivations(t *testing.T) {
 						time.Duration(1)*time.Second, activationStartTime)
 				})
 
+				Convey("the active flag should be true after creating", func() {
+					So(activation.Active, ShouldBeTrue)
+				})
+
 				Convey("It should be possible to close the activation", func() {
 					activationEndTime := time.Now()
 					err = models.CloseActivation(aid, activationEndTime)
@@ -72,6 +76,10 @@ func TestActivations(t *testing.T) {
 						totalTime := activation.TimeEnd.Sub(activation.TimeStart)
 						So(activation.TimeTotal, ShouldAlmostEqual,
 							int64(totalTime.Seconds()), 1)
+					})
+
+					Convey("the active flag should be false after closing", func() {
+						So(activation.Active, ShouldBeFalse)
 					})
 				})
 			})
