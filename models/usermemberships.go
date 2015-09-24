@@ -38,7 +38,7 @@ type UserMembershipCombo struct {
 	EndDate               time.Time
 	Title                 string
 	ShortName             string
-	Duration              int
+	DurationMonths        int
 	Unit                  string
 	MonthlyPrice          float32
 	MachinePriceDeduction int

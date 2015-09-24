@@ -95,7 +95,7 @@ const getMembershipsByMonth = [
     var byMonths = {};
     _.each(userStore.get('membershipInfo'), function(membership) {
       var start = moment(membership.StartDate);
-      var end = moment(membership.StartDate).add(membership.Duration, 'd');
+      var end = moment(membership.EndDate);
       for (var t = start; t.isBefore(end); t = t.add(1, 'M')) {
         var month = t.format('MMM YYYY');
         if (!byMonths[month]) {
@@ -174,7 +174,7 @@ const getMonthlyBills = [
         var vat = totalPrice - priceExclVat;
         monthlyBill.memberships.push({
           startDate: moment(membership.StartDate),
-          endDate: moment(membership.StartDate).add(membership.Duration, 'd'),
+          endDate: moment(membership.EndDate),
           priceExclVAT: priceExclVat,
           priceVAT: vat,
           priceInclVAT: totalPrice
