@@ -99,6 +99,7 @@ func addSeparationRowXlsx(sheet *xlsx.Sheet) {
 func createXlsxFile(filePath string, invoice *Invoice,
 	invSummarry *InvoiceSummary) error {
 
+	sort.Sort(invSummarry)
 	userSummaries := &(*invSummarry).UserSummaries
 
 	// Create a xlsx file if there
@@ -133,6 +134,16 @@ func createXlsxFile(filePath string, invoice *Invoice,
 	// Fill the xlsx sheet
 	for usrSumIter := 0; usrSumIter < len(*userSummaries); usrSumIter++ {
 		userSummary := (*userSummaries)[usrSumIter]
+
+		memberships, err := GetUserMemberships(userSummary.User.Id)
+		if err != nil {
+			return fmt.Errorf("GetUserMemberships: %v", err)
+		}
+
+		if len(userSummary.Activations) == 0 && (memberships == nil || len(memberships.Data) == 0) {
+			// nothing to bill
+			continue
+		}
 
 		addSeparationRowXlsx(sheet)
 		row = sheet.AddRow()
@@ -187,17 +198,21 @@ func createXlsxFile(filePath string, invoice *Invoice,
 		cell = row.AddCell()
 		cell.Value = userSummary.User.Phone
 
+		// Company
+		if userSummary.User.Company != "" {
+			row = sheet.AddRow()
+			cell = row.AddCell()
+			cell.Value = "Company"
+			cell = row.AddCell()
+			cell.Value = userSummary.User.Company
+		}
+
 		// User Comments
 		row = sheet.AddRow()
 		cell = row.AddCell()
 		cell.Value = "Comments"
 		cell = row.AddCell()
 		cell.Value = userSummary.User.Comments
-
-		memberships, err := GetUserMemberships(userSummary.User.Id)
-		if err != nil {
-			return fmt.Errorf("GetUserMemberships: %v", err)
-		}
 
 		if memberships != nil {
 			sheet.AddRow()

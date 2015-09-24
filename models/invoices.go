@@ -176,6 +176,22 @@ type InvoiceSummary struct {
 	UserSummaries   []*UserSummary
 }
 
+func (this *InvoiceSummary) Len() int {
+	return len(this.UserSummaries)
+}
+
+func (this *InvoiceSummary) Less(i, j int) bool {
+	a := this.UserSummaries[i]
+	b := this.UserSummaries[j]
+	aName := a.User.FirstName + " " + a.User.LastName
+	bName := b.User.FirstName + " " + b.User.LastName
+	return aName < bName
+}
+
+func (this *InvoiceSummary) Swap(i, j int) {
+	this.UserSummaries[i], this.UserSummaries[j] = this.UserSummaries[j], this.UserSummaries[i]
+}
+
 // exists returns whether the given file or directory exists or not
 func exists(path string) (bool, error) {
 	_, err := os.Stat(path)
