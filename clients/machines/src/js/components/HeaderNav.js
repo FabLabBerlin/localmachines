@@ -5,6 +5,21 @@ var Reactor = require('../reactor');
 var Getters = require('../getters');
 
 
+var HeaderNavBrand = React.createClass({
+  render() {
+    return (
+      <div className="navbar-brand">
+        <a 
+          class="brand-link" 
+          href="/machines/#/machine">
+          <img src="img/logo-easylab.svg" className="brand-image hidden-xs"/>
+          <img src="img/logo-small.svg" className="brand-image visible-xs-block"/>
+        </a>
+      </div>
+    );
+  }
+});
+
 var MenuItem = React.createClass({
   render() {
     
@@ -100,26 +115,15 @@ var HeaderNav = React.createClass({
 
     return (
       <div>
-
         <nav className="navbar navbar-default">
           <div className="container-fluid">
-            
-            <div className="navbar-header">
-              
-              {isLogged ? (<BurgerMenuToggle />) : ('')}
-              
-              <div className="navbar-brand">
-                <img src="img/logo-easylab.svg" className="brand-image hidden-xs"/>
-                <img src="img/logo-small.svg" className="brand-image visible-xs-block"/>
-              </div>
-
+            <div className="navbar-header">              
+              {isLogged ? (<BurgerMenuToggle />) : ('')}   
+              <HeaderNavBrand />
             </div>
-        
             {isLogged ? (<MainMenu />) : ('')}
-
           </div>
         </nav>
-
       </div>
     );
   }
