@@ -189,9 +189,10 @@
 
     <div class="col-sm-3" ng-show="nfcSupport">
       <div class="form-group">
-        <button class="btn btn-warning btn-block" 
-                ng-disabled="nfcPolling"
-                ng-click="getNfcUid()">
+        <button 
+          class="btn btn-warning btn-block" 
+          ng-disabled="nfcPolling"
+          ng-click="getNfcUid()">
           {{nfcButtonLabel}}
         </button>
       </div>
@@ -199,8 +200,9 @@
 
     <div class="col-sm-3">
       <div class="form-group">
-        <button class="btn btn-primary btn-block" 
-                ng-click="updateNfcUid()">
+        <button 
+          class="btn btn-primary btn-block" 
+          ng-click="updateNfcUid()">
           Update NFC UID
         </button>
       </div>
@@ -229,9 +231,10 @@
         <div class="col-sm-6">
           <div class="checkbox-inline">
             <label>
-              <input type="checkbox" 
-                     ng-model="user.Admin"
-                     ng-change="updateAdminStatus()">
+              <input 
+                type="checkbox" 
+                ng-model="user.Admin"
+                ng-change="updateAdminStatus()">
               Admin
             </label>
           </div>
@@ -254,9 +257,10 @@
         <div class="col-sm-6" ng-repeat="machine in availableMachines">
           <div class="checkbox-inline">
             <label title="{{machine.Description}}">
-              <input type="checkbox" 
-                     ng-model="machine['Checked']"
-                     ng-disabled="machine['Disabled']"> 
+              <input 
+                type="checkbox" 
+                ng-model="machine['Checked']"
+                ng-disabled="machine['Disabled']"> 
               {{machine.Name}}
             </label>
           </div>
@@ -275,23 +279,72 @@
         <th>Membership Name</th>
         <th>Start Date</th>
         <th>End Date</th>
+        <th>Extends Automatically</th>
+        <th>Status</th>
         <th style="min-width:60px">&nbsp;</th>
       </tr>
     </thead>
     <tbody>
       <tr ng-hide="userMemberships.length">
-        <td colspan="4">User has no memberships</td>
+        <td colspan="6">User has no memberships</td>
       </tr>
       <tr ng-repeat="userMembership in userMemberships">
         <td>{{userMembership.Title}}</td>
-        <td>{{userMembership.StartDate}}</td>
-        <td>{{userMembership.EndDate}}</td>
+        <td style="min-width:90px">{{userMembership.StartDate}}</td>
+        <td style="min-width:160px">
+
+          <!-- Visible only if user membership is active or canceled -->
+          <div 
+            class="form-inline"
+            ng-hide="userMembership.Inactive">
+            <div class="input-group">
+              <input
+                class="adm-user-membership-end-date form-control datepicker"
+                data-user-membership-id="{{userMembership.Id}}"
+                placeholder="End Date"
+                value="{{userMembership.EndDate}}">
+              <div class="input-group-addon">
+                <i class="fa fa-calendar"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Visible only if user membership is inactive -->
+          <div ng-show="userMembership.Inactive">
+            {{userMembership.EndDate}}
+          </div>
+        
+        </td>
+        <td>
+
+          <!-- Obviously, when the user membership is inactive, 
+               it is also not automatically extending -->
+          <div ng-show="userMembership.Inactive">
+            <i class="fa fa-ban"></i> No
+          </div>
+
+          <div ng-hide="userMembership.Inactive">
+            <!-- The user membership should be updated automatically
+                 when this checkbox changes state -->
+            <input 
+              type="checkbox" 
+              ng-model="userMembership.AutoExtend"
+              ng-disabled="userMemberhip.Inactive"
+              ng-change="updateUserMembership(userMembership.Id)">
+          </div>
+
+        </td>
+        <td>
+          <div ng-show="userMembership.Active">Active</div>
+          <div ng-show="userMembership.Cancelled">Cancelled</div>
+          <div ng-show="userMembership.Inactive">Inactive</div>
+        </td>
         <td>
           <div class="pull-right">
-            <!-- <button type="button" class="btn btn-primary btn-ico">
-              <i class="fa fa-edit"></i>
-            </button> -->
-            <button type="button" class="btn btn-danger btn-ico" ng-click="deleteUserMembershipPrompt(userMembership.Id)">
+            <button 
+              type="button" 
+              class="btn btn-danger btn-ico" 
+              ng-click="deleteUserMembershipPrompt(userMembership.Id)">
               <i class="fa fa-close"></i>
             </button>
           </div>
@@ -303,10 +356,15 @@
   <div class="row">
     <div class="col-sm-3">
       <div class="form-group">
-        <select class="form-control" id="user-select-membership" placeholder="Membership">
+        <select 
+          class="form-control" 
+          id="user-select-membership" 
+          placeholder="Membership">
           <!-- These have to be loaded via API -->
           <option value="" selected disabled>Select Membership</option>
-          <option ng-repeat="membership in memberships" value={{membership.Id}}>
+          <option 
+            ng-repeat="membership in memberships" 
+            value={{membership.Id}}>
             {{membership.Title}}
           </option>
         </select>
@@ -316,7 +374,10 @@
     <div class="col-sm-3">
       <div class="form-group">
         <div class="input-group">
-          <input id="adm-add-user-membership-start-date" class="form-control datepicker" placeholder="Start Date">
+          <input 
+            id="adm-add-user-membership-start-date" 
+            class="form-control datepicker" 
+            placeholder="Start Date">
           <div class="input-group-addon">
             <i class="fa fa-calendar"></i>
           </div>
@@ -325,7 +386,10 @@
     </div>
 
     <div class="col-sm-3">
-      <button class="btn btn-primary btn-block" id="user-add-membership-btn" ng-click="addUserMembership()">
+      <button 
+        class="btn btn-primary btn-block" 
+        id="user-add-membership-btn" 
+        ng-click="addUserMembership()">
         <i class="fa fa-plus"></i>&nbsp;Add Membership
       </button>
     </div>
@@ -334,10 +398,14 @@
   <hr>
 
   <div class="pull-right">
-    <button class="btn btn-danger btn-lg" ng-click="deleteUserPrompt()">
+    <button 
+      class="btn btn-danger btn-lg" 
+      ng-click="deleteUserPrompt()">
       <i class="fa fa-trash-o"></i>&nbsp;Delete
     </button>
-    <button class="btn btn-primary btn-lg" ng-click="saveUser()">
+    <button 
+      class="btn btn-primary btn-lg" 
+      ng-click="saveUser()">
       <i class="fa fa-save"></i>&nbsp;Save
     </button>
   </div>

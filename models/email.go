@@ -12,6 +12,7 @@ type Email struct {
 	pw   string
 }
 
+// Creates a new Email store out of the Email model.
 func NewEmail() (this Email) {
 	this.host = beego.AppConfig.String("smtphost")
 	this.from = beego.AppConfig.String("emailsenderaddr")
@@ -20,6 +21,7 @@ func NewEmail() (this Email) {
 	return
 }
 
+// Sends an email by consuming an existing Email store.
 func (this Email) Send(to, subject, message string) error {
 	beego.Info("Email#Send: from:", this.from)
 	beego.Info("Email#Send: to:", to)

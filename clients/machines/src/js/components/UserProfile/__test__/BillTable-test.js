@@ -34,6 +34,9 @@ var state = {
       'DebitorNumber': 'Undefined',
       'Activations': [
         {
+          'Machine': {
+            'Name': 'Laydrop 3D Printer'
+          },
           'MachineId': 1,
           'MachineName': 'Laydrop 3D Printer',
           'MachineProductId': 'Undefined',
@@ -71,6 +74,9 @@ var state = {
           'TimeEnd': '2015-09-11T10:01:56+02:00'
         },
         {
+          'Machine': {
+            'Name': 'MakerBot 3D Printer'
+          },
           'MachineId': 2,
           'MachineName': 'MakerBot 3D Printer',
           'MachineProductId': 'Undefined',
@@ -153,10 +159,10 @@ describe('BillTable', function() {
       var html = React.renderToString(billTable);
       /* Activations */
       expect(html).toContain('MakerBot 3D Printer');
-      expect(html).toContain('6 s');
+      expect(html).toContain('6s');
       expect(html).toContain('0.08');
       expect(html).toContain('Laydrop 3D Printer');
-      expect(html).toContain('12 s');
+      expect(html).toContain('12s');
       expect(html).toContain('0.08');
       /* Totals */
       expect(html).toContain('Total Pay-As-You-Go');

@@ -30,15 +30,11 @@ function toEuro(priceCents) {
  *
  * expecting date types moment.js
  */
-function endDate(startDate, duration) {
-  return startDate.add(duration, 'd');
-}
-
 function formatDate(d) {
   return d.format('DD. MMM YYYY');
 }
 
 export default {
   addVAT, subtractVAT, toCents, toEuro,
-  endDate, formatDate
+  formatDate
 };

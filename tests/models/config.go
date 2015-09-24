@@ -2,6 +2,8 @@ package modelTest
 
 import (
 	"fmt"
+	"net/url"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 
@@ -10,12 +12,27 @@ import (
 	"github.com/kr15h/fabsmith/models"
 )
 
+// Beego ORM model used only for testing time
+type TimeTest struct {
+	Id   int64     `orm:"auto";"pk"`
+	Time time.Time `orm:"type(timestamp)"`
+}
+
+func (this *TimeTest) TableName() string {
+	return "time_test"
+}
+
+func init() {
+	orm.RegisterModel(new(TimeTest))
+}
+
 // ConfigDB : Configure database for tests
 func ConfigDB() {
 	beego.SetLevel(beego.LevelError)
 
 	runmodetest, err := beego.AppConfig.Bool("runmodtest")
 	if !runmodetest || err != nil {
+		fmt.Println(err)
 		panic("Your configuration file is wrong for testing, see app.example.conf")
 	}
 
@@ -45,8 +62,9 @@ func ConfigDB() {
 		panic("Please set mysqldb in app.conf")
 	}
 
-	mysqlConnString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8",
-		mysqlUser, mysqlPass, mysqlHost, mysqlPort, mysqlDb)
+	loc := url.QueryEscape("Europe/Berlin")
+	mysqlConnString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&loc=%s",
+		mysqlUser, mysqlPass, mysqlHost, mysqlPort, mysqlDb, loc)
 
 	orm.RegisterDriver("mysql", orm.DR_MySQL)
 	orm.RegisterDataBase("default", "mysql", mysqlConnString)
@@ -55,6 +73,8 @@ func ConfigDB() {
 // ResetDB : Reset the database after each test
 func ResetDB() {
 	o := orm.NewOrm()
+
+	// TODO: Use model.TableName() for table names
 
 	var machines []models.Machine
 	o.QueryTable("machines").All(&machines)
@@ -68,6 +88,12 @@ func ResetDB() {
 		o.Delete(&item)
 	}
 
+	var invoices []models.Invoice
+	o.QueryTable("invoices").All(&invoices)
+	for _, item := range invoices {
+		o.Delete(&item)
+	}
+
 	var netswitches []models.NetSwitchMapping
 	o.QueryTable("netswitch").All(&netswitches)
 	for _, item := range netswitches {
@@ -77,6 +103,12 @@ func ResetDB() {
 	var users []models.User
 	o.QueryTable("user").All(&users)
 	for _, item := range users {
+		o.Delete(&item)
+	}
+
+	var user_memberships []models.UserMembership
+	o.QueryTable("user_membership").All(&user_memberships)
+	for _, item := range user_memberships {
 		o.Delete(&item)
 	}
 

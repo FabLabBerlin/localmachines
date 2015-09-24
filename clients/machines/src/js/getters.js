@@ -95,7 +95,7 @@ const getMembershipsByMonth = [
     var byMonths = {};
     _.each(userStore.get('membershipInfo'), function(membership) {
       var start = moment(membership.StartDate);
-      var end = moment(membership.StartDate).add(membership.Duration, 'd');
+      var end = moment(membership.EndDate);
       for (var t = start; t.isBefore(end); t = t.add(1, 'M')) {
         var month = t.format('MMM YYYY');
         if (!byMonths[month]) {
@@ -143,7 +143,10 @@ const getMonthlyBills = [
        * Collect activations and sum for the totals
        */
       _.eachRight(activationsByMonth[month], function(info) {
-        var duration = moment.duration(moment(info.TimeEnd).diff(moment(info.TimeStart))).asSeconds();
+        
+        var duration = moment.duration(moment(info.TimeEnd)
+          .diff(moment(info.TimeStart))).asSeconds();
+        
         monthlyBill.sums.durations += duration;
         var priceInclVAT = toCents(info.DiscountedTotal);
         var priceExclVAT = toCents(subtractVAT(info.DiscountedTotal));
@@ -151,8 +154,9 @@ const getMonthlyBills = [
         monthlyBill.sums.activations.priceInclVAT += priceInclVAT;
         monthlyBill.sums.activations.priceExclVAT += priceExclVAT;
         monthlyBill.sums.activations.priceVAT += priceVAT;
+        
         monthlyBill.activations.push({
-          MachineName: info.MachineName,
+          MachineName: info.Machine.Name,
           TimeStart: moment(info.TimeStart),
           duration: duration,
           priceExclVAT: priceExclVAT,
@@ -170,7 +174,7 @@ const getMonthlyBills = [
         var vat = totalPrice - priceExclVat;
         monthlyBill.memberships.push({
           startDate: moment(membership.StartDate),
-          endDate: moment(membership.StartDate).add(membership.Duration, 'd'),
+          endDate: moment(membership.EndDate),
           priceExclVAT: priceExclVat,
           priceVAT: vat,
           priceInclVAT: totalPrice

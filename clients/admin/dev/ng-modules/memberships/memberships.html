@@ -10,7 +10,6 @@
         <th>Membership Title</th>
         <th>Short Name</th>
         <th>Duration</th>
-        <th>Unit</th>
         <th>Monthly Price / €</th>
         <th>&nbsp;</th>
       </tr>
@@ -19,8 +18,7 @@
       <tr ng-repeat="membership in memberships">
         <td>{{membership.Title}}</td>
         <td>{{membership.ShortName}}</td>
-        <td>{{membership.Duration}}</td>
-        <td>{{membership.Unit}}</td>
+        <td>{{membership.DurationMonths}} Months</td>
         <td>{{membership.MonthlyPrice | currency:''}}</td>
         <td>
           <button type="button" class="btn btn-primary btn-ico pull-right"

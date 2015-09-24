@@ -14,13 +14,13 @@ function formatDuration(t) {
     var s = Math.floor(d % 3600 % 60);
     var str = '';
     if (h) {
-      str += String(h) + ' h ';
+      str += String(h) + 'h ';
     }
     if (h || m) {
-      str += String(m) + ' m ';
+      str += String(m) + 'm ';
     }
     if (h || m || s) {
-      str += String(s) + ' s ';
+      str += String(s) + 's ';
     }
     return str;
   }
@@ -39,22 +39,26 @@ var BillTables = React.createClass({
     if (this.state.monthlyBills && this.state.monthlyBills.length > 0) {
 
       var i = 0;
-      var tbody = [];
+      var tables = [];
 
       _.each(this.state.monthlyBills, function(bill) {
-        if (i > 0) {
-          tbody.push(<tr key={i++}><td colSpan={6}></td></tr>);
-        }
-        tbody.push(
-          <tr key={i++}>
-            <td colSpan={6}>
-              <h4 className="text-left">{bill.month}</h4>
-              <h5 className="text-left">({toEuro(bill.sums.total.priceInclVAT)} <i className="fa fa-eur"/> total incl. VAT)</h5>
-            </td>
-          </tr>
+        
+        var caption = [];
+        var thead = [];
+        var tbody = [];
+        var tfoot = [];
+
+        caption.push( 
+          <div key={i++}>
+            <h4 className="text-left">{bill.month}</h4>
+            <h5 className="text-left">
+              ({toEuro(bill.sums.total.priceInclVAT)} 
+              <i className="fa fa-eur"/> total incl. VAT)
+            </h5>
+          </div>
         );
 
-        tbody.push(
+        thead.push(
           <tr key={i++}>
             <th>Machine</th>
             <th>Date</th>
@@ -71,52 +75,64 @@ var BillTables = React.createClass({
               <td>{info.MachineName}</td>
               <td>{formatDate(info.TimeStart)}</td>
               <td>{formatDuration(info.duration)}</td>
-              <td>{toEuro(info.priceExclVAT)} <i className="fa fa-eur"></i></td>
-              <td>{toEuro(info.priceVAT)} <i className="fa fa-eur"></i></td>
-              <td>{toEuro(info.priceInclVAT)} <i className="fa fa-eur"></i></td>
+              <td>{toEuro(info.priceExclVAT)}€</td>
+              <td>{toEuro(info.priceVAT)}€</td>
+              <td>{toEuro(info.priceInclVAT)}€</td>
             </tr>
           );
         });
 
-        tbody.push(
+        tfoot.push(
           <tr key={i++}>
-            <td><label>Total Pay-As-You-Go</label></td>
-            <td><label></label></td>
-            <td><label>{formatDuration(bill.sums.activations.durations)}</label></td>
-            <td><label>{toEuro(bill.sums.activations.priceExclVAT)}</label> <i className="fa fa-eur"></i></td>
-            <td><label>{toEuro(bill.sums.activations.priceVAT)}</label> <i className="fa fa-eur"></i></td>
-            <td><label>{toEuro(bill.sums.activations.priceInclVAT)}</label> <i className="fa fa-eur"></i></td>
+            <td><b>Total Pay-As-You-Go</b></td>
+            <td>&nbsp;</td>
+            <td><b>{formatDuration(bill.sums.activations.durations)}</b></td>
+            <td><b>{toEuro(bill.sums.activations.priceExclVAT)}€</b></td>
+            <td><b>{toEuro(bill.sums.activations.priceVAT)}€</b></td>
+            <td><b>{toEuro(bill.sums.activations.priceInclVAT)}€</b></td>
           </tr>
         );
-        tbody.push(
+
+        tfoot.push(
           <tr key={i++}>
-            <td><label>Total Memberships</label></td>
-            <td><label></label></td>
-            <td><label></label></td>
-            <td><label>{toEuro(bill.sums.memberships.priceExclVAT)}</label> <i className="fa fa-eur"></i></td>
-            <td><label>{toEuro(bill.sums.memberships.priceVAT)}</label> <i className="fa fa-eur"></i></td>
-            <td><label>{toEuro(bill.sums.memberships.priceInclVAT)}</label> <i className="fa fa-eur"></i></td>
+            <td><b>Total Memberships</b></td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><b>{toEuro(bill.sums.memberships.priceExclVAT)}€</b></td>
+            <td><b>{toEuro(bill.sums.memberships.priceVAT)}€</b></td>
+            <td><b>{toEuro(bill.sums.memberships.priceInclVAT)}€</b></td>
           </tr>
         );
-        tbody.push(
+
+        tfoot.push(
           <tr key={i++}>
-            <td><label>Total</label></td>
-            <td><label></label></td>
-            <td><label></label></td>
-            <td><label>{toEuro(bill.sums.total.priceExclVAT)}</label> <i className="fa fa-eur"></i></td>
-            <td><label>{toEuro(bill.sums.total.priceVAT)}</label> <i className="fa fa-eur"></i></td>
-            <td><label>{toEuro(bill.sums.total.priceInclVAT)}</label> <i className="fa fa-eur"></i></td>
+            <td><b>Total</b></td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><b>{toEuro(bill.sums.total.priceExclVAT)}€</b></td>
+            <td><b>{toEuro(bill.sums.total.priceVAT)}€</b></td>
+            <td><b>{toEuro(bill.sums.total.priceInclVAT)}€</b></td>
           </tr>
+        );
+
+        tables.push(
+          <div key={i++}>
+            {caption}
+            <div className="table-responsive">
+              <table className="table table-stripped table-hover">
+                <thead>{thead}</thead>
+                <tbody>{tbody}</tbody>
+                <tfoot>{tfoot}</tfoot>
+              </table>
+            </div>
+          </div>
         );
       });
 
       return (
-        <table className="bill-table table table-striped table-hover" >
-          <thead></thead>
-          <tbody>
-            {tbody}
-          </tbody>
-        </table>
+        <div>
+          {tables}
+        </div>
       );
     } else {
       return <p>You do not have any expenses.</p>;

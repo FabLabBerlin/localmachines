@@ -137,15 +137,14 @@ func CreateUser(user *User) (userId int64, er error) {
 		if created {
 			beego.Info("Created user with ID", id)
 
-			// Update created time.
-			// Still using a hack here as Beego timezone support is foggy.
-			updQuery := fmt.Sprintf("UPDATE %s SET created=? WHERE id=?",
-				user.TableName())
-			_, err = o.Raw(updQuery,
-				time.Now().Format("2006-01-02 15:04:05"), id).Exec()
+			user.Id = id
+			user.Created = time.Now()
+			_, err = o.Update(user)
 			if err != nil {
-				beego.Error("Failed to update user creation time")
+				beego.Error("Failed to update user create time:", err)
+				return 0, fmt.Errorf("Failed to update user create time: %v", err)
 			}
+
 		} else {
 			beego.Info("User already exists with ID", id,
 				"and email", user.Email)
@@ -490,9 +489,9 @@ func CreateUserPermission(userId, machineId int64) error {
 	}
 
 	if created {
-		beego.Warning("User permission already exists:", id)
-	} else {
 		beego.Info("User permission created:", id)
+	} else {
+		beego.Warning("User permission already exists:", id)
 	}
 
 	return nil

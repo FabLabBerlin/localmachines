@@ -1,4 +1,4 @@
-var {endDate, formatDate, subtractVAT, toCents, toEuro} = require('./helpers');
+var {formatDate, subtractVAT, toCents, toEuro} = require('./helpers');
 var moment = require('moment');
 import React from 'react';
 
@@ -17,6 +17,7 @@ var Membership = React.createClass({
     if (this.props.info && this.props.info.length !== 0) {
       MembershipNode = this.props.info.map(function(membership) {
         var startDate = moment(membership.StartDate);
+        var endDate = moment(membership.EndDate);
         var totalPrice = toCents(membership.MonthlyPrice);
         var priceExclVat = toCents(subtractVAT(membership.MonthlyPrice));
         var vat = totalPrice - priceExclVat;
@@ -24,10 +25,10 @@ var Membership = React.createClass({
           <tr key={membership.Id} >
             <td>{membership.Title}</td>
             <td>{formatDate(startDate)}</td>
-            <td>{formatDate(endDate(startDate, membership.Duration))}</td>
-            <td>{toEuro(priceExclVat)} €</td>
-            <td>{toEuro(vat)} €</td>
-            <td>{toEuro(totalPrice)} €</td>
+            <td>{formatDate(endDate)}</td>
+            <td>{toEuro(priceExclVat)}€</td>
+            <td>{toEuro(vat)}€</td>
+            <td>{toEuro(totalPrice)}€</td>
           </tr>
         );
       });
@@ -35,21 +36,23 @@ var Membership = React.createClass({
       return <p>You do not have any memberships</p>;
     }
     return (
-      <table className="table table-striped table-hover">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Start Date</th>
-            <th>End Date</th>
-            <th>Price/month excl. VAT</th>
-            <th>VAT/month (19%)</th>
-            <th>Total/month</th>
-          </tr>
-        </thead>
-        <tbody>
-          {MembershipNode}
-        </tbody>
-      </table>
+      <div className="table-responsive">
+        <table className="table table-stripped table-hover">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Start Date</th>
+              <th>End Date</th>
+              <th>Price/month excl. VAT</th>
+              <th>VAT/month (19%)</th>
+              <th>Total/month</th>
+            </tr>
+          </thead>
+          <tbody>
+            {MembershipNode}
+          </tbody>
+        </table>
+      </div>
     );
   }
 });

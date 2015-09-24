@@ -2,6 +2,7 @@ package modelTest
 
 import (
 	"testing"
+	"time"
 
 	"github.com/kr15h/fabsmith/models"
 	. "github.com/smartystreets/goconvey/convey"
@@ -241,6 +242,11 @@ func TestUsers(t *testing.T) {
 				So(user.Id, ShouldEqual, uid)
 				So(user.Username, ShouldEqual, "test")
 				So(err, ShouldBeNil)
+
+				Convey("The created time should be close to now", func() {
+					So(user.Created, ShouldHappenWithin,
+						time.Duration(1)*time.Second, time.Now())
+				})
 			})
 			Convey("Try to get non-existing user", func() {
 				user, err := models.GetUser(0)

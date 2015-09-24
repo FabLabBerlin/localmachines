@@ -5,23 +5,27 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 )
 
+// Main membership type/struct that contains information
+// about a mase membership and is mapper to a table in
+// the database.
 type Membership struct {
-	Id                    int64  `orm:"auto";"pk"`
-	Title                 string `orm:"size(100)"`
-	ShortName             string `orm:"size(100)"`
-	Duration              int
-	Unit                  string `orm:"size(100)"`
-	MonthlyPrice          float32
-	MachinePriceDeduction int
-	AffectedMachines      string `orm:"type(text)"`
+	Id                       int64  `orm:"auto";"pk"`
+	Title                    string `orm:"size(100)"`
+	ShortName                string `orm:"size(100)"`
+	DurationMonths           int64
+	MonthlyPrice             float32
+	MachinePriceDeduction    int
+	AffectedMachines         string `orm:"type(text)"`
+	AutoExtend               bool
+	AutoExtendDurationMonths int64
 }
 
+// Get an array of ID's of affected machines by the membership.
 func (this *Membership) AffectedMachineIds() ([]int64, error) {
 	parseErr := fmt.Errorf("cannot parse AffectedMachines property: '%v'", this.AffectedMachines)
 	l := len(this.AffectedMachines)
@@ -40,6 +44,8 @@ func (this *Membership) AffectedMachineIds() ([]int64, error) {
 	return ids, nil
 }
 
+// Returns whether the membership is affecting a machine
+// with the given machine ID.
 func (this *Membership) IsMachineAffected(machineId int64) (bool, error) {
 	if machineIds, err := this.AffectedMachineIds(); err == nil {
 		for _, id := range machineIds {
@@ -53,82 +59,61 @@ func (this *Membership) IsMachineAffected(machineId int64) (bool, error) {
 	}
 }
 
+// Returns the database table name of the Membership model.
 func (this *Membership) TableName() string {
 	return "membership"
 }
 
-type UserMembership struct {
-	Id           int64 `orm:"auto";"pk"`
-	UserId       int64
-	MembershipId int64
-	StartDate    time.Time
-}
-
-func (this *UserMembership) TableName() string {
-	return "user_membership"
-}
-
 func init() {
-	orm.RegisterModel((new(Membership)), new(UserMembership))
+	orm.RegisterModel(new(Membership))
 }
 
-// Extended UserMembership type that contains the same fields as UserMembership
-// model, but additionaly fields from the membership model.
-type UserMembershipCombo struct {
-	Id                    int64
-	UserId                int64
-	MembershipId          int64
-	StartDate             time.Time
-	Title                 string
-	ShortName             string
-	Duration              int
-	Unit                  string
-	MonthlyPrice          float32
-	MachinePriceDeduction int
-	AffectedMachines      string
-}
-
-type UserMembershipList struct {
-	Data []UserMembershipCombo
-}
-
-// Get all memberships from database
+// Gets all base memberships from database.
 func GetAllMemberships() (memberships []*Membership, err error) {
+	m := Membership{} // Used only for the TableName() method
 	o := orm.NewOrm()
-	num, err := o.QueryTable("membership").All(&memberships)
+	num, err := o.QueryTable(m.TableName()).All(&memberships)
 	if err != nil {
-		beego.Error("Failed to get all memberships")
+		beego.Error("Failed to get all memberships:", err)
 		return nil, errors.New("Failed to get all memberships")
 	}
 	beego.Trace("Got num memberships:", num)
 	return
 }
 
-// Creates a new membership in the database
+// Creates a new membership in the database with the given name.
 func CreateMembership(membershipName string) (int64, error) {
 	o := orm.NewOrm()
-	membership := Membership{Title: membershipName}
-	membership.Unit = "days"
+	membership := Membership{}
+	membership.Title = membershipName
+	membership.AutoExtend = true
+	membership.DurationMonths = 1
+	membership.AutoExtendDurationMonths = 1
+
 	id, err := o.Insert(&membership)
+	beego.Trace("Created membershipId:", id)
 	if err == nil {
 		return id, nil
 	} else {
-		return 0, err
+		return 0, fmt.Errorf("Failed to create membership: %v", err)
 	}
 }
 
-// Get single membership from database using membership unique ID
+// Gets single membership from database using membership unique ID
 func GetMembership(membershipId int64) (*Membership, error) {
-	membership := &Membership{Id: membershipId}
+	membership := Membership{}
+	sql := fmt.Sprintf("SELECT * FROM %s WHERE id=?", membership.TableName())
 	o := orm.NewOrm()
-	err := o.Read(membership)
+	err := o.Raw(sql, membershipId).QueryRow(&membership)
 	if err != nil {
-		return membership, err
+		beego.Error("Failed to get membership:", err, membershipId)
+		return nil, fmt.Errorf("Failed to get membership")
 	}
-	return membership, nil
+	return &membership, nil
 }
 
-// Updates membership in the database
+// Updates membership in the database by using a pointer to
+// an existing membership store.
 func UpdateMembership(membership *Membership) error {
 	var err error
 	var num int64
@@ -143,7 +128,8 @@ func UpdateMembership(membership *Membership) error {
 	return nil
 }
 
-// Delete membership from the database
+// Delete membership from the database by using a
+// membership ID.
 func DeleteMembership(membershipId int64) error {
 	var num int64
 	var err error
@@ -169,92 +155,6 @@ func DeleteMembership(membershipId int64) error {
 	if err != nil {
 		return err
 	}
-	beego.Trace("Deleted num rows:", num)
-	return nil
-}
-
-func CreateUserMembership(userMembership *UserMembership) (umid int64, err error) {
-	if userMembership != nil {
-		o := orm.NewOrm()
-
-		if umid, err := o.Insert(userMembership); err != nil {
-			beego.Error("Error creating new user membership: ", err)
-			return umid, err
-		}
-
-		return umid, nil
-	} else {
-		return 0, errors.New("userMembership is nil")
-	}
-}
-
-func GetUserMemberships(userId int64) (*UserMembershipList, error) {
-
-	o := orm.NewOrm()
-
-	// Use these for the table names
-	m := Membership{}
-	um := UserMembership{}
-
-	/*
-			Id           int64 `orm:"auto";"pk"`
-		UserId       int64
-		MembershipId int64
-		StartDate    time.Time
-	*/
-
-	// Joint query, select user memberships and expands them with
-	// membership base information.
-	sql := fmt.Sprintf("SELECT um.*, m.title, m.short_name, m.duration, m.unit, "+
-		"m.monthly_price, m.machine_price_deduction, m.affected_machines "+
-		"FROM %s AS um "+
-		"JOIN %s m ON um.membership_id=m.id "+
-		"WHERE um.user_id=?",
-		um.TableName(), m.TableName())
-
-	var userMemberships []UserMembershipCombo
-	var num int64
-	var err error
-	num, err = o.Raw(sql, userId).QueryRows(&userMemberships)
-	if err != nil {
-		beego.Error(err)
-		return nil, fmt.Errorf("Failed to get user memberships")
-	}
-	beego.Trace("Got num user memberships:", num)
-
-	userMembershipList := UserMembershipList{}
-	userMembershipList.Data = userMemberships
-
-	return &userMembershipList, nil
-}
-
-// Delete membership from the database
-func DeleteUserMembership(userMembershipId int64) error {
-	var num int64
-	var err error
-	o := orm.NewOrm()
-
-	beego.Trace("models.DeleteUserMembership: userMembershipId:",
-		userMembershipId)
-
-	userMembership := &UserMembership{}
-	userMembership.Id = userMembershipId
-
-	num, err = o.QueryTable(userMembership.TableName()).
-		Filter("id", userMembershipId).Delete()
-	if err != nil {
-		beego.Error("Failed to delete user membership")
-		return errors.New("Failed to delete user membership")
-	}
-
-	/*
-		num, err = o.Delete(userMembership)
-		if err != nil {
-			return errors.New(
-				fmt.Sprintf("Failed to delete user membership: %v", err))
-		}
-	*/
-
 	beego.Trace("Deleted num rows:", num)
 	return nil
 }

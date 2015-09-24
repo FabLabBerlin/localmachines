@@ -1,26 +1,14 @@
 package models
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	"github.com/tealeg/xlsx"
 	"math/rand"
+	"os"
 	"sort"
-	"strconv"
 	"time"
-)
-
-const (
-	FORMAT_2_DIGIT = "#,##0.00"
-	FORMAT_4_DIGIT = "#,####0.0000"
-
-	BLUE   = "FF63C5E5"
-	RED    = "FFEA535D"
-	YELLOW = "FFFBE16B"
-	GREEN  = "FF92D050"
 )
 
 // Invoice entry that is saved in the database.
@@ -45,30 +33,14 @@ func (this *Invoice) TableName() string {
 
 // This is a user activation row that appears in the XLSX file
 type InvoiceActivation struct {
-	MachineId           int64 // Machine info
-	MachineName         string
-	MachineProductId    string
-	MachineUsage        float64
-	MachineUsageUnit    string
-	MachinePricePerUnit float64
-	UserId              int64 // User info
-	UserClientId        int
-	UserFirstName       string
-	UserLastName        string
-	Username            string
-	UserEmail           string
-	UserDebitorNumber   string
-	UserInvoiceAddr     string
-	UserZipCode         string
-	UserCity            string
-	UserCountryCode     string
-	UserPhone           string
-	UserComments        string
-	Memberships         []*Membership
-	TotalPrice          float64
-	DiscountedTotal     float64
-	TimeStart           time.Time
-	TimeEnd             time.Time
+	Machine         *Machine
+	MachineUsage    float64
+	User            User
+	Memberships     []*Membership
+	TotalPrice      float64
+	DiscountedTotal float64
+	TimeStart       time.Time
+	TimeEnd         time.Time
 }
 
 func (this *InvoiceActivation) MembershipStr() string {
@@ -91,16 +63,23 @@ func (this *InvoiceActivation) MembershipStr() string {
 }
 
 func (this *InvoiceActivation) PriceTotalExclDisc() float64 {
-	return this.MachineUsage * this.MachinePricePerUnit
+	return this.MachineUsage * float64(this.Machine.Price)
 }
 
 func (this *InvoiceActivation) PriceTotalDisc() (float64, error) {
 	priceTotal := this.PriceTotalExclDisc()
 	for _, membership := range this.Memberships {
-		isAffected, err := membership.IsMachineAffected(this.MachineId)
+
+		// We need to know whether the machine is affected by the base membership
+		// as well as the individual activation is affected by the user membership
+		isAffected, err := membership.IsMachineAffected(this.Machine.Id)
 		if err != nil {
-			return 0, fmt.Errorf("membership: AffectedMachines: %v", err)
+			beego.Error(
+				"Failed to check whether machine is affected by membership:", err)
+			return 0, fmt.Errorf(
+				"Failed to check whether machine is affected by membership")
 		}
+
 		machinePriceDeduction := 0.0
 		if isAffected {
 			machinePriceDeduction = float64(membership.MachinePriceDeduction)
@@ -109,45 +88,6 @@ func (this *InvoiceActivation) PriceTotalDisc() (float64, error) {
 		priceTotal = priceTotal - (priceTotal * machinePriceDeduction / 100.0)
 	}
 	return priceTotal, nil
-}
-
-func (this *InvoiceActivation) AddRowXlsx(sheet *xlsx.Sheet) error {
-	row := sheet.AddRow()
-	row.AddCell()
-	cell := row.AddCell()
-	cell.Value = this.MachineName
-
-	cell = row.AddCell()
-	cell.Value = this.MachineProductId
-
-	cell = row.AddCell()
-	if this.TimeStart.Unix() > 0 {
-		cell.Value = this.TimeStart.Format(time.RFC1123)
-	}
-
-	cell = row.AddCell()
-	cell.SetFloatWithFormat(this.MachineUsage, FORMAT_4_DIGIT)
-
-	cell = row.AddCell()
-	cell.Value = this.MachineUsageUnit
-
-	cell = row.AddCell()
-	cell.SetFloatWithFormat(this.MachinePricePerUnit, FORMAT_2_DIGIT)
-
-	cell = row.AddCell()
-	cell.SetFloatWithFormat(this.PriceTotalExclDisc(), FORMAT_2_DIGIT)
-
-	cell = row.AddCell()
-	cell.Value = this.MembershipStr()
-
-	cell = row.AddCell()
-	if priceTotalDisc, err := this.PriceTotalDisc(); err == nil {
-		cell.SetFloatWithFormat(priceTotalDisc, FORMAT_2_DIGIT)
-		cell.SetStyle(boldStyle())
-		return nil
-	} else {
-		return fmt.Errorf("PriceTotalDisc: %v", err)
-	}
 }
 
 type InvoiceActivations []*InvoiceActivation
@@ -162,7 +102,7 @@ func (this InvoiceActivations) Less(i, j int) bool {
 	} else if (*this[j]).TimeStart.Before((*this[i]).TimeStart) {
 		return false
 	} else {
-		return (*this[i]).MachineName < (*this[j]).MachineName
+		return (*this[i]).Machine.Name < (*this[j]).Machine.Name
 	}
 }
 
@@ -170,10 +110,12 @@ func (this InvoiceActivations) Swap(i, j int) {
 	*this[i], *this[j] = *this[j], *this[i]
 }
 
-func (this InvoiceActivations) SummarizedByMachine() (InvoiceActivations, error) {
+func (this InvoiceActivations) SummarizedByMachine() (
+	InvoiceActivations, error) {
+
 	byMachine := make(map[string]*InvoiceActivation)
 	for _, activation := range this {
-		summary, ok := byMachine[activation.MachineName]
+		summary, ok := byMachine[activation.Machine.Name]
 		if !ok {
 			a := *activation
 			summary = &a
@@ -181,7 +123,7 @@ func (this InvoiceActivations) SummarizedByMachine() (InvoiceActivations, error)
 			summary.MachineUsage = 0
 			summary.TotalPrice = 0
 			summary.DiscountedTotal = 0
-			byMachine[activation.MachineName] = summary
+			byMachine[activation.Machine.Name] = summary
 		}
 		summary.MachineUsage += activation.MachineUsage
 		summary.TotalPrice += activation.PriceTotalExclDisc()
@@ -209,9 +151,9 @@ func (this InvoiceActivationsXlsx) Len() int {
 }
 
 func (this InvoiceActivationsXlsx) Less(i, j int) bool {
-	if (*this[i]).MachineName < (*this[j]).MachineName {
+	if (*this[i]).Machine.Name < (*this[j]).Machine.Name {
 		return true
-	} else if (*this[j]).MachineName < (*this[i]).MachineName {
+	} else if (*this[j]).Machine.Name < (*this[i]).Machine.Name {
 		return false
 	} else {
 		return (*this[i]).TimeStart.Before((*this[j]).TimeStart)
@@ -223,20 +165,8 @@ func (this InvoiceActivationsXlsx) Swap(i, j int) {
 }
 
 type UserSummary struct {
-	UserId        int64
-	UserClientId  int
-	UserFirstName string
-	UserLastName  string
-	Username      string
-	UserEmail     string
-	DebitorNumber string
-	Activations   InvoiceActivations
-	InvoiceAddr   string
-	ZipCode       string
-	City          string
-	CountryCode   string
-	Phone         string
-	Comments      string
+	User        User
+	Activations InvoiceActivations
 }
 
 type InvoiceSummary struct {
@@ -246,6 +176,19 @@ type InvoiceSummary struct {
 	UserSummaries   []*UserSummary
 }
 
+// exists returns whether the given file or directory exists or not
+func exists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return true, err
+}
+
+// Creates invoice entry in the database
 func CreateInvoice(startTime, endTime time.Time) (*Invoice, error) {
 
 	var err error
@@ -257,10 +200,23 @@ func CreateInvoice(startTime, endTime time.Time) (*Invoice, error) {
 
 	// Create *.xlsx file.
 	fileName := invoice.getInvoiceFileName(startTime, endTime)
+
+	// Make sure the files directory exists
+	exists, _ := exists("files")
+	if !exists {
+
+		// Create the files directory with permission to write
+		err = os.Mkdir("files", 0777)
+		if err != nil {
+			beego.Error("Failed to create files dir:", err)
+			return nil, fmt.Errorf("Failed to create files dir: %v", err)
+		}
+	}
+
 	filePath := fmt.Sprintf("files/%s.xlsx", fileName)
 	invoice.FilePath = filePath
 
-	err = invoice.createXlsxFile(filePath, &invSummary)
+	err = createXlsxFile(filePath, &invoice, &invSummary)
 	if err != nil {
 		return nil, errors.New(
 			fmt.Sprintf("Failed to create *.xlsx file: %v", err))
@@ -272,43 +228,36 @@ func CreateInvoice(startTime, endTime time.Time) (*Invoice, error) {
 
 	// Store invoice entry
 	o := orm.NewOrm()
-
-	/*
-		invoiceId, err = o.Insert(&invoice)
-		if err != nil {
-			return nil, errors.New(
-				fmt.Sprintf("Failed to insert invoice into db: %v", err))
-		}
-		beego.Trace("Created invoice ID:", invoiceId)
-	*/
-
-	// Beego time management is very strange...
-	// Thinking of converting all datetime fields to string fields in models
-	query := fmt.Sprintf("INSERT INTO %s VALUES (?,?,?,?,?,?)",
-		invoice.TableName())
-
-	var res sql.Result
-	res, err = o.Raw(query,
-		nil, invoice.Activations, invoice.FilePath,
-		time.Now().Format("2006-01-02 15:04:05"),
-		invoice.PeriodFrom.Format("2006-01-02 15:04:05"),
-		invoice.PeriodTo.Format("2006-01-02 15:04:05")).Exec()
-
+	invoice.Id, err = o.Insert(&invoice)
 	if err != nil {
 		beego.Error("Failed to insert invoice into db:", err)
-		return nil, errors.New(
-			fmt.Sprintf("Failed to insert invoice into db: %v", err))
+		return nil, fmt.Errorf("Failed to insert invoice into db: %v", err)
 	}
 
-	invoice.Id, err = res.LastInsertId()
-	if err != nil {
-		return nil, errors.New(
-			fmt.Sprintf("Failed to acquire last inserted id: %v", err))
-	}
 	return &invoice, nil
 }
 
-func CalculateInvoiceSummary(startTime, endTime time.Time) (invoice Invoice, invSummary InvoiceSummary, err error) {
+// Gets existing invoice from db by invoice ID
+func GetInvoice(invoiceId int64) (invoice *Invoice, err error) {
+
+	invoice = &Invoice{}
+	invoice.Id = invoiceId
+
+	o := orm.NewOrm()
+	err = o.Read(invoice)
+	if err != nil {
+		beego.Error("Failed to read invoice:", err)
+		return nil, fmt.Errorf("Failed to read invoice: %v", err)
+	}
+
+	return
+}
+
+// Returns Invoice and InvoiceSummary objects, error otherwise
+func CalculateInvoiceSummary(
+	startTime, endTime time.Time) (
+	invoice Invoice, invSummary InvoiceSummary, err error) {
+
 	// Get all uninvoiced activations in the time range
 	var activations *[]Activation
 	activations, err = invoice.getActivations(startTime, endTime)
@@ -329,7 +278,7 @@ func CalculateInvoiceSummary(startTime, endTime time.Time) (invoice Invoice, inv
 
 	// Create user summaries from invoice activations
 	var userSummaries *[]*UserSummary
-	userSummaries = invoice.getUserSummaries(enhancedActivations)
+	userSummaries, err = invoice.getUserSummaries(enhancedActivations)
 	if err != nil {
 		err = fmt.Errorf("Failed to get user summaries: %v", err)
 		return
@@ -356,63 +305,23 @@ func CalculateInvoiceSummary(startTime, endTime time.Time) (invoice Invoice, inv
 	return invoice, invSummary, err
 }
 
-func GetAllInvoices() (*[]Invoice, error) {
-
-	type CustomInvoice struct {
-		Id          int64
-		Activations string
-		FilePath    string
-		Created     string
-		PeriodFrom  string
-		PeriodTo    string
-	}
-
-	customInvoices := []CustomInvoice{}
+// Gets all invoices from the database
+func GetAllInvoices() (invoices *[]Invoice, err error) {
 	inv := Invoice{}
+	var readInvoices []Invoice
 	o := orm.NewOrm()
-
-	query := fmt.Sprintf("SELECT i.* FROM %s i ORDER BY i.id DESC",
-		inv.TableName())
-	num, err := o.Raw(query).QueryRows(&customInvoices)
-
+	var num int64
+	num, err = o.QueryTable(inv.TableName()).OrderBy("-Id").All(&readInvoices)
 	if err != nil {
-		return nil, errors.New(
-			fmt.Sprintf("Failed to get all invoices: %v", err))
+		beego.Error("Failed to get all invoices:", err)
+		return nil, fmt.Errorf("Failed to get all invoices: %v", err)
 	}
-	beego.Trace("Got num invoices:", num)
+	beego.Info("Got num invoices:", num)
 
-	invoices := []Invoice{}
-
-	for invIter := 0; invIter < len(customInvoices); invIter++ {
-		inv := Invoice{}
-		inv.Id = customInvoices[invIter].Id
-		inv.Activations = customInvoices[invIter].Activations
-		inv.FilePath = customInvoices[invIter].FilePath
-		inv.Created, err = time.ParseInLocation("2006-01-02 15:04:05",
-			customInvoices[invIter].Created, time.Now().Location())
-		if err != nil {
-			return nil, errors.New(
-				fmt.Sprintf("Failed to parse invoice: %v", err))
-		}
-		inv.PeriodFrom, err = time.ParseInLocation("2006-01-02 15:04:05",
-			customInvoices[invIter].PeriodFrom, time.Now().Location())
-		if err != nil {
-			return nil, errors.New(
-				fmt.Sprintf("Failed to parse invoice: %v", err))
-		}
-		inv.PeriodTo, err = time.ParseInLocation("2006-01-02 15:04:05",
-			customInvoices[invIter].PeriodTo, time.Now().Location())
-		if err != nil {
-			return nil, errors.New(
-				fmt.Sprintf("Failed to parse invoice: %v", err))
-		}
-
-		invoices = append(invoices, inv)
-	}
-
-	return &invoices, nil
+	return &readInvoices, nil
 }
 
+// Deletes an invoice by ID
 func DeleteInvoice(invoiceId int64) error {
 	invoice := Invoice{}
 	invoice.Id = invoiceId
@@ -426,291 +335,12 @@ func DeleteInvoice(invoiceId int64) error {
 	return nil
 }
 
-func (this *Invoice) AddRowActivationsHeaderXlsx(sheet *xlsx.Sheet) {
-	row := sheet.AddRow()
-	row.AddCell()
-	cell := row.AddCell()
-	cell.Value = "Machine Name"
-	cell = row.AddCell()
-	cell.Value = "Product ID"
-	cell = row.AddCell()
-	cell.Value = "Start Time"
-	cell = row.AddCell()
-	cell.Value = "Usage"
-	cell = row.AddCell()
-	cell.Value = "Usage Unit"
-	cell = row.AddCell()
-	cell.Value = "€ per Unit"
-	cell = row.AddCell()
-	cell.Value = "Total €"
-	cell = row.AddCell()
-	cell.Value = "Memberships"
-	cell = row.AddCell()
-	cell.Value = "Discounted €"
-}
-
-func (this *Invoice) addSeparationRowXlsx(sheet *xlsx.Sheet) {
-	row := sheet.AddRow()
-	style := colorStyle(YELLOW)
-	for i := 0; i < 11; i++ {
-		cell := row.AddCell()
-		cell.SetStyle(style)
-	}
-}
-
-func (this *Invoice) createXlsxFile(filePath string,
-	invSummarry *InvoiceSummary) error {
-
-	userSummaries := &(*invSummarry).UserSummaries
-
-	// Create a xlsx file if there
-	var file *xlsx.File
-	var sheet *xlsx.Sheet
-	var row *xlsx.Row
-	var cell *xlsx.Cell
-	var err error
-
-	file = xlsx.NewFile()
-	sheet = file.AddSheet("User Summaries")
-
-	// Create header
-	row = sheet.AddRow()
-	cell = row.AddCell()
-	cell.Value = "Fab Lab Machine Usage Summary"
-
-	row = sheet.AddRow()
-	cell = row.AddCell()
-	cell.Value = "Period Start Date"
-	cell = row.AddCell()
-	cell.Value = invSummarry.PeriodStartTime.Format("2006-01-02")
-
-	row = sheet.AddRow()
-	cell = row.AddCell()
-	cell.Value = "Period End Date"
-	cell = row.AddCell()
-	cell.Value = invSummarry.PeriodEndTime.Format("2006-01-02")
-
-	row = sheet.AddRow()
-	row = sheet.AddRow()
-
-	// Fill the xlsx sheet
-	for usrSumIter := 0; usrSumIter < len(*userSummaries); usrSumIter++ {
-		userSummary := (*userSummaries)[usrSumIter]
-
-		this.addSeparationRowXlsx(sheet)
-		row = sheet.AddRow()
-		cell = row.AddCell()
-		cell.Value = "User"
-		cell = row.AddCell()
-		cell.Value = userSummary.UserFirstName
-		cell = row.AddCell()
-		cell.Value = userSummary.UserLastName
-		cell = row.AddCell()
-		cell.Value = userSummary.UserEmail
-
-		row = sheet.AddRow()
-		cell = row.AddCell()
-		cell.Value = "Fastbill User Id"
-		cell = row.AddCell()
-		cell.SetStyle(colorStyle(RED))
-		cell.Value = strconv.Itoa(userSummary.UserClientId)
-
-		// User Billing Address
-		row = sheet.AddRow()
-		cell = row.AddCell()
-		cell.Value = "Billing Address"
-		cell = row.AddCell()
-		cell.Value = userSummary.InvoiceAddr
-
-		// User Zip Code
-		row = sheet.AddRow()
-		cell = row.AddCell()
-		cell.Value = "Zip Code"
-		cell = row.AddCell()
-		cell.Value = userSummary.ZipCode
-
-		// User City
-		row = sheet.AddRow()
-		cell = row.AddCell()
-		cell.Value = "City"
-		cell = row.AddCell()
-		cell.Value = userSummary.City
-
-		// User Country
-		row = sheet.AddRow()
-		cell = row.AddCell()
-		cell.Value = "Country"
-		cell = row.AddCell()
-		cell.Value = userSummary.CountryCode
-
-		// User Phone
-		row = sheet.AddRow()
-		cell = row.AddCell()
-		cell.Value = "Phone"
-		cell = row.AddCell()
-		cell.Value = userSummary.Phone
-
-		// User Comments
-		row = sheet.AddRow()
-		cell = row.AddCell()
-		cell.Value = "Comments"
-		cell = row.AddCell()
-		cell.Value = userSummary.Comments
-
-		row = sheet.AddRow()
-		cell = row.AddCell()
-		cell.Value = "Debitor Number"
-		cell = row.AddCell()
-		cell.Value = userSummary.DebitorNumber
-
-		memberships, err := GetUserMemberships(userSummary.UserId)
-		if err != nil {
-			return fmt.Errorf("GetUserMemberships: %v", err)
-		}
-
-		if memberships != nil {
-			sheet.AddRow()
-			sheet.AddRow()
-			row = sheet.AddRow()
-			cell = row.AddCell()
-			cell.Value = "Memberships"
-			row = sheet.AddRow()
-			row.AddCell()
-			cell = row.AddCell()
-			cell.SetStyle(boldStyle())
-			cell.Value = "Title"
-			cell = row.AddCell()
-			cell.Value = "Start Date"
-			cell = row.AddCell()
-			cell.Value = "End Date"
-			cell = row.AddCell()
-			cell.SetStyle(boldStyle())
-			cell.Value = "Monthly Price / €"
-			cell = row.AddCell()
-			cell.Value = "Duration Unit"
-			cell = row.AddCell()
-			cell.Value = "Machine Price Deduction"
-			for _, m := range memberships.Data {
-				row = sheet.AddRow()
-				row.AddCell()
-				cell = row.AddCell()
-				cell.SetStyle(colorStyle(BLUE))
-				cell.Value = m.Title
-				cell = row.AddCell()
-				cell.Value = m.StartDate.Format(time.RFC1123)
-				cell = row.AddCell()
-				duration := time.Duration(24*m.Duration) * time.Hour
-				cell.Value = m.StartDate.Add(duration).Format(time.RFC1123)
-				cell = row.AddCell()
-				cell.SetFloatWithFormat(float64(m.MonthlyPrice), FORMAT_2_DIGIT)
-				cell.SetStyle(colorStyle(GREEN))
-				cell = row.AddCell()
-				cell.Value = m.Unit
-				cell = row.AddCell()
-				cell.Value = strconv.Itoa(m.MachinePriceDeduction) + "%"
-			}
-			sheet.AddRow()
-			sheet.AddRow()
-		}
-
-		sumTotal := 0.0
-		sumTotalDisc := 0.0
-		activations := InvoiceActivationsXlsx(userSummary.Activations)
-		sort.Stable(activations)
-		for _, activation := range activations {
-			sumTotal += activation.PriceTotalExclDisc()
-			if priceTotalDisc, err := activation.PriceTotalDisc(); err == nil {
-				sumTotalDisc += priceTotalDisc
-			} else {
-				return err
-			}
-
-		}
-
-		row = sheet.AddRow()
-		cell = row.AddCell()
-		cell.Value = "Activations By Machine"
-		this.AddRowActivationsHeaderXlsx(sheet)
-
-		if summarizedByMachine, err := userSummary.Activations.SummarizedByMachine(); err == nil {
-			for _, summed := range summarizedByMachine {
-				if err := summed.AddRowXlsx(sheet); err != nil {
-					return fmt.Errorf("AddRowXlsx: %v", err)
-				}
-			}
-		} else {
-			return fmt.Errorf("SummarizedByMachine: %v", err)
-		}
-
-		printTotal := func() {
-			row = sheet.AddRow()
-			row.AddCell()
-			row.AddCell()
-			row.AddCell()
-			row.AddCell()
-			row.AddCell()
-			row.AddCell()
-			cell = row.AddCell()
-			cell.Value = "Subtotal €"
-			cell = row.AddCell()
-			cell.SetFloatWithFormat(sumTotal, FORMAT_2_DIGIT)
-			cell = row.AddCell()
-			cell.SetStyle(boldStyle())
-			cell.Value = "Discounted €"
-			cell = row.AddCell()
-			cell.SetFloatWithFormat(sumTotalDisc, FORMAT_2_DIGIT)
-			cell.SetStyle(colorStyle(GREEN))
-		}
-		printTotal()
-
-		sheet.AddRow()
-		row = sheet.AddRow()
-		cell = row.AddCell()
-		cell.Value = "Activations"
-		this.AddRowActivationsHeaderXlsx(sheet)
-
-		for _, activation := range activations {
-			if err := activation.AddRowXlsx(sheet); err != nil {
-				return fmt.Errorf("AddRowXlsx: %v", err)
-			}
-		}
-		printTotal()
-
-		sheet.AddRow()
-	} // for userSummaries
-
-	err = file.Save(filePath)
-	if err != nil {
-		return err
-	}
-
-	this.FilePath = filePath
-	return nil
-}
-
-func boldStyle() *xlsx.Style {
-	font := xlsx.DefaultFont()
-	font.Bold = true
-	style := xlsx.NewStyle()
-	style.Font = *font
-	return style
-}
-
-func colorStyle(color string) *xlsx.Style {
-	font := xlsx.DefaultFont()
-	font.Bold = true
-	style := xlsx.NewStyle()
-	style.Fill = *xlsx.NewFill("solid", color, "FF00FF00")
-	style.Font = *font
-	return style
-}
-
+// Gets activations that have happened between start and end dates
 func (this *Invoice) getActivations(startTime,
-	endTime time.Time) (*[]Activation, error) {
+	endTime time.Time) (activationsArr *[]Activation, err error) {
 
 	act := Activation{}
 	usr := User{}
-	var err error
 	o := orm.NewOrm()
 
 	query := fmt.Sprintf("SELECT a.* FROM %s a JOIN %s u ON a.user_id=u.id "+
@@ -722,12 +352,13 @@ func (this *Invoice) getActivations(startTime,
 
 	activations := []Activation{}
 	_, err = o.Raw(query,
-		startTime.Format("2006-01-02"),
-		endTime.Format("2006-01-02")).QueryRows(&activations)
+		startTime.Format("2006-01-02 15:04:05"),
+		endTime.Format("2006-01-02 15:04:05")).QueryRows(&activations)
 	if err != nil {
 		return nil, err
 	}
 
+	// Fill the Invoice store Activations string
 	this.Activations = "["
 	for actIter := 0; actIter < len(activations); actIter++ {
 		var format string
@@ -782,10 +413,19 @@ func (this *Invoice) getEnhancedActivations(
 }
 
 func (this *Invoice) getUserSummaries(
-	invoiceActivations *[]*InvoiceActivation) *[]*UserSummary {
+	invoiceActivations *[]*InvoiceActivation) (*[]*UserSummary, error) {
 
 	// Create a slice for unique user summaries.
-	userSummaries := []*UserSummary{}
+	users, err := GetAllUsers()
+	if err != nil {
+		return nil, err
+	}
+	userSummaries := make([]*UserSummary, 0, len(users))
+	for _, user := range users {
+		newSummary := UserSummary{}
+		newSummary.User = *user
+		userSummaries = append(userSummaries, &newSummary)
+	}
 
 	// Sort invoice activations by user.
 	for invActIter := 0; invActIter < len(*invoiceActivations); invActIter++ {
@@ -795,78 +435,64 @@ func (this *Invoice) getUserSummaries(
 		uSummaryExists := false
 		var summary *UserSummary
 
-		for usrSumIter := 0; usrSumIter < len(userSummaries); usrSumIter++ {
-			if iActivation.UserId == userSummaries[usrSumIter].UserId {
+		for _, userSummary := range userSummaries {
+			if iActivation.User.Id == userSummary.User.Id {
 				uSummaryExists = true
-				summary = userSummaries[usrSumIter]
+				summary = userSummary
 				break
 			}
 		}
 
 		// Create new user summary if it does not exist for the user.
 		if !uSummaryExists {
+			beego.Warn("Creating user summary for activation that has no matching user")
 			newSummary := UserSummary{}
-			newSummary.UserId = iActivation.UserId
-			newSummary.UserClientId = iActivation.UserClientId
-			newSummary.UserFirstName = iActivation.UserFirstName
-			newSummary.UserLastName = iActivation.UserLastName
-			newSummary.Username = iActivation.Username
-			newSummary.UserEmail = iActivation.UserEmail
-			newSummary.DebitorNumber = "Undefined"
-			newSummary.InvoiceAddr = iActivation.UserInvoiceAddr
-			newSummary.ZipCode = iActivation.UserZipCode
-			newSummary.City = iActivation.UserCity
-			newSummary.CountryCode = iActivation.UserCountryCode
-			newSummary.Phone = iActivation.UserPhone
-			newSummary.Comments = iActivation.UserComments
+			newSummary.User = iActivation.User
 			userSummaries = append(userSummaries, &newSummary)
 			summary = userSummaries[len(userSummaries)-1]
 		}
 
 		// Append the invoice activation to the user summary.
-		if summary.UserId == iActivation.UserId {
+		if summary.User.Id == iActivation.User.Id {
 			summary.Activations = append(summary.Activations, iActivation)
 		}
 	} // for
 
 	// Return populated user summaries slice.
-	return &userSummaries
+	return &userSummaries, nil
 }
 
-func (this *Invoice) enhanceActivation(activation *Activation) (*InvoiceActivation, error) {
+func (this *Invoice) enhanceActivation(activation *Activation) (
+	*InvoiceActivation, error) {
 
-	invActivation := &InvoiceActivation{}
 	o := orm.NewOrm()
 
 	// Get activation machine data
-	machine := &Machine{}
-	query := fmt.Sprintf("SELECT m.name, m.price, m.price_unit FROM %s m "+
-		"WHERE id = ?", machine.TableName())
-
-	err := o.Raw(query, activation.MachineId).QueryRow(machine)
+	machine, err := GetMachine(activation.MachineId)
 	if err != nil {
-		//return nil, errors.New(fmt.Sprintf("Failed to get machine: %v", err))
-		beego.Info("Failed to get machine, ID: ", activation.MachineId)
+		beego.Error("Failed to get machine, ID: ", activation.MachineId, ":", err)
+		return nil, fmt.Errorf("Failed to get machine: %v", err)
 	}
 
-	invActivation.MachineId = int64(activation.MachineId)
-	invActivation.MachineName = machine.Name
-	invActivation.MachineProductId = "Undefined"
-	invActivation.MachinePricePerUnit = float64(machine.Price)
-	invActivation.MachineUsageUnit = machine.PriceUnit
+	invActivation := &InvoiceActivation{
+		Machine: machine,
+	}
 
 	// Usage time is stored as seconds and we need to transform that into
 	// other format depending on the machine usage unit.
-	if invActivation.MachineUsageUnit == "minute" {
+	switch invActivation.Machine.PriceUnit {
+	case "minute":
 		invActivation.MachineUsage = float64(activation.TimeTotal) / 60.0
 		if invActivation.MachineUsage < 0.01 {
 			invActivation.MachineUsage = 0.01
 		}
-	} else if invActivation.MachineUsageUnit == "hour" {
+		break
+	case "hour":
 		invActivation.MachineUsage = float64(activation.TimeTotal) / 60.0 / 60.0
 		if invActivation.MachineUsage < 0.01 {
 			invActivation.MachineUsage = 0.01
 		}
+		break
 	}
 
 	// Get activation user data
@@ -875,103 +501,56 @@ func (this *Invoice) enhanceActivation(activation *Activation) (*InvoiceActivati
 		return nil, errors.New(fmt.Sprintf("Failed to get user: %v", err))
 	}
 
-	invActivation.UserId = activation.UserId
-	invActivation.UserClientId = user.ClientId
-	invActivation.UserFirstName = user.FirstName
-	invActivation.UserLastName = user.LastName
-	invActivation.Username = user.Username
-	invActivation.UserEmail = user.Email
-	invActivation.UserDebitorNumber = "Undefined"
-	invActivation.UserInvoiceAddr = user.InvoiceAddr
-	invActivation.UserZipCode = user.ZipCode
-	invActivation.UserCity = user.City
-	invActivation.UserCountryCode = user.CountryCode
-	invActivation.UserPhone = user.Phone
-	invActivation.UserComments = user.Comments
+	invActivation.User = *user
 
 	// Get user memberships
 	m := &UserMembership{} // Use just for the TableName func
-	type CustomUserMembership struct {
-		Id           int64 `orm:"auto";"pk"`
-		UserId       int64
-		MembershipId int64
-		StartDate    string
-	}
-	usrMemberships := &[]CustomUserMembership{}
-	query = fmt.Sprintf("SELECT membership_id, start_date FROM %s "+
-		"WHERE user_id = ?", m.TableName())
-	_, err = o.Raw(query, invActivation.UserId).QueryRows(usrMemberships)
+	usrMemberships := &[]UserMembership{}
+	query := fmt.Sprintf("SELECT id, user_id, membership_id, start_date, end_date, auto_extend FROM %s "+
+		"WHERE user_id=?", m.TableName())
+	_, err = o.Raw(query, invActivation.User.Id).QueryRows(usrMemberships)
 	if err != nil {
 		return nil, errors.New(
 			fmt.Sprintf("Failed to get user membership: %v", err))
 	}
-
 	// Check if the membership dates of the user overlap with the activation.
 	// If they overlap, add the membership to the invActivation
 	for i := 0; i < len(*usrMemberships); i++ {
-		//for _, usrMem := range *usrMemberships {
-
 		usrMem := &(*usrMemberships)[i]
 
-		// Parse user membership start time
-		var memStartTime time.Time
-		memStartTime, err = time.ParseInLocation("2006-01-02 15:04:05",
-			usrMem.StartDate,
-			time.Now().Location())
-		if err != nil {
-			return nil, errors.New(
-				fmt.Sprintf("Failed to parse user membership start time: %v",
-					err))
-		}
+		beego.Trace("usrMem.StartTime:", usrMem.StartDate)
 
-		// We also need to get the membership end time that is not yet saved
-		// in the database
-
-		// We need to get the actual membership to be able to do that
-		mem := &Membership{}
-		query = fmt.Sprintf("SELECT title, short_name, duration, unit, "+
-			"machine_price_deduction, affected_machines FROM %s "+
-			"WHERE id = ?", mem.TableName())
-		err = o.Raw(query, usrMem.MembershipId).QueryRow(mem)
+		// Get membership
+		mem, err := GetMembership(usrMem.MembershipId)
 		if err != nil {
 			return nil, errors.New(
 				fmt.Sprintf("Failed to get the actual membership: %v", err))
 		}
 
-		// From the membership we need the duration in days to calculate the
-		// membership end time.
-		var dur time.Duration
-		var durStr string
-		var durHours int64
-		if mem.Unit == "days" {
-			durHours = int64(mem.Duration) * 24
-			durStr = fmt.Sprintf("%dh", durHours)
-		} else {
-			return nil, errors.New(
-				fmt.Sprintf("Unsupported membership duration unit: %s",
-					mem.Unit))
+		if usrMem.EndDate.IsZero() {
+			return nil, fmt.Errorf("end date is zero")
 		}
 
-		// Parse the membership duration
-		//beego.Trace(durStr)
-		dur, err = time.ParseDuration(durStr)
+		// Update user membership with correct end date
+		userMembershipUpdate := UserMembership{
+			Id: usrMem.Id,
+		}
+		beego.Trace("userMembershipUpdate.Id:", userMembershipUpdate.Id)
+		userMembershipUpdate.EndDate = usrMem.EndDate
+		_, err = o.Update(&userMembershipUpdate, "EndDate")
 		if err != nil {
-			return nil, errors.New(
-				fmt.Sprintf("Failed to parse membership duration: %v", err))
+			beego.Error("Failed to update user membership end date:", err)
+			return nil, fmt.Errorf("Failed to update user membership end date")
 		}
-
-		// Calculate end time using user membership start time and
-		// membership duration
-		var memEndTime time.Time
-		memEndTime = memStartTime.Add(dur)
 
 		// Now that we have membership start and end time, let's check
 		// if this period of time overlaps with the activation
-		if activation.TimeStart.After(memStartTime) &&
-			activation.TimeStart.Before(memEndTime) {
+		if activation.TimeStart.After(usrMem.StartDate) &&
+			activation.TimeStart.Before(usrMem.EndDate) {
 
 			// Yes, this activation is within the range of a membership,
 			// add the membership to the activation
+			beego.Trace("Activation affected by membership")
 			invActivation.Memberships = append(invActivation.Memberships, mem)
 		}
 	}

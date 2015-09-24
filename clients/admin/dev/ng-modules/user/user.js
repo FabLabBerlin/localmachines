@@ -186,7 +186,6 @@ app.controller('UserCtrl',
   }
 
   $scope.getAvailableMemberships = function() {
-    console.log('Getting available memberships...');
     $http({
       method: 'GET',
       url: '/api/memberships',
@@ -195,7 +194,19 @@ app.controller('UserCtrl',
       }
     })
     .success(function(data) {
+
       $scope.memberships = data;
+      $('.adm-user-membership-end-date').each(function() {
+        var eachUserMembershipId = $(this).attr('data-user-membership-id');
+        eachUserMembershipId = parseInt(eachUserMembershipId);
+        $(this).pickadate({
+          format: 'yyyy-mm-dd',
+          onSet: function(setWhat) {
+            $scope.updateUserMembership(eachUserMembershipId);
+          }
+        });
+      });
+
     })
     .error(function(data, status) {
       console.log('Could not get memberships');
@@ -213,15 +224,33 @@ app.controller('UserCtrl',
       }
     })
     .success(function(userMembershipList) {
-      console.log('Got user membership list:');
-      console.log(userMembershipList);
       var data = userMembershipList.Data;
       $scope.userMemberships = _.map(data, function(userMembership) {
-        userMembership.StartDate = new Date(Date.parse(userMembership.StartDate));
-        _.merge(userMembership, {
-          EndDate: new Date(userMembership.StartDate)
-        });
-        userMembership.EndDate.setDate(userMembership.StartDate.getDate() + userMembership.Duration);
+        
+        console.log('User membership ID: ' + userMembership.Id);
+        console.log('User membership start date');
+        console.log(userMembership.StartDate);
+        userMembership.StartDate = 
+          new Date(Date.parse(userMembership.StartDate));
+        
+        console.log('User membership end date');
+        console.log(userMembership.EndDate);
+        userMembership.EndDate = new Date(Date.parse(userMembership.EndDate));
+        var today = new Date();
+        
+        if (userMembership.StartDate <= today && 
+          today <= userMembership.EndDate) {
+          
+          if (userMembership.AutoExtend) {
+            userMembership.Active = true;
+          } else {
+            userMembership.Cancelled = true;
+          }
+
+        } else {
+          userMembership.Inactive = true;
+        }
+
         userMembership.StartDate = formatDate(userMembership.StartDate);
         userMembership.EndDate = formatDate(userMembership.EndDate);
         return userMembership;
@@ -234,8 +263,10 @@ app.controller('UserCtrl',
     });
   };
 
+  // Adds user membership to the database and updates the UI
   $scope.addUserMembership = function() {
     var startDate = $('#adm-add-user-membership-start-date').val();
+    console.log(startDate);
     if (!startDate) {
       toastr.error('Please select a Start Date');
       return;
@@ -246,8 +277,8 @@ app.controller('UserCtrl',
       return;
     }
 
-    var userMembershipId = $('#user-select-membership').val();
-    if (!userMembershipId) {
+    var selectedMembershipId = $('#user-select-membership').val();
+    if (!selectedMembershipId) {
       toastr.error('Please select a Membership');
       return;
     }
@@ -255,8 +286,8 @@ app.controller('UserCtrl',
       method: 'POST',
       url: '/api/users/' + $scope.user.Id + '/memberships',
       data: {
-        StartDate: startDate,
-        UserMembershipId: userMembershipId
+        startDate: startDate,
+        membershipId: selectedMembershipId
       },
       params: {
         ac: new Date().getTime()
@@ -346,6 +377,42 @@ app.controller('UserCtrl',
         }
       } // callback
     });
+  };
+
+  $scope.updateUserMembership = function(userMembershipId) {
+    var userMembership;
+    _.each($scope.userMemberships, function(um) {
+      if (um.Id && um.Id === userMembershipId) {
+        userMembership = um;
+      }
+    });
+    if (userMembership) {
+      $http({
+        method: 'PUT',
+        url: '/api/users/' + $scope.user.Id + '/memberships/' + userMembershipId,
+        headers: {'Content-Type': 'application/json' },
+        data: userMembership,
+        transformRequest: function(data) {
+          var transformed = _.extend({}, data);
+          if (data.StartDate) {
+            transformed.StartDate = new Date(data.StartDate);
+          }
+          var endDate = $('.adm-user-membership-end-date[data-user-membership-id=' + userMembershipId + ']').val();
+          if (endDate) {
+            transformed.EndDate = new Date(endDate);
+          }
+          return JSON.stringify(transformed);
+        },
+      })
+      .success(function() {
+        toastr.success('Membership updated.');
+      })
+      .error(function() {
+        toastr.error('Error while trying to update user membership');
+      });
+    } else {
+      toastr.error('Fatal error.');
+    }
   };
 
   $scope.deleteUserMembership = function(userMembershipId) {

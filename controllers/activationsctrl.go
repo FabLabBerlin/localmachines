@@ -228,7 +228,8 @@ func (this *ActivationsController) Create() {
 
 	// Continue with creating activation
 	var activationId int64
-	activationId, err = models.CreateActivation(machineId, userId)
+	var startTime time.Time = time.Now()
+	activationId, err = models.CreateActivation(machineId, userId, startTime)
 	if err != nil {
 		beego.Error("Failed to create activation")
 		this.CustomAbort(403, "Failed to create activation")
@@ -287,7 +288,7 @@ func (this *ActivationsController) Close() {
 		}
 	}
 
-	err = models.CloseActivation(aid)
+	err = models.CloseActivation(aid, time.Now())
 	if err != nil {
 		beego.Error("Failed to close activation")
 		this.CustomAbort(403, "Failed to close activation")

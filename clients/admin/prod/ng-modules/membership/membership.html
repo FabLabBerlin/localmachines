@@ -24,9 +24,9 @@
     
     <div class="col-sm-3">
       <div class="form-group">
-        <label for="membership-duration">Duration (days)</label>
+        <label for="membership-duration">Duration (months)</label>
         <input type="text" id="membership-duration" class="form-control"
-               placeholder="Duration" ng-model="membership.Duration">
+               placeholder="Duration" ng-model="membership.DurationMonths">
       </div>
     </div>
     
@@ -48,7 +48,7 @@
   <div class="row">
     <div class="col-sm-6">
       <div class="form-group">
-        <label for="membership-price">Machines Affected by Membership</label>
+        <label>Machines Affected by Membership</label>
         <div class="row">
 
           <div class="col-sm-6" ng-repeat="machine in machines">
@@ -68,9 +68,11 @@
       <div class="form-group">
         <label for="membership-price-deduction">Machine price deduction</label>
         <div class="input-group">
-          <input type="text" id="membership-price-deduction" class="form-control"
-                 placeholder="Percentage" 
-                 ng-model="membership.MachinePriceDeduction">
+          <input type="text" 
+            id="membership-price-deduction" 
+            class="form-control"
+            placeholder="Percentage" 
+            ng-model="membership.MachinePriceDeduction">
           <div class="input-group-addon">
             <b>%</b>
           </div>
@@ -78,6 +80,37 @@
       </div>
     </div>
   </div><!-- /.row -->
+
+  <div class="row">
+
+    <div class="col-sm-3">
+      <div class="form-group">
+        <label>Auto Extend</label>
+        <div class="checkbox-inline">
+          <label title="Automatically Extend Membership. Or not.">
+            <input type="checkbox" 
+              id="membership-auto-extend"
+              ng-model="membership.AutoExtend"> Automatically Extend Membership
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-sm-3">
+      <div class="form-group">
+        <label for="membership-extend-duration">Extend By</label>
+        <div class="input-group">
+          <input type="text"
+            id="membership-extend-duration"
+            class="form-control"
+            ng-model="membership.AutoExtendDurationMonths"
+            ng-disabled="!membership.AutoExtend">
+          <div class="input-group-addon">months</div>
+        </div>
+      </div>
+    </div>
+  
+  </div>
 
   <hr>
 

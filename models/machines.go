@@ -24,7 +24,7 @@ type Machine struct {
 	Available         bool
 	UnavailMsg        string    `orm:"type(text)"`
 	UnavailTill       time.Time `orm:"null;type(date)" form:"Date,2006-01-02T15:04:05Z07:00`
-	Price             float32
+	Price             float64
 	PriceUnit         string `orm:"size(100)"`
 	Comments          string `orm:"type(text)"`
 	Visible           bool
@@ -146,7 +146,7 @@ func UpdateMachine(machine *Machine) error {
 		return err
 	}
 
-	beego.Trace("Rows affected:", num)
+	beego.Trace("UpdateMachine: Rows affected:", num)
 	return nil
 }
 

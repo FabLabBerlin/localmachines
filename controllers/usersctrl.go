@@ -2,12 +2,10 @@ package controllers
 
 import (
 	"encoding/json"
+	"github.com/astaxie/beego"
+	"github.com/kr15h/fabsmith/models"
 	"strings"
 	"time"
-
-	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/orm"
-	"github.com/kr15h/fabsmith/models"
 )
 
 type UsersController struct {
@@ -549,7 +547,7 @@ func (this *UsersController) GetUserBill() {
 	var userSummary *models.UserSummary
 
 	for _, us := range invSummary.UserSummaries {
-		if us.UserId == suid {
+		if us.User.Id == suid {
 			userSummary = us
 		}
 	}
@@ -577,12 +575,15 @@ type MachinesAffectedArray struct {
 
 // @Title PostUserMemberships
 // @Description Post user membership
-// @Param	uid		path 	int	true		"User ID"
+// @Param	uid							path 		int			true		"User ID"
+// @Param	membershipId		query 	int			true		"Membership ID"
+// @Param	startDate				query 	string	true		"Membership ID"
 // @Success 200 {object} models.UserMembership
 // @Failure	403	Failed to get user memberships
 // @Failure	401	Not authorized
 // @router /:uid/memberships [post]
 func (this *UsersController) PostUserMemberships() {
+
 	// Check if logged in
 	suid := this.GetSession(SESSION_FIELD_NAME_USER_ID)
 	if suid == nil {
@@ -601,32 +602,45 @@ func (this *UsersController) PostUserMemberships() {
 		beego.Error("Failed to get :uid")
 		this.CustomAbort(403, "Failed to get :uid")
 	}
+	if ruid <= 0 {
+		beego.Error("Bad :uid")
+		this.CustomAbort(500, "Bad uid")
+	}
 
-	// Get requested user membership Id
-	userMembershipId, err := this.GetInt64("UserMembershipId")
+	// Get requested user membership ID
+	membershipId, err := this.GetInt64("membershipId")
 	if err != nil {
-		beego.Error("Failed to get :uid")
-		this.CustomAbort(403, "Failed to get :uid")
+		beego.Error("Failed to get membership ID")
+		this.CustomAbort(403, "Failed to get membership ID")
 	}
 
 	// Get requested start date
-	startDate, err := time.Parse("2006-01-02", this.GetString("StartDate"))
+	startDate, err := time.ParseInLocation("2006-01-02",
+		this.GetString("startDate"),
+		time.UTC)
 	if err != nil {
-		beego.Error("Failed to parse startDate")
-		this.CustomAbort(400, "Failed to obtain start date")
-	}
-
-	o := orm.NewOrm()
-	um := models.UserMembership{
-		UserId:       ruid,
-		MembershipId: userMembershipId,
-		StartDate:    startDate,
-	}
-
-	if _, err := o.Insert(&um); err != nil {
-		beego.Error("Error creating new user membership: ", err)
+		beego.Error("Failed to parse startDate=%v", startDate)
 		this.CustomAbort(500, "Internal Server Error")
 	}
+
+	// Create user membership by using the model function
+	var userMembershipId int64
+	userMembershipId, err = models.CreateUserMembership(ruid, membershipId, startDate)
+	if err != nil {
+		beego.Error("Error creating user membership:", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	// Read the user membership back
+	var userMembership *models.UserMembership
+	userMembership, err = models.GetUserMembership(userMembershipId)
+	if err != nil {
+		beego.Error("Failed to get user membership:", err)
+		this.CustomAbort(500, "Failed to get user membership")
+	}
+
+	this.Data["json"] = userMembership
+	this.ServeJson()
 }
 
 // @Title GetUserMemberships
@@ -711,6 +725,39 @@ func (this *UsersController) DeleteUserMembership() {
 	err = models.DeleteUserMembership(umid)
 	if err != nil {
 		beego.Error("Failed to delete user membership")
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	this.Data["json"] = "ok"
+	this.ServeJson()
+}
+
+// @Title Put
+// @Description Update UserMembership
+// @Param	uid		path 	int	true						"User Membership Id"
+// @Param	body	body	models.UserMembership	true	"User Membership model"
+// @Success	200	ok
+// @Failure	400	Variable message
+// @Failure	401	Unauthorized
+// @Failure	403	Variable message
+// @router /:uid/memberships/:umid [put]
+func (this *UsersController) PutUserMembership() {
+	dec := json.NewDecoder(this.Ctx.Request.Body)
+	var userMembership models.UserMembership
+	if err := dec.Decode(&userMembership); err == nil {
+		beego.Info("userMembership: ", userMembership)
+	} else {
+		beego.Error("Failed to decode json", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	if !this.IsAdmin() {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	if err := models.UpdateUserMembership(&userMembership); err != nil {
+		beego.Error("UpdateMembership: ", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
