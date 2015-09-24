@@ -73,7 +73,7 @@ function setActivationInfo(state, { activationInfo }) {
 }
 
 function setMachineInfo(state, { machineInfo }) {
-  const machinesById = toImmutable(machineInfo)
+  const machinesById = toImmutable(machineInfo || {})
     .toMap()
     .mapKeys((k, v) => v.get('Id'));
   return state.set('machinesById', machinesById);
