@@ -468,11 +468,7 @@ func (this *Invoice) enhanceActivation(activation *Activation) (
 	o := orm.NewOrm()
 
 	// Get activation machine data
-	machine := &Machine{}
-	query := fmt.Sprintf("SELECT m.name, m.price, m.price_unit FROM %s m "+
-		"WHERE id = ?", machine.TableName())
-
-	err := o.Raw(query, activation.MachineId).QueryRow(machine)
+	machine, err := GetMachine(activation.MachineId)
 	if err != nil {
 		beego.Error("Failed to get machine, ID: ", activation.MachineId, ":", err)
 		return nil, fmt.Errorf("Failed to get machine: %v", err)
@@ -510,7 +506,7 @@ func (this *Invoice) enhanceActivation(activation *Activation) (
 	// Get user memberships
 	m := &UserMembership{} // Use just for the TableName func
 	usrMemberships := &[]UserMembership{}
-	query = fmt.Sprintf("SELECT id, membership_id, start_date, end_date FROM %s "+
+	query := fmt.Sprintf("SELECT id, user_id, membership_id, start_date, end_date, auto_extend FROM %s "+
 		"WHERE user_id=?", m.TableName())
 	_, err = o.Raw(query, invActivation.User.Id).QueryRows(usrMemberships)
 	if err != nil {
@@ -525,11 +521,7 @@ func (this *Invoice) enhanceActivation(activation *Activation) (
 		beego.Trace("usrMem.StartTime:", usrMem.StartDate)
 
 		// Get membership
-		mem := &Membership{}
-		query = fmt.Sprintf("SELECT title, short_name, duration_months, "+
-			"machine_price_deduction, affected_machines FROM %s "+
-			"WHERE id=?", mem.TableName())
-		err = o.Raw(query, usrMem.MembershipId).QueryRow(mem)
+		mem, err := GetMembership(usrMem.MembershipId)
 		if err != nil {
 			return nil, errors.New(
 				fmt.Sprintf("Failed to get the actual membership: %v", err))
