@@ -91,7 +91,6 @@ app.controller('MachineCtrl',
     // Remove currently unused properties
     delete machine.UnavailMsg;
     delete machine.UnavailTill;
-    delete machine.Image;
 
     machine.Price = parseFloat(machine.Price);
 
