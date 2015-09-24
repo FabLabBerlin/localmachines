@@ -8,8 +8,7 @@ var toImmutable = Nuclear.toImmutable;
 const initialState = toImmutable({
   activationInfo: [],
   machineInfo: [],
-  machineUsers: {},
-  loading: false
+  machineUsers: {}
 });
 
 /*
@@ -51,8 +50,6 @@ var MachineStore = new Nuclear.Store({
     this.on(actionTypes.SET_ACTIVATION_INFO, setActivationInfo);
     this.on(actionTypes.SET_MACHINE_INFO, setMachineInfo);
     this.on(actionTypes.SET_UNDER_MAINTENANCE, setUnderMaintenance);
-    this.on(actionTypes.SET_LOADING, setLoading);
-    this.on(actionTypes.UNSET_LOADING, unsetLoading);
   }
 
 });
@@ -84,14 +81,6 @@ function setUnderMaintenance(state, { mid, onOrOff }) {
                                    .set('UnderMaintenance', onOrOff === 'on');
   return state.set('machinesById', state.get('machinesById')
                                         .set(mid, m));
-}
-
-function setLoading(state) {
-  return state.set('loading', true);
-}
-
-function unsetLoading(state) {
-  return state.set('loading', false);
 }
 
 export default MachineStore;

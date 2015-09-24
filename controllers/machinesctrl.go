@@ -411,13 +411,11 @@ func (this *MachinesController) ReportBroken() {
 		this.CustomAbort(403, "Failed to get machine")
 	}
 
-	beego.Info("Now calling machine#ReportBroken:")
 	err = machine.ReportBroken()
 	if err != nil {
 		beego.Error("Failed to report machine", err)
 		this.CustomAbort(500, "Failed to report machine")
 	}
-	beego.Info("machine#ReportBroken called!")
 	this.Data["json"] = "ok"
 	this.ServeJson()
 }

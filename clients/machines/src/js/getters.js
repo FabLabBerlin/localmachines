@@ -6,6 +6,17 @@ var toImmutable = Nuclear.toImmutable;
 
 
 /*
+ * Global state related getters
+ */
+const getIsLoading = [
+  ['globalStore'],
+  (machineStore) => {
+    return machineStore.get('loading');
+  }
+];
+
+
+/*
  * Login state related getters
  */
 const getIsLogged = [
@@ -225,13 +236,6 @@ const getMachineUsers = [
   ['machineStore'],
   (machineStore) => {
     return machineStore.get('machineUsers') || {};
-  }
-];
-
-const getIsLoading = [
-  ['machineStore'],
-  (machineStore) => {
-    return machineStore.get('loading');
   }
 ];
 

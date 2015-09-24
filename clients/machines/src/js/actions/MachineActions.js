@@ -2,6 +2,7 @@ var $ = require('jquery');
 var actionTypes = require('../actionTypes');
 var ApiActions = require('./ApiActions');
 var getters = require('../getters');
+var GlobalActions = require('./GlobalActions');
 var LoginActions = require('../actions/LoginActions');
 var MachineStore = require('../stores/MachineStore');
 var reactor = require('../reactor');
@@ -107,7 +108,7 @@ var MachineActions = {
  * @aid: activation id you want to shut down
  */
 function apiPutActivation(aid, cb) {
-  ApiActions.showGlobalLoader();
+  GlobalActions.showGlobalLoader();
   $.ajax({
     url: '/api/activations/' + aid,
     method: 'PUT',
@@ -115,14 +116,14 @@ function apiPutActivation(aid, cb) {
       ac: new Date().getTime()
     },
     success: function(data) {
-      ApiActions.hideGlobalLoader();
+      GlobalActions.hideGlobalLoader();
       _postActivationSuccess(data, 'Machine deactivated');
       if (cb) {
         cb();
       }
     }.bind(this),
     error: function(xhr, status, err) {
-      ApiActions.hideGlobalLoader();
+      GlobalActions.hideGlobalLoader();
       toastr.error('Failed to deactivate');
       console.error('/api/activation/aid', status, err.toString());
     }.bind(this)

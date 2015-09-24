@@ -1,5 +1,6 @@
 var $ = require('jquery');
 var actionTypes = require('../actionTypes');
+var GlobalActions = require('./GlobalActions');
 var reactor = require('../reactor');
 var toastr = require('../toastr');
 
@@ -32,18 +33,18 @@ function getCall(url, successFunction, toastrMessage = '', errorFunction = funct
  * Make POST call cutomisable
  */
 function postCall(url, dataToSend, successFunction, toastrMessage = '', errorFunction = function() {}) {
-  showGlobalLoader();
+  GlobalActions.showGlobalLoader();
   $.ajax({
     url: url,
     dataType: 'json',
     type: 'POST',
     data: dataToSend,
     success: function(data) {
-      hideGlobalLoader();
+      GlobalActions.hideGlobalLoader();
       successFunction(data);
     },
     error: function(xhr, status, err) {
-      hideGlobalLoader();
+      GlobalActions.hideGlobalLoader();
       if (toastrMessage) {
         toastr.error(toastrMessage);
       }
@@ -53,15 +54,6 @@ function postCall(url, dataToSend, successFunction, toastrMessage = '', errorFun
   });
 }
 
-function showGlobalLoader() {
-  reactor.dispatch(actionTypes.SET_LOADING);
-}
-
-function hideGlobalLoader() {
-  reactor.dispatch(actionTypes.UNSET_LOADING);
-}
-
 export default {
-  getCall, postCall,
-  showGlobalLoader, hideGlobalLoader
+  getCall, postCall
 };

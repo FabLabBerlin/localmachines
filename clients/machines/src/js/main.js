@@ -2,6 +2,7 @@ var App = require('./components/App');
 var FeedbackPage = require('./components/Feedback/FeedbackPage');
 var FeedbackStore = require('./stores/FeedbackStore');
 var getters = require('./getters');
+var GlobalStore = require('./stores/GlobalStore');
 var LoginChooser = require('./components/Login/LoginChooser');
 var LoginStore = require('./stores/LoginStore');
 var MachinePage = require('./components/MachinePage/MachinePage');
@@ -62,6 +63,7 @@ let routes = (
 
 reactor.registerStores({
   feedbackStore: FeedbackStore,
+  globalStore: GlobalStore,
   loginStore: LoginStore,
   machineStore: MachineStore,
   scrollNavStore: ScrollNavStore,

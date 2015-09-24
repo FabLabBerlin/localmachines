@@ -14,6 +14,15 @@ var RouteHandler = require('react-router').RouteHandler;
  * navigation bar and footer are in this component
  */
  var App = React.createClass({
+
+  mixins: [ reactor.ReactMixin ],
+
+  getDataBindings() {
+    return {
+      isLoading: getters.getIsLoading
+    };
+  },
+
   /*
    * Render:
    *  - navBar
@@ -35,6 +44,17 @@ var RouteHandler = require('react-router').RouteHandler;
             <i className="fa fa-copyright"></i> Fab Lab Berlin 2015
           </div>
         </footer>
+        {
+          this.state.isLoading ?
+          (
+            <div id="loader-global">
+              <div className="spinner">
+                <i className="fa fa-cog fa-spin"></i>
+              </div>
+            </div>
+          )
+          : ''
+        }
       </div>
     );
 

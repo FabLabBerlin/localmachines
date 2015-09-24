@@ -8,9 +8,9 @@ jest.dontMock('../../stores/UserStore');
 
 var $ = require('jquery');
 var actionTypes = require('../../actionTypes');
-var ApiActions = require('../ApiActions');
 var FeedbackActions = require('../FeedbackActions');
 var FeedbackStore = require('../../stores/FeedbackStore');
+var GlobalActions = require('../GlobalActions');
 var MachineStore = require('../../stores/MachineStore');
 var reactor = require('../../reactor');
 var UserStore = require('../../stores/UserStore');
@@ -28,7 +28,7 @@ describe('FeedbackActions', function() {
     it('should show the loader and start an ajax request', function() {
       var machineId = 123;
       FeedbackActions.reportMachineBroken({ machineId });
-      expect(ApiActions.showGlobalLoader).toBeCalled();
+      expect(GlobalActions.showGlobalLoader).toBeCalled();
       expect($.ajax).toBeCalled();
     });
   });
@@ -45,7 +45,7 @@ describe('FeedbackActions', function() {
   describe('submit', function() {
     it('should show the loader and start an ajax request', function() {
       FeedbackActions.submit();
-      expect(ApiActions.showGlobalLoader).toBeCalled();
+      expect(GlobalActions.showGlobalLoader).toBeCalled();
       expect($.ajax).toBeCalled();
     });
   });
