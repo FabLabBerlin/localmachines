@@ -138,12 +138,29 @@ var MachineChooser = React.createClass({
         );
       }
     }
-
+    console.log('this.props.info:', this.props.info);
+    var price;
+    if (this.props.info.Name.indexOf('Tutor') < 0) {
+      price = ' [€';
+      price += this.props.info.Price.toFixed(2)
+      price += '/';
+      switch (this.props.info.PriceUnit) {
+        case 'hour':
+          price += 'h';
+          break;
+        case 'minute':
+          price += 'min';
+          break;
+        default:
+          price += this.props.info.PriceUnit;
+      }
+      price += ']';
+    }
     return (
       <div className="machine-container">
         <div className="container-fluid">
           <div className="machine-header">
-            <div className="machine-title pull-left">{this.props.info.Name}</div>
+            <div className="machine-title pull-left">{this.props.info.Name} {price}</div>
             <div className="clearfix"></div>
           </div>
           <div className="machine-body">
