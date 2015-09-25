@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"os"
 	"sort"
+	"strings"
 	"time"
 )
 
@@ -185,7 +186,7 @@ func (this *InvoiceSummary) Less(i, j int) bool {
 	b := this.UserSummaries[j]
 	aName := a.User.FirstName + " " + a.User.LastName
 	bName := b.User.FirstName + " " + b.User.LastName
-	return aName < bName
+	return strings.ToLower(aName) < strings.ToLower(bName)
 }
 
 func (this *InvoiceSummary) Swap(i, j int) {
