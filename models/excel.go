@@ -287,7 +287,7 @@ func createXlsxFile(filePath string, invoice *Invoice,
 			return fmt.Errorf("SummarizedByMachine: %v", err)
 		}
 
-		printTotal := func() {
+		printTotal := func(totalColor string) {
 			row = sheet.AddRow()
 			row.AddCell()
 			row.AddCell()
@@ -304,9 +304,9 @@ func createXlsxFile(filePath string, invoice *Invoice,
 			cell.Value = "Discounted €"
 			cell = row.AddCell()
 			cell.SetFloatWithFormat(sumTotalDisc, FORMAT_2_DIGIT)
-			cell.SetStyle(colorStyle(GREEN))
+			cell.SetStyle(colorStyle(totalColor))
 		}
-		printTotal()
+		printTotal(BLUE)
 
 		sheet.AddRow()
 		row = sheet.AddRow()
@@ -319,7 +319,7 @@ func createXlsxFile(filePath string, invoice *Invoice,
 				return fmt.Errorf("AddRowXlsx: %v", err)
 			}
 		}
-		printTotal()
+		printTotal(GREEN)
 
 		sheet.AddRow()
 	} // for userSummaries
