@@ -10,7 +10,7 @@ function getOutputDevOrProd() {
 }
 
 module.exports = {
-  devtool: 'source-map',
+  devtool: process.env.NODE_ENV !== 'production' ? 'source-map' : undefined,
   entry: './src/js/main.js',
   output: {
     path: __dirname + getOutputDevOrProd(),
