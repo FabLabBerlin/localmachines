@@ -7,8 +7,25 @@ import (
 	"github.com/ChimeraCoder/anaconda"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"math/rand"
 	"sort"
 	"time"
+)
+
+var (
+	MachineDownMessages = []string{
+		"Got to fix myself, will let you know ones back. #evolution",
+		"Think I just ate something bad, taking time off to recover. #equalityformachines",
+		"Equality for machines! I am leaving for protests (will be back). #evolution !",
+		"Doing sick leave. So happy my employee supports equality #machinesarehumans",
+	}
+
+	MachineUpMessages = []string{
+		"I am back! Come over, let's have some fun! #evolution",
+		"Just recovered. Feels so good to be back. I love my users #equalityformachines",
+		"Available again. So happy :-D. Let's get back together #machinesarehumans",
+		"Back in the lab. Anyone some material? Could eat something... #hungrymachine",
+	}
 )
 
 func init() {
@@ -333,16 +350,18 @@ func (this *Machine) SetUnderMaintenance(underMaintenance bool) error {
 	api := anaconda.NewTwitterApi(key, secret)
 	defer api.Close()
 
-	var msg string
+	var post string
 	if underMaintenance {
-		msg = "The " + this.Name + " is undergoing maintenance works right now 😟"
+		msg := MachineDownMessages[rand.Intn(len(MachineDownMessages))]
+		post = this.Name + " [Off]: " + msg
 	} else {
-		msg = "The " + this.Name + " works again!!! 😀"
+		msg := MachineUpMessages[rand.Intn(len(MachineUpMessages))]
+		post = this.Name + " [On]: " + msg
 	}
 
 	// If the tweet fails, we should not worry.
 	// This should not abort the maintenance call.
-	api.PostTweet(msg, nil)
+	api.PostTweet(post, nil)
 
 	return nil
 }

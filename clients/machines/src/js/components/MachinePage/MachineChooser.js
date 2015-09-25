@@ -138,7 +138,6 @@ var MachineChooser = React.createClass({
         );
       }
     }
-    console.log('this.props.info:', this.props.info);
     var price;
     if (this.props.info.Name.indexOf('Tutor') < 0) {
       price = ' [€';

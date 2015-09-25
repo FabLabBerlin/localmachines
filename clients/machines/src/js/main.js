@@ -30,7 +30,7 @@ require('vex/css/vex.css');
 var debugNfc = false;
 if (debugNfc) {
   window.libnfc = {
-    debug: true,
+    debug: window.location.host !== 'easylab.io',
     cardRead: {
       connect: function() {},
       disconnect: function() {}
