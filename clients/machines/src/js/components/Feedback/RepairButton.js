@@ -15,7 +15,7 @@ var RepairButton = React.createClass({
           href="#" 
           onClick={this.handleClick}>
           <i className="fa fa-wrench"></i>
-        </a>Request Service Repair
+        </a>Report a machine fault
       </div>
     );
   }
