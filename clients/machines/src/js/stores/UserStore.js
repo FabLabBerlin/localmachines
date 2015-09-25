@@ -10,7 +10,7 @@ const initialState = toImmutable({
   userId: 0,
   isLogged: false,
   firstTry: true,
-  billInfo: {},
+  billInfo: undefined,
   membershipInfo: [],
   userInfo: {}
 });

@@ -31,12 +31,14 @@ var BillTables = React.createClass({
 
   getDataBindings() {
     return {
+      billInfo: getters.getBillInfo,
       monthlyBills: getters.getMonthlyBills
     };
   },
 
   render() {
-    if (this.state.monthlyBills && this.state.monthlyBills.length > 0) {
+    console.log('this.state.billInfo:', this.state.billInfo);
+    if (this.state.billInfo) {
 
       var i = 0;
       var tables = [];
@@ -135,7 +137,13 @@ var BillTables = React.createClass({
         </div>
       );
     } else {
-      return <p>You do not have any expenses.</p>;
+      return (
+        <div className="loader-local">
+          <div className="spinner">
+            <i className="fa fa-cog fa-spin"></i>
+          </div>
+        </div>
+      );
     }
   }
 });

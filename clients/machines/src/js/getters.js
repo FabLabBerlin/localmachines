@@ -124,6 +124,9 @@ const getMonthlyBills = [
   getBillMonths,
   getMembershipsByMonth,
   (billInfo, billMonths, membershipsByMonth) => {
+    if (!billInfo) {
+      return undefined;
+    }
     var activations = billInfo.Activations;
     var activationsByMonth = _.groupBy(activations, function(info) {
       return moment(info.TimeStart).format('MMM YYYY');

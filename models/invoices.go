@@ -413,12 +413,11 @@ func (this *Invoice) getInvoiceFileName(startTime,
 func (this *Invoice) getEnhancedActivations(
 	activations *[]Activation) (*[]*InvoiceActivation, error) {
 
-	enhActivations := []*InvoiceActivation{}
+	enhActivations := make([]*InvoiceActivation, 0, len(*activations))
 
 	// Enhance each activation in the activations slice.
-	for actIter := 0; actIter < len(*activations); actIter++ {
-		var activation *Activation = &(*activations)[actIter]
-		invActivation, err := this.enhanceActivation(activation)
+	for _, activation := range *activations {
+		invActivation, err := this.enhanceActivation(&activation)
 		if err != nil {
 			return nil, errors.New(
 				fmt.Sprintf("Failed to enhance activation: %v", err))
