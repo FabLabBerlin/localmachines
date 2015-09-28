@@ -27,8 +27,10 @@ func CreateTestInvActivation(machineId int64, machineName string,
 	machine.Price = pricePerMinute
 
 	invAct := &models.InvoiceActivation{
-		TimeStart:    TIME_START,
-		TimeEnd:      TIME_START.Add(time.Minute * time.Duration(minutes)),
+		Activation: models.Activation{
+			TimeStart: TIME_START,
+			TimeEnd:   TIME_START.Add(time.Minute * time.Duration(minutes)),
+		},
 		Machine:      &machine,
 		MachineUsage: minutes,
 		Memberships: []*models.Membership{
@@ -40,6 +42,12 @@ func CreateTestInvActivation(machineId int64, machineName string,
 				AffectedMachines:      "[22]",
 			},
 		},
+	}
+	invAct.TotalPrice = invAct.PriceTotalExclDisc()
+	var err error
+	invAct.DiscountedTotal, err = invAct.PriceTotalDisc()
+	if err != nil {
+		panic(err.Error())
 	}
 	return invAct
 }

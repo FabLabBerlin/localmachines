@@ -121,27 +121,27 @@ func TestUserMemberships(t *testing.T) {
 
 				Convey("The activations made during the user membership period should be affected by the base membership discount rules", func() {
 
-					var invoiceSummary models.InvoiceSummary
+					var invoice models.Invoice
 					invoiceStartTime := time.Date(2015, 1, 1, 0, 0, 0, 0, time.UTC)
 					invoiceEndTime := time.Date(2015, 12, 30, 0, 0, 0, 0, time.UTC)
-					_, invoiceSummary, err = models.CalculateInvoiceSummary(
+					invoice, err = models.CalculateInvoiceSummary(
 						invoiceStartTime, invoiceEndTime)
 					if err != nil {
 						panic(err.Error())
 					}
 
 					// there should be 4 activations and 2 of them should be affected
-					numUserSummaries := len(invoiceSummary.UserSummaries)
+					numUserSummaries := len(invoice.UserSummaries)
 					So(numUserSummaries, ShouldEqual, 1)
 
-					numActivations := len(invoiceSummary.UserSummaries[0].Activations)
+					numActivations := len(invoice.UserSummaries[0].Activations)
 					So(numActivations, ShouldEqual, 4)
 
 					// 2 of the activations should contain memberships
 					numAffectedActivations := 0
 					for i := 0; i < numActivations; i++ {
 
-						activation := invoiceSummary.UserSummaries[0].Activations[i]
+						activation := invoice.UserSummaries[0].Activations[i]
 						memberships := activation.Memberships
 						if len(memberships) > 0 {
 							numAffectedActivations += 1
