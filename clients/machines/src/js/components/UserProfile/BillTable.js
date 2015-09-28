@@ -37,7 +37,6 @@ var BillTables = React.createClass({
   },
 
   render() {
-    console.log('this.state.billInfo:', this.state.billInfo);
     if (this.state.billInfo) {
 
       var i = 0;

@@ -32,8 +32,8 @@ func AddRowXlsx(sheet *xlsx.Sheet, invActivation *InvoiceActivation) error {
 	cell.Value = "Undefined"
 
 	cell = row.AddCell()
-	if invActivation.TimeStart.Unix() > 0 {
-		cell.Value = invActivation.TimeStart.Format(time.RFC1123)
+	if invActivation.Activation.TimeStart.Unix() > 0 {
+		cell.Value = invActivation.Activation.TimeStart.Format(time.RFC1123)
 	}
 
 	cell = row.AddCell()
@@ -96,11 +96,10 @@ func addSeparationRowXlsx(sheet *xlsx.Sheet) {
 }
 
 // Creates a xlsx file.
-func createXlsxFile(filePath string, invoice *Invoice,
-	invSummarry *InvoiceSummary) error {
+func createXlsxFile(filePath string, invoice *Invoice) error {
 
-	sort.Sort(invSummarry)
-	userSummaries := &(*invSummarry).UserSummaries
+	sort.Sort(invoice)
+	userSummaries := invoice.UserSummaries
 
 	// Create a xlsx file if there
 	var file *xlsx.File
@@ -120,20 +119,19 @@ func createXlsxFile(filePath string, invoice *Invoice,
 	cell = row.AddCell()
 	cell.Value = "Period Start Date"
 	cell = row.AddCell()
-	cell.Value = invSummarry.PeriodStartTime.Format("2006-01-02")
+	cell.Value = invoice.PeriodFrom.Format("2006-01-02")
 
 	row = sheet.AddRow()
 	cell = row.AddCell()
 	cell.Value = "Period End Date"
 	cell = row.AddCell()
-	cell.Value = invSummarry.PeriodEndTime.Format("2006-01-02")
+	cell.Value = invoice.PeriodTo.Format("2006-01-02")
 
 	row = sheet.AddRow()
 	row = sheet.AddRow()
 
 	// Fill the xlsx sheet
-	for usrSumIter := 0; usrSumIter < len(*userSummaries); usrSumIter++ {
-		userSummary := (*userSummaries)[usrSumIter]
+	for _, userSummary := range userSummaries {
 
 		memberships, err := GetUserMemberships(userSummary.User.Id)
 		if err != nil {

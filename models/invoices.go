@@ -8,24 +8,42 @@ import (
 	"math/rand"
 	"os"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 )
+
+func init() {
+	orm.RegisterModel(new(Invoice))
+}
 
 // Invoice entry that is saved in the database.
 // Activations field contains a JSON array with activation IDs.
 // XlsFile field contains URL to the generated XLSX file.
 type Invoice struct {
-	Id          int64  `orm:"auto";"pk"`
-	Activations string `orm:type(text)`
-	FilePath    string `orm:size(255)`
-	Created     time.Time
-	PeriodFrom  time.Time
-	PeriodTo    time.Time
+	Id            int64  `orm:"auto";"pk"`
+	Activations   string `orm:type(text)`
+	FilePath      string `orm:size(255)`
+	Created       time.Time
+	PeriodFrom    time.Time
+	PeriodTo      time.Time
+	UserSummaries []*UserSummary `orm:"-"`
 }
 
-func init() {
-	orm.RegisterModel(new(Invoice))
+func (this *Invoice) Len() int {
+	return len(this.UserSummaries)
+}
+
+func (this *Invoice) Less(i, j int) bool {
+	a := this.UserSummaries[i]
+	b := this.UserSummaries[j]
+	aName := a.User.FirstName + " " + a.User.LastName
+	bName := b.User.FirstName + " " + b.User.LastName
+	return strings.ToLower(aName) < strings.ToLower(bName)
+}
+
+func (this *Invoice) Swap(i, j int) {
+	this.UserSummaries[i], this.UserSummaries[j] = this.UserSummaries[j], this.UserSummaries[i]
 }
 
 func (this *Invoice) TableName() string {
@@ -34,14 +52,13 @@ func (this *Invoice) TableName() string {
 
 // This is a user activation row that appears in the XLSX file
 type InvoiceActivation struct {
+	Activation      Activation
 	Machine         *Machine
 	MachineUsage    float64
 	User            User
 	Memberships     []*Membership
 	TotalPrice      float64
 	DiscountedTotal float64
-	TimeStart       time.Time
-	TimeEnd         time.Time
 }
 
 func (this *InvoiceActivation) MembershipStr() string {
@@ -98,9 +115,9 @@ func (this InvoiceActivations) Len() int {
 }
 
 func (this InvoiceActivations) Less(i, j int) bool {
-	if (*this[i]).TimeStart.Before((*this[j]).TimeStart) {
+	if (*this[i]).Activation.TimeStart.Before((*this[j]).Activation.TimeStart) {
 		return true
-	} else if (*this[j]).TimeStart.Before((*this[i]).TimeStart) {
+	} else if (*this[j]).Activation.TimeStart.Before((*this[i]).Activation.TimeStart) {
 		return false
 	} else {
 		return (*this[i]).Machine.Name < (*this[j]).Machine.Name
@@ -118,21 +135,19 @@ func (this InvoiceActivations) SummarizedByMachine() (
 	for _, activation := range this {
 		summary, ok := byMachine[activation.Machine.Name]
 		if !ok {
-			a := *activation
-			summary = &a
-			summary.TimeStart = time.Unix(0, 0)
-			summary.MachineUsage = 0
-			summary.TotalPrice = 0
-			summary.DiscountedTotal = 0
+			summary = &InvoiceActivation{
+				Activation:      Activation{},
+				MachineUsage:    0,
+				TotalPrice:      0,
+				DiscountedTotal: 0,
+				Machine:         activation.Machine,
+				Memberships:     activation.Memberships,
+			}
 			byMachine[activation.Machine.Name] = summary
 		}
 		summary.MachineUsage += activation.MachineUsage
-		summary.TotalPrice += activation.PriceTotalExclDisc()
-		if priceTotalDisc, err := activation.PriceTotalDisc(); err == nil {
-			summary.DiscountedTotal += priceTotalDisc
-		} else {
-			return nil, err
-		}
+		summary.TotalPrice += activation.TotalPrice
+		summary.DiscountedTotal += activation.DiscountedTotal
 
 	}
 
@@ -157,7 +172,7 @@ func (this InvoiceActivationsXlsx) Less(i, j int) bool {
 	} else if (*this[j]).Machine.Name < (*this[i]).Machine.Name {
 		return false
 	} else {
-		return (*this[i]).TimeStart.Before((*this[j]).TimeStart)
+		return (*this[i]).Activation.TimeStart.Before((*this[j]).Activation.TimeStart)
 	}
 }
 
@@ -168,29 +183,6 @@ func (this InvoiceActivationsXlsx) Swap(i, j int) {
 type UserSummary struct {
 	User        User
 	Activations InvoiceActivations
-}
-
-type InvoiceSummary struct {
-	InvoiceName     string
-	PeriodStartTime time.Time
-	PeriodEndTime   time.Time
-	UserSummaries   []*UserSummary
-}
-
-func (this *InvoiceSummary) Len() int {
-	return len(this.UserSummaries)
-}
-
-func (this *InvoiceSummary) Less(i, j int) bool {
-	a := this.UserSummaries[i]
-	b := this.UserSummaries[j]
-	aName := a.User.FirstName + " " + a.User.LastName
-	bName := b.User.FirstName + " " + b.User.LastName
-	return strings.ToLower(aName) < strings.ToLower(bName)
-}
-
-func (this *InvoiceSummary) Swap(i, j int) {
-	this.UserSummaries[i], this.UserSummaries[j] = this.UserSummaries[j], this.UserSummaries[i]
 }
 
 // exists returns whether the given file or directory exists or not
@@ -210,7 +202,7 @@ func CreateInvoice(startTime, endTime time.Time) (*Invoice, error) {
 
 	var err error
 
-	invoice, invSummary, err := CalculateInvoiceSummary(startTime, endTime)
+	invoice, err := CalculateInvoiceSummary(startTime, endTime)
 	if err != nil {
 		return nil, fmt.Errorf("CalculateInvoiceSummary: %v", err)
 	}
@@ -233,7 +225,7 @@ func CreateInvoice(startTime, endTime time.Time) (*Invoice, error) {
 	filePath := fmt.Sprintf("files/%s.xlsx", fileName)
 	invoice.FilePath = filePath
 
-	err = createXlsxFile(filePath, &invoice, &invSummary)
+	err = createXlsxFile(filePath, &invoice)
 	if err != nil {
 		return nil, errors.New(
 			fmt.Sprintf("Failed to create *.xlsx file: %v", err))
@@ -271,31 +263,25 @@ func GetInvoice(invoiceId int64) (invoice *Invoice, err error) {
 }
 
 // Returns Invoice and InvoiceSummary objects, error otherwise
-func CalculateInvoiceSummary(
-	startTime, endTime time.Time) (
-	invoice Invoice, invSummary InvoiceSummary, err error) {
-
-	// Get all uninvoiced activations in the time range
-	var activations *[]Activation
-	activations, err = invoice.getActivations(startTime, endTime)
-	if err != nil {
-		err = fmt.Errorf("Failed to get activations: %v", err)
-		return
-	}
-
-	beego.Trace("Activations str:", invoice.Activations)
+func CalculateInvoiceSummary(startTime, endTime time.Time) (invoice Invoice, err error) {
 
 	// Enhance activations with user and membership data
-	var enhancedActivations *[]*InvoiceActivation
-	enhancedActivations, err = invoice.getEnhancedActivations(activations)
+	var invActivations *[]*InvoiceActivation
+	invActivations, err = invoice.getInvoiceActivations(startTime, endTime)
 	if err != nil {
 		err = fmt.Errorf("Failed to get enhanced activations: %v", err)
 		return
 	}
 
+	activationIds := make([]string, 0, len(*invActivations))
+	for _, act := range *invActivations {
+		activationIds = append(activationIds, strconv.FormatInt(act.Activation.Id, 10))
+	}
+	invoice.Activations = "[" + strings.Join(activationIds, ",") + "]"
+
 	// Create user summaries from invoice activations
 	var userSummaries *[]*UserSummary
-	userSummaries, err = invoice.getUserSummaries(enhancedActivations)
+	userSummaries, err = invoice.getUserSummaries(invActivations)
 	if err != nil {
 		err = fmt.Errorf("Failed to get user summaries: %v", err)
 		return
@@ -314,12 +300,11 @@ func CalculateInvoiceSummary(
 	}
 
 	// Create invoice summary
-	invSummary.InvoiceName = "Invoice"
-	invSummary.PeriodStartTime = startTime
-	invSummary.PeriodEndTime = endTime
-	invSummary.UserSummaries = *userSummaries
+	invoice.PeriodFrom = startTime
+	invoice.PeriodTo = endTime
+	invoice.UserSummaries = *userSummaries
 
-	return invoice, invSummary, err
+	return invoice, err
 }
 
 // Gets all invoices from the database
@@ -353,7 +338,7 @@ func DeleteInvoice(invoiceId int64) error {
 }
 
 // Gets activations that have happened between start and end dates
-func (this *Invoice) getActivations(startTime,
+func getActivations(startTime,
 	endTime time.Time) (activationsArr *[]Activation, err error) {
 
 	act := Activation{}
@@ -362,8 +347,7 @@ func (this *Invoice) getActivations(startTime,
 
 	query := fmt.Sprintf("SELECT a.* FROM %s a JOIN %s u ON a.user_id=u.id "+
 		"WHERE a.time_start > ? AND a.time_end < ? "+
-		"AND a.invoiced = false AND a.active = false "+
-		"ORDER BY u.first_name ASC, a.machine_id",
+		"AND a.invoiced = false AND a.active = false ",
 		act.TableName(),
 		usr.TableName())
 
@@ -374,21 +358,6 @@ func (this *Invoice) getActivations(startTime,
 	if err != nil {
 		return nil, err
 	}
-
-	// Fill the Invoice store Activations string
-	this.Activations = "["
-	for actIter := 0; actIter < len(activations); actIter++ {
-		var format string
-		if actIter == 0 {
-			format = "%s%d"
-		} else {
-			format = "%s,%d"
-		}
-		this.Activations = fmt.Sprintf(format,
-			this.Activations,
-			activations[actIter].Id)
-	}
-	this.Activations = fmt.Sprintf("%s]", this.Activations)
 
 	return &activations, nil
 }
@@ -410,8 +379,13 @@ func (this *Invoice) getInvoiceFileName(startTime,
 		string(b))
 }
 
-func (this *Invoice) getEnhancedActivations(
-	activations *[]Activation) (*[]*InvoiceActivation, error) {
+func (this *Invoice) getInvoiceActivations(startTime, endTime time.Time) (*[]*InvoiceActivation, error) {
+	// Get all uninvoiced activations in the time range
+	var activations *[]Activation
+	activations, err := getActivations(startTime, endTime)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to get activations: %v", err)
+	}
 
 	enhActivations := make([]*InvoiceActivation, 0, len(*activations))
 
@@ -570,9 +544,8 @@ func (this *Invoice) enhanceActivation(activation *Activation) (
 			invActivation.Memberships = append(invActivation.Memberships, mem)
 		}
 	}
-
-	invActivation.TimeStart = activation.TimeStart
-	invActivation.TimeEnd = activation.TimeEnd
+	invActivation.Activation = *activation
+	beego.Info("invActivation.Activation.TimeStart = ", invActivation.Activation.TimeStart)
 
 	return invActivation, nil
 }

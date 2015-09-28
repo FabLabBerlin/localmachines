@@ -539,14 +539,14 @@ func (this *UsersController) GetUserBill() {
 	}
 
 	endTime := time.Now().Add(86400 * time.Second)
-	_, invSummary, err := models.CalculateInvoiceSummary(startTime, endTime)
+	invoice, err := models.CalculateInvoiceSummary(startTime, endTime)
 	if err != nil {
 		beego.Error("CalculateInvoiceSummary:", err)
 	}
 
 	var userSummary *models.UserSummary
 
-	for _, us := range invSummary.UserSummaries {
+	for _, us := range invoice.UserSummaries {
 		if us.User.Id == suid {
 			userSummary = us
 		}
