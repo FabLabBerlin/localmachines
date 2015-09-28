@@ -1,6 +1,6 @@
 var $ = require('jquery');
 var getters = require('../../getters');
-var MachineList = require('./MachineList');
+var MachineList = require('../MachinePage/MachineList');
 var LoginStore = require('../../stores/LoginStore');
 var MachineStore = require('../../stores/MachineStore');
 var MachineActions = require('../../actions/MachineActions');
@@ -20,7 +20,7 @@ var UserActions = require('../../actions/UserActions');
  * Give it to its children to display the interface
  * TODO: reorganize and documente some function
  */
-var MachinePage = React.createClass({
+var threeDPrinterPage = React.createClass({
 
   /*
    * Enable some React router function as:
@@ -129,6 +129,10 @@ var MachinePage = React.createClass({
 
   },
 
+  goToCategories(event) {
+    event.preventDefault();
+    window.location = '/machines/#/categories';
+  },
   /*
    * Render the user name
    * MachinList
@@ -161,7 +165,15 @@ var MachinePage = React.createClass({
               user={this.state.userInfo}
               info={machineInfo}
               activation={this.state.activationInfo}
+              category="3DPrinter"
             />
+            <div className="container-fluid">
+              <button
+                onClick={this.goToCategories}
+                className="btn btn-lg btn-block btn-primary btn-logout-bottom">
+                Categories
+              </button>
+            </div>
             <div className="container-fluid">
               <button
                 onClick={this.handleLogout}
@@ -200,4 +212,4 @@ var MachinePage = React.createClass({
   }
 });
 
-export default MachinePage;
+export default threeDPrinterPage;

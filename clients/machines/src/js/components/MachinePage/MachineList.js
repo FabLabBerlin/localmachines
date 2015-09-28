@@ -59,6 +59,7 @@ var MachineList = React.createClass({
             busy={isMachineBusy}
             sameUser={isSameUser}
             activation={activationProps}
+            category={this.props.category}
           />
         );
       }.bind(this));
@@ -66,8 +67,10 @@ var MachineList = React.createClass({
       MachineNode = <p>You do not have access to any machines</p>;
     }
     return (
-      <div className="machines">
-        {MachineNode}
+      <div className="container-fluid">
+        <div className="machines row">
+          {MachineNode}
+        </div>
       </div>
     );
   }

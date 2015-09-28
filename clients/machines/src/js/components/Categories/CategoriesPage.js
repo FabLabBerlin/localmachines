@@ -1,9 +1,6 @@
 var $ = require('jquery');
 var getters = require('../../getters');
-var MachineList = require('./MachineList');
 var LoginStore = require('../../stores/LoginStore');
-var MachineStore = require('../../stores/MachineStore');
-var MachineActions = require('../../actions/MachineActions');
 var NfcLogoutMixin = require('../Login/NfcLogoutMixin');
 var LoginActions = require('../../actions/LoginActions');
 var Navigation = require('react-router').Navigation;
@@ -20,7 +17,7 @@ var UserActions = require('../../actions/UserActions');
  * Give it to its children to display the interface
  * TODO: reorganize and documente some function
  */
-var MachinePage = React.createClass({
+var CategoriesPage = React.createClass({
 
   /*
    * Enable some React router function as:
@@ -47,7 +44,6 @@ var MachinePage = React.createClass({
   componentWillMount() {
     const uid = reactor.evaluateToJS(getters.getUid);
     UserActions.getUserInfoFromServer(uid);
-    MachineActions.apiGetUserMachines(uid);
   },
 
   /*
@@ -57,7 +53,6 @@ var MachinePage = React.createClass({
   getDataBindings() {
     return {
       userInfo: getters.getUserInfo,
-      machineInfo: getters.getMachineInfo,
       activationInfo: getters.getActivationInfo,
       isLoading: getters.getIsLoading
     };
@@ -88,12 +83,6 @@ var MachinePage = React.createClass({
     return true;
   },
 
-  /*
-   * Clear state while logout
-   */
-  clearState() {
-    MachineActions.clearState();
-  },
 
   /*
    * Logout with the exit button
@@ -109,7 +98,6 @@ var MachinePage = React.createClass({
    */
   componentWillUnmount() {
     this.nfcOnWillUnmount();
-    this.clearState();
     clearInterval(this.interval);
   },
 
@@ -121,59 +109,64 @@ var MachinePage = React.createClass({
   componentDidMount() {
 
     this.nfcOnDidMount();
-    MachineStore.onChangeActivation = this.onChangeActivation;
     LoginStore.onChangeLogout = this.onChangeLogout;
-    MachineStore.onChangeLogin = this.onChangeLogin;
     this.interval = setInterval(this.update, 1500);
 
 
   },
 
+  goTo3Dprinters(event) {
+    event.preventDefault();
+    window.location = '/machines/#/3dprinter';
+  },
+
+  goToLasercutter(event) {
+    event.preventDefault();
+    window.location = '/machines/#/lasercutter';
+  },
   /*
    * Render the user name
-   * MachinList
+   * Categories
    * exit button
    */
   render() {
-    var imageUrl;
-    if (this.props.info && this.props.info.Image) {
-      imageUrl = '/files/' + this.props.info.Image;
-    } else {
-      imageUrl = '/machines/img/img-machine-placeholder.svg';
-    }
-    var machineInfo = reactor.evaluateToJS(getters.getMachineInfo);
-    if (this.state.activationInfo) {
+  
       return (
-        <div className="container-fluid">
-          <div className="row">
-
-            <div className="logged-user-name">
-              <div className="text-center ng-binding">
-                <i className="fa fa-user-secret"></i>&nbsp;
-                {this.state.userInfo.get('FirstName')} {this.state.userInfo.get('LastName')}
-              </div>
+        <div className="containter-fluid">
+          <div className="logged-user-name">
+            <div className="text-center ng-binding">
+              <i className="fa fa-user-secret"></i>&nbsp;
+              {this.state.userInfo.get('FirstName')} {this.state.userInfo.get('LastName')}
             </div>
-            <div className="machine-action-info">
-              <h3 className="categories-header"><img className="machine-image" src={imageUrl}/>3D Printers</h3> 
-              
-            </div>
-            <MachineList
-              user={this.state.userInfo}
-              info={machineInfo}
-              activation={this.state.activationInfo}
-            />
-            <div className="container-fluid">
-              <button
-                onClick={this.handleLogout}
-                className="btn btn-lg btn-block btn-danger btn-logout-bottom">
-                Sign out
+          </div>
+          <div className="container-fluid">
+          	<div className="row">
+          		<button className="btn-primary btn-cat col-xs-6 col-sm-4 col-md-4 col-lg-4" href="#"
+              onClick={this.goTo3Dprinters}>3D PRINTING
               </button>
-            </div>
+              <button className="btn-primary btn-cat col-xs-6 col-sm-4 col-md-4 col-lg-4" href="#"
+              onClick={this.goToLasercutter}>LASER CUTTING</button>
+              <button className="btn-primary btn-cat col-xs-6 col-sm-4 col-md-4 col-lg-4">ELECTRONICS</button>
+              <button className="btn-primary btn-cat col-xs-6 col-sm-4 col-md-4 col-lg-4">VINYL & TEXTILES</button>
+              <button className="btn-primary btn-cat col-xs-6 col-sm-4 col-md-4 col-lg-4">WOOD WORK</button>
+              <button className="btn-primary btn-cat col-xs-6 col-sm-4 col-md-4 col-lg-4">METAL WORK</button>
+              <button className="btn-primary btn-cat col-xs-6 col-sm-4 col-md-4 col-lg-4">bads</button>
+              <button className="btn-primary btn-cat col-xs-6 col-sm-4 col-md-4 col-lg-4">8</button>
+              <button className="btn-primary btn-cat col-xs-6 col-sm-4 col-md-4 col-lg-4">9</button>
+          	</div>
+          </div>
+          
+          <div className="container-fluid">
+            <button
+              onClick={this.handleLogout}
+              className="btn btn-lg btn-block btn-danger btn-logout-bottom">
+              Sign out
+            </button>
           </div>
           <ScrollNav/>
           {
             this.state.isLoading ?
-            (
+              (
               <div id="loader-global">
                 <div className="spinner">
                   <i className="fa fa-cog fa-spin"></i>
@@ -184,20 +177,8 @@ var MachinePage = React.createClass({
           }
         </div>
       );
-    } else {
-      return <div/>;
-    }
   },
-
-  /*
-   * update
-   *
-   * Need polling for activation status and maintenance status
-   */
-  update() {
-    MachineActions.pollActivations();
-    MachineActions.pollMachines();
-  }
+ 
 });
 
-export default MachinePage;
+export default CategoriesPage;

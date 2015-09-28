@@ -20,7 +20,7 @@ export default {
       data: content,
       success: function(data) {
         reactor.dispatch(actionTypes.SUCCESS_LOGIN, { data });
-        router.transitionTo('/machine');
+        router.transitionTo('/categories');
       }.bind(this),
       error: function(xhr, status, err) {
         if (content.username !== '' && content.password !== '') {
@@ -45,7 +45,7 @@ export default {
       },
       success: function(data) {
         reactor.dispatch(actionTypes.SUCCESS_LOGIN, { data });
-        router.transitionTo('/machine');
+        router.transitionTo('/categories');
       }.bind(this),
       error: function(xhr, status, err) {
         toastr.error('Problem with NFC login.  Try again later or talk to us if the problem persists.');

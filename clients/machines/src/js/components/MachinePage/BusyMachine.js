@@ -27,12 +27,12 @@ var BusyMachine = React.createClass({
    render() {
     return (
       <div className="machine used">
-        <div className="row">
+        <table className="row">
   
-          <div className="col-xs-6">
+          <th>
   
-            <div className="machine-action-info">
-              <div className="machine-info-content">
+            <div>
+              <div className="machine-info-content row">
                 <div className="machine-time-label">
                   Usage time
                 </div>
@@ -40,9 +40,9 @@ var BusyMachine = React.createClass({
               </div>
             </div>
   
-          </div>
+          </th>
   
-          <div className="col-xs-6">
+          <td className="col-xs-12">
   
           { this.props.isAdmin ? (
             
@@ -50,7 +50,7 @@ var BusyMachine = React.createClass({
               <tr>
                 <td rowSpan="2">
                   <button
-                    className="btn btn-lg btn-danger btn-block"
+                    className="btn-stop btn btn-lg btn-danger btn-block"
                     onClick={this.endActivation}>
                     Stop
                   </button>
@@ -69,16 +69,16 @@ var BusyMachine = React.createClass({
           ) : (
   
             <button
-              className="btn btn-lg btn-danger btn-block"
+              className="btn-stop btn btn-lg btn-danger btn-block"
               onClick={this.endActivation}>
               Stop
             </button>
   
           )}
   
-          </div>
+          </td>
   
-        </div>
+        </table>
       </div>
     );
   }

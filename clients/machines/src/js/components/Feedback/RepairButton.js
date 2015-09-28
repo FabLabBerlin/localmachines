@@ -9,13 +9,13 @@ var RepairButton = React.createClass({
 
   render() {
     return (
-      <div className="machine-service-repair">
+      <div className="machine-repair-switch row">
         <a
           className="danger" 
           href="#" 
           onClick={this.handleClick}>
           <i className="fa fa-wrench"></i>
-        </a>Request Service Repair
+        </a>Request Repair
       </div>
     );
   }

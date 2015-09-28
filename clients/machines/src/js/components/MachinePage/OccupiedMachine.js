@@ -34,12 +34,12 @@ var OccupiedMachine = React.createClass({
     var users = this.state.machineUsers;
     var user = users.get(this.props.activation.UserId) || {};
     return (
-      <div className="machine occupied">
-        <div className="row">
-          <div className="col-xs-6">
+      <div className="machine occupied row">
+        <table>
+          <th>
   
-            <div className="machine-action-info">
-              <div className="machine-info-content">
+            <div>
+              <div>
                 <div className="occupied-by-label">
                   Occupied by
                 </div>
@@ -50,11 +50,10 @@ var OccupiedMachine = React.createClass({
               </div>
             </div>
   
-          </div>
-  
+          </th>
+          <td className="col-xs-12">
           { this.props.isAdmin ? (
-            <div className="col-xs-6">
-  
+
               <table className="machine-activation-table">
                 <tr>
                   <td rowSpan="2">
@@ -79,14 +78,13 @@ var OccupiedMachine = React.createClass({
                 </tr>
               </table>
   
-            </div>
           ) : (
-            <div className="col-xs-6">
+            <div>
               <div className="indicator occupied">Occupied</div>
             </div>
           )}
-  
-        </div>
+          </td>
+        </table>
       </div>
     );
   }

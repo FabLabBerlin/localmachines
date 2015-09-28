@@ -26,7 +26,7 @@ var NfcLogoutMixin = {
   },
 
   connectJsToQt() {
-    if (window.location.hash === '#/machine') {
+    if (window.location.hash === '#/categories') {
       toastr.info('You can log out with your nfc card');
     }
     window.libnfc.cardRead.connect(this.handleLogout);

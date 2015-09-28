@@ -22,26 +22,17 @@ var FreeMachine = React.createClass({
    * If is admin, two button will also be displayed
    */
   render() {
-    var imageUrl;
-    if (this.props.info && this.props.info.Image) {
-      imageUrl = '/files/' + this.props.info.Image;
-    } else {
-      imageUrl = '/machines/img/img-machine-placeholder.svg';
-    }
+
 
     return (
       <div className="machine available">
         <div className="row">
-          <div className="col-xs-6">
-  
-            {this.props.activation}
-            <div className="machine-action-info">
-              <img className="machine-image" src={imageUrl}/>
-            </div>
-          
+          <div >
+            {this.props.activation}        
           </div>
-          <div className="col-xs-6">
-  
+        </div>
+        <div className="row">
+          <div >
             { this.props.isAdmin ? (
   
               <table className="machine-activation-table">
@@ -56,18 +47,18 @@ var FreeMachine = React.createClass({
                   <td className="force-button-table-cell">
                     {this.props.isAdmin ? (
                       <ForceSwitchOn force={this.props.force}/>
-                    ) : ''}
+                   ) : ''}
                   </td>
                 </tr>
                 <tr>
                   <td className="force-button-table-cell">
                     {this.props.isAdmin ? (
                       <ForceSwitchOff force={this.props.force}/>
-                    ) : ''}
+                   ) : ''}
                   </td>
-                </tr>
+               </tr>
               </table>
-  
+    
             ) : (
   
               <button
@@ -77,7 +68,6 @@ var FreeMachine = React.createClass({
               </button>
             
             )}
-            
           </div>
         </div>
       </div>

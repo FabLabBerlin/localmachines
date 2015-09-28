@@ -1,6 +1,6 @@
 var $ = require('jquery');
 var getters = require('../../getters');
-var MachineList = require('./MachineList');
+var MachineList = require('../MachinePage/MachineList');
 var LoginStore = require('../../stores/LoginStore');
 var MachineStore = require('../../stores/MachineStore');
 var MachineActions = require('../../actions/MachineActions');
@@ -20,7 +20,7 @@ var UserActions = require('../../actions/UserActions');
  * Give it to its children to display the interface
  * TODO: reorganize and documente some function
  */
-var MachinePage = React.createClass({
+var LasercutterPage = React.createClass({
 
   /*
    * Enable some React router function as:
@@ -129,6 +129,10 @@ var MachinePage = React.createClass({
 
   },
 
+  goToCategories(event) {
+    event.preventDefault();
+    window.location = '/machines/#/categories';
+  },
   /*
    * Render the user name
    * MachinList
@@ -154,14 +158,22 @@ var MachinePage = React.createClass({
               </div>
             </div>
             <div className="machine-action-info">
-              <h3 className="categories-header"><img className="machine-image" src={imageUrl}/>3D Printers</h3> 
+              <h3 className="categories-header"><img className="machine-image" src={imageUrl}/>Lasercutter</h3> 
               
             </div>
             <MachineList
               user={this.state.userInfo}
               info={machineInfo}
               activation={this.state.activationInfo}
+              category="Lasercutter"
             />
+            <div className="container-fluid">
+              <button
+                onClick={this.goToCategories}
+                className="btn btn-lg btn-block btn-primary btn-logout-bottom">
+                Categories
+              </button>
+            </div>
             <div className="container-fluid">
               <button
                 onClick={this.handleLogout}
@@ -200,4 +212,4 @@ var MachinePage = React.createClass({
   }
 });
 
-export default MachinePage;
+export default LasercutterPage;

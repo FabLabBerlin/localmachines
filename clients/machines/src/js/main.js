@@ -14,6 +14,10 @@ var SpendingsPage = require('./components/UserProfile/SpendingsPage');
 var UserPage = require('./components/UserProfile/UserPage');
 var UserStore = require('./stores/UserStore');
 var {DefaultRoute, Route, Routes, NotFoundRoute} = require('react-router');
+var CategoriesPage = require('./components/Categories/CategoriesPage')
+var threeDPrinterPage = require('./components/Categories/3DPrinterPage')
+var LasercutterPage = require('./components/Categories/LasercutterPage')
+
 
 /*
  * Style dependencies for webpack
@@ -52,7 +56,10 @@ let routes = (
     <Route name="profile" handler={UserPage} />
     <Route name="spendings" handler={SpendingsPage} />
     <Route name="feedback" handler={FeedbackPage} />
-    <DefaultRoute handler={MachinePage} />
+    <Route name="categories" handler={CategoriesPage} /> 
+    <Route name="3dprinter" handler={threeDPrinterPage} /> 
+    <Route name="lasercutter" handler={LasercutterPage} />     
+    <DefaultRoute handler={CategoriesPage} />
   </Route>
 );
 

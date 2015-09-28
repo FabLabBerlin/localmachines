@@ -138,30 +138,37 @@ var MachineChooser = React.createClass({
         );
       }
     }
+    if (this.props.info.Category === this.props.category) {
+      return (
+        <div className="machine-container col-xs-6 col-sm-4 col-md-4 col-lg-4">
+          <div className="container-fluid">
+            <div className="machine-header">
+              <div>{this.props.info.Name}</div>
+              <div className="clearfix"></div>
+            </div>
+            <div className="machine-body">
+              {machineBody}
+              
+              <div className="machine-extra-actions">
+                <div className="action-item">
+                  <MaintenanceSwitch machineId={this.props.info.Id}/>
+                </div>
+              </div>
+              <div className="machine-extra-actions">
+                <div className="action-item">
+                    <RepairButton machineId={this.props.info.Id}/>
+                </div>
+              </div>
 
-    return (
-      <div className="machine-container">
-        <div className="container-fluid">
-          <div className="machine-header">
-            <div className="machine-title pull-left">{this.props.info.Name}</div>
-            <div className="clearfix"></div>
+            </div>          
           </div>
-          <div className="machine-body">
-            {machineBody}
-
-            <ul className="machine-extra-actions">
-              <li className="action-item">
-                <MaintenanceSwitch machineId={this.props.info.Id}/>
-              </li>
-              <li className="action-item">
-                <RepairButton machineId={this.props.info.Id}/>
-              </li>
-            </ul>
-
-          </div>          
         </div>
-      </div>
-    );
+      );
+    } else {      
+        return(
+          <div></div>
+        );      
+    }
   }
 });
 
