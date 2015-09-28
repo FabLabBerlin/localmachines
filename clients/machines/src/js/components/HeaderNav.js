@@ -92,6 +92,12 @@ var MainMenu = React.createClass({
           faIconClass="fa-paper-plane"
           label="Feedback">
         </MenuItem>);
+
+      buttons.push(
+        <MenuItem href="/machines/#/reservations"
+          faIconClass="fa-calendar"
+          label="Reservations">
+        </MenuItem>);
     }
 
     return (

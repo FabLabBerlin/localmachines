@@ -13,6 +13,7 @@ var Router = require('react-router');
 var ScrollNavStore = require('./stores/ScrollNavStore');
 var SpendingsPage = require('./components/UserProfile/SpendingsPage');
 var UserPage = require('./components/UserProfile/UserPage');
+var ReservationsPage = require('./components/ReservationsPage/ReservationsPage');
 var UserStore = require('./stores/UserStore');
 var {DefaultRoute, Route, Routes, NotFoundRoute} = require('react-router');
 
@@ -53,6 +54,7 @@ let routes = (
     <Route name="profile" handler={UserPage} />
     <Route name="spendings" handler={SpendingsPage} />
     <Route name="feedback" handler={FeedbackPage} />
+    <Route name="reservations" handler={ReservationsPage} />
     <DefaultRoute handler={MachinePage} />
   </Route>
 );

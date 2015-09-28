@@ -765,6 +765,46 @@ Spendings Page
   text-align: right;
 }
 
+/*
+
+http://www.network-science.de/ascii/ 
+font: basic
+
+d8888b. d88888b .d8888. d88888b d8888b. db    db  .d8b.  d888888b d888888b  .d88b.  d8b   db .d8888. 
+88  `8D 88'     88'  YP 88'     88  `8D 88    88 d8' `8b `~~88~~'   `88'   .8P  Y8. 888o  88 88'  YP 
+88oobY' 88ooooo `8bo.   88ooooo 88oobY' Y8    8P 88ooo88    88       88    88    88 88V8o 88 `8bo.   
+88`8b   88~~~~~   `Y8b. 88~~~~~ 88`8b   `8b  d8' 88~~~88    88       88    88    88 88 V8o88   `Y8b. 
+88 `88. 88.     db   8D 88.     88 `88.  `8bd8'  88   88    88      .88.   `8b  d8' 88  V888 db   8D 
+88   YD Y88888P `8888Y' Y88888P 88   YD    YP    YP   YP    YP    Y888888P  `Y88P'  VP   V8P `8888Y' 
+
+Reservations page
+
+*/
+
+.range-date-picker {
+  background: white;
+  position: fixed;
+  z-index: 100;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+
+  .header {
+    border-bottom: 1px solid @color-neutral;
+  }
+
+  .footer {
+    border-top: 1px solid @color-neutral;
+    position: fixed;
+    width: 100%;
+    left: 0;
+    bottom: 0;
+    padding-top: 15px;
+    padding-bottom: 15px;
+  }
+}
+
 /* 
 
 http://www.network-science.de/ascii/ 
