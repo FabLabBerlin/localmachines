@@ -88,6 +88,12 @@ var MainMenu = React.createClass({
         </MenuItem>);
 
       buttons.push(
+        <MenuItem href="/machines/#/reservations"
+          faIconClass="fa-calendar-check-o"
+          label="Reservations">
+        </MenuItem>);
+
+      buttons.push(
         <MenuItem href="/machines/#/feedback"
           faIconClass="fa-paper-plane"
           label="Feedback">

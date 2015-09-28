@@ -9,6 +9,8 @@ var MachinePage = require('./components/MachinePage/MachinePage');
 var MachineStore = require('./stores/MachineStore');
 var React = require('react');
 var reactor = require('./reactor');
+var ReservationsPage = require('./components/Reservations/ReservationsPage');
+var ReservationsStore = require('./stores/ReservationsStore');
 var Router = require('react-router');
 var ScrollNavStore = require('./stores/ScrollNavStore');
 var SpendingsPage = require('./components/UserProfile/SpendingsPage');
@@ -52,6 +54,7 @@ let routes = (
     <Route name="machine" handler={MachinePage} />
     <Route name="profile" handler={UserPage} />
     <Route name="spendings" handler={SpendingsPage} />
+    <Route name="reservations" handler={ReservationsPage} />
     <Route name="feedback" handler={FeedbackPage} />
     <DefaultRoute handler={MachinePage} />
   </Route>
@@ -66,6 +69,7 @@ reactor.registerStores({
   globalStore: GlobalStore,
   loginStore: LoginStore,
   machineStore: MachineStore,
+  reservationsStore: ReservationsStore,
   scrollNavStore: ScrollNavStore,
   userStore: UserStore
 });
