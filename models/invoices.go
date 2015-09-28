@@ -80,17 +80,17 @@ func (this *InvoiceActivation) MembershipStr() string {
 	return membershipStr
 }
 
-func (this *InvoiceActivation) PriceTotalExclDisc() float64 {
-	return this.MachineUsage * float64(this.Machine.Price)
+func PriceTotalExclDisc(invAct *InvoiceActivation) float64 {
+	return invAct.MachineUsage * float64(invAct.Machine.Price)
 }
 
-func (this *InvoiceActivation) PriceTotalDisc() (float64, error) {
-	priceTotal := this.PriceTotalExclDisc()
-	for _, membership := range this.Memberships {
+func PriceTotalDisc(invAct *InvoiceActivation) (float64, error) {
+	priceTotal := PriceTotalExclDisc(invAct)
+	for _, membership := range invAct.Memberships {
 
 		// We need to know whether the machine is affected by the base membership
 		// as well as the individual activation is affected by the user membership
-		isAffected, err := membership.IsMachineAffected(this.Machine.Id)
+		isAffected, err := membership.IsMachineAffected(invAct.Machine.Id)
 		if err != nil {
 			beego.Error(
 				"Failed to check whether machine is affected by membership:", err)
@@ -291,8 +291,8 @@ func CalculateInvoiceSummary(startTime, endTime time.Time) (invoice Invoice, err
 		sort.Stable((*userSummaries)[i].Activations)
 		beego.Trace((*userSummaries)[i].Activations)
 		for _, activation := range (*userSummaries)[i].Activations {
-			activation.TotalPrice = activation.PriceTotalExclDisc()
-			activation.DiscountedTotal, err = activation.PriceTotalDisc()
+			activation.TotalPrice = PriceTotalExclDisc(activation)
+			activation.DiscountedTotal, err = PriceTotalDisc(activation)
 			if err != nil {
 				return
 			}

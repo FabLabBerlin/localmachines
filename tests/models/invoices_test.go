@@ -43,9 +43,9 @@ func CreateTestInvActivation(machineId int64, machineName string,
 			},
 		},
 	}
-	invAct.TotalPrice = invAct.PriceTotalExclDisc()
+	invAct.TotalPrice = models.PriceTotalExclDisc(invAct)
 	var err error
-	invAct.DiscountedTotal, err = invAct.PriceTotalDisc()
+	invAct.DiscountedTotal, err = models.PriceTotalDisc(invAct)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -61,11 +61,11 @@ func TestInvoiceActivation(t *testing.T) {
 		})
 		Convey("Testing PriceTotalExclDisc", func() {
 			invAct := CreateTestInvActivation(22, "Lasercutter", 12, 0.5)
-			So(invAct.PriceTotalExclDisc(), ShouldEqual, 6)
+			So(models.PriceTotalExclDisc(invAct), ShouldEqual, 6)
 		})
 		Convey("Testing PriceTotalDisc", func() {
 			invAct := CreateTestInvActivation(22, "Lasercutter", 12, 0.5)
-			if priceTotalDisc, err := invAct.PriceTotalDisc(); err == nil {
+			if priceTotalDisc, err := models.PriceTotalDisc(invAct); err == nil {
 				So(priceTotalDisc, ShouldEqual, 3)
 			} else {
 				panic(err.Error())
@@ -126,10 +126,10 @@ func TestInvoiceActivation(t *testing.T) {
 				So(len(invs), ShouldEqual, 2)
 				So(invs[0].Machine.Name, ShouldEqual, "CNC Router")
 				So(invs[0].TotalPrice, ShouldAlmostEqual, 36*0.8, 0.000001)
-				So(invs[0].TotalPrice, ShouldAlmostEqual, invs[0].PriceTotalExclDisc(), 0.000001)
+				So(invs[0].TotalPrice, ShouldAlmostEqual, models.PriceTotalExclDisc(invs[0]), 0.000001)
 				So(invs[0].DiscountedTotal, ShouldAlmostEqual, 36*0.8, 0.000001)
 				So(invs[1].DiscountedTotal, ShouldAlmostEqual, 0.5*(12*0.5+13*0.25), 0.000001)
-				if priceTotalDisc, err := invs[0].PriceTotalDisc(); err == nil {
+				if priceTotalDisc, err := models.PriceTotalDisc(invs[0]); err == nil {
 					So(invs[0].DiscountedTotal, ShouldAlmostEqual, priceTotalDisc, 0.000001)
 				} else {
 					panic(err.Error())

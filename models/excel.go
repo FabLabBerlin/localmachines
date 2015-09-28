@@ -46,19 +46,15 @@ func AddRowXlsx(sheet *xlsx.Sheet, invActivation *InvoiceActivation) error {
 	cell.SetFloatWithFormat(float64(invActivation.Machine.Price), FORMAT_2_DIGIT)
 
 	cell = row.AddCell()
-	cell.SetFloatWithFormat(invActivation.PriceTotalExclDisc(), FORMAT_2_DIGIT)
+	cell.SetFloatWithFormat(invActivation.TotalPrice, FORMAT_2_DIGIT)
 
 	cell = row.AddCell()
 	cell.Value = invActivation.MembershipStr()
 
 	cell = row.AddCell()
-	if priceTotalDisc, err := invActivation.PriceTotalDisc(); err == nil {
-		cell.SetFloatWithFormat(priceTotalDisc, FORMAT_2_DIGIT)
-		cell.SetStyle(boldStyle())
-		return nil
-	} else {
-		return fmt.Errorf("PriceTotalDisc: %v", err)
-	}
+	cell.SetFloatWithFormat(invActivation.DiscountedTotal, FORMAT_2_DIGIT)
+	cell.SetStyle(boldStyle())
+	return nil
 }
 
 // Adds header row to existing xlsx sheet.
@@ -261,12 +257,8 @@ func createXlsxFile(filePath string, invoice *Invoice) error {
 		activations := InvoiceActivationsXlsx(userSummary.Activations)
 		sort.Stable(activations)
 		for _, activation := range activations {
-			sumTotal += activation.PriceTotalExclDisc()
-			if priceTotalDisc, err := activation.PriceTotalDisc(); err == nil {
-				sumTotalDisc += priceTotalDisc
-			} else {
-				return err
-			}
+			sumTotal += activation.TotalPrice
+			sumTotalDisc += activation.DiscountedTotal
 
 		}
 
