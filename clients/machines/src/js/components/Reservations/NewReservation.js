@@ -52,6 +52,7 @@ var SelectMachine = React.createClass({
 
   setMachine() {
     var mid = this.refs.selection.getDOMNode().value;
+    mid = parseInt(mid);
     ReservationsActions.createSetMachine({ mid });
   }
 });

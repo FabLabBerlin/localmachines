@@ -1,11 +1,74 @@
 var getters = require('../../getters');
+var MachineActions = require('../../actions/MachineActions');
+var moment = require('moment');
 var Navigation = require('react-router').Navigation;
 var NewReservation = require('./NewReservation');
 var Nuclear = require('nuclear-js');
 var React = require('react');
 var reactor = require('../../reactor');
-var ReservationActions = require('../../actions/ReservationsActions');
+var ReservationsActions = require('../../actions/ReservationsActions');
 var toImmutable = Nuclear.toImmutable;
+
+
+function formatDate(date) {
+  date = moment(date);
+  return date.format('DD. MMM YYYY');
+}
+
+var ReservationsTable = React.createClass({
+  mixins: [ reactor.ReactMixin ],
+
+  componentWillMount() {
+    const uid = reactor.evaluateToJS(getters.getUid);
+    MachineActions.apiGetUserMachines(uid);
+    ReservationsActions.load();
+  },
+
+  getDataBindings() {
+    return {
+      machinesById: getters.getMachinesById,
+      reservations: getters.getReservations
+    };
+  },
+
+  render() {
+    if (this.state.reservations && this.state.machinesById) {
+      return (
+        <table>
+          <thead>
+            <th>User</th>
+            <th>Machine</th>
+            <th>From</th>
+            <th>To</th>
+            <th>Created</th>
+          </thead>
+          <tbody>
+            {_.map(this.state.reservations.toArray(), (reservation, i) => {
+              const machineId = reservation.get('MachineId');
+              const machine = this.state.machinesById.get(machineId);
+              if (machine) {
+                return (
+                  <tr key={i}>
+                    <td>{reservation.get('UserId')}</td>
+                    <td>{machine.get('Name')}</td>
+                    <td>{formatDate(reservation.get('TimeStart'))}</td>
+                    <td>{formatDate(reservation.get('TimeEnd'))}</td>
+                    <td>{formatDate(reservation.get('Created'))}</td>
+                  </tr>
+                );
+              } else {
+                console.log('no machine for id ', machineId);
+                console.log('machinesById:', this.state.machinesById);
+              }
+            })}
+          </tbody>
+        </table>
+      );
+    } else {
+      return <div>'Loading reservations...'</div>;
+    }
+  }
+});
 
 
 var ReservationsPage = React.createClass({
@@ -21,13 +84,12 @@ var ReservationsPage = React.createClass({
   },
 
   clickCreate() {
-    ReservationActions.createEmpty();
+    ReservationsActions.createEmpty();
   },
 
   getDataBindings() {
     return {
-      newReservation: getters.getNewReservation,
-      reservations: getters.getReservations
+      newReservation: getters.getNewReservation
     };
   },
 
@@ -38,20 +100,7 @@ var ReservationsPage = React.createClass({
       return (
         <div className="container">
           <h3>Reservations</h3>
-          <table>
-            <thead>
-              <th>Name</th>
-            </thead>
-            <tbody>
-              {_.each(this.state.reservations, (reservation) => {
-                return (
-                  <tr>
-                    <td>Reservation</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <ReservationsTable/>
           <button className="btn btn-lg btn-primary" onClick={this.clickCreate}>
             Create
           </button>
