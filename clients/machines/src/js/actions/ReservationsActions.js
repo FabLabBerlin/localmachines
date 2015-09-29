@@ -40,18 +40,30 @@ var ReservationActions = {
     const reservation = reactor.evaluateToJS(getters.getNewReservation);
     const uid = reactor.evaluateToJS(getters.getUid);
     console.log('createSetTimes...reservation:', reservation);
+    var selectedTimes = _.filter(times, function(t) {
+      return t.selected;
+    });
+    var data = {
+      MachineId: reservation.machineId,
+      UserId: uid,
+      TimeStart: _.first(selectedTimes).start.toDate(),
+      TimeEnd: _.last(selectedTimes).end.toDate(),
+      Created: new Date()
+    };
+    console.log('createSetTimes: data=', data);
     $.ajax({
       url: '/api/reservations',
       contentType: "application/json; charset=utf-8",
       dataType: 'json',
       type: 'POST',
-      data: JSON.stringify({
-        MachineId: reservation.machineId,
-        UserId: uid,
-        TimeStart: times[0].start.toDate(),
-        TimeEnd: times[times.length - 1].start.toDate(),
-        Created: new Date()
-      })
+      data: JSON.stringify(data),
+      success: function() {
+        reactor.dispatch(actionTypes.CREATE_DONE);
+        ReservationActions.load();
+      },
+      error: function() {
+        reactor.dispatch(actionTypes.CREATE_DONE);
+      }
     });
   },
 

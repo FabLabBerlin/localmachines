@@ -63,6 +63,7 @@ func (this *ReservationsController) Create() {
 		beego.Error("Failed to decode json:", err)
 		this.CustomAbort(403, "Failed to create reservation")
 	}
+	beego.Info("create reservation:", req)
 
 	id, err := models.CreateReservation(&req)
 	if err != nil {

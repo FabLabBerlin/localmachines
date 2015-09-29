@@ -32,5 +32,6 @@ export default keyMirror({
   CREATE_EMPTY: null,
   CREATE_SET_MACHINE: null,
   CREATE_SET_DATE: null,
-  CREATE_SET_TIMES: null
+  CREATE_SET_TIMES: null,
+  CREATE_DONE: null
 });

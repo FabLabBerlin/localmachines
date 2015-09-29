@@ -24,7 +24,6 @@ var SelectMachine = React.createClass({
   },
 
   render() {
-    console.log('this.state.machineInfo:', this.state.machineInfo);
     if (this.state.machineInfo.length !== 0) {
       return (
         <div>

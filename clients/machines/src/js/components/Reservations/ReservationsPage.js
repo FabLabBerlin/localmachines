@@ -15,6 +15,11 @@ function formatDate(date) {
   return date.format('DD. MMM YYYY');
 }
 
+function formatTime(date) {
+  date = moment(date);
+  return date.format('HH:mm');
+}
+
 var ReservationsTable = React.createClass({
   mixins: [ reactor.ReactMixin ],
 
@@ -34,35 +39,39 @@ var ReservationsTable = React.createClass({
   render() {
     if (this.state.reservations && this.state.machinesById) {
       return (
-        <table>
-          <thead>
-            <th>User</th>
-            <th>Machine</th>
-            <th>From</th>
-            <th>To</th>
-            <th>Created</th>
-          </thead>
-          <tbody>
-            {_.map(this.state.reservations.toArray(), (reservation, i) => {
-              const machineId = reservation.get('MachineId');
-              const machine = this.state.machinesById.get(machineId);
-              if (machine) {
-                return (
-                  <tr key={i}>
-                    <td>{reservation.get('UserId')}</td>
-                    <td>{machine.get('Name')}</td>
-                    <td>{formatDate(reservation.get('TimeStart'))}</td>
-                    <td>{formatDate(reservation.get('TimeEnd'))}</td>
-                    <td>{formatDate(reservation.get('Created'))}</td>
-                  </tr>
-                );
-              } else {
-                console.log('no machine for id ', machineId);
-                console.log('machinesById:', this.state.machinesById);
-              }
-            })}
-          </tbody>
-        </table>
+        <div className="table-responsive">
+          <table className="table table-stripped table-hover">
+            <thead>
+              <th>User</th>
+              <th>Machine</th>
+              <th>Date</th>
+              <th>From</th>
+              <th>To</th>
+              <th>Created</th>
+            </thead>
+            <tbody>
+              {_.map(this.state.reservations.toArray(), (reservation, i) => {
+                const machineId = reservation.get('MachineId');
+                const machine = this.state.machinesById.get(machineId);
+                if (machine) {
+                  return (
+                    <tr key={i}>
+                      <td>{reservation.get('UserId')}</td>
+                      <td>{machine.get('Name')}</td>
+                      <td>{formatDate(reservation.get('TimeStart'))}</td>
+                      <td>{formatTime(reservation.get('TimeStart'))}</td>
+                      <td>{formatTime(reservation.get('TimeEnd'))}</td>
+                      <td>{formatDate(reservation.get('Created'))}</td>
+                    </tr>
+                  );
+                } else {
+                  console.log('no machine for id ', machineId);
+                  console.log('machinesById:', this.state.machinesById);
+                }
+              })}
+            </tbody>
+          </table>
+        </div>
       );
     } else {
       return <div>'Loading reservations...'</div>;

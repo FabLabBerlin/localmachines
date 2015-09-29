@@ -19,6 +19,7 @@ var ReservationsStore = new Nuclear.Store({
     this.on(actionTypes.CREATE_SET_MACHINE, createSetMachine);
     this.on(actionTypes.CREATE_SET_DATE, createSetDate);
     this.on(actionTypes.CREATE_SET_TIMES, createSetTimes);
+    this.on(actionTypes.CREATE_DONE, createDone);
   }
 });
 
@@ -63,6 +64,10 @@ function possibleTimes(state) {
 
 function createSetTimes(state, { times }) {
   return state.setIn(['create', 'times'], toImmutable(times));
+}
+
+function createDone(state) {
+  return state.set('create', null);
 }
 
 export default ReservationsStore;
