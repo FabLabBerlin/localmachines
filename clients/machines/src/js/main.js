@@ -15,8 +15,7 @@ var UserPage = require('./components/UserProfile/UserPage');
 var UserStore = require('./stores/UserStore');
 var {DefaultRoute, Route, Routes, NotFoundRoute} = require('react-router');
 var CategoriesPage = require('./components/Categories/CategoriesPage')
-var threeDPrinterPage = require('./components/Categories/3DPrinterPage')
-var LasercutterPage = require('./components/Categories/LasercutterPage')
+var CategoryPage = require('./components/Categories/CategoryPage')
 
 
 /*
@@ -56,9 +55,8 @@ let routes = (
     <Route name="profile" handler={UserPage} />
     <Route name="spendings" handler={SpendingsPage} />
     <Route name="feedback" handler={FeedbackPage} />
-    <Route name="categories" handler={CategoriesPage} /> 
-    <Route name="3dprinter" handler={threeDPrinterPage} /> 
-    <Route name="lasercutter" handler={LasercutterPage} />     
+    <Route name="categories" handler={CategoriesPage} />
+    <Route name="categories/*" handler={CategoryPage} />
     <DefaultRoute handler={CategoriesPage} />
   </Route>
 );

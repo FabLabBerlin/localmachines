@@ -117,13 +117,34 @@ var CategoriesPage = React.createClass({
 
   goTo3Dprinters(event) {
     event.preventDefault();
-    window.location = '/machines/#/3dprinter';
+    window.location = '/machines/#/categories/3DPrinter';
   },
 
   goToLasercutter(event) {
     event.preventDefault();
-    window.location = '/machines/#/lasercutter';
+    window.location = '/machines/#/categories/Lasercutter';
   },
+
+  goToWoodWork(event) {
+    event.preventDefault();
+    window.location = '/machines/#/categories/WoodWork';
+  },
+
+  goToMetalWork(event) {
+    event.preventDefault();
+    window.location = '/machines/#/categories/MetalWork';
+  },
+
+  goToVinylnTextiles(event) {
+    event.preventDefault();
+    window.location = '/machines/#/categories/VinylnTextiles';
+  },
+
+  goToElectronics(event) {
+    event.preventDefault();
+    window.location = '/machines/#/categories/Electronics';
+  },
+
   /*
    * Render the user name
    * Categories
@@ -141,21 +162,94 @@ var CategoriesPage = React.createClass({
           </div>
           <div className="container-fluid">
           	<div className="row">
-          		<button className="btn-primary btn-cat col-xs-6 col-sm-4 col-md-4 col-lg-4" href="#"
-              onClick={this.goTo3Dprinters}>3D PRINTING
-              </button>
-              <button className="btn-primary btn-cat col-xs-6 col-sm-4 col-md-4 col-lg-4" href="#"
-              onClick={this.goToLasercutter}>LASER CUTTING</button>
-              <button className="btn-primary btn-cat col-xs-6 col-sm-4 col-md-4 col-lg-4">ELECTRONICS</button>
-              <button className="btn-primary btn-cat col-xs-6 col-sm-4 col-md-4 col-lg-4">VINYL & TEXTILES</button>
-              <button className="btn-primary btn-cat col-xs-6 col-sm-4 col-md-4 col-lg-4">WOOD WORK</button>
-              <button className="btn-primary btn-cat col-xs-6 col-sm-4 col-md-4 col-lg-4">METAL WORK</button>
-              <button className="btn-primary btn-cat col-xs-6 col-sm-4 col-md-4 col-lg-4">bads</button>
-              <button className="btn-primary btn-cat col-xs-6 col-sm-4 col-md-4 col-lg-4">8</button>
-              <button className="btn-primary btn-cat col-xs-6 col-sm-4 col-md-4 col-lg-4">9</button>
+              <div className="col-xs-6 col-sm-4 col-md-4 col-lg-4">
+          		  <div className="category-pad row">
+                  <button className="button-category" href="#"
+                  onClick={this.goTo3Dprinters}>
+                    <div>
+                      <img className="machine-image" src='../../../../../../files/machine-4.svg'/>
+                    </div>
+                    <div>
+                      3D Printing
+                    </div>
+                  </button>
+                </div>
+              </div>
+              <div className="col-xs-6 col-sm-4 col-md-4 col-lg-4">
+                <div className="category-pad row">
+                  <button className="button-category" href="#"
+                  onClick={this.goToLasercutter}>
+                    <div>
+                      <img className="machine-image" src='../../../../../../files/machine-3.svg'/>
+                    </div>
+                    <div>
+                      Laser Cutting
+                    </div>
+                  </button>
+                </div>
+              </div>
+              <div className="col-xs-6 col-sm-4 col-md-4 col-lg-4">
+                <div className="category-pad row">                 
+                  <button className="button-category" href="#"
+                  onClick={this.goToElectronics}>
+                    <div>
+                      <img className="machine-image" src='../../../../../../files/machine-9.svg'/>
+                    </div>
+                    <div>
+                      Electronics
+                    </div>                  
+                  </button>
+                </div>
+              </div>
+              <div className="col-xs-6 col-sm-4 col-md-4 col-lg-4">
+                <div className="category-pad row">
+                  <button className="button-category" href="#"
+                  onClick={this.goToVinylnTextiles}>
+                    <div>
+                      <img className="machine-image" src='../../../../../../files/machine-14.svg'/>
+                    </div>
+                    <div>
+                      Vinyl & Textiles
+                    </div>                  
+                  </button>
+                </div>
+              </div>
+              <div className="col-xs-6 col-sm-4 col-md-4 col-lg-4">
+                <div className="category-pad row">
+                  <button className="button-category" href="#"
+                  onClick={this.goToWoodWork}>
+                    <div>
+                      <img className="machine-image" src='../../../../../../files/machine-11.svg'/>
+                    </div>
+                    <div>
+                      Wood Work
+                    </div>
+                  </button>
+                </div>
+              </div>
+              <div className="col-xs-6 col-sm-4 col-md-4 col-lg-4">
+                <div className="category-pad row">
+                  <button className="button-category" href="#"
+                  onClick={this.goToMetalWork}>METAL WORK</button>
+                </div>
+              </div>
+              <div className="col-xs-6 col-sm-4 col-md-4 col-lg-4">
+                <div className="category-pad row">
+                  <button className="button-category">bads</button>
+                </div>
+              </div>
+              <div className="col-xs-6 col-sm-4 col-md-4 col-lg-4">
+                <div className="category-pad row"> 
+                  <button className="button-category">8</button>
+                </div>
+              </div>
+              <div className="col-xs-6 col-sm-4 col-md-4 col-lg-4">
+                <div className="category-pad row">
+                  <button className="button-category">9</button>
+                </div>
+              </div>
           	</div>
           </div>
-          
           <div className="container-fluid">
             <button
               onClick={this.handleLogout}

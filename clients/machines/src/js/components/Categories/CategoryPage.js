@@ -20,7 +20,7 @@ var UserActions = require('../../actions/UserActions');
  * Give it to its children to display the interface
  * TODO: reorganize and documente some function
  */
-var threeDPrinterPage = React.createClass({
+var CategoryPage = React.createClass({
 
   /*
    * Enable some React router function as:
@@ -139,6 +139,7 @@ var threeDPrinterPage = React.createClass({
    * exit button
    */
   render() {
+    const category = window.location.hash.slice('#/categories/'.length);
     var imageUrl;
     if (this.props.info && this.props.info.Image) {
       imageUrl = '/files/' + this.props.info.Image;
@@ -158,14 +159,14 @@ var threeDPrinterPage = React.createClass({
               </div>
             </div>
             <div className="machine-action-info">
-              <h3 className="categories-header"><img className="machine-image" src={imageUrl}/>3D Printers</h3> 
+              <h3 className="categories-header"><img className="machine-image" src={imageUrl}/>{category}</h3> 
               
             </div>
             <MachineList
               user={this.state.userInfo}
               info={machineInfo}
               activation={this.state.activationInfo}
-              category="3DPrinter"
+              category={category}
             />
             <div className="container-fluid">
               <button
@@ -212,4 +213,4 @@ var threeDPrinterPage = React.createClass({
   }
 });
 
-export default threeDPrinterPage;
+export default CategoryPage;
