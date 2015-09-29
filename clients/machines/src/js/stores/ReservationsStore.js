@@ -3,6 +3,13 @@ var Nuclear = require('nuclear-js');
 var toImmutable = Nuclear.toImmutable;
 
 
+/* Create Steps */
+const STEP_SET_MACHINE = 1;
+const STEP_SET_DATE = 2;
+const STEP_SET_TIME = 3;
+const STEP_SUCCESS = 4;
+const STEP_ERROR = 5;
+
 const initialState = toImmutable({
   reservations: undefined,
   create: null
@@ -20,6 +27,7 @@ var ReservationsStore = new Nuclear.Store({
     this.on(actionTypes.CREATE_SET_DATE, createSetDate);
     this.on(actionTypes.CREATE_SET_TIMES, createSetTimes);
     this.on(actionTypes.CREATE_DONE, createDone);
+    this.on(actionTypes.CREATE_SET_STEP, createSetStep);
   }
 });
 
@@ -28,7 +36,9 @@ function setReservations(state, { reservations }) {
 }
 
 function createEmpty(state) {
-  return state.set('create', toImmutable({}));
+  return state.set('create', toImmutable({
+    step: STEP_SET_MACHINE
+  }));
 }
 
 function createSetMachine(state, { mid }) {
@@ -48,7 +58,7 @@ function possibleTimes(state) {
   var endHour = 19;
   if (date.isoWeekday() === 6) {
     startHour = 12;
-    endTime = 18;
+    endHour = 18;
   }
   if (date.isoWeekday() !== 7) {
     for (var tStart = date.clone().hours(startHour); tStart.hours() < endHour; tStart.add(30, 'm')) {
@@ -68,6 +78,10 @@ function createSetTimes(state, { times }) {
 
 function createDone(state) {
   return state.set('create', null);
+}
+
+function createSetStep(state, step) {
+  return state.setIn(['create', 'step'], step);
 }
 
 export default ReservationsStore;

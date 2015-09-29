@@ -296,6 +296,32 @@ const getNewReservationTimes = [
   }
 ];
 
+const getNewReservationFrom = [
+  getNewReservationTimes,
+  (reservationTimes) => {
+    console.log('reservationTimes.toArray():', reservationTimes.toArray());
+    var selectedTimes = _.filter(reservationTimes.toArray(), function(t) {
+      return t.get('selected');
+    });
+    console.log('selectedTimes:', selectedTimes);
+    if (selectedTimes.length > 0) {
+      return _.first(selectedTimes).get('start').toDate();
+    }
+  }
+];
+
+const getNewReservationTo = [
+  getNewReservationTimes,
+  (reservationTimes) => {
+    var selectedTimes = _.filter(reservationTimes.toArray(), function(t) {
+      return t.get('selected');
+    });
+    if (selectedTimes.length > 0) {
+      return _.last(selectedTimes).get('end').toDate();
+    }
+  }
+];
+
 const getReservations = [
   ['reservationsStore'],
   (reservationsStore) => {
@@ -332,6 +358,6 @@ export default {
   getIsLogged, getUid, getFirstTry, getLoginSuccess, getLastActivity,
   getUserInfo, getActivationInfo, getMachineInfo, getMachinesById, getMachineUsers, getIsLoading, getBillInfo, getBillMonths, getMonthlyBills, getMembership, getMembershipsByMonth,
   getFeedbackSubject, getFeedbackSubjectDropdown, getFeedbackSubjectOtherText, getFeedbackMessage,
-  getNewReservation, getNewReservationTimes, getReservations,
+  getNewReservation, getNewReservationTimes, getNewReservationFrom, getNewReservationTo, getReservations,
   getScrollUpEnabled, getScrollDownEnabled, getScrollPosition
 };
