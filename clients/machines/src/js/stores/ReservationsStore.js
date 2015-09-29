@@ -18,8 +18,7 @@ var ReservationsStore = new Nuclear.Store({
     this.on(actionTypes.CREATE_EMPTY, createEmpty);
     this.on(actionTypes.CREATE_SET_MACHINE, createSetMachine);
     this.on(actionTypes.CREATE_SET_DATE, createSetDate);
-    this.on(actionTypes.CREATE_SET_TIME_FROM, createSetTimeFrom);
-    this.on(actionTypes.CREATE_SET_TIME_TO, createSetTimeTo);
+    this.on(actionTypes.CREATE_SET_TIMES, createSetTimes);
   }
 });
 
@@ -36,15 +35,34 @@ function createSetMachine(state, { mid }) {
 }
 
 function createSetDate(state, { date }) {
-  return state.setIn(['create', 'date'], date);
+  state = state.setIn(['create', 'date'], date);
+  state = state.setIn(['create', 'times'], possibleTimes(state));
+  return state;
 }
 
-function createSetTimeFrom(state, { timeFrom }) {
-  return state.setIn(['create', 'timeFrom'], timeFrom);
+function possibleTimes(state) {
+  var date = state.get('create').get('date');
+  var times = [];
+  var startHour = 10;
+  var endHour = 19;
+  if (date.isoWeekday() === 6) {
+    startHour = 12;
+    endTime = 18;
+  }
+  if (date.isoWeekday() !== 7) {
+    for (var tStart = date.clone().hours(startHour); tStart.hours() < endHour; tStart.add(30, 'm')) {
+      times.push({
+        start: tStart.clone(),
+        end: tStart.clone().add(30, 'm'),
+        selected: false
+      });
+    }
+  }
+  return toImmutable(times);
 }
 
-function createSetTimeTo(state, { timeTo }) {
-  return state.setIn(['create', 'timeTo'], timeTo);
+function createSetTimes(state, { times }) {
+  return state.setIn(['create', 'times'], toImmutable(times));
 }
 
 export default ReservationsStore;

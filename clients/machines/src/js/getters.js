@@ -280,6 +280,31 @@ const getFeedbackMessage = [
 
 
 /*
+ * Reservations related getters
+ */
+const getNewReservation = [
+  ['reservationsStore'],
+  (reservationsStore) => {
+    return reservationsStore.get('create');
+  }
+];
+
+const getNewReservationTimes = [
+  ['reservationsStore'],
+  (reservationsStore) => {
+    return reservationsStore.get('create').get('times');
+  }
+];
+
+const getReservations = [
+  ['reservationsStore'],
+  (reservationsStore) => {
+    return reservationsStore.get('reservations');
+  }
+];
+
+
+/*
  * Scroll Navigation related getters
  */
 const getScrollUpEnabled = [
@@ -307,5 +332,6 @@ export default {
   getIsLogged, getUid, getFirstTry, getLoginSuccess, getLastActivity,
   getUserInfo, getActivationInfo, getMachineInfo, getMachinesById, getMachineUsers, getIsLoading, getBillInfo, getBillMonths, getMonthlyBills, getMembership, getMembershipsByMonth,
   getFeedbackSubject, getFeedbackSubjectDropdown, getFeedbackSubjectOtherText, getFeedbackMessage,
+  getNewReservation, getNewReservationTimes, getReservations,
   getScrollUpEnabled, getScrollDownEnabled, getScrollPosition
 };

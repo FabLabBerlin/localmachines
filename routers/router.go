@@ -64,6 +64,11 @@ func Init() {
 				&controllers.FeedbackController{},
 			),
 		),
+		beego.NSNamespace("/reservations",
+			beego.NSInclude(
+				&controllers.ReservationsController{},
+			),
+		),
 	)
 	beego.AddNamespace(ns)
 }

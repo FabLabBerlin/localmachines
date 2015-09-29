@@ -1,3 +1,10 @@
+var actionTypes = require('../actionTypes');
+var getters = require('../getters');
+var moment = require('moment');
+var reactor = require('../reactor');
+var toastr = require('toastr');
+
+
 var ReservationActions = {
 
   createEmpty() {
@@ -5,19 +12,42 @@ var ReservationActions = {
   },
 
   createSetMachine({ mid }) {
-    reactor.dispatch(actionTypes.CREATE_SET_MACHINE);
+    reactor.dispatch(actionTypes.CREATE_SET_MACHINE, { mid });
   },
 
   createSetDate({ date }) {
-    reactor.dispatch(actionTypes.CREATE_SET_DATE);
+    date = moment(date, 'YYYY-MM-DD');
+    if (!date.isValid()) {
+      toastr.error('Please enter date in the format YYYY-MM-DD');
+    } else if (date.isBefore(moment())) {
+      toastr.error('Please enter date from the future');
+    } else {
+      reactor.dispatch(actionTypes.CREATE_SET_DATE, { date });
+    }
   },
 
-  createSetTimeFrom({ timeFrom }) {
-    reactor.dispatch(actionTypes.CREATE_SET_TIME_FROM);
+  createSetTimes({ times }) {
+    reactor.dispatch(actionTypes.CREATE_SET_TIMES, { times });
+    const reservation = reactor.evaluateToJS(getters.getNewReservation);
+    const uid = reactor.evaluateToJS(getters.getUid);
+    console.log('times:', times);
+    $.ajax({
+      url: '/api/reservations',
+      contentType: "application/json; charset=utf-8",
+      dataType: 'json',
+      type: 'POST',
+      data: JSON.stringify({
+        MachineId: reservation.MachineId,
+        UserId: uid,
+        TimeStart: times[0].start.toDate(),
+        TimeEnd: times[times.length - 1].start.toDate(),
+        Created: new Date()
+      })
+    });
   },
 
-  createSetTimeTo({ timeTo }) {
-    reactor.dispatch(actionTypes.CREATE_SET_TIME_TO);
+  createToggleStartTime({ startTime }) {
+    reactor.dispatch(actionTypes.CREATE_TOGGLE_START_TIME);
   }
 };
 

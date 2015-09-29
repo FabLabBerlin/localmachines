@@ -26,5 +26,11 @@ export default keyMirror({
   SET_MEMBERSHIP_INFO: null,
 
   SET_FEEDBACK_PROPERTY: null,
-  RESET_FEEDBACK_FORM: null
+  RESET_FEEDBACK_FORM: null,
+
+  SET_RESERVATIONS: null,
+  CREATE_EMPTY: null,
+  CREATE_SET_MACHINE: null,
+  CREATE_SET_DATE: null,
+  CREATE_SET_TIMES: null
 });
