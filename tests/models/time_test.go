@@ -74,6 +74,17 @@ func TestTime(t *testing.T) {
 			Convey("Saving current UTC time in to the database", func() {
 				So(err, ShouldBeNil)
 				So(id, ShouldBeGreaterThan, 0)
+				var dbTimeString string
+				query := "SELECT time FROM " + myTime.TableName() + " WHERE id = ?"
+				err := o.Raw(query, id).QueryRow(&dbTimeString)
+				if err != nil {
+					panic(err.Error())
+				}
+				currentTimeString := currentTime.Format("2006-01-02 15:04:05")
+				if dbTimeString != currentTimeString {
+					panic(fmt.Sprintf("Expected %v but got %v (original time = %v)", currentTimeString, dbTimeString, currentTime))
+				}
+				So(dbTimeString, ShouldEqual)
 			})
 
 			Convey("Retrieving time from the database", func() {
