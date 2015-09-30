@@ -2,13 +2,13 @@ package modelTest
 
 import (
 	"fmt"
-	"net/url"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"github.com/kr15h/fabsmith/database/connect"
 	"github.com/kr15h/fabsmith/models"
 )
 
@@ -57,17 +57,11 @@ func ConfigDB() {
 	}
 
 	mysqlDb := beego.AppConfig.String("mysqldb")
-	beego.Info("Lel: " + mysqlDb)
 	if mysqlDb == "" {
 		panic("Please set mysqldb in app.conf")
 	}
 
-	loc := url.QueryEscape("Europe/Berlin")
-	mysqlConnString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&loc=%s",
-		mysqlUser, mysqlPass, mysqlHost, mysqlPort, mysqlDb, loc)
-
-	orm.RegisterDriver("mysql", orm.DR_MySQL)
-	orm.RegisterDataBase("default", "mysql", mysqlConnString)
+	connect.Connect(mysqlUser, mysqlPass, mysqlHost, mysqlPort, mysqlDb)
 }
 
 // ResetDB : Reset the database after each test

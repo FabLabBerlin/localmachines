@@ -52,6 +52,8 @@ func TestActivations(t *testing.T) {
 				})
 
 				Convey("Activation start time should match current time", func() {
+					t.Logf("activation.TimeStart = %v", activation.TimeStart)
+					t.Logf("activationStartTime = %v", activationStartTime)
 					So(activation.TimeStart, ShouldHappenWithin,
 						time.Duration(1)*time.Second, activationStartTime)
 				})

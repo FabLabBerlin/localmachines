@@ -80,11 +80,11 @@ func TestTime(t *testing.T) {
 				if err != nil {
 					panic(err.Error())
 				}
-				currentTimeString := currentTime.Format("2006-01-02 15:04:05")
-				if dbTimeString != currentTimeString {
-					panic(fmt.Sprintf("Expected %v but got %v (original time = %v)", currentTimeString, dbTimeString, currentTime))
+				currentTimeString0 := currentTime.Format("2006-01-02 15:04:05 +0000 UTC")
+				currentTimeString1 := currentTime.Add(time.Second).Format("2006-01-02 15:04:05 +0000 UTC")
+				if dbTimeString != currentTimeString0 && dbTimeString != currentTimeString1 {
+					panic(fmt.Sprintf("Expected %v or %v but got %v (original time = %v)", currentTimeString0, currentTimeString1, dbTimeString, currentTime))
 				}
-				So(dbTimeString, ShouldEqual)
 			})
 
 			Convey("Retrieving time from the database", func() {
@@ -115,6 +115,18 @@ func TestTime(t *testing.T) {
 			Convey("Saving fake Los Angeles time in to the database", func() {
 				So(err, ShouldBeNil)
 				So(id, ShouldBeGreaterThan, 0)
+				var dbTimeString string
+				query := "SELECT time FROM " + myTime.TableName() + " WHERE id = ?"
+				err := o.Raw(query, id).QueryRow(&dbTimeString)
+				if err != nil {
+					panic(err.Error())
+				}
+				currentTimeString0 := currentTime.UTC().Format("2006-01-02 15:04:05 +0000 UTC")
+				currentTimeString1 := currentTime.UTC().Add(time.Second).Format("2006-01-02 15:04:05 +0000 UTC")
+				if dbTimeString != currentTimeString0 && dbTimeString != currentTimeString1 {
+					panic(fmt.Sprintf("Expected %v or %v but got %v (original time = %v)", currentTimeString0, currentTimeString1, dbTimeString, currentTime))
+				}
+
 			})
 
 			Convey("Retrieving time from the database", func() {

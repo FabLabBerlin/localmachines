@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
-	"github.com/astaxie/beego/orm"
 	"github.com/astaxie/beego/toolbox"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/kr15h/fabsmith/database/connect"
 	_ "github.com/kr15h/fabsmith/docs"
 	"github.com/kr15h/fabsmith/models"
 	_ "github.com/kr15h/fabsmith/routers"
-	"net/url"
 )
 
 func main() {
@@ -95,14 +94,7 @@ func configDatabase() {
 		panic("Please set mysqldb in app.conf")
 	}
 
-	// Build MySQL connection string out of the config variables
-	loc := url.QueryEscape("Europe/Berlin")
-	mysqlConnString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&loc=%s",
-		mysqlUser, mysqlPass, mysqlHost, mysqlPort, mysqlDb, loc)
-
-	// Register MySQL driver and default database for beego ORM
-	orm.RegisterDriver("mysql", orm.DR_MySQL)
-	orm.RegisterDataBase("default", "mysql", mysqlConnString)
+	connect.Connect(mysqlUser, mysqlPass, mysqlHost, mysqlPort, mysqlDb)
 }
 
 // Setup Beego toolbox tasks. They are kind of cron jobs.
