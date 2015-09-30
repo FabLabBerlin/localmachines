@@ -39,6 +39,8 @@ var ReservationActions = {
       toastr.error('Please enter date in the format YYYY-MM-DD');
     } else if (date.isBefore(moment())) {
       toastr.error('Please enter date from the future');
+    } else if (date.isAfter(moment().add(2, 'months'))) {
+      toastr.error('Please enter date within the next 2 months');
     } else if (date.isoWeekday() === 7) {
       toastr.error('Please enter a weekday');
     } else {
@@ -49,9 +51,16 @@ var ReservationActions = {
 
   createSetTimes({ times }) {
     reactor.dispatch(actionTypes.CREATE_SET_TIMES, { times });
+  },
+
+  createToggleStartTime({ startTime }) {
+    reactor.dispatch(actionTypes.CREATE_TOGGLE_START_TIME);
+  },
+
+  createSubmit() {
+    const times = reactor.evaluateToJS(getters.getNewReservationTimes);
     const reservation = reactor.evaluateToJS(getters.getNewReservation);
     const uid = reactor.evaluateToJS(getters.getUid);
-    console.log('createSetTimes...reservation:', reservation);
     if (!this.isRange(times)) {
       toastr.error('Please select a time range');
       return;
@@ -81,10 +90,6 @@ var ReservationActions = {
         toastr.error('Error submitting reservation. Please try again later.');
       }
     });
-  },
-
-  createToggleStartTime({ startTime }) {
-    reactor.dispatch(actionTypes.CREATE_TOGGLE_START_TIME);
   },
 
   createDone() {

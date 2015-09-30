@@ -1,10 +1,11 @@
-var $ = require('jquery');
+var DatePicker = require('./DatePicker');
 var getters = require('../../getters');
 var MachineActions = require('../../actions/MachineActions');
 var moment = require('moment');
 var React = require('react');
 var reactor = require('../../reactor');
 var ReservationsActions = require('../../actions/ReservationsActions');
+var TimePicker = require('./TimePicker');
 var UserActions = require('../../actions/UserActions');
 
 
@@ -28,7 +29,7 @@ var SelectMachine = React.createClass({
     if (this.state.machineInfo.length !== 0) {
       return (
         <div>
-          <div>Select Machine</div>
+          <h3 className="h3">Select Machine</h3>
           <div>
             <select ref="selection">
               {_.map(this.state.machineInfo.toArray(), function(machine){
@@ -40,7 +41,7 @@ var SelectMachine = React.createClass({
               })}
             </select>
           </div>
-          <button type="button" onClick={this.setMachine}>Next</button>
+          <button className="btn btn-lg btn-primary" type="button" onClick={this.setMachine}>Next</button>
         </div>
       );
     } else {
@@ -54,66 +55,6 @@ var SelectMachine = React.createClass({
     var mid = this.refs.selection.getDOMNode().value;
     mid = parseInt(mid);
     ReservationsActions.createSetMachine({ mid });
-  }
-});
-
-
-var SelectDate = React.createClass({
-  render() {
-    return (
-      <div>
-        <div>Select Date</div>
-        <input type="text" placeholder="YYYY-MM-DD" ref="date"/>
-        <button type="button" onClick={this.setDate}>Next</button>
-      </div>
-    );
-  },
-
-  setDate() {
-    var date = this.refs.date.getDOMNode().value;
-    ReservationsActions.createSetDate({ date });
-  }
-});
-
-
-var SelectTimeRange = React.createClass({
-  mixins: [ reactor.ReactMixin ],
-
-  getDataBindings() {
-    return {
-      times: getters.getNewReservationTimes
-    };
-  },
-
-  render() {
-    return (
-      <div>
-        <div>Select Times</div>
-        <div ref="times">
-          {_.map(this.state.times.toJS(), (t, i) => {
-            return (
-              <div key={i}>
-                <label>
-                  <input
-                    type="checkbox"
-                  />
-                  {t.start.format('HH:mm')} - {t.end.format('HH:mm')}
-                </label>
-              </div>
-            );
-          })}
-        </div>
-        <button type="button" onClick={this.setTimes}>Next</button>
-      </div>
-    );
-  },
-
-  setTimes() {
-    var times = this.state.times.toJS();
-    $(this.refs.times.getDOMNode()).find('input').each(function(i, el) {
-      times[i].selected = el.checked;
-    });
-    ReservationsActions.createSetTimes({ times });
   }
 });
 
@@ -141,7 +82,7 @@ var SuccessMsg = React.createClass({
     const to = moment(this.state.to).format('HH:mm');
     return (
       <div>
-        <h3>Your booking is confirmed.</h3>
+        <h3 className="h3">Your booking is confirmed.</h3>
         <p>The booking details will be sent to the email you provided.</p>
         <h4>Time:</h4>
         <div>
@@ -150,7 +91,7 @@ var SuccessMsg = React.createClass({
         <div>
           {from} - {to}
         </div>
-        <button type="button" onClick={this.handleClick}>
+        <button className="btn btn-lg btn-primary" type="button" onClick={this.handleClick}>
           Continue
         </button>
       </div>
@@ -184,10 +125,10 @@ var NewReservation = React.createClass({
       dialog = <SelectMachine/>;
       break;
     case ReservationsActions.STEP_SET_DATE:
-      dialog = <SelectDate/>;
+      dialog = <DatePicker/>;
       break;
     case ReservationsActions.STEP_SET_TIME:
-      dialog = <SelectTimeRange/>;
+      dialog = <TimePicker/>;
       break;
     case ReservationsActions.STEP_SUCCESS:
       dialog = <SuccessMsg/>;
