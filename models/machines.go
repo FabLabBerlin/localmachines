@@ -31,7 +31,7 @@ type Machine struct {
 	ConnectedMachines string `orm:"size(255)"`
 	SwitchRefCount    int64
 	UnderMaintenance  bool
-	Category		  string `orm:"size(255)"`
+	CategoryId		  int64 `orm:"int(11)"`
 }
 
 // Define custom table name as for SQL table with a name "machines"
@@ -125,9 +125,9 @@ func GetAllMachines() ([]*Machine, error) {
 	return sortedMachines, nil
 }
 
-func CreateMachine(machineName string) (int64, error) {
+func CreateMachine(name string) (int64, error) {
 	o := orm.NewOrm()
-	machine := Machine{Name: machineName, Available: true}
+	machine := Machine{Name: name, Available: true}
 	id, err := o.Insert(&machine)
 	if err == nil {
 		return id, nil

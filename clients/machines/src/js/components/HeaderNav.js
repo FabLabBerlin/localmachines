@@ -57,7 +57,7 @@ var MainMenu = React.createClass({
       buttons.push(
         <MenuItem href="/machines/#/categories"
           faIconClass="fa-plug"
-          label="Categories">
+          label="Machines">
         </MenuItem>);
   
       buttons.push(

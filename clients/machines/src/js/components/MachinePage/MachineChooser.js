@@ -140,8 +140,8 @@ var MachineChooser = React.createClass({
     }
     if (this.props.info.Category === this.props.category) {
       return (
-        <div className="machine-container col-xs-6 col-sm-4 col-md-4 col-lg-4">
-          <div className="container-fluid">
+        <div className="col-xs-6 col-sm-4 col-md-4 col-lg-4">
+          <div className="container-fluid button-category">
             <div className="machine-header">
               <div>{this.props.info.Name}</div>
               <div className="clearfix"></div>
