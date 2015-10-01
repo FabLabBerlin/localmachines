@@ -71,6 +71,9 @@ var DayView = React.createClass({
       } else {
         className += ' selectable';
       }
+      if (this.props.moment.format('YYYY-MM-DD') === moment().format('YYYY-MM-DD')) {
+        className += ' today';
+      }
       if (this.props.selected) {
         className += ' selected';
       }

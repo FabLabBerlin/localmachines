@@ -90,7 +90,6 @@ var SuccessMsg = React.createClass({
     return (
       <div className={this.props.className}>
         <h3 className="h3">Your booking is confirmed.</h3>
-        <p>The booking details will be sent to the email you provided.</p>
         <h4>Time:</h4>
         <div>
           {date}

@@ -37,12 +37,12 @@ var ReservationsTable = React.createClass({
   },
 
   render() {
+    const uid = reactor.evaluateToJS(getters.getUid);
     if (this.state.reservations && this.state.machinesById) {
       return (
         <div className="table-responsive">
           <table className="table table-stripped table-hover">
             <thead>
-              <th>User</th>
               <th>Machine</th>
               <th>Date</th>
               <th>From</th>
@@ -53,10 +53,9 @@ var ReservationsTable = React.createClass({
               {_.map(this.state.reservations.toArray(), (reservation, i) => {
                 const machineId = reservation.get('MachineId');
                 const machine = this.state.machinesById.get(machineId);
-                if (machine) {
+                if (machine && reservation.get('UserId') === uid) {
                   return (
                     <tr key={i}>
-                      <td>{reservation.get('UserId')}</td>
                       <td>{machine.get('Name')}</td>
                       <td>{formatDate(reservation.get('TimeStart'))}</td>
                       <td>{formatTime(reservation.get('TimeStart'))}</td>
@@ -108,7 +107,7 @@ var ReservationsPage = React.createClass({
     } else {
       return (
         <div className="container">
-          <h3>Reservations</h3>
+          <h3 className="h3">My Reservations</h3>
           <ReservationsTable/>
           <hr/>
           <div className="pull-right">
