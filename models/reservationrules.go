@@ -10,17 +10,20 @@ func init() {
 }
 
 type ReservationRule struct {
-	Id        int64 `orm:"auto";"pk"`
-	MachineId int64
-	From      time.Time `orm:"type(datetime)"`
-	To        time.Time `orm:"type(datetime)"`
-	Monday    bool
-	Tuesday   bool
-	Wednesday bool
-	Thursday  bool
-	Friday    bool
-	Saturday  bool
-	Sunday    bool
+	Id          int64 `orm:"auto";"pk"`
+	MachineId   int64
+	Available   bool
+	Unavailable bool
+	TimeStart   time.Time `orm:"type(datetime)"`
+	TimeEnd     time.Time `orm:"type(datetime)"`
+	Monday      bool
+	Tuesday     bool
+	Wednesday   bool
+	Thursday    bool
+	Friday      bool
+	Saturday    bool
+	Sunday      bool
+	Created     time.Time `orm:"type(datetime)"`
 }
 
 func (this *ReservationRule) TableName() string {
@@ -34,7 +37,7 @@ func GetReservationRule(id int64) (reservationRule *ReservationRule, err error) 
 
 func GetAllReservationRules() (reservationRules []ReservationRule, err error) {
 	o := orm.NewOrm()
-	r := new(Reservation)
+	r := new(ReservationRule)
 	_, err = o.QueryTable(r.TableName()).All(&reservationRules)
 	return
 }
