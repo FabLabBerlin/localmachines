@@ -37,11 +37,16 @@ font: basic
 Global Styling
 
 */
+html {
+  height: 100%;
+}
+
 body {
   background-color: @bg-color-default;
   color: @text-color-default;
   font-family: 'Helvetica', 'Arial', sans-serif;
   font-weight: normal;
+  height: 100%;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -781,6 +786,10 @@ Reservations related components
 
 */
 
+#reservations-new button {
+  margin: 0 5px;
+}
+
 /*
  * Reusable mixins for Time Picker and Date Picker CSS classes
  */
@@ -807,7 +816,6 @@ Reservations related components
 .time-picker-time {
   cursor: pointer;
   font-size: 22px;
-  margin: 2px 0;
   text-align: center;
 }
 
@@ -838,7 +846,6 @@ Reservations related components
  */
 .date-picker-heading {
   border-bottom: 1px solid #4a4a4a;
-  /* height: 28px; */
   width: 50px;
   float: left;
   text-align: center;
@@ -849,10 +856,8 @@ Reservations related components
 .date-picker-day {
   border-left: 1px solid #4a4a4a;
   cursor: pointer;
-  /* display: inline-block; */
   float: left;
   font-size: 0.9em;
-  /* margin: 2px; */
   width: 50px;
   height: 50px;
   padding: 1px 5px 0 6px;

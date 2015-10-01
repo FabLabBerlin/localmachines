@@ -78,10 +78,6 @@ var ReservationActions = {
     const times = reactor.evaluateToJS(getters.getNewReservationTimes);
     const reservation = reactor.evaluateToJS(getters.getNewReservation);
     const uid = reactor.evaluateToJS(getters.getUid);
-    if (!this.isRange(times)) {
-      toastr.error('Please select a time range');
-      return;
-    }
     var selectedTimes = _.filter(times, function(t) {
       return t.selected;
     });
@@ -111,18 +107,6 @@ var ReservationActions = {
 
   createDone() {
     reactor.dispatch(actionTypes.CREATE_DONE);
-  },
-
-  isRange(times) {
-    var lastIsSelected;
-    var rangesFound = 0;
-    _.each(times, function(t) {
-      if (t.selected && !lastIsSelected) {
-        rangesFound++;
-      }
-      lastIsSelected = t.selected;
-    });
-    return rangesFound === 1;
   }
 };
 

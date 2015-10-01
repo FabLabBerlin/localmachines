@@ -110,9 +110,12 @@ var ReservationsPage = React.createClass({
         <div className="container">
           <h3>Reservations</h3>
           <ReservationsTable/>
-          <button className="btn btn-lg btn-primary" onClick={this.clickCreate}>
-            Create
-          </button>
+          <hr/>
+          <div className="pull-right">
+            <button className="btn btn-lg btn-primary" onClick={this.clickCreate}>
+              Create
+            </button>
+          </div>
         </div>
       );
     }

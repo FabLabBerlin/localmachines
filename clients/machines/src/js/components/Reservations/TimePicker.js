@@ -14,9 +14,21 @@ var TimePicker = React.createClass({
     };
   },
 
+  isRange(times) {
+    var lastIsSelected;
+    var rangesFound = 0;
+    _.each(times, function(t) {
+      if (t.selected && !lastIsSelected) {
+        rangesFound++;
+      }
+      lastIsSelected = t.selected;
+    });
+    return rangesFound === 1;
+  },
+
   render() {
     return (
-      <div>
+      <div className={this.props.className}>
         <h3 className="h3">Select time range</h3>
         <div className="no-select" ref="times">
           {_.map(this.state.times.toJS(), (t, i) => {
@@ -28,8 +40,9 @@ var TimePicker = React.createClass({
               <div key={i} className={className}>
                 <label>
                   <input
+                    checked={t.selected}
                     type="checkbox"
-                    onChange={this.setTimes}
+                    onChange={this.setTimes.bind(this, i)}
                   />
                   {t.start.format('HH:mm')} - {t.end.format('HH:mm')}
                 </label>
@@ -37,8 +50,11 @@ var TimePicker = React.createClass({
             );
           })}
         </div>
-        <button className="btn btn-lg btn-info" type="button" onClick={this.previous}>Previous</button>
-        <button className="btn btn-lg btn-primary" type="button" onClick={this.submit}>Submit</button>
+        <hr/>
+        <div className="pull-right">
+          <button className="btn btn-lg btn-info" type="button" onClick={this.previous}>Previous</button>
+          <button className="btn btn-lg btn-primary" type="button" onClick={this.submit}>Submit</button>
+        </div>
       </div>
     );
   },
@@ -47,11 +63,16 @@ var TimePicker = React.createClass({
     ReservationsActions.previousStep();
   },
 
-  setTimes() {
+  setTimes(lastClickIndex) {
     var times = this.state.times.toJS();
     $(this.refs.times.getDOMNode()).find('input').each(function(i, el) {
       times[i].selected = el.checked;
     });
+    if (!this.isRange(times)) {
+      _.each(times, function(t, i) {
+        t.selected = lastClickIndex === i;
+      });
+    }
     ReservationsActions.createSetTimes({ times });
   },
 

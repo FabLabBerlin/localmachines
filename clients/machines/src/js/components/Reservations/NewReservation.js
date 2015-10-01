@@ -28,7 +28,7 @@ var SelectMachine = React.createClass({
   render() {
     if (this.state.machineInfo.length !== 0) {
       return (
-        <div>
+        <div className={this.props.className}>
           <h3 className="h3">Select Machine</h3>
           <div>
             <select ref="selection">
@@ -41,7 +41,11 @@ var SelectMachine = React.createClass({
               })}
             </select>
           </div>
-          <button className="btn btn-lg btn-primary" type="button" onClick={this.setMachine}>Next</button>
+          <hr/>
+          <div className="pull-right">
+            <button className="btn btn-lg btn-info" type="button" onClick={this.cancel}>Cancel</button>
+            <button className="btn btn-lg btn-primary" type="button" onClick={this.setMachine}>Next</button>
+          </div>
         </div>
       );
     } else {
@@ -49,6 +53,10 @@ var SelectMachine = React.createClass({
         <div>Loading machines...</div>
       );
     }
+  },
+
+  cancel() {
+    ReservationsActions.createDone();
   },
 
   setMachine() {
@@ -76,12 +84,11 @@ var SuccessMsg = React.createClass({
 
   render() {
     var newReservation = this.state.newReservation;
-    console.log('SuccessMsg: this.state:', this.state);
     const date = moment(this.state.from).format('DD. MMM YYYY');
     const from = moment(this.state.from).format('HH:mm');
     const to = moment(this.state.to).format('HH:mm');
     return (
-      <div>
+      <div className={this.props.className}>
         <h3 className="h3">Your booking is confirmed.</h3>
         <p>The booking details will be sent to the email you provided.</p>
         <h4>Time:</h4>
@@ -91,9 +98,12 @@ var SuccessMsg = React.createClass({
         <div>
           {from} - {to}
         </div>
-        <button className="btn btn-lg btn-primary" type="button" onClick={this.handleClick}>
-          Continue
-        </button>
+        <hr/>
+        <div className="pull-right">
+          <button className="btn btn-lg btn-primary" type="button" onClick={this.handleClick}>
+            Continue
+          </button>
+        </div>
       </div>
     );
   }
@@ -122,20 +132,20 @@ var NewReservation = React.createClass({
     }
     switch (newReservation.get('step')) {
     case ReservationsActions.STEP_SET_MACHINE:
-      dialog = <SelectMachine/>;
+      dialog = <SelectMachine className="reservations-new-dialog"/>;
       break;
     case ReservationsActions.STEP_SET_DATE:
-      dialog = <DatePicker/>;
+      dialog = <DatePicker className="reservations-new-dialog"/>;
       break;
     case ReservationsActions.STEP_SET_TIME:
-      dialog = <TimePicker/>;
+      dialog = <TimePicker className="reservations-new-dialog"/>;
       break;
     case ReservationsActions.STEP_SUCCESS:
-      dialog = <SuccessMsg/>;
+      dialog = <SuccessMsg className="reservations-new-dialog"/>;
       break;
     }
     return (
-      <div className="container">
+      <div id="reservations-new" className="container">
         {dialog}
       </div>
     );
