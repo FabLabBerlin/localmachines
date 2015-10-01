@@ -781,6 +781,29 @@ Reservations related components
 
 */
 
+/*
+ * Reusable mixins for Time Picker and Date Picker CSS classes
+ */
+.date-time-unselected {
+}
+
+.date-time-hover-unselected {
+  background: #4a4a4a;
+  color: white;
+}
+
+.date-time-hover-selected {
+  background: #0a0a0a;
+  color: white;
+}
+
+.date-time-selected {
+  background: #2a2a2a;
+}
+
+/*
+ * Time Picker CSS classes
+ */
 .time-picker-time {
   cursor: pointer;
   font-size: 22px;
@@ -789,17 +812,15 @@ Reservations related components
 }
 
 .time-picker-time.selected {
-  background: #0a0a0a;
-  color: white;
+  .date-time-hover-selected
 }
 
 .time-picker-time:hover {
-  background: #4a4a4a;
-  color: white;
+  .date-time-hover-unselected
 }
 
 .time-picker-time.selected:hover {
-  background: #2a2a2a;
+  .date-time-selected
 }
 
 .time-picker-time label {
@@ -810,6 +831,68 @@ Reservations related components
 
 .time-picker-time input {
   display: none;
+}
+
+/*
+ * Date Picker CSS classes
+ */
+.date-picker-heading {
+  border-bottom: 1px solid #4a4a4a;
+  /* height: 28px; */
+  width: 50px;
+  float: left;
+  text-align: center;
+  padding-bottom: 1px;
+  font-size: 0.9em;
+}
+
+.date-picker-day {
+  border-left: 1px solid #4a4a4a;
+  cursor: pointer;
+  /* display: inline-block; */
+  float: left;
+  font-size: 0.9em;
+  /* margin: 2px; */
+  width: 50px;
+  height: 50px;
+  padding: 1px 5px 0 6px;
+  text-align: right;
+  border-bottom: 1px solid #4a4a4a;
+}
+
+.date-picker-day:last-child {
+  border-right: 1px solid #4a4a4a;
+}
+
+.date-picker-day.selectable.selected {
+  .date-time-hover-selected
+}
+
+.date-picker-day.selectable:hover {
+  .date-time-hover-unselected
+}
+
+.date-picker-day.selectable.selected:hover {
+  .date-time-selected
+}
+
+.date-picker-day.date-picker-empty {
+  background: #eaeaea;
+  cursor: default;
+}
+
+.date-picker-day.date-picker-not-available {
+  background: #eaeaea;
+  color: #666666;
+  cursor: not-allowed;
+}
+
+.date-picker-week {
+  clear: both;
+}
+
+.date-picker-finish {
+  clear: both;
 }
 
 /* 
