@@ -34,10 +34,8 @@ var ReservationActions = {
   },
 
   createSetDate({ date }) {
-    date = moment(date, 'YYYY-MM-DD');
-    if (!date.isValid()) {
-      toastr.error('Please enter date in the format YYYY-MM-DD');
-    } else if (date.isBefore(moment())) {
+    console.log('createSetDate: date=', date);
+    if (date.isBefore(moment())) {
       toastr.error('Please enter date from the future');
     } else if (date.isAfter(moment().add(2, 'months'))) {
       toastr.error('Please enter date within the next 2 months');
@@ -55,6 +53,25 @@ var ReservationActions = {
 
   createToggleStartTime({ startTime }) {
     reactor.dispatch(actionTypes.CREATE_TOGGLE_START_TIME);
+  },
+
+  previousStep() {
+    var step = reactor.evaluateToJS(getters.getNewReservation).step;
+    if (step > STEP_SET_MACHINE && step !== STEP_ERROR) {
+      step--;
+    }
+    reactor.dispatch(actionTypes.CREATE_SET_STEP, step);
+  },
+
+  nextStep() {
+    var newReservation = reactor.evaluateToJS(getters.getNewReservation);
+    var step = newReservation.step;
+    if (step === STEP_SET_DATE && !newReservation.date) {
+      toastr.error('Please select a date');
+    } else if (step < STEP_SUCCESS && step !== STEP_ERROR) {
+      step++;
+      reactor.dispatch(actionTypes.CREATE_SET_STEP, step);
+    }
   },
 
   createSubmit() {

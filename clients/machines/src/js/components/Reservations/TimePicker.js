@@ -37,9 +37,14 @@ var TimePicker = React.createClass({
             );
           })}
         </div>
-        <button className="btn btn-lg btn-primary" type="button" onClick={this.submit}>Next</button>
+        <button className="btn btn-lg btn-info" type="button" onClick={this.previous}>Previous</button>
+        <button className="btn btn-lg btn-primary" type="button" onClick={this.submit}>Submit</button>
       </div>
     );
+  },
+
+  previous() {
+    ReservationsActions.previousStep();
   },
 
   setTimes() {

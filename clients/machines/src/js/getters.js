@@ -292,20 +292,25 @@ const getNewReservation = [
 const getNewReservationTimes = [
   ['reservationsStore'],
   (reservationsStore) => {
-    return reservationsStore.get('create').get('times');
+    var newReservation = reservationsStore.get('create');
+    if (newReservation) {
+      return newReservation.get('times');
+    }
   }
 ];
 
 const getNewReservationFrom = [
   getNewReservationTimes,
   (reservationTimes) => {
-    console.log('reservationTimes.toArray():', reservationTimes.toArray());
-    var selectedTimes = _.filter(reservationTimes.toArray(), function(t) {
-      return t.get('selected');
-    });
-    console.log('selectedTimes:', selectedTimes);
-    if (selectedTimes.length > 0) {
-      return _.first(selectedTimes).get('start').toDate();
+    if (reservationTimes) {
+      console.log('reservationTimes.toArray():', reservationTimes.toArray());
+      var selectedTimes = _.filter(reservationTimes.toArray(), function(t) {
+        return t.get('selected');
+      });
+      console.log('selectedTimes:', selectedTimes);
+      if (selectedTimes.length > 0) {
+        return _.first(selectedTimes).get('start').toDate();
+      }
     }
   }
 ];
@@ -313,11 +318,13 @@ const getNewReservationFrom = [
 const getNewReservationTo = [
   getNewReservationTimes,
   (reservationTimes) => {
-    var selectedTimes = _.filter(reservationTimes.toArray(), function(t) {
-      return t.get('selected');
-    });
-    if (selectedTimes.length > 0) {
-      return _.last(selectedTimes).get('end').toDate();
+    if (reservationTimes) {
+      var selectedTimes = _.filter(reservationTimes.toArray(), function(t) {
+        return t.get('selected');
+      });
+      if (selectedTimes.length > 0) {
+        return _.last(selectedTimes).get('end').toDate();
+      }
     }
   }
 ];

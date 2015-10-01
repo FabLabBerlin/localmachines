@@ -47,6 +47,14 @@ class Month {
 
 
 var DayView = React.createClass({
+  handleClick() {
+    if (!this.props.header && !this.props.empty && !this.props.notAvailable) {
+      var date = this.props.moment;
+      console.log('handleClick: date=', date);
+      ReservationsActions.createSetDate({ date });
+    }
+  },
+
   render() {
     if (this.props.header) {
       return (
@@ -64,7 +72,7 @@ var DayView = React.createClass({
         className += ' selectable';
       }
       return (
-        <div className={className}>
+        <div className={className} onClick={this.handleClick}>
           {this.props.day}
         </div>
       );
@@ -107,6 +115,7 @@ var MonthView = React.createClass({
       _.last(weeks).push(
         <DayView key={k++}
                  day={day.date()}
+                 moment={day}
                  notAvailable={day.isBefore(moment()) || day.day() === 0}
         />
       );
@@ -138,23 +147,26 @@ var MonthView = React.createClass({
 
 
 var DatePicker = React.createClass({
+  previous() {
+    ReservationsActions.previousStep();
+  },
+
+  next() {
+    ReservationsActions.nextStep();
+  },
+
   render() {
     var currentMonth = Month.getCurrentMonth();
     var nextMonth = currentMonth.getNextMonth();
     return (
       <div>
         <h3 className="h3">Select Date</h3>
-        <input type="text" placeholder="YYYY-MM-DD" ref="date"/>
         <MonthView month={currentMonth}/>
         <MonthView month={nextMonth}/>
-        <button className="btn btn-lg btn-primary" type="button" onClick={this.setDate}>Next</button>
+        <button className="btn btn-lg btn-info" type="button" onClick={this.previous}>Previous</button>
+        <button className="btn btn-lg btn-primary" type="button" onClick={this.next}>Next</button>
       </div>
     );
-  },
-
-  setDate() {
-    var date = this.refs.date.getDOMNode().value;
-    ReservationsActions.createSetDate({ date });
   }
 });
 
