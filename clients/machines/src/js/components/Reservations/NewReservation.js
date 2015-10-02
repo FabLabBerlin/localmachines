@@ -31,7 +31,7 @@ var SelectMachine = React.createClass({
         <div className={this.props.className}>
           <h3 className="h3">Select Machine</h3>
           <div>
-            <select ref="selection">
+            <select className="form-control" ref="selection">
               {_.map(this.state.machineInfo.toArray(), function(machine){
                 return (
                   <option value={machine.get('Id')}>

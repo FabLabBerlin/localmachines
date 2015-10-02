@@ -11,6 +11,7 @@ func init() {
 
 type ReservationRule struct {
 	Id          int64 `orm:"auto";"pk"`
+	Name        string
 	MachineId   int64
 	Available   bool
 	Unavailable bool

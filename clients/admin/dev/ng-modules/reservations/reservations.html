@@ -6,10 +6,9 @@
 
   <h2>Reservation Rules</h2>
 
-  <table class="table table-striped table-hover">
+  <table id="reservations" class="table table-striped table-hover">
     <thead>
       <tr>
-        <th>Rule Name</th>
         <th>Machine</th>
         <th>From</th>
         <th>To</th>
@@ -20,17 +19,48 @@
         <th>Fri</th>
         <th>Sat</th>
         <th>Sun</th>
+        <th>Created</th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
+      <tr ng-repeat="reservationRule in reservationRules">
+        <td>{{reservationRule.Machine.Name}}</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>{{reservationRule.Created}}</td>
+        <td><span class="fa fa-close"></span></td>
+      </tr>
     </tbody>
   </table>
 
   <hr>
 
-  <button class="btn btn-primary btn-lg pull-right"
-          ng-click="addReservationPrompt()">
-    <i class="fa fa-plus"></i>&nbsp;Add Reservation
-  </button>
+  <table class="pull-right">
+    <tbody>
+      <tr>
+        <td>
+          <select class="form-control">
+            <option ng-repeat="machine in machines" value={{machine.Id}}>
+              {{machine.Name}}
+            </option>
+          </select>
+        </td>
+        <td>
+          <button class="btn btn-primary btn-lg pull-right"
+                  ng-click="addReservationRule()">
+            <i class="fa fa-plus"></i>&nbsp;Add Reservation Rule
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
 </div> <!-- /container -->
