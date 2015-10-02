@@ -320,45 +320,6 @@ app.controller('UserCtrl',
     }
   };
 
-  $scope.deleteUserPrompt = function() {
-    var token = randomToken.generate();
-    vex.dialog.prompt({
-      message: 'Enter <span class="delete-prompt-token">' +
-       token + '</span> to delete',
-      placeholder: 'Token',
-      callback: $scope.deleteUserPromptCallback.bind(this, token)
-    });
-  };
-
-  $scope.deleteUserPromptCallback = function(expectedToken, value) {
-    if (value) {
-      if (value === expectedToken) {
-        $scope.deleteUser();
-      } else {
-        toastr.error('Wrong token');
-      }
-    } else if (value !== false) {
-      toastr.error('No token');
-    }
-  };
-
-  $scope.deleteUser = function() {
-    $http({
-      method: 'DELETE',
-      url: '/api/users/' + $scope.user.Id,
-      params: {
-        ac: new Date().getTime()
-      }
-    })
-    .success(function() {
-      toastr.success('User deleted');
-      $location.path('/users');
-    })
-    .error(function() {
-      toastr.error('Error while trying to delete user');
-    });
-  };
-
   $scope.deleteUserMembershipPrompt = function(userMembershipId) {
     var token = randomToken.generate();
     vex.dialog.prompt({
