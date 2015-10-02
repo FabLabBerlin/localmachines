@@ -2,7 +2,7 @@
 
 'use strict';
 
-var app = angular.module('fabsmith.admin.reservations', ['ngRoute', 'ngCookies']);
+var app = angular.module('fabsmith.admin.reservations', ['ngRoute', 'ngCookies', 'fabsmith.admin.randomtoken']);
 
 app.config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/reservations', {
@@ -11,12 +11,27 @@ app.config(['$routeProvider', function($routeProvider) {
   });
 }]); // app.config
 
-app.controller('ReservationsCtrl', ['$scope', '$http', '$location', '$cookieStore', 
- function($scope, $http, $location, $cookieStore) {
+app.controller('ReservationsCtrl', ['$scope', '$http', '$location', '$cookieStore', 'randomToken', 
+ function($scope, $http, $location, $cookieStore, randomToken) {
 
   $scope.machines = [];
   $scope.reservationRules = [];
   $scope.machinesById = {};
+  $scope.reservationRulesById = {};
+
+  function fromYYYYMMDD(yyyymmdd) {
+    return yyyymmdd ? moment(yyyymmdd).toDate() : moment('0001-01-01 01:00').toDate();
+  }
+
+  function toYYYYMMDD(textInput) {
+    var m = textInput ? moment(textInput) : moment(0);
+    var yyyymmdd = m.format('YYYY-MM-DD HH:mm');
+    if (yyyymmdd === '0001-01-01 01:00') {
+      return '';
+    } else {
+      return yyyymmdd;
+    }
+  }
 
   function loadReservationRules() {
     $http({
@@ -29,6 +44,9 @@ app.controller('ReservationsCtrl', ['$scope', '$http', '$location', '$cookieStor
     .success(function(data) {
       $scope.reservationRules = _.map(data, function(r) {
         r.Machine = $scope.machinesById[r.MachineId] || {};
+        r.TimeStartYYYYMMDD = toYYYYMMDD(r.TimeStart);
+        r.TimeEndYYYYMMDD = toYYYYMMDD(r.TimeEnd);
+        $scope.reservationRulesById[r.Id] = r;
         return r;
       });
     })
@@ -75,6 +93,60 @@ app.controller('ReservationsCtrl', ['$scope', '$http', '$location', '$cookieStor
     })
     .error(function() {
       toastr.error('Failed to create Reservation Rule');
+    });
+  };
+
+  $scope.saveReservationRule = function(id) {
+    $http({
+      method: 'PUT',
+      url: '/api/reservation_rules/' + id,
+      headers: {'Content-Type': 'application/json' },
+      data: $scope.reservationRulesById[id],
+      transformRequest: function(data) {
+        var transformed = _.extend({}, data);
+        transformed.TimeStart = fromYYYYMMDD(data.TimeStartYYYYMMDD);
+        transformed.TimeEnd = fromYYYYMMDD(data.TimeEndYYYYMMDD);
+        return JSON.stringify(transformed);
+      }
+    })
+    .success(function(data) {
+      toastr.info('Saved updates to Reservation Rule');
+    })
+    .error(function() {
+      toastr.error('Failed to update Reservation Rule');
+    });
+  };
+
+  $scope.deleteReservationRule = function(id) {
+    var token = randomToken.generate();
+    vex.dialog.prompt({
+      message: 'Enter <span class="delete-prompt-token">' +
+       token + '</span> to delete',
+      placeholder: 'Token',
+      callback: function(value) {
+        if (value) {
+          if (value === token) {
+            $http({
+              method: 'DELETE',
+              url: '/api/reservation_rules/' + id,
+              params: {
+                ac: new Date().getTime()
+              }
+            })
+            .success(function() {
+              toastr.success('Reservation Rule deleted');
+              loadReservationRules();
+            })
+            .error(function() {
+              toastr.error('Error while trying to delete Reservation Rule');
+            });
+          } else {
+            toastr.error('Wrong token');
+          }
+        } else {
+          toastr.warning('Deletion canceled');
+        }
+      }
     });
   };
 

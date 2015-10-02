@@ -76,6 +76,26 @@ func (this *ReservationRulesController) Create() {
 	this.ServeJson()
 }
 
+// @router /:rid [put]
+func (this *ReservationRulesController) Update() {
+	dec := json.NewDecoder(this.Ctx.Request.Body)
+	req := models.ReservationRule{}
+	if err := dec.Decode(&req); err != nil {
+		beego.Error("Failed to decode json:", err)
+		this.CustomAbort(403, "Failed to update ReservationRule")
+	}
+	beego.Info("create ReservationRule:", req)
+
+	err := models.UpdateReservationRule(&req)
+	if err != nil {
+		beego.Error("Failed to update ReservationRule", err)
+		this.CustomAbort(403, "Failed to update ReservationRule")
+	}
+
+	this.Data["json"] = req
+	this.ServeJson()
+}
+
 // @Title Delete
 // @Description Delete ReservationRule
 // @Param	rid	path	int	true	"ReservationRule ID"

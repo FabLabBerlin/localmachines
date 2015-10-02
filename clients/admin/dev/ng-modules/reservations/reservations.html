@@ -9,7 +9,10 @@
   <table id="reservations" class="table table-striped table-hover">
     <thead>
       <tr>
+        <th>Name</th>
         <th>Machine</th>
+        <th>Available</th>
+        <th>Unavailable</th>
         <th>From</th>
         <th>To</th>
         <th>Mon</th>
@@ -21,22 +24,59 @@
         <th>Sun</th>
         <th>Created</th>
         <th></th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
       <tr ng-repeat="reservationRule in reservationRules">
+        <td>
+          <input type="text" ng-model="reservationRule.Name">
+        </td>
         <td>{{reservationRule.Machine.Name}}</td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <td>
+          <input type="checkbox" ng-model="reservationRule.Available">
+        </td>
+        <td>
+          <input type="checkbox" ng-model="reservationRule.Unavailable">
+        </td>
+        <td>
+          <input type="text" ng-model="reservationRule.TimeStartYYYYMMDD" placeholder="YYYY-MM-DD HH:MM">
+        </td>
+        <td>
+          <input type="text" ng-model="reservationRule.TimeEndYYYYMMDD" placeholder="YYYY-MM-DD HH:MM">
+        </td>
+        <td>
+          <input type="checkbox" ng-model="reservationRule.Monday">
+        </td>
+        <td>
+          <input type="checkbox" ng-model="reservationRule.Tuesday">
+        </td>
+        <td>
+          <input type="checkbox" ng-model="reservationRule.Wednesday">
+        </td>
+        <td>
+          <input type="checkbox" ng-model="reservationRule.Thursday">
+        </td>
+        <td>
+          <input type="checkbox" ng-model="reservationRule.Friday">
+        </td>
+        <td>
+          <input type="checkbox" ng-model="reservationRule.Saturday">
+        </td>
+        <td>
+          <input type="checkbox" ng-model="reservationRule.Sunday">
+        </td>
         <td>{{reservationRule.Created}}</td>
-        <td><span class="fa fa-close"></span></td>
+        <td>
+          <button type="button" class="btn btn-primary btn-ico pull-right" ng-click="saveReservationRule(reservationRule.Id)">
+            <span class="fa fa-floppy-o"></span>
+          </button>
+        </td>
+        <td>
+          <button type="button" class="btn btn-danger btn-ico pull-right" ng-click="deleteReservationRule(reservationRule.Id)">
+            <span class="fa fa-close"></span>
+          </button>
+        </td>
       </tr>
     </tbody>
   </table>

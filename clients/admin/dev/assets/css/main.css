@@ -361,3 +361,6 @@ footer {
   margin-top: 20px;
   text-align: center;
 }
+#reservations .fa-close {
+  cursor: pointer;
+}
