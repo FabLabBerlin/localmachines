@@ -20,6 +20,7 @@ func init() {
 func (m *Reservationrules_20151001_173125) Up() {
 	m.Sql(`CREATE TABLE reservation_rules (
 		id int(11) unsigned NOT NULL AUTO_INCREMENT,
+		name varchar(100),
 		machine_id int(11),
 		available tinyint(1),
 		unavailable tinyint(1),
