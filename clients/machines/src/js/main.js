@@ -11,6 +11,7 @@ var React = require('react');
 var reactor = require('./reactor');
 var ReservationsPage = require('./components/Reservations/ReservationsPage');
 var ReservationsStore = require('./stores/ReservationsStore');
+var ReservationRulesStore = require('./stores/ReservationRulesStore');
 var Router = require('react-router');
 var ScrollNavStore = require('./stores/ScrollNavStore');
 var SpendingsPage = require('./components/UserProfile/SpendingsPage');
@@ -70,6 +71,7 @@ reactor.registerStores({
   loginStore: LoginStore,
   machineStore: MachineStore,
   reservationsStore: ReservationsStore,
+  reservationRulesStore: ReservationRulesStore,
   scrollNavStore: ScrollNavStore,
   userStore: UserStore
 });

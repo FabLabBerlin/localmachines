@@ -6,6 +6,7 @@ var NewReservation = require('./NewReservation');
 var Nuclear = require('nuclear-js');
 var React = require('react');
 var reactor = require('../../reactor');
+var ReservationRulesActions = require('../../actions/ReservationRulesActions');
 var ReservationsActions = require('../../actions/ReservationsActions');
 var toImmutable = Nuclear.toImmutable;
 
@@ -27,6 +28,7 @@ var ReservationsTable = React.createClass({
     const uid = reactor.evaluateToJS(getters.getUid);
     MachineActions.apiGetUserMachines(uid);
     ReservationsActions.load();
+    ReservationRulesActions.load();
   },
 
   getDataBindings() {
