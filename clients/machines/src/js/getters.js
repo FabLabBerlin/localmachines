@@ -289,12 +289,100 @@ const getNewReservation = [
   }
 ];
 
+class Time {
+  constructor(hhmm) {
+    var hh = hhmm.slice(0, 2);
+    var mm = hhmm.slice(3, 5);
+    this._hours = parseInt(hh, 10);
+    this._minutes = parseInt(mm, 10);
+  }
+
+  static now() {
+    var m = moment();
+    return new Time(m.format('HH:mm'));
+  }
+
+  isLargerEqual(t) {
+    if (this._hours === t._hours) {
+      return this._minutes >= t._minutes;
+    } else {
+      return this._hours >= t._hours;
+    }
+  }
+
+  toInt() {
+    return this._hours * 24 + this._minutes;
+  }
+}
+
 const getNewReservationTimes = [
+  getMachinesById,
   ['reservationsStore'],
-  (reservationsStore) => {
+  ['reservationRulesStore'],
+  (machinesById, reservationsStore, reservationRulesStore) => {
     var newReservation = reservationsStore.get('create');
+    var machineIds = [];
+    _.each(machinesById.toJS(), function(machine, id) {
+      id = parseInt(id);
+      machineIds.push(id);
+    });
+
     if (newReservation) {
-      return newReservation.get('times');
+      return newReservation.get('times').map((t) => {
+        var availableIds = reservationRulesStore
+          .get('reservationRules')
+          .reduce((availableMachineIds, rule) => {
+            var applies = true;
+            var tm;
+
+            if (rule.get('DateStart') && rule.get('TimeStart')) {
+              var start = moment(rule.get('DateStart') + ' ' + rule.get('TimeStart'));
+              if (start.unix() > t.get('end').unix()) {
+                applies = false;
+              }
+            } else if (rule.get('DateStart')) {
+              var dateStart = moment(rule.get('DateStart'));
+              if (dateStart.unix() > t.get('end').unix()) {
+                applies = false;
+              }
+            } else if (rule.get('TimeStart')) {
+              var timeStart = new Time(rule.get('TimeStart'));
+              tm = new Time(t.get('end').format('HH:mm'));
+              if (timeStart.toInt() > tm.toInt()) {
+                applies = false;
+              }
+            }
+
+            if (dateEnd && timeEnd) {
+              var end = moment(rule.get('DateEnd') + ' ' + rule.get('TimeEnd'));
+              if (end.unix() < t.get('start').unix()) {
+                applies = false;
+              }
+            } else if (rule.get('DateEnd')) {
+              var dateEnd = moment(rule.get('DateEnd'));
+              if (dateEnd.unix() < t.get('start').unix()) {
+                applies = false;
+              }
+            } else if (rule.get('TimeEnd')) {
+              var timeEnd = new Time(rule.get('TimeEnd'));
+              tm = new Time(t.get('start').format('HH:mm'));
+              if (timeEnd.toInt() > tm.toInt()) {
+                applies = false;
+              }
+            }
+
+            if (applies && rule.get('Unavailable')) {
+              if (rule.get('MachineId')) {
+                return _.difference(availableMachineIds, [rule.get('MachineId')]);
+              } else {
+                return [];
+              }
+            } else {
+              return availableMachineIds;
+            }
+          }, machineIds);
+        return t.set('availableMachineIds', availableIds);
+      });
     }
   }
 ];

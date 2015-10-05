@@ -10,6 +10,7 @@ var TimePicker = React.createClass({
 
   getDataBindings() {
     return {
+      newReservation: getters.getNewReservation,
       times: getters.getNewReservationTimes
     };
   },
@@ -27,13 +28,17 @@ var TimePicker = React.createClass({
   },
 
   render() {
+    var machineId = this.state.newReservation.get('machineId');
     return (
       <div className={this.props.className}>
         <h3 className="h3">Select time range</h3>
         <div className="no-select" ref="times">
           {_.map(this.state.times.toJS(), (t, i) => {
+            console.log('t[' + i + '] = ', t);
             var className = 'time-picker-time';
-            if (t.selected) {
+            if (!_.includes(t.availableMachineIds, machineId)) {
+              className += ' unavailable';
+            } else if (t.selected) {
               className += ' selected';
             }
             return (
