@@ -9,14 +9,24 @@ func init() {
 	orm.RegisterModel(new(ReservationRule))
 }
 
+/*
+ * ReservationRule
+ *
+ * DateStart, DateEnd strings of "YYYY-MM-DD"
+ * TimeStart, TimeEnd strings of "HH:MM"
+ *
+ */
 type ReservationRule struct {
 	Id          int64 `orm:"auto";"pk"`
 	Name        string
 	MachineId   int64
 	Available   bool
 	Unavailable bool
-	TimeStart   time.Time `orm:"type(datetime)"`
-	TimeEnd     time.Time `orm:"type(datetime)"`
+	DateStart   string
+	DateEnd     string
+	TimeStart   string
+	TimeEnd     string
+	TimeZone    string
 	Monday      bool
 	Tuesday     bool
 	Wednesday   bool

@@ -19,20 +19,6 @@ app.controller('ReservationsCtrl', ['$scope', '$http', '$location', '$cookieStor
   $scope.machinesById = {};
   $scope.reservationRulesById = {};
 
-  function fromYYYYMMDD(yyyymmdd) {
-    return yyyymmdd ? moment(yyyymmdd).toDate() : moment('0001-01-01 01:00').toDate();
-  }
-
-  function toYYYYMMDD(textInput) {
-    var m = textInput ? moment(textInput) : moment(0);
-    var yyyymmdd = m.format('YYYY-MM-DD HH:mm');
-    if (yyyymmdd === '0001-01-01 01:00') {
-      return '';
-    } else {
-      return yyyymmdd;
-    }
-  }
-
   function loadReservationRules() {
     $http({
       method: 'GET',
@@ -44,8 +30,6 @@ app.controller('ReservationsCtrl', ['$scope', '$http', '$location', '$cookieStor
     .success(function(data) {
       $scope.reservationRules = _.map(data, function(r) {
         r.Machine = $scope.machinesById[r.MachineId] || {};
-        r.TimeStartYYYYMMDD = toYYYYMMDD(r.TimeStart);
-        r.TimeEndYYYYMMDD = toYYYYMMDD(r.TimeEnd);
         $scope.reservationRulesById[r.Id] = r;
         return r;
       });
@@ -104,8 +88,6 @@ app.controller('ReservationsCtrl', ['$scope', '$http', '$location', '$cookieStor
       data: $scope.reservationRulesById[id],
       transformRequest: function(data) {
         var transformed = _.extend({}, data);
-        transformed.TimeStart = fromYYYYMMDD(data.TimeStartYYYYMMDD);
-        transformed.TimeEnd = fromYYYYMMDD(data.TimeEndYYYYMMDD);
         return JSON.stringify(transformed);
       }
     })

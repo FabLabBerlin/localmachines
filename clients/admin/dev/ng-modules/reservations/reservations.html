@@ -13,16 +13,17 @@
         <th>Machine</th>
         <th>Available</th>
         <th>Unavailable</th>
-        <th>From</th>
-        <th>To</th>
-        <th>Mon</th>
-        <th>Tue</th>
-        <th>Wed</th>
-        <th>Thu</th>
-        <th>Fri</th>
-        <th>Sat</th>
-        <th>Sun</th>
-        <th>Created</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th>Start Time</th>
+        <th>End Time</th>
+        <th>Mo</th>
+        <th>Tu</th>
+        <th>We</th>
+        <th>Th</th>
+        <th>Fr</th>
+        <th>Sa</th>
+        <th>Su</th>
         <th></th>
         <th></th>
       </tr>
@@ -40,10 +41,16 @@
           <input type="checkbox" ng-model="reservationRule.Unavailable">
         </td>
         <td>
-          <input type="text" ng-model="reservationRule.TimeStartYYYYMMDD" placeholder="YYYY-MM-DD HH:MM">
+          <input type="text" ng-model="reservationRule.DateStart" placeholder="YYYY-MM-DD" size="13">
         </td>
         <td>
-          <input type="text" ng-model="reservationRule.TimeEndYYYYMMDD" placeholder="YYYY-MM-DD HH:MM">
+          <input type="text" ng-model="reservationRule.DateEnd" placeholder="YYYY-MM-DD" size="13">
+        </td>
+        <td>
+          <input type="text" ng-model="reservationRule.TimeStart" placeholder="HH:MM" size="6">
+        </td>
+        <td>
+          <input type="text" ng-model="reservationRule.TimeEnd" placeholder="HH:MM" size="6">
         </td>
         <td>
           <input type="checkbox" ng-model="reservationRule.Monday">
@@ -66,7 +73,6 @@
         <td>
           <input type="checkbox" ng-model="reservationRule.Sunday">
         </td>
-        <td>{{reservationRule.Created}}</td>
         <td>
           <button type="button" class="btn btn-primary btn-ico pull-right" ng-click="saveReservationRule(reservationRule.Id)">
             <span class="fa fa-floppy-o"></span>
