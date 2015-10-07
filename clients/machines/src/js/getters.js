@@ -310,7 +310,11 @@ class Time {
   }
 
   toInt() {
-    return this._hours * 24 + this._minutes;
+    return this._hours * 60 + this._minutes;
+  }
+
+  toString() {
+    return String(this._hours) + ':' + this._minutes;
   }
 }
 
@@ -333,7 +337,6 @@ const getNewReservationTimes = [
           .reduce((availableMachineIds, rule) => {
             var applies = true;
             var tm;
-
             if (rule.get('DateStart') && rule.get('TimeStart')) {
               var start = moment(rule.get('DateStart') + ' ' + rule.get('TimeStart'));
               if (start.unix() > t.get('end').unix()) {
@@ -347,7 +350,7 @@ const getNewReservationTimes = [
             } else if (rule.get('TimeStart')) {
               var timeStart = new Time(rule.get('TimeStart'));
               tm = new Time(t.get('end').format('HH:mm'));
-              if (timeStart.toInt() > tm.toInt()) {
+              if (timeStart.toInt() >= tm.toInt()) {
                 applies = false;
               }
             }
@@ -365,7 +368,7 @@ const getNewReservationTimes = [
             } else if (rule.get('TimeEnd')) {
               var timeEnd = new Time(rule.get('TimeEnd'));
               tm = new Time(t.get('start').format('HH:mm'));
-              if (timeEnd.toInt() > tm.toInt()) {
+              if (timeEnd.toInt() < tm.toInt()) {
                 applies = false;
               }
             }
