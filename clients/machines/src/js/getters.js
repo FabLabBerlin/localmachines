@@ -288,6 +288,22 @@ const getNewReservation = [
   }
 ];
 
+class Day {
+  constructor(yyyymmdd) {
+    var yyyy = yyyymmdd.slice(0, 4);
+    var mm = yyyymmdd.slice(5, 7);
+    var dd = yyyymmdd.slice(8, 10);
+    this._years = parseInt(yyyy);
+    this._months = parseInt(mm);
+    this._days = parseInt(dd);
+  }
+
+  toInt() {
+    return this._years * 400 + this._months * 31 + this._days;
+  }
+}
+
+
 class Time {
   constructor(hhmm) {
     var hh = hhmm.slice(0, 2);
@@ -324,27 +340,32 @@ const getNewReservationTimes = [
   ['reservationRulesStore'],
   (machinesById, reservationsStore, reservationRulesStore) => {
     var newReservation = reservationsStore.get('create');
-    var machineIds = [];
+    var allMachineIds = [];
     _.each(machinesById.toJS(), function(machine, id) {
       id = parseInt(id);
-      machineIds.push(id);
+      allMachineIds.push(id);
     });
 
     if (newReservation) {
       return newReservation.get('times').map((t) => {
         var availableIds = reservationRulesStore
           .get('reservationRules')
+          .sortBy((rule) => {
+            return rule.get('Available');
+          })
           .reduce((availableMachineIds, rule) => {
             var applies = true;
             var tm;
+            var d;
             if (rule.get('DateStart') && rule.get('TimeStart')) {
               var start = moment(rule.get('DateStart') + ' ' + rule.get('TimeStart'));
               if (start.unix() > t.get('end').unix()) {
                 applies = false;
               }
             } else if (rule.get('DateStart')) {
-              var dateStart = moment(rule.get('DateStart'));
-              if (dateStart.unix() > t.get('end').unix()) {
+              var dateStart = new Day(rule.get('DateStart'));
+              d = new Day(t.get('end').format('YYYY-MM-DD'));
+              if (dateStart.toInt() > d.toInt()) {
                 applies = false;
               }
             } else if (rule.get('TimeStart')) {
@@ -355,14 +376,15 @@ const getNewReservationTimes = [
               }
             }
 
-            if (dateEnd && timeEnd) {
+            if (rule.get('DateEnd') && rule.get('TimeEnd')) {
               var end = moment(rule.get('DateEnd') + ' ' + rule.get('TimeEnd'));
               if (end.unix() < t.get('start').unix()) {
                 applies = false;
               }
             } else if (rule.get('DateEnd')) {
-              var dateEnd = moment(rule.get('DateEnd'));
-              if (dateEnd.unix() < t.get('start').unix()) {
+              var dateEnd = new Day(rule.get('DateEnd'));
+              d = new Day(t.get('end').format('YYYY-MM-DD'));
+              if (dateEnd.toInt() < d.toInt()) {
                 applies = false;
               }
             } else if (rule.get('TimeEnd')) {
@@ -405,10 +427,16 @@ const getNewReservationTimes = [
               } else {
                 return [];
               }
+            } else if (applies && rule.get('Available')) {
+              if (rule.get('MachineId')) {
+                return _.union(availableMachineIds, [rule.get('MachineId')]);
+              } else {
+                return allMachineIds; 
+              }
             } else {
               return availableMachineIds;
             }
-          }, machineIds);
+          }, allMachineIds);
         return t.set('availableMachineIds', availableIds);
       });
     }
