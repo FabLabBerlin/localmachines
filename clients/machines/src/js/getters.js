@@ -373,6 +373,32 @@ const getNewReservationTimes = [
               }
             }
 
+            if (rule.get('Monday') || rule.get('Tuesday') || rule.get('Wednesday') || rule.get('Thursday') || rule.get('Friday') || rule.get('Saturday') || rule.get('Sunday')) {
+              switch (reservationsStore.get('create').get('date').isoWeekday()) {
+              case 1:
+                applies = applies && !!rule.get('Monday');
+                break;
+              case 2:
+                applies = applies && !!rule.get('Tuesday');
+                break;
+              case 3:
+                applies = applies && !!rule.get('Wednesday');
+                break;
+              case 4:
+                applies = applies && !!rule.get('Thursday');
+                break;
+              case 5:
+                applies = applies && !!rule.get('Friday');
+                break;
+              case 6:
+                applies = applies && !!rule.get('Saturday');
+                break;
+              case 7:
+                applies = applies && !!rule.get('Sunday');
+                break;
+              }
+            }
+
             if (applies && rule.get('Unavailable')) {
               if (rule.get('MachineId')) {
                 return _.difference(availableMachineIds, [rule.get('MachineId')]);

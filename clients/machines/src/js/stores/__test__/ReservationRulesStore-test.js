@@ -174,6 +174,7 @@ describe('ReservationRulesStore', function() {
     var tuesdayTimes = reactor.evaluateToJS(getters.getNewReservationTimes);
 
     var TIME_FMT = 'HH:mm';
+    // Lasercutter not available on Tuesday 17:30 - 19:00 during workshop
     expect(tuesdayTimes.length).toEqual(18);
     expect(tuesdayTimes[0].start.format(TIME_FMT)).toEqual('10:00');
     expect(tuesdayTimes[0].end.format(TIME_FMT)).toEqual('10:30');
@@ -194,5 +195,15 @@ describe('ReservationRulesStore', function() {
     expect(tuesdayTimes[17].start.format(TIME_FMT)).toEqual('18:30');
     expect(tuesdayTimes[17].end.format(TIME_FMT)).toEqual('19:00');
     expect(tuesdayTimes[17].availableMachineIds).toEqual([8, 10]);
+
+    // Lasercutter available whole Wednesday
+    date = moment('2015-10-14');
+    reactor.dispatch(actionTypes.CREATE_SET_DATE, { date });
+    var wednesdayTimes = reactor.evaluateToJS(getters.getNewReservationTimes);
+    expect(wednesdayTimes.length).toEqual(18);
+
+    for (var i = 0; i < 18; i++) {
+      expect(wednesdayTimes[i].availableMachineIds).toEqual([3, 8, 10]);
+    }
   });
 });
