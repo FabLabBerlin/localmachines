@@ -112,7 +112,27 @@ function reservationRules() {
       'TimeZone': '',
       'Saturday': false,
       'Thursday': false,
-      'Id': 5,
+      'Id': 6,
+      'Friday': false
+    },
+    {
+      'MachineId': 3,
+      'Created': '2015-10-05T14:51:02+02:00',
+      'Available': false,
+      'Name': 'Rule with no times/dates',
+      'Tuesday': false,
+      'DateEnd': '',
+      'TimeEnd': '',
+      'Unavailable': true,
+      'Monday': false,
+      'Sunday': false,
+      'DateStart': '',
+      'TimeStart': '',
+      'Wednesday': false,
+      'TimeZone': '',
+      'Saturday': false,
+      'Thursday': false,
+      'Id': 7,
       'Friday': false
     }
   ];
@@ -269,6 +289,25 @@ describe('ReservationRulesStore', function() {
     times = reactor.evaluateToJS(getters.getNewReservationTimes);
     expect(times.length).toEqual(12);
     for (i = 0; i < 12; i++) {
+      expect(times[i].availableMachineIds).toEqual([3, 8, 10]);
+    }
+  });
+
+  it('ignores rules with neither time/date specified', function() {
+    var machineInfo = getMachineInfo();
+    reactor.dispatch(actionTypes.SET_MACHINE_INFO, { machineInfo });
+    reactor.dispatch(actionTypes.SET_RESERVATION_RULES, reservationRules());
+    reactor.dispatch(actionTypes.CREATE_EMPTY);
+    var mid = 3;
+    reactor.dispatch(actionTypes.CREATE_SET_MACHINE, { mid });
+    var i;
+
+    // Everything is available on November Wednesday, 11th
+    var date = moment('2015-11-11');
+    reactor.dispatch(actionTypes.CREATE_SET_DATE, { date });
+    var times = reactor.evaluateToJS(getters.getNewReservationTimes);
+    expect(times.length).toEqual(18);
+    for (i = 0; i < 18; i++) {
       expect(times[i].availableMachineIds).toEqual([3, 8, 10]);
     }
   });

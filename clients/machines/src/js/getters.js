@@ -395,6 +395,10 @@ const getNewReservationTimes = [
               }
             }
 
+            if (!rule.get('DateStart') && !rule.get('TimeStart') && !rule.get('DateEnd') && !rule.get('TimeEnd')) {
+              applies = false;
+            }
+
             if (rule.get('Monday') || rule.get('Tuesday') || rule.get('Wednesday') || rule.get('Thursday') || rule.get('Friday') || rule.get('Saturday') || rule.get('Sunday')) {
               switch (reservationsStore.get('create').get('date').isoWeekday()) {
               case 1:

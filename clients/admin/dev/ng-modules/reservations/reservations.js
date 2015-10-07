@@ -64,7 +64,8 @@ app.controller('ReservationsCtrl', ['$scope', '$http', '$location', '$cookieStor
       headers: {'Content-Type': 'application/json' },
       data: {
         MachineId: parseInt($('select').val()),
-        Created: new Date()
+        Created: new Date(),
+        Unavailable: true
       },
       transformRequest: function(data) {
         var transformed = _.extend({}, data);
@@ -130,6 +131,18 @@ app.controller('ReservationsCtrl', ['$scope', '$http', '$location', '$cookieStor
         }
       }
     });
+  };
+
+  $scope.setAvailable = function(id) {
+    var rule = $scope.reservationRulesById[id];
+    rule.Available = true;
+    rule.Unavailable = false;
+  };
+
+  $scope.setUnavailable = function(id) {
+    var rule = $scope.reservationRulesById[id];
+    rule.Available = false;
+    rule.Unavailable = true;
   };
 
 }]); // app.controller
