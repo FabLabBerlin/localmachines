@@ -18,12 +18,36 @@ app.controller('ReservationsCtrl', ['$scope', '$http', '$location', '$cookieStor
   $scope.reservationRules = [];
   $scope.machinesById = {};
   $scope.reservationRulesById = {};
+  $scope.users = [];
+  $scope.usersById = {};
 
   /*
    *
    * Loader functions
    *
    */
+
+  function loadUsers() {
+    $http({
+      method: 'GET',
+      url: '/api/users',
+      params: {
+        ac: new Date().getTime()
+      }
+    })
+    .success(function(data) {
+      $scope.users = data;
+      _.each($scope.users, function(user) {
+        $scope.usersById[user.Id] = user;
+      });
+      _.each($scope.reservations, function(r) {
+        r.User = $scope.usersById[r.UserId];
+      });
+    })
+    .error(function() {
+      toastr.error('Failed to get reservations');
+    });
+  }
 
   function loadReservationRules() {
     $http({
@@ -45,6 +69,29 @@ app.controller('ReservationsCtrl', ['$scope', '$http', '$location', '$cookieStor
     });
   }
 
+  function loadReservations() {
+    $http({
+      method: 'GET',
+      url: '/api/reservations',
+      params: {
+        ac: new Date().getTime()
+      }
+    })
+    .success(function(data) {
+      var reservations = _.map(data, function(r) {
+        r.Machine = $scope.machinesById[r.MachineId] || {};
+        return r;
+      });
+      $scope.reservations = _.sortBy(reservations, function(r) {
+        return [r.Machine.Name, r.TimeStart];
+      });
+      loadUsers();
+    })
+    .error(function() {
+      toastr.error('Failed to get reservations');
+    });
+  }
+
   $http({
     method: 'GET',
     url: '/api/machines',
@@ -58,6 +105,7 @@ app.controller('ReservationsCtrl', ['$scope', '$http', '$location', '$cookieStor
       $scope.machinesById[machine.Id] = machine;
     });
     loadReservationRules();
+    loadReservations();
   })
   .error(function() {
     toastr.error('Failed to get machines');
@@ -196,6 +244,47 @@ app.controller('ReservationsCtrl', ['$scope', '$http', '$location', '$cookieStor
     rule.Available = false;
     rule.Unavailable = true;
   };
+
+
+  /*
+   *
+   * Reservations CRUD functions
+   *
+   */
+
+  $scope.deleteReservation = function(id) {
+    var token = randomToken.generate();
+    vex.dialog.prompt({
+      message: 'Enter <span class="delete-prompt-token">' +
+       token + '</span> to delete',
+      placeholder: 'Token',
+      callback: function(value) {
+        if (value) {
+          if (value === token) {
+            $http({
+              method: 'DELETE',
+              url: '/api/reservations/' + id,
+              params: {
+                ac: new Date().getTime()
+              }
+            })
+            .success(function() {
+              toastr.success('Reservation deleted');
+              loadReservations();
+            })
+            .error(function() {
+              toastr.error('Error while trying to delete Reservation');
+            });
+          } else {
+            toastr.error('Wrong token');
+          }
+        } else {
+          toastr.warning('Deletion canceled');
+        }
+      }
+    });
+  };
+
 
 }]); // app.controller
 

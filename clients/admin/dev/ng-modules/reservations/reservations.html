@@ -4,6 +4,35 @@
 
   <hr>
 
+  <h2>List of Reservations</h2>
+
+  <table class="table table-bordered table-striped table-hover">
+    <thead>
+      <tr>
+        <th>Machine</th>
+        <th>Start</th>
+        <th>End</th>
+        <th>User</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="reservation in reservations">
+        <td>{{reservation.Machine.Name}}</td>
+        <td>{{reservation.TimeStart}}</td>
+        <td>{{reservation.TimeEnd}}</td>
+        <td>{{reservation.User.FirstName}} {{reservation.User.LastName}}</td>
+        <td>
+          <button type="button" class="btn btn-danger btn-ico pull-right" ng-click="deleteReservation(reservation.Id)">
+            <span class="fa fa-close"></span>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr>
+
   <h2>Machines</h2>
 
   <table class="table table-bordered table-striped table-hover">
