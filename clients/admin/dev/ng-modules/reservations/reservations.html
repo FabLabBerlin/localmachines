@@ -1,0 +1,148 @@
+<div id="admin-reservations" class="container-fluid">
+
+  <h1>Reservations</h1>
+
+  <hr>
+
+  <h2>Machines</h2>
+
+  <table class="table table-bordered table-striped table-hover">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Reservation Price for Machine Start (if 0 €: user must reserve at least 2 slots)</th>
+        <th>Reservation Price per hour</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="machine in machines">
+        <td>{{machine.Name}}</td>
+        <td>
+          <input type="text" ng-model="machine.ReservationPriceStart" placeholder="Enter price to enable reservations for this machine" size="50">
+        </td>
+        <td>
+          <input type="text" ng-model="machine.ReservationPriceHourly" placeholder="Enter price to enable reservations for this machine" size="50">
+        </td>
+        <td>
+          <button type="button" class="btn btn-primary btn-ico pull-right" ng-click="saveMachine(machine.Id)">
+            <span class="fa fa-floppy-o"></span>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr>
+
+  <h2>Reservation Rules</h2>
+
+  <table id="reservations" class="table table-bordered table-striped table-hover">
+    <thead>
+      <tr>
+        <th rowspan="2">Name</th>
+        <th rowspan="2">Machine</th>
+        <th rowspan="2">Available (Overwrites Unavailables)</th>
+        <th rowspan="2">Unavailable</th>
+        <th colspan="2">Start</th>
+        <th colspan="2">End</th>
+        <th colspan="7">Weekdays</th>
+        <th rowspan="2"></th>
+        <th rowspan="2"></th>
+      </tr>
+      <tr>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Mo</th>
+        <th>Tu</th>
+        <th>We</th>
+        <th>Th</th>
+        <th>Fr</th>
+        <th>Sa</th>
+        <th>Su</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="reservationRule in reservationRules">
+        <td>
+          <input type="text" ng-model="reservationRule.Name">
+        </td>
+        <td>{{reservationRule.Machine.Name}}</td>
+        <td>
+          <input type="radio" ng-model="reservationRule.Available" ng-value="true" ng-change="setAvailable(reservationRule.Id)">
+        </td>
+        <td>
+          <input type="radio" ng-model="reservationRule.Unavailable" ng-value="true" ng-change="setUnavailable(reservationRule.Id)">
+        </td>
+        <td>
+          <input type="text" ng-model="reservationRule.DateStart" placeholder="YYYY-MM-DD" size="13">
+        </td>
+        <td>
+          <input type="text" ng-model="reservationRule.TimeStart" placeholder="HH:MM" size="6">
+        </td>
+        <td>
+          <input type="text" ng-model="reservationRule.DateEnd" placeholder="YYYY-MM-DD" size="13">
+        </td>
+        <td>
+          <input type="text" ng-model="reservationRule.TimeEnd" placeholder="HH:MM" size="6">
+        </td>
+        <td>
+          <input type="checkbox" ng-model="reservationRule.Monday">
+        </td>
+        <td>
+          <input type="checkbox" ng-model="reservationRule.Tuesday">
+        </td>
+        <td>
+          <input type="checkbox" ng-model="reservationRule.Wednesday">
+        </td>
+        <td>
+          <input type="checkbox" ng-model="reservationRule.Thursday">
+        </td>
+        <td>
+          <input type="checkbox" ng-model="reservationRule.Friday">
+        </td>
+        <td>
+          <input type="checkbox" ng-model="reservationRule.Saturday">
+        </td>
+        <td>
+          <input type="checkbox" ng-model="reservationRule.Sunday">
+        </td>
+        <td>
+          <button type="button" class="btn btn-danger btn-ico pull-right" ng-click="deleteReservationRule(reservationRule.Id)">
+            <span class="fa fa-close"></span>
+          </button>
+        </td>
+        <td>
+          <button type="button" class="btn btn-primary btn-ico pull-right" ng-click="saveReservationRule(reservationRule.Id)">
+            <span class="fa fa-floppy-o"></span>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr>
+
+  <table class="pull-right">
+    <tbody>
+      <tr>
+        <td>
+          <select class="form-control">
+            <option ng-repeat="machine in machines" value={{machine.Id}}>
+              {{machine.Name}}
+            </option>
+          </select>
+        </td>
+        <td>
+          <button class="btn btn-primary btn-lg pull-right"
+                  ng-click="addReservationRule()">
+            <i class="fa fa-plus"></i>&nbsp;Add Reservation Rule
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</div> <!-- /container -->

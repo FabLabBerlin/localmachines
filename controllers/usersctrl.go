@@ -506,6 +506,7 @@ func (this *UsersController) GetUserBill() {
 		beego.Error("GetUserActivationsStartTime:", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
+	startTime = startTime.Add(-86400 * time.Second)
 
 	endTime := time.Now().Add(86400 * time.Second)
 	invoice, err := models.CalculateInvoiceSummary(startTime, endTime)

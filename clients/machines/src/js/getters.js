@@ -157,9 +157,8 @@ const getMonthlyBills = [
        * Collect activations and sum for the totals
        */
       _.eachRight(activationsByMonth[month], function(info) {
-        
-        var duration = moment.duration(moment(info.TimeEnd)
-          .diff(moment(info.TimeStart))).asSeconds();
+        var duration = moment.duration(moment(info.Activation.TimeEnd)
+          .diff(moment(info.Activation.TimeStart))).asSeconds();
         
         monthlyBill.sums.durations += duration;
         var priceInclVAT = toCents(info.DiscountedTotal);
@@ -289,13 +288,221 @@ const getNewReservation = [
   }
 ];
 
-const getNewReservationTimes = [
+class Day {
+  constructor(yyyymmdd) {
+    var yyyy = yyyymmdd.slice(0, 4);
+    var mm = yyyymmdd.slice(5, 7);
+    var dd = yyyymmdd.slice(8, 10);
+    this._years = parseInt(yyyy);
+    this._months = parseInt(mm);
+    this._days = parseInt(dd);
+  }
+
+  toInt() {
+    return this._years * 400 + this._months * 31 + this._days;
+  }
+}
+
+
+class Time {
+  constructor(hhmm) {
+    var hh = hhmm.slice(0, 2);
+    var mm = hhmm.slice(3, 5);
+    this._hours = parseInt(hh, 10);
+    this._minutes = parseInt(mm, 10);
+  }
+
+  static now() {
+    var m = moment();
+    return new Time(m.format('HH:mm'));
+  }
+
+  isLargerEqual(t) {
+    if (this._hours === t._hours) {
+      return this._minutes >= t._minutes;
+    } else {
+      return this._hours >= t._hours;
+    }
+  }
+
+  toInt() {
+    return this._hours * 60 + this._minutes;
+  }
+
+  toString() {
+    return String(this._hours) + ':' + this._minutes;
+  }
+}
+
+const getReservations = [
   ['reservationsStore'],
   (reservationsStore) => {
-    var newReservation = reservationsStore.get('create');
-    if (newReservation) {
-      return newReservation.get('times');
+    return reservationsStore.get('reservations');
+  }
+];
+
+const getReservationsByDay = [
+  getReservations,
+  (reservations) => {
+    if (reservations) {
+      return toImmutable(_.groupBy(reservations.toArray(), (reservation) => {
+        return moment(reservation.get('TimeStart')).format('YYYY-MM-DD');
+      }));
     }
+  }
+];
+
+const getActiveReservationsByMachineId = [
+  getReservationsByDay,
+  (reservationsByDay) => {
+    if (reservationsByDay) {
+      var m = moment();
+      var u = m.unix();
+      var rs = reservationsByDay.get(m.format('YYYY-MM-DD'));
+      var reservationsByMachineId = {};
+      if (rs) {
+        _.each(rs.toObject(), (reservation) => {
+          var start = moment(reservation.get('start')).unix();
+          var end = moment(reservation.get('end')).unix();
+          if (start <= u && u <= end) {
+            reservationsByMachineId[reservation.get('MachineId')] = reservation;
+          }
+        });
+      }
+      return toImmutable(reservationsByMachineId);
+    }
+  }
+];
+
+const getNewReservationTimes = [
+  getMachinesById,
+  ['reservationsStore'],
+  ['reservationRulesStore'],
+  getReservationsByDay,
+  (machinesById, reservationsStore, reservationRulesStore, reservationsByDay) => {
+    var newReservation = reservationsStore.get('create');
+    var allMachineIds = [];
+    _.each(machinesById.toJS(), function(machine, id) {
+      id = parseInt(id);
+      allMachineIds.push(id);
+    });
+
+    if (newReservation) {
+      return newReservation.get('times').map((t) => {
+        /* Machine Ids available according to reservation rules */
+        var availableIds = reservationRulesStore
+          .get('reservationRules')
+          .sortBy((rule) => {
+            return rule.get('Available');
+          })
+          .reduce((availableMachineIds, rule) => {
+            var applies = true;
+            var tm;
+            var d;
+            if (rule.get('DateStart') && rule.get('TimeStart')) {
+              var start = moment(rule.get('DateStart') + ' ' + rule.get('TimeStart'));
+              if (start.unix() > t.get('end').unix()) {
+                applies = false;
+              }
+            } else if (rule.get('DateStart')) {
+              var dateStart = new Day(rule.get('DateStart'));
+              d = new Day(t.get('end').format('YYYY-MM-DD'));
+              if (dateStart.toInt() > d.toInt()) {
+                applies = false;
+              }
+            } else if (rule.get('TimeStart')) {
+              var timeStart = new Time(rule.get('TimeStart'));
+              tm = new Time(t.get('end').format('HH:mm'));
+              if (timeStart.toInt() >= tm.toInt()) {
+                applies = false;
+              }
+            }
+
+            if (rule.get('DateEnd') && rule.get('TimeEnd')) {
+              var end = moment(rule.get('DateEnd') + ' ' + rule.get('TimeEnd'));
+              if (end.unix() < t.get('start').unix()) {
+                applies = false;
+              }
+            } else if (rule.get('DateEnd')) {
+              var dateEnd = new Day(rule.get('DateEnd'));
+              d = new Day(t.get('end').format('YYYY-MM-DD'));
+              if (dateEnd.toInt() < d.toInt()) {
+                applies = false;
+              }
+            } else if (rule.get('TimeEnd')) {
+              var timeEnd = new Time(rule.get('TimeEnd'));
+              tm = new Time(t.get('start').format('HH:mm'));
+              if (timeEnd.toInt() < tm.toInt()) {
+                applies = false;
+              }
+            }
+
+            if (!rule.get('DateStart') && !rule.get('TimeStart') && !rule.get('DateEnd') && !rule.get('TimeEnd')) {
+              applies = false;
+            }
+
+            if (rule.get('Monday') || rule.get('Tuesday') || rule.get('Wednesday') || rule.get('Thursday') || rule.get('Friday') || rule.get('Saturday') || rule.get('Sunday')) {
+              switch (reservationsStore.get('create').get('date').isoWeekday()) {
+              case 1:
+                applies = applies && !!rule.get('Monday');
+                break;
+              case 2:
+                applies = applies && !!rule.get('Tuesday');
+                break;
+              case 3:
+                applies = applies && !!rule.get('Wednesday');
+                break;
+              case 4:
+                applies = applies && !!rule.get('Thursday');
+                break;
+              case 5:
+                applies = applies && !!rule.get('Friday');
+                break;
+              case 6:
+                applies = applies && !!rule.get('Saturday');
+                break;
+              case 7:
+                applies = applies && !!rule.get('Sunday');
+                break;
+              }
+            }
+
+            if (applies && rule.get('Unavailable')) {
+              if (rule.get('MachineId')) {
+                return _.difference(availableMachineIds, [rule.get('MachineId')]);
+              } else {
+                return [];
+              }
+            } else if (applies && rule.get('Available')) {
+              if (rule.get('MachineId')) {
+                return _.union(availableMachineIds, [rule.get('MachineId')]);
+              } else {
+                return allMachineIds; 
+              }
+            } else {
+              return availableMachineIds;
+            }
+          }, allMachineIds);
+
+        /* Consider colliding reservations */
+        var day = t.get('start').format('YYYY-MM-DD');
+        var rs = reservationsByDay.get(day);
+        if (rs) {
+          _.each(rs.toArray(), function(reservation) {
+            var rStart = moment(reservation.get('TimeStart')).unix();
+            var rEnd = moment(reservation.get('TimeEnd')).unix();
+            var tStart = moment(t.get('start')).unix();
+            var tEnd = moment(t.get('end')).unix();
+            var tStartInInterval = tStart >= rStart && tStart < rEnd;
+            var tEndInInterval = tEnd > rStart && tEnd <= rEnd;
+            if (tStartInInterval || tEndInInterval) {
+              availableIds = _.difference(availableIds, [reservation.get('MachineId')]);
+            }
+          });
+        }
+        return t.set('availableMachineIds', availableIds);
+      });
+    } // if (newReservation)
   }
 ];
 
@@ -329,13 +536,6 @@ const getNewReservationTo = [
   }
 ];
 
-const getReservations = [
-  ['reservationsStore'],
-  (reservationsStore) => {
-    return reservationsStore.get('reservations');
-  }
-];
-
 
 /*
  * Scroll Navigation related getters
@@ -365,6 +565,6 @@ export default {
   getIsLogged, getUid, getFirstTry, getLoginSuccess, getLastActivity,
   getUserInfo, getActivationInfo, getMachineInfo, getMachinesById, getMachineUsers, getIsLoading, getBillInfo, getBillMonths, getMonthlyBills, getMembership, getMembershipsByMonth,
   getFeedbackSubject, getFeedbackSubjectDropdown, getFeedbackSubjectOtherText, getFeedbackMessage,
-  getNewReservation, getNewReservationTimes, getNewReservationFrom, getNewReservationTo, getReservations,
+  getNewReservation, getNewReservationTimes, getNewReservationFrom, getNewReservationTo, getReservations, getActiveReservationsByMachineId,
   getScrollUpEnabled, getScrollDownEnabled, getScrollPosition
 };

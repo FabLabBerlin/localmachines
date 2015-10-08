@@ -93,6 +93,16 @@ app.controller('MachineCtrl',
     delete machine.UnavailTill;
 
     machine.Price = parseFloat(machine.Price);
+    if (machine.ReservationPriceStart) {
+      machine.ReservationPriceStart = parseFloat(machine.ReservationPriceStart);
+    } else {
+      machine.ReservationPriceStart = null;
+    }
+    if (machine.ReservationPriceHourly) {
+      machine.ReservationPriceHourly = parseFloat(machine.ReservationPriceHourly);
+    } else {
+      machine.ReservationPriceHourly = null;
+    }
 
     $http({
       method: 'PUT',

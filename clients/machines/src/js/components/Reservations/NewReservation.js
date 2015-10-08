@@ -9,6 +9,44 @@ var TimePicker = require('./TimePicker');
 var UserActions = require('../../actions/UserActions');
 
 
+
+var MachinePricing = React.createClass({
+
+  render() {
+    var startPrice = this.props.machine.get('ReservationPriceStart');
+    var hourlyPrice = this.props.machine.get('ReservationPriceHourly');
+    if (_.isNumber(startPrice)) {
+      startPrice = (
+        <tr>
+          <td>Fixed price for reservation:</td>
+          <td>{startPrice.toFixed(2)} €</td>
+        </tr>
+      );
+    }
+    if (_.isNumber(hourlyPrice)) {
+      hourlyPrice = (
+        <tr>
+          <td>Price per reserved half hour:&nbsp;</td>
+          <td>{(hourlyPrice / 2).toFixed(2)} €</td>
+        </tr>
+      );
+    }
+    return (
+      <div>
+        <hr/>
+        <table className="table table-bordered table-striped table-hover">
+          <tbody>
+            {startPrice}
+            {hourlyPrice}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+
+});
+
+
 var SelectMachine = React.createClass({
 
   mixins: [ reactor.ReactMixin ],
@@ -21,30 +59,47 @@ var SelectMachine = React.createClass({
 
   getDataBindings() {
     return {
-      machineInfo: getters.getMachineInfo
+      machineInfo: getters.getMachineInfo,
+      machinesById: getters.getMachinesById,
+      newReservation: getters.getNewReservation
     };
+  },
+
+  handleChange() {
+    this.setMachine();
   },
 
   render() {
     if (this.state.machineInfo.length !== 0) {
+      var selectedMachineId;
+      var machinePricing;
+      if (this.state.newReservation.get('machineId')) {
+        selectedMachineId = this.state.newReservation.get('machineId');
+        machinePricing = <MachinePricing machine={this.state.machinesById.get(selectedMachineId)}/>;
+      }
+
       return (
         <div className={this.props.className}>
           <h3 className="h3">Select Machine</h3>
           <div>
-            <select ref="selection">
+            <select className="form-control" ref="selection" onChange={this.handleChange} value={selectedMachineId}>
+              <option value="0">Please select a machine</option>
               {_.map(this.state.machineInfo.toArray(), function(machine){
-                return (
-                  <option value={machine.get('Id')}>
-                    {machine.get('Name')}
-                  </option>
-                );
+                if (_.isNumber(machine.get('ReservationPriceStart')) && _.isNumber(machine.get('ReservationPriceHourly'))) {
+                  return (
+                    <option value={machine.get('Id')}>
+                      {machine.get('Name')}
+                    </option>
+                  );
+                }
               })}
             </select>
           </div>
+          {machinePricing}
           <hr/>
           <div className="pull-right">
             <button className="btn btn-lg btn-info" type="button" onClick={this.cancel}>Cancel</button>
-            <button className="btn btn-lg btn-primary" type="button" onClick={this.setMachine}>Next</button>
+            <button className="btn btn-lg btn-primary" type="button" onClick={this.next}>Next</button>
           </div>
         </div>
       );
@@ -59,10 +114,19 @@ var SelectMachine = React.createClass({
     ReservationsActions.createDone();
   },
 
+  next() {
+    this.setMachine();
+    if (this.state.newReservation.get('machineId')) {
+      ReservationsActions.nextStep();
+    }
+  },
+
   setMachine() {
     var mid = this.refs.selection.getDOMNode().value;
-    mid = parseInt(mid);
-    ReservationsActions.createSetMachine({ mid });
+    if (mid) {
+      mid = parseInt(mid);
+      ReservationsActions.createSetMachine({ mid });
+    }
   }
 });
 

@@ -25,115 +25,191 @@ var state = {
     'isLogged': false,
     'firstTry': true,
     'billInfo': {
-      'UserId': 1,
-      'UserClientId': 0,
-      'UserFirstName': 'Regular',
-      'UserLastName': 'User',
-      'Username': 'user',
-      'UserEmail': 'user@example.com',
-      'DebitorNumber': 'Undefined',
+      'User': {
+        'Id': 261,
+        'FirstName': 'bla',
+        'LastName': 'bla',
+        'Username': 'bla',
+        'Email': 'bla@example.com',
+        'InvoiceAddr': '',
+        'ShipAddr': '',
+        'ClientId': 0,
+        'B2b': false,
+        'Company': '',
+        'VatUserId': '',
+        'VatRate': 0,
+        'UserRole': '',
+        'Created': '2015-10-07T10:30:21+02:00',
+        'Comments': '',
+        'Phone': '',
+        'ZipCode': '',
+        'City': '',
+        'CountryCode': ''
+      },
       'Activations': [
         {
-          'Machine': {
-            'Name': 'Laydrop 3D Printer'
+          'Activation': {
+            'Id': 3195,
+            'InvoiceId': 0,
+            'UserId': 261,
+            'MachineId': 8,
+            'Active': false,
+            'TimeStart': '2015-10-07T10:32:59+02:00',
+            'TimeEnd': '2015-10-07T10:33:51+02:00',
+            'TimeTotal': 51,
+            'UsedKwh': 0,
+            'DiscountPercents': 0,
+            'DiscountFixed': 0,
+            'VatRate': 0,
+            'CommentRef': '',
+            'Invoiced': false,
+            'Changed': false
           },
-          'MachineId': 1,
-          'MachineName': 'Laydrop 3D Printer',
-          'MachineProductId': 'Undefined',
-          'MachineUsage': 0.01,
-          'MachineUsageUnit': 'hour',
-          'MachinePricePerUnit': 16,
-          'UserId': 1,
-          'UserClientId': 0,
-          'UserFirstName': 'Regular',
-          'UserLastName': 'User',
-          'Username': 'user',
-          'UserEmail': 'user@example.com',
-          'UserDebitorNumber': 'Undefined',
-          'UserInvoiceAddr': '0',
-          'UserZipCode': '',
-          'UserCity': '',
-          'UserCountryCode': '',
-          'UserPhone': '',
-          'UserComments': '',
+          'Machine': {
+            'Id': 8,
+            'Name': '3D Printer - 5 Pumpkin (I3 Berlin) [€0.10/min]',
+            'Shortname': 'I3B1',
+            'Description': 'i3Berlin 3D Printer',
+            'Image': '',
+            'Available': true,
+            'UnavailMsg': '',
+            'UnavailTill': '0001-01-01T00:00:00Z',
+            'Price': 0.1,
+            'PriceUnit': 'minute',
+            'Comments': '',
+            'Visible': true,
+            'ConnectedMachines': '',
+            'SwitchRefCount': 0,
+            'UnderMaintenance': false
+          },
+          'MachineUsage': 0.85,
+          'User': {
+            'Id': 261,
+            'FirstName': 'bla',
+            'LastName': 'bla',
+            'Username': 'bla',
+            'Email': 'bla@example.com',
+            'InvoiceAddr': '',
+            'ShipAddr': '',
+            'ClientId': 0,
+            'B2b': false,
+            'Company': '',
+            'VatUserId': '',
+            'VatRate': 0,
+            'UserRole': '',
+            'Created': '2015-10-07T10:30:21+02:00',
+            'Comments': '',
+            'Phone': '',
+            'ZipCode': '',
+            'City': '',
+            'CountryCode': ''
+          },
           'Memberships': [
             {
-              'Id': 0,
-              'Title': '1 Month Basic',
-              'ShortName': 'SMB',
-              'Duration': 30,
-              'Unit': 'days',
-              'MonthlyPrice': 0,
-              'MachinePriceDeduction': 50,
-              'AffectedMachines': '[1,2,3]'
+              'Id': 4,
+              'Title': '3D Print Club',
+              'ShortName': '3DPC',
+              'DurationMonths': 12,
+              'MonthlyPrice': 10,
+              'MachinePriceDeduction': 100,
+              'AffectedMachines': '[2,4,6,10,8,7,12,13]',
+              'AutoExtend': true,
+              'AutoExtendDurationMonths': 1
             }
           ],
-          'TotalPrice': 0.16,
-          'DiscountedTotal': 0.08,
-          'TimeStart': '2015-09-11T10:01:44+02:00',
-          'TimeEnd': '2015-09-11T10:01:56+02:00'
+          'TotalPrice': 0.085,
+          'DiscountedTotal': 0
         },
         {
-          'Machine': {
-            'Name': 'MakerBot 3D Printer'
+          'Activation': {
+            'Id': 3196,
+            'InvoiceId': 0,
+            'UserId': 261,
+            'MachineId': 3,
+            'Active': false,
+            'TimeStart': '2015-10-07T10:33:54+02:00',
+            'TimeEnd': '2015-10-07T10:35:06+02:00',
+            'TimeTotal': 72,
+            'UsedKwh': 0,
+            'DiscountPercents': 0,
+            'DiscountFixed': 0,
+            'VatRate': 0,
+            'CommentRef': '',
+            'Invoiced': false,
+            'Changed': false
           },
-          'MachineId': 2,
-          'MachineName': 'MakerBot 3D Printer',
-          'MachineProductId': 'Undefined',
-          'MachineUsage': 0.01,
-          'MachineUsageUnit': 'hour',
-          'MachinePricePerUnit': 16,
-          'UserId': 1,
-          'UserClientId': 0,
-          'UserFirstName': 'Regular',
-          'UserLastName': 'User',
-          'Username': 'user',
-          'UserEmail': 'user@example.com',
-          'UserDebitorNumber': 'Undefined',
-          'UserInvoiceAddr': '0',
-          'UserZipCode': '',
-          'UserCity': '',
-          'UserCountryCode': '',
-          'UserPhone': '',
-          'UserComments': '',
+          'Machine': {
+            'Id': 3,
+            'Name': 'Laser Cutter - Epilog Zing 6030 [€0.80/min]',
+            'Shortname': 'ZLC',
+            'Description': 'Cuts wood, plastic, paper. Fast.',
+            'Image': '',
+            'Available': true,
+            'UnavailMsg': '',
+            'UnavailTill': '0001-01-01T00:00:00Z',
+            'Price': 0.8,
+            'PriceUnit': 'minute',
+            'Comments': 'asd',
+            'Visible': true,
+            'ConnectedMachines': '',
+            'SwitchRefCount': 0,
+            'UnderMaintenance': false
+          },
+          'MachineUsage': 1.2,
+          'User': {
+            'Id': 261,
+            'FirstName': 'bla',
+            'LastName': 'bla',
+            'Username': 'bla',
+            'Email': 'bla@example.com',
+            'InvoiceAddr': '',
+            'ShipAddr': '',
+            'ClientId': 0,
+            'B2b': false,
+            'Company': '',
+            'VatUserId': '',
+            'VatRate': 0,
+            'UserRole': '',
+            'Created': '2015-10-07T10:30:21+02:00',
+            'Comments': '',
+            'Phone': '',
+            'ZipCode': '',
+            'City': '',
+            'CountryCode': ''
+          },
           'Memberships': [
             {
-              'Id': 0,
-              'Title': '1 Month Basic',
-              'ShortName': 'SMB',
-              'Duration': 30,
-              'Unit': 'days',
-              'MonthlyPrice': 0,
-              'MachinePriceDeduction': 50,
-              'AffectedMachines': '[1,2,3]'
+              'Id': 4,
+              'Title': '3D Print Club',
+              'ShortName': '3DPC',
+              'DurationMonths': 12,
+              'MonthlyPrice': 10,
+              'MachinePriceDeduction': 100,
+              'AffectedMachines': '[2,4,6,10,8,7,12,13]',
+              'AutoExtend': true,
+              'AutoExtendDurationMonths': 1
             }
           ],
-          'TotalPrice': 0.16,
-          'DiscountedTotal': 0.08,
-          'TimeStart': '2015-09-11T10:02:05+02:00',
-          'TimeEnd': '2015-09-11T10:02:11+02:00'
+          'TotalPrice': 0.96,
+          'DiscountedTotal': 0.96
         }
-      ],
-      'InvoiceAddr': '0',
-      'ZipCode': '',
-      'City': '',
-      'CountryCode': '',
-      'Phone': '',
-      'Comments': ''
+      ]
     },
     'membershipInfo': [
       {
-        'Id': 1,
-        'UserId': 1,
-        'MembershipId': 2,
-        'StartDate': '2015-09-01T00:00:00+02:00',
-        'Title': '1 Month Basic',
-        'ShortName': 'SMB',
-        'Duration': 30,
-        'Unit': 'days',
-        'MonthlyPrice': 100,
-        'MachinePriceDeduction': 50,
-        'AffectedMachines': '[1,2,3]'
+        'Id': 62,
+        'UserId': 261,
+        'MembershipId': 4,
+        'StartDate': '2015-08-05T02:00:00+02:00',
+        'EndDate': '2016-08-05T02:00:00+02:00',
+        'Title': '3D Print Club',
+        'ShortName': '3DPC',
+        'DurationMonths': 12,
+        'Unit': '',
+        'MonthlyPrice': 10,
+        'MachinePriceDeduction': 100,
+        'AffectedMachines': '[2,4,6,10,8,7,12,13]',
+        'AutoExtend': true
       }
     ]
   }
@@ -158,19 +234,19 @@ describe('BillTable', function() {
       var billTable = new BillTable();
       var html = React.renderToString(billTable);
       /* Activations */
-      expect(html).toContain('MakerBot 3D Printer');
-      expect(html).toContain('6s');
-      expect(html).toContain('0.08');
-      expect(html).toContain('Laydrop 3D Printer');
-      expect(html).toContain('12s');
-      expect(html).toContain('0.08');
+      expect(html).toContain('Laser Cutter - Epilog Zing 6030 [€0.80/min]');
+      expect(html).toContain('1m 12s');
+      expect(html).toContain('0.96');
+      expect(html).toContain('3D Printer - 5 Pumpkin (I3 Berlin) [€0.10/min]');
+      expect(html).toContain('52s');
+      expect(html).toContain('0.00');
       /* Totals */
       expect(html).toContain('Total Pay-As-You-Go');
-      expect(html).toContain('0.16');
+      expect(html).toContain('0.96');
       expect(html).toContain('Total Memberships');
-      expect(html).toContain('100.00');
+      expect(html).toContain('10.00');
       expect(html).toContain('Total');
-      expect(html).toContain('100.16');
+      expect(html).toContain('10.96');
     });
   });
 });
