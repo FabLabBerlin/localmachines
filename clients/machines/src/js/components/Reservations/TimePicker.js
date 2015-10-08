@@ -36,10 +36,14 @@ var TimePicker = React.createClass({
           {_.map(this.state.times.toJS(), (t, i) => {
             console.log('t[' + i + '] = ', t);
             var className = 'time-picker-time';
+            var onChange;
             if (!_.includes(t.availableMachineIds, machineId)) {
               className += ' unavailable';
-            } else if (t.selected) {
-              className += ' selected';
+            } else {
+              onChange = this.setTimes.bind(this, i);
+              if (t.selected) {
+                className += ' selected';
+              }
             }
             return (
               <div key={i} className={className}>
@@ -47,7 +51,7 @@ var TimePicker = React.createClass({
                   <input
                     checked={t.selected}
                     type="checkbox"
-                    onChange={this.setTimes.bind(this, i)}
+                    onChange={onChange}
                   />
                   {t.start.format('HH:mm')} - {t.end.format('HH:mm')}
                 </label>

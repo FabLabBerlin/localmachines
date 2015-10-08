@@ -30,7 +30,6 @@ var ReservationActions = {
 
   createSetMachine({ mid }) {
     reactor.dispatch(actionTypes.CREATE_SET_MACHINE, { mid });
-    reactor.dispatch(actionTypes.CREATE_SET_STEP, STEP_SET_DATE);
   },
 
   createSetDate({ date }) {
