@@ -4,6 +4,37 @@
 
   <hr>
 
+  <h2>Machines</h2>
+
+  <table class="table table-bordered table-striped table-hover">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Reservation Price for Machine Start</th>
+        <th>Reservation Price per hour</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="machine in machines">
+        <td>{{machine.Name}}</td>
+        <td>
+          <input type="text" ng-model="machine.ReservationPriceStart" placeholder="Enter price to enable reservations for this machine" size="50">
+        </td>
+        <td>
+          <input type="text" ng-model="machine.ReservationPriceHourly" placeholder="Enter price to enable reservations for this machine" size="50">
+        </td>
+        <td>
+          <button type="button" class="btn btn-primary btn-ico pull-right" ng-click="saveMachine(machine.Id)">
+            <span class="fa fa-floppy-o"></span>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr>
+
   <h2>Reservation Rules</h2>
 
   <table id="reservations" class="table table-bordered table-striped table-hover">
@@ -79,13 +110,13 @@
           <input type="checkbox" ng-model="reservationRule.Sunday">
         </td>
         <td>
-          <button type="button" class="btn btn-primary btn-ico pull-right" ng-click="saveReservationRule(reservationRule.Id)">
-            <span class="fa fa-floppy-o"></span>
+          <button type="button" class="btn btn-danger btn-ico pull-right" ng-click="deleteReservationRule(reservationRule.Id)">
+            <span class="fa fa-close"></span>
           </button>
         </td>
         <td>
-          <button type="button" class="btn btn-danger btn-ico pull-right" ng-click="deleteReservationRule(reservationRule.Id)">
-            <span class="fa fa-close"></span>
+          <button type="button" class="btn btn-primary btn-ico pull-right" ng-click="saveReservationRule(reservationRule.Id)">
+            <span class="fa fa-floppy-o"></span>
           </button>
         </td>
       </tr>

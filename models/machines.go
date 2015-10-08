@@ -33,21 +33,23 @@ func init() {
 }
 
 type Machine struct {
-	Id                int64  `orm:"auto";"pk"`
-	Name              string `orm:"size(255)"`
-	Shortname         string `orm:"size(100)"`
-	Description       string `orm:"type(text)"`
-	Image             string `orm:"size(255)"` // TODO: media and media type tables
-	Available         bool
-	UnavailMsg        string    `orm:"type(text)"`
-	UnavailTill       time.Time `orm:"null;type(date)" form:"Date,2006-01-02T15:04:05Z07:00`
-	Price             float64
-	PriceUnit         string `orm:"size(100)"`
-	Comments          string `orm:"type(text)"`
-	Visible           bool
-	ConnectedMachines string `orm:"size(255)"`
-	SwitchRefCount    int64
-	UnderMaintenance  bool
+	Id                     int64  `orm:"auto";"pk"`
+	Name                   string `orm:"size(255)"`
+	Shortname              string `orm:"size(100)"`
+	Description            string `orm:"type(text)"`
+	Image                  string `orm:"size(255)"` // TODO: media and media type tables
+	Available              bool
+	UnavailMsg             string    `orm:"type(text)"`
+	UnavailTill            time.Time `orm:"null;type(date)" form:"Date,2006-01-02T15:04:05Z07:00`
+	Price                  float64
+	PriceUnit              string `orm:"size(100)"`
+	Comments               string `orm:"type(text)"`
+	Visible                bool
+	ConnectedMachines      string `orm:"size(255)"`
+	SwitchRefCount         int64
+	UnderMaintenance       bool
+	ReservationPriceStart  *float64
+	ReservationPriceHourly *float64
 }
 
 // Define custom table name as for SQL table with a name "machines"

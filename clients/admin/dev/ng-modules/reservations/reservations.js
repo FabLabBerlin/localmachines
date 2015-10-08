@@ -19,6 +19,12 @@ app.controller('ReservationsCtrl', ['$scope', '$http', '$location', '$cookieStor
   $scope.machinesById = {};
   $scope.reservationRulesById = {};
 
+  /*
+   *
+   * Loader functions
+   *
+   */
+
   function loadReservationRules() {
     $http({
       method: 'GET',
@@ -56,6 +62,52 @@ app.controller('ReservationsCtrl', ['$scope', '$http', '$location', '$cookieStor
   .error(function() {
     toastr.error('Failed to get machines');
   });
+
+
+  /*
+   *
+   * Machines Rules CRUD functions
+   *
+   */
+
+  $scope.saveMachine = function(id) {
+    var machine = _.clone($scope.machinesById[id]);
+
+    if (machine.ReservationPriceStart) {
+      machine.ReservationPriceStart = parseFloat(machine.ReservationPriceStart);
+    } else {
+      machine.ReservationPriceStart = null;
+    }
+    if (machine.ReservationPriceHourly) {
+      machine.ReservationPriceHourly = parseFloat(machine.ReservationPriceHourly);
+    } else {
+      machine.ReservationPriceHourly = null;
+    }
+
+    $http({
+      method: 'PUT',
+      url: '/api/machines/' + id,
+      headers: {'Content-Type': 'application/json' },
+      data: machine,
+      transformRequest: function(data) {
+        var transformed = _.extend({}, data);
+        return JSON.stringify(transformed);
+      }
+    })
+    .success(function(data) {
+      toastr.info('Saved updates to Reservation Rule');
+    })
+    .error(function() {
+      toastr.error('Failed to update Reservation Rule');
+    });
+  };
+
+
+  /*
+   *
+   * Reservation Rules CRUD functions
+   *
+   */
 
   $scope.addReservationRule = function() {
     $http({
