@@ -334,11 +334,28 @@ class Time {
   }
 }
 
+const getReservations = [
+  ['reservationsStore'],
+  (reservationsStore) => {
+    return reservationsStore.get('reservations');
+  }
+];
+
+const getReservationsByDay = [
+  getReservations,
+  (reservations) => {
+    return toImmutable(_.groupBy(reservations.toArray(), (reservation) => {
+      return moment(reservation.get('TimeStart')).format('YYYY-MM-DD');
+    }));
+  }
+];
+
 const getNewReservationTimes = [
   getMachinesById,
   ['reservationsStore'],
   ['reservationRulesStore'],
-  (machinesById, reservationsStore, reservationRulesStore) => {
+  getReservationsByDay,
+  (machinesById, reservationsStore, reservationRulesStore, reservationsByDay) => {
     var newReservation = reservationsStore.get('create');
     var allMachineIds = [];
     _.each(machinesById.toJS(), function(machine, id) {
@@ -348,6 +365,7 @@ const getNewReservationTimes = [
 
     if (newReservation) {
       return newReservation.get('times').map((t) => {
+        /* Machine Ids available according to reservation rules */
         var availableIds = reservationRulesStore
           .get('reservationRules')
           .sortBy((rule) => {
@@ -441,9 +459,26 @@ const getNewReservationTimes = [
               return availableMachineIds;
             }
           }, allMachineIds);
+
+        /* Consider colliding reservations */
+        var day = t.get('start').format('YYYY-MM-DD');
+        var rs = reservationsByDay.get(day);
+        if (rs) {
+          _.each(rs.toArray(), function(reservation) {
+            var rStart = moment(reservation.get('TimeStart')).unix();
+            var rEnd = moment(reservation.get('TimeEnd')).unix();
+            var tStart = moment(t.get('start')).unix();
+            var tEnd = moment(t.get('end')).unix();
+            var tStartInInterval = tStart >= rStart && tStart < rEnd;
+            var tEndInInterval = tEnd > rStart && tEnd <= rEnd;
+            if (tStartInInterval || tEndInInterval) {
+              availableIds = _.difference(availableIds, [reservation.get('MachineId')]);
+            }
+          });
+        }
         return t.set('availableMachineIds', availableIds);
       });
-    }
+    } // if (newReservation)
   }
 ];
 
@@ -474,13 +509,6 @@ const getNewReservationTo = [
         return _.last(selectedTimes).get('end').toDate();
       }
     }
-  }
-];
-
-const getReservations = [
-  ['reservationsStore'],
-  (reservationsStore) => {
-    return reservationsStore.get('reservations');
   }
 ];
 

@@ -13,6 +13,27 @@ var moment = require('moment');
 var reactor = require('../../reactor');
 
 
+function existingReservations() {
+  return [
+    {  
+      'Id': 1,
+      'MachineId': 3,
+      'UserId': 19,
+      'TimeStart': '2015-10-15T11:30:00+02:00',
+      'TimeEnd': '2015-10-15T18:00:00+02:00',
+      'Created': '2015-10-02T17:29:51+02:00'
+    },
+    {  
+      'Id': 2,
+      'MachineId': 3,
+      'UserId': 19,
+      'TimeStart': '2015-10-06T14:00:00+02:00',
+      'TimeEnd': '2015-10-06T15:00:00+02:00',
+      'Created': '2015-10-05T11:23:58+02:00'
+    }
+  ];
+}
+
 function reservationRules() {
   return [
     {  
@@ -206,10 +227,13 @@ describe('ReservationRulesStore', function() {
     reservationsStore: ReservationsStore
   });
 
+  var machineInfo = getMachineInfo();
+  var reservations = existingReservations();
+  reactor.dispatch(actionTypes.SET_MACHINE_INFO, { machineInfo });
+  reactor.dispatch(actionTypes.SET_RESERVATIONS, { reservations });
+  reactor.dispatch(actionTypes.SET_RESERVATION_RULES, reservationRules());
+
   it('works for the Lasercutting workshop every Tuesday', function() {
-    var machineInfo = getMachineInfo();
-    reactor.dispatch(actionTypes.SET_MACHINE_INFO, { machineInfo });
-    reactor.dispatch(actionTypes.SET_RESERVATION_RULES, reservationRules());
     reactor.dispatch(actionTypes.CREATE_EMPTY);
     var mid = 3;
     reactor.dispatch(actionTypes.CREATE_SET_MACHINE, { mid });
@@ -252,9 +276,6 @@ describe('ReservationRulesStore', function() {
   });
 
   it('works for availability overlapping an unavailability', function() {
-    var machineInfo = getMachineInfo();
-    reactor.dispatch(actionTypes.SET_MACHINE_INFO, { machineInfo });
-    reactor.dispatch(actionTypes.SET_RESERVATION_RULES, reservationRules());
     reactor.dispatch(actionTypes.CREATE_EMPTY);
     var mid = 3;
     reactor.dispatch(actionTypes.CREATE_SET_MACHINE, { mid });
@@ -294,9 +315,6 @@ describe('ReservationRulesStore', function() {
   });
 
   it('ignores rules with neither time/date specified', function() {
-    var machineInfo = getMachineInfo();
-    reactor.dispatch(actionTypes.SET_MACHINE_INFO, { machineInfo });
-    reactor.dispatch(actionTypes.SET_RESERVATION_RULES, reservationRules());
     reactor.dispatch(actionTypes.CREATE_EMPTY);
     var mid = 3;
     reactor.dispatch(actionTypes.CREATE_SET_MACHINE, { mid });
@@ -309,6 +327,24 @@ describe('ReservationRulesStore', function() {
     expect(times.length).toEqual(18);
     for (i = 0; i < 18; i++) {
       expect(times[i].availableMachineIds).toEqual([3, 8, 10]);
+    }
+  });
+
+  it('takes existing reservations into account', function() {
+    reactor.dispatch(actionTypes.CREATE_EMPTY);
+    var mid = 3;
+    reactor.dispatch(actionTypes.CREATE_SET_MACHINE, { mid });
+
+    var date = moment('2015-10-15');
+    reactor.dispatch(actionTypes.CREATE_SET_DATE, { date });
+    var times = reactor.evaluateToJS(getters.getNewReservationTimes);
+    expect(times.length).toEqual(18);
+    for (var i = 0; i < 18; i++) {
+      if (i < 3 || i > 15) {
+        expect(times[i].availableMachineIds).toEqual([3, 8, 10]);
+      } else {
+        expect(times[i].availableMachineIds).toEqual([8, 10]);
+      }
     }
   });
 });
