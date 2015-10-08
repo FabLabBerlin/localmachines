@@ -9,6 +9,7 @@ var FreeMachine = require('./FreeMachine');
 var MaintenanceSwitch = require('./MaintenanceSwitch');
 var reactor = require('../../reactor');
 var RepairButton = require('../Feedback/RepairButton');
+var ReservedMachine = require('./ReservedMachine');
 var UnavailableMachine = require('./UnavailableMachine');
 
 // https://github.com/HubSpot/vex/issues/72
@@ -28,7 +29,8 @@ var MachineChooser = React.createClass({
 
   getDataBindings() {
     return {
-      machineInfo: getters.getMachineInfo
+      machineInfo: getters.getMachineInfo,
+      reservationsByMachineId: getters.getActiveReservationsByMachineId
     };
   },
 
@@ -91,8 +93,26 @@ var MachineChooser = React.createClass({
    */
   render() {
     let isAdmin = this.props.user.get('UserRole') === 'admin';
+    var reservation;
+    if (this.state.reservationsByMachineId) {
+      reservation = this.state.reservationsByMachineId.toObject()[this.props.info.Id];
+    }
     var machineBody;
-    if (this.props.info.UnderMaintenance) {
+    if (reservation) {
+      machineBody = (
+        <ReservedMachine
+          activation={this.props.activation}
+          busy={this.props.busy}
+          info={this.props.info}
+          isAdmin={isAdmin}
+          endActivation={this.endActivation}
+          startActivation={this.startActivation}
+          force={this.forceSwitch}
+          reservation={reservation}
+          user={this.props.user}
+        />
+      );
+    } else if (this.props.info.UnderMaintenance) {
       machineBody = (
         <UnavailableMachine
           activation={this.props.activation}

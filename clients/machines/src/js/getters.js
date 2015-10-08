@@ -344,9 +344,33 @@ const getReservations = [
 const getReservationsByDay = [
   getReservations,
   (reservations) => {
-    return toImmutable(_.groupBy(reservations.toArray(), (reservation) => {
-      return moment(reservation.get('TimeStart')).format('YYYY-MM-DD');
-    }));
+    if (reservations) {
+      return toImmutable(_.groupBy(reservations.toArray(), (reservation) => {
+        return moment(reservation.get('TimeStart')).format('YYYY-MM-DD');
+      }));
+    }
+  }
+];
+
+const getActiveReservationsByMachineId = [
+  getReservationsByDay,
+  (reservationsByDay) => {
+    if (reservationsByDay) {
+      var m = moment();
+      var u = m.unix();
+      var rs = reservationsByDay.get(m.format('YYYY-MM-DD'));
+      var reservationsByMachineId = {};
+      if (rs) {
+        _.each(rs.toObject(), (reservation) => {
+          var start = moment(reservation.get('start')).unix();
+          var end = moment(reservation.get('end')).unix();
+          if (start <= u && u <= end) {
+            reservationsByMachineId[reservation.get('MachineId')] = reservation;
+          }
+        });
+      }
+      return toImmutable(reservationsByMachineId);
+    }
   }
 ];
 
@@ -541,6 +565,6 @@ export default {
   getIsLogged, getUid, getFirstTry, getLoginSuccess, getLastActivity,
   getUserInfo, getActivationInfo, getMachineInfo, getMachinesById, getMachineUsers, getIsLoading, getBillInfo, getBillMonths, getMonthlyBills, getMembership, getMembershipsByMonth,
   getFeedbackSubject, getFeedbackSubjectDropdown, getFeedbackSubjectOtherText, getFeedbackMessage,
-  getNewReservation, getNewReservationTimes, getNewReservationFrom, getNewReservationTo, getReservations,
+  getNewReservation, getNewReservationTimes, getNewReservationFrom, getNewReservationTo, getReservations, getActiveReservationsByMachineId,
   getScrollUpEnabled, getScrollDownEnabled, getScrollPosition
 };
