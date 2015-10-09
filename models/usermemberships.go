@@ -103,6 +103,13 @@ func CreateUserMembership(
 	return
 }
 
+func GetAllUserMemberships() (userMemberships []*UserMembership, err error) {
+	o := orm.NewOrm()
+	um := new(UserMembership)
+	_, err = o.QueryTable(um.TableName()).All(&userMemberships)
+	return
+}
+
 // Gets pointer to filled user membership store
 // by using user membership ID.
 func GetUserMembership(userMembershipId int64) (*UserMembership, error) {

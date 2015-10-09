@@ -369,9 +369,52 @@ func (this *Invoice) getPurchases(startTime, endTime time.Time) ([]*Purchase, er
 
 	enhActivations := make([]*Purchase, 0, len(*activations))
 
+	machines, err := GetAllMachines()
+	if err != nil {
+		return nil, fmt.Errorf("Failed to get machines: %v", err)
+	}
+	machinesById := make(map[int64]*Machine)
+	for _, machine := range machines {
+		machinesById[machine.Id] = machine
+	}
+
+	users, err := GetAllUsers()
+	if err != nil {
+		return nil, fmt.Errorf("Failed to get users: %v", err)
+	}
+	usersById := make(map[int64]User)
+	for _, user := range users {
+		usersById[user.Id] = *user
+	}
+
+	userMemberships, err := GetAllUserMemberships()
+	if err != nil {
+		return nil, fmt.Errorf("Failed to get user memberships: %v", err)
+	}
+	userMembershipsById := make(map[int64][]*UserMembership)
+	for _, userMembership := range userMemberships {
+		uid := userMembership.UserId
+		if _, ok := userMembershipsById[uid]; !ok {
+			userMembershipsById[uid] = []*UserMembership{
+				userMembership,
+			}
+		} else {
+			userMembershipsById[uid] = append(userMembershipsById[uid], userMembership)
+		}
+	}
+
+	memberships, err := GetAllMemberships()
+	if err != nil {
+		return nil, fmt.Errorf("Failed to get memberships: %v", err)
+	}
+	membershipsById := make(map[int64]*Membership)
+	for _, membership := range memberships {
+		membershipsById[membership.Id] = membership
+	}
+
 	// Enhance each activation in the activations slice.
 	for _, activation := range *activations {
-		invActivation, err := this.enhanceActivation(&activation)
+		invActivation, err := this.enhanceActivation(&activation, machinesById, usersById, userMembershipsById, membershipsById)
 		if err != nil {
 			return nil, errors.New(
 				fmt.Sprintf("Failed to enhance activation: %v", err))
@@ -430,16 +473,12 @@ func (this *Invoice) getUserSummaries(
 	return &userSummaries, nil
 }
 
-func (this *Invoice) enhanceActivation(activation *Activation) (
+func (this *Invoice) enhanceActivation(activation *Activation, machinesById map[int64]*Machine, usersById map[int64]User, userMembershipsByUserId map[int64][]*UserMembership, membershipsById map[int64]*Membership) (
 	*Purchase, error) {
 
-	o := orm.NewOrm()
-
-	// Get activation machine data
-	machine, err := GetMachine(activation.MachineId)
-	if err != nil {
-		beego.Error("Failed to get machine, ID: ", activation.MachineId, ":", err)
-		return nil, fmt.Errorf("Failed to get machine: %v", err)
+	machine, ok := machinesById[activation.MachineId]
+	if !ok {
+		return nil, fmt.Errorf("No machine has the ID %v", activation.MachineId)
 	}
 
 	purchase := &Purchase{
@@ -463,52 +502,27 @@ func (this *Invoice) enhanceActivation(activation *Activation) (
 		break
 	}
 
-	// Get activation user data
-	user, err := GetUser(activation.UserId)
-	if err != nil {
-		return nil, errors.New(fmt.Sprintf("Failed to get user: %v", err))
+	if purchase.User, ok = usersById[activation.UserId]; !ok {
+		return nil, fmt.Errorf("No user has the ID %v", activation.MachineId)
 	}
 
-	purchase.User = *user
-
-	// Get user memberships
-	m := &UserMembership{} // Use just for the TableName func
-	usrMemberships := &[]UserMembership{}
-	query := fmt.Sprintf("SELECT id, user_id, membership_id, start_date, end_date, auto_extend FROM %s "+
-		"WHERE user_id=?", m.TableName())
-	_, err = o.Raw(query, purchase.User.Id).QueryRows(usrMemberships)
-	if err != nil {
-		return nil, errors.New(
-			fmt.Sprintf("Failed to get user membership: %v", err))
+	usrMemberships, ok := userMembershipsByUserId[activation.UserId]
+	if !ok {
+		usrMemberships = []*UserMembership{}
 	}
+
 	// Check if the membership dates of the user overlap with the activation.
 	// If they overlap, add the membership to the invActivation
-	for i := 0; i < len(*usrMemberships); i++ {
-		usrMem := &(*usrMemberships)[i]
-
-		beego.Trace("usrMem.StartTime:", usrMem.StartDate)
+	for _, usrMem := range usrMemberships {
 
 		// Get membership
-		mem, err := GetMembership(usrMem.MembershipId)
-		if err != nil {
-			return nil, errors.New(
-				fmt.Sprintf("Failed to get the actual membership: %v", err))
+		mem, ok := membershipsById[usrMem.MembershipId]
+		if !ok {
+			return nil, fmt.Errorf("Unknown membership id: %v", usrMem.MembershipId)
 		}
 
 		if usrMem.EndDate.IsZero() {
 			return nil, fmt.Errorf("end date is zero")
-		}
-
-		// Update user membership with correct end date
-		userMembershipUpdate := UserMembership{
-			Id: usrMem.Id,
-		}
-		beego.Trace("userMembershipUpdate.Id:", userMembershipUpdate.Id)
-		userMembershipUpdate.EndDate = usrMem.EndDate
-		_, err = o.Update(&userMembershipUpdate, "EndDate")
-		if err != nil {
-			beego.Error("Failed to update user membership end date:", err)
-			return nil, fmt.Errorf("Failed to update user membership end date")
 		}
 
 		// Now that we have membership start and end time, let's check
