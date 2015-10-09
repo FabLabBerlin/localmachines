@@ -127,7 +127,7 @@ const getMonthlyBills = [
     if (!billInfo) {
       return undefined;
     }
-    var activations = billInfo.Activations;
+    var activations = billInfo.Purchases;
     var activationsByMonth = _.groupBy(activations, function(info) {
       return moment(info.Activation.TimeStart).format('MMM YYYY');
     });

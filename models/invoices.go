@@ -50,8 +50,8 @@ func (this *Invoice) TableName() string {
 	return "invoices"
 }
 
-// This is a user activation row that appears in the XLSX file
-type InvoiceActivation struct {
+// This is a purchase row that appears in the XLSX file
+type Purchase struct {
 	Activation      Activation
 	Machine         *Machine
 	MachineUsage    float64
@@ -61,7 +61,7 @@ type InvoiceActivation struct {
 	DiscountedTotal float64
 }
 
-func (this *InvoiceActivation) MembershipStr() string {
+func (this *Purchase) MembershipStr() string {
 	membershipStr := ""
 	for _, membership := range this.Memberships {
 		memStr := fmt.Sprintf("%s (%d%%)",
@@ -80,17 +80,17 @@ func (this *InvoiceActivation) MembershipStr() string {
 	return membershipStr
 }
 
-func PriceTotalExclDisc(invAct *InvoiceActivation) float64 {
-	return invAct.MachineUsage * float64(invAct.Machine.Price)
+func PriceTotalExclDisc(p *Purchase) float64 {
+	return p.MachineUsage * float64(p.Machine.Price)
 }
 
-func PriceTotalDisc(invAct *InvoiceActivation) (float64, error) {
-	priceTotal := PriceTotalExclDisc(invAct)
-	for _, membership := range invAct.Memberships {
+func PriceTotalDisc(p *Purchase) (float64, error) {
+	priceTotal := PriceTotalExclDisc(p)
+	for _, membership := range p.Memberships {
 
 		// We need to know whether the machine is affected by the base membership
 		// as well as the individual activation is affected by the user membership
-		isAffected, err := membership.IsMachineAffected(invAct.Machine.Id)
+		isAffected, err := membership.IsMachineAffected(p.Machine.Id)
 		if err != nil {
 			beego.Error(
 				"Failed to check whether machine is affected by membership:", err)
@@ -108,13 +108,13 @@ func PriceTotalDisc(invAct *InvoiceActivation) (float64, error) {
 	return priceTotal, nil
 }
 
-type InvoiceActivations []*InvoiceActivation
+type Purchases []*Purchase
 
-func (this InvoiceActivations) Len() int {
+func (this Purchases) Len() int {
 	return len(this)
 }
 
-func (this InvoiceActivations) Less(i, j int) bool {
+func (this Purchases) Less(i, j int) bool {
 	if (*this[i]).Activation.TimeStart.Before((*this[j]).Activation.TimeStart) {
 		return true
 	} else if (*this[j]).Activation.TimeStart.Before((*this[i]).Activation.TimeStart) {
@@ -124,18 +124,18 @@ func (this InvoiceActivations) Less(i, j int) bool {
 	}
 }
 
-func (this InvoiceActivations) Swap(i, j int) {
+func (this Purchases) Swap(i, j int) {
 	*this[i], *this[j] = *this[j], *this[i]
 }
 
-func (this InvoiceActivations) SummarizedByMachine() (
-	InvoiceActivations, error) {
+func (this Purchases) SummarizedByMachine() (
+	Purchases, error) {
 
-	byMachine := make(map[string]*InvoiceActivation)
+	byMachine := make(map[string]*Purchase)
 	for _, activation := range this {
 		summary, ok := byMachine[activation.Machine.Name]
 		if !ok {
-			summary = &InvoiceActivation{
+			summary = &Purchase{
 				Activation:      Activation{},
 				MachineUsage:    0,
 				TotalPrice:      0,
@@ -151,38 +151,18 @@ func (this InvoiceActivations) SummarizedByMachine() (
 
 	}
 
-	sumActivations := make(InvoiceActivations, 0, len(byMachine))
+	sumPurchases := make(Purchases, 0, len(byMachine))
 	for _, summary := range byMachine {
-		sumActivations = append(sumActivations, summary)
+		sumPurchases = append(sumPurchases, summary)
 	}
-	sort.Stable(sumActivations)
+	sort.Stable(sumPurchases)
 
-	return sumActivations, nil
-}
-
-type InvoiceActivationsXlsx []*InvoiceActivation
-
-func (this InvoiceActivationsXlsx) Len() int {
-	return len(this)
-}
-
-func (this InvoiceActivationsXlsx) Less(i, j int) bool {
-	if (*this[i]).Machine.Name < (*this[j]).Machine.Name {
-		return true
-	} else if (*this[j]).Machine.Name < (*this[i]).Machine.Name {
-		return false
-	} else {
-		return (*this[i]).Activation.TimeStart.Before((*this[j]).Activation.TimeStart)
-	}
-}
-
-func (this InvoiceActivationsXlsx) Swap(i, j int) {
-	*this[i], *this[j] = *this[j], *this[i]
+	return sumPurchases, nil
 }
 
 type UserSummary struct {
-	User        User
-	Activations InvoiceActivations
+	User      User
+	Purchases Purchases
 }
 
 // exists returns whether the given file or directory exists or not
@@ -266,31 +246,31 @@ func GetInvoice(invoiceId int64) (invoice *Invoice, err error) {
 func CalculateInvoiceSummary(startTime, endTime time.Time) (invoice Invoice, err error) {
 
 	// Enhance activations with user and membership data
-	var invActivations *[]*InvoiceActivation
-	invActivations, err = invoice.getInvoiceActivations(startTime, endTime)
+	var purchases []*Purchase
+	purchases, err = invoice.getPurchases(startTime, endTime)
 	if err != nil {
 		err = fmt.Errorf("Failed to get enhanced activations: %v", err)
 		return
 	}
 
-	activationIds := make([]string, 0, len(*invActivations))
-	for _, act := range *invActivations {
+	activationIds := make([]string, 0, len(purchases))
+	for _, act := range purchases {
 		activationIds = append(activationIds, strconv.FormatInt(act.Activation.Id, 10))
 	}
 	invoice.Activations = "[" + strings.Join(activationIds, ",") + "]"
 
 	// Create user summaries from invoice activations
 	var userSummaries *[]*UserSummary
-	userSummaries, err = invoice.getUserSummaries(invActivations)
+	userSummaries, err = invoice.getUserSummaries(purchases)
 	if err != nil {
 		err = fmt.Errorf("Failed to get user summaries: %v", err)
 		return
 	}
 
 	for i := 0; i < len(*userSummaries); i++ {
-		sort.Stable((*userSummaries)[i].Activations)
-		beego.Trace((*userSummaries)[i].Activations)
-		for _, activation := range (*userSummaries)[i].Activations {
+		sort.Stable((*userSummaries)[i].Purchases)
+		beego.Trace((*userSummaries)[i].Purchases)
+		for _, activation := range (*userSummaries)[i].Purchases {
 			activation.TotalPrice = PriceTotalExclDisc(activation)
 			activation.DiscountedTotal, err = PriceTotalDisc(activation)
 			if err != nil {
@@ -379,7 +359,7 @@ func (this *Invoice) getInvoiceFileName(startTime,
 		string(b))
 }
 
-func (this *Invoice) getInvoiceActivations(startTime, endTime time.Time) (*[]*InvoiceActivation, error) {
+func (this *Invoice) getPurchases(startTime, endTime time.Time) ([]*Purchase, error) {
 	// Get all uninvoiced activations in the time range
 	var activations *[]Activation
 	activations, err := getActivations(startTime, endTime)
@@ -387,7 +367,7 @@ func (this *Invoice) getInvoiceActivations(startTime, endTime time.Time) (*[]*In
 		return nil, fmt.Errorf("Failed to get activations: %v", err)
 	}
 
-	enhActivations := make([]*InvoiceActivation, 0, len(*activations))
+	enhActivations := make([]*Purchase, 0, len(*activations))
 
 	// Enhance each activation in the activations slice.
 	for _, activation := range *activations {
@@ -399,11 +379,11 @@ func (this *Invoice) getInvoiceActivations(startTime, endTime time.Time) (*[]*In
 		enhActivations = append(enhActivations, invActivation)
 	}
 
-	return &enhActivations, nil
+	return enhActivations, nil
 }
 
 func (this *Invoice) getUserSummaries(
-	invoiceActivations *[]*InvoiceActivation) (*[]*UserSummary, error) {
+	purchases []*Purchase) (*[]*UserSummary, error) {
 
 	// Create a slice for unique user summaries.
 	users, err := GetAllUsers()
@@ -417,16 +397,14 @@ func (this *Invoice) getUserSummaries(
 		userSummaries = append(userSummaries, &newSummary)
 	}
 
-	// Sort invoice activations by user.
-	for invActIter := 0; invActIter < len(*invoiceActivations); invActIter++ {
+	// Sort purchases by user.
+	for _, purchase := range purchases {
 
-		// Search for user Id in the user summaries slice.
-		iActivation := (*invoiceActivations)[invActIter]
 		uSummaryExists := false
 		var summary *UserSummary
 
 		for _, userSummary := range userSummaries {
-			if iActivation.User.Id == userSummary.User.Id {
+			if purchase.User.Id == userSummary.User.Id {
 				uSummaryExists = true
 				summary = userSummary
 				break
@@ -437,23 +415,23 @@ func (this *Invoice) getUserSummaries(
 		if !uSummaryExists {
 			beego.Warn("Creating user summary for activation that has no matching user")
 			newSummary := UserSummary{}
-			newSummary.User = iActivation.User
+			newSummary.User = purchase.User
 			userSummaries = append(userSummaries, &newSummary)
 			summary = userSummaries[len(userSummaries)-1]
 		}
 
 		// Append the invoice activation to the user summary.
-		if summary.User.Id == iActivation.User.Id {
-			summary.Activations = append(summary.Activations, iActivation)
+		if summary.User.Id == purchase.User.Id {
+			summary.Purchases = append(summary.Purchases, purchase)
 		}
-	} // for
+	}
 
 	// Return populated user summaries slice.
 	return &userSummaries, nil
 }
 
 func (this *Invoice) enhanceActivation(activation *Activation) (
-	*InvoiceActivation, error) {
+	*Purchase, error) {
 
 	o := orm.NewOrm()
 
@@ -464,23 +442,23 @@ func (this *Invoice) enhanceActivation(activation *Activation) (
 		return nil, fmt.Errorf("Failed to get machine: %v", err)
 	}
 
-	invActivation := &InvoiceActivation{
+	purchase := &Purchase{
 		Machine: machine,
 	}
 
 	// Usage time is stored as seconds and we need to transform that into
 	// other format depending on the machine usage unit.
-	switch invActivation.Machine.PriceUnit {
+	switch purchase.Machine.PriceUnit {
 	case "minute":
-		invActivation.MachineUsage = float64(activation.TimeTotal) / 60.0
-		if invActivation.MachineUsage < 0.01 {
-			invActivation.MachineUsage = 0.01
+		purchase.MachineUsage = float64(activation.TimeTotal) / 60.0
+		if purchase.MachineUsage < 0.01 {
+			purchase.MachineUsage = 0.01
 		}
 		break
 	case "hour":
-		invActivation.MachineUsage = float64(activation.TimeTotal) / 60.0 / 60.0
-		if invActivation.MachineUsage < 0.01 {
-			invActivation.MachineUsage = 0.01
+		purchase.MachineUsage = float64(activation.TimeTotal) / 60.0 / 60.0
+		if purchase.MachineUsage < 0.01 {
+			purchase.MachineUsage = 0.01
 		}
 		break
 	}
@@ -491,14 +469,14 @@ func (this *Invoice) enhanceActivation(activation *Activation) (
 		return nil, errors.New(fmt.Sprintf("Failed to get user: %v", err))
 	}
 
-	invActivation.User = *user
+	purchase.User = *user
 
 	// Get user memberships
 	m := &UserMembership{} // Use just for the TableName func
 	usrMemberships := &[]UserMembership{}
 	query := fmt.Sprintf("SELECT id, user_id, membership_id, start_date, end_date, auto_extend FROM %s "+
 		"WHERE user_id=?", m.TableName())
-	_, err = o.Raw(query, invActivation.User.Id).QueryRows(usrMemberships)
+	_, err = o.Raw(query, purchase.User.Id).QueryRows(usrMemberships)
 	if err != nil {
 		return nil, errors.New(
 			fmt.Sprintf("Failed to get user membership: %v", err))
@@ -538,14 +516,10 @@ func (this *Invoice) enhanceActivation(activation *Activation) (
 		if activation.TimeStart.After(usrMem.StartDate) &&
 			activation.TimeStart.Before(usrMem.EndDate) {
 
-			// Yes, this activation is within the range of a membership,
-			// add the membership to the activation
-			beego.Trace("Activation affected by membership")
-			invActivation.Memberships = append(invActivation.Memberships, mem)
+			purchase.Memberships = append(purchase.Memberships, mem)
 		}
 	}
-	invActivation.Activation = *activation
-	beego.Info("invActivation.Activation.TimeStart = ", invActivation.Activation.TimeStart)
+	purchase.Activation = *activation
 
-	return invActivation, nil
+	return purchase, nil
 }
