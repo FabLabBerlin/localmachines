@@ -129,7 +129,7 @@ const getMonthlyBills = [
     }
     var activations = billInfo.Activations;
     var activationsByMonth = _.groupBy(activations, function(info) {
-      return moment(info.TimeStart).format('MMM YYYY');
+      return moment(info.Activation.TimeStart).format('MMM YYYY');
     });
     var monthlyBills = _.map(billMonths, function(m) {
       var month = m.format('MMM YYYY');
@@ -167,10 +167,9 @@ const getMonthlyBills = [
         monthlyBill.sums.activations.priceInclVAT += priceInclVAT;
         monthlyBill.sums.activations.priceExclVAT += priceExclVAT;
         monthlyBill.sums.activations.priceVAT += priceVAT;
-        
         monthlyBill.activations.push({
           MachineName: info.Machine.Name,
-          TimeStart: moment(info.TimeStart),
+          TimeStart: moment(info.Activation.TimeStart),
           duration: duration,
           priceExclVAT: priceExclVAT,
           priceVAT: priceVAT,
