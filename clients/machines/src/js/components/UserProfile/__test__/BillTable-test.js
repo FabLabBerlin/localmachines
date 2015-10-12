@@ -46,7 +46,7 @@ var state = {
         'City': '',
         'CountryCode': ''
       },
-      'Activations': [
+      'Purchases': [
         {
           'Activation': {
             'Id': 3195,

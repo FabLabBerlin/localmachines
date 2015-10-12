@@ -39,7 +39,6 @@
     <thead>
       <tr>
         <th>Name</th>
-        <th>Reservation Price for Machine Start (if 0 €: user must reserve at least 2 slots)</th>
         <th>Reservation Price per hour</th>
         <th></th>
       </tr>
@@ -47,9 +46,6 @@
     <tbody>
       <tr ng-repeat="machine in machines">
         <td>{{machine.Name}}</td>
-        <td>
-          <input type="text" ng-model="machine.ReservationPriceStart" placeholder="Enter price to enable reservations for this machine" size="50">
-        </td>
         <td>
           <input type="text" ng-model="machine.ReservationPriceHourly" placeholder="Enter price to enable reservations for this machine" size="50">
         </td>

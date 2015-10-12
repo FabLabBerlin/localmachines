@@ -18,41 +18,97 @@ const (
 	GREEN  = "FF92D050"
 )
 
+type PurchasesXlsx []*Purchase
+
+func (this PurchasesXlsx) Len() int {
+	return len(this)
+}
+
+func (this PurchasesXlsx) Less(i, j int) bool {
+	var timeStartI time.Time
+	var timeStartJ time.Time
+	if (*this[i]).Activation != nil {
+		timeStartI = (*this[i]).Activation.TimeStart
+	} else {
+		timeStartI = (*this[i]).Reservation.TimeStart
+	}
+	if (*this[j]).Activation != nil {
+		timeStartJ = (*this[j]).Activation.TimeStart
+	} else {
+		timeStartJ = (*this[j]).Reservation.TimeStart
+	}
+	if (*this[i]).Machine.Name < (*this[j]).Machine.Name {
+		return true
+	} else if (*this[j]).Machine.Name < (*this[i]).Machine.Name {
+		return false
+	} else {
+		return timeStartI.Before(timeStartJ)
+	}
+}
+
+func (this PurchasesXlsx) Swap(i, j int) {
+	*this[i], *this[j] = *this[j], *this[i]
+}
+
 // Adds a row to xlsx sheet by consuming a pointer to
 // InvoiceActivation model based store.
-func AddRowXlsx(sheet *xlsx.Sheet, invActivation *InvoiceActivation) error {
+func AddRowXlsx(sheet *xlsx.Sheet, purchase *Purchase) error {
+	var label string
+	var timeStart time.Time
+	var priceUnit string
+	var totalPrice float64
+	var discountedTotal float64
+
+	if purchase.Activation != nil {
+		label = purchase.Machine.Name
+		priceUnit = purchase.Machine.PriceUnit
+		timeStart = purchase.Activation.TimeStart
+		totalPrice = purchase.TotalPrice
+		discountedTotal = purchase.DiscountedTotal
+	} else {
+		label = "Reservation (" + purchase.Machine.Name + ")"
+		priceUnit = purchase.Reservation.PriceUnit()
+		timeStart = purchase.Reservation.TimeStart
+	}
+
 	row := sheet.AddRow()
 	row.AddCell()
 
 	cell := row.AddCell()
-	cell.Value = invActivation.Machine.Name
+	cell.Value = label
 
 	// TODO: Implement FastBill product ID
 	cell = row.AddCell()
 	cell.Value = "Undefined"
 
 	cell = row.AddCell()
-	if invActivation.Activation.TimeStart.Unix() > 0 {
-		cell.Value = invActivation.Activation.TimeStart.Format(time.RFC1123)
+	if timeStart.Unix() > 0 {
+		cell.Value = timeStart.Format(time.RFC1123)
 	}
 
 	cell = row.AddCell()
-	cell.SetFloatWithFormat(invActivation.MachineUsage, FORMAT_4_DIGIT)
+	if purchase.Activation != nil {
+		cell.SetFloatWithFormat(purchase.MachineUsage, FORMAT_4_DIGIT)
+	} else {
+		totalPrice = float64(purchase.Reservation.Slots()) * purchase.PricePerUnit()
+		discountedTotal = totalPrice
+		cell.SetInt(purchase.Reservation.Slots())
+	}
 
 	cell = row.AddCell()
-	cell.Value = invActivation.Machine.PriceUnit
+	cell.Value = priceUnit
 
 	cell = row.AddCell()
-	cell.SetFloatWithFormat(float64(invActivation.Machine.Price), FORMAT_2_DIGIT)
+	cell.SetFloatWithFormat(purchase.PricePerUnit(), FORMAT_2_DIGIT)
 
 	cell = row.AddCell()
-	cell.SetFloatWithFormat(invActivation.TotalPrice, FORMAT_2_DIGIT)
+	cell.SetFloatWithFormat(totalPrice, FORMAT_2_DIGIT)
 
 	cell = row.AddCell()
-	cell.Value = invActivation.MembershipStr()
+	cell.Value = purchase.MembershipStr()
 
 	cell = row.AddCell()
-	cell.SetFloatWithFormat(invActivation.DiscountedTotal, FORMAT_2_DIGIT)
+	cell.SetFloatWithFormat(discountedTotal, FORMAT_2_DIGIT)
 	cell.SetStyle(boldStyle())
 	return nil
 }
@@ -134,7 +190,7 @@ func createXlsxFile(filePath string, invoice *Invoice) error {
 			return fmt.Errorf("GetUserMemberships: %v", err)
 		}
 
-		if len(userSummary.Activations) == 0 && (memberships == nil || len(memberships.Data) == 0) {
+		if len(userSummary.Purchases) == 0 && (memberships == nil || len(memberships.Data) == 0) {
 			// nothing to bill
 			continue
 		}
@@ -254,11 +310,11 @@ func createXlsxFile(filePath string, invoice *Invoice) error {
 
 		sumTotal := 0.0
 		sumTotalDisc := 0.0
-		activations := InvoiceActivationsXlsx(userSummary.Activations)
-		sort.Stable(activations)
-		for _, activation := range activations {
-			sumTotal += activation.TotalPrice
-			sumTotalDisc += activation.DiscountedTotal
+		purchases := PurchasesXlsx(userSummary.Purchases)
+		sort.Stable(purchases)
+		for _, purchase := range purchases {
+			sumTotal += purchase.TotalPrice
+			sumTotalDisc += purchase.DiscountedTotal
 
 		}
 
@@ -267,7 +323,7 @@ func createXlsxFile(filePath string, invoice *Invoice) error {
 		cell.Value = "Activations By Machine"
 		AddRowActivationsHeaderXlsx(sheet)
 
-		if summarizedByMachine, err := userSummary.Activations.SummarizedByMachine(); err == nil {
+		if summarizedByMachine, err := userSummary.Purchases.SummarizedByMachine(); err == nil {
 			for _, summed := range summarizedByMachine {
 				if err := AddRowXlsx(sheet, summed); err != nil {
 					return fmt.Errorf("AddRowXlsx: %v", err)
@@ -304,8 +360,8 @@ func createXlsxFile(filePath string, invoice *Invoice) error {
 		cell.Value = "Activations"
 		AddRowActivationsHeaderXlsx(sheet)
 
-		for _, activation := range activations {
-			if err := AddRowXlsx(sheet, activation); err != nil {
+		for _, purchase := range purchases {
+			if err := AddRowXlsx(sheet, purchase); err != nil {
 				return fmt.Errorf("AddRowXlsx: %v", err)
 			}
 		}
