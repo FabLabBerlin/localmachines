@@ -129,7 +129,11 @@ const getMonthlyBills = [
     }
     var activations = billInfo.Purchases;
     var activationsByMonth = _.groupBy(activations, function(info) {
-      return moment(info.Activation.TimeStart).format('MMM YYYY');
+      console.log('info:', info);
+      if (info.Activation) {
+        console.log('info.Activation.TimeStart:', info.Activation.TimeStart);
+        return moment(info.Activation.TimeStart).format('MMM YYYY');
+      }
     });
     var monthlyBills = _.map(billMonths, function(m) {
       var month = m.format('MMM YYYY');

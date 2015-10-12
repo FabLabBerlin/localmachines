@@ -454,7 +454,7 @@ func (this *Invoice) getPurchases(startTime, endTime time.Time) ([]*Purchase, er
 
 	// Add purchases from activations
 	for _, activation := range *activations {
-		purchase, err := this.purchaseFromActivation(&activation, machinesById, usersById, userMembershipsById, membershipsById)
+		purchase, err := this.purchaseFromActivation(activation, machinesById, usersById, userMembershipsById, membershipsById)
 		if err != nil {
 			return nil, fmt.Errorf("Failed to create purchase from activation: %v", err)
 		}
@@ -521,7 +521,7 @@ func (this *Invoice) getUserSummaries(
 	return &userSummaries, nil
 }
 
-func (this *Invoice) purchaseFromActivation(activation *Activation, machinesById map[int64]*Machine, usersById map[int64]User, userMembershipsByUserId map[int64][]*UserMembership, membershipsById map[int64]*Membership) (
+func (this *Invoice) purchaseFromActivation(activation Activation, machinesById map[int64]*Machine, usersById map[int64]User, userMembershipsByUserId map[int64][]*UserMembership, membershipsById map[int64]*Membership) (
 	*Purchase, error) {
 
 	machine, ok := machinesById[activation.MachineId]
@@ -581,7 +581,7 @@ func (this *Invoice) purchaseFromActivation(activation *Activation, machinesById
 			purchase.Memberships = append(purchase.Memberships, mem)
 		}
 	}
-	purchase.Activation = activation
+	purchase.Activation = &activation
 
 	return purchase, nil
 }
