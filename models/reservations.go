@@ -18,8 +18,17 @@ type Reservation struct {
 	Created   time.Time `orm:"type(datetime)"`
 }
 
+func (this *Reservation) Slots() int {
+	duration := this.TimeEnd.Unix() - this.TimeStart.Unix()
+	return int(duration / 1800)
+}
+
 func (this *Reservation) TableName() string {
 	return "reservations"
+}
+
+func (this *Reservation) PriceUnit() string {
+	return "30 minute slot"
 }
 
 func GetReservation(id int64) (reservation *Reservation, err error) {

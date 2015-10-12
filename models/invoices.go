@@ -52,7 +52,8 @@ func (this *Invoice) TableName() string {
 
 // This is a purchase row that appears in the XLSX file
 type Purchase struct {
-	Activation      Activation
+	Activation      *Activation
+	Reservation     *Reservation
 	Machine         *Machine
 	MachineUsage    float64
 	User            User
@@ -80,11 +81,31 @@ func (this *Purchase) MembershipStr() string {
 	return membershipStr
 }
 
+func (this *Purchase) PricePerUnit() float64 {
+	if this.Reservation != nil {
+		if this.Machine.ReservationPriceHourly != nil {
+			return *this.Machine.ReservationPriceHourly / 2
+		} else {
+			return 0
+		}
+	} else {
+		return float64(this.Machine.Price)
+	}
+}
+
 func PriceTotalExclDisc(p *Purchase) float64 {
-	return p.MachineUsage * float64(p.Machine.Price)
+	if p.Activation != nil {
+		return p.MachineUsage * float64(p.Machine.Price)
+	} else {
+		return float64(p.Reservation.Slots()) * p.PricePerUnit()
+	}
 }
 
 func PriceTotalDisc(p *Purchase) (float64, error) {
+	if p.Reservation != nil {
+		return PriceTotalExclDisc(p), nil
+	}
+
 	priceTotal := PriceTotalExclDisc(p)
 	for _, membership := range p.Memberships {
 
@@ -115,9 +136,21 @@ func (this Purchases) Len() int {
 }
 
 func (this Purchases) Less(i, j int) bool {
-	if (*this[i]).Activation.TimeStart.Before((*this[j]).Activation.TimeStart) {
+	var timeStartI time.Time
+	var timeStartJ time.Time
+	if (*this[i]).Activation != nil {
+		timeStartI = (*this[i]).Activation.TimeStart
+	} else {
+		timeStartI = (*this[i]).Reservation.TimeStart
+	}
+	if (*this[j]).Activation != nil {
+		timeStartJ = (*this[j]).Activation.TimeStart
+	} else {
+		timeStartI = (*this[j]).Reservation.TimeStart
+	}
+	if timeStartI.Before(timeStartJ) {
 		return true
-	} else if (*this[j]).Activation.TimeStart.Before((*this[i]).Activation.TimeStart) {
+	} else if timeStartJ.Before(timeStartI) {
 		return false
 	} else {
 		return (*this[i]).Machine.Name < (*this[j]).Machine.Name
@@ -136,7 +169,7 @@ func (this Purchases) SummarizedByMachine() (
 		summary, ok := byMachine[activation.Machine.Name]
 		if !ok {
 			summary = &Purchase{
-				Activation:      Activation{},
+				Activation:      &Activation{},
 				MachineUsage:    0,
 				TotalPrice:      0,
 				DiscountedTotal: 0,
@@ -254,8 +287,10 @@ func CalculateInvoiceSummary(startTime, endTime time.Time) (invoice Invoice, err
 	}
 
 	activationIds := make([]string, 0, len(purchases))
-	for _, act := range purchases {
-		activationIds = append(activationIds, strconv.FormatInt(act.Activation.Id, 10))
+	for _, p := range purchases {
+		if p.Activation != nil {
+			activationIds = append(activationIds, strconv.FormatInt(p.Activation.Id, 10))
+		}
 	}
 	invoice.Activations = "[" + strings.Join(activationIds, ",") + "]"
 
@@ -360,14 +395,6 @@ func (this *Invoice) getInvoiceFileName(startTime,
 }
 
 func (this *Invoice) getPurchases(startTime, endTime time.Time) ([]*Purchase, error) {
-	// Get all uninvoiced activations in the time range
-	var activations *[]Activation
-	activations, err := getActivations(startTime, endTime)
-	if err != nil {
-		return nil, fmt.Errorf("Failed to get activations: %v", err)
-	}
-
-	enhActivations := make([]*Purchase, 0, len(*activations))
 
 	machines, err := GetAllMachines()
 	if err != nil {
@@ -412,17 +439,38 @@ func (this *Invoice) getPurchases(startTime, endTime time.Time) ([]*Purchase, er
 		membershipsById[membership.Id] = membership
 	}
 
-	// Enhance each activation in the activations slice.
-	for _, activation := range *activations {
-		invActivation, err := this.enhanceActivation(&activation, machinesById, usersById, userMembershipsById, membershipsById)
-		if err != nil {
-			return nil, errors.New(
-				fmt.Sprintf("Failed to enhance activation: %v", err))
-		}
-		enhActivations = append(enhActivations, invActivation)
+	// Get all uninvoiced activations in the time range
+	activations, err := getActivations(startTime, endTime)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to get activations: %v", err)
 	}
 
-	return enhActivations, nil
+	reservations, err := GetAllReservations()
+	if err != nil {
+		return nil, fmt.Errorf("Failed to get reservations: %v", err)
+	}
+
+	purchases := make([]*Purchase, 0, len(*activations)+len(reservations))
+
+	// Add purchases from activations
+	for _, activation := range *activations {
+		purchase, err := this.purchaseFromActivation(&activation, machinesById, usersById, userMembershipsById, membershipsById)
+		if err != nil {
+			return nil, fmt.Errorf("Failed to create purchase from activation: %v", err)
+		}
+		purchases = append(purchases, purchase)
+	}
+
+	// Add purchases from reservations
+	for _, reservation := range reservations {
+		purchase, err := this.purchaseFromReservation(reservation, machinesById, usersById)
+		if err != nil {
+			return nil, fmt.Errorf("Failed to create purchase from reservation: %v", err)
+		}
+		purchases = append(purchases, purchase)
+	}
+
+	return purchases, nil
 }
 
 func (this *Invoice) getUserSummaries(
@@ -473,7 +521,7 @@ func (this *Invoice) getUserSummaries(
 	return &userSummaries, nil
 }
 
-func (this *Invoice) enhanceActivation(activation *Activation, machinesById map[int64]*Machine, usersById map[int64]User, userMembershipsByUserId map[int64][]*UserMembership, membershipsById map[int64]*Membership) (
+func (this *Invoice) purchaseFromActivation(activation *Activation, machinesById map[int64]*Machine, usersById map[int64]User, userMembershipsByUserId map[int64][]*UserMembership, membershipsById map[int64]*Membership) (
 	*Purchase, error) {
 
 	machine, ok := machinesById[activation.MachineId]
@@ -533,7 +581,23 @@ func (this *Invoice) enhanceActivation(activation *Activation, machinesById map[
 			purchase.Memberships = append(purchase.Memberships, mem)
 		}
 	}
-	purchase.Activation = *activation
+	purchase.Activation = activation
 
+	return purchase, nil
+}
+
+func (this *Invoice) purchaseFromReservation(reservation *Reservation, machinesById map[int64]*Machine, usersById map[int64]User) (*Purchase, error) {
+	machine, ok := machinesById[reservation.MachineId]
+	if !ok {
+		return nil, fmt.Errorf("No machine has the ID %v", reservation.MachineId)
+	}
+
+	purchase := &Purchase{
+		Machine:     machine,
+		Reservation: reservation,
+	}
+	if purchase.User, ok = usersById[reservation.UserId]; !ok {
+		return nil, fmt.Errorf("No user has the ID %v", reservation.MachineId)
+	}
 	return purchase, nil
 }

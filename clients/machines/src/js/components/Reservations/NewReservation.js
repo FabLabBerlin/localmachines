@@ -13,16 +13,7 @@ var UserActions = require('../../actions/UserActions');
 var MachinePricing = React.createClass({
 
   render() {
-    var startPrice = this.props.machine.get('ReservationPriceStart');
     var hourlyPrice = this.props.machine.get('ReservationPriceHourly');
-    if (_.isNumber(startPrice)) {
-      startPrice = (
-        <tr>
-          <td>Fixed price for reservation:</td>
-          <td>{startPrice.toFixed(2)} €</td>
-        </tr>
-      );
-    }
     if (_.isNumber(hourlyPrice)) {
       hourlyPrice = (
         <tr>
@@ -36,7 +27,6 @@ var MachinePricing = React.createClass({
         <hr/>
         <table className="table table-bordered table-striped table-hover">
           <tbody>
-            {startPrice}
             {hourlyPrice}
           </tbody>
         </table>

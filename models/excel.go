@@ -25,12 +25,24 @@ func (this PurchasesXlsx) Len() int {
 }
 
 func (this PurchasesXlsx) Less(i, j int) bool {
+	var timeStartI time.Time
+	var timeStartJ time.Time
+	if (*this[i]).Activation != nil {
+		timeStartI = (*this[i]).Activation.TimeStart
+	} else {
+		timeStartI = (*this[i]).Reservation.TimeStart
+	}
+	if (*this[j]).Activation != nil {
+		timeStartJ = (*this[j]).Activation.TimeStart
+	} else {
+		timeStartJ = (*this[j]).Reservation.TimeStart
+	}
 	if (*this[i]).Machine.Name < (*this[j]).Machine.Name {
 		return true
 	} else if (*this[j]).Machine.Name < (*this[i]).Machine.Name {
 		return false
 	} else {
-		return (*this[i]).Activation.TimeStart.Before((*this[j]).Activation.TimeStart)
+		return timeStartI.Before(timeStartJ)
 	}
 }
 
@@ -41,38 +53,62 @@ func (this PurchasesXlsx) Swap(i, j int) {
 // Adds a row to xlsx sheet by consuming a pointer to
 // InvoiceActivation model based store.
 func AddRowXlsx(sheet *xlsx.Sheet, purchase *Purchase) error {
+	var label string
+	var timeStart time.Time
+	var priceUnit string
+	var totalPrice float64
+	var discountedTotal float64
+
+	if purchase.Activation != nil {
+		label = purchase.Machine.Name
+		priceUnit = purchase.Machine.PriceUnit
+		timeStart = purchase.Activation.TimeStart
+		totalPrice = purchase.TotalPrice
+		discountedTotal = purchase.DiscountedTotal
+	} else {
+		label = "Reservation (" + purchase.Machine.Name + ")"
+		priceUnit = purchase.Reservation.PriceUnit()
+		timeStart = purchase.Reservation.TimeStart
+	}
+
 	row := sheet.AddRow()
 	row.AddCell()
 
 	cell := row.AddCell()
-	cell.Value = purchase.Machine.Name
+	cell.Value = label
 
 	// TODO: Implement FastBill product ID
 	cell = row.AddCell()
 	cell.Value = "Undefined"
 
 	cell = row.AddCell()
-	if purchase.Activation.TimeStart.Unix() > 0 {
-		cell.Value = purchase.Activation.TimeStart.Format(time.RFC1123)
+	if timeStart.Unix() > 0 {
+		cell.Value = timeStart.Format(time.RFC1123)
 	}
 
 	cell = row.AddCell()
-	cell.SetFloatWithFormat(purchase.MachineUsage, FORMAT_4_DIGIT)
+	if purchase.Activation != nil {
+		cell.SetFloatWithFormat(purchase.MachineUsage, FORMAT_4_DIGIT)
+	} else {
+		totalPrice = float64(purchase.Reservation.Slots()) * purchase.PricePerUnit()
+		discountedTotal = totalPrice
+		cell.SetInt(purchase.Reservation.Slots())
+	}
 
 	cell = row.AddCell()
-	cell.Value = purchase.Machine.PriceUnit
+	cell.Value = priceUnit
 
 	cell = row.AddCell()
-	cell.SetFloatWithFormat(float64(purchase.Machine.Price), FORMAT_2_DIGIT)
+	cell.SetFloatWithFormat(purchase.PricePerUnit(), FORMAT_2_DIGIT)
 
 	cell = row.AddCell()
-	cell.SetFloatWithFormat(purchase.TotalPrice, FORMAT_2_DIGIT)
+	cell.SetFloatWithFormat(totalPrice, FORMAT_2_DIGIT)
 
 	cell = row.AddCell()
 	cell.Value = purchase.MembershipStr()
 
 	cell = row.AddCell()
-	cell.SetFloatWithFormat(purchase.DiscountedTotal, FORMAT_2_DIGIT)
+	cell.SetFloatWithFormat(discountedTotal, FORMAT_2_DIGIT)
 	cell.SetStyle(boldStyle())
 	return nil
 }
