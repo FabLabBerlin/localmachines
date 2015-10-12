@@ -98,7 +98,7 @@
         <td>
           <input type="text" ng-model="reservationRule.Name">
         </td>
-        <td>{{reservationRule.Machine.Name}}</td>
+        <td>{{reservationRule.Machine.Name || 'All machines'}}</td>
         <td>
           <input type="radio" ng-model="reservationRule.Available" ng-value="true" ng-change="setAvailable(reservationRule.Id)">
         </td>
