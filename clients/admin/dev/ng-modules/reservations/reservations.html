@@ -39,7 +39,7 @@
     <thead>
       <tr>
         <th>Name</th>
-        <th>Reservation Price per hour</th>
+        <th>Reservation Price per 30 minute slot</th>
         <th></th>
       </tr>
     </thead>
@@ -47,7 +47,7 @@
       <tr ng-repeat="machine in machines">
         <td>{{machine.Name}}</td>
         <td>
-          <input type="text" ng-model="machine.ReservationPriceHourly" placeholder="Enter price to enable reservations for this machine" size="50">
+          <input type="text" ng-model="machine.ReservationPriceHalfHourly" placeholder="Enter price to enable reservations for this machine" size="50">
         </td>
         <td>
           <button type="button" class="btn btn-primary btn-ico pull-right" ng-click="saveMachine(machine.Id)">

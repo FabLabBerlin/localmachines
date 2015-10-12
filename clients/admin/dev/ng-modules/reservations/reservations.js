@@ -102,6 +102,7 @@ app.controller('ReservationsCtrl', ['$scope', '$http', '$location', '$cookieStor
   .success(function(data) {
     $scope.machines = data;
     _.each($scope.machines, function(machine) {
+      machine.ReservationPriceHalfHourly = machine.ReservationPriceHourly / 2;
       $scope.machinesById[machine.Id] = machine;
     });
     loadReservationRules();
@@ -126,8 +127,8 @@ app.controller('ReservationsCtrl', ['$scope', '$http', '$location', '$cookieStor
     } else {
       machine.ReservationPriceStart = null;
     }
-    if (machine.ReservationPriceHourly) {
-      machine.ReservationPriceHourly = parseFloat(machine.ReservationPriceHourly);
+    if (machine.ReservationPriceHalfHourly) {
+      machine.ReservationPriceHourly = parseFloat(machine.ReservationPriceHalfHourly) * 2;
     } else {
       machine.ReservationPriceHourly = null;
     }
