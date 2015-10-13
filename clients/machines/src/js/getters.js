@@ -440,7 +440,7 @@ const getNewReservationTimes = [
               }
             }
 
-            if (!rule.get('DateStart') && !rule.get('TimeStart') && !rule.get('DateEnd') && !rule.get('TimeEnd')) {
+            if (!rule.get('DateStart') && !rule.get('TimeStart') && !rule.get('DateEnd') && !rule.get('TimeEnd') && !rule.get('Monday') && !rule.get('Tuesday') && !rule.get('Wednesday') && !rule.get('Thursday') && !rule.get('Friday') && !rule.get('Saturday') && !rule.get('Sunday')) {
               applies = false;
             }
 
