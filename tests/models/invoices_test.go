@@ -17,8 +17,8 @@ func init() {
 	ConfigDB()
 }
 
-func CreateTestInvActivation(machineId int64, machineName string,
-	minutes, pricePerMinute float64) *models.InvoiceActivation {
+func CreateTestPurchase(machineId int64, machineName string,
+	minutes, pricePerMinute float64) *models.Purchase {
 
 	machine := models.Machine{}
 	machine.Id = machineId
@@ -26,8 +26,8 @@ func CreateTestInvActivation(machineId int64, machineName string,
 	machine.PriceUnit = "minute"
 	machine.Price = pricePerMinute
 
-	invAct := &models.InvoiceActivation{
-		Activation: models.Activation{
+	invAct := &models.Purchase{
+		Activation: &models.Activation{
 			TimeStart: TIME_START,
 			TimeEnd:   TIME_START.Add(time.Minute * time.Duration(minutes)),
 		},
@@ -56,15 +56,15 @@ func TestInvoiceActivation(t *testing.T) {
 	Convey("Testing InvoiceActivation model", t, func() {
 		Reset(ResetDB)
 		Convey("Testing MembershipStr", func() {
-			invAct := CreateTestInvActivation(22, "Lasercutter", 12, 0.5)
+			invAct := CreateTestPurchase(22, "Lasercutter", 12, 0.5)
 			So(invAct.MembershipStr(), ShouldEqual, "HP (50%)")
 		})
 		Convey("Testing PriceTotalExclDisc", func() {
-			invAct := CreateTestInvActivation(22, "Lasercutter", 12, 0.5)
+			invAct := CreateTestPurchase(22, "Lasercutter", 12, 0.5)
 			So(models.PriceTotalExclDisc(invAct), ShouldEqual, 6)
 		})
 		Convey("Testing PriceTotalDisc", func() {
-			invAct := CreateTestInvActivation(22, "Lasercutter", 12, 0.5)
+			invAct := CreateTestPurchase(22, "Lasercutter", 12, 0.5)
 			if priceTotalDisc, err := models.PriceTotalDisc(invAct); err == nil {
 				So(priceTotalDisc, ShouldEqual, 3)
 			} else {
@@ -82,7 +82,7 @@ func TestInvoiceActivation(t *testing.T) {
 					"0.50", "6.00", "HP (50%)", "3.00"},
 			}
 
-			invAct := CreateTestInvActivation(22, "Lasercutter", 12, 0.5)
+			invAct := CreateTestPurchase(22, "Lasercutter", 12, 0.5)
 			file := xlsx.NewFile()
 			sheet := file.AddSheet("User Summaries")
 			models.AddRowActivationsHeaderXlsx(sheet)
@@ -113,12 +113,12 @@ func TestInvoiceActivation(t *testing.T) {
 		Reset(ResetDB)
 
 		Convey("Testing SummarizedByMachine", func() {
-			invs := models.InvoiceActivations{
-				CreateTestInvActivation(22, "Lasercutter", 12, 0.5),
-				CreateTestInvActivation(22, "Lasercutter", 13, 0.25),
-				CreateTestInvActivation(23, "CNC Router", 12, 0.8),
-				CreateTestInvActivation(23, "CNC Router", 12, 0.8),
-				CreateTestInvActivation(23, "CNC Router", 12, 0.8),
+			invs := models.Purchases{
+				CreateTestPurchase(22, "Lasercutter", 12, 0.5),
+				CreateTestPurchase(22, "Lasercutter", 13, 0.25),
+				CreateTestPurchase(23, "CNC Router", 12, 0.8),
+				CreateTestPurchase(23, "CNC Router", 12, 0.8),
+				CreateTestPurchase(23, "CNC Router", 12, 0.8),
 			}
 
 			if invs, err := invs.SummarizedByMachine(); err == nil {

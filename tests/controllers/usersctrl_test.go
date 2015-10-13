@@ -274,49 +274,6 @@ func TestUsersAPI(t *testing.T) {
 			})
 		})
 
-		Convey("Testing DELETE /users/:uid", func() {
-
-			Convey("Try to delete user without being logged in, should return 401", func() {
-				r, _ := http.NewRequest("DELETE", "/api/users/0", nil)
-				w := httptest.NewRecorder()
-				beego.BeeApp.Handlers.ServeHTTP(w, r)
-
-				So(w.Code, ShouldEqual, 401)
-			})
-
-			Convey("Try to delete user as a regular user, should return 401", func() {
-				r, _ := http.NewRequest("DELETE", "/api/users/0", nil)
-				r.AddCookie(LoginAsRegular())
-				w := httptest.NewRecorder()
-				beego.BeeApp.Handlers.ServeHTTP(w, r)
-
-				So(w.Code, ShouldEqual, 401)
-			})
-
-			Convey("Try to delete a non-existing user, should return 403", func() {
-				r, _ := http.NewRequest("DELETE", "/api/users/0", nil)
-				r.AddCookie(LoginAsAdmin())
-				w := httptest.NewRecorder()
-				beego.BeeApp.Handlers.ServeHTTP(w, r)
-
-				So(w.Code, ShouldEqual, 403)
-			})
-
-			Convey("Create a user and delete it, should return 200", func() {
-				u := &models.User{
-					Username: "A",
-					Email:    "a@easylab.io",
-				}
-				mid, _ := models.CreateUser(u)
-				r, _ := http.NewRequest("DELETE", "/api/users/"+strconv.FormatInt(mid, 10), nil)
-				r.AddCookie(LoginAsAdmin())
-				w := httptest.NewRecorder()
-				beego.BeeApp.Handlers.ServeHTTP(w, r)
-
-				So(w.Code, ShouldEqual, 200)
-			})
-		})
-
 		Convey("Testing PUT /users/:uid", func() {
 
 			Convey("Try to modify a user without being connected, should return 500", func() {

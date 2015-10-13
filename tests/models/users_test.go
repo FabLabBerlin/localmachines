@@ -15,22 +15,6 @@ func init() {
 func TestUsers(t *testing.T) {
 	Convey("Testing User model", t, func() {
 		Reset(ResetDB)
-		Convey("Testing Delete user", func() {
-			Convey("Creating user and deleting it should be no problem", func() {
-				user := models.User{}
-				user.Email = "user@example.com"
-				uid, err := models.CreateUser(&user)
-				So(err, ShouldBeNil)
-				So(uid, ShouldBeGreaterThan, 0)
-
-				err = models.DeleteUser(uid)
-				So(err, ShouldBeNil)
-			})
-			Convey("Try to delete non-existing user", func() {
-				err := models.DeleteUser(0)
-				So(err, ShouldNotBeNil)
-			})
-		})
 		Convey("Testing CreateUser", func() {
 			Convey("Creating user with invalid email should not work", func() {
 				user := models.User{}
