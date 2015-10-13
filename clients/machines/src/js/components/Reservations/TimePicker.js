@@ -10,6 +10,7 @@ var TimePicker = React.createClass({
 
   getDataBindings() {
     return {
+      machinesById: getters.getMachinesById,
       newReservation: getters.getNewReservation,
       times: getters.getNewReservationTimes
     };
@@ -29,14 +30,25 @@ var TimePicker = React.createClass({
 
   render() {
     var machineId = this.state.newReservation.get('machineId');
+    var machine = this.state.machinesById.get(machineId);
+    var pricePerSlot = machine.get('ReservationPriceHourly') / 2;
+    var lastIndex = _.reduce(this.state.times.toJS(), (lastIdx, t, i) => {
+      if (t.selected) {
+        return i;
+      } else {
+        return lastIdx;
+      }
+    }, null);
+
     return (
       <div className={this.props.className}>
         <h3 className="h3">Select time range</h3>
         <div className="no-select" ref="times">
           {_.map(this.state.times.toJS(), (t, i) => {
-            console.log('t[' + i + '] = ', t);
             var className = 'time-picker-time';
             var onChange;
+            var pricingInfo;
+
             if (!_.includes(t.availableMachineIds, machineId)) {
               className += ' unavailable';
             } else {
@@ -45,6 +57,18 @@ var TimePicker = React.createClass({
                 className += ' selected';
               }
             }
+
+            if (i === lastIndex) {
+              var slots = _.reduce(this.state.times.toJS(), (total, slot) => {
+                return total + (slot.selected ? 1 : 0);
+              }, 0);
+              pricingInfo = (
+                <div>
+                  Total price: {(slots * pricePerSlot).toFixed(2)} €
+                </div>
+              );
+            }
+
             return (
               <div key={i} className={className}>
                 <label>
@@ -53,7 +77,16 @@ var TimePicker = React.createClass({
                     type="checkbox"
                     onChange={onChange}
                   />
-                  {t.start.format('HH:mm')} - {t.end.format('HH:mm')}
+                  <div className="row">
+                    <div className="col-md-3">
+                    </div>
+                    <div className="col-md-6">
+                      {t.start.format('HH:mm')} - {t.end.format('HH:mm')}
+                    </div>
+                    <div className="col-md-3">
+                      {pricingInfo}
+                    </div>
+                  </div>
                 </label>
               </div>
             );
