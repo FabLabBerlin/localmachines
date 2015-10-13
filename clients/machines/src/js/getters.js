@@ -440,11 +440,18 @@ const getNewReservationTimes = [
               }
             }
 
-            if (!rule.get('DateStart') && !rule.get('TimeStart') && !rule.get('DateEnd') && !rule.get('TimeEnd') && !rule.get('Monday') && !rule.get('Tuesday') && !rule.get('Wednesday') && !rule.get('Thursday') && !rule.get('Friday') && !rule.get('Saturday') && !rule.get('Sunday')) {
+            var anyWeekDaySelected = false;
+            _.each(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], (weekDay) => {
+              if (rule.get(weekDay)) {
+                anyWeekDaySelected = true;
+              }
+            });
+
+            if (!rule.get('DateStart') && !rule.get('TimeStart') && !rule.get('DateEnd') && !rule.get('TimeEnd') && !anyWeekDaySelected) {
               applies = false;
             }
 
-            if (rule.get('Monday') || rule.get('Tuesday') || rule.get('Wednesday') || rule.get('Thursday') || rule.get('Friday') || rule.get('Saturday') || rule.get('Sunday')) {
+            if (anyWeekDaySelected) {
               switch (reservationsStore.get('create').get('date').isoWeekday()) {
               case 1:
                 applies = applies && !!rule.get('Monday');
@@ -468,6 +475,8 @@ const getNewReservationTimes = [
                 applies = applies && !!rule.get('Sunday');
                 break;
               }
+            } else {
+              applies = false;
             }
 
             if (applies && rule.get('Unavailable')) {
