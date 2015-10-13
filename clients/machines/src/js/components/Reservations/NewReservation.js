@@ -75,7 +75,7 @@ var SelectMachine = React.createClass({
             <select className="form-control" ref="selection" onChange={this.handleChange} value={selectedMachineId}>
               <option value="0">Please select a machine</option>
               {_.map(this.state.machineInfo.toArray(), function(machine){
-                if (_.isNumber(machine.get('ReservationPriceStart')) && _.isNumber(machine.get('ReservationPriceHourly'))) {
+                if (_.isNumber(machine.get('ReservationPriceHourly'))) {
                   return (
                     <option value={machine.get('Id')}>
                       {machine.get('Name')}

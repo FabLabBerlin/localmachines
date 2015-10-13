@@ -102,7 +102,9 @@ app.controller('ReservationsCtrl', ['$scope', '$http', '$location', '$cookieStor
   .success(function(data) {
     $scope.machines = data;
     _.each($scope.machines, function(machine) {
-      machine.ReservationPriceHalfHourly = machine.ReservationPriceHourly / 2;
+      if (_.isNumber(machine.ReservationPriceHourly)) {
+        machine.ReservationPriceHalfHourly = machine.ReservationPriceHourly / 2;
+      }
       $scope.machinesById[machine.Id] = machine;
     });
     loadReservationRules();
