@@ -64,6 +64,7 @@ var UserForm = React.createClass({
     });
 
     const keys = [
+      'Company',
       'FirstName',
       'LastName',
       'Username',
@@ -94,6 +95,19 @@ var UserForm = React.createClass({
             </div>
           </div>
         );
+      } else if (key === 'Company') {
+        if (value) {
+          return (
+            <div className="col-md-6" key={key}>
+              <div className="form-group">
+                <label>{key}</label>
+                <div id="profile-company">
+                  {value}
+                </div>
+              </div>
+            </div>
+          );
+        }
       } else if (key !== 'UserRole') {
         return (
           <div className="col-md-6" key={key}>

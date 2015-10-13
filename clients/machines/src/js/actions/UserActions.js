@@ -125,7 +125,8 @@ function _userInfoSuccess(data) {
     'City',
     'CountryCode',
     'UserRole',
-    'Created'
+    'Created',
+    'Company'
   ];
   var userInfo = {};
   for(var index in usefulInformation) {
