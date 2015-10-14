@@ -134,7 +134,7 @@ var MonthView = React.createClass({
 
     return (
       <div className="date-picker">
-        <h4 className="h4">{month.toString()}</h4>
+        <h4 className="month-name">{month.toString()}</h4>
         <div className="date-picker-week">
           {_.map(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], function(heading, i) {
             return <DayView key={i} day={heading} header={true}/>;
