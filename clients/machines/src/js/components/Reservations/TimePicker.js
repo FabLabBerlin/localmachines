@@ -38,7 +38,7 @@ var TimePicker = React.createClass({
 
     return (
       <div className={containerClassName}>
-        <h3 className="h3">Select time range</h3>
+        <h3>Select time range</h3>
         <div className="no-select" ref="times">
           {_.map(this.state.times.toJS(), (t, i) => {
             var className = 'time';
