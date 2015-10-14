@@ -37,7 +37,7 @@ class Month {
   }
 
   weeks() {
-    return this.lastDay().week() - this.firstDay().week() + 1;
+    return (this.lastDay().week() - this.firstDay().week() + 1 + 52) % 52;
   }
 }
 
