@@ -13,7 +13,7 @@ var toImmutable = Nuclear.toImmutable;
 
 function formatDate(date) {
   date = moment(date);
-  return date.format('DD. MMM YYYY');
+  return date.format('DD MMM YYYY');
 }
 
 function formatTime(date) {
