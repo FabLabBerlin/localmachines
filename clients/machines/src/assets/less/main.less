@@ -889,7 +889,7 @@ Reservations related components
  */
 .date-picker-heading {
   border-bottom: 1px solid #4a4a4a;
-  width: 50px;
+  width: 14.27%;
   float: left;
   text-align: center;
   padding-bottom: 1px;
@@ -901,8 +901,8 @@ Reservations related components
   cursor: pointer;
   float: left;
   font-size: 0.9em;
-  width: 50px;
-  height: 50px;
+  width: 14.27%;
+  height: 40px;
   padding: 1px 5px 0 6px;
   text-align: right;
   border-bottom: 1px solid #4a4a4a;
@@ -966,10 +966,9 @@ This is for the big screens. Remember: "Mobile First"
 @media (min-width: @mobile-screen-breakpoint) {
   
   /* 
+   * Header/Navbar
+   */
 
-  Header/Navbar
-
-  */
   nav.navbar .navbar-header {
     height: 90px;
   }
@@ -991,11 +990,10 @@ This is for the big screens. Remember: "Mobile First"
     border-left: 1px solid darken(@bg-color-default, 10%);
   }
 
-  /* 
-  
-  Login Form 
-  
-  */
+  /*
+   * Login Form  
+   */
+
   .login-heading {
     font-size: 30px;
   }
@@ -1029,6 +1027,14 @@ This is for the big screens. Remember: "Mobile First"
     -ms-transform: translateY(-50%);
     -webkit-transform: translateY(-50%);
     width: 100%;
+  }
+
+  /*
+   * Reservations Date Picker
+   */
+
+  .date-picker-day {
+    height: 60px;
   }
 
 } /* @media (min-width: @mobile-screen-breakpoint) */
