@@ -149,15 +149,16 @@ var SuccessMsg = React.createClass({
   render() {
     var newReservation = this.state.newReservation;
     const date = moment(this.state.from).format('DD MMM YYYY');
-    const from = moment(this.state.from).format('HH:mm');
-    const to = moment(this.state.to).format('HH:mm');
+    const timeFrom = moment(this.state.from).format('HH:mm');
+    const timeTo = moment(this.state.to).format('HH:mm');
     var containerClassName = 'reservation-confirmed ' + this.props.className;
     return (
       <div className={containerClassName}>
         <h3 className="h3">Reservation confirmed</h3>
         
         <div className>
-          <p><b>Date and time:</b> {date} {from}—{to}</p>
+          <p><b>Date:</b> {date}</p>
+          <p><b>Time:</b> {timeFrom}—{timeTo}</p>
           <p><b>Total price:</b> €{this.state.newReservationPrice}</p>
         </div>
 
