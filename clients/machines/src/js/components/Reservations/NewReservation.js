@@ -151,7 +151,7 @@ var SuccessMsg = React.createClass({
     const to = moment(this.state.to).format('HH:mm');
     return (
       <div className={this.props.className}>
-        <h3 className="h3">Your booking is confirmed.</h3>
+        <h3 className="h3">Reservation confirmed</h3>
         <h4>Time:</h4>
         <div>
           {date}
