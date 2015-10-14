@@ -67,7 +67,7 @@ var DayView = React.createClass({
     } else {
       var className = 'day';
       if (this.props.notAvailable) {
-        className += ' not-available';
+        className += ' unavailable';
       } else {
         className += ' selectable';
       }
