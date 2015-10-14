@@ -16,21 +16,11 @@ var MachinePricing = React.createClass({
     var hourlyPrice = this.props.machine.get('ReservationPriceHourly');
     if (_.isNumber(hourlyPrice)) {
       hourlyPrice = (
-        <tr>
-          <td>Price per reserved half hour:&nbsp;</td>
-          <td>{(hourlyPrice / 2).toFixed(2)} €</td>
-        </tr>
+        <p>Price: €{(hourlyPrice / 2).toFixed(2)} per 30 minutes</p>
       );
     }
     return (
-      <div>
-        <hr/>
-        <table className="table table-bordered table-striped table-hover">
-          <tbody>
-            {hourlyPrice}
-          </tbody>
-        </table>
-      </div>
+      <div className="reservations-machine-price">{hourlyPrice}</div>
     );
   }
 
@@ -72,8 +62,14 @@ var SelectMachine = React.createClass({
         <div className={this.props.className}>
           <h3 className="h3">Select Machine</h3>
           <div>
-            <select className="form-control" ref="selection" onChange={this.handleChange} value={selectedMachineId}>
+            <select 
+              className="form-control" 
+              ref="selection" 
+              onChange={this.handleChange} 
+              value={selectedMachineId}>
+              
               <option value="0">Please select a machine</option>
+              
               {_.map(this.state.machineInfo.toArray(), function(machine){
                 if (_.isNumber(machine.get('ReservationPriceHourly'))) {
                   return (
