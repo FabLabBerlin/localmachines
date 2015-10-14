@@ -16,7 +16,7 @@ var MachinePricing = React.createClass({
     var hourlyPrice = this.props.machine.get('ReservationPriceHourly');
     if (_.isNumber(hourlyPrice)) {
       hourlyPrice = (
-        <p>Price: €{(hourlyPrice / 2).toFixed(2)} per 30 minutes</p>
+        <p><b>Price:</b> €{(hourlyPrice / 2).toFixed(2)} per 30 minutes</p>
       );
     }
     return (
