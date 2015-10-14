@@ -797,12 +797,12 @@ Spendings Page
 http://www.network-science.de/ascii/ 
 font: basic
 
-d8888b. d88888b .d8888. d88888b d8888b. db    db  .d8b.  d888888b d888888b  .d88b.  d8b   db .d8888. 
-88  `8D 88'     88'  YP 88'     88  `8D 88    88 d8' `8b `~~88~~'   `88'   .8P  Y8. 888o  88 88'  YP 
-88oobY' 88ooooo `8bo.   88ooooo 88oobY' Y8    8P 88ooo88    88       88    88    88 88V8o 88 `8bo.   
-88`8b   88~~~~~   `Y8b. 88~~~~~ 88`8b   `8b  d8' 88~~~88    88       88    88    88 88 V8o88   `Y8b. 
-88 `88. 88.     db   8D 88.     88 `88.  `8bd8'  88   88    88      .88.   `8b  d8' 88  V888 db   8D 
-88   YD Y88888P `8888Y' Y88888P 88   YD    YP    YP   YP    YP    Y888888P  `Y88P'  VP   V8P `8888Y' 
+d8888b. d88888b .d8888. d88888b d8888b. db    db  .d8b.  d888888b d888888b
+88  `8D 88'     88'  YP 88'     88  `8D 88    88 d8' `8b `~~88~~'   `88'  
+88oobY' 88ooooo `8bo.   88ooooo 88oobY' Y8    8P 88ooo88    88       88   
+88`8b   88~~~~~   `Y8b. 88~~~~~ 88`8b   `8b  d8' 88~~~88    88       88   
+88 `88. 88.     db   8D 88.     88 `88.  `8bd8'  88   88    88      .88.  
+88   YD Y88888P `8888Y' Y88888P 88   YD    YP    YP   YP    YP    Y888888P ons
 
 Reservations related components
 
@@ -812,132 +812,148 @@ Reservations related components
   margin: 0 5px;
 }
 
+/* 
+ * Select Machine pricing information
+ */
+.reservations-machine-price {
+  margin-top: 10px;
+}
+
 /*
  * Reusable mixins for Time Picker and Date Picker CSS classes
  */
-.date-time-unselected {
-}
-
-.date-time-hover-unselected {
-  background: #4a4a4a;
-  color: white;
-}
-
 .date-time-hover-selected {
-  background: #0a0a0a;
+  background: darken(@color-neutral, 10%);
   color: white;
 }
 
 .date-time-selected {
-  background: #2a2a2a;
+  background: darken(@color-neutral, 20%);
 }
 
 /*
  * Time Picker CSS classes
  */
-.time-picker-time {
-  cursor: pointer;
-  font-size: 22px;
-  text-align: center;
-}
 
-.time-picker-time.selected {
-  .date-time-hover-selected
-}
+.time-picker {
+  .time {
+    cursor: pointer;
+    font-size: 22px;
+    line-height: 22px;
+    text-align: center;
 
-.time-picker-time:hover {
-  .date-time-hover-unselected
-}
+    &.selected { 
+      background: darken(@color-neutral, 30%);
+      color: white;
+    }
+    &:hover { 
+      background: darken(@color-neutral, 30%);
+      color: white;
+    }
+    &.selected:hover {
+      color: white; 
+    }
+    &.unavailable {
+      color: lighten(@color-neutral, 20%);
+      cursor: not-allowed;
+    }
+    &.unavailable:hover {
+      background: white;
+      color: lighten(@color-neutral, 20%);
+    }
+    &.unavailable label { cursor: not-allowed; }
+    
 
-.time-picker-time.selected:hover {
-  .date-time-selected
-}
+    label {
+      cursor: pointer;
+      padding: 10px 0;
+      width: 100%;
+      margin: 0;
+    }
 
-.time-picker-time.unavailable {
-  color: #eaeaea;
-  cursor: not-allowed;
-}
+    input { display: none; }
+  }
 
-.time-picker-time.unavailable label {
-  cursor: not-allowed;
-}
-
-.time-picker-time.unavailable:hover {
-  background: white;
-  color: #eaeaea;
-}
-
-.time-picker-time label {
-  cursor: pointer;
-  padding: 9px 22px;
-  width: 100%;
-}
-
-.time-picker-time input {
-  display: none;
+  .total-price {
+    font-size: 16px;
+    line-height: 16px;
+    font-weight: normal;
+    padding-top: 10px;
+    margin-top: 10px;
+    border-top: 1px solid @color-neutral;
+  }
 }
 
 /*
  * Date Picker CSS classes
  */
-.date-picker-heading {
-  border-bottom: 1px solid #4a4a4a;
-  width: 50px;
-  float: left;
-  text-align: center;
-  padding-bottom: 1px;
-  font-size: 0.9em;
-}
 
-.date-picker-day {
-  border-left: 1px solid #4a4a4a;
-  cursor: pointer;
-  float: left;
-  font-size: 0.9em;
-  width: 50px;
-  height: 50px;
-  padding: 1px 5px 0 6px;
-  text-align: right;
-  border-bottom: 1px solid #4a4a4a;
-}
+.date-picker {
+  .month-name {
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid lighten(@color-neutral, 25%);
+  }
 
-.date-picker-day:last-child {
-  border-right: 1px solid #4a4a4a;
-}
+  .week-name {
+    border-bottom: 1px solid darken(@color-neutral, 10%);
+    width: 14.27%;
+    float: left;
+    text-align: center;
+    padding-bottom: 5px;
+    font-size: 0.9em;
+  }
 
-.date-picker-day.selectable.selected {
-  .date-time-hover-selected
-}
+  .day {
+    border-left: 1px solid darken(@color-neutral, 10%);
+    cursor: pointer;
+    float: left;
+    font-size: 0.9em;
+    width: 14.27%;
+    height: 40px;
+    padding: 1px 5px 0 6px;
+    text-align: right;
+    border-bottom: 1px solid darken(@color-neutral, 10%);
 
-.date-picker-day.selectable:hover {
-  .date-time-hover-unselected
-}
+    &.selectable {
+      &:hover { 
+        background: @color-neutral;
+        color: white;
+      }
+      &.selected { .date-time-hover-selected }
+      &.selected:hover { .date-time-selected }
+    }
 
-.date-picker-day.selectable.selected:hover {
-  .date-time-selected
-}
+    &.empty {
+      background: lighten(@color-neutral, 30%);
+      cursor: default;
+    }
 
-.date-picker-day.date-picker-empty {
-  background: #eaeaea;
-  cursor: default;
-}
+    &.unavailable {
+      background: lighten(@color-neutral, 25%);
+      color: @color-neutral;
+      cursor: not-allowed;    
+    }
 
-.date-picker-day.date-picker-not-available {
-  background: #eaeaea;
-  color: #666666;
-  cursor: not-allowed;
-}
+    &.today {
+      background: @color-danger;
+      color: white;
+    }
 
-div.date-picker-day.today {
-  background: #EA535D;
-}
+    &:last-child {
+      border-right: 1px solid @color-neutral;
+    }
+  }
 
-.date-picker-week {
-  clear: both;
-}
+  .finish {
+    clear: both;
+  }
 
-.date-picker-finish {
-  clear: both;
+  .week {
+    clear: both;
+  }
 }
 
 /* 
@@ -959,10 +975,9 @@ This is for the big screens. Remember: "Mobile First"
 @media (min-width: @mobile-screen-breakpoint) {
   
   /* 
+   * Header/Navbar
+   */
 
-  Header/Navbar
-
-  */
   nav.navbar .navbar-header {
     height: 90px;
   }
@@ -984,11 +999,10 @@ This is for the big screens. Remember: "Mobile First"
     border-left: 1px solid darken(@bg-color-default, 10%);
   }
 
-  /* 
-  
-  Login Form 
-  
-  */
+  /*
+   * Login Form  
+   */
+
   .login-heading {
     font-size: 30px;
   }
@@ -1022,6 +1036,14 @@ This is for the big screens. Remember: "Mobile First"
     -ms-transform: translateY(-50%);
     -webkit-transform: translateY(-50%);
     width: 100%;
+  }
+
+  /*
+   * Reservations Date Picker
+   */
+
+  .date-picker-day {
+    height: 60px;
   }
 
 } /* @media (min-width: @mobile-screen-breakpoint) */
