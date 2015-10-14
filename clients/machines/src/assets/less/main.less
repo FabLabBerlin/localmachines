@@ -822,66 +822,66 @@ Reservations related components
 /*
  * Reusable mixins for Time Picker and Date Picker CSS classes
  */
-.date-time-unselected {
-}
-
-.date-time-hover-unselected {
-  background: #4a4a4a;
-  color: white;
-}
-
 .date-time-hover-selected {
-  background: #0a0a0a;
+  background: darken(@color-neutral, 10%);
   color: white;
 }
 
 .date-time-selected {
-  background: #2a2a2a;
+  background: darken(@color-neutral, 20%);
 }
 
 /*
  * Time Picker CSS classes
  */
-.time-picker-time {
-  cursor: pointer;
-  font-size: 22px;
-  text-align: center;
-}
 
-.time-picker-time.selected {
-  .date-time-hover-selected
-}
+.time-picker {
+  .time {
+    cursor: pointer;
+    font-size: 22px;
+    line-height: 22px;
+    text-align: center;
 
-.time-picker-time:hover {
-  .date-time-hover-unselected
-}
+    &.selected { 
+      background: darken(@color-neutral, 30%);
+      color: white;
+    }
+    &:hover { 
+      background: darken(@color-neutral, 30%);
+      color: white;
+    }
+    &.selected:hover {
+      color: white; 
+    }
+    &.unavailable {
+      color: lighten(@color-neutral, 20%);
+      cursor: not-allowed;
+    }
+    &.unavailable:hover {
+      background: white;
+      color: lighten(@color-neutral, 20%);
+    }
+    &.unavailable label { cursor: not-allowed; }
+    
 
-.time-picker-time.selected:hover {
-  .date-time-selected
-}
+    label {
+      cursor: pointer;
+      padding: 10px 0;
+      width: 100%;
+      margin: 0;
+    }
 
-.time-picker-time.unavailable {
-  color: #eaeaea;
-  cursor: not-allowed;
-}
+    input { display: none; }
+  }
 
-.time-picker-time.unavailable label {
-  cursor: not-allowed;
-}
-
-.time-picker-time.unavailable:hover {
-  background: white;
-  color: #eaeaea;
-}
-
-.time-picker-time label {
-  cursor: pointer;
-  padding: 9px 22px;
-  width: 100%;
-}
-
-.time-picker-time input {
-  display: none;
+  .total-price {
+    font-size: 16px;
+    line-height: 16px;
+    font-weight: normal;
+    padding-top: 10px;
+    margin-top: 10px;
+    border-top: 1px solid @color-neutral;
+  }
 }
 
 /*
@@ -898,7 +898,7 @@ Reservations related components
   }
 
   .week-name {
-    border-bottom: 1px solid #4a4a4a;
+    border-bottom: 1px solid darken(@color-neutral, 10%);
     width: 14.27%;
     float: left;
     text-align: center;
@@ -907,7 +907,7 @@ Reservations related components
   }
 
   .day {
-    border-left: 1px solid #4a4a4a;
+    border-left: 1px solid darken(@color-neutral, 10%);
     cursor: pointer;
     float: left;
     font-size: 0.9em;
@@ -915,22 +915,25 @@ Reservations related components
     height: 40px;
     padding: 1px 5px 0 6px;
     text-align: right;
-    border-bottom: 1px solid #4a4a4a;
+    border-bottom: 1px solid darken(@color-neutral, 10%);
 
     &.selectable {
-      &:hover { .date-time-hover-unselected }
+      &:hover { 
+        background: @color-neutral;
+        color: white;
+      }
       &.selected { .date-time-hover-selected }
       &.selected:hover { .date-time-selected }
     }
 
     &.empty {
-      background: #eaeaea;
+      background: lighten(@color-neutral, 30%);
       cursor: default;
     }
 
     &.unavailable {
-      background: #eaeaea;
-      color: #666666;
+      background: lighten(@color-neutral, 25%);
+      color: @color-neutral;
       cursor: not-allowed;    
     }
 
@@ -940,7 +943,7 @@ Reservations related components
     }
 
     &:last-child {
-      border-right: 1px solid #4a4a4a;
+      border-right: 1px solid @color-neutral;
     }
   }
 

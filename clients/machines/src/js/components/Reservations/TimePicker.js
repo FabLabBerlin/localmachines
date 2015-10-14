@@ -34,12 +34,14 @@ var TimePicker = React.createClass({
       return t.selected ? i : lastIdx;
     }, null);
 
+    var containerClassName = 'time-picker ' + this.props.className;
+
     return (
-      <div className={this.props.className}>
+      <div className={containerClassName}>
         <h3 className="h3">Select time range</h3>
         <div className="no-select" ref="times">
           {_.map(this.state.times.toJS(), (t, i) => {
-            var className = 'time-picker-time';
+            var className = 'time';
             var onChange;
             var pricingInfo;
 
@@ -54,7 +56,7 @@ var TimePicker = React.createClass({
 
             if (i === lastIndex) {
               pricingInfo = (
-                <div>
+                <div className="total-price">
                   Total price: {(this.state.newReservationPrice).toFixed(2)} €
                 </div>
               );
