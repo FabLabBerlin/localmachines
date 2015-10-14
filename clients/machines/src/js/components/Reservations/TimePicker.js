@@ -57,7 +57,7 @@ var TimePicker = React.createClass({
             if (i === lastIndex) {
               pricingInfo = (
                 <div className="total-price">
-                  Total price: {(this.state.newReservationPrice).toFixed(2)} €
+                  Total price: €{(this.state.newReservationPrice).toFixed(2)}
                 </div>
               );
             }
