@@ -58,7 +58,7 @@ var DayView = React.createClass({
   render() {
     if (this.props.header) {
       return (
-        <div className="date-picker-heading">
+        <div className="week-name">
           {this.props.day}
         </div>
       );
