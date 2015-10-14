@@ -63,11 +63,11 @@ var DayView = React.createClass({
         </div>
       );
     } else if (this.props.empty) {
-      return <div className="date-picker-day date-picker-empty"/>;
+      return <div className="day empty"/>;
     } else {
-      var className = 'date-picker-day';
+      var className = 'day';
       if (this.props.notAvailable) {
-        className += ' date-picker-not-available';
+        className += ' not-available';
       } else {
         className += ' selectable';
       }
@@ -135,19 +135,19 @@ var MonthView = React.createClass({
     return (
       <div className="date-picker">
         <h4 className="month-name">{month.toString()}</h4>
-        <div className="date-picker-week">
+        <div className="week">
           {_.map(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], function(heading, i) {
             return <DayView key={i} day={heading} header={true}/>;
           })}
         </div>
         {_.map(weeks, function(w, i) {
           return (
-            <div key={i} className="date-picker-week">
+            <div key={i} className="week">
               {w}
             </div>
           );
         })}
-        <div className="date-picker-finish"/>
+        <div className="finish"/>
       </div>
     );
   }
