@@ -144,8 +144,6 @@ var SuccessMsg = React.createClass({
     ReservationsActions.createDone();
   },
 
-  // TODO: Add extra floating 0s to numbers like 1.2 or 1 for reservation price
-
   render() {
     var newReservation = this.state.newReservation;
     const date = moment(this.state.from).format('DD MMM YYYY');
@@ -159,7 +157,7 @@ var SuccessMsg = React.createClass({
         <div className>
           <p><b>Date:</b> {date}</p>
           <p><b>Time:</b> {timeFrom}—{timeTo}</p>
-          <p><b>Total price:</b> €{this.state.newReservationPrice}</p>
+          <p><b>Total price:</b> €{(this.state.newReservationPrice).toFixed(2)}</p>
         </div>
 
         <hr/>
