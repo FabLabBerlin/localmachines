@@ -60,7 +60,7 @@ var SelectMachine = React.createClass({
 
       return (
         <div className={this.props.className}>
-          <h3 className="h3">Select Machine</h3>
+          <h3 className="h3">Select machine</h3>
           <div>
             <select 
               className="form-control" 
@@ -144,25 +144,23 @@ var SuccessMsg = React.createClass({
     ReservationsActions.createDone();
   },
 
+  // TODO: Add extra floating 0s to numbers like 1.2 or 1 for reservation price
+
   render() {
     var newReservation = this.state.newReservation;
-    const date = moment(this.state.from).format('DD. MMM YYYY');
+    const date = moment(this.state.from).format('DD MMM YYYY');
     const from = moment(this.state.from).format('HH:mm');
     const to = moment(this.state.to).format('HH:mm');
+    var containerClassName = 'reservation-confirmed ' + this.props.className;
     return (
-      <div className={this.props.className}>
+      <div className={containerClassName}>
         <h3 className="h3">Reservation confirmed</h3>
-        <h4>Time:</h4>
-        <div>
-          {date}
+        
+        <div className>
+          <p><b>Date and time:</b> {date} {from}—{to}</p>
+          <p><b>Total price:</b> €{this.state.newReservationPrice}</p>
         </div>
-        <div>
-          {from} - {to}
-        </div>
-        <h4>Total Price:</h4>
-        <div>
-          {this.state.newReservationPrice} €
-        </div>
+
         <hr/>
         <div className="pull-right">
           <button className="btn btn-lg btn-primary" type="button" onClick={this.handleClick}>
