@@ -7,7 +7,7 @@ var reactor = require('../../reactor');
 var ReservationsActions = require('../../actions/ReservationsActions');
 var TimePicker = require('./TimePicker');
 var UserActions = require('../../actions/UserActions');
-
+var toastr = require('../../toastr');
 
 
 var MachinePricing = React.createClass({
@@ -84,8 +84,15 @@ var SelectMachine = React.createClass({
           {machinePricing}
           <hr/>
           <div className="pull-right">
-            <button className="btn btn-lg btn-info" type="button" onClick={this.cancel}>Cancel</button>
-            <button className="btn btn-lg btn-primary" type="button" onClick={this.next}>Next</button>
+            <button 
+              className="btn btn-lg btn-info" 
+              type="button" 
+              onClick={this.cancel}>Cancel</button>
+
+            <button 
+              className="btn btn-lg btn-primary" 
+              type="button" 
+              onClick={this.next}>Next</button>
           </div>
         </div>
       );
@@ -111,7 +118,11 @@ var SelectMachine = React.createClass({
     var mid = this.refs.selection.getDOMNode().value;
     if (mid) {
       mid = parseInt(mid);
-      ReservationsActions.createSetMachine({ mid });
+      if (mid) {
+        ReservationsActions.createSetMachine({ mid });
+      } else {
+        toastr.error('No machine selected');
+      }
     }
   }
 });
