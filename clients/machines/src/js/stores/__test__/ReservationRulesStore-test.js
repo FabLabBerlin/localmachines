@@ -2,6 +2,7 @@ jest.dontMock('lodash');
 jest.dontMock('moment');
 jest.dontMock('nuclear-js');
 jest.dontMock('../../actionTypes');
+jest.dontMock('../../components/Reservations/helpers');
 jest.dontMock('../../getters');
 jest.dontMock('../../reactor');
 jest.dontMock('../MachineStore');
