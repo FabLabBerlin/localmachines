@@ -1,7 +1,7 @@
 jest.dontMock('../helpers');
 jest.dontMock('moment');
 
-var { Month } = require('../helpers');
+var { Month, Time } = require('../helpers');
 
 
 describe('Month', function() {
@@ -46,6 +46,39 @@ describe('Month', function() {
     it('returns 5 for 2015-12', function() {
       var december = new Month(11, 2015);
       expect(december.weeks()).toEqual(5);
+    });
+  });
+});
+
+describe('Time', function() {
+  describe('isLargerEqual', function() {
+    it('returns true for 12:00 vs 12:00', function() {
+      var t = new Time('12:00');
+      expect(t.isLargerEqual(t)).toBe(true);
+    });
+
+    it('returns true for 12:01 vs 11:59', function() {
+      var t1201 = new Time('12:01');
+      var t1159 = new Time('11:59');
+      expect(t1201.isLargerEqual(t1159)).toBe(true);
+    });
+
+    it('returns false for 01:11 vs 11:11', function() {
+      var t0111 = new Time('01:11');
+      var t1111 = new Time('11:11');
+      expect(t0111.isLargerEqual(t1111)).toBe(false);
+    });
+  });
+
+  describe('toInt', function() {
+    it('returns 31 for 0:31', function() {
+      var t = new Time('0:31');
+      expect(t.toInt()).toEqual(31);
+    });
+
+    it('returns 92 for 1:32', function() {
+      var t = new Time('1:32');
+      expect(t.toInt()).toEqual(92);
     });
   });
 });

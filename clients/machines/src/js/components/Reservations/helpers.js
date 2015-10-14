@@ -60,8 +60,15 @@ class Day {
 
 class Time {
   constructor(hhmm) {
-    var hh = hhmm.slice(0, 2);
-    var mm = hhmm.slice(3, 5);
+    var mm;
+    var hh;
+    if (hhmm.length === 4) {
+      hh = hhmm[0];
+      mm = hhmm.slice(2, 4);
+    } else {
+      hh = hhmm.slice(0, 2);
+      mm = hhmm.slice(3, 5);
+    }
     this._hours = parseInt(hh, 10);
     this._minutes = parseInt(mm, 10);
   }
