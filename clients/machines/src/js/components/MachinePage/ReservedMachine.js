@@ -36,26 +36,40 @@ var ReservedMachine = React.createClass({
     var users = this.state.machineUsers;
     var user = users.get(this.props.activation.UserId) || {};
     var startStopButton;
+    const isReservator = this.props.reservation.get('UserId') === this.props.user.get('Id');
     if (this.props.busy) {
       startStopButton = (
         <button 
-          className="btn btn-lg btn-default btn-block"
+          className="btn btn-lg btn-danger btn-block"
           onClick={this.endActivation}>
           Stop
         </button>
       );
     } else {
-      startStopButton = (
-        <button 
-          className="btn btn-lg btn-default btn-block"
-          onClick={this.startActivation}>
-          Start
-        </button>
-      );
+
+      if (isReservator) {
+        startStopButton = (
+          <button 
+            className="btn btn-lg btn-warning btn-block"
+            onClick={this.startActivation}>
+            Start
+          </button>
+        );
+      } else {
+        startStopButton = (
+          <button 
+            className="btn btn-lg btn-default btn-block"
+            onClick={this.startActivation}>
+            Start
+          </button>
+        );
+      }
     }
-    const isReservator = this.props.reservation.get('UserId') === this.props.user.get('Id');
+    
+    const reservedClassName = 'machine reserved' + 
+      (isReservator ? ' reservator' : '');
     return (
-      <div className="machine reserved">
+      <div className={reservedClassName}>
         <div className="row">
           <div className="col-xs-6">
   
@@ -66,7 +80,6 @@ var ReservedMachine = React.createClass({
                 ) : (
                   'This machine is reserved.'
                 )}
-                
               </div>
             </div>
   
@@ -74,7 +87,9 @@ var ReservedMachine = React.createClass({
   
           <div className="col-xs-6">
 
-          { (this.props.isAdmin || isReservator) ? (
+          { (isReservator && !this.props.isAdmin) ? ( {startStopButton} ) : '' }
+
+          { (this.props.isAdmin) ? (
             <table className="machine-activation-table">
               <tr>
                 <td rowSpan="2">
@@ -94,11 +109,13 @@ var ReservedMachine = React.createClass({
                 </td>
               </tr>
             </table>
-          ) : (
-            <div className="indicator unavailable">
+          ) : ''}
+
+          {(!this.props.isAdmin && !isReservator) ? (
+            <div className="indicator reserved">
               Reserved
             </div>
-          )}
+          ) : ''}
 
           </div>
   
