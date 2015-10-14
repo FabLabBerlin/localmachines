@@ -109,7 +109,7 @@ var ReservationsPage = React.createClass({
     } else {
       return (
         <div className="container">
-          <h3 className="h3">My Reservations</h3>
+          <h3>My Reservations</h3>
           <ReservationsTable/>
           <hr/>
           <div className="pull-right">

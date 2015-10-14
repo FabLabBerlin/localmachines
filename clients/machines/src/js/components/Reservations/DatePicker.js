@@ -168,7 +168,7 @@ var DatePicker = React.createClass({
     var nextMonth = currentMonth.getNextMonth();
     return (
       <div className={this.props.className}>
-        <h3 className="h3">Select date</h3>
+        <h3>Select date</h3>
         <div id="date-picker">
           <MonthView month={currentMonth}/>
           <MonthView month={nextMonth}/>

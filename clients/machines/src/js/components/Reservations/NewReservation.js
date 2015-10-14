@@ -60,7 +60,7 @@ var SelectMachine = React.createClass({
 
       return (
         <div className={this.props.className}>
-          <h3 className="h3">Select machine</h3>
+          <h3>Select machine</h3>
           <div>
             <select 
               className="form-control" 
@@ -154,7 +154,7 @@ var SuccessMsg = React.createClass({
     var containerClassName = 'reservation-confirmed ' + this.props.className;
     return (
       <div className={containerClassName}>
-        <h3 className="h3">Reservation confirmed</h3>
+        <h3><i className="fa fa-check-circle-o"></i> Reservation confirmed</h3>
         
         <div className>
           <p><b>Date:</b> {date}</p>
