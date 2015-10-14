@@ -548,6 +548,23 @@ const getNewReservationTo = [
   }
 ];
 
+const getNewReservationPrice = [
+  getMachinesById,
+  getNewReservation,
+  getNewReservationTimes,
+  (machinesById, newReservation, times) => {
+    if (machinesById && times) {
+      var machineId = newReservation.get('machineId');
+      var machine = machinesById.get(machineId);
+      var pricePerSlot = machine.get('ReservationPriceHourly') / 2;
+      var slots = _.reduce(times.toJS(), (total, slot) => {
+        return total + (slot.selected ? 1 : 0);
+      }, 0);
+      return slots * pricePerSlot;
+    }
+  }
+];
+
 
 /*
  * Scroll Navigation related getters
@@ -577,6 +594,6 @@ export default {
   getIsLogged, getUid, getFirstTry, getLoginSuccess, getLastActivity,
   getUserInfo, getActivationInfo, getMachineInfo, getMachinesById, getMachineUsers, getIsLoading, getBillInfo, getBillMonths, getMonthlyBills, getMembership, getMembershipsByMonth,
   getFeedbackSubject, getFeedbackSubjectDropdown, getFeedbackSubjectOtherText, getFeedbackMessage,
-  getNewReservation, getNewReservationTimes, getNewReservationFrom, getNewReservationTo, getReservations, getActiveReservationsByMachineId,
+  getNewReservation, getNewReservationPrice, getNewReservationTimes, getNewReservationFrom, getNewReservationTo, getReservations, getActiveReservationsByMachineId,
   getScrollUpEnabled, getScrollDownEnabled, getScrollPosition
 };

@@ -10,8 +10,8 @@ var TimePicker = React.createClass({
 
   getDataBindings() {
     return {
-      machinesById: getters.getMachinesById,
       newReservation: getters.getNewReservation,
+      newReservationPrice: getters.getNewReservationPrice,
       times: getters.getNewReservationTimes
     };
   },
@@ -30,14 +30,8 @@ var TimePicker = React.createClass({
 
   render() {
     var machineId = this.state.newReservation.get('machineId');
-    var machine = this.state.machinesById.get(machineId);
-    var pricePerSlot = machine.get('ReservationPriceHourly') / 2;
     var lastIndex = _.reduce(this.state.times.toJS(), (lastIdx, t, i) => {
-      if (t.selected) {
-        return i;
-      } else {
-        return lastIdx;
-      }
+      return t.selected ? i : lastIdx;
     }, null);
 
     return (
@@ -59,12 +53,9 @@ var TimePicker = React.createClass({
             }
 
             if (i === lastIndex) {
-              var slots = _.reduce(this.state.times.toJS(), (total, slot) => {
-                return total + (slot.selected ? 1 : 0);
-              }, 0);
               pricingInfo = (
                 <div>
-                  Total price: {(slots * pricePerSlot).toFixed(2)} €
+                  Total price: {(this.state.newReservationPrice).toFixed(2)} €
                 </div>
               );
             }

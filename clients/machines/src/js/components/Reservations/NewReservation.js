@@ -123,6 +123,7 @@ var SuccessMsg = React.createClass({
   getDataBindings() {
     return {
       newReservation: getters.getNewReservation,
+      newReservationPrice: getters.getNewReservationPrice,
       from: getters.getNewReservationFrom,
       to: getters.getNewReservationTo
     };
@@ -146,6 +147,10 @@ var SuccessMsg = React.createClass({
         </div>
         <div>
           {from} - {to}
+        </div>
+        <h4>Total Price:</h4>
+        <div>
+          {this.state.newReservationPrice} €
         </div>
         <hr/>
         <div className="pull-right">
