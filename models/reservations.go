@@ -5,10 +5,6 @@ import (
 	"time"
 )
 
-func init() {
-	orm.RegisterModel(new(Reservation))
-}
-
 type Reservation struct {
 	Id        int64 `orm:"auto";"pk"`
 	MachineId int64
@@ -16,6 +12,10 @@ type Reservation struct {
 	TimeStart time.Time `orm:"type(datetime)"`
 	TimeEnd   time.Time `orm:"type(datetime)"`
 	Created   time.Time `orm:"type(datetime)"`
+}
+
+func init() {
+	orm.RegisterModel(new(Reservation))
 }
 
 type ReservationCreatedResponse struct {
@@ -36,7 +36,10 @@ func (this *Reservation) PriceUnit() string {
 }
 
 func GetReservation(id int64) (reservation *Reservation, err error) {
-	err = orm.NewOrm().Read(reservation)
+	r := Reservation{Id: id}
+	reservation = &r
+	o := orm.NewOrm()
+	err = o.Read(reservation)
 	return
 }
 
