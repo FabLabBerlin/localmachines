@@ -13,6 +13,7 @@
         <th>Start</th>
         <th>End</th>
         <th>User</th>
+        <th>E-Mail</th>
         <th></th>
       </tr>
     </thead>
@@ -22,6 +23,7 @@
         <td>{{reservation.TimeStart}}</td>
         <td>{{reservation.TimeEnd}}</td>
         <td>{{reservation.User.FirstName}} {{reservation.User.LastName}}</td>
+        <td>{{reservation.User.Email}}</td>
         <td>
           <button type="button" class="btn btn-danger btn-ico pull-right" ng-click="deleteReservation(reservation.Id)">
             <span class="fa fa-close"></span>
