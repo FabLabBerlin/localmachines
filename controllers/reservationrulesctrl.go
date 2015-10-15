@@ -76,6 +76,12 @@ func (this *ReservationRulesController) Create() {
 	this.ServeJson()
 }
 
+// @Title Update
+// @Description Update ReservationRule
+// @Param	model	body	models.ReservationRule	true	"ReservationRule"
+// @Success 200 {object} models.ReservationRule
+// @Failure	403	Failed to update ReservationRule
+// @Failure	401	Not authorized
 // @router /:rid [put]
 func (this *ReservationRulesController) Update() {
 	dec := json.NewDecoder(this.Ctx.Request.Body)
