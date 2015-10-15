@@ -133,6 +133,7 @@ var SuccessMsg = React.createClass({
 
   getDataBindings() {
     return {
+      machinesById: getters.getMachinesById,
       newReservation: getters.getNewReservation,
       newReservationPrice: getters.getNewReservationPrice,
       from: getters.getNewReservationFrom,
@@ -146,15 +147,19 @@ var SuccessMsg = React.createClass({
 
   render() {
     var newReservation = this.state.newReservation;
+    const machineId = newReservation.get('machineId');
+    const machine = this.state.machinesById.get(machineId);
     const date = moment(this.state.from).format('DD MMM YYYY');
     const timeFrom = moment(this.state.from).format('HH:mm');
     const timeTo = moment(this.state.to).format('HH:mm');
     var containerClassName = 'reservation-confirmed ' + this.props.className;
+
     return (
       <div className={containerClassName}>
         <h3><i className="fa fa-check-circle-o"></i> Reservation confirmed</h3>
-        
-        <div className>
+
+        <div>
+          <p><b>Machine:</b> {machine.get('Name')}</p>
           <p><b>Date:</b> {date}</p>
           <p><b>Time:</b> {timeFrom}—{timeTo}</p>
           <p><b>Total price:</b> €{(this.state.newReservationPrice).toFixed(2)}</p>
