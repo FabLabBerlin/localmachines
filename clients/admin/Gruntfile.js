@@ -91,7 +91,8 @@ module.exports = function (grunt) {
 						'dev/ng-modules/bookings/bookings.js',
 						'dev/ng-modules/invoices/invoices.js',
 						'dev/ng-modules/users/users.js',
-						'dev/ng-modules/randomtoken/randomtoken.js'
+						'dev/ng-modules/randomtoken/randomtoken.js',
+						'dev/ng-modules/reservations/reservations.js'
 					]
 				}
 			}
@@ -200,6 +201,11 @@ module.exports = function (grunt) {
 				}, {
 					src: 'dev/ng-modules/users/users.html', 
 					dest: 'prod/ng-modules/users/',
+					expand: true,
+					flatten: true
+				}, {
+					src: 'dev/ng-modules/reservations/reservations.html', 
+					dest: 'prod/ng-modules/reservations/',
 					expand: true,
 					flatten: true
 				}, {

@@ -292,11 +292,7 @@
         <td>{{userMembership.Title}}</td>
         <td style="min-width:90px">{{userMembership.StartDate}}</td>
         <td style="min-width:160px">
-
-          <!-- Visible only if user membership is active or canceled -->
-          <div 
-            class="form-inline"
-            ng-hide="userMembership.Inactive">
+          <div class="form-inline">
             <div class="input-group">
               <input
                 class="adm-user-membership-end-date form-control datepicker"
@@ -308,31 +304,13 @@
               </div>
             </div>
           </div>
-
-          <!-- Visible only if user membership is inactive -->
-          <div ng-show="userMembership.Inactive">
-            {{userMembership.EndDate}}
-          </div>
-        
         </td>
         <td>
-
-          <!-- Obviously, when the user membership is inactive, 
-               it is also not automatically extending -->
-          <div ng-show="userMembership.Inactive">
-            <i class="fa fa-ban"></i> No
-          </div>
-
-          <div ng-hide="userMembership.Inactive">
-            <!-- The user membership should be updated automatically
-                 when this checkbox changes state -->
-            <input 
-              type="checkbox" 
-              ng-model="userMembership.AutoExtend"
-              ng-disabled="userMemberhip.Inactive"
-              ng-change="updateUserMembership(userMembership.Id)">
-          </div>
-
+          <input 
+            type="checkbox" 
+            ng-model="userMembership.AutoExtend"
+            ng-disabled="userMemberhip.Inactive"
+            ng-change="updateUserMembership(userMembership.Id)">
         </td>
         <td>
           <div ng-show="userMembership.Active">Active</div>
@@ -398,11 +376,6 @@
   <hr>
 
   <div class="pull-right">
-    <button 
-      class="btn btn-danger btn-lg" 
-      ng-click="deleteUserPrompt()">
-      <i class="fa fa-trash-o"></i>&nbsp;Delete
-    </button>
     <button 
       class="btn btn-primary btn-lg" 
       ng-click="saveUser()">
