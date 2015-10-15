@@ -72,7 +72,7 @@ func (this *ReservationRulesController) Create() {
 		this.CustomAbort(403, "Failed to create ReservationRule")
 	}
 
-	this.Data["json"] = map[string]int64{"Id": id}
+	this.Data["json"] = models.ReservationRuleCreatedResponse{Id: id}
 	this.ServeJson()
 }
 

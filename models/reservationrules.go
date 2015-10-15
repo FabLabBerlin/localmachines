@@ -69,3 +69,7 @@ func DeleteReservationRule(id int64) (err error) {
 	_, err = o.Delete(&ReservationRule{Id: id})
 	return
 }
+
+type ReservationRuleCreatedResponse struct {
+	Id int64
+}
