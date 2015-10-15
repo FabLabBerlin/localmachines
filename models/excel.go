@@ -160,7 +160,7 @@ func createXlsxFile(filePath string, invoice *Invoice) error {
 	var cell *xlsx.Cell
 
 	file = xlsx.NewFile()
-	sheet = file.AddSheet("User Summaries")
+	sheet, _ = file.AddSheet("User Summaries")
 
 	// Create header
 	row = sheet.AddRow()
