@@ -36,12 +36,6 @@ var SelectMachine = React.createClass({
 
   mixins: [ reactor.ReactMixin ],
 
-  componentWillMount() {
-    const uid = reactor.evaluateToJS(getters.getUid);
-    UserActions.getUserInfoFromServer(uid);
-    MachineActions.apiGetUserMachines(uid);
-  },
-
   getDataBindings() {
     return {
       machineInfo: getters.getMachineInfo,
@@ -190,40 +184,50 @@ var NewReservation = React.createClass({
 
   getDataBindings() {
     return {
+      machineInfo: getters.getMachineInfo,
+      machinesById: getters.getMachinesById,
       newReservation: getters.getNewReservation
     };
   },
 
+  componentWillMount() {
+    const uid = reactor.evaluateToJS(getters.getUid);
+    UserActions.getUserInfoFromServer(uid);
+    MachineActions.apiGetUserMachines(uid);
+  },
+
   render() {
-    var dialog;
-    var newReservation = this.state.newReservation;
-    var selectedTimes = 0;
-    if (newReservation.get('times')) {
-      this.state.newReservation.get('times').forEach(function(t) {
-        if (t.get('selected')) {
-          selectedTimes++;
-        }
-      });
+    if (this.state.machineInfo && this.state.machinesById) {
+      var dialog;
+      var newReservation = this.state.newReservation;
+      var selectedTimes = 0;
+      if (newReservation.get('times')) {
+        this.state.newReservation.get('times').forEach(function(t) {
+          if (t.get('selected')) {
+            selectedTimes++;
+          }
+        });
+      }
+      switch (newReservation.get('step')) {
+      case ReservationsActions.STEP_SET_MACHINE:
+        dialog = <SelectMachine className="reservations-new-dialog"/>;
+        break;
+      case ReservationsActions.STEP_SET_DATE:
+        dialog = <DatePicker className="reservations-new-dialog"/>;
+        break;
+      case ReservationsActions.STEP_SET_TIME:
+        dialog = <TimePicker className="reservations-new-dialog"/>;
+        break;
+      case ReservationsActions.STEP_SUCCESS:
+        dialog = <SuccessMsg className="reservations-new-dialog"/>;
+        break;
+      }
+      return (
+        <div id="reservations-new" className="container">
+          {dialog}
+        </div>
+      );
     }
-    switch (newReservation.get('step')) {
-    case ReservationsActions.STEP_SET_MACHINE:
-      dialog = <SelectMachine className="reservations-new-dialog"/>;
-      break;
-    case ReservationsActions.STEP_SET_DATE:
-      dialog = <DatePicker className="reservations-new-dialog"/>;
-      break;
-    case ReservationsActions.STEP_SET_TIME:
-      dialog = <TimePicker className="reservations-new-dialog"/>;
-      break;
-    case ReservationsActions.STEP_SUCCESS:
-      dialog = <SuccessMsg className="reservations-new-dialog"/>;
-      break;
-    }
-    return (
-      <div id="reservations-new" className="container">
-        {dialog}
-      </div>
-    );
   }
 });
 

@@ -511,11 +511,13 @@ const getNewReservationPrice = [
     if (machinesById && times) {
       var machineId = newReservation.get('machineId');
       var machine = machinesById.get(machineId);
-      var pricePerSlot = machine.get('ReservationPriceHourly') / 2;
-      var slots = _.reduce(times.toJS(), (total, slot) => {
-        return total + (slot.selected ? 1 : 0);
-      }, 0);
-      return slots * pricePerSlot;
+      if (machine) {
+        var pricePerSlot = machine.get('ReservationPriceHourly') / 2;
+        var slots = _.reduce(times.toJS(), (total, slot) => {
+          return total + (slot.selected ? 1 : 0);
+        }, 0);
+        return slots * pricePerSlot;
+      }
     }
   }
 ];
