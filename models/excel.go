@@ -190,7 +190,8 @@ func createXlsxFile(filePath string, invoice *Invoice) error {
 			return fmt.Errorf("GetUserMemberships: %v", err)
 		}
 
-		if len(userSummary.Purchases) == 0 && (memberships == nil || len(memberships.Data) == 0) {
+		if len(userSummary.Purchases.Data) == 0 &&
+			(memberships == nil || len(memberships.Data) == 0) {
 			// nothing to bill
 			continue
 		}
@@ -310,7 +311,7 @@ func createXlsxFile(filePath string, invoice *Invoice) error {
 
 		sumTotal := 0.0
 		sumTotalDisc := 0.0
-		purchases := PurchasesXlsx(userSummary.Purchases)
+		purchases := PurchasesXlsx(userSummary.Purchases.Data)
 		sort.Stable(purchases)
 		for _, purchase := range purchases {
 			sumTotal += purchase.TotalPrice
@@ -324,7 +325,7 @@ func createXlsxFile(filePath string, invoice *Invoice) error {
 		AddRowActivationsHeaderXlsx(sheet)
 
 		if summarizedByMachine, err := userSummary.Purchases.SummarizedByMachine(); err == nil {
-			for _, summed := range summarizedByMachine {
+			for _, summed := range summarizedByMachine.Data {
 				if err := AddRowXlsx(sheet, summed); err != nil {
 					return fmt.Errorf("AddRowXlsx: %v", err)
 				}

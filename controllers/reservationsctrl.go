@@ -71,7 +71,7 @@ func (this *ReservationsController) Create() {
 		this.CustomAbort(403, "Failed to create reservation")
 	}
 
-	this.Data["json"] = map[string]int64{"Id": id}
+	this.Data["json"] = models.ReservationCreatedResponse{Id: id}
 	this.ServeJson()
 }
 
