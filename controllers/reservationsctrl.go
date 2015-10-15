@@ -27,7 +27,7 @@ func (this *ReservationsController) GetAll() {
 
 // @Title Get
 // @Description Get reservation by ID
-// @Param	mid		path 	int	true		"Reservation ID"
+// @Param	rid		path 	int	true		"Reservation ID"
 // @Success 200 {object} models.Reservation
 // @Failure	403	Failed to get reservation
 // @Failure	401	Not authorized
