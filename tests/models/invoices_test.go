@@ -84,7 +84,7 @@ func TestInvoiceActivation(t *testing.T) {
 
 			invAct := CreateTestPurchase(22, "Lasercutter", 12, 0.5)
 			file := xlsx.NewFile()
-			sheet := file.AddSheet("User Summaries")
+			sheet, _ := file.AddSheet("User Summaries")
 			models.AddRowActivationsHeaderXlsx(sheet)
 			models.AddRowXlsx(sheet, invAct)
 			numRows := 2
@@ -114,27 +114,29 @@ func TestInvoiceActivation(t *testing.T) {
 
 		Convey("Testing SummarizedByMachine", func() {
 			invs := models.Purchases{
-				CreateTestPurchase(22, "Lasercutter", 12, 0.5),
-				CreateTestPurchase(22, "Lasercutter", 13, 0.25),
-				CreateTestPurchase(23, "CNC Router", 12, 0.8),
-				CreateTestPurchase(23, "CNC Router", 12, 0.8),
-				CreateTestPurchase(23, "CNC Router", 12, 0.8),
+				Data: []*models.Purchase{
+					CreateTestPurchase(22, "Lasercutter", 12, 0.5),
+					CreateTestPurchase(22, "Lasercutter", 13, 0.25),
+					CreateTestPurchase(23, "CNC Router", 12, 0.8),
+					CreateTestPurchase(23, "CNC Router", 12, 0.8),
+					CreateTestPurchase(23, "CNC Router", 12, 0.8),
+				},
 			}
 
 			if invs, err := invs.SummarizedByMachine(); err == nil {
 				sort.Stable(invs)
-				So(len(invs), ShouldEqual, 2)
-				So(invs[0].Machine.Name, ShouldEqual, "CNC Router")
-				So(invs[0].TotalPrice, ShouldAlmostEqual, 36*0.8, 0.000001)
-				So(invs[0].TotalPrice, ShouldAlmostEqual, models.PriceTotalExclDisc(invs[0]), 0.000001)
-				So(invs[0].DiscountedTotal, ShouldAlmostEqual, 36*0.8, 0.000001)
-				So(invs[1].DiscountedTotal, ShouldAlmostEqual, 0.5*(12*0.5+13*0.25), 0.000001)
-				if priceTotalDisc, err := models.PriceTotalDisc(invs[0]); err == nil {
-					So(invs[0].DiscountedTotal, ShouldAlmostEqual, priceTotalDisc, 0.000001)
+				So(len(invs.Data), ShouldEqual, 2)
+				So(invs.Data[0].Machine.Name, ShouldEqual, "CNC Router")
+				So(invs.Data[0].TotalPrice, ShouldAlmostEqual, 36*0.8, 0.000001)
+				So(invs.Data[0].TotalPrice, ShouldAlmostEqual, models.PriceTotalExclDisc(invs.Data[0]), 0.000001)
+				So(invs.Data[0].DiscountedTotal, ShouldAlmostEqual, 36*0.8, 0.000001)
+				So(invs.Data[1].DiscountedTotal, ShouldAlmostEqual, 0.5*(12*0.5+13*0.25), 0.000001)
+				if priceTotalDisc, err := models.PriceTotalDisc(invs.Data[0]); err == nil {
+					So(invs.Data[0].DiscountedTotal, ShouldAlmostEqual, priceTotalDisc, 0.000001)
 				} else {
 					panic(err.Error())
 				}
-				So(invs[1].Machine.Name, ShouldEqual, "Lasercutter")
+				So(invs.Data[1].Machine.Name, ShouldEqual, "Lasercutter")
 			} else {
 				panic(err.Error())
 			}
