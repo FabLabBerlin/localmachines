@@ -20,6 +20,12 @@ var ReservationActions = {
 
   load() {
     ApiActions.getCall('/api/reservations', function(reservations) {
+      _.each(reservations, function(reservation) {
+        ApiActions.getCall('/api/users/' + reservation.UserId + '/name', function(userData) {
+          reactor.dispatch(actionTypes.REGISTER_MACHINE_USER, { userData });
+        });
+      });
+      console.log('reservations:', reservations);
       reactor.dispatch(actionTypes.SET_RESERVATIONS, { reservations });
     });
   },

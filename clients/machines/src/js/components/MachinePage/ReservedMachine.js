@@ -34,7 +34,7 @@ var ReservedMachine = React.createClass({
    */
   render() {
     var users = this.state.machineUsers;
-    var user = users.get(this.props.activation.UserId) || {};
+    var user = users.get(this.props.reservation.get('UserId')) || {};
     var startStopButton;
     const isReservator = this.props.reservation.get('UserId') === this.props.user.get('Id');
     if (this.props.busy) {
@@ -78,7 +78,7 @@ var ReservedMachine = React.createClass({
                 {isReservator ? (
                   'This machine is reserved by you.'
                 ) : (
-                  'This machine is reserved.'
+                  'This machine is reserved by ' + user.FirstName + ' ' + user.LastName + '.'
                 )}
               </div>
             </div>
