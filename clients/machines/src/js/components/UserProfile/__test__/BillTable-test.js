@@ -46,154 +46,156 @@ var state = {
         'City': '',
         'CountryCode': ''
       },
-      'Purchases': [
-        {
-          'Activation': {
-            'Id': 3195,
-            'InvoiceId': 0,
-            'UserId': 261,
-            'MachineId': 8,
-            'Active': false,
-            'TimeStart': '2015-10-07T10:32:59+02:00',
-            'TimeEnd': '2015-10-07T10:33:51+02:00',
-            'TimeTotal': 51,
-            'UsedKwh': 0,
-            'DiscountPercents': 0,
-            'DiscountFixed': 0,
-            'VatRate': 0,
-            'CommentRef': '',
-            'Invoiced': false,
-            'Changed': false
+      'Purchases': {
+        Data: [
+          {
+            'Activation': {
+              'Id': 3195,
+              'InvoiceId': 0,
+              'UserId': 261,
+              'MachineId': 8,
+              'Active': false,
+              'TimeStart': '2015-10-07T10:32:59+02:00',
+              'TimeEnd': '2015-10-07T10:33:51+02:00',
+              'TimeTotal': 51,
+              'UsedKwh': 0,
+              'DiscountPercents': 0,
+              'DiscountFixed': 0,
+              'VatRate': 0,
+              'CommentRef': '',
+              'Invoiced': false,
+              'Changed': false
+            },
+            'Machine': {
+              'Id': 8,
+              'Name': '3D Printer - 5 Pumpkin (I3 Berlin) [€0.10/min]',
+              'Shortname': 'I3B1',
+              'Description': 'i3Berlin 3D Printer',
+              'Image': '',
+              'Available': true,
+              'UnavailMsg': '',
+              'UnavailTill': '0001-01-01T00:00:00Z',
+              'Price': 0.1,
+              'PriceUnit': 'minute',
+              'Comments': '',
+              'Visible': true,
+              'ConnectedMachines': '',
+              'SwitchRefCount': 0,
+              'UnderMaintenance': false
+            },
+            'MachineUsage': 0.85,
+            'User': {
+              'Id': 261,
+              'FirstName': 'bla',
+              'LastName': 'bla',
+              'Username': 'bla',
+              'Email': 'bla@example.com',
+              'InvoiceAddr': '',
+              'ShipAddr': '',
+              'ClientId': 0,
+              'B2b': false,
+              'Company': '',
+              'VatUserId': '',
+              'VatRate': 0,
+              'UserRole': '',
+              'Created': '2015-10-07T10:30:21+02:00',
+              'Comments': '',
+              'Phone': '',
+              'ZipCode': '',
+              'City': '',
+              'CountryCode': ''
+            },
+            'Memberships': [
+              {
+                'Id': 4,
+                'Title': '3D Print Club',
+                'ShortName': '3DPC',
+                'DurationMonths': 12,
+                'MonthlyPrice': 10,
+                'MachinePriceDeduction': 100,
+                'AffectedMachines': '[2,4,6,10,8,7,12,13]',
+                'AutoExtend': true,
+                'AutoExtendDurationMonths': 1
+              }
+            ],
+            'TotalPrice': 0.085,
+            'DiscountedTotal': 0
           },
-          'Machine': {
-            'Id': 8,
-            'Name': '3D Printer - 5 Pumpkin (I3 Berlin) [€0.10/min]',
-            'Shortname': 'I3B1',
-            'Description': 'i3Berlin 3D Printer',
-            'Image': '',
-            'Available': true,
-            'UnavailMsg': '',
-            'UnavailTill': '0001-01-01T00:00:00Z',
-            'Price': 0.1,
-            'PriceUnit': 'minute',
-            'Comments': '',
-            'Visible': true,
-            'ConnectedMachines': '',
-            'SwitchRefCount': 0,
-            'UnderMaintenance': false
-          },
-          'MachineUsage': 0.85,
-          'User': {
-            'Id': 261,
-            'FirstName': 'bla',
-            'LastName': 'bla',
-            'Username': 'bla',
-            'Email': 'bla@example.com',
-            'InvoiceAddr': '',
-            'ShipAddr': '',
-            'ClientId': 0,
-            'B2b': false,
-            'Company': '',
-            'VatUserId': '',
-            'VatRate': 0,
-            'UserRole': '',
-            'Created': '2015-10-07T10:30:21+02:00',
-            'Comments': '',
-            'Phone': '',
-            'ZipCode': '',
-            'City': '',
-            'CountryCode': ''
-          },
-          'Memberships': [
-            {
-              'Id': 4,
-              'Title': '3D Print Club',
-              'ShortName': '3DPC',
-              'DurationMonths': 12,
-              'MonthlyPrice': 10,
-              'MachinePriceDeduction': 100,
-              'AffectedMachines': '[2,4,6,10,8,7,12,13]',
-              'AutoExtend': true,
-              'AutoExtendDurationMonths': 1
-            }
-          ],
-          'TotalPrice': 0.085,
-          'DiscountedTotal': 0
-        },
-        {
-          'Activation': {
-            'Id': 3196,
-            'InvoiceId': 0,
-            'UserId': 261,
-            'MachineId': 3,
-            'Active': false,
-            'TimeStart': '2015-10-07T10:33:54+02:00',
-            'TimeEnd': '2015-10-07T10:35:06+02:00',
-            'TimeTotal': 72,
-            'UsedKwh': 0,
-            'DiscountPercents': 0,
-            'DiscountFixed': 0,
-            'VatRate': 0,
-            'CommentRef': '',
-            'Invoiced': false,
-            'Changed': false
-          },
-          'Machine': {
-            'Id': 3,
-            'Name': 'Laser Cutter - Epilog Zing 6030 [€0.80/min]',
-            'Shortname': 'ZLC',
-            'Description': 'Cuts wood, plastic, paper. Fast.',
-            'Image': '',
-            'Available': true,
-            'UnavailMsg': '',
-            'UnavailTill': '0001-01-01T00:00:00Z',
-            'Price': 0.8,
-            'PriceUnit': 'minute',
-            'Comments': 'asd',
-            'Visible': true,
-            'ConnectedMachines': '',
-            'SwitchRefCount': 0,
-            'UnderMaintenance': false
-          },
-          'MachineUsage': 1.2,
-          'User': {
-            'Id': 261,
-            'FirstName': 'bla',
-            'LastName': 'bla',
-            'Username': 'bla',
-            'Email': 'bla@example.com',
-            'InvoiceAddr': '',
-            'ShipAddr': '',
-            'ClientId': 0,
-            'B2b': false,
-            'Company': '',
-            'VatUserId': '',
-            'VatRate': 0,
-            'UserRole': '',
-            'Created': '2015-10-07T10:30:21+02:00',
-            'Comments': '',
-            'Phone': '',
-            'ZipCode': '',
-            'City': '',
-            'CountryCode': ''
-          },
-          'Memberships': [
-            {
-              'Id': 4,
-              'Title': '3D Print Club',
-              'ShortName': '3DPC',
-              'DurationMonths': 12,
-              'MonthlyPrice': 10,
-              'MachinePriceDeduction': 100,
-              'AffectedMachines': '[2,4,6,10,8,7,12,13]',
-              'AutoExtend': true,
-              'AutoExtendDurationMonths': 1
-            }
-          ],
-          'TotalPrice': 0.96,
-          'DiscountedTotal': 0.96
-        }
-      ]
+          {
+            'Activation': {
+              'Id': 3196,
+              'InvoiceId': 0,
+              'UserId': 261,
+              'MachineId': 3,
+              'Active': false,
+              'TimeStart': '2015-10-07T10:33:54+02:00',
+              'TimeEnd': '2015-10-07T10:35:06+02:00',
+              'TimeTotal': 72,
+              'UsedKwh': 0,
+              'DiscountPercents': 0,
+              'DiscountFixed': 0,
+              'VatRate': 0,
+              'CommentRef': '',
+              'Invoiced': false,
+              'Changed': false
+            },
+            'Machine': {
+              'Id': 3,
+              'Name': 'Laser Cutter - Epilog Zing 6030 [€0.80/min]',
+              'Shortname': 'ZLC',
+              'Description': 'Cuts wood, plastic, paper. Fast.',
+              'Image': '',
+              'Available': true,
+              'UnavailMsg': '',
+              'UnavailTill': '0001-01-01T00:00:00Z',
+              'Price': 0.8,
+              'PriceUnit': 'minute',
+              'Comments': 'asd',
+              'Visible': true,
+              'ConnectedMachines': '',
+              'SwitchRefCount': 0,
+              'UnderMaintenance': false
+            },
+            'MachineUsage': 1.2,
+            'User': {
+              'Id': 261,
+              'FirstName': 'bla',
+              'LastName': 'bla',
+              'Username': 'bla',
+              'Email': 'bla@example.com',
+              'InvoiceAddr': '',
+              'ShipAddr': '',
+              'ClientId': 0,
+              'B2b': false,
+              'Company': '',
+              'VatUserId': '',
+              'VatRate': 0,
+              'UserRole': '',
+              'Created': '2015-10-07T10:30:21+02:00',
+              'Comments': '',
+              'Phone': '',
+              'ZipCode': '',
+              'City': '',
+              'CountryCode': ''
+            },
+            'Memberships': [
+              {
+                'Id': 4,
+                'Title': '3D Print Club',
+                'ShortName': '3DPC',
+                'DurationMonths': 12,
+                'MonthlyPrice': 10,
+                'MachinePriceDeduction': 100,
+                'AffectedMachines': '[2,4,6,10,8,7,12,13]',
+                'AutoExtend': true,
+                'AutoExtendDurationMonths': 1
+              }
+            ],
+            'TotalPrice': 0.96,
+            'DiscountedTotal': 0.96
+          }
+        ]
+      }
     },
     'membershipInfo': [
       {
