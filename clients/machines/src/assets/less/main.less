@@ -538,14 +538,16 @@ YP  YP  YP YP   YP  `Y88P' YP   YP Y888888P VP   V8P Y88888P
   border-left: (@lg-height / 2) solid lighten(@color-warning, 10%);
 }
 
-.machine.occupied .occupied-by-label {
+.machine.occupied .occupied-by-label,
+.machine.reserved .reserved-by-label {
   font-size: 10px;
   font-weight: normal;
   color: lighten(@text-color-default, 50%);
   line-height: 1.3;
 }
 
-.machine.occupied .occupied-by-value {
+.machine.occupied .occupied-by-value,
+.machine.reserved .reserved-by-value {
   font-size: 12px;
   font-weight: bold;
   line-height: 1.3;

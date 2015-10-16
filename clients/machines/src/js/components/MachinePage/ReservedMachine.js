@@ -75,11 +75,15 @@ var ReservedMachine = React.createClass({
   
             <div className="machine-action-info">
               <div className="machine-info-content">
-                {isReservator ? (
-                  'This machine is reserved by you.'
-                ) : (
-                  'This machine is reserved by ' + user.FirstName + ' ' + user.LastName + '.'
-                )}
+                <div className="reserved-by-label">
+                  Reserved by
+                </div>
+                <div className="reserved-by-value">
+                {isReservator ? 
+                  ('You') : 
+                  (user.FirstName + ' ' + user.LastName)
+                }
+                </div>
               </div>
             </div>
   
