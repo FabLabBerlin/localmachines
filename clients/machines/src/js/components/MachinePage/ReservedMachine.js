@@ -50,7 +50,7 @@ var ReservedMachine = React.createClass({
       if (isReservator) {
         startStopButton = (
           <button 
-            className="btn btn-lg btn-warning btn-block"
+            className="btn btn-lg btn-reservation btn-block"
             onClick={this.startActivation}>
             Start
           </button>
@@ -58,7 +58,7 @@ var ReservedMachine = React.createClass({
       } else {
         startStopButton = (
           <button 
-            className="btn btn-lg btn-default btn-block"
+            className="btn btn-lg btn-reservation btn-block"
             onClick={this.startActivation}>
             Start
           </button>
