@@ -30,15 +30,16 @@ function scrollUp(state) {
 
 function scrollDown(state) {
   var pos = state.get('position') + state.get('scrollStep');
-  if (pos + $(window).height() >= $('html,body').height()) {
-    pos = $('html,body').height() - $(window).height();
+  if (pos + $(window).height() >= $(document).height()) {
+    pos = $(document).height() - $(window).height();
   }
   return update(state.set('position', pos));
 }
 
 function update(state) {
   return state.set('upEnabled', state.get('position') > 0)
-              .set('downEnabled', state.get('position') + $(window).height() < $('html,body').height());
+              .set('downEnabled', state.get('position') + 
+                $(window).height() < $(document).height());
 }
 
 function setScrollStep(state, { scrollStep }) {
