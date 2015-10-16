@@ -23,7 +23,7 @@ var MachinePricing = React.createClass({
       <div>
         <div className="reservations-machine-price">{hourlyPrice}</div>
         <div>
-          The reservation price in on top of the Machine Time.
+          The reservation price is on top of the Machine Time.
         </div>
       </div>
     );
@@ -164,7 +164,7 @@ var SuccessMsg = React.createClass({
           <p><b>Total price:</b> €{(this.state.newReservationPrice).toFixed(2)}</p>
         </div>
         <div>
-          The reservation price in on top of the Machine Time.
+          The reservation price is on top of the Machine Time.
         </div>
 
         <hr/>
