@@ -289,6 +289,71 @@ app.controller('ReservationsCtrl', ['$scope', '$http', '$location', '$cookieStor
   };
 
 
+  /*
+   *
+   * Reservations helper functions
+   *
+   */
+
+  $scope.dateRangeUpdate = function(id) {
+    var rule = $scope.reservationRulesById[id];
+    var dateStart = String(rule.DateStart);
+    var dateEnd = String(rule.DateEnd);
+    if (dateStart.length === 10 && dateEnd.length === 10) {
+      dateStart = moment(dateStart);
+      dateEnd = moment(dateEnd);
+      var i = 0;
+      if (!dateStart.isValid() || !dateEnd.isValid()) {
+        return;
+      }
+      if (dateStart.unix() > dateEnd.unix()) {
+        toastr.error('Date Start is after Date End');
+        return;
+      }
+      var t = dateStart.clone();
+      var tString;
+      var dateEndString = dateEnd.format('YYYY-MM-DD');
+      rule.Monday = false;
+      rule.Tuesday = false;
+      rule.Wednesday = false;
+      rule.Thursday = false;
+      rule.Friday = false;
+      rule.Saturday = false;
+      rule.Sunday = false;
+      do {
+        tString = t.format('YYYY-MM-DD');
+        switch (t.isoWeekday()) {
+        case 1:
+          rule.Monday = true;
+          break;
+        case 2:
+          rule.Tuesday = true;
+          break;
+        case 3:
+          rule.Wednesday = true;
+          break;
+        case 4:
+          rule.Thursday = true;
+          break;
+        case 5:
+          rule.Friday = true;
+          break;
+        case 6:
+          rule.Saturday = true;
+          break;
+        case 7:
+          rule.Sunday = true;
+          break;
+        default:
+          toastr.error('Internal Error.');
+        }
+        i++;
+        t.add(1, 'day');
+      } while (tString !== dateEndString && i < 1000);
+    }
+  };
+
+
 }]); // app.controller
 
 })(); // closure
