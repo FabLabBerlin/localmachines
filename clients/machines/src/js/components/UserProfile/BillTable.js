@@ -70,10 +70,14 @@ var BillTables = React.createClass({
           </tr>
         );
 
-        _.each(bill.activations, function(info) {
+        _.each(bill.purchases, function(info) {
+          var label = info.MachineName;
+          if (info.Type === 'Reservation') {
+            label += ' (Reservation)';
+          }
           tbody.push(
             <tr key={i++}>
-              <td>{info.MachineName}</td>
+              <td>{label}</td>
               <td>{formatDate(info.TimeStart)}</td>
               <td>{formatDuration(info.duration)}</td>
               <td>{toEuro(info.priceExclVAT)}€</td>
@@ -83,14 +87,18 @@ var BillTables = React.createClass({
           );
         });
 
+        bill.purchases = _.sortBy(bill.purchases, (p) => {
+          return -p.TimeStart.unix();
+        });
+
         tfoot.push(
           <tr key={i++}>
             <td><b>Total Pay-As-You-Go</b></td>
             <td>&nbsp;</td>
-            <td><b>{formatDuration(bill.sums.activations.durations)}</b></td>
-            <td><b>{toEuro(bill.sums.activations.priceExclVAT)}€</b></td>
-            <td><b>{toEuro(bill.sums.activations.priceVAT)}€</b></td>
-            <td><b>{toEuro(bill.sums.activations.priceInclVAT)}€</b></td>
+            <td><b>{formatDuration(bill.sums.purchases.durations)}</b></td>
+            <td><b>{toEuro(bill.sums.purchases.priceExclVAT)}€</b></td>
+            <td><b>{toEuro(bill.sums.purchases.priceVAT)}€</b></td>
+            <td><b>{toEuro(bill.sums.purchases.priceInclVAT)}€</b></td>
           </tr>
         );
 

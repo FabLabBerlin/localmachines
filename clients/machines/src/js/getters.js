@@ -128,51 +128,61 @@ const getMonthlyBills = [
     if (!billInfo) {
       return undefined;
     }
-    var activations = billInfo.Purchases;
-    var activationsByMonth = _.groupBy(activations.Data, function(info) {
-      if (info.Activation) {
-        return moment(info.Activation.TimeStart).format('MMM YYYY');
-      }
+    var purchases = billInfo.Purchases;
+    var purchasesByMonth = _.groupBy(purchases.Data, function(p) {
+      var info = p.Activation ? p.Activation : p.Reservation;
+      return moment(info.TimeStart).format('MMM YYYY');
     });
     var monthlyBills = _.map(billMonths, function(m) {
       var month = m.format('MMM YYYY');
       var monthlyBill = {
         month: month,
-        activations: [],
         memberships: [],
+        purchases: [],
         sums: {
-          activations: {
-            priceInclVAT: 0,
-            priceExclVAT: 0,
-            priceVAT: 0,
-            durations: 0
-          },
           memberships: {
             priceInclVAT: 0,
             priceExclVAT: 0,
             priceVAT: 0
+          },
+          purchases: {
+            priceInclVAT: 0,
+            priceExclVAT: 0,
+            priceVAT: 0,
+            durations: 0
           },
           total: {}
         }
       };
 
       /*
-       * Collect activations and sum for the totals
+       * Collect purchases and sum for the totals
        */
-      _.eachRight(activationsByMonth[month], function(info) {
-        var duration = moment.duration(moment(info.Activation.TimeEnd)
-          .diff(moment(info.Activation.TimeStart))).asSeconds();
+      _.eachRight(purchasesByMonth[month], function(info) {
+        var timeStart;
+        var timeEnd;
+        if (info.Activation) {
+          timeStart = moment(info.Activation.TimeStart);
+          timeEnd = moment(info.Activation.TimeEnd);
+        } else {
+          timeStart = moment(info.Reservation.TimeStart);
+          timeEnd = moment(info.Reservation.TimeEnd);
+        }
+
+        var duration = moment.duration(timeEnd.diff(timeStart))
+                             .asSeconds();
         
         monthlyBill.sums.durations += duration;
         var priceInclVAT = toCents(info.DiscountedTotal);
         var priceExclVAT = toCents(subtractVAT(info.DiscountedTotal));
         var priceVAT = priceInclVAT - priceExclVAT;
-        monthlyBill.sums.activations.priceInclVAT += priceInclVAT;
-        monthlyBill.sums.activations.priceExclVAT += priceExclVAT;
-        monthlyBill.sums.activations.priceVAT += priceVAT;
-        monthlyBill.activations.push({
+        monthlyBill.sums.purchases.priceInclVAT += priceInclVAT;
+        monthlyBill.sums.purchases.priceExclVAT += priceExclVAT;
+        monthlyBill.sums.purchases.priceVAT += priceVAT;
+        monthlyBill.purchases.push({
           MachineName: info.Machine.Name,
-          TimeStart: moment(info.Activation.TimeStart),
+          Type: info.Activation ? 'Activation' : 'Reservation',
+          TimeStart: timeStart,
           duration: duration,
           priceExclVAT: priceExclVAT,
           priceVAT: priceVAT,
@@ -200,9 +210,9 @@ const getMonthlyBills = [
       });
 
       monthlyBill.sums.total = {
-        priceInclVAT: monthlyBill.sums.activations.priceInclVAT + monthlyBill.sums.memberships.priceInclVAT,
-        priceExclVAT: monthlyBill.sums.activations.priceExclVAT + monthlyBill.sums.memberships.priceExclVAT,
-        priceVAT: monthlyBill.sums.activations.priceVAT + monthlyBill.sums.memberships.priceVAT
+        priceInclVAT: monthlyBill.sums.purchases.priceInclVAT + monthlyBill.sums.memberships.priceInclVAT,
+        priceExclVAT: monthlyBill.sums.purchases.priceExclVAT + monthlyBill.sums.memberships.priceExclVAT,
+        priceVAT: monthlyBill.sums.purchases.priceVAT + monthlyBill.sums.memberships.priceVAT
       };
 
       return monthlyBill;
@@ -475,11 +485,9 @@ const getNewReservationFrom = [
   getNewReservationTimes,
   (reservationTimes) => {
     if (reservationTimes) {
-      console.log('reservationTimes.toArray():', reservationTimes.toArray());
       var selectedTimes = _.filter(reservationTimes.toArray(), function(t) {
         return t.get('selected');
       });
-      console.log('selectedTimes:', selectedTimes);
       if (selectedTimes.length > 0) {
         return _.first(selectedTimes).get('start').toDate();
       }
