@@ -71,17 +71,15 @@
         <th rowspan="2">Machine</th>
         <th rowspan="2">Available (Overwrites Unavailables)</th>
         <th rowspan="2">Unavailable</th>
-        <th colspan="2">Start</th>
-        <th colspan="2">End</th>
+        <th rowspan="2">Start Date</th>
+        <th rowspan="2">End Date</th>
+        <th rowspan="2">Start Time</th>
+        <th rowspan="2">End Time</th>
         <th colspan="7">Weekdays</th>
         <th rowspan="2"></th>
         <th rowspan="2"></th>
       </tr>
       <tr>
-        <th>Date</th>
-        <th>Time</th>
-        <th>Date</th>
-        <th>Time</th>
         <th>Mo</th>
         <th>Tu</th>
         <th>We</th>
@@ -107,10 +105,10 @@
           <input type="text" ng-model="reservationRule.DateStart" ng-change="dateRangeUpdate(reservationRule.Id)" placeholder="YYYY-MM-DD" size="13">
         </td>
         <td>
-          <input type="text" ng-model="reservationRule.TimeStart" placeholder="HH:MM" size="6">
+          <input type="text" ng-model="reservationRule.DateEnd" ng-change="dateRangeUpdate(reservationRule.Id)" placeholder="YYYY-MM-DD" size="13">
         </td>
         <td>
-          <input type="text" ng-model="reservationRule.DateEnd" ng-change="dateRangeUpdate(reservationRule.Id)" placeholder="YYYY-MM-DD" size="13">
+          <input type="text" ng-model="reservationRule.TimeStart" placeholder="HH:MM" size="6">
         </td>
         <td>
           <input type="text" ng-model="reservationRule.TimeEnd" placeholder="HH:MM" size="6">

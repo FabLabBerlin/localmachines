@@ -92,7 +92,7 @@ function reservationRules() {
       'TimeStart': '09:00',
       'Wednesday': false,
       'TimeZone': '',
-      'Saturday': false,
+      'Saturday': true,
       'Thursday': false,
       'Id': 4,
       'Friday': false
@@ -113,9 +113,9 @@ function reservationRules() {
       'Wednesday': true,
       'TimeZone': '',
       'Saturday': true,
-      'Thursday': true,
+      'Thursday': false,
       'Id': 5,
-      'Friday': true
+      'Friday': false
     },
     {
       'MachineId': 10,
@@ -282,22 +282,28 @@ describe('ReservationRulesStore', function() {
     reactor.dispatch(actionTypes.CREATE_SET_MACHINE, { mid });
     var i;
 
-    // i3 not available December Wednesday, 23rd
+    // i3 not available December Wednesday, 23rd from 17:00 on
     var date = moment('2015-12-23');
     reactor.dispatch(actionTypes.CREATE_SET_DATE, { date });
     var times = reactor.evaluateToJS(getters.getNewReservationTimes);
     expect(times.length).toEqual(18);
     for (i = 0; i < 18; i++) {
-      expect(times[i].availableMachineIds).toEqual([3, 8]);
+      if (i < 14) {
+        expect(times[i].availableMachineIds).toEqual([3, 8, 10]);
+      } else {
+        expect(times[i].availableMachineIds).toEqual([3, 8]);
+      }
     }
 
-    // i3 not available December Tuesday, 22nd
+    // i3 not available December Tuesday, 22nd from 17:00 on
     date = moment('2015-12-22');
     reactor.dispatch(actionTypes.CREATE_SET_DATE, { date });
     times = reactor.evaluateToJS(getters.getNewReservationTimes);
     expect(times.length).toEqual(18);
     for (i = 0; i < 18; i++) {
-      if (i < 15) {
+      if (i < 14) {
+        expect(times[i].availableMachineIds).toEqual([3, 8, 10]);
+      } else if (i < 15) {
         expect(times[i].availableMachineIds).toEqual([3, 8]);
       } else {
         // Lasercutter workshop in the evening...

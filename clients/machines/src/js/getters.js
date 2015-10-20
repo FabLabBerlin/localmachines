@@ -365,18 +365,14 @@ const getNewReservationTimes = [
             var applies = true;
             var tm;
             var d;
-            if (rule.get('DateStart') && rule.get('TimeStart')) {
-              var start = moment(rule.get('DateStart') + ' ' + rule.get('TimeStart'));
-              if (start.unix() > t.get('end').unix()) {
-                applies = false;
-              }
-            } else if (rule.get('DateStart')) {
+            if (rule.get('DateStart')) {
               var dateStart = new Day(rule.get('DateStart'));
               d = new Day(t.get('end').format('YYYY-MM-DD'));
               if (dateStart.toInt() > d.toInt()) {
                 applies = false;
               }
-            } else if (rule.get('TimeStart')) {
+            }
+            if (rule.get('TimeStart')) {
               var timeStart = new Time(rule.get('TimeStart'));
               tm = new Time(t.get('end').format('HH:mm'));
               if (timeStart.toInt() >= tm.toInt()) {
@@ -384,18 +380,14 @@ const getNewReservationTimes = [
               }
             }
 
-            if (rule.get('DateEnd') && rule.get('TimeEnd')) {
-              var end = moment(rule.get('DateEnd') + ' ' + rule.get('TimeEnd'));
-              if (end.unix() < t.get('start').unix()) {
-                applies = false;
-              }
-            } else if (rule.get('DateEnd')) {
+            if (rule.get('DateEnd')) {
               var dateEnd = new Day(rule.get('DateEnd'));
               d = new Day(t.get('end').format('YYYY-MM-DD'));
               if (dateEnd.toInt() < d.toInt()) {
                 applies = false;
               }
-            } else if (rule.get('TimeEnd')) {
+            }
+            if (rule.get('TimeEnd')) {
               var timeEnd = new Time(rule.get('TimeEnd'));
               tm = new Time(t.get('start').format('HH:mm'));
               if (timeEnd.toInt() < tm.toInt()) {
