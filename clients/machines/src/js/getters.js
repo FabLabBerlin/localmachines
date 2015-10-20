@@ -359,7 +359,8 @@ const getNewReservationTimes = [
         var availableIds = reservationRulesStore
           .get('reservationRules')
           .sortBy((rule) => {
-            return rule.get('Available');
+            /* Unavailability overrides Availability */
+            return !rule.get('Available');
           })
           .reduce((availableMachineIds, rule) => {
             var applies = true;
