@@ -193,6 +193,61 @@ var state = {
             ],
             'TotalPrice': 0.96,
             'DiscountedTotal': 0.96
+          },
+          {
+            Activation: null,
+            Reservation: {
+              Id: 2,
+              MachineId: 11,
+              UserId: 19,
+              TimeStart: '2015-10-23T12:30:00+02:00',
+              TimeEnd: '2015-10-23T13:00:00+02:00',
+              Created: '2015-10-15T11:44:04+02:00'
+            },
+            Machine: {
+              Id: 11,
+              Name: 'CNC Router',
+              Shortname: 'CNC',
+              Description: '',
+              Image: 'machine-11.svg',
+              Available: true,
+              UnavailMsg: '',
+              UnavailTill: '0001-01-01T00:00:00Z',
+              Price: 0.8,
+              PriceUnit: 'minute',
+              Comments: '',
+              Visible: true,
+              ConnectedMachines: '',
+              SwitchRefCount: 0,
+              UnderMaintenance: false,
+              ReservationPriceStart: null,
+              ReservationPriceHourly: 5
+            },
+            MachineUsage: 0,
+            User: {
+              Id: 19,
+              FirstName: 'Philip',
+              LastName: 'Silva',
+              Username: 'psilva',
+              Email: 'psilva.de@gmail.com',
+              InvoiceAddr: 'There is one',
+              ShipAddr: '0',
+              ClientId: 696,
+              B2b: false,
+              Company: '',
+              VatUserId: '',
+              VatRate: 0,
+              UserRole: 'admin',
+              Created: '2015-06-04T08:34:51+02:00',
+              Comments: 'Fastbill Kd-Nr. 696',
+              Phone: '0002',
+              ZipCode: '',
+              City: '',
+              CountryCode: ''
+            },
+            Memberships: null,
+            TotalPrice: 2.5,
+            DiscountedTotal: 2.5
           }
         ]
       }
@@ -242,13 +297,17 @@ describe('BillTable', function() {
       expect(html).toContain('3D Printer - 5 Pumpkin (I3 Berlin) [€0.10/min]');
       expect(html).toContain('52s');
       expect(html).toContain('0.00');
+      /* Reservations */
+      expect(html).toContain('CNC Router (Reservation)');
+      expect(html).toContain('30m 0s');
+      expect(html).toContain('2.50');
       /* Totals */
       expect(html).toContain('Total Pay-As-You-Go');
-      expect(html).toContain('0.96');
+      expect(html).toContain('3.46');
       expect(html).toContain('Total Memberships');
       expect(html).toContain('10.00');
       expect(html).toContain('Total');
-      expect(html).toContain('10.96');
+      expect(html).toContain('13.46');
     });
   });
 });
