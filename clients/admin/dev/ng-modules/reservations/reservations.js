@@ -185,6 +185,11 @@ app.controller('ReservationsCtrl', ['$scope', '$http', '$location', '$cookieStor
   };
 
   $scope.saveReservationRule = function(id) {
+    if (!$scope.weekDayCheck(id)) {
+      toastr.error('Failed to update Reservation Rule');
+      return;
+    }
+
     $http({
       method: 'PUT',
       url: '/api/reservation_rules/' + id,
@@ -350,6 +355,23 @@ app.controller('ReservationsCtrl', ['$scope', '$http', '$location', '$cookieStor
         i++;
         t.add(1, 'day');
       } while (tString !== dateEndString && i < 1000);
+    }
+  };
+
+  // weekDayCheck returns true when everything is okay, false otherwise
+  $scope.weekDayCheck = function(id) {
+    var rule = $scope.reservationRulesById[id];
+    var weekDaySelected = rule.Monday || rule.Tuesday || rule.Wednesday ||
+          rule.Thursday || rule.Friday || rule.Saturday || rule.Sunday;
+
+    if (weekDaySelected) {
+      var okay = !!(rule.DateStart && rule.DateEnd);
+      if (!okay) {
+        toastr.error('Set Date Start and Date End before setting week days!');
+      }
+      return okay;
+    } else {
+      return true;
     }
   };
 

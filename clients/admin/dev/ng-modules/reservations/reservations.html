@@ -114,25 +114,25 @@
           <input type="text" ng-model="reservationRule.TimeEnd" placeholder="HH:MM" size="6">
         </td>
         <td>
-          <input type="checkbox" ng-model="reservationRule.Monday">
+          <input type="checkbox" ng-model="reservationRule.Monday" ng-change="weekDayCheck(reservationRule.Id)">
         </td>
         <td>
-          <input type="checkbox" ng-model="reservationRule.Tuesday">
+          <input type="checkbox" ng-model="reservationRule.Tuesday" ng-change="weekDayCheck(reservationRule.Id)">
         </td>
         <td>
-          <input type="checkbox" ng-model="reservationRule.Wednesday">
+          <input type="checkbox" ng-model="reservationRule.Wednesday" ng-change="weekDayCheck(reservationRule.Id)">
         </td>
         <td>
-          <input type="checkbox" ng-model="reservationRule.Thursday">
+          <input type="checkbox" ng-model="reservationRule.Thursday" ng-change="weekDayCheck(reservationRule.Id)">
         </td>
         <td>
-          <input type="checkbox" ng-model="reservationRule.Friday">
+          <input type="checkbox" ng-model="reservationRule.Friday" ng-change="weekDayCheck(reservationRule.Id)">
         </td>
         <td>
-          <input type="checkbox" ng-model="reservationRule.Saturday">
+          <input type="checkbox" ng-model="reservationRule.Saturday" ng-change="weekDayCheck(reservationRule.Id)">
         </td>
         <td>
-          <input type="checkbox" ng-model="reservationRule.Sunday">
+          <input type="checkbox" ng-model="reservationRule.Sunday" ng-change="weekDayCheck(reservationRule.Id)">
         </td>
         <td>
           <button type="button" class="btn btn-danger btn-ico pull-right" ng-click="deleteReservationRule(reservationRule.Id)">
