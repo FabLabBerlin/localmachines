@@ -12,7 +12,7 @@ type Purchase struct {
 	Activation      *Activation
 	Reservation     *Reservation
 	Machine         *Machine
-	MachineUsage    float64
+	MachineUsage    time.Duration
 	User            User
 	Memberships     []*Membership
 	TotalPrice      float64
@@ -52,7 +52,16 @@ func (this *Purchase) PricePerUnit() float64 {
 
 func PriceTotalExclDisc(p *Purchase) float64 {
 	if p.Activation != nil {
-		return p.MachineUsage * float64(p.Machine.Price)
+		var pricePerSecond float64
+		switch p.Machine.PriceUnit {
+		case "minute":
+			pricePerSecond = float64(p.Machine.Price) / 60
+			break
+		case "hour":
+			pricePerSecond = float64(p.Machine.Price) / 60 / 60
+			break
+		}
+		return p.MachineUsage.Seconds() * pricePerSecond
 	} else {
 		return float64(p.Reservation.Slots()) * p.PricePerUnit()
 	}

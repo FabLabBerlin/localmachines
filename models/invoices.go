@@ -394,24 +394,8 @@ func (this *Invoice) purchaseFromActivation(activation Activation,
 	}
 
 	purchase := &Purchase{
-		Machine: machine,
-	}
-
-	// Usage time is stored as seconds and we need to transform that into
-	// other format depending on the machine usage unit.
-	switch purchase.Machine.PriceUnit {
-	case "minute":
-		purchase.MachineUsage = float64(activation.TimeTotal) / 60.0
-		if purchase.MachineUsage < 0.01 {
-			purchase.MachineUsage = 0.01
-		}
-		break
-	case "hour":
-		purchase.MachineUsage = float64(activation.TimeTotal) / 60.0 / 60.0
-		if purchase.MachineUsage < 0.01 {
-			purchase.MachineUsage = 0.01
-		}
-		break
+		Machine:      machine,
+		MachineUsage: time.Duration(activation.TimeTotal) * time.Second,
 	}
 
 	if purchase.User, ok = usersById[activation.UserId]; !ok {

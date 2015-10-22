@@ -88,7 +88,7 @@ func AddRowXlsx(sheet *xlsx.Sheet, purchase *Purchase) error {
 
 	cell = row.AddCell()
 	if purchase.Activation != nil {
-		cell.SetFloatWithFormat(purchase.MachineUsage, FORMAT_4_DIGIT)
+		cell.SetFloatWithFormat(purchase.MachineUsage.Minutes(), FORMAT_4_DIGIT)
 	} else {
 		totalPrice = float64(purchase.Reservation.Slots()) * purchase.PricePerUnit()
 		discountedTotal = totalPrice
