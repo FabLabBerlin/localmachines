@@ -225,6 +225,142 @@ const getMonthlyBills = [
 /*
  * Machine (Page) related getters
  */
+function slotAvailabilities({date, machinesById, reservationsStore, reservationRulesStore, reservationsByDay}) {
+  var allMachineIds = [];
+  _.each(machinesById.toJS(), function(machine, id) {
+    id = parseInt(id);
+    allMachineIds.push(id);
+  });
+
+  var timesOfDay = [];
+  var i = 0;
+  for (var tt = date.clone().hours(0); i < 2 * 24; tt.add(30, 'm'), i++) {
+    timesOfDay.push({
+      start: tt.clone(),
+      end: tt.clone().add(30, 'm'),
+      selected: false
+    });
+  }
+  timesOfDay = toImmutable(timesOfDay);
+
+  return timesOfDay.map((t) => {
+    /* Machine Ids available according to reservation rules */
+    var availableIds = reservationRulesStore
+      .get('reservationRules')
+      .sortBy((rule) => {
+        /* Unavailability overrides Availability */
+        return !rule.get('Available');
+      })
+      .reduce((availableMachineIds, rule) => {
+        var applies = true;
+        var tm;
+        var d;
+        if (rule.get('DateStart')) {
+          var dateStart = new Day(rule.get('DateStart'));
+          d = new Day(t.get('end').format('YYYY-MM-DD'));
+          if (dateStart.toInt() > d.toInt()) {
+            applies = false;
+          }
+        }
+        if (rule.get('TimeStart')) {
+          var timeStart = new Time(rule.get('TimeStart'));
+          tm = new Time(t.get('end').format('HH:mm'));
+          if (timeStart.toInt() >= tm.toInt()) {
+            applies = false;
+          }
+        }
+
+        if (rule.get('DateEnd')) {
+          var dateEnd = new Day(rule.get('DateEnd'));
+          d = new Day(t.get('end').format('YYYY-MM-DD'));
+          if (dateEnd.toInt() < d.toInt()) {
+            applies = false;
+          }
+        }
+        if (rule.get('TimeEnd')) {
+          var timeEnd = new Time(rule.get('TimeEnd'));
+          tm = new Time(t.get('start').format('HH:mm'));
+          if (timeEnd.toInt() <= tm.toInt()) {
+            applies = false;
+          }
+        }
+
+        var anyWeekDaySelected = false;
+        _.each(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], (weekDay) => {
+          if (rule.get(weekDay)) {
+            anyWeekDaySelected = true;
+          }
+        });
+
+        if (!rule.get('DateStart') && !rule.get('TimeStart') && !rule.get('DateEnd') && !rule.get('TimeEnd') && !anyWeekDaySelected) {
+          applies = false;
+        }
+
+        if (anyWeekDaySelected) {
+          switch (reservationsStore.get('create').get('date').isoWeekday()) {
+          case 1:
+            applies = applies && !!rule.get('Monday');
+            break;
+          case 2:
+            applies = applies && !!rule.get('Tuesday');
+            break;
+          case 3:
+            applies = applies && !!rule.get('Wednesday');
+            break;
+          case 4:
+            applies = applies && !!rule.get('Thursday');
+            break;
+          case 5:
+            applies = applies && !!rule.get('Friday');
+            break;
+          case 6:
+            applies = applies && !!rule.get('Saturday');
+            break;
+          case 7:
+            applies = applies && !!rule.get('Sunday');
+            break;
+          }
+        } else {
+          applies = false;
+        }
+
+        if (applies && rule.get('Unavailable')) {
+          if (rule.get('MachineId')) {
+            return _.difference(availableMachineIds, [rule.get('MachineId')]);
+          } else {
+            return [];
+          }
+        } else if (applies && rule.get('Available')) {
+          if (rule.get('MachineId')) {
+            return _.union(availableMachineIds, [rule.get('MachineId')]);
+          } else {
+            return allMachineIds;
+          }
+        } else {
+          return availableMachineIds;
+        }
+      }, []);
+
+    /* Consider colliding reservations */
+    var day = t.get('start').format('YYYY-MM-DD');
+    var rs = reservationsByDay.get(day);
+    if (rs) {
+      _.each(rs.toArray(), function(reservation) {
+        var rStart = moment(reservation.get('TimeStart')).unix();
+        var rEnd = moment(reservation.get('TimeEnd')).unix();
+        var tStart = moment(t.get('start')).unix();
+        var tEnd = moment(t.get('end')).unix();
+        var tStartInInterval = tStart >= rStart && tStart < rEnd;
+        var tEndInInterval = tEnd > rStart && tEnd <= rEnd;
+        if (tStartInInterval || tEndInInterval) {
+          availableIds = _.difference(availableIds, [reservation.get('MachineId')]);
+        }
+      });
+    }
+    return t.set('availableMachineIds', availableIds);
+  });
+}
+
 const getActivationInfo = [
   ['machineStore'],
   (machineStore) => {
@@ -356,136 +492,17 @@ const getNewReservationTimes = [
     if (newReservation && newReservation.get('date')) {
       if (newReservation.get('times').count() > 0) {
         return newReservation.get('times');
-      }
-      var date = newReservation.get('date');
-      var timesOfDay = [];
-      var i = 0;
-      for (var tt = date.clone().hours(0); i < 2 * 24; tt.add(30, 'm'), i++) {
-        timesOfDay.push({
-          start: tt.clone(),
-          end: tt.clone().add(30, 'm'),
-          selected: false
+      } else {
+        var date = newReservation.get('date');
+        return slotAvailabilities({
+          date,
+          machinesById,
+          reservationsStore,
+          reservationRulesStore,
+          reservationsByDay
         });
       }
-      timesOfDay = toImmutable(timesOfDay);
-
-      return timesOfDay.map((t) => {
-        /* Machine Ids available according to reservation rules */
-        var availableIds = reservationRulesStore
-          .get('reservationRules')
-          .sortBy((rule) => {
-            /* Unavailability overrides Availability */
-            return !rule.get('Available');
-          })
-          .reduce((availableMachineIds, rule) => {
-            var applies = true;
-            var tm;
-            var d;
-            if (rule.get('DateStart')) {
-              var dateStart = new Day(rule.get('DateStart'));
-              d = new Day(t.get('end').format('YYYY-MM-DD'));
-              if (dateStart.toInt() > d.toInt()) {
-                applies = false;
-              }
-            }
-            if (rule.get('TimeStart')) {
-              var timeStart = new Time(rule.get('TimeStart'));
-              tm = new Time(t.get('end').format('HH:mm'));
-              if (timeStart.toInt() >= tm.toInt()) {
-                applies = false;
-              }
-            }
-
-            if (rule.get('DateEnd')) {
-              var dateEnd = new Day(rule.get('DateEnd'));
-              d = new Day(t.get('end').format('YYYY-MM-DD'));
-              if (dateEnd.toInt() < d.toInt()) {
-                applies = false;
-              }
-            }
-            if (rule.get('TimeEnd')) {
-              var timeEnd = new Time(rule.get('TimeEnd'));
-              tm = new Time(t.get('start').format('HH:mm'));
-              if (timeEnd.toInt() <= tm.toInt()) {
-                applies = false;
-              }
-            }
-
-            var anyWeekDaySelected = false;
-            _.each(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], (weekDay) => {
-              if (rule.get(weekDay)) {
-                anyWeekDaySelected = true;
-              }
-            });
-
-            if (!rule.get('DateStart') && !rule.get('TimeStart') && !rule.get('DateEnd') && !rule.get('TimeEnd') && !anyWeekDaySelected) {
-              applies = false;
-            }
-
-            if (anyWeekDaySelected) {
-              switch (reservationsStore.get('create').get('date').isoWeekday()) {
-              case 1:
-                applies = applies && !!rule.get('Monday');
-                break;
-              case 2:
-                applies = applies && !!rule.get('Tuesday');
-                break;
-              case 3:
-                applies = applies && !!rule.get('Wednesday');
-                break;
-              case 4:
-                applies = applies && !!rule.get('Thursday');
-                break;
-              case 5:
-                applies = applies && !!rule.get('Friday');
-                break;
-              case 6:
-                applies = applies && !!rule.get('Saturday');
-                break;
-              case 7:
-                applies = applies && !!rule.get('Sunday');
-                break;
-              }
-            } else {
-              applies = false;
-            }
-
-            if (applies && rule.get('Unavailable')) {
-              if (rule.get('MachineId')) {
-                return _.difference(availableMachineIds, [rule.get('MachineId')]);
-              } else {
-                return [];
-              }
-            } else if (applies && rule.get('Available')) {
-              if (rule.get('MachineId')) {
-                return _.union(availableMachineIds, [rule.get('MachineId')]);
-              } else {
-                return allMachineIds; 
-              }
-            } else {
-              return availableMachineIds;
-            }
-          }, []);
-
-        /* Consider colliding reservations */
-        var day = t.get('start').format('YYYY-MM-DD');
-        var rs = reservationsByDay.get(day);
-        if (rs) {
-          _.each(rs.toArray(), function(reservation) {
-            var rStart = moment(reservation.get('TimeStart')).unix();
-            var rEnd = moment(reservation.get('TimeEnd')).unix();
-            var tStart = moment(t.get('start')).unix();
-            var tEnd = moment(t.get('end')).unix();
-            var tStartInInterval = tStart >= rStart && tStart < rEnd;
-            var tEndInInterval = tEnd > rStart && tEnd <= rEnd;
-            if (tStartInInterval || tEndInInterval) {
-              availableIds = _.difference(availableIds, [reservation.get('MachineId')]);
-            }
-          });
-        }
-        return t.set('availableMachineIds', availableIds);
-      });
-    } // if (newReservation)
+    }
   }
 ];
 
