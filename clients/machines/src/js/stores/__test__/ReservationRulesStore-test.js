@@ -38,6 +38,46 @@ function existingReservations() {
 function reservationRules() {
   return [
     {  
+      'MachineId': 0,
+      'Created': '2015-10-05T14:28:51+02:00',
+      'Available': true,
+      'Name': 'Opening Hours Mo - Fr',
+      'Tuesday': true,
+      'DateEnd': '2015-12-31',
+      'TimeEnd': '19:00',
+      'Unavailable': false,
+      'Monday': true,
+      'Sunday': false,
+      'DateStart': '2015-01-01',
+      'TimeStart': '10:00',
+      'Wednesday': true,
+      'TimeZone': '',
+      'Saturday': false,
+      'Thursday': true,
+      'Id': 100,
+      'Friday': true
+    },
+    {  
+      'MachineId': 0,
+      'Created': '2015-10-05T14:28:51+02:00',
+      'Available': true,
+      'Name': 'Opening Hours Sa',
+      'Tuesday': false,
+      'DateEnd': '2015-12-31',
+      'TimeEnd': '18:00',
+      'Unavailable': false,
+      'Monday': false,
+      'Sunday': false,
+      'DateStart': '2015-01-01',
+      'TimeStart': '12:00',
+      'Wednesday': false,
+      'TimeZone': '',
+      'Saturday': true,
+      'Thursday': false,
+      'Id': 101,
+      'Friday': false
+    },
+    {  
       'MachineId': 3,
       'Created': '2015-10-05T14:28:51+02:00',
       'Available': false,
@@ -244,34 +284,34 @@ describe('ReservationRulesStore', function() {
 
     var TIME_FMT = 'HH:mm';
     // Lasercutter not available on Tuesday 17:30 - 19:00 during workshop
-    expect(tuesdayTimes.length).toEqual(18);
-    expect(tuesdayTimes[0].start.format(TIME_FMT)).toEqual('10:00');
-    expect(tuesdayTimes[0].end.format(TIME_FMT)).toEqual('10:30');
-    expect(tuesdayTimes[0].availableMachineIds).toEqual([3, 8, 10]);
+    expect(tuesdayTimes.length).toEqual(48);
+    expect(tuesdayTimes[20].start.format(TIME_FMT)).toEqual('10:00');
+    expect(tuesdayTimes[20].end.format(TIME_FMT)).toEqual('10:30');
+    expect(tuesdayTimes[20].availableMachineIds).toEqual([3, 8, 10]);
 
-    expect(tuesdayTimes[14].start.format(TIME_FMT)).toEqual('17:00');
-    expect(tuesdayTimes[14].end.format(TIME_FMT)).toEqual('17:30');
-    expect(tuesdayTimes[14].availableMachineIds).toEqual([3, 8, 10]);
+    expect(tuesdayTimes[34].start.format(TIME_FMT)).toEqual('17:00');
+    expect(tuesdayTimes[34].end.format(TIME_FMT)).toEqual('17:30');
+    expect(tuesdayTimes[34].availableMachineIds).toEqual([3, 8, 10]);
 
-    expect(tuesdayTimes[15].start.format(TIME_FMT)).toEqual('17:30');
-    expect(tuesdayTimes[15].end.format(TIME_FMT)).toEqual('18:00');
-    expect(tuesdayTimes[15].availableMachineIds).toEqual([8, 10]);
+    expect(tuesdayTimes[35].start.format(TIME_FMT)).toEqual('17:30');
+    expect(tuesdayTimes[35].end.format(TIME_FMT)).toEqual('18:00');
+    expect(tuesdayTimes[35].availableMachineIds).toEqual([8, 10]);
 
-    expect(tuesdayTimes[16].start.format(TIME_FMT)).toEqual('18:00');
-    expect(tuesdayTimes[16].end.format(TIME_FMT)).toEqual('18:30');
-    expect(tuesdayTimes[16].availableMachineIds).toEqual([8, 10]);
+    expect(tuesdayTimes[36].start.format(TIME_FMT)).toEqual('18:00');
+    expect(tuesdayTimes[36].end.format(TIME_FMT)).toEqual('18:30');
+    expect(tuesdayTimes[36].availableMachineIds).toEqual([8, 10]);
 
-    expect(tuesdayTimes[17].start.format(TIME_FMT)).toEqual('18:30');
-    expect(tuesdayTimes[17].end.format(TIME_FMT)).toEqual('19:00');
-    expect(tuesdayTimes[17].availableMachineIds).toEqual([8, 10]);
+    expect(tuesdayTimes[37].start.format(TIME_FMT)).toEqual('18:30');
+    expect(tuesdayTimes[37].end.format(TIME_FMT)).toEqual('19:00');
+    expect(tuesdayTimes[37].availableMachineIds).toEqual([8, 10]);
 
     // Lasercutter available whole Wednesday
     date = moment('2015-10-14');
     reactor.dispatch(actionTypes.CREATE_SET_DATE, { date });
     var wednesdayTimes = reactor.evaluateToJS(getters.getNewReservationTimes);
-    expect(wednesdayTimes.length).toEqual(18);
+    expect(wednesdayTimes.length).toEqual(48);
 
-    for (var i = 0; i < 18; i++) {
+    for (var i = 20; i < 38; i++) {
       expect(wednesdayTimes[i].availableMachineIds).toEqual([3, 8, 10]);
     }
   });
@@ -286,9 +326,9 @@ describe('ReservationRulesStore', function() {
     var date = moment('2015-12-23');
     reactor.dispatch(actionTypes.CREATE_SET_DATE, { date });
     var times = reactor.evaluateToJS(getters.getNewReservationTimes);
-    expect(times.length).toEqual(18);
-    for (i = 0; i < 18; i++) {
-      if (i < 14) {
+    expect(times.length).toEqual(48);
+    for (i = 20; i < 38; i++) {
+      if (i < 34) {
         expect(times[i].availableMachineIds).toEqual([3, 8, 10]);
       } else {
         expect(times[i].availableMachineIds).toEqual([3, 8]);
@@ -299,11 +339,11 @@ describe('ReservationRulesStore', function() {
     date = moment('2015-12-22');
     reactor.dispatch(actionTypes.CREATE_SET_DATE, { date });
     times = reactor.evaluateToJS(getters.getNewReservationTimes);
-    expect(times.length).toEqual(18);
-    for (i = 0; i < 18; i++) {
-      if (i < 14) {
+    expect(times.length).toEqual(48);
+    for (i = 20; i < 38; i++) {
+      if (i < 34) {
         expect(times[i].availableMachineIds).toEqual([3, 8, 10]);
-      } else if (i < 15) {
+      } else if (i < 35) {
         expect(times[i].availableMachineIds).toEqual([3, 8]);
       } else {
         // Lasercutter workshop in the evening...
@@ -315,8 +355,8 @@ describe('ReservationRulesStore', function() {
     date = moment('2015-12-19');
     reactor.dispatch(actionTypes.CREATE_SET_DATE, { date });
     times = reactor.evaluateToJS(getters.getNewReservationTimes);
-    expect(times.length).toEqual(12);
-    for (i = 0; i < 12; i++) {
+    expect(times.length).toEqual(48);
+    for (i = 24; i < 36; i++) {
       expect(times[i].availableMachineIds).toEqual([3, 8, 10]);
     }
   });
@@ -331,8 +371,8 @@ describe('ReservationRulesStore', function() {
     var date = moment('2015-11-11');
     reactor.dispatch(actionTypes.CREATE_SET_DATE, { date });
     var times = reactor.evaluateToJS(getters.getNewReservationTimes);
-    expect(times.length).toEqual(18);
-    for (i = 0; i < 18; i++) {
+    expect(times.length).toEqual(48);
+    for (i = 20; i < 38; i++) {
       expect(times[i].availableMachineIds).toEqual([3, 8, 10]);
     }
   });
@@ -345,9 +385,9 @@ describe('ReservationRulesStore', function() {
     var date = moment('2015-10-15');
     reactor.dispatch(actionTypes.CREATE_SET_DATE, { date });
     var times = reactor.evaluateToJS(getters.getNewReservationTimes);
-    expect(times.length).toEqual(18);
-    for (var i = 0; i < 18; i++) {
-      if (i < 3 || i > 15) {
+    expect(times.length).toEqual(48);
+    for (var i = 20; i < 38; i++) {
+      if (i < 23 || i > 35) {
         expect(times[i].availableMachineIds).toEqual([3, 8, 10]);
       } else {
         expect(times[i].availableMachineIds).toEqual([8, 10]);

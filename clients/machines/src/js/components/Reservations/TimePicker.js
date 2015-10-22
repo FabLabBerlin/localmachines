@@ -40,7 +40,7 @@ var TimePicker = React.createClass({
       <div className={containerClassName}>
         <h3>Select time range</h3>
         <div className="no-select" ref="times">
-          {_.map(this.state.times.toJS(), (t, i) => {
+          {_.map(this.times(), (t, i) => {
             var className = 'time';
             var onChange;
             var pricingInfo;
@@ -48,7 +48,7 @@ var TimePicker = React.createClass({
             if (!_.includes(t.availableMachineIds, machineId)) {
               className += ' unavailable';
             } else {
-              onChange = this.setTimes.bind(this, i);
+              onChange = this.setTimes.bind(this, i + this.state.times.length - this.times().length);
               if (t.selected) {
                 className += ' selected';
               }
@@ -99,10 +99,11 @@ var TimePicker = React.createClass({
   },
 
   setTimes(lastClickIndex) {
+    console.log('setTimes(' + lastClickIndex + ')');
     var times = this.state.times.toJS();
     $(this.refs.times.getDOMNode()).find('input').each(function(i, el) {
-      times[i].selected = el.checked;
-    });
+      times[i + this.state.times.length - this.times().length].selected = el.checked;
+    }.bind(this));
     if (!this.isRange(times)) {
       _.each(times, function(t, i) {
         t.selected = lastClickIndex === i;
@@ -113,6 +114,45 @@ var TimePicker = React.createClass({
 
   submit() {
     ReservationsActions.createSubmit();
+  },
+
+  times() {
+    var times = this.state.times.toJS();
+    var machineId = this.state.newReservation.get('machineId');
+    var anyTimeAvailable = _.reduce(times, (foundAny, t) => {
+      return foundAny || _.includes(t.availableMachineIds, machineId);
+    }, false);
+
+    if (!anyTimeAvailable) {
+      times = [];
+      var i = 0;
+      var minHour = 10;
+      var maxHour = 19;
+      if (this.state.newReservation.get('date').isoWeekday() === 6) {
+        minHour = 12;
+        maxHour = 18;
+      }
+      for (var tt = this.state.newReservation.get('date').clone().hours(minHour); i < 2 * (maxHour - minHour); tt.add(30, 'm'), i++) {
+        times.push({
+          start: tt.clone(),
+          end: tt.clone().add(30, 'm'),
+          selected: false,
+          availableMachineIds: []
+        });
+      }
+    } else {
+      var someAvailableAlready = false;
+      times = _.reduce(times, (newTimes, ttt) => {
+        if (!someAvailableAlready && !_.includes(ttt.availableMachineIds, machineId)) {
+          return newTimes;
+        } else {
+          someAvailableAlready = true;
+          newTimes.push(ttt);
+          return newTimes;
+        }
+      }, []);
+    }
+    return times;
   }
 });
 

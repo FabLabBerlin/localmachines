@@ -47,29 +47,8 @@ function createSetMachine(state, { mid }) {
 
 function createSetDate(state, { date }) {
   state = state.setIn(['create', 'date'], date);
-  state = state.setIn(['create', 'times'], possibleTimes(state));
+  state = state.setIn(['create', 'times'], toImmutable([]));
   return state;
-}
-
-function possibleTimes(state) {
-  var date = state.get('create').get('date');
-  var times = [];
-  var startHour = 10;
-  var endHour = 19;
-  if (date.isoWeekday() === 6) {
-    startHour = 12;
-    endHour = 18;
-  }
-  if (date.isoWeekday() !== 7) {
-    for (var tStart = date.clone().hours(startHour); tStart.hours() < endHour; tStart.add(30, 'm')) {
-      times.push({
-        start: tStart.clone(),
-        end: tStart.clone().add(30, 'm'),
-        selected: false
-      });
-    }
-  }
-  return toImmutable(times);
 }
 
 function createSetTimes(state, { times }) {

@@ -1,4 +1,5 @@
 jest.dontMock('../../actionTypes');
+jest.dontMock('../../components/Reservations/helpers');
 jest.dontMock('../../getters');
 jest.dontMock('lodash');
 jest.dontMock('../MachineStore.js');
@@ -29,6 +30,51 @@ function machines() {
   };
 }
 
+function reservationRules() {
+  return [
+    {  
+      'MachineId': 0,
+      'Created': '2015-10-05T14:28:51+02:00',
+      'Available': true,
+      'Name': 'Opening Hours Mo - Fr',
+      'Tuesday': true,
+      'DateEnd': '2015-12-31',
+      'TimeEnd': '19:00',
+      'Unavailable': false,
+      'Monday': true,
+      'Sunday': false,
+      'DateStart': '2015-01-01',
+      'TimeStart': '10:00',
+      'Wednesday': true,
+      'TimeZone': '',
+      'Saturday': false,
+      'Thursday': true,
+      'Id': 100,
+      'Friday': true
+    },
+    {  
+      'MachineId': 0,
+      'Created': '2015-10-05T14:28:51+02:00',
+      'Available': true,
+      'Name': 'Opening Hours Sa',
+      'Tuesday': false,
+      'DateEnd': '2015-12-31',
+      'TimeEnd': '18:00',
+      'Unavailable': false,
+      'Monday': false,
+      'Sunday': false,
+      'DateStart': '2015-01-01',
+      'TimeStart': '12:00',
+      'Wednesday': false,
+      'TimeZone': '',
+      'Saturday': true,
+      'Thursday': false,
+      'Id': 101,
+      'Friday': false
+    }
+  ];
+}
+
 describe('ReservationsStore', function() {
   reactor.registerStores({
     machineStore: MachineStore,
@@ -36,10 +82,9 @@ describe('ReservationsStore', function() {
     reservationsStore: ReservationsStore
   });
 
-  reactor.dispatch(actionTypes.SET_RESERVATION_RULES, []);
-
   describe('CREATE_SET_DATE', function() {
     it('sets the date and possible times at that day', function() {
+      reactor.dispatch(actionTypes.SET_RESERVATION_RULES, reservationRules());
       reactor.dispatch(actionTypes.SET_MACHINE_INFO, {
         machineInfo: machines()
       });
@@ -51,13 +96,17 @@ describe('ReservationsStore', function() {
         date: moment('2015-10-16')
       });
       var possibleTimes = reactor.evaluateToJS(getters.getNewReservationTimes);
-      expect(possibleTimes.length).toEqual(18);
-      expect(_.first(possibleTimes).start.format('HH:mm')).toEqual('10:00');
-      expect(_.first(possibleTimes).end.format('HH:mm')).toEqual('10:30');
-      expect(_.last(possibleTimes).start.format('HH:mm')).toEqual('18:30');
-      expect(_.last(possibleTimes).end.format('HH:mm')).toEqual('19:00');
-      _.each(possibleTimes, (t) => {
-        expect(t.availableMachineIds).toEqual([1]);
+      expect(possibleTimes.length).toEqual(48);
+      expect(_.first(possibleTimes).start.format('HH:mm')).toEqual('00:00');
+      expect(_.first(possibleTimes).end.format('HH:mm')).toEqual('00:30');
+      expect(_.last(possibleTimes).start.format('HH:mm')).toEqual('23:30');
+      expect(_.last(possibleTimes).end.format('HH:mm')).toEqual('00:00');
+      _.each(possibleTimes, (t, i) => {
+        if (i >= 20 && i < 38) {
+          expect(t.availableMachineIds).toEqual([1]);
+        } else {
+          expect(t.availableMachineIds).toEqual([]);
+        }
       });
     });
   });

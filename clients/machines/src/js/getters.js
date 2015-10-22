@@ -353,8 +353,20 @@ const getNewReservationTimes = [
       allMachineIds.push(id);
     });
 
-    if (newReservation) {
-      return newReservation.get('times').map((t) => {
+    if (newReservation && newReservation.get('date')) {
+      var date = newReservation.get('date');
+      var timesOfDay = [];
+      var i = 0;
+      for (var tt = date.clone().hours(0); i < 2 * 24; tt.add(30, 'm'), i++) {
+        timesOfDay.push({
+          start: tt.clone(),
+          end: tt.clone().add(30, 'm'),
+          selected: false
+        });
+      }
+      timesOfDay = toImmutable(timesOfDay);
+
+      return timesOfDay.map((t) => {
         /* Machine Ids available according to reservation rules */
         var availableIds = reservationRulesStore
           .get('reservationRules')
@@ -391,7 +403,7 @@ const getNewReservationTimes = [
             if (rule.get('TimeEnd')) {
               var timeEnd = new Time(rule.get('TimeEnd'));
               tm = new Time(t.get('start').format('HH:mm'));
-              if (timeEnd.toInt() < tm.toInt()) {
+              if (timeEnd.toInt() <= tm.toInt()) {
                 applies = false;
               }
             }
@@ -450,7 +462,7 @@ const getNewReservationTimes = [
             } else {
               return availableMachineIds;
             }
-          }, allMachineIds);
+          }, []);
 
         /* Consider colliding reservations */
         var day = t.get('start').format('YYYY-MM-DD');
