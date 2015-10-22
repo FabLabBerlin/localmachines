@@ -354,6 +354,9 @@ const getNewReservationTimes = [
     });
 
     if (newReservation && newReservation.get('date')) {
+      if (newReservation.get('times').count() > 0) {
+        return newReservation.get('times');
+      }
       var date = newReservation.get('date');
       var timesOfDay = [];
       var i = 0;
