@@ -328,8 +328,8 @@ const getActiveReservationsByMachineId = [
       var reservationsByMachineId = {};
       if (rs) {
         _.each(rs.toObject(), (reservation) => {
-          var start = moment(reservation.get('start')).unix();
-          var end = moment(reservation.get('end')).unix();
+          var start = moment(reservation.get('TimeStart')).unix();
+          var end = moment(reservation.get('TimeEnd')).unix();
           if (start <= u && u <= end) {
             reservationsByMachineId[reservation.get('MachineId')] = reservation;
           }
