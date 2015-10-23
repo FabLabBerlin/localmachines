@@ -11,21 +11,24 @@ import (
 
 // Activation type/model to hold information of single activation.
 type Activation struct {
-	Id               int64 `orm:"auto";"pk"`
-	InvoiceId        int   `orm:"null"`
-	UserId           int64
-	MachineId        int64
-	Active           bool
-	TimeStart        time.Time
-	TimeEnd          time.Time `orm:"null"`
-	TimeTotal        int64
-	UsedKwh          float32
-	DiscountPercents float32
-	DiscountFixed    float32
-	VatRate          float32
-	CommentRef       string `orm:"size(255)"`
-	Invoiced         bool
-	Changed          bool
+	Id                          int64 `orm:"auto";"pk"`
+	InvoiceId                   int   `orm:"null"`
+	UserId                      int64
+	MachineId                   int64
+	Active                      bool
+	TimeStart                   time.Time
+	TimeEnd                     time.Time `orm:"null"`
+	TimeTotal                   int64
+	UsedKwh                     float32
+	DiscountPercents            float32
+	DiscountFixed               float32
+	VatRate                     float32
+	CommentRef                  string `orm:"size(255)"`
+	Invoiced                    bool
+	Changed                     bool
+	CurrentMachinePrice         float64
+	CurrentMachinePriceCurrency string
+	CurrentMachinePriceUnit     string
 }
 
 // Returns mysql table name of the table mapped to the Activation model.
@@ -218,11 +221,24 @@ func CreateActivation(machineId, userId int64, startTime time.Time) (
 		return
 	}
 
+	err, _ = mch.Read()
+	if err != nil {
+		activationId = 0
+		err = fmt.Errorf("Failed to read existing machine")
+		return
+	}
+
 	newActivation := Activation{}
 	newActivation.UserId = userId
 	newActivation.MachineId = machineId
 	newActivation.Active = true
 	newActivation.TimeStart = startTime
+
+	// Save current activation price, currency and price unit (minute, hour, pcs)
+	newActivation.CurrentMachinePrice = mch.Price
+	newActivation.CurrentMachinePriceCurrency = "€"
+	newActivation.CurrentMachinePriceUnit = mch.PriceUnit
+
 	activationId, err = o.Insert(&newActivation)
 	if err != nil {
 		beego.Error("Failed to insert activation:", err)

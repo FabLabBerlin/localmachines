@@ -77,6 +77,14 @@ func (this *Machine) IsAvailable() bool {
 	return machineAvailable
 }
 
+// Read in values from the db
+func (this *Machine) Read() (err error, machine *Machine) {
+	o := orm.NewOrm()
+	err = o.Read(this)
+	machine = this
+	return
+}
+
 type ConnectedMachine struct {
 	Id   int64
 	Name string
