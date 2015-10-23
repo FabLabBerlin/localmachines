@@ -48,7 +48,8 @@ var TimePicker = React.createClass({
             if (!_.includes(t.availableMachineIds, machineId)) {
               className += ' unavailable';
             } else {
-              onChange = this.setTimes.bind(this, i + this.state.times.length - this.times().length);
+              onChange = this.setTimes.bind(this, 
+                i + this.state.times.length - this.times().length);
               if (t.selected) {
                 className += ' selected';
               }
@@ -99,16 +100,51 @@ var TimePicker = React.createClass({
   },
 
   setTimes(lastClickIndex) {
-    console.log('setTimes(' + lastClickIndex + ')');
     var times = this.state.times.toJS();
+
+    var first = null;
+    var firstIndex = undefined;
+    var last = null;
+    var lastIndex = undefined;
     $(this.refs.times.getDOMNode()).find('input').each(function(i, el) {
-      times[i + this.state.times.length - this.times().length].selected = el.checked;
+
+      // Find first checked element
+      if (first === null && el.checked) {
+        first = el;
+        firstIndex = i;
+      } 
+
+      // Find last checked element
+      if (el.checked) {
+        last = el;
+        lastIndex = i;
+      }
+
+      times[i + this.state.times.length - this.times().length].selected = false;
     }.bind(this));
-    if (!this.isRange(times)) {
-      _.each(times, function(t, i) {
-        t.selected = lastClickIndex === i;
-      });
+
+    if ((firstIndex && lastIndex) && (firstIndex === lastIndex)) {
+      times[firstIndex + this.state.times.length - this.times().length].selected = true;
+    } else {
+      var doSelect = false;
+      $(this.refs.times.getDOMNode()).find('input').each(function(i, el) {
+        if (parseInt(i) === parseInt(firstIndex)) {
+          doSelect = true;
+        }
+
+        // Do the selection between first and last checked time item
+        if (doSelect) {
+          times[i + this.state.times.length - this.times().length].selected = true;
+        } else {
+          times[i + this.state.times.length - this.times().length].selected = false;
+        }
+
+        if (parseInt(i) === parseInt(lastIndex)) {
+          doSelect = false;
+        } 
+      }.bind(this));
     }
+
     ReservationsActions.createSetTimes({ times });
   },
 
