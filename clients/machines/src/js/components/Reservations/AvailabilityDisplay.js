@@ -5,17 +5,6 @@ var reactor = require('../../reactor');
 
 
 var Slot = React.createClass({
-  render() {
-    var className = 'slot ';
-    if (this.props.busy) {
-      className += 'busy';
-    }
-    return <div className={className}/>;
-  }
-});
-
-
-var AvailabilityDisplay = React.createClass({
 
   mixins: [ reactor.ReactMixin ],
 
@@ -26,27 +15,39 @@ var AvailabilityDisplay = React.createClass({
   },
 
   render() {
-    var slots = [];
+    var reserved = false;
+    _.each(this.state.reservations.toJS(), r => {
+        if (r.MachineId === this.props.machineId) {
+        var start = moment(r.TimeStart).unix();
+        var end = moment(r.TimeEnd).unix();
+        var u = this.props.time.unix();
+        if (start <= u && u <= end) {
+          reserved = true;
+        }
+      }
+    }.bind(this));
+    var className = 'slot ';
+    if (reserved) {
+      className += 'busy';
+    }
+    return <div className={className}/>;
+  }
+});
+
+
+var AvailabilityDisplay = React.createClass({
+
+  render() {
+    var times = [];
     var i = 0;
 
     for (var t = moment().hours(0); i < 2 * 48; t.add(30, 'm'), i++) {
-      var reserved = false;
-      _.each(this.state.reservations.toJS(), r => {
-          if (r.MachineId === this.props.machineId) {
-          var start = moment(r.TimeStart).unix();
-          var end = moment(r.TimeEnd).unix();
-          var u = t.unix();
-          if (start <= u && u <= end) {
-            reserved = true;
-          }
-        }
-      });
-      slots.push(reserved);
+      times.push(t.clone());
     }
 
     return (
       <div className="machine-reserv-preview">
-        {_.map(slots, busy => <Slot busy={busy}/>)}
+        {_.map(times, time => <Slot machineId={this.props.machineId} time={time}/>)}
       </div>
     );
   }
