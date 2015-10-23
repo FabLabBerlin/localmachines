@@ -15,7 +15,10 @@ var Slot = React.createClass({
   },
 
   render() {
+    var now = moment().unix();
     var reserved = false;
+    var reservedByUser = false;
+
     _.each(this.state.reservations.toJS(), r => {
         if (r.MachineId === this.props.machineId) {
         var start = moment(r.TimeStart).unix();
@@ -26,10 +29,17 @@ var Slot = React.createClass({
         }
       }
     }.bind(this));
-    var className = 'slot ';
+
+    var className = 'slot';
     if (reserved) {
-      className += 'busy';
+      className += ' reserved';
     }
+    var nn = now - (now % 1800);
+    var uu = this.props.time.unix() - (this.props.time.unix() % 1800);
+    if (nn === uu) {
+      className += ' now';
+    }
+
     return <div className={className}/>;
   }
 });
