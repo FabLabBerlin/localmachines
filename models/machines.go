@@ -58,6 +58,20 @@ func (u *Machine) TableName() string {
 	return "machines"
 }
 
+func (this *Machine) Exists() bool {
+	o := orm.NewOrm()
+	machineExists := o.QueryTable(this.TableName()).
+		Filter("Id", this.Id).Exist()
+
+	beego.Trace("Machine with ID", this.Id, "exists:", machineExists)
+
+	if !machineExists {
+		return false
+	} else {
+		return true
+	}
+}
+
 type ConnectedMachine struct {
 	Id   int64
 	Name string

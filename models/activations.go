@@ -184,16 +184,16 @@ func GetActiveActivations() ([]*Activation, error) {
 }
 
 // Creates activation and returns activation ID.
-func CreateActivation(machineId, userId int64, startTime time.Time) (activationId int64, err error) {
+func CreateActivation(machineId, userId int64, startTime time.Time) (
+	activationId int64, err error) {
 
 	// Check if machine with machineId exists
-	// TODO: Replace this with a more readable helper function
 	o := orm.NewOrm()
-	mch := Machine{}
-	machineExists := o.QueryTable(mch.TableName()).Filter("Id", machineId).Exist()
-	beego.Trace("machineExists:", machineExists)
-	if !machineExists {
-		return 0, fmt.Errorf("Machine with provided ID does not exist")
+	mch := Machine{Id: machineId}
+	if !mch.Exists() {
+		activationId = 0
+		err = fmt.Errorf("Machine with provided ID does not exist")
+		return
 	}
 
 	// Check for duplicate activations
