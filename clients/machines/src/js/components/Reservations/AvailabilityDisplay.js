@@ -10,7 +10,8 @@ var Slot = React.createClass({
 
   getDataBindings() {
     return {
-      reservations: getters.getReservations
+      reservations: getters.getReservations,
+      userId: getters.getUid
     };
   },
 
@@ -20,12 +21,15 @@ var Slot = React.createClass({
     var reservedByUser = false;
 
     _.each(this.state.reservations.toJS(), r => {
-        if (r.MachineId === this.props.machineId) {
+      if (r.MachineId === this.props.machineId) {
         var start = moment(r.TimeStart).unix();
         var end = moment(r.TimeEnd).unix();
         var u = this.props.time.unix();
         if (start <= u && u <= end) {
           reserved = true;
+          if (r.UserId === this.state.userId) {
+            reservedByUser = true;
+          }
         }
       }
     }.bind(this));
@@ -33,6 +37,9 @@ var Slot = React.createClass({
     var className = 'slot';
     if (reserved) {
       className += ' reserved';
+      if (reservedByUser) {
+        className += ' by-user';
+      }
     }
     var nn = now - (now % 1800);
     var uu = this.props.time.unix() - (this.props.time.unix() % 1800);
@@ -50,14 +57,20 @@ var AvailabilityDisplay = React.createClass({
   render() {
     var times = [];
     var i = 0;
+    var n = 2 * 48;
 
-    for (var t = moment().hours(0); i < 2 * 48; t.add(30, 'm'), i++) {
+    for (var t = moment().hours(0); i < n; t.add(30, 'm'), i++) {
       times.push(t.clone());
     }
 
     return (
       <div className="machine-reserv-preview">
-        {_.map(times, time => <Slot machineId={this.props.machineId} time={time}/>)}
+        <div className="today">
+          {_.map(times.slice(0, n / 2), time => <Slot machineId={this.props.machineId} time={time}/>)}
+        </div>
+        <div className="tomorrow">
+          {_.map(times.slice(n / 2), time => <Slot machineId={this.props.machineId} time={time}/>)}
+        </div>
       </div>
     );
   }

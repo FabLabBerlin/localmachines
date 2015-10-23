@@ -508,22 +508,36 @@ YP  YP  YP YP   YP  `Y88P' YP   YP Y888888P VP   V8P Y88888P
 }
 
 .machine-reserv-preview {
-  border: 1px solid black;
   height: 10px;
   margin: 10px;
   width: 48%;
 }
 
+.machine-reserv-preview .today {
+  height: 100%;
+  width: 100%;
+}
+
+.machine-reserv-preview .tomorrow {
+  display: none;
+  height: 100%;
+  width: 50%;
+}
+
 .machine-reserv-preview .slot {
-  background: green;
+  background: @color-primary;
   display: inline-block;
   float: left;
   height: 100%;
-  width: 1.041666666%;
+  width: 2.083333333%;
 }
 
 .machine-reserv-preview .slot.reserved {
-  background: red;
+  background: @color-danger;
+}
+
+.machine-reserv-preview .slot.reserved.by-user {
+  background: @color-reservation;
 }
 
 .machine-reserv-preview .slot.now {
@@ -1094,6 +1108,23 @@ This is for the big screens. Remember: "Mobile First"
     -ms-transform: translateY(-50%);
     -webkit-transform: translateY(-50%);
     width: 100%;
+  }
+
+  /*
+   * Machines Page
+   */
+
+  .machine-reserv-preview .today {
+    float: left;
+    height: 100%;
+    width: 50%;
+  }
+
+  .machine-reserv-preview .tomorrow {
+    display: inline;
+    float: left;
+    height: 100%;
+    width: 50%;
   }
 
   /*

@@ -103,9 +103,9 @@ var TimePicker = React.createClass({
     var times = this.state.times.toJS();
 
     var first = null;
-    var firstIndex = undefined;
+    var firstIndex;
     var last = null;
-    var lastIndex = undefined;
+    var lastIndex;
     $(this.refs.times.getDOMNode()).find('input').each(function(i, el) {
 
       // Find first checked element
