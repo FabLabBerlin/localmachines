@@ -1,3 +1,4 @@
+var AvailabilityDisplay = require('../Reservations/AvailabilityDisplay');
 var FeedbackDialogs = require('../Feedback/FeedbackDialogs');
 var getters = require('../../getters');
 var React = require('react');
@@ -184,6 +185,7 @@ var MachineChooser = React.createClass({
           </div>
           <div className="machine-body">
             {machineBody}
+            <AvailabilityDisplay machineId={this.props.info.Id}/>
 
             <ul className="machine-extra-actions">
               <li className="action-item">

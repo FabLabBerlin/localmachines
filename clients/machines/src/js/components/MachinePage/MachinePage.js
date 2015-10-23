@@ -9,6 +9,7 @@ var LoginActions = require('../../actions/LoginActions');
 var Navigation = require('react-router').Navigation;
 var React = require('react');
 var reactor = require('../../reactor');
+var ReservationRulesActions = require('../../actions/ReservationRulesActions');
 var ReservationsActions = require('../../actions/ReservationsActions');
 var ScrollNav = require('../ScrollNav');
 var toastr = require('../../toastr');
@@ -50,6 +51,7 @@ var MachinePage = React.createClass({
     UserActions.getUserInfoFromServer(uid);
     MachineActions.apiGetUserMachines(uid);
     ReservationsActions.load();
+    ReservationRulesActions.load();
   },
 
   /*
