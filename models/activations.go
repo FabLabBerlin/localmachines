@@ -11,21 +11,24 @@ import (
 
 // Activation type/model to hold information of single activation.
 type Activation struct {
-	Id               int64 `orm:"auto";"pk"`
-	InvoiceId        int   `orm:"null"`
-	UserId           int64
-	MachineId        int64
-	Active           bool
-	TimeStart        time.Time
-	TimeEnd          time.Time `orm:"null"`
-	TimeTotal        int64
-	UsedKwh          float32
-	DiscountPercents float32
-	DiscountFixed    float32
-	VatRate          float32
-	CommentRef       string `orm:"size(255)"`
-	Invoiced         bool
-	Changed          bool
+	Id                          int64 `orm:"auto";"pk"`
+	InvoiceId                   int   `orm:"null"`
+	UserId                      int64
+	MachineId                   int64
+	Active                      bool
+	TimeStart                   time.Time
+	TimeEnd                     time.Time `orm:"null"`
+	TimeTotal                   int64
+	UsedKwh                     float32
+	DiscountPercents            float32
+	DiscountFixed               float32
+	VatRate                     float32
+	CommentRef                  string `orm:"size(255)"`
+	Invoiced                    bool
+	Changed                     bool
+	CurrentMachinePrice         float64
+	CurrentMachinePriceCurrency string
+	CurrentMachinePriceUnit     string
 }
 
 // Returns mysql table name of the table mapped to the Activation model.
@@ -184,16 +187,16 @@ func GetActiveActivations() ([]*Activation, error) {
 }
 
 // Creates activation and returns activation ID.
-func CreateActivation(machineId, userId int64, startTime time.Time) (activationId int64, err error) {
+func CreateActivation(machineId, userId int64, startTime time.Time) (
+	activationId int64, err error) {
 
-	// Check if machine with machineId exists
-	// TODO: Replace this with a more readable helper function
 	o := orm.NewOrm()
-	mch := Machine{}
-	machineExists := o.QueryTable(mch.TableName()).Filter("Id", machineId).Exist()
-	beego.Trace("machineExists:", machineExists)
-	if !machineExists {
-		return 0, fmt.Errorf("Machine with provided ID does not exist")
+	mch := Machine{Id: machineId}
+
+	if !mch.Exists() {
+		activationId = 0
+		err = fmt.Errorf("Machine with provided ID does not exist")
+		return
 	}
 
 	// Check for duplicate activations
@@ -212,16 +215,17 @@ func CreateActivation(machineId, userId int64, startTime time.Time) (activationI
 		return 0, fmt.Errorf("Duplicate activations found")
 	}
 
-	// Check if the machine is available
-	machineAvailable := o.QueryTable(mch.TableName()).
-		Filter("Id", machineId).
-		Filter("Available", true).
-		Exist()
+	if !mch.IsAvailable() {
+		activationId = 0
+		err = fmt.Errorf("Machine with provided ID is not available")
+		return
+	}
 
-	beego.Trace("machineAvailable:", machineAvailable)
-
-	if !machineAvailable {
-		return 0, fmt.Errorf("Machine ID %s not available", machineId)
+	err, _ = mch.Read()
+	if err != nil {
+		activationId = 0
+		err = fmt.Errorf("Failed to read existing machine")
+		return
 	}
 
 	newActivation := Activation{}
@@ -229,6 +233,12 @@ func CreateActivation(machineId, userId int64, startTime time.Time) (activationI
 	newActivation.MachineId = machineId
 	newActivation.Active = true
 	newActivation.TimeStart = startTime
+
+	// Save current activation price, currency and price unit (minute, hour, pcs)
+	newActivation.CurrentMachinePrice = mch.Price
+	newActivation.CurrentMachinePriceCurrency = "€"
+	newActivation.CurrentMachinePriceUnit = mch.PriceUnit
+
 	activationId, err = o.Insert(&newActivation)
 	if err != nil {
 		beego.Error("Failed to insert activation:", err)

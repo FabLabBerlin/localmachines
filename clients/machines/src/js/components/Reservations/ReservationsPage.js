@@ -93,6 +93,10 @@ var ReservationsPage = React.createClass({
     }
   },
 
+  componentWillUnmount() {
+    ReservationsActions.createDone();
+  },
+
   clickCreate() {
     ReservationsActions.createEmpty();
   },
