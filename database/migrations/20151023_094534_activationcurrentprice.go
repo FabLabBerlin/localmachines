@@ -21,6 +21,12 @@ func (m *Activationcurrentprice_20151023_094534) Up() {
 	m.Sql("ALTER TABLE activations ADD COLUMN current_machine_price double unsigned")
 	m.Sql("ALTER TABLE activations ADD COLUMN current_machine_price_currency varchar(10)")
 	m.Sql("ALTER TABLE activations ADD COLUMN current_machine_price_unit varchar(100)")
+
+	// Fill the new fields of old values
+	m.Sql("UPDATE activations a JOIN machines m ON a.machine_id = m.id " +
+		"SET a.current_machine_price=m.price, " +
+		"a.current_machine_price_currency='€', " +
+		"a.current_machine_price_unit=m.price_unit")
 }
 
 // Reverse the migrations
