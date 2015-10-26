@@ -21,6 +21,12 @@ func (m *Reservationcurrentprice_20151026_120719) Up() {
 	m.Sql("ALTER TABLE reservations ADD COLUMN current_price double unsigned")
 	m.Sql("ALTER TABLE reservations ADD COLUMN current_price_currency varchar(10)")
 	m.Sql("ALTER TABLE reservations ADD COLUMN current_price_unit varchar(100)")
+
+	// Fill the new fields of old records
+	m.Sql("UPDATE reservations r JOIN machines m ON r.machine_id = m.id " +
+		"SET r.current_price=m.reservation_price_hourly, " +
+		"r.current_price_currency='€', " +
+		"r.current_price_unit='30 minutes'")
 }
 
 // Reverse the migrations
