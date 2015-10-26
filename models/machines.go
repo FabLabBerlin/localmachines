@@ -48,7 +48,7 @@ type Machine struct {
 	ConnectedMachines      string `orm:"size(255)"`
 	SwitchRefCount         int64
 	UnderMaintenance       bool
-	ReservationPriceStart  *float64
+	ReservationPriceStart  *float64 // Why pointers?
 	ReservationPriceHourly *float64
 }
 
