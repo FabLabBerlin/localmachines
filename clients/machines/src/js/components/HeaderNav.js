@@ -10,7 +10,7 @@ var HeaderNavBrand = React.createClass({
     return (
       <div className="navbar-brand">
         <a 
-          class="brand-link" 
+          className="brand-link" 
           href="/machines/#/machine">
           <img src="img/logo-easylab.svg" className="brand-image hidden-xs"/>
           <img src="img/logo-small.svg" className="brand-image visible-xs-block"/>
@@ -70,31 +70,36 @@ var MainMenu = React.createClass({
 
     if (!window.libnfc) {
       buttons.push(
-        <MenuItem href="/machines/#/machine"
+        <MenuItem key={1}
+          href="/machines/#/machine"
           faIconClass="fa-plug"
           label="Machines">
         </MenuItem>);
   
       buttons.push(
-        <MenuItem href="/machines/#/profile"
+        <MenuItem key={2}
+          href="/machines/#/profile"
           faIconClass="fa-user"
           label="Profile">
         </MenuItem>);
       
       buttons.push(
-        <MenuItem href="/machines/#/spendings"
+        <MenuItem key={3}
+          href="/machines/#/spendings"
           faIconClass="fa-money"
           label="Spendings">
         </MenuItem>);
 
       buttons.push(
-        <MenuItem href="/machines/#/reservations"
+        <MenuItem key={4}
+          href="/machines/#/reservations"
           faIconClass="fa-calendar-check-o"
           label="Reservations">
         </MenuItem>);
 
       buttons.push(
-        <MenuItem href="/machines/#/feedback"
+        <MenuItem key={5}
+          href="/machines/#/feedback"
           faIconClass="fa-paper-plane"
           label="Feedback">
         </MenuItem>);

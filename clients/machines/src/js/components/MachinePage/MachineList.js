@@ -35,7 +35,7 @@ var MachineList = React.createClass({
   render() {
     let activation = this.props.activation;
     var MachineNode;
-    if(this.props.info.length !== 0) {
+    if(this.props.info) {
       var machines = _.filter(this.props.info, function(machine) {
         return machine.Visible;
       });
@@ -43,14 +43,16 @@ var MachineList = React.createClass({
         let activationProps = false;
         let isMachineBusy = false;
         let isSameUser = false;
-        _.each(activation, function(a, i) {
-          if( machine.Id === activation[i].MachineId ) {
-            isMachineBusy = true;
-            isSameUser = this.props.user.get('Id') === activation[i].UserId;
-            activationProps = activation[i];
-            return false;
-          }
-        }.bind(this));
+        if (activation) {
+          _.each(activation, function(a, i) {
+            if( machine.Id === activation[i].MachineId ) {
+              isMachineBusy = true;
+              isSameUser = this.props.user.get('Id') === activation[i].UserId;
+              activationProps = activation[i];
+              return false;
+            }
+          }.bind(this));
+        }
         return (
           <MachineChooser
             key={machine.Id}
