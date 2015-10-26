@@ -40,25 +40,25 @@ func (this *Purchase) MembershipStr() string {
 
 func (this *Purchase) PricePerUnit() float64 {
 	if this.Reservation != nil {
-		if this.Machine.ReservationPriceHourly != nil {
-			return *this.Machine.ReservationPriceHourly / 2
+		if this.Reservation.CurrentPrice != 0 {
+			return this.Reservation.CurrentPrice / 2
 		} else {
 			return 0
 		}
 	} else {
-		return float64(this.Machine.Price)
+		return this.Activation.CurrentMachinePrice
 	}
 }
 
 func PriceTotalExclDisc(p *Purchase) float64 {
 	if p.Activation != nil {
 		var pricePerSecond float64
-		switch p.Machine.PriceUnit {
+		switch p.Activation.CurrentMachinePriceUnit {
 		case "minute":
-			pricePerSecond = float64(p.Machine.Price) / 60
+			pricePerSecond = float64(p.Activation.CurrentMachinePrice) / 60
 			break
 		case "hour":
-			pricePerSecond = float64(p.Machine.Price) / 60 / 60
+			pricePerSecond = float64(p.Activation.CurrentMachinePrice) / 60 / 60
 			break
 		}
 		return p.MachineUsage.Seconds() * pricePerSecond

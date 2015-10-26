@@ -61,7 +61,7 @@ func AddRowXlsx(sheet *xlsx.Sheet, purchase *Purchase) error {
 
 	if purchase.Activation != nil {
 		label = purchase.Machine.Name
-		priceUnit = purchase.Machine.PriceUnit
+		priceUnit = purchase.Activation.CurrentMachinePriceUnit
 		timeStart = purchase.Activation.TimeStart
 		totalPrice = purchase.TotalPrice
 		discountedTotal = purchase.DiscountedTotal
