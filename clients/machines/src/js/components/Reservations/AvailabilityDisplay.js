@@ -66,10 +66,20 @@ var AvailabilityDisplay = React.createClass({
     return (
       <div className="machine-reserv-preview">
         <div className="today">
-          {_.map(times.slice(0, n / 2), time => <Slot machineId={this.props.machineId} time={time}/>)}
+          <div className="slots">
+            {_.map(times.slice(0, n / 2), time => <Slot machineId={this.props.machineId} time={time}/>)}
+          </div>
+          <div className="label">
+            Today
+          </div>
         </div>
         <div className="tomorrow">
-          {_.map(times.slice(n / 2), time => <Slot machineId={this.props.machineId} time={time}/>)}
+          <div className="slots">
+            {_.map(times.slice(n / 2), time => <Slot machineId={this.props.machineId} time={time}/>)}
+          </div>
+          <div className="label">
+            Tomorrow
+          </div>
         </div>
       </div>
     );
