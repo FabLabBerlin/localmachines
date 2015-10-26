@@ -1,17 +1,22 @@
 package models
 
 import (
+	"fmt"
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"time"
 )
 
 type Reservation struct {
-	Id        int64 `orm:"auto";"pk"`
-	MachineId int64
-	UserId    int64
-	TimeStart time.Time `orm:"type(datetime)"`
-	TimeEnd   time.Time `orm:"type(datetime)"`
-	Created   time.Time `orm:"type(datetime)"`
+	Id                   int64 `orm:"auto";"pk"`
+	MachineId            int64
+	UserId               int64
+	TimeStart            time.Time `orm:"type(datetime)"`
+	TimeEnd              time.Time `orm:"type(datetime)"`
+	Created              time.Time `orm:"type(datetime)"`
+	CurrentPrice         float64
+	CurrentPriceCurrency string
+	CurrentPriceUnit     string
 }
 
 func init() {
@@ -51,6 +56,19 @@ func GetAllReservations() (reservations []*Reservation, err error) {
 }
 
 func CreateReservation(reservation *Reservation) (int64, error) {
+
+	// Get the reservation_price_hourly of the machine being reserved
+	machine := Machine{Id: reservation.MachineId}
+	err, _ := machine.Read()
+	if err != nil {
+		beego.Error("Failed to read machine")
+		return 0, fmt.Errorf("Failed to read machine")
+	}
+
+	reservation.CurrentPrice = *machine.ReservationPriceHourly
+	reservation.CurrentPriceCurrency = "€"      // Reserved for possible future use
+	reservation.CurrentPriceUnit = "30 minutes" // Reserved for possible future use
+
 	o := orm.NewOrm()
 	return o.Insert(reservation)
 }
