@@ -508,7 +508,7 @@ YP  YP  YP YP   YP  `Y88P' YP   YP Y888888P VP   V8P Y88888P
 }
 
 .machine-reserv-preview {
-  height: 10px;
+  height: 20px;
   margin: 10px;
 }
 
@@ -517,8 +517,10 @@ YP  YP  YP YP   YP  `Y88P' YP   YP Y888888P VP   V8P Y88888P
   width: 100%;
 }
 
-.machine-reserv-preview .today .slots {
+.machine-reserv-preview .slots {
+  background: #a3cc52;
   height: 50%;
+  position: relative;
   width: 100%;
 }
 
@@ -533,11 +535,6 @@ YP  YP  YP YP   YP  `Y88P' YP   YP Y888888P VP   V8P Y88888P
   width: 50%;
 }
 
-.machine-reserv-preview .tomorrow .slots {
-  height: 50%;
-  width: 100%;
-}
-
 .machine-reserv-preview .tomorrow .label {
   height: 50%;
   width: 100%;
@@ -546,13 +543,16 @@ YP  YP  YP YP   YP  `Y88P' YP   YP Y888888P VP   V8P Y88888P
 .machine-reserv-preview .slot {
   background: @color-primary;
   display: inline-block;
-  float: left;
-  height: 100%;
-  width: 2.083333333%;
+  height: 10px;
+  position: absolute;
 }
 
 .machine-reserv-preview .slot.reserved {
-  background: @color-danger;
+  background: lighten(@color-danger, 10%);
+}
+
+.machine-reserv-preview .slot.reserved:hover {
+  background: @color-danger;  
 }
 
 .machine-reserv-preview .slot.reserved.by-user {

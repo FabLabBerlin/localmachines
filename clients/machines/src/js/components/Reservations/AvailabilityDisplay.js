@@ -3,6 +3,15 @@ var moment = require('moment');
 var React = require('react');
 var reactor = require('../../reactor');
 
+const DELTA = 2.08333333;
+
+function isNow(t) {
+  var now = moment().unix();
+  var nn = now - (now % 1800);
+  var uu = t.unix() - (t.unix() % 1800);
+  return nn === uu;
+}
+
 
 var Slot = React.createClass({
 
@@ -10,31 +19,13 @@ var Slot = React.createClass({
 
   getDataBindings() {
     return {
-      reservations: getters.getReservations,
       userId: getters.getUid
     };
   },
 
   render() {
-    var now = moment().unix();
-    var reserved = false;
-    var reservedByUser = false;
-
-    if (this.state.reservations) {
-      _.each(this.state.reservations.toJS(), r => {
-        if (r.MachineId === this.props.machineId) {
-          var start = moment(r.TimeStart).unix();
-          var end = moment(r.TimeEnd).unix();
-          var u = this.props.time.unix();
-          if (start <= u && u <= end) {
-            reserved = true;
-            if (r.UserId === this.state.userId) {
-              reservedByUser = true;
-            }
-          }
-        }
-      }.bind(this));
-    }
+    var reserved = true;
+    var reservedByUser = this.props.reservation && this.props.reservation.get('UserId') === this.state.userId;
 
     var className = 'slot';
     if (reserved) {
@@ -43,54 +34,107 @@ var Slot = React.createClass({
         className += ' by-user';
       }
     }
-    var nn = now - (now % 1800);
-    var uu = this.props.time.unix() - (this.props.time.unix() % 1800);
-    if (nn === uu) {
+    if (isNow(this.props.time)) {
       className += ' now';
     }
 
-    return <div className={className}/>;
+    var title;
+    var width = String(DELTA) + '%';
+    if (this.props.reservation) {
+      var start = moment(this.props.reservation.get('TimeStart'));
+      var end = moment(this.props.reservation.get('TimeEnd'));
+      width = String(DELTA * (end.unix() - start.unix()) / 1800) + '%';
+      title = start.format('DD. MMM HH:mm') + ' - ' + end.format('HH:mm');
+    }
+
+    var style = {
+      marginLeft: String(DELTA * this.props.position) + '%',
+      width: width
+    };
+
+    return <div className={className}
+                style={style}
+                title={title}/>;
   }
 });
 
 
 var AvailabilityDisplay = React.createClass({
 
-  render() {
-    var times = [];
-    var i = 0;
-    var n = 2 * 48;
+  mixins: [ reactor.ReactMixin ],
 
-    for (var t = moment().hours(0); i < n; t.add(30, 'm'), i++) {
-      times.push(t.clone());
+  getDataBindings() {
+    return {
+      reservations: getters.getReservations,
+      slotAvailabilities48h: getters.getSlotAvailabilities48h,
+      userId: getters.getUid
+    };
+  },
+
+  render() {
+    if (!this.state.reservations) {
+      return <div/>;
     }
 
     var key = 1;
 
-    return (
-      <div className="machine-reserv-preview">
-        <div className="today">
-          <div className="slots">
-            {_.map(times.slice(0, n / 2), time => {
-              return <Slot key={key++} machineId={this.props.machineId} time={time}/>;
-            })}
+    var availabilities = this.state.slotAvailabilities48h.get(this.props.machineId);
+    if (availabilities) {
+      var today = availabilities.get('today');
+      var tomorrow = availabilities.get('tomorrow');
+      var todayStart = moment().hours(0);
+      var todayEnd = todayStart.clone().add(1, 'day');
+      var tomorrowStart = todayEnd.clone();
+      var tomorrowEnd = tomorrowStart.clone().add(1, 'day');
+      todayStart = todayStart.unix();
+      todayEnd = todayEnd.unix();
+      tomorrowStart = tomorrowStart.unix();
+      tomorrowEnd = tomorrowEnd.unix();
+      var indexNow = Math.round(2 * (moment().unix() - todayStart) / 3600);
+
+      return (
+        <div className="machine-reserv-preview">
+          <div className="today">
+            <div className="slots">
+              {today.map(reservation => {
+                var timeStart = moment(reservation.get('TimeStart'));
+                var jj = Math.round(2 * (timeStart.unix() - todayStart) / (3600));
+                return <Slot key={key++}
+                             machineId={reservation.get('MachineId')}
+                             position={jj}
+                             reservation={reservation}
+                             time={timeStart}/>;
+              })}
+              <Slot key={key++}
+                    machineId={this.props.machineId}
+                    position={indexNow}
+                    time={moment()}/>
+            </div>
+            <div className="label">
+              Today
+            </div>
           </div>
-          <div className="label">
-            Today
+          <div className="tomorrow">
+            <div className="slots">
+              {tomorrow.map(reservation => {
+                var timeStart = moment(reservation.get('TimeStart'));
+                var jj = Math.round(2 * (timeStart.unix() - tomorrowStart) / (3600));
+                return <Slot key={key++}
+                             machineId={reservation.get('MachineId')}
+                             position={jj}
+                             reservation={reservation}
+                             time={timeStart}/>;
+              })}
+            </div>
+            <div className="label">
+              Tomorrow
+            </div>
           </div>
         </div>
-        <div className="tomorrow">
-          <div className="slots">
-            {_.map(times.slice(n / 2), time => {
-              return <Slot key={key++} machineId={this.props.machineId} time={time}/>;
-            })}
-          </div>
-          <div className="label">
-            Tomorrow
-          </div>
-        </div>
-      </div>
-    );
+      );
+    } else {
+      return <div/>;
+    }
   }
 
 });
