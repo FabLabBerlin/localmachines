@@ -38,7 +38,7 @@ var Slot = React.createClass({
     }
 
     var style = {
-      marginLeft: String(1.04166667 * this.props.position) + '%'
+      marginLeft: String(1.04166666 * this.props.position) + '%'
     };
 
     return <div className={className}
