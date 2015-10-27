@@ -83,18 +83,37 @@ func (this *ReservationsController) Create() {
 // @Failure	401	Not authorized
 // @router /:rid [delete]
 func (this *ReservationsController) Delete() {
-	if !this.IsAdmin() {
-		beego.Error("Not authorized")
-		this.CustomAbort(401, "Not authorized")
-	}
 
-	rid, err := this.GetInt64(":rid")
+	reservationId, err := this.GetInt64(":rid")
 	if err != nil {
-		beego.Error("Failed to get rid:", err)
+		beego.Error("Failed to get reservation ID:", err)
 		this.CustomAbort(403, "Failed to delete reservation")
 	}
 
-	err = models.DeleteReservation(rid)
+	// One is allowed to delete a reservation if he/she is the owner
+	// of the reservation or an admin.
+
+	if !this.IsAdmin() {
+
+		// Not an admin, check if owner
+		sessUserId, ok := this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
+		if !ok {
+			beego.Error("Failed to get session user ID")
+			this.CustomAbort(500, "Internal Server Error")
+		}
+		var reservation *models.Reservation
+		reservation, err = models.GetReservation(reservationId)
+		if err != nil {
+			beego.Error("Failed to get reservation")
+			this.CustomAbort(500, "Internal Server Error")
+		}
+		if reservation.UserId != sessUserId {
+			beego.Error("Not authorized")
+			this.CustomAbort(401, "Not authorized")
+		}
+	}
+
+	err = models.DeleteReservation(reservationId)
 	if err != nil {
 		beego.Error("Failed to delete reservation:", err)
 		this.CustomAbort(403, "Failed to delete reservation")
