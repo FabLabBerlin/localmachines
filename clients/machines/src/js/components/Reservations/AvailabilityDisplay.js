@@ -76,15 +76,6 @@ var AvailabilityDisplay = React.createClass({
       return <div/>;
     }
 
-    var times = [];
-    var i = 0;
-    var n = 2 * 48;
-    var reservation;
-
-    for (var t = moment().hours(0); i < n; t.add(30, 'm'), i++) {
-      times.push(t.clone());
-    }
-
     var key = 1;
 
     var availabilities = this.state.slotAvailabilities48h.get(this.props.machineId);

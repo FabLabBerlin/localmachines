@@ -584,7 +584,7 @@ const getSlotAvailabilities48h = [
           var end = moment(r.get('TimeEnd')).unix();
           return start >= tomorrowStart && end <= tomorrowEnd;
         })
-      }
+      };
       return toImmutable(tmp);
     });
   }
