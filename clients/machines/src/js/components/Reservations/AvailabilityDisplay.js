@@ -79,58 +79,62 @@ var AvailabilityDisplay = React.createClass({
     var key = 1;
 
     var availabilities = this.state.slotAvailabilities48h.get(this.props.machineId);
-    var today = availabilities.get('today');
-    var tomorrow = availabilities.get('tomorrow');
-    var todayStart = moment().hours(0);
-    var todayEnd = todayStart.clone().add(1, 'day');
-    var tomorrowStart = todayEnd.clone();
-    var tomorrowEnd = tomorrowStart.clone().add(1, 'day');
-    todayStart = todayStart.unix();
-    todayEnd = todayEnd.unix();
-    tomorrowStart = tomorrowStart.unix();
-    tomorrowEnd = tomorrowEnd.unix();
-    var indexNow = Math.round(2 * (moment().unix() - todayStart) / 3600);
+    if (availabilities) {
+      var today = availabilities.get('today');
+      var tomorrow = availabilities.get('tomorrow');
+      var todayStart = moment().hours(0);
+      var todayEnd = todayStart.clone().add(1, 'day');
+      var tomorrowStart = todayEnd.clone();
+      var tomorrowEnd = tomorrowStart.clone().add(1, 'day');
+      todayStart = todayStart.unix();
+      todayEnd = todayEnd.unix();
+      tomorrowStart = tomorrowStart.unix();
+      tomorrowEnd = tomorrowEnd.unix();
+      var indexNow = Math.round(2 * (moment().unix() - todayStart) / 3600);
 
-    return (
-      <div className="machine-reserv-preview">
-        <div className="today">
-          <div className="slots">
-            {today.map(reservation => {
-              var timeStart = moment(reservation.get('TimeStart'));
-              var jj = Math.round(2 * (timeStart.unix() - todayStart) / (3600));
-              return <Slot key={key++}
-                           machineId={reservation.get('MachineId')}
-                           position={jj}
-                           reservation={reservation}
-                           time={timeStart}/>;
-            })}
-            <Slot key={key++}
-                  machineId={this.props.machineId}
-                  position={indexNow}
-                  time={moment()}/>
+      return (
+        <div className="machine-reserv-preview">
+          <div className="today">
+            <div className="slots">
+              {today.map(reservation => {
+                var timeStart = moment(reservation.get('TimeStart'));
+                var jj = Math.round(2 * (timeStart.unix() - todayStart) / (3600));
+                return <Slot key={key++}
+                             machineId={reservation.get('MachineId')}
+                             position={jj}
+                             reservation={reservation}
+                             time={timeStart}/>;
+              })}
+              <Slot key={key++}
+                    machineId={this.props.machineId}
+                    position={indexNow}
+                    time={moment()}/>
+            </div>
+            <div className="label">
+              Today
+            </div>
           </div>
-          <div className="label">
-            Today
+          <div className="tomorrow">
+            <div className="slots">
+              {tomorrow.map(reservation => {
+                var timeStart = moment(reservation.get('TimeStart'));
+                var jj = Math.round(2 * (timeStart.unix() - tomorrowStart) / (3600));
+                return <Slot key={key++}
+                             machineId={reservation.get('MachineId')}
+                             position={jj}
+                             reservation={reservation}
+                             time={timeStart}/>;
+              })}
+            </div>
+            <div className="label">
+              Tomorrow
+            </div>
           </div>
         </div>
-        <div className="tomorrow">
-          <div className="slots">
-            {tomorrow.map(reservation => {
-              var timeStart = moment(reservation.get('TimeStart'));
-              var jj = Math.round(2 * (timeStart.unix() - tomorrowStart) / (3600));
-              return <Slot key={key++}
-                           machineId={reservation.get('MachineId')}
-                           position={jj}
-                           reservation={reservation}
-                           time={timeStart}/>;
-            })}
-          </div>
-          <div className="label">
-            Tomorrow
-          </div>
-        </div>
-      </div>
-    );
+      );
+    } else {
+      return <div/>;
+    }
   }
 
 });
