@@ -25,7 +25,6 @@ var ReservationActions = {
           reactor.dispatch(actionTypes.REGISTER_MACHINE_USER, { userData });
         });
       });
-      console.log('reservations:', reservations);
       reactor.dispatch(actionTypes.SET_RESERVATIONS, { reservations });
     });
   },

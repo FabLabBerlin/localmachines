@@ -74,7 +74,7 @@ var Login = React.createClass({
    */
   render() {
     return (
-      <form className="login-form" onSubmit={this.handleSubmit}>
+      <form className="login-form" method="post" onSubmit={this.handleSubmit}>
         <div className="regular-login">
 
           <h2 className="login-heading">Please log in</h2>

@@ -20,19 +20,21 @@ var Slot = React.createClass({
     var reserved = false;
     var reservedByUser = false;
 
-    _.each(this.state.reservations.toJS(), r => {
-      if (r.MachineId === this.props.machineId) {
-        var start = moment(r.TimeStart).unix();
-        var end = moment(r.TimeEnd).unix();
-        var u = this.props.time.unix();
-        if (start <= u && u <= end) {
-          reserved = true;
-          if (r.UserId === this.state.userId) {
-            reservedByUser = true;
+    if (this.state.reservations) {
+      _.each(this.state.reservations.toJS(), r => {
+        if (r.MachineId === this.props.machineId) {
+          var start = moment(r.TimeStart).unix();
+          var end = moment(r.TimeEnd).unix();
+          var u = this.props.time.unix();
+          if (start <= u && u <= end) {
+            reserved = true;
+            if (r.UserId === this.state.userId) {
+              reservedByUser = true;
+            }
           }
         }
-      }
-    }.bind(this));
+      }.bind(this));
+    }
 
     var className = 'slot';
     if (reserved) {
@@ -63,13 +65,29 @@ var AvailabilityDisplay = React.createClass({
       times.push(t.clone());
     }
 
+    var key = 1;
+
     return (
       <div className="machine-reserv-preview">
         <div className="today">
-          {_.map(times.slice(0, n / 2), time => <Slot machineId={this.props.machineId} time={time}/>)}
+          <div className="slots">
+            {_.map(times.slice(0, n / 2), time => {
+              return <Slot key={key++} machineId={this.props.machineId} time={time}/>;
+            })}
+          </div>
+          <div className="label">
+            Today
+          </div>
         </div>
         <div className="tomorrow">
-          {_.map(times.slice(n / 2), time => <Slot machineId={this.props.machineId} time={time}/>)}
+          <div className="slots">
+            {_.map(times.slice(n / 2), time => {
+              return <Slot key={key++} machineId={this.props.machineId} time={time}/>;
+            })}
+          </div>
+          <div className="label">
+            Tomorrow
+          </div>
         </div>
       </div>
     );
