@@ -570,6 +570,10 @@ const getSlotAvailabilities48h = [
     tomorrowStart = tomorrowStart.unix();
     tomorrowEnd = tomorrowEnd.unix();
 
+    if (!reservations) {
+      return toImmutable({});
+    }
+
     return reservations.groupBy(reservation => {
       return reservation.get('MachineId');
     }).map((rs) => {
