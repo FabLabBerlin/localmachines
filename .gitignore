@@ -14,3 +14,4 @@ cert/
 tests/controllers/conf/app.conf
 tests/controllers/routers/
 tests/models/conf/app.conf
+lastupdate.tmp
