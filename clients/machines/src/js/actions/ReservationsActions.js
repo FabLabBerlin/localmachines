@@ -111,6 +111,25 @@ var ReservationActions = {
 
   createDone() {
     reactor.dispatch(actionTypes.CREATE_DONE);
+  },
+
+  deleteReservation(reservationId) {
+    reactor.dispatch(actionTypes.DELETE_RESERVATION_START);
+
+    $.ajax({
+      url: '/api/reservations/' + reservationId,
+      type: 'DELETE',
+      cache: false,
+      success: function() {
+        reactor.dispatch(actionTypes.DELETE_RESERVATION_SUCCESS);
+        toastr.success('Successfuly deleted reservation');
+        ReservationActions.load();
+      },
+      error: function() {
+        reactor.dispatch(actionTypes.DELETE_RESERVATION_FAIL);
+        toastr.error('Error deleting reservation');
+      }
+    });
   }
 };
 

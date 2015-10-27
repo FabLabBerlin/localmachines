@@ -10,6 +10,11 @@ var ReservationRulesActions = require('../../actions/ReservationRulesActions');
 var ReservationsActions = require('../../actions/ReservationsActions');
 var toImmutable = Nuclear.toImmutable;
 
+// https://github.com/HubSpot/vex/issues/72
+var vex = require('vex-js'),
+VexDialog = require('vex-js/js/vex.dialog.js');
+vex.defaultOptions.className = 'vex-theme-custom';
+
 
 function formatDate(date) {
   date = moment(date);
@@ -38,7 +43,25 @@ var ReservationsTable = React.createClass({
     };
   },
 
+  deleteReservation(reservationId) {
+    VexDialog.buttons.YES.text = 'Yes';
+    VexDialog.buttons.NO.text = 'No';
+
+    VexDialog.confirm({
+      message: 'Do you really want to delete this reservation?',
+      callback: function(confirmed) {
+        if (confirmed) {
+          console.log(reservationId);
+          ReservationsActions.deleteReservation(reservationId);
+        }
+        $('.vex').remove();
+        $('body').removeClass('vex-open');
+      }.bind(this)
+    });
+  },
+
   render() {
+    console.log('Reservations page render');
     const uid = reactor.evaluateToJS(getters.getUid);
     if (this.state.reservations && this.state.machinesById) {
       return (
@@ -50,11 +73,17 @@ var ReservationsTable = React.createClass({
               <th>From</th>
               <th>To</th>
               <th>Created</th>
+              <th>
+                <div className="pull-right">
+                  Options
+                </div>
+              </th>
             </thead>
             <tbody>
               {_.map(this.state.reservations.toArray(), (reservation, i) => {
                 const machineId = reservation.get('MachineId');
                 const machine = this.state.machinesById.get(machineId);
+                const reservationId = reservation.get('Id');
                 if (machine && reservation.get('UserId') === uid) {
                   return (
                     <tr key={i}>
@@ -63,6 +92,14 @@ var ReservationsTable = React.createClass({
                       <td>{formatTime(reservation.get('TimeStart'))}</td>
                       <td>{formatTime(reservation.get('TimeEnd'))}</td>
                       <td>{formatDate(reservation.get('Created'))}</td>
+                      <td>
+                        <button
+                          type="button"
+                          className="btn btn-danger btn-ico pull-right"
+                          onClick={this.deleteReservation.bind(this, reservationId)}>
+                          <i className="fa fa-remove"></i>
+                        </button>
+                      </td>
                     </tr>
                   );
                 } else {
@@ -117,7 +154,9 @@ var ReservationsPage = React.createClass({
           <ReservationsTable/>
           <hr/>
           <div className="pull-right">
-            <button className="btn btn-lg btn-primary" onClick={this.clickCreate}>
+            <button 
+              className="btn btn-lg btn-primary" 
+              onClick={this.clickCreate}>
               Create
             </button>
           </div>
