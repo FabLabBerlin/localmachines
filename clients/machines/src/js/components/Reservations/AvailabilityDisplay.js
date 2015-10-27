@@ -3,6 +3,7 @@ var moment = require('moment');
 var React = require('react');
 var reactor = require('../../reactor');
 
+const DELTA = 2.08333333;
 
 function isNow(t) {
   var now = moment().unix();
@@ -37,12 +38,23 @@ var Slot = React.createClass({
       className += ' now';
     }
 
+    var title;
+    var width = String(DELTA) + '%';
+    if (this.props.reservation) {
+      var start = moment(this.props.reservation.get('TimeStart'));
+      var end = moment(this.props.reservation.get('TimeEnd'));
+      width = String(DELTA * (end.unix() - start.unix()) / 1800) + '%';
+      title = start.format('DD. MMM HH:mm') + ' - ' + end.format('HH:mm');
+    }
+
     var style = {
-      marginLeft: String(2.08333333 * this.props.position) + '%'
+      marginLeft: String(DELTA * this.props.position) + '%',
+      width: width
     };
 
     return <div className={className}
-                style={style}/>;
+                style={style}
+                title={title}/>;
   }
 });
 
