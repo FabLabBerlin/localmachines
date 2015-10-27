@@ -553,27 +553,39 @@ const getNewReservationPrice = [
   }
 ];
 
+// getSlotAvailabilities48h returns a map...
+// machineId => [reservations in the next 48h]
 const getSlotAvailabilities48h = [
   getMachinesById,
   ['reservationsStore'],
-  ['reservationRulesStore'],
-  getReservationsByDay,
-  (machinesById, reservationsStore, reservationRulesStore, reservationsByDay) => {
-    return toImmutable({
-      today: slotAvailabilities({
-        date: moment(),
-        machinesById,
-        reservationsStore,
-        reservationRulesStore,
-        reservationsByDay
-      }),
-      tomorrow: slotAvailabilities({
-        date: moment().add(1, 'day'),
-        machinesById,
-        reservationsStore,
-        reservationRulesStore,
-        reservationsByDay
-      })
+  getReservations,
+  (machinesById, reservationsStore, reservations) => {
+    //console.log('fgsdfgdfgdf reservations=', reservations);
+    var todayStart = moment().hours(0);
+    var todayEnd = todayStart.clone().add(1, 'day');
+    var tomorrowStart = todayEnd.clone();
+    var tomorrowEnd = tomorrowStart.clone().add(1, 'day');
+    todayStart = todayStart.unix();
+    todayEnd = todayEnd.unix();
+    tomorrowStart = tomorrowStart.unix();
+    tomorrowEnd = tomorrowEnd.unix();
+
+    return reservations.groupBy(reservation => {
+      return reservation.get('MachineId');
+    }).map((rs) => {
+      var tmp = {
+        today: rs.filter(r => {
+          var start = moment(r.get('TimeStart')).unix();
+          var end = moment(r.get('TimeEnd')).unix();
+          return start >= todayStart && end <= todayEnd;
+        }),
+        tomorrow: rs.filter(r => {
+          var start = moment(r.get('TimeStart')).unix();
+          var end = moment(r.get('TimeEnd')).unix();
+          return start >= tomorrowStart && end <= tomorrowEnd;
+        })
+      }
+      return toImmutable(tmp);
     });
   }
 ];
