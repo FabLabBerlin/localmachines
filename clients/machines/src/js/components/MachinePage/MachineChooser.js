@@ -176,6 +176,10 @@ var MachineChooser = React.createClass({
       }
       price += ']';
     }
+    var availabilityDisplay;
+    if (_.isNumber(this.props.info.ReservationPriceHourly)) {
+      availabilityDisplay = <AvailabilityDisplay machineId={this.props.info.Id}/>;
+    }
     return (
       <div className="machine-container">
         <div className="container-fluid">
@@ -185,7 +189,7 @@ var MachineChooser = React.createClass({
           </div>
           <div className="machine-body">
             {machineBody}
-            <AvailabilityDisplay machineId={this.props.info.Id}/>
+            {availabilityDisplay}
 
             <ul className="machine-extra-actions">
               <li className="action-item">
