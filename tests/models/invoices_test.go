@@ -18,7 +18,7 @@ func init() {
 }
 
 func CreateTestPurchase(machineId int64, machineName string,
-	minutes, pricePerMinute float64) *models.Purchase {
+	minutes time.Duration, pricePerMinute float64) *models.Purchase {
 
 	machine := models.Machine{}
 	machine.Id = machineId
@@ -28,8 +28,11 @@ func CreateTestPurchase(machineId int64, machineName string,
 
 	invAct := &models.Purchase{
 		Activation: &models.Activation{
-			TimeStart: TIME_START,
-			TimeEnd:   TIME_START.Add(time.Minute * time.Duration(minutes)),
+			TimeStart:                   TIME_START,
+			TimeEnd:                     TIME_START.Add(time.Minute * time.Duration(minutes)),
+			CurrentMachinePrice:         pricePerMinute,
+			CurrentMachinePriceUnit:     "minute",
+			CurrentMachinePriceCurrency: "€",
 		},
 		Machine:      &machine,
 		MachineUsage: minutes,
@@ -56,15 +59,18 @@ func TestInvoiceActivation(t *testing.T) {
 	Convey("Testing InvoiceActivation model", t, func() {
 		Reset(ResetDB)
 		Convey("Testing MembershipStr", func() {
-			invAct := CreateTestPurchase(22, "Lasercutter", 12, 0.5)
+			invAct := CreateTestPurchase(22, "Lasercutter",
+				time.Duration(12)*time.Minute, 0.5)
 			So(invAct.MembershipStr(), ShouldEqual, "HP (50%)")
 		})
 		Convey("Testing PriceTotalExclDisc", func() {
-			invAct := CreateTestPurchase(22, "Lasercutter", 12, 0.5)
+			invAct := CreateTestPurchase(22, "Lasercutter",
+				time.Duration(12)*time.Minute, 0.5)
 			So(models.PriceTotalExclDisc(invAct), ShouldEqual, 6)
 		})
 		Convey("Testing PriceTotalDisc", func() {
-			invAct := CreateTestPurchase(22, "Lasercutter", 12, 0.5)
+			invAct := CreateTestPurchase(22, "Lasercutter",
+				time.Duration(12)*time.Minute, 0.5)
 			if priceTotalDisc, err := models.PriceTotalDisc(invAct); err == nil {
 				So(priceTotalDisc, ShouldEqual, 3)
 			} else {
@@ -82,7 +88,8 @@ func TestInvoiceActivation(t *testing.T) {
 					"0.50", "6.00", "HP (50%)", "3.00"},
 			}
 
-			invAct := CreateTestPurchase(22, "Lasercutter", 12, 0.5)
+			invAct := CreateTestPurchase(22, "Lasercutter",
+				time.Duration(12)*time.Minute, 0.5)
 			file := xlsx.NewFile()
 			sheet, _ := file.AddSheet("User Summaries")
 			models.AddRowActivationsHeaderXlsx(sheet)
@@ -115,11 +122,11 @@ func TestInvoiceActivation(t *testing.T) {
 		Convey("Testing SummarizedByMachine", func() {
 			invs := models.Purchases{
 				Data: []*models.Purchase{
-					CreateTestPurchase(22, "Lasercutter", 12, 0.5),
-					CreateTestPurchase(22, "Lasercutter", 13, 0.25),
-					CreateTestPurchase(23, "CNC Router", 12, 0.8),
-					CreateTestPurchase(23, "CNC Router", 12, 0.8),
-					CreateTestPurchase(23, "CNC Router", 12, 0.8),
+					CreateTestPurchase(22, "Lasercutter", time.Duration(12)*time.Minute, 0.5),
+					CreateTestPurchase(22, "Lasercutter", time.Duration(13)*time.Minute, 0.25),
+					CreateTestPurchase(23, "CNC Router", time.Duration(12)*time.Minute, 0.8),
+					CreateTestPurchase(23, "CNC Router", time.Duration(12)*time.Minute, 0.8),
+					CreateTestPurchase(23, "CNC Router", time.Duration(12)*time.Minute, 0.8),
 				},
 			}
 

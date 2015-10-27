@@ -29,6 +29,7 @@ func init() {
 // ConfigDB : Configure database for tests
 func ConfigDB() {
 	beego.SetLevel(beego.LevelError)
+	//beego.SetLevel(beego.LevelDebug)
 
 	runmodetest, err := beego.AppConfig.Bool("runmodtest")
 	if !runmodetest || err != nil {
