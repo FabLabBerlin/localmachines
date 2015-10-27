@@ -155,9 +155,11 @@ func (this Purchases) SummarizedByMachine() (
 			byMachine[activation.Machine.Name] = summary
 		}
 
-		summary.Activation.CurrentMachinePrice = activation.Activation.CurrentMachinePrice
-		summary.Activation.CurrentMachinePriceCurrency = activation.Activation.CurrentMachinePriceCurrency
-		summary.Activation.CurrentMachinePriceUnit = activation.Activation.CurrentMachinePriceUnit
+		if activation != nil && activation.Activation != nil {
+			summary.Activation.CurrentMachinePrice = activation.Activation.CurrentMachinePrice
+			summary.Activation.CurrentMachinePriceCurrency = activation.Activation.CurrentMachinePriceCurrency
+			summary.Activation.CurrentMachinePriceUnit = activation.Activation.CurrentMachinePriceUnit
+		}
 		summary.MachineUsage += activation.MachineUsage
 		summary.TotalPrice += activation.TotalPrice
 		summary.DiscountedTotal += activation.DiscountedTotal
