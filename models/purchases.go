@@ -53,15 +53,22 @@ func (this *Purchase) PricePerUnit() float64 {
 func PriceTotalExclDisc(p *Purchase) float64 {
 	if p.Activation != nil {
 		var pricePerSecond float64
+		beego.Trace("p.Activation.CurrentMachinePriceUnit", p.Activation.CurrentMachinePriceUnit)
+		beego.Trace("p.Activation.CurrentMachinePrice", p.Activation.CurrentMachinePrice)
 		switch p.Activation.CurrentMachinePriceUnit {
 		case "minute":
+			beego.Trace("minute")
 			pricePerSecond = float64(p.Activation.CurrentMachinePrice) / 60
 			break
 		case "hour":
+			beego.Trace("hour")
 			pricePerSecond = float64(p.Activation.CurrentMachinePrice) / 60 / 60
 			break
 		}
-		return p.MachineUsage.Seconds() * pricePerSecond
+		beego.Trace(p.MachineUsage.Seconds())
+		beego.Trace(pricePerSecond)
+		ret := p.MachineUsage.Seconds() * pricePerSecond
+		return ret
 	} else {
 		return float64(p.Reservation.Slots()) * p.PricePerUnit()
 	}
@@ -129,6 +136,7 @@ func (this Purchases) Swap(i, j int) {
 	*this.Data[i], *this.Data[j] = *this.Data[j], *this.Data[i]
 }
 
+// TODO: REWRITE!!!
 func (this Purchases) SummarizedByMachine() (
 	Purchases, error) {
 
@@ -146,10 +154,13 @@ func (this Purchases) SummarizedByMachine() (
 			}
 			byMachine[activation.Machine.Name] = summary
 		}
+
+		summary.Activation.CurrentMachinePrice = activation.Activation.CurrentMachinePrice
+		summary.Activation.CurrentMachinePriceCurrency = activation.Activation.CurrentMachinePriceCurrency
+		summary.Activation.CurrentMachinePriceUnit = activation.Activation.CurrentMachinePriceUnit
 		summary.MachineUsage += activation.MachineUsage
 		summary.TotalPrice += activation.TotalPrice
 		summary.DiscountedTotal += activation.DiscountedTotal
-
 	}
 
 	sumPurchasesData := make([]*Purchase, 0, len(byMachine))
