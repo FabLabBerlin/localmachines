@@ -80,6 +80,8 @@ app.controller('ReservationsCtrl', ['$scope', '$http', '$location', '$cookieStor
     .success(function(data) {
       var reservations = _.map(data, function(r) {
         r.Machine = $scope.machinesById[r.MachineId] || {};
+        r.TimeStartLocal = moment(r.TimeStart).tz('Europe/Berlin').format('YYYY-MM-DD HH:mm');
+        r.TimeEndLocal = moment(r.TimeEnd).tz('Europe/Berlin').format('YYYY-MM-DD HH:mm');
         return r;
       });
       $scope.reservations = _.sortBy(reservations, function(r) {
