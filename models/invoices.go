@@ -302,7 +302,7 @@ func (this *Invoice) getPurchases(startTime, endTime time.Time) (Purchases, erro
 		return Purchases{}, fmt.Errorf("Failed to get activations: %v", err)
 	}
 
-	reservations, err := GetAllReservations()
+	reservations, err := GetAllReservationsBetween(startTime, endTime)
 	if err != nil {
 		return Purchases{}, fmt.Errorf("Failed to get reservations: %v", err)
 	}

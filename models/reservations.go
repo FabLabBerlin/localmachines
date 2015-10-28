@@ -55,6 +55,20 @@ func GetAllReservations() (reservations []*Reservation, err error) {
 	return
 }
 
+func GetAllReservationsBetween(startTime, endTime time.Time) (reservations []*Reservation, err error) {
+	allReservations, err := GetAllReservations()
+	if err != nil {
+		return
+	}
+	reservations = make([]*Reservation, 0, len(allReservations))
+	for _, reservation := range allReservations {
+		if startTime.Before(reservation.TimeStart) && reservation.TimeEnd.Before(endTime) {
+			reservations = append(reservations, reservation)
+		}
+	}
+	return
+}
+
 func CreateReservation(reservation *Reservation) (int64, error) {
 
 	// Get the reservation_price_hourly of the machine being reserved
