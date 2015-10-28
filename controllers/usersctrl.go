@@ -508,7 +508,7 @@ func (this *UsersController) GetUserBill() {
 	}
 	startTime = startTime.Add(-86400 * time.Second)
 
-	endTime := time.Now().Add(86400 * time.Second)
+	endTime := time.Now().Add(86400 * 30 * time.Second)
 	invoice, err := models.CalculateInvoiceSummary(startTime, endTime)
 	if err != nil {
 		beego.Error("CalculateInvoiceSummary:", err)
