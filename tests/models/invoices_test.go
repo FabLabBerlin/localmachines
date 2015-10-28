@@ -2,7 +2,6 @@ package modelTest
 
 import (
 	"os"
-	"sort"
 	"testing"
 	"time"
 
@@ -118,36 +117,7 @@ func TestInvoiceActivation(t *testing.T) {
 
 	Convey("Testing InvoiceActivations model", t, func() {
 		Reset(ResetDB)
-
-		Convey("Testing SummarizedByMachine", func() {
-			invs := models.Purchases{
-				Data: []*models.Purchase{
-					CreateTestPurchase(22, "Lasercutter", time.Duration(12)*time.Minute, 0.5),
-					CreateTestPurchase(22, "Lasercutter", time.Duration(13)*time.Minute, 0.25),
-					CreateTestPurchase(23, "CNC Router", time.Duration(12)*time.Minute, 0.8),
-					CreateTestPurchase(23, "CNC Router", time.Duration(12)*time.Minute, 0.8),
-					CreateTestPurchase(23, "CNC Router", time.Duration(12)*time.Minute, 0.8),
-				},
-			}
-
-			if invs, err := invs.SummarizedByMachine(); err == nil {
-				sort.Stable(invs)
-				So(len(invs.Data), ShouldEqual, 2)
-				So(invs.Data[0].Machine.Name, ShouldEqual, "CNC Router")
-				So(invs.Data[0].TotalPrice, ShouldAlmostEqual, 36*0.8, 0.000001)
-				So(invs.Data[0].TotalPrice, ShouldAlmostEqual, models.PriceTotalExclDisc(invs.Data[0]), 0.000001)
-				So(invs.Data[0].DiscountedTotal, ShouldAlmostEqual, 36*0.8, 0.000001)
-				So(invs.Data[1].DiscountedTotal, ShouldAlmostEqual, 0.5*(12*0.5+13*0.25), 0.000001)
-				if priceTotalDisc, err := models.PriceTotalDisc(invs.Data[0]); err == nil {
-					So(invs.Data[0].DiscountedTotal, ShouldAlmostEqual, priceTotalDisc, 0.000001)
-				} else {
-					panic(err.Error())
-				}
-				So(invs.Data[1].Machine.Name, ShouldEqual, "Lasercutter")
-			} else {
-				panic(err.Error())
-			}
-		})
+		// TODO: Write tests for this
 	})
 
 	Convey("When creating invoice with CreateInvoice", t, func() {
