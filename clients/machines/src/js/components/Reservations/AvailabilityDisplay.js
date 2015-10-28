@@ -31,11 +31,9 @@ var Slot = React.createClass({
   render() {
     var reserved = true;
     var reservedByUser = this.props.reservation && this.props.reservation.get('UserId') === this.state.userId;
-
+    
     var className = 'slot';
     var clickHandler = {};
-    console.log('RESERVED');
-    console.log(reserved);
     if (reserved) {
       clickHandler = this.handleClickOnReservedSlot;
       className += ' reserved';
@@ -43,7 +41,7 @@ var Slot = React.createClass({
         className += ' by-user';
       }
     }
-    if (isNow(this.props.time)) {
+    if (isNow(this.props.time) && !this.props.reservation) {
       className = 'slot now';
     }
 
