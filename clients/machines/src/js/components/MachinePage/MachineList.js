@@ -35,7 +35,7 @@ var MachineList = React.createClass({
   render() {
     let activation = this.props.activation;
     var MachineNode;
-    if(this.props.info) {
+    if(this.props.info && _.size(this.props.info) > 0) {
       var machines = _.filter(this.props.info, function(machine) {
         return machine.Visible;
       });
@@ -65,7 +65,13 @@ var MachineList = React.createClass({
         );
       }.bind(this));
     } else {
-      MachineNode = <p>You do not have access to any machines</p>;
+      return (
+        <div className="loader-local">
+          <div className="spinner">
+            <i className="fa fa-cog fa-spin"></i>
+          </div>
+        </div>
+      );
     }
     return (
       <div className="machines">
