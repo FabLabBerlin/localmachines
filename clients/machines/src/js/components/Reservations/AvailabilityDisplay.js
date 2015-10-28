@@ -2,6 +2,7 @@ var getters = require('../../getters');
 var moment = require('moment');
 var React = require('react');
 var reactor = require('../../reactor');
+var toastr = require('../../toastr');
 
 const DELTA = 2.08333333;
 
@@ -23,19 +24,25 @@ var Slot = React.createClass({
     };
   },
 
+  handleClickOnReservedSlot(displayString) {
+    toastr.info(displayString);
+  },
+
   render() {
     var reserved = true;
     var reservedByUser = this.props.reservation && this.props.reservation.get('UserId') === this.state.userId;
-
+    
     var className = 'slot';
+    var clickHandler = {};
     if (reserved) {
+      clickHandler = this.handleClickOnReservedSlot;
       className += ' reserved';
       if (reservedByUser) {
         className += ' by-user';
       }
     }
-    if (isNow(this.props.time)) {
-      className += ' now';
+    if (isNow(this.props.time) && !this.props.reservation) {
+      className = 'slot now';
     }
 
     var title;
@@ -54,7 +61,8 @@ var Slot = React.createClass({
 
     return <div className={className}
                 style={style}
-                title={title}/>;
+                title={title}
+                onClick={clickHandler.bind(this, title)}/>;
   }
 });
 
@@ -94,6 +102,7 @@ var AvailabilityDisplay = React.createClass({
 
       return (
         <div className="machine-reserv-preview">
+
           <div className="today">
             <div className="slots">
               {today.map(reservation => {
@@ -109,12 +118,19 @@ var AvailabilityDisplay = React.createClass({
                     machineId={this.props.machineId}
                     position={indexNow}
                     time={moment()}/>
-            </div>
-            <div className="label">
-              Today
-            </div>
+            </div> 
+
+            <table className="label-bar">
+              <tr>
+                <td className="start-time">00:00</td>
+                <td className="label">Availability Today</td>
+                <td className="end-time">24:00</td>
+              </tr>
+            </table>
+
           </div>
-          <div className="tomorrow">
+
+          <div className="tomorrow hidden-xs">
             <div className="slots">
               {tomorrow.map(reservation => {
                 var timeStart = moment(reservation.get('TimeStart'));
@@ -126,10 +142,17 @@ var AvailabilityDisplay = React.createClass({
                              time={timeStart}/>;
               })}
             </div>
-            <div className="label">
-              Tomorrow
-            </div>
+            
+            <table className="label-bar">
+              <tr>
+                <td className="start-time">00:00</td>
+                <td className="label">Availability Tomorrow</td>
+                <td className="end-time">24:00</td>
+              </tr>
+            </table>
+
           </div>
+
         </div>
       );
     } else {
