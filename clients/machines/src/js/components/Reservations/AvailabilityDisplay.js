@@ -94,6 +94,7 @@ var AvailabilityDisplay = React.createClass({
 
       return (
         <div className="machine-reserv-preview">
+
           <div className="today">
             <div className="slots">
               {today.map(reservation => {
@@ -109,12 +110,19 @@ var AvailabilityDisplay = React.createClass({
                     machineId={this.props.machineId}
                     position={indexNow}
                     time={moment()}/>
-            </div>
-            <div className="label">
-              Today
-            </div>
+            </div> 
+
+            <table className="label-bar">
+              <tr>
+                <td className="start-time">00:00</td>
+                <td className="label">Availability Today</td>
+                <td className="end-time">24:00</td>
+              </tr>
+            </table>
+
           </div>
-          <div className="tomorrow">
+
+          <div className="tomorrow hidden-xs">
             <div className="slots">
               {tomorrow.map(reservation => {
                 var timeStart = moment(reservation.get('TimeStart'));
@@ -126,10 +134,17 @@ var AvailabilityDisplay = React.createClass({
                              time={timeStart}/>;
               })}
             </div>
-            <div className="label">
-              Tomorrow
-            </div>
+            
+            <table className="label-bar">
+              <tr>
+                <td className="start-time">00:00</td>
+                <td className="label">Availability Tomorrow</td>
+                <td className="end-time">24:00</td>
+              </tr>
+            </table>
+
           </div>
+
         </div>
       );
     } else {

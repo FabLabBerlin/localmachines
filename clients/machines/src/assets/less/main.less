@@ -509,58 +509,95 @@ YP  YP  YP YP   YP  `Y88P' YP   YP Y888888P VP   V8P Y88888P
 
 .machine-reserv-preview {
   height: 20px;
-  margin: 10px;
+  margin-top: 5px;
 }
 
-.machine-reserv-preview .today {
-  height: 100%;
-  width: 100%;
-}
+.machine-reserv-preview {
+  .slots {
+    background: #a3cc52;
+    height: 50%;
+    position: relative;
+    width: 100%;
+  }
 
-.machine-reserv-preview .slots {
-  background: #a3cc52;
-  height: 50%;
-  position: relative;
-  width: 100%;
-}
+  .slot {
+    background: @color-primary;
+    display: inline-block;
+    height: 10px;
+    position: absolute;
 
-.machine-reserv-preview .today .label {
-  height: 50%;
-  width: 100%;
-}
+    &.reserved {
+      background: lighten(@color-danger, 10%);
+    }
 
-.machine-reserv-preview .tomorrow {
-  display: none;
-  height: 100%;
-  width: 50%;
-}
+    &.reserved:hover {
+      background: @color-danger;
+      cursor: pointer;
+    }
 
-.machine-reserv-preview .tomorrow .label {
-  height: 50%;
-  width: 100%;
-}
+    &.reserved.by-user {
+      background: lighten(@color-primary, 10%);
+    }
 
-.machine-reserv-preview .slot {
-  background: @color-primary;
-  display: inline-block;
-  height: 10px;
-  position: absolute;
-}
+    &.reserved.by-user:hover {
+      background: darken(@color-primary, 10%);
+    }
 
-.machine-reserv-preview .slot.reserved {
-  background: lighten(@color-danger, 10%);
-}
+    &.now {
+      background: transparent;
+      border-left: 1px solid @color-danger;
+    }
 
-.machine-reserv-preview .slot.reserved:hover {
-  background: @color-danger;  
-}
+    &.now:hover {
+      background: transparent;
+    }
+  }
 
-.machine-reserv-preview .slot.reserved.by-user {
-  background: @color-reservation;
-}
+  .today {
+    border-left: 1px solid @color-neutral;
+    border-right: 1px solid @color-neutral;
+  }
 
-.machine-reserv-preview .slot.now {
-  background: yellow;
+  .tomorrow {
+    border-right: 1px solid @color-neutral;
+  }
+
+  .today, .tomorrow {
+    height: 100%;
+    width: 100%;
+    font-size: 9px;
+    color: @color-neutral;
+
+    .label-bar {
+      width: 100%;
+    }
+
+    .label {
+      text-align: center;
+      display: block;
+      font-size: 1em;
+      font-weight: normal;
+      color: @color-neutral;
+      padding: 0;
+      padding-top: 2px;
+    }
+
+    .start-time {
+      text-align: left;
+      font-size: 1em;
+      padding: 0;
+      padding-top: 2px;
+      padding-left: 3px;
+    }
+
+    .end-time {
+      text-align: right;
+      font-size: 1em;
+      padding: 0;
+      padding-top: 2px;
+      padding-right: 3px;
+    }
+  }
 }
 
 /* 
