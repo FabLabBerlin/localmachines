@@ -20,8 +20,8 @@
     <tbody>
       <tr ng-repeat="reservation in reservations">
         <td>{{reservation.Machine.Name}}</td>
-        <td>{{reservation.TimeStart}}</td>
-        <td>{{reservation.TimeEnd}}</td>
+        <td>{{reservation.TimeStartLocal}}</td>
+        <td>{{reservation.TimeEndLocal}}</td>
         <td>{{reservation.User.FirstName}} {{reservation.User.LastName}}</td>
         <td>{{reservation.User.Email}}</td>
         <td>
