@@ -20,7 +20,8 @@ var Slot = React.createClass({
 
   getDataBindings() {
     return {
-      userId: getters.getUid
+      userId: getters.getUid,
+      machineUsers: getters.getMachineUsers
     };
   },
 
@@ -30,8 +31,11 @@ var Slot = React.createClass({
 
   render() {
     var reserved = true;
-    var reservedByUser = this.props.reservation && this.props.reservation.get('UserId') === this.state.userId;
-    
+    var reservedByUser = this.props.reservation && 
+      this.props.reservation.get('UserId') === 
+      this.state.userId;
+    var users = this.state.machineUsers;
+
     var className = 'slot';
     var clickHandler = {};
     if (reserved) {
@@ -52,6 +56,13 @@ var Slot = React.createClass({
       var end = moment(this.props.reservation.get('TimeEnd'));
       width = String(DELTA * (end.unix() - start.unix()) / 1800) + '%';
       title = start.format('DD. MMM HH:mm') + ' - ' + end.format('HH:mm');
+      var userId = this.props.reservation.get('UserId');
+      var user = users.get(userId) || {};
+      if (reservedByUser) {
+        title += ' by You';
+      } else {
+        title += ' by ' + user.FirstName + ' ' + user.LastName;
+      }
     }
 
     var style = {
