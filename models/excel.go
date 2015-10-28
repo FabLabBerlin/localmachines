@@ -53,21 +53,15 @@ func (this PurchasesXlsx) Swap(i, j int) {
 // Adds a row to xlsx sheet by consuming a pointer to
 // InvoiceActivation model based store.
 func AddRowXlsx(sheet *xlsx.Sheet, purchase *Purchase) error {
-	var label string
 	var timeStart time.Time
-	var priceUnit string
 	var totalPrice float64
 	var discountedTotal float64
 
 	if purchase.Activation != nil {
-		label = purchase.Machine.Name
-		priceUnit = purchase.Activation.CurrentMachinePriceUnit
 		timeStart = purchase.Activation.TimeStart
 		totalPrice = purchase.TotalPrice
 		discountedTotal = purchase.DiscountedTotal
 	} else {
-		label = "Reservation (" + purchase.Machine.Name + ")"
-		priceUnit = purchase.Reservation.PriceUnit()
 		timeStart = purchase.Reservation.TimeStart
 	}
 
@@ -75,7 +69,7 @@ func AddRowXlsx(sheet *xlsx.Sheet, purchase *Purchase) error {
 	row.AddCell()
 
 	cell := row.AddCell()
-	cell.Value = label
+	cell.Value = purchase.ProductName()
 
 	// TODO: Implement FastBill product ID
 	cell = row.AddCell()
@@ -88,15 +82,15 @@ func AddRowXlsx(sheet *xlsx.Sheet, purchase *Purchase) error {
 
 	cell = row.AddCell()
 	if purchase.Activation != nil {
-		cell.SetFloatWithFormat(purchase.MachineUsage.Minutes(), FORMAT_4_DIGIT)
+		cell.SetFloatWithFormat(purchase.Usage(), FORMAT_4_DIGIT)
 	} else {
 		totalPrice = float64(purchase.Reservation.Slots()) * purchase.PricePerUnit()
 		discountedTotal = totalPrice
-		cell.SetInt(purchase.Reservation.Slots())
+		cell.SetInt(int(purchase.Usage()))
 	}
 
 	cell = row.AddCell()
-	cell.Value = priceUnit
+	cell.Value = purchase.PriceUnit()
 
 	cell = row.AddCell()
 	cell.SetFloatWithFormat(purchase.PricePerUnit(), FORMAT_2_DIGIT)
@@ -324,14 +318,47 @@ func createXlsxFile(filePath string, invoice *Invoice) error {
 		cell.Value = "Activations By Machine"
 		AddRowActivationsHeaderXlsx(sheet)
 
-		if summarizedByMachine, err := userSummary.Purchases.SummarizedByMachine(); err == nil {
-			for _, summed := range summarizedByMachine.Data {
-				if err := AddRowXlsx(sheet, summed); err != nil {
-					return fmt.Errorf("AddRowXlsx: %v", err)
-				}
+		byProductNameAndPricePerUnit := make(map[string]map[float64][]*Purchase)
+		for _, p := range userSummary.Purchases.Data {
+			if _, ok := byProductNameAndPricePerUnit[p.ProductName()]; !ok {
+				byProductNameAndPricePerUnit[p.ProductName()] = make(map[float64][]*Purchase)
 			}
-		} else {
-			return fmt.Errorf("SummarizedByMachine: %v", err)
+			if _, ok := byProductNameAndPricePerUnit[p.ProductName()][p.PricePerUnit()]; !ok {
+				byProductNameAndPricePerUnit[p.ProductName()][p.PricePerUnit()] = make([]*Purchase, 0, 20)
+			}
+			byProductNameAndPricePerUnit[p.ProductName()][p.PricePerUnit()] = append(byProductNameAndPricePerUnit[p.ProductName()][p.PricePerUnit()], p)
+		}
+
+		for productName, byPricePerUnit := range byProductNameAndPricePerUnit {
+			for pricePerUnit, purchases := range byPricePerUnit {
+				var usage float64
+				var usageUnit string
+				var totalPriceExclDisc float64
+				var discPrice float64
+				var membershipStr string
+				for _, purchase := range purchases {
+					usageUnit = purchase.PriceUnit()
+					usage += purchase.Usage()
+					totalPriceExclDisc += PriceTotalExclDisc(purchase)
+					priceDisc, err := PriceTotalDisc(purchase)
+					if err != nil {
+						return fmt.Errorf("PriceTotalDisc: %v", err)
+					}
+					discPrice += priceDisc
+					membershipStr = purchase.MembershipStr()
+				}
+				row = sheet.AddRow()
+				row.AddCell()
+				row.AddCell().Value = productName
+				row.AddCell().Value = "Undefined"
+				row.AddCell()
+				row.AddCell().SetFloatWithFormat(usage, FORMAT_4_DIGIT)
+				row.AddCell().Value = usageUnit
+				row.AddCell().SetFloatWithFormat(pricePerUnit, FORMAT_2_DIGIT)
+				row.AddCell().SetFloatWithFormat(totalPriceExclDisc, FORMAT_2_DIGIT)
+				row.AddCell().Value = membershipStr
+				row.AddCell().SetFloatWithFormat(discPrice, FORMAT_2_DIGIT)
+			}
 		}
 
 		printTotal := func(totalColor string) {

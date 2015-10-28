@@ -3,7 +3,6 @@ package models
 import (
 	"fmt"
 	"github.com/astaxie/beego"
-	"sort"
 	"time"
 )
 
@@ -47,6 +46,22 @@ func (this *Purchase) PricePerUnit() float64 {
 		}
 	} else {
 		return this.Activation.CurrentMachinePrice
+	}
+}
+
+func (this *Purchase) PriceUnit() string {
+	if this.Activation != nil {
+		return this.Activation.CurrentMachinePriceUnit
+	} else {
+		return this.Reservation.PriceUnit()
+	}
+}
+
+func (this *Purchase) Usage() float64 {
+	if this.Activation != nil {
+		return this.MachineUsage.Minutes()
+	} else {
+		return float64(this.Reservation.Slots())
 	}
 }
 
@@ -132,46 +147,14 @@ func (this Purchases) Less(i, j int) bool {
 	}
 }
 
-func (this Purchases) Swap(i, j int) {
-	*this.Data[i], *this.Data[j] = *this.Data[j], *this.Data[i]
+func (this Purchase) ProductName() string {
+	if this.Activation != nil {
+		return this.Machine.Name
+	} else {
+		return "Reservation (" + this.Machine.Name + ")"
+	}
 }
 
-// TODO: REWRITE!!!
-func (this Purchases) SummarizedByMachine() (
-	Purchases, error) {
-
-	byMachine := make(map[string]*Purchase)
-	for _, activation := range this.Data {
-		summary, ok := byMachine[activation.Machine.Name]
-		if !ok {
-			summary = &Purchase{
-				Activation:      &Activation{},
-				MachineUsage:    0,
-				TotalPrice:      0,
-				DiscountedTotal: 0,
-				Machine:         activation.Machine,
-				Memberships:     activation.Memberships,
-			}
-			byMachine[activation.Machine.Name] = summary
-		}
-
-		if activation != nil && activation.Activation != nil {
-			summary.Activation.CurrentMachinePrice = activation.Activation.CurrentMachinePrice
-			summary.Activation.CurrentMachinePriceCurrency = activation.Activation.CurrentMachinePriceCurrency
-			summary.Activation.CurrentMachinePriceUnit = activation.Activation.CurrentMachinePriceUnit
-		}
-		summary.MachineUsage += activation.MachineUsage
-		summary.TotalPrice += activation.TotalPrice
-		summary.DiscountedTotal += activation.DiscountedTotal
-	}
-
-	sumPurchasesData := make([]*Purchase, 0, len(byMachine))
-	sumPurchases := Purchases{}
-	sumPurchases.Data = sumPurchasesData
-	for _, summary := range byMachine {
-		sumPurchases.Data = append(sumPurchases.Data, summary)
-	}
-	sort.Stable(sumPurchases)
-
-	return sumPurchases, nil
+func (this Purchases) Swap(i, j int) {
+	*this.Data[i], *this.Data[j] = *this.Data[j], *this.Data[i]
 }
