@@ -2,6 +2,7 @@ var getters = require('../../getters');
 var moment = require('moment');
 var React = require('react');
 var reactor = require('../../reactor');
+var toastr = require('../../toastr');
 
 const DELTA = 2.08333333;
 
@@ -23,19 +24,27 @@ var Slot = React.createClass({
     };
   },
 
+  handleClickOnReservedSlot(displayString) {
+    toastr.info(displayString);
+  },
+
   render() {
     var reserved = true;
     var reservedByUser = this.props.reservation && this.props.reservation.get('UserId') === this.state.userId;
 
     var className = 'slot';
+    var clickHandler = {};
+    console.log('RESERVED');
+    console.log(reserved);
     if (reserved) {
+      clickHandler = this.handleClickOnReservedSlot;
       className += ' reserved';
       if (reservedByUser) {
         className += ' by-user';
       }
     }
     if (isNow(this.props.time)) {
-      className += ' now';
+      className = 'slot now';
     }
 
     var title;
@@ -54,7 +63,8 @@ var Slot = React.createClass({
 
     return <div className={className}
                 style={style}
-                title={title}/>;
+                title={title}
+                onClick={clickHandler.bind(this, title)}/>;
   }
 });
 
