@@ -94,6 +94,36 @@ func UpdateReservation(reservation *Reservation) (err error) {
 }
 
 func DeleteReservation(id int64) (err error) {
+
+	// Do not allow to delete reservations
+	// if they are in the past
+	// or they are happening today
+
+	var reservation *Reservation
+	reservation, err = GetReservation(id)
+	if err != nil {
+		beego.Error("Failed to get reservation")
+		return fmt.Errorf("Failed to get reservation: %v", err)
+	}
+
+	timeNow := time.Now()
+
+	// Check if past reservation
+	if reservation.TimeEnd.Before(timeNow) {
+		beego.Error("Can not delete reservation from the past")
+		return fmt.Errorf("Can not delete reservation from the past")
+	}
+
+	// Check if happening today
+	if timeNow.Day() == reservation.TimeStart.Day() &&
+		timeNow.Month() == reservation.TimeStart.Month() &&
+		timeNow.Year() == reservation.TimeStart.Year() {
+
+		beego.Error("Can not delete a reservation happening today")
+		return fmt.Errorf("Can not delete a reservation happening today")
+	}
+
+	// If we have not returned yet, then let's delete
 	o := orm.NewOrm()
 	_, err = o.Delete(&Reservation{Id: id})
 	return
