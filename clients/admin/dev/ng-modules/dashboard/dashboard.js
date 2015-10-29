@@ -33,7 +33,7 @@ app.controller('DashboardCtrl', ['$scope', '$http', '$location',
     });
   };
 
-  $scope.renderCharts = function(a, b) {
+  $scope.renderMonthlyCharts = function() {
     var months = _.map($scope.metrics.ActivationsByMonth, function(sum, month) {
       return month;
     }).sort();
@@ -50,7 +50,7 @@ app.controller('DashboardCtrl', ['$scope', '$http', '$location',
 
 
     var data = new google.visualization.DataTable();
-    data.addColumn('string', 'Time of Day');
+    data.addColumn('string', 'Month');
     data.addColumn('number', 'Activations (€)');
     data.addColumn('number', 'Memberships (€)');
     data.addRows(byMonth);
@@ -66,9 +66,52 @@ app.controller('DashboardCtrl', ['$scope', '$http', '$location',
     };
 
     var chart = new google.visualization.ColumnChart(
-      document.getElementById('chart_div'));
+      document.getElementById('chart_monthly'));
 
     chart.draw(data, options);
+  };
+
+  $scope.renderDailyCharts = function() {
+    var days = _.map($scope.metrics.ActivationsByDay, function(sum, day) {
+      return day;
+    }).sort();
+    var byDay = days.map(function(day) {
+      return [
+        {
+          v: moment(day).toDate(),
+          f: day
+        },
+        Math.round($scope.metrics.ActivationsByDay[day]),
+        Math.round($scope.metrics.MembershipsByDay[day])
+      ];
+    });
+
+
+    var data = new google.visualization.DataTable();
+    data.addColumn('date', 'Day');
+    data.addColumn('number', 'Activations (€)');
+    data.addColumn('number', 'Memberships (€)');
+    data.addRows(byDay);
+
+    var options = {
+      title: 'Revenue through Activations and Memberships',
+      hAxis: {
+        title: 'Day',
+      },
+      vAxis: {
+        title: 'Revenue / €'
+      }
+    };
+
+    var chart = new google.visualization.ColumnChart(
+      document.getElementById('chart_daily'));
+
+    chart.draw(data, options);
+  };
+
+  $scope.renderCharts = function() {
+    $scope.renderMonthlyCharts();
+    $scope.renderDailyCharts();
   };
 
   $scope.renderChartsInit = function() {
