@@ -81,14 +81,14 @@ app.controller('DashboardCtrl', ['$scope', '$http', '$location',
           v: moment(day).toDate(),
           f: day
         },
-        Math.round($scope.metrics.MembershipsByDay[day])
+        Math.round($scope.metrics.ActivationsByDay[day])
       ];
     });
 
 
     var data = new google.visualization.DataTable();
     data.addColumn('date', 'Day');
-    data.addColumn('number', 'Memberships (€)');
+    data.addColumn('number', 'Activations (€)');
     data.addRows(byDay);
 
     var options = {
