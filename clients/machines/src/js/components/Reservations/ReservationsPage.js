@@ -84,21 +84,37 @@ var ReservationsTable = React.createClass({
                 const machineId = reservation.get('MachineId');
                 const machine = this.state.machinesById.get(machineId);
                 const reservationId = reservation.get('Id');
+
+                const reservationStart = moment( reservation.get('TimeStart') );
+                const reservationEnd = moment( reservation.get('TimeEnd') );
+                const now = moment();
+
+                const isPast = reservationEnd.isBefore(now);
+                const isToday = (reservationStart.date() === now.date()) &&
+                  (reservationStart.year() === now.year()) &&
+                  (reservationStart.month() === now.month());
+
+                const rowClassName = (isPast || isToday) ? 
+                  'reservation disabled' : 
+                  'reservation'; 
+
                 if (machine && reservation.get('UserId') === uid) {
                   return (
-                    <tr key={i}>
+                    <tr key={i} className={rowClassName}>
                       <td>{machine.get('Name')}</td>
                       <td>{formatDate(reservation.get('TimeStart'))}</td>
                       <td>{formatTime(reservation.get('TimeStart'))}</td>
                       <td>{formatTime(reservation.get('TimeEnd'))}</td>
                       <td>{formatDate(reservation.get('Created'))}</td>
                       <td>
-                        <button
-                          type="button"
-                          className="btn btn-danger btn-ico pull-right"
-                          onClick={this.deleteReservation.bind(this, reservationId)}>
-                          <i className="fa fa-remove"></i>
-                        </button>
+                        {(!isPast && !isToday) ?
+                          <button
+                            type="button"
+                            className="btn btn-danger btn-ico pull-right"
+                            onClick={this.deleteReservation.bind(this, reservationId)}>
+                            <i className="fa fa-remove"></i>
+                          </button>
+                        : ''}
                       </td>
                     </tr>
                   );
