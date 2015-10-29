@@ -27,6 +27,7 @@
 		"toastr": false,
 		"vex": false,
 		"_": false,
-		"libnfc": false
+		"libnfc": false,
+		"google": false
 	}
 }
