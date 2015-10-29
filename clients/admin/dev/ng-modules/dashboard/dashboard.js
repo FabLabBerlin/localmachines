@@ -81,7 +81,6 @@ app.controller('DashboardCtrl', ['$scope', '$http', '$location',
           v: moment(day).toDate(),
           f: day
         },
-        Math.round($scope.metrics.ActivationsByDay[day]),
         Math.round($scope.metrics.MembershipsByDay[day])
       ];
     });
@@ -89,12 +88,11 @@ app.controller('DashboardCtrl', ['$scope', '$http', '$location',
 
     var data = new google.visualization.DataTable();
     data.addColumn('date', 'Day');
-    data.addColumn('number', 'Activations (€)');
     data.addColumn('number', 'Memberships (€)');
     data.addRows(byDay);
 
     var options = {
-      title: 'Revenue through Activations and Memberships',
+      title: 'Daily Revenue through Activations',
       hAxis: {
         title: 'Day',
       },
