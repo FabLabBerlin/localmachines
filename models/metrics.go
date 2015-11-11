@@ -11,6 +11,7 @@ type MetricsResponse struct {
 	MembershipCountsByMonth map[string]int
 	ActivationsByDay        map[string]float64
 	ActivationsByMonth      map[string]float64
+	MinutesByMonth          map[string]float64
 }
 
 func NewMetricsResponse(data MetricsData) (resp MetricsResponse, err error) {
@@ -31,6 +32,10 @@ func NewMetricsResponse(data MetricsData) (resp MetricsResponse, err error) {
 		return
 	}
 	resp.ActivationsByMonth, err = data.sumActivationsBy("2006-01")
+	if err != nil {
+		return
+	}
+	resp.MinutesByMonth, err = data.sumMinutesBy("2006-01")
 	if err != nil {
 		return
 	}
@@ -123,6 +128,23 @@ func (this MetricsData) sumMembershipCountsBy(timeFormat string) (sums map[strin
 			key := t.Format(timeFormat)
 			if membership.MonthlyPrice > 0 {
 				sums[key] = sums[key] + 1
+			}
+		}
+	}
+
+	return
+}
+
+func (this MetricsData) sumMinutesBy(timeFormat string) (sums map[string]float64, err error) {
+	sums = make(map[string]float64)
+
+	for _, userSummary := range this.invoice.UserSummaries {
+		if userSummary.User.UserRole != STAFF && userSummary.User.UserRole != ADMIN {
+			for _, purchase := range userSummary.Purchases.Data {
+				if activation := purchase.Activation; activation != nil {
+					key := purchase.Activation.TimeStart.Format(timeFormat)
+					sums[key] = sums[key] + purchase.MachineUsage.Minutes()
+				}
 			}
 		}
 	}
