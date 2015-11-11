@@ -1,0 +1,35 @@
+README for caching server. This is intended to be a living document, to be
+clear what the caching layer does and what not.
+
+Caching static files is trivial. Synchronization is more of a problem, so
+concentrating on caching activations makes sense, as they are anyway already
+almost in a log format, making it also quickly realizable.
+
+
+       +--------------------------+                         - optional Caching
+       |      EasyLab Server      |                         - HTML5 offline APP
+       |     (public IPv4+v6)     |                           (=> Mobile)
+       +--------------------------+
+
+ +------------------------------------------------------+
+ |                      Lab LAN                         |
+ |                                                      |
+ |  +------------------------------------------------+  |   +-----------------+
+ |  |               EasyLab Cache                    |  |   |    Switch 1     |
+ |  |                                                |  |   |  (public IPv6)  |
+ |  |  +-------------------+   +------------------+  |  |   +-----------------+
+ |  |  |   Fallback for    |   |  Forward proxy   |  |  |
+ |  |  | /api/activations  |   | for easylab.io   |  |  |   +-----------------+
+ |  |  |                   |   | cache manifest & |  |  |   |    Switch ...   |
+ |  |  | (sync w/ web svc) |   | related files    |  |  |   |  (public IPv6)  |
+ |  |  +-------------------+   +------------------+  |  |   +-----------------+
+ |  |                                                |  |
+ |  +------------------------------------------------+  |
+ |                                                      |
+ |            +------------------------+                |
+ |            |     Browser Client     |                |  +------------------+
+ |            |         Lab LAN        |                |  | Browser Client   |
+ |            +------------------------+                |  |     Internet     |
+ |                                                      |  +------------------+
+ |                                                      |
+ +------------------------------------------------------+
