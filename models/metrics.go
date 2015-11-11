@@ -11,6 +11,7 @@ type MetricsResponse struct {
 	MembershipCountsByMonth map[string]int
 	ActivationsByDay        map[string]float64
 	ActivationsByMonth      map[string]float64
+	MinutesByDay            map[string]float64
 	MinutesByMonth          map[string]float64
 }
 
@@ -32,6 +33,10 @@ func NewMetricsResponse(data MetricsData) (resp MetricsResponse, err error) {
 		return
 	}
 	resp.ActivationsByMonth, err = data.sumActivationsBy("2006-01")
+	if err != nil {
+		return
+	}
+	resp.MinutesByDay, err = data.sumMinutesBy("2006-01-02")
 	if err != nil {
 		return
 	}

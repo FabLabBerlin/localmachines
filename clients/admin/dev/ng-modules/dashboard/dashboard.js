@@ -40,13 +40,17 @@ app.controller('DashboardCtrl', ['$scope', '$http', '$location',
     var byMonth = months.map(function(month) {
       var memberships = $scope.metrics.MembershipCountsByMonth[month];
       var minutes = Math.round($scope.metrics.MinutesByMonth[month]);
+      var activationsRevenue = Math.round($scope.metrics.ActivationsByMonth[month]);
+      var membershipsRevenue = Math.round($scope.metrics.MembershipsByMonth[month]);
       return [
         {
           v: month,
-          f: month + ' (' + memberships + ' non-free Memberships, ' + minutes + ' non-Admin minutes)'
+          f: month
         },
-        Math.round($scope.metrics.ActivationsByMonth[month]),
-        Math.round($scope.metrics.MembershipsByMonth[month])
+        activationsRevenue,
+        'Activations (€): <b>' + activationsRevenue + '</b><br>' + minutes + ' minutes for non-Admins',
+        membershipsRevenue,
+        'Memberships (€): <b>' + membershipsRevenue + '</b><br>' + memberships + ' non-free Memberships'
       ];
     });
 
@@ -54,7 +58,9 @@ app.controller('DashboardCtrl', ['$scope', '$http', '$location',
     var data = new google.visualization.DataTable();
     data.addColumn('string', 'Month');
     data.addColumn('number', 'Activations (€)');
+    data.addColumn({'type': 'string', 'role': 'tooltip', 'p': {'html': true}});
     data.addColumn('number', 'Memberships (€)');
+    data.addColumn({'type': 'string', 'role': 'tooltip', 'p': {'html': true}});
     data.addRows(byMonth);
 
     var options = {
@@ -64,7 +70,8 @@ app.controller('DashboardCtrl', ['$scope', '$http', '$location',
       },
       vAxis: {
         title: 'Revenue / €'
-      }
+      },
+      tooltip: {isHtml: true}
     };
 
     var chart = new google.visualization.ColumnChart(
@@ -78,12 +85,15 @@ app.controller('DashboardCtrl', ['$scope', '$http', '$location',
       return day;
     }).sort();
     var byDay = days.map(function(day) {
+      var minutes = Math.round($scope.metrics.MinutesByDay[day]);
+      var activationsRevenue = Math.round($scope.metrics.ActivationsByDay[day]);
       return [
         {
           v: moment(day).toDate(),
           f: day
         },
-        Math.round($scope.metrics.ActivationsByDay[day])
+        activationsRevenue,
+        'Activations (€): <b>' + activationsRevenue + '</b><br>' + minutes + ' minutes for non-Admins'
       ];
     });
 
@@ -91,6 +101,7 @@ app.controller('DashboardCtrl', ['$scope', '$http', '$location',
     var data = new google.visualization.DataTable();
     data.addColumn('date', 'Day');
     data.addColumn('number', 'Activations (€)');
+    data.addColumn({'type': 'string', 'role': 'tooltip', 'p': {'html': true}});
     data.addRows(byDay);
 
     var options = {
@@ -100,7 +111,8 @@ app.controller('DashboardCtrl', ['$scope', '$http', '$location',
       },
       vAxis: {
         title: 'Revenue / €'
-      }
+      },
+      tooltip: {isHtml: true}
     };
 
     var chart = new google.visualization.ColumnChart(
