@@ -28,6 +28,7 @@
 		"vex": false,
 		"_": false,
 		"libnfc": false,
-		"google": false
+		"google": false,
+		"Chart": false
 	}
 }
