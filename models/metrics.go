@@ -6,10 +6,11 @@ import (
 )
 
 type MetricsResponse struct {
-	MembershipsByDay   map[string]float64
-	MembershipsByMonth map[string]float64
-	ActivationsByDay   map[string]float64
-	ActivationsByMonth map[string]float64
+	MembershipsByDay        map[string]float64
+	MembershipsByMonth      map[string]float64
+	MembershipCountsByMonth map[string]int
+	ActivationsByDay        map[string]float64
+	ActivationsByMonth      map[string]float64
 }
 
 func NewMetricsResponse(data MetricsData) (resp MetricsResponse, err error) {
@@ -18,6 +19,10 @@ func NewMetricsResponse(data MetricsData) (resp MetricsResponse, err error) {
 		return
 	}
 	resp.MembershipsByMonth, err = data.sumMembershipsBy("2006-01")
+	if err != nil {
+		return
+	}
+	resp.MembershipCountsByMonth, err = data.sumMembershipCountsBy("2006-01")
 	if err != nil {
 		return
 	}
@@ -100,6 +105,25 @@ func (this MetricsData) sumMembershipsBy(timeFormat string) (sums map[string]flo
 		for t := userMembership.StartDate; t.Before(userMembership.EndDate); t = t.AddDate(0, 1, 0) {
 			key := t.Format(timeFormat)
 			sums[key] = sums[key] + float64(membership.MonthlyPrice)
+		}
+	}
+
+	return
+}
+
+func (this MetricsData) sumMembershipCountsBy(timeFormat string) (sums map[string]int, err error) {
+	sums = make(map[string]int)
+
+	for _, userMembership := range this.userMemberships {
+		membership, ok := this.membershipsById[userMembership.MembershipId]
+		if !ok {
+			return nil, fmt.Errorf("User Membership %v links to unknown Membership Id %v", userMembership.Id, userMembership.MembershipId)
+		}
+		for t := userMembership.StartDate; t.Before(userMembership.EndDate); t = t.AddDate(0, 1, 0) {
+			key := t.Format(timeFormat)
+			if membership.MonthlyPrice > 0 {
+				sums[key] = sums[key] + 1
+			}
 		}
 	}
 

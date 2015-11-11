@@ -38,10 +38,11 @@ app.controller('DashboardCtrl', ['$scope', '$http', '$location',
       return month;
     }).sort();
     var byMonth = months.map(function(month) {
+      var memberships = $scope.metrics.MembershipCountsByMonth[month];
       return [
         {
           v: month,
-          f: month
+          f: month + ' (' + memberships + ' Memberships)'
         },
         Math.round($scope.metrics.ActivationsByMonth[month]),
         Math.round($scope.metrics.MembershipsByMonth[month])
