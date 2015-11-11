@@ -42,7 +42,7 @@ app.controller('DashboardCtrl', ['$scope', '$http', '$location',
       return [
         {
           v: month,
-          f: month + ' (' + memberships + ' Memberships)'
+          f: month + ' (' + memberships + ' non-free Memberships)'
         },
         Math.round($scope.metrics.ActivationsByMonth[month]),
         Math.round($scope.metrics.MembershipsByMonth[month])
