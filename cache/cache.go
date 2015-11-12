@@ -8,9 +8,13 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
+	"strings"
+	"time"
 )
 
 var masterHost *string
+var serverDownTime *time.Time
 
 func isSafe(path string) bool {
 	return true
@@ -46,6 +50,29 @@ func newRequest(browserReq *http.Request) (req *http.Request, err error) {
 	return
 }
 
+func cacheFilename(urlPath string) string {
+	return cachePath(urlPath) + "/index"
+}
+
+func cachePath(urlPath string) string {
+	path := urlPath
+	if path[len(path)-1] == '/' {
+		path = path[:len(path)-1]
+	}
+	path = "cache" + path
+	return path
+}
+
+func contentType(urlPath string) *string {
+	log.Printf("contentType of %v", urlPath)
+	if strings.HasSuffix(urlPath, "svg") {
+		t := "image/svg+xml"
+		return &t
+	} else {
+		return nil
+	}
+}
+
 func main() {
 	masterHost = flag.String("master", "127.0.0.1:8080", "Master host")
 	listenHost := flag.String("listen", "127.0.0.1:1234", "Listen host")
@@ -61,16 +88,49 @@ func main() {
 				log.Fatalf("http.NewRequest: %v", err)
 			}
 			resp, err := client.Do(req)
-			if err != nil {
-				log.Fatalf("http.Get: %v", err)
-			}
-			defer resp.Body.Close()
-			forwardHeader(w, resp, "Content-Type")
-			forwardHeader(w, resp, "Cookie")
-			forwardHeader(w, resp, "Set-Cookie")
-			_, err = io.Copy(w, resp.Body)
-			if err != nil {
-				log.Fatalf("io.Copy resp.Body: %v", err)
+			if err == nil {
+				defer resp.Body.Close()
+				forwardHeader(w, resp, "Content-Type")
+				forwardHeader(w, resp, "Cookie")
+				forwardHeader(w, resp, "Set-Cookie")
+				buf := new(bytes.Buffer)
+				_, err = io.Copy(buf, resp.Body)
+				if err != nil {
+					log.Fatalf("io.Copy resp.Body: %v", err)
+				}
+
+				var ww io.Writer
+				if r.Method == "GET" {
+					os.MkdirAll(cachePath(r.URL.Path), 0755)
+					f, err := os.Create(cacheFilename(r.URL.Path))
+					if err != nil {
+						log.Fatalf("os.Create: %v", err)
+					}
+					defer f.Close()
+					ww = io.MultiWriter(w, f)
+				} else {
+					ww = w
+				}
+
+				_, err = io.Copy(ww, buf)
+				if err != nil {
+					log.Fatalf("io.Copy f: %v", err)
+				}
+			} else {
+				if r.Method == "GET" {
+					f, err := os.Open(cacheFilename(r.URL.Path))
+					if err == nil {
+						defer f.Close()
+						if t := contentType(r.URL.Path); t != nil {
+							w.Header().Set("Content-Type", *t)
+						}
+						io.Copy(w, f)
+					} else {
+						log.Printf("cannot open file: %v", err)
+					}
+				} else {
+					log.Printf("master: %v", err)
+				}
 			}
 		} else {
 			fmt.Fprintf(w, "Sorry not possible. Thank you.")
