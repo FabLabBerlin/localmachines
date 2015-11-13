@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"strings"
 	"time"
 )
 
@@ -44,6 +46,17 @@ func NewDataLog(changedTable string, before, after interface{}) (*DataLog, error
 func CreateDataLog(dataLog *DataLog) (id int64, err error) {
 	o := orm.NewOrm()
 	return o.Insert(dataLog)
+}
+
+func DataLogSync() error {
+	task := &DataSyncTask{}
+	return task.run()
+}
+
+func GetAllDataLogs() (dataLogs []*DataLog, err error) {
+	o := orm.NewOrm()
+	_, err = o.QueryTable("data_log").All(&dataLogs)
+	return
 }
 
 func (this *DataLog) Diff() (deltas []Delta, err error) {
@@ -117,4 +130,36 @@ func (this *Delta) isZero() (bool, error) {
 		return false, err
 	}
 	return bytes.Equal(before, after), nil
+}
+
+type DataSyncTask struct {
+	localLogs  []*DataLog
+	remoteLogs map[string][]*DataLog
+}
+
+func (this *DataSyncTask) run() error {
+	beego.Info("Running DataLogSync Task")
+	this.fetchLocalLogs()
+	switch beego.AppConfig.String("instancetype") {
+	case "cloud":
+		labs := strings.Split(beego.AppConfig.String("labs"), ",")
+		if len(labs) == 0 {
+			return fmt.Errorf("app.conf: no labs defined")
+		}
+		break
+	case "lab":
+		cloud := beego.AppConfig.String("cloud")
+		if cloud == "" {
+			return fmt.Errorf("app.conf: no cloud defined")
+		}
+		break
+	default:
+		return fmt.Errorf("app.conf: instancetype must be cloud or lab")
+	}
+	return nil
+}
+
+func (this *DataSyncTask) fetchLocalLogs() (err error) {
+	this.localLogs, err = GetAllDataLogs()
+	return
 }

@@ -104,4 +104,9 @@ func setupTasks() {
 		"0/10 * * * * *",
 		models.AutoExtendUserMemberships)
 	toolbox.AddTask("Extend User Memberships", extUsrMemberships)
+
+	dataLogSync := toolbox.NewTask("Sync Data Log",
+		"0/10 * * * * *",
+		models.DataLogSync)
+	toolbox.AddTask("Sync Data Log", dataLogSync)
 }
