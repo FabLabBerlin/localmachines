@@ -242,6 +242,8 @@ func AuthSetPassword(userId int64, password string) error {
 	o := orm.NewOrm()
 	auth := Auth{UserId: userId}
 	err := o.Read(&auth)
+	var before Auth
+	before = auth
 	authRecordMissing := err == orm.ErrNoRows
 	if err != nil && !authRecordMissing {
 		return fmt.Errorf("Read: %v", err)
@@ -264,6 +266,15 @@ func AuthSetPassword(userId int64, password string) error {
 		fmt.Printf("update: auth: %v", auth)
 		_, err = o.Update(&auth)
 	}
+	dataLog, err := NewDataLog(new(Auth).TableName(), before, auth)
+	if err != nil {
+		return fmt.Errorf("NewDataLog: %v", err)
+	}
+	_, err = CreateDataLog(dataLog)
+	if err != nil {
+		return fmt.Errorf("CreateDataLog: %v", err)
+	}
+
 	return err
 }
 
