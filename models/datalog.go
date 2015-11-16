@@ -20,6 +20,7 @@ type DataLog struct {
 	ChangedTable string `orm:"size(100)"`
 	BeforeJson   string
 	AfterJson    string
+	Hash         string
 	Created      time.Time
 }
 
@@ -29,17 +30,20 @@ func NewDataLog(changedTable string, before, after interface{}) (*DataLog, error
 		ChangedTable: changedTable,
 		Created:      time.Now(),
 	}
-	var buf []byte
-	buf, err = json.Marshal(before)
+	bufBefore, err := json.Marshal(before)
 	if err != nil {
 		return nil, err
 	}
-	dataLog.BeforeJson = string(buf)
-	buf, err = json.Marshal(after)
+	dataLog.BeforeJson = string(bufBefore)
+	bufAfter, err := json.Marshal(after)
 	if err != nil {
 		return nil, err
 	}
-	dataLog.AfterJson = string(buf)
+	dataLog.AfterJson = string(bufAfter)
+	dataLog.Hash = getHash(dataLog.ChangedTable, bufBefore, bufAfter, dataLog.Created)
+	if err != nil {
+		return nil, err
+	}
 
 	return &dataLog, nil
 }
@@ -113,16 +117,14 @@ type Delta struct {
 	After     interface{}
 }
 
-func (this *Delta) Hash() (hash string, err error) {
-	before, err := json.Marshal(this.Before)
-	if err != nil {
-		return
+func getHash(description string, before, after []byte, timestamp time.Time) (hash string) {
+	buf := [][]byte{
+		[]byte(description),
+		before,
+		after,
+		[]byte(timestamp.String()),
 	}
-	after, err := json.Marshal(this.After)
-	if err != nil {
-		return
-	}
-	data := bytes.Join([][]byte{before, after}, []byte{})
+	data := bytes.Join(buf, []byte{})
 	hash = fmt.Sprintf("%x", sha1.Sum(data))
 	return
 }

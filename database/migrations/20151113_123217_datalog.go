@@ -25,6 +25,7 @@ func (m *Datalog_20151113_123217) Up() {
 			before_json text,
 			after_json text,
 			created datetime NOT NULL,
+			hash text NOT NULL,
 			PRIMARY KEY (id)
 		)
 	`)
