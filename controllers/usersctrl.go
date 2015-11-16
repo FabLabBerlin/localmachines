@@ -297,6 +297,8 @@ func (this *UsersController) Put() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
+	before := existingUser
+
 	if existingUser.UserRole != req.User.UserRole {
 		if sessUserId == req.User.Id {
 			beego.Error("User can't change his own user role")
@@ -322,6 +324,17 @@ func (this *UsersController) Put() {
 			beego.Error("Failed to update user:", err)
 			this.CustomAbort(403, "lastAdmin")
 		}
+	}
+
+	dataLog, err := models.NewDataLog(new(models.User).TableName(), before, req.User)
+	if err != nil {
+		beego.Error("NewDataLog:", err)
+		this.CustomAbort(500, "NewDataLog")
+	}
+	_, err = models.CreateDataLog(dataLog)
+	if err != nil {
+		beego.Error("CreateDataLog: %v", err)
+		this.CustomAbort(500, "CreateDataLog")
 	}
 
 	this.Data["json"] = "ok"

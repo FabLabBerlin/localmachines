@@ -2,6 +2,7 @@ package models
 
 import (
 	"bytes"
+	"crypto/sha1"
 	"encoding/json"
 	"fmt"
 	"github.com/astaxie/beego"
@@ -112,6 +113,20 @@ type Delta struct {
 	After     interface{}
 }
 
+func (this *Delta) Hash() (hash string, err error) {
+	before, err := json.Marshal(this.Before)
+	if err != nil {
+		return
+	}
+	after, err := json.Marshal(this.After)
+	if err != nil {
+		return
+	}
+	data := bytes.Join([][]byte{before, after}, []byte{})
+	hash = fmt.Sprintf("%x", sha1.Sum(data))
+	return
+}
+
 func (this *Delta) isInsert() bool {
 	return this.Before == nil && this.After != nil
 }
@@ -133,8 +148,10 @@ func (this *Delta) isZero() (bool, error) {
 }
 
 type DataSyncTask struct {
-	localLogs  []*DataLog
-	remoteLogs map[string][]*DataLog
+	localLogs       []*DataLog
+	localLogHashes  []string
+	remoteLogs      map[string][]*DataLog
+	remoteLogHashes []string
 }
 
 func (this *DataSyncTask) run() error {

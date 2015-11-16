@@ -145,6 +145,15 @@ func CreateUser(user *User) (userId int64, er error) {
 				return 0, fmt.Errorf("Failed to update user create time: %v", err)
 			}
 
+			dataLog, err := NewDataLog(new(User).TableName(), nil, user)
+			if err != nil {
+				return 0, fmt.Errorf("NewDataLog: %v", err)
+			}
+			_, err = CreateDataLog(dataLog)
+			if err != nil {
+				return 0, fmt.Errorf("CreateDataLog: %v", err)
+			}
+
 		} else {
 			beego.Info("User already exists with ID", id,
 				"and email", user.Email)
