@@ -20,8 +20,10 @@ func init() {
 func (m *Globalconfig_20151117_095700) Up() {
 	m.Sql(`CREATE TABLE global_config (
 		id int(11) unsigned NOT NULL AUTO_INCREMENT,
-		name varchar(100),
-		value text,
+		name varchar(100) NOT NULL,
+		value_int int(11),
+		value_string text,
+		value_float double,
 		PRIMARY KEY (id)
 	)`)
 
