@@ -31,7 +31,6 @@ app.controller('SettingsCtrl', ['$scope', '$http', '$location', 'randomToken',
       _.each(settings, function(setting) {
         $scope.settings[setting.Name] = setting;
       });
-      console.log('settings:', settings);
     })
     .error(function() {
       toastr.error('Failed to get global config');
@@ -51,7 +50,6 @@ app.controller('SettingsCtrl', ['$scope', '$http', '$location', 'randomToken',
         }, setting);
       }),
       transformRequest: function(data) {
-        console.log('settings data to send:', data);
         return JSON.stringify(data);
       },
       params: {

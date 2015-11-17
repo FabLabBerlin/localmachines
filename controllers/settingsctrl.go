@@ -28,7 +28,7 @@ func (this *SettingsController) GetAll() {
 		this.CustomAbort(500, "Failed to get all settings")
 	}
 
-	this.Data["json"] = settings
+	this.Data["json"] = settings.Data
 	this.ServeJson()
 }
 
