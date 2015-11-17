@@ -57,11 +57,21 @@ var DayView = React.createClass({
  * => WorkWeekDay = (MomentJSWeekDay + 6) % 7
  */
 var MonthView = React.createClass({
+
+  mixins: [ reactor.ReactMixin ],
+
+  getDataBindings() {
+    return {
+      userInfo: getters.getUserInfo
+    };
+  },
+
   render() {
     var selectedDate = reactor.evaluateToJS(getters.getNewReservation).date;
     var k = 0;
     var month = this.props.month;
     var days = [];
+    var admin = this.state.userInfo.get('UserRole') === 'admin';
     for (var t = month.firstDay(); !t.isAfter(month.lastDay()); t = t.clone().add(1, 'day')) {
       days.push(t);
     }
@@ -83,7 +93,7 @@ var MonthView = React.createClass({
                  day={day.date()}
                  moment={day}
                  selected={selectedDate && !selectedDate.diff(day, 'days')}
-                 notAvailable={day.isBefore(moment()) || day.day() === 0}
+                 notAvailable={!admin && (day.isBefore(moment()) || day.day() === 0)}
         />
       );
     }

@@ -38,17 +38,8 @@ var ReservationActions = {
   },
 
   createSetDate({ date }) {
-    console.log('createSetDate: date=', date);
-    if (date.isBefore(moment())) {
-      toastr.error('Please enter date from the future');
-    } else if (date.isAfter(moment().add(2, 'months'))) {
-      toastr.error('Please enter date within the next 2 months');
-    } else if (date.isoWeekday() === 7) {
-      toastr.error('Please enter a weekday');
-    } else {
-      reactor.dispatch(actionTypes.CREATE_SET_DATE, { date });
-      reactor.dispatch(actionTypes.CREATE_SET_STEP, STEP_SET_TIME);
-    }
+    reactor.dispatch(actionTypes.CREATE_SET_DATE, { date });
+    reactor.dispatch(actionTypes.CREATE_SET_STEP, STEP_SET_TIME);
   },
 
   createSetTimes({ times }) {
