@@ -164,7 +164,7 @@ app.controller('ActivationsCtrl', ['$scope', '$http', '$location', 'randomToken'
   };
 
   // Creates invoice on the server side and returns link
-  $scope.createInvoice = function() {
+  $scope.exportSpreadsheet = function() {
     $http({
       method: 'POST',
       url: '/api/invoices',
