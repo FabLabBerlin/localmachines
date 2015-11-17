@@ -93,7 +93,7 @@ func UpdateReservation(reservation *Reservation) (err error) {
 	return
 }
 
-func DeleteReservation(id int64) (err error) {
+func DeleteReservation(id int64, isAdmin bool) (err error) {
 
 	// Do not allow to delete reservations
 	// if they are in the past
@@ -117,7 +117,8 @@ func DeleteReservation(id int64) (err error) {
 	// Check if happening today
 	if timeNow.Day() == reservation.TimeStart.Day() &&
 		timeNow.Month() == reservation.TimeStart.Month() &&
-		timeNow.Year() == reservation.TimeStart.Year() {
+		timeNow.Year() == reservation.TimeStart.Year() &&
+		!isAdmin {
 
 		beego.Error("Can not delete a reservation happening today")
 		return fmt.Errorf("Can not delete a reservation happening today")

@@ -113,7 +113,7 @@ func (this *ReservationsController) Delete() {
 		}
 	}
 
-	err = models.DeleteReservation(reservationId)
+	err = models.DeleteReservation(reservationId, this.IsAdmin())
 	if err != nil {
 		beego.Error("Failed to delete reservation:", err)
 		this.CustomAbort(403, "Failed to delete reservation")
