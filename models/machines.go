@@ -354,11 +354,15 @@ func (this *Machine) On() error {
 	return nil
 }
 
-func (this *Machine) ReportBroken() error {
+func (this *Machine) ReportBroken(user User) error {
 	email := NewEmail()
 	to := beego.AppConfig.String("trelloemail")
 	subject := this.Name + " reported as broken"
-	message := "The machine " + this.Name + " seems to be broken."
+	message := "The machine " + this.Name + " seems to be broken.\n\n"
+	message += "Yours sincerely, " + user.FirstName + " " + user.LastName + "\n\n"
+	message += "--\n"
+	message += "E-Mail: " + user.Email + "\n"
+	message += "Phone: " + user.Phone + "\n"
 	return email.Send(to, subject, message)
 }
 

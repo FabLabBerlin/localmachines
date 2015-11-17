@@ -411,7 +411,18 @@ func (this *MachinesController) ReportBroken() {
 		this.CustomAbort(403, "Failed to get machine")
 	}
 
-	err = machine.ReportBroken()
+	uid, ok := this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
+	if !ok {
+		beego.Info("Not logged in")
+		this.CustomAbort(401, "Not logged in")
+	}
+	user, err := models.GetUser(uid)
+	if err != nil {
+		beego.Error("Failed to get machine permissions", err)
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	err = machine.ReportBroken(*user)
 	if err != nil {
 		beego.Error("Failed to report machine", err)
 		this.CustomAbort(500, "Failed to report machine")

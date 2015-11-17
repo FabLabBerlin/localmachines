@@ -62,7 +62,6 @@ func (this *UsersController) LoginUid() {
 
 	if sessUsername == nil {
 		uid := this.GetString("uid")
-		beego.Trace("uid", uid)
 		username, userId, err = models.AuthenticateUserUid(uid)
 		if err != nil {
 			beego.Error(err)
