@@ -4,7 +4,7 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
-type GlobalConfig struct {
+type Setting struct {
 	Id          int64  `orm:"auto";"pk"`
 	Name        string `orm:"size(100)"`
 	ValueInt    *int64
@@ -13,5 +13,5 @@ type GlobalConfig struct {
 }
 
 func init() {
-	orm.RegisterModel(new(GlobalConfig))
+	orm.RegisterModel(new(Setting))
 }
