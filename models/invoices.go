@@ -161,7 +161,6 @@ func CalculateInvoiceSummary(startTime, endTime time.Time) (invoice Invoice, err
 
 	for i := 0; i < len(*userSummaries); i++ {
 		sort.Stable((*userSummaries)[i].Purchases)
-		beego.Trace((*userSummaries)[i].Purchases)
 		for _, activation := range (*userSummaries)[i].Purchases.Data {
 			activation.TotalPrice = PriceTotalExclDisc(activation)
 			activation.DiscountedTotal, err = PriceTotalDisc(activation)

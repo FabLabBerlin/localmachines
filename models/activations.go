@@ -63,9 +63,7 @@ func GetUserActivations(startTime time.Time,
 		act.TableName(),
 		usr.TableName())
 
-	beego.Trace(query)
-
-	num, err := o.Raw(query,
+	_, err := o.Raw(query,
 		startTime.Format("2006-01-02"),
 		endTime.Format("2006-01-02"),
 		userId).QueryRows(&activations)
@@ -74,8 +72,6 @@ func GetUserActivations(startTime time.Time,
 		msg := fmt.Sprintf("Failed to get activations: %v", err)
 		return nil, errors.New(msg)
 	}
-
-	beego.Trace("Got num activations:", num)
 
 	return &activations, nil
 }

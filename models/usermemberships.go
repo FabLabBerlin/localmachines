@@ -143,14 +143,10 @@ func GetUserMemberships(userId int64) (*UserMembershipList, error) {
 		um.TableName(), m.TableName())
 
 	var userMemberships []UserMembershipCombo
-	var num int64
-	var err error
-	num, err = o.Raw(sql, userId).QueryRows(&userMemberships)
+	_, err := o.Raw(sql, userId).QueryRows(&userMemberships)
 	if err != nil {
-		beego.Error(err)
 		return nil, fmt.Errorf("Failed to get user memberships")
 	}
-	beego.Trace("Got num user memberships:", num)
 
 	userMembershipList := UserMembershipList{}
 	userMembershipList.Data = userMemberships

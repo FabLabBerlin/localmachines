@@ -68,20 +68,14 @@ func (this *Purchase) Usage() float64 {
 func PriceTotalExclDisc(p *Purchase) float64 {
 	if p.Activation != nil {
 		var pricePerSecond float64
-		beego.Trace("p.Activation.CurrentMachinePriceUnit", p.Activation.CurrentMachinePriceUnit)
-		beego.Trace("p.Activation.CurrentMachinePrice", p.Activation.CurrentMachinePrice)
 		switch p.Activation.CurrentMachinePriceUnit {
 		case "minute":
-			beego.Trace("minute")
 			pricePerSecond = float64(p.Activation.CurrentMachinePrice) / 60
 			break
 		case "hour":
-			beego.Trace("hour")
 			pricePerSecond = float64(p.Activation.CurrentMachinePrice) / 60 / 60
 			break
 		}
-		beego.Trace(p.MachineUsage.Seconds())
-		beego.Trace(pricePerSecond)
 		ret := p.MachineUsage.Seconds() * pricePerSecond
 		return ret
 	} else {

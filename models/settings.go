@@ -12,6 +12,27 @@ type Setting struct {
 	ValueFloat  *float64
 }
 
+func (this *Setting) TableName() string {
+	return "settings"
+}
+
+func CreateSetting(setting *Setting) (int64, error) {
+	o := orm.NewOrm()
+	return o.Insert(setting)
+}
+
+func GetAllSettings() (settings []*Setting, err error) {
+	o := orm.NewOrm()
+	_, err = o.QueryTable(new(Setting).TableName()).All(&settings)
+	return
+}
+
+func UpdateSetting(setting *Setting) (err error) {
+	o := orm.NewOrm()
+	_, err = o.Update(setting)
+	return
+}
+
 func init() {
 	orm.RegisterModel(new(Setting))
 }
