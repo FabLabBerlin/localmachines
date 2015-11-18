@@ -11,24 +11,27 @@ import (
 
 // Activation type/model to hold information of single activation.
 type Activation struct {
-	Id                          int64 `orm:"auto";"pk"`
-	InvoiceId                   int   `orm:"null"`
-	UserId                      int64
-	MachineId                   int64
-	Active                      bool
-	TimeStart                   time.Time
-	TimeEnd                     time.Time `orm:"null"`
-	TimeTotal                   int64
-	UsedKwh                     float32
-	DiscountPercents            float32
-	DiscountFixed               float32
-	VatRate                     float32
-	CommentRef                  string `orm:"size(255)"`
-	Invoiced                    bool
-	Changed                     bool
-	CurrentMachinePrice         float64
-	CurrentMachinePriceCurrency string
-	CurrentMachinePriceUnit     string
+	Id               int64 `orm:"auto";"pk"`
+	InvoiceId        int   `orm:"null"`
+	UserId           int64
+	MachineId        int64
+	Active           bool
+	TimeStart        time.Time
+	TimeEnd          time.Time `orm:"null"`
+	UsedKwh          float32
+	DiscountPercents float32
+	DiscountFixed    float32
+	VatRate          float32
+	CommentRef       string `orm:"size(255)"`
+	Invoiced         bool
+	Changed          bool
+	PurchaseId       int64
+	Purchase         *Purchase `orm:"-"`
+	TimeTotal        int64
+	//CurrentMachinePrice         float64
+	//CurrentMachinePriceCurrency string
+	//CurrentMachinePriceUnit     string
+
 }
 
 // Returns mysql table name of the table mapped to the Activation model.
@@ -172,12 +175,12 @@ func GetActiveActivations() ([]*Activation, error) {
 	}
 	beego.Trace("Got num activations:", num)
 
-	// Calculate total time for all activations
+	/*// Calculate total time for all activations
 	for i := 0; i < len(activations); i++ {
 		timeNow := time.Now()
 		activations[i].TimeTotal =
 			int64(timeNow.Sub(activations[i].TimeStart).Seconds())
-	}
+	}*/
 
 	return activations, nil
 }
@@ -230,10 +233,18 @@ func CreateActivation(machineId, userId int64, startTime time.Time) (
 	newActivation.Active = true
 	newActivation.TimeStart = startTime
 
+	newActivation.Purchase, err = createPurchase()
+	if err != nil {
+		err = fmt.Errorf("Failed to create purchase: %v", err)
+		return
+	}
+
+	newActivation.Purchase.ProductId = mch.ReservationProductId
 	// Save current activation price, currency and price unit (minute, hour, pcs)
-	newActivation.CurrentMachinePrice = mch.Price
-	newActivation.CurrentMachinePriceCurrency = "€"
-	newActivation.CurrentMachinePriceUnit = mch.PriceUnit
+	newActivation.Purchase.Price = mch.Price
+	//newActivation.CurrentMachinePriceCurrency = "€"
+	newActivation.Purchase.PriceUnit = mch.PriceUnit
+	newActivation.Purchase.UserId = userId
 
 	activationId, err = o.Insert(&newActivation)
 	if err != nil {
@@ -280,7 +291,7 @@ func CloseActivation(activationId int64, endTime time.Time) error {
 	// Calculate activation duration and update activation.
 	activation.Active = false
 	activation.TimeEnd = endTime
-	activation.TimeTotal = int64(endTime.Sub(activation.TimeStart).Seconds())
+	//activation.TimeTotal = int64(endTime.Sub(activation.TimeStart).Seconds())
 
 	err = UpdateActivation(activation)
 	if err != nil {

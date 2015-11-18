@@ -3,19 +3,37 @@ package models
 import (
 	"fmt"
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/orm"
 	"time"
 )
 
 // This is a purchase row that appears in the XLSX file
 type Purchase struct {
-	Activation      *Activation
-	Reservation     *Reservation
-	Machine         *Machine
-	MachineUsage    time.Duration
-	User            User
-	Memberships     []*Membership
-	TotalPrice      float64
-	DiscountedTotal float64
+	Id              int64
+	Activation      *Activation   `orm:"-"`
+	Reservation     *Reservation  `orm:"-"`
+	Machine         *Machine      `orm:"-"`
+	MachineUsage    time.Duration `orm:"-"`
+	User            User          `orm:"-"`
+	Memberships     []*Membership `orm:"-"`
+	Quantity        float64
+	Price           float64
+	PriceUnit       string
+	TotalPrice      float64 `orm:"-"`
+	DiscountedTotal float64 `orm:"-"`
+	ProductId       int64
+	UserId          int64
+}
+
+func (this *Purchase) TableName() string {
+	return "purchases"
+}
+
+func createPurchase() (purchase *Purchase, err error) {
+	purchase = &Purchase{}
+	o := orm.NewOrm()
+	_, err = o.Insert(purchase)
+	return
 }
 
 func (this *Purchase) MembershipStr() string {
@@ -45,15 +63,7 @@ func (this *Purchase) PricePerUnit() float64 {
 			return 0
 		}
 	} else {
-		return this.Activation.CurrentMachinePrice
-	}
-}
-
-func (this *Purchase) PriceUnit() string {
-	if this.Activation != nil {
-		return this.Activation.CurrentMachinePriceUnit
-	} else {
-		return this.Reservation.PriceUnit()
+		return this.Activation.Purchase.Price
 	}
 }
 
@@ -68,12 +78,12 @@ func (this *Purchase) Usage() float64 {
 func PriceTotalExclDisc(p *Purchase) float64 {
 	if p.Activation != nil {
 		var pricePerSecond float64
-		switch p.Activation.CurrentMachinePriceUnit {
+		switch p.Activation.Purchase.PriceUnit {
 		case "minute":
-			pricePerSecond = float64(p.Activation.CurrentMachinePrice) / 60
+			pricePerSecond = float64(p.Activation.Purchase.Price) / 60
 			break
 		case "hour":
-			pricePerSecond = float64(p.Activation.CurrentMachinePrice) / 60 / 60
+			pricePerSecond = float64(p.Activation.Purchase.Price) / 60 / 60
 			break
 		}
 		ret := p.MachineUsage.Seconds() * pricePerSecond
@@ -151,4 +161,8 @@ func (this Purchase) ProductName() string {
 
 func (this Purchases) Swap(i, j int) {
 	*this.Data[i], *this.Data[j] = *this.Data[j], *this.Data[i]
+}
+
+func init() {
+	orm.RegisterModel(new(Purchase))
 }

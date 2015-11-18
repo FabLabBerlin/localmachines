@@ -90,7 +90,7 @@ func AddRowXlsx(sheet *xlsx.Sheet, purchase *Purchase) error {
 	}
 
 	cell = row.AddCell()
-	cell.Value = purchase.PriceUnit()
+	cell.Value = purchase.PriceUnit
 
 	cell = row.AddCell()
 	cell.SetFloatWithFormat(purchase.PricePerUnit(), FORMAT_2_DIGIT)
@@ -337,7 +337,7 @@ func createXlsxFile(filePath string, invoice *Invoice) error {
 				var discPrice float64
 				var membershipStr string
 				for _, purchase := range purchases {
-					usageUnit = purchase.PriceUnit()
+					usageUnit = purchase.PriceUnit
 					usage += purchase.Usage()
 					totalPriceExclDisc += PriceTotalExclDisc(purchase)
 					priceDisc, err := PriceTotalDisc(purchase)

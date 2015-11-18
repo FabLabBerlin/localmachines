@@ -394,7 +394,7 @@ func (this *Invoice) purchaseFromActivation(activation Activation,
 
 	purchase := &Purchase{
 		Machine:      machine,
-		MachineUsage: time.Duration(activation.TimeTotal) * time.Second,
+		MachineUsage: activation.TimeEnd.Sub(activation.TimeStart),
 	}
 
 	if purchase.User, ok = usersById[activation.UserId]; !ok {
