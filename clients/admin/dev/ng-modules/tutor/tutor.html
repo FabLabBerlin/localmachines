@@ -9,7 +9,8 @@
       type="text"
       class="form-control"
       id="tutor-name"
-      placeholder="Tutor name"> 
+      placeholder="Tutor name"
+      ng-model="tutor.Name"> 
   </div>
 
   <div class="form-group">
@@ -19,7 +20,8 @@
         type="text"
         class="form-control"
         id="price"
-        placeholder="Price">
+        placeholder="Price"
+        ng-model="tutor.Price">
       <span class="input-group-addon">€</span>
     </div>
   </div>
@@ -31,7 +33,8 @@
       class="form-control"
       id="price-unit"
       value="hour"
-      disabled="disabled"> 
+      disabled="disabled"
+      ng-model="tutor.PriceUnit"> 
   </div>
 
   <div class="form-group">
@@ -39,7 +42,8 @@
     <textarea 
       class="form-control" 
       rows="3"
-      id="comments">
+      id="comments"
+      ng-model="tutor.Comments">
     </textarea>
   </div>
 
@@ -54,8 +58,8 @@
   
     <button 
       class="btn btn-lg btn-primary"
-      ng-click="saveTutor()">
-      Add
+      ng-click="save()">
+      Save
     </button>
   </div>
 
