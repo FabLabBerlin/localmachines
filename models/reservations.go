@@ -17,6 +17,7 @@ type Reservation struct {
 	CurrentPrice         float64
 	CurrentPriceCurrency string
 	CurrentPriceUnit     string
+	Disabled             bool
 }
 
 func init() {
