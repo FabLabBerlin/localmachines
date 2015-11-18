@@ -1,7 +1,7 @@
 package models
 
 import (
-	//"github.com/astaxie/beego/orm"
+	"github.com/astaxie/beego"
 	"time"
 )
 
@@ -10,6 +10,7 @@ type Tutor struct {
 	Name      string
 	Price     float64
 	PriceUnit string
+	Comments  string
 }
 
 type TutorList struct {
@@ -63,4 +64,9 @@ func GetTutoringPurchaseList() (*TutoringPurchaseList, error) {
 	purchaseList.Data = append(purchaseList.Data, &purchase1, &purchase2)
 
 	return &purchaseList, nil
+}
+
+func CreateNewTutor(tutor *Tutor) error {
+	beego.Trace(tutor)
+	return nil
 }
