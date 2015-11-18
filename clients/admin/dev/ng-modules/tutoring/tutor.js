@@ -2,7 +2,7 @@
 
 'use strict';
 
-var app = angular.module('fabsmith.admin.tutor', ['ngRoute', 'ngCookies']);
+var app = angular.module('fabsmith.admin.tutoring.tutor', ['ngRoute', 'ngCookies']);
 
 app.config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/tutoring/tutor', {
