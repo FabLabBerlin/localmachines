@@ -73,7 +73,7 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location',
   };
 
   $scope.addTutor = function() {
-    $location.path('/tutor');
+    $location.path('/tutoring/tutor');
   };
 
   $scope.addPurchase = function() {

@@ -5,8 +5,8 @@
 var app = angular.module('fabsmith.admin.tutor', ['ngRoute', 'ngCookies']);
 
 app.config(['$routeProvider', function($routeProvider) {
-  $routeProvider.when('/tutor', {
-    templateUrl: 'ng-modules/tutor/tutor.html',
+  $routeProvider.when('/tutoring/tutor', {
+    templateUrl: 'ng-modules/tutoring/tutor.html',
     controller: 'TutorCtrl'
   });
 }]); // app.config
