@@ -53,15 +53,51 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location',
     });
   };
 
+  $scope.loadTutors = function() {
+    $http({
+      method: 'GET',
+      url: '/api/tutoring/tutors',
+      params: {
+        ac: new Date().getTime()
+      }
+    })
+    .success(function(tutorList) {
+      $scope.tutors = tutorList.Data;
+      console.log(tutorList);
+    })
+    .error(function() {
+      toastr.error('Failed to load tutor list');
+    });
+  };
+
+  $scope.loadPurchases = function() {
+    $http({
+      method: 'GET',
+      url: '/api/tutoring/purchases',
+      params: {
+        ac: new Date().getTime()
+      }
+    })
+    .success(function(purchaseList) {
+      $scope.purchases = purchaseList.Data;
+      console.log(purchaseList);
+    })
+    .error(function() {
+      toastr.error('Failed to load purchase list');
+    });
+  };
+
   $scope.addTutor = function() {
     alert('Add tutor');
-  }
+  };
 
   $scope.addPurchase = function() {
     alert('Add purchase');
-  }
+  };
 
   $scope.loadSettings();
+  $scope.loadTutors();
+  $scope.loadPurchases();
 
 }]); // app.controller
 
