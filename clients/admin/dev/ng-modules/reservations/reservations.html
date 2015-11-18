@@ -25,8 +25,11 @@
         <td>{{reservation.User.FirstName}} {{reservation.User.LastName}}</td>
         <td>{{reservation.User.Email}}</td>
         <td>
-          <button type="button" class="btn btn-danger btn-ico pull-right" ng-click="deleteReservation(reservation.Id)">
-            <span class="fa fa-close"></span>
+          <button 
+            type="button" 
+            class="btn btn-primary btn-ico pull-right" 
+            ng-click="editReservation(reservation.Id)">
+            <span class="fa fa-edit"></span>
           </button>
         </td>
       </tr>

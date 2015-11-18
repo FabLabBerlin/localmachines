@@ -40,7 +40,7 @@ func (this *SettingsController) GetAll() {
 // @router / [post]
 func (this *SettingsController) Post() {
 	if !this.IsAdmin() {
-		beego.Error("Unauthorized attempt to delete user")
+		beego.Error("Unauthorized attempt to change setting")
 		this.CustomAbort(401, "Unauthorized")
 	}
 
@@ -70,17 +70,4 @@ func (this *SettingsController) Post() {
 	}
 
 	this.ServeJson()
-	/*user := models.User{Email: email}
-
-	// Attempt to create the user.
-	// The CreateUser function takes (or should take)
-	// care of validating the email.
-	if userId, err := models.CreateUser(&user); err != nil {
-		beego.Error("Failed to create user:", err)
-		this.CustomAbort(500, "Internal Server Error")
-	} else {
-		user.Id = userId
-		this.Data["json"] = user
-		this.ServeJson()
-	}*/
 }
