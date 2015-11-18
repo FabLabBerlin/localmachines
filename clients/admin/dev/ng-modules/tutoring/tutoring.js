@@ -77,7 +77,7 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location',
   };
 
   $scope.addPurchase = function() {
-    alert('Add purchase');
+    $location.path('/tutoring/purchase');
   };
 
   $scope.loadSettings();
