@@ -20,7 +20,7 @@
     <tbody>
       <tr ng-repeat="tutor in tutors">
         <td>{{tutor.Name}}</td>
-        <td>{{tutor.Price | currency:''}}€</td>
+        <td>{{tutor.Price | currency:''}}{{settings.Currency.ValueString}}</td>
         <td>{{tutor.PriceUnit}}</td>
         <td>
           <div class="pull-right">
@@ -72,8 +72,8 @@
         <td>{{purchase.StartTime}}</td>
         <td>{{purchase.EndTime}}</td>
         <td>{{purchase.TotalTime}} hours</td>
-        <td>{{purchase.TotalPrice | currency:''}}€</td>
-        <td>{{purchase.VAT | currency:''}}€</td>
+        <td>{{purchase.TotalPrice | currency:''}}{{settings.Currency.ValueString}}</td>
+        <td>{{purchase.VAT | currency:''}}{{settings.Currency.ValueString}}</td>
         <td>
           <div class="pull-right">
             <button 
