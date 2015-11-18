@@ -23,7 +23,8 @@ var app = angular.module('fabsmith', [
   'fabsmith.admin.settings',
   'fabsmith.version',
   'fabsmith.admin.tutoring',
-  'fabsmith.admin.tutor',
+  'fabsmith.admin.tutoring.tutor',
+  'fabsmith.admin.tutoring.purchase'
 ]);
 
 // This checks whether an user is logged in always before switching to a new view
