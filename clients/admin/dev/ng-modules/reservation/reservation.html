@@ -29,13 +29,8 @@
     <div class="col-sm-3">
       <div class="form-group">
         <label for="reservation-end">End</label>
-        <div class="input-group">
-          <input type="text" id="reservation-end" class="form-control"
-                 placeholder="YYYY-MM-DD HH:MM" ng-model="reservation.TimeEndLocal">
-          <div class="input-group-addon">
-            <i class="fa fa-euro"></i>
-          </div>
-        </div>
+        <input type="text" id="reservation-end" class="form-control"
+               placeholder="YYYY-MM-DD HH:MM" ng-model="reservation.TimeEndLocal">
       </div>
     </div>
   
@@ -53,6 +48,20 @@
         </select>
       </div>
     </div>
+
+  </div><!-- /.row -->
+
+  <div class="row">
+
+    <div class="col-sm-3">
+      <div class="form-group">
+        <label>
+          <input type="checkbox" id="reservation-disabled" ng-model="reservation.Disabled">
+          Disabled
+        </label>
+      </div>
+    </div>
+
   </div><!-- /.row -->
 
   <hr>

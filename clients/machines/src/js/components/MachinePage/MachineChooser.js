@@ -99,7 +99,7 @@ var MachineChooser = React.createClass({
       reservation = this.state.reservationsByMachineId.toObject()[this.props.info.Id];
     }
     var machineBody;
-    if (reservation && !this.props.busy) {
+    if (reservation && !this.props.busy && !reservation.get('Disabled')) {
       machineBody = (
         <ReservedMachine
           activation={this.props.activation}
