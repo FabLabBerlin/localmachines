@@ -109,7 +109,7 @@ func GetActivations(startTime time.Time,
 	}
 
 	// Get activations from database
-	activations := []Activation{}
+	purchases := []*Purchase{}
 	act := Activation{}
 	usr := User{}
 	o := orm.NewOrm()
@@ -118,25 +118,31 @@ func GetActivations(startTime time.Time,
 	pageOffset = itemsPerPage * (page - 1)
 
 	query := fmt.Sprintf("SELECT a.* FROM %s a JOIN %s u ON a.user_id=u.id "+
-		"WHERE a.type=? AND a.time_start>? AND a.time_end<? AND a.invoiced=? AND a.activation_running=false "+
+		"WHERE a.type=? AND a.time_start>? AND a.time_end<? AND a.activation_running=false "+
 		"ORDER BY u.first_name ASC, a.time_start DESC "+
 		"LIMIT ? OFFSET ?",
-		PURCHASE_TYPE_ACTIVATION,
 		act.purchase.TableName(),
 		usr.TableName())
 
-	num, err := o.Raw(query,
+	_, err := o.Raw(query,
+		PURCHASE_TYPE_ACTIVATION,
 		startTime.Format("2006-01-02"),
 		endTime.Format("2006-01-02"),
 		itemsPerPage,
-		pageOffset).QueryRows(&activations)
+		pageOffset).QueryRows(&purchases)
 
 	if err != nil {
 		msg := fmt.Sprintf("Failed to get activations: %v", err)
 		return nil, errors.New(msg)
 	}
 
-	beego.Trace("Got num activations:", num)
+	activations := make([]Activation, 0, len(purchases))
+	for _, purchase := range purchases {
+		act := Activation{
+			purchase: *purchase,
+		}
+		activations = append(activations, act)
+	}
 
 	return &activations, nil
 }
@@ -190,7 +196,7 @@ func GetActiveActivations() ([]*Activation, error) {
 		}
 		timeNow := time.Now()
 		a.purchase.Quantity =
-			int64(timeNow.Sub(purchase.TimeStart).Seconds())
+			float64(timeNow.Sub(purchase.TimeStart).Seconds())
 		activations = append(activations, a)
 	}
 
@@ -295,7 +301,7 @@ func CloseActivation(activationId int64, endTime time.Time) error {
 	// Calculate activation duration and update activation.
 	activation.purchase.ActivationRunning = false
 	activation.purchase.TimeEnd = endTime
-	activation.purchase.Quantity = int64(endTime.Sub(activation.purchase.TimeStart).Seconds())
+	activation.purchase.Quantity = float64(endTime.Sub(activation.purchase.TimeStart).Seconds())
 
 	err = UpdateActivation(activation)
 	if err != nil {

@@ -136,24 +136,23 @@ func GetInvoice(invoiceId int64) (invoice *Invoice, err error) {
 func CalculateInvoiceSummary(startTime, endTime time.Time) (invoice Invoice, err error) {
 
 	// Enhance activations with user and membership data
-	var purchases Purchases
-	purchases, err = invoice.getPurchases(startTime, endTime)
+	purchases, err := invoice.getPurchases(startTime, endTime)
 	if err != nil {
 		err = fmt.Errorf("Failed to get enhanced activations: %v", err)
 		return
 	}
 
-	activationIds := make([]string, 0, len(purchases.Data))
-	for _, p := range purchases.Data {
+	activationIds := make([]string, 0, len(purchases))
+	for _, p := range purchases {
 		if p.Activation != nil {
-			activationIds = append(activationIds, strconv.FormatInt(p.Activation.purchase.Id, 10))
+			activationIds = append(activationIds, strconv.FormatInt(p.Id, 10))
 		}
 	}
 	invoice.Activations = "[" + strings.Join(activationIds, ",") + "]"
 
 	// Create user summaries from invoice activations
 	var userSummaries *[]*UserSummary
-	userSummaries, err = invoice.getUserSummaries(purchases)
+	userSummaries, err = invoice.getUserSummaries(Purchases{Data: purchases})
 	if err != nil {
 		err = fmt.Errorf("Failed to get user summaries: %v", err)
 		return
@@ -208,30 +207,25 @@ func DeleteInvoice(invoiceId int64) error {
 	return nil
 }
 
-// Gets activations that have happened between start and end dates
-func getActivations(startTime,
-	endTime time.Time) (activationsArr *[]Activation, err error) {
+// Gets purchases that have happened between start and end dates
+func getPurchases(startTime,
+	endTime time.Time) (purchases []*Purchase, err error) {
 
-	act := Activation{}
+	p := Purchase{}
 	usr := User{}
 	o := orm.NewOrm()
 
 	query := fmt.Sprintf("SELECT a.* FROM %s a JOIN %s u ON a.user_id=u.id "+
-		"WHERE type = ? AND a.time_start > ? AND a.time_end < ? "+
-		"AND a.invoiced = false AND a.active = false ",
-		act.purchase.TableName(),
+		"WHERE a.time_start > ? AND a.time_end < ? "+
+		"AND a.activation_running <> true ",
+		p.TableName(),
 		usr.TableName())
 
-	activations := []Activation{}
 	_, err = o.Raw(query,
-		PURCHASE_TYPE_ACTIVATION,
 		startTime.Format("2006-01-02 15:04:05"),
-		endTime.Format("2006-01-02 15:04:05")).QueryRows(&activations)
-	if err != nil {
-		return nil, err
-	}
+		endTime.Format("2006-01-02 15:04:05")).QueryRows(&purchases)
 
-	return &activations, nil
+	return
 }
 
 func (this *Invoice) getInvoiceFileName(startTime,
@@ -251,11 +245,11 @@ func (this *Invoice) getInvoiceFileName(startTime,
 		string(b))
 }
 
-func (this *Invoice) getPurchases(startTime, endTime time.Time) (Purchases, error) {
+func (this *Invoice) getPurchases(startTime, endTime time.Time) (purchases []*Purchase, err error) {
 
 	machines, err := GetAllMachines()
 	if err != nil {
-		return Purchases{}, fmt.Errorf("Failed to get machines: %v", err)
+		return nil, fmt.Errorf("Failed to get machines: %v", err)
 	}
 	machinesById := make(map[int64]*Machine)
 	for _, machine := range machines {
@@ -264,7 +258,7 @@ func (this *Invoice) getPurchases(startTime, endTime time.Time) (Purchases, erro
 
 	users, err := GetAllUsers()
 	if err != nil {
-		return Purchases{}, fmt.Errorf("Failed to get users: %v", err)
+		return nil, fmt.Errorf("Failed to get users: %v", err)
 	}
 	usersById := make(map[int64]User)
 	for _, user := range users {
@@ -273,7 +267,7 @@ func (this *Invoice) getPurchases(startTime, endTime time.Time) (Purchases, erro
 
 	userMemberships, err := GetAllUserMemberships()
 	if err != nil {
-		return Purchases{}, fmt.Errorf("Failed to get user memberships: %v", err)
+		return nil, fmt.Errorf("Failed to get user memberships: %v", err)
 	}
 	userMembershipsById := make(map[int64][]*UserMembership)
 	for _, userMembership := range userMemberships {
@@ -289,46 +283,26 @@ func (this *Invoice) getPurchases(startTime, endTime time.Time) (Purchases, erro
 
 	memberships, err := GetAllMemberships()
 	if err != nil {
-		return Purchases{}, fmt.Errorf("Failed to get memberships: %v", err)
+		return nil, fmt.Errorf("Failed to get memberships: %v", err)
 	}
 	membershipsById := make(map[int64]*Membership)
 	for _, membership := range memberships {
 		membershipsById[membership.Id] = membership
 	}
 
-	// Get all uninvoiced activations in the time range
-	activations, err := getActivations(startTime, endTime)
+	// Get all uninvoiced purchases in the time range
+	purchases, err = getPurchases(startTime, endTime)
 	if err != nil {
-		return Purchases{}, fmt.Errorf("Failed to get activations: %v", err)
+		return nil, fmt.Errorf("Failed to get purchases: %v", err)
 	}
 
-	reservations, err := GetAllReservationsBetween(startTime, endTime)
-	if err != nil {
-		return Purchases{}, fmt.Errorf("Failed to get reservations: %v", err)
-	}
-
-	purchasesData := make([]*Purchase, 0, len(*activations)+len(reservations))
-	purchases := Purchases{}
-	purchases.Data = purchasesData
-
-	// Add purchases from activations
-	for _, activation := range *activations {
-		purchase, err := this.purchaseFromActivation(activation, machinesById,
+	// Enhance purchases
+	for _, purchase := range purchases {
+		err := this.enhancePurchase(purchase, machinesById,
 			usersById, userMembershipsById, membershipsById)
 		if err != nil {
-			return Purchases{}, fmt.Errorf("Failed to create purchase from activation: %v", err)
+			return nil, fmt.Errorf("Failed to enhance purchase: %v", err)
 		}
-		purchases.Data = append(purchases.Data, purchase)
-	}
-
-	// Add purchases from reservations
-	for _, reservation := range reservations {
-		purchase, err := this.purchaseFromReservation(reservation,
-			machinesById, usersById)
-		if err != nil {
-			return Purchases{}, fmt.Errorf("Failed to create purchase from reservation: %v", err)
-		}
-		purchases.Data = append(purchases.Data, purchase)
 	}
 
 	return purchases, nil
@@ -382,27 +356,27 @@ func (this *Invoice) getUserSummaries(
 	return &userSummaries, nil
 }
 
-func (this *Invoice) purchaseFromActivation(activation Activation,
+func (this *Invoice) enhancePurchase(purchase *Purchase,
 	machinesById map[int64]*Machine, usersById map[int64]User,
 	userMembershipsByUserId map[int64][]*UserMembership,
-	membershipsById map[int64]*Membership) (
-	*Purchase, error) {
+	membershipsById map[int64]*Membership) error {
 
-	machine, ok := machinesById[activation.purchase.MachineId]
+	var ok bool
+	purchase.Machine, ok = machinesById[purchase.MachineId]
 	if !ok {
-		return nil, fmt.Errorf("No machine has the ID %v", activation.purchase.MachineId)
+		return fmt.Errorf("No machine has the ID %v", purchase.MachineId)
 	}
 
-	purchase := &Purchase{
+	/*purchase := &Purchase{
 		Machine:      machine,
-		MachineUsage: time.Duration(activation.purchase.Quantity) * time.Second,
+		MachineUsage: time.Duration(purchase.Quantity) * time.Second,
+	}*/
+
+	if purchase.User, ok = usersById[purchase.UserId]; !ok {
+		return fmt.Errorf("No user has the ID %v", purchase.MachineId)
 	}
 
-	if purchase.User, ok = usersById[activation.purchase.UserId]; !ok {
-		return nil, fmt.Errorf("No user has the ID %v", activation.purchase.MachineId)
-	}
-
-	usrMemberships, ok := userMembershipsByUserId[activation.purchase.UserId]
+	usrMemberships, ok := userMembershipsByUserId[purchase.UserId]
 	if !ok {
 		usrMemberships = []*UserMembership{}
 	}
@@ -414,24 +388,23 @@ func (this *Invoice) purchaseFromActivation(activation Activation,
 		// Get membership
 		mem, ok := membershipsById[usrMem.MembershipId]
 		if !ok {
-			return nil, fmt.Errorf("Unknown membership id: %v", usrMem.MembershipId)
+			return fmt.Errorf("Unknown membership id: %v", usrMem.MembershipId)
 		}
 
 		if usrMem.EndDate.IsZero() {
-			return nil, fmt.Errorf("end date is zero")
+			return fmt.Errorf("end date is zero")
 		}
 
 		// Now that we have membership start and end time, let's check
 		// if this period of time overlaps with the activation
-		if activation.purchase.TimeStart.After(usrMem.StartDate) &&
-			activation.purchase.TimeStart.Before(usrMem.EndDate) {
+		if purchase.TimeStart.After(usrMem.StartDate) &&
+			purchase.TimeStart.Before(usrMem.EndDate) {
 
 			purchase.Memberships = append(purchase.Memberships, mem)
 		}
 	}
-	purchase.Activation = &activation
 
-	return purchase, nil
+	return nil
 }
 
 func (this *Invoice) purchaseFromReservation(reservation *Reservation, machinesById map[int64]*Machine, usersById map[int64]User) (*Purchase, error) {

@@ -24,7 +24,7 @@ type Purchase struct {
 
 	TimeStart    time.Time `orm:"type(datetime)"`
 	TimeEnd      time.Time `orm:"type(datetime)"`
-	Quantity     int64
+	Quantity     float64
 	PricePerUnit float64
 	PriceUnit    string
 	Vat          float64
@@ -82,26 +82,6 @@ func (this *Purchase) MembershipStr() string {
 	return membershipStr
 }
 
-/*func (this *Purchase) PricePerUnit() float64 {
-	if this.Reservation != nil {
-		if this.Reservation.CurrentPrice != 0 {
-			return this.Reservation.CurrentPrice / 2
-		} else {
-			return 0
-		}
-	} else {
-		return this.Activation.CurrentMachinePrice
-	}
-}
-
-func (this *Purchase) PriceUnit() string {
-	if this.Activation != nil {
-		return this.Activation.CurrentMachinePriceUnit
-	} else {
-		return this.Reservation.PriceUnit()
-	}
-}*/
-
 func (this *Purchase) Usage() float64 {
 	if this.Activation != nil {
 		return this.MachineUsage.Minutes()
@@ -111,21 +91,17 @@ func (this *Purchase) Usage() float64 {
 }
 
 func PriceTotalExclDisc(p *Purchase) float64 {
-	if p.Activation != nil {
-		var pricePerSecond float64
-		switch p.PriceUnit {
-		case "minute":
-			pricePerSecond = float64(p.PricePerUnit) / 60
-			break
-		case "hour":
-			pricePerSecond = float64(p.PricePerUnit) / 60 / 60
-			break
-		}
-		ret := p.MachineUsage.Seconds() * pricePerSecond
-		return ret
-	} else {
-		return float64(p.Reservation.Slots()) * p.PricePerUnit
+	var pricePerSecond float64
+	switch p.PriceUnit {
+	case "minute":
+		pricePerSecond = float64(p.PricePerUnit) / 60
+		break
+	case "hour":
+		pricePerSecond = float64(p.PricePerUnit) / 60 / 60
+		break
 	}
+	ret := p.Quantity * pricePerSecond
+	return ret
 }
 
 func PriceTotalDisc(p *Purchase) (float64, error) {
@@ -165,18 +141,8 @@ func (this Purchases) Len() int {
 }
 
 func (this Purchases) Less(i, j int) bool {
-	var timeStartI time.Time
-	var timeStartJ time.Time
-	if (*this.Data[i]).Activation != nil {
-		timeStartI = (*this.Data[i]).TimeStart
-	} else {
-		timeStartI = (*this.Data[i]).Reservation.TimeStart
-	}
-	if (*this.Data[j]).Activation != nil {
-		timeStartJ = (*this.Data[j]).TimeStart
-	} else {
-		timeStartI = (*this.Data[j]).Reservation.TimeStart
-	}
+	var timeStartI = (*this.Data[i]).TimeStart
+	var timeStartJ = (*this.Data[j]).TimeStart
 	if timeStartI.Before(timeStartJ) {
 		return true
 	} else if timeStartJ.Before(timeStartI) {
@@ -187,11 +153,13 @@ func (this Purchases) Less(i, j int) bool {
 }
 
 func (this Purchase) ProductName() string {
-	if this.Activation != nil {
+	switch this.Type {
+	case PURCHASE_TYPE_ACTIVATION:
 		return this.Machine.Name
-	} else {
+	case PURCHASE_TYPE_RESERVATION:
 		return "Reservation (" + this.Machine.Name + ")"
 	}
+	return "Unnamed product"
 }
 
 func (this Purchases) Swap(i, j int) {

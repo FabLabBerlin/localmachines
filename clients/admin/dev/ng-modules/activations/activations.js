@@ -60,6 +60,7 @@ app.controller('ActivationsCtrl', ['$scope', '$http', '$location', 'randomToken'
       }
     })
     .success(function(response) {
+      console.log('response:', response);
       _.each(response.ActivationsPage, function(activation){
         var machine = _.find($scope.machines, 'Id', activation.MachineId);
         if (machine) {
