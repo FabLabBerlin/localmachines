@@ -28,12 +28,12 @@ func (this PurchasesXlsx) Less(i, j int) bool {
 	var timeStartI time.Time
 	var timeStartJ time.Time
 	if (*this[i]).Activation != nil {
-		timeStartI = (*this[i]).Activation.TimeStart
+		timeStartI = (*this[i]).TimeStart
 	} else {
 		timeStartI = (*this[i]).Reservation.TimeStart
 	}
 	if (*this[j]).Activation != nil {
-		timeStartJ = (*this[j]).Activation.TimeStart
+		timeStartJ = (*this[j]).TimeStart
 	} else {
 		timeStartJ = (*this[j]).Reservation.TimeStart
 	}
@@ -58,7 +58,7 @@ func AddRowXlsx(sheet *xlsx.Sheet, purchase *Purchase) error {
 	var discountedTotal float64
 
 	if purchase.Activation != nil {
-		timeStart = purchase.Activation.TimeStart
+		timeStart = purchase.TimeStart
 		totalPrice = purchase.TotalPrice
 		discountedTotal = purchase.DiscountedTotal
 	} else {
@@ -84,16 +84,16 @@ func AddRowXlsx(sheet *xlsx.Sheet, purchase *Purchase) error {
 	if purchase.Activation != nil {
 		cell.SetFloatWithFormat(purchase.Usage(), FORMAT_4_DIGIT)
 	} else {
-		totalPrice = float64(purchase.Reservation.Slots()) * purchase.PricePerUnit()
+		totalPrice = float64(purchase.Reservation.Slots()) * purchase.PricePerUnit
 		discountedTotal = totalPrice
 		cell.SetInt(int(purchase.Usage()))
 	}
 
 	cell = row.AddCell()
-	cell.Value = purchase.PriceUnit()
+	cell.Value = purchase.PriceUnit
 
 	cell = row.AddCell()
-	cell.SetFloatWithFormat(purchase.PricePerUnit(), FORMAT_2_DIGIT)
+	cell.SetFloatWithFormat(purchase.PricePerUnit, FORMAT_2_DIGIT)
 
 	cell = row.AddCell()
 	cell.SetFloatWithFormat(totalPrice, FORMAT_2_DIGIT)
@@ -323,10 +323,10 @@ func createXlsxFile(filePath string, invoice *Invoice) error {
 			if _, ok := byProductNameAndPricePerUnit[p.ProductName()]; !ok {
 				byProductNameAndPricePerUnit[p.ProductName()] = make(map[float64][]*Purchase)
 			}
-			if _, ok := byProductNameAndPricePerUnit[p.ProductName()][p.PricePerUnit()]; !ok {
-				byProductNameAndPricePerUnit[p.ProductName()][p.PricePerUnit()] = make([]*Purchase, 0, 20)
+			if _, ok := byProductNameAndPricePerUnit[p.ProductName()][p.PricePerUnit]; !ok {
+				byProductNameAndPricePerUnit[p.ProductName()][p.PricePerUnit] = make([]*Purchase, 0, 20)
 			}
-			byProductNameAndPricePerUnit[p.ProductName()][p.PricePerUnit()] = append(byProductNameAndPricePerUnit[p.ProductName()][p.PricePerUnit()], p)
+			byProductNameAndPricePerUnit[p.ProductName()][p.PricePerUnit] = append(byProductNameAndPricePerUnit[p.ProductName()][p.PricePerUnit], p)
 		}
 
 		for productName, byPricePerUnit := range byProductNameAndPricePerUnit {
@@ -337,7 +337,7 @@ func createXlsxFile(filePath string, invoice *Invoice) error {
 				var discPrice float64
 				var membershipStr string
 				for _, purchase := range purchases {
-					usageUnit = purchase.PriceUnit()
+					usageUnit = purchase.PriceUnit
 					usage += purchase.Usage()
 					totalPriceExclDisc += PriceTotalExclDisc(purchase)
 					priceDisc, err := PriceTotalDisc(purchase)

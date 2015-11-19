@@ -146,7 +146,7 @@ func CalculateInvoiceSummary(startTime, endTime time.Time) (invoice Invoice, err
 	activationIds := make([]string, 0, len(purchases.Data))
 	for _, p := range purchases.Data {
 		if p.Activation != nil {
-			activationIds = append(activationIds, strconv.FormatInt(p.Activation.Id, 10))
+			activationIds = append(activationIds, strconv.FormatInt(p.Activation.purchase.Id, 10))
 		}
 	}
 	invoice.Activations = "[" + strings.Join(activationIds, ",") + "]"
@@ -217,13 +217,14 @@ func getActivations(startTime,
 	o := orm.NewOrm()
 
 	query := fmt.Sprintf("SELECT a.* FROM %s a JOIN %s u ON a.user_id=u.id "+
-		"WHERE a.time_start > ? AND a.time_end < ? "+
+		"WHERE type = ? AND a.time_start > ? AND a.time_end < ? "+
 		"AND a.invoiced = false AND a.active = false ",
-		act.TableName(),
+		act.purchase.TableName(),
 		usr.TableName())
 
 	activations := []Activation{}
 	_, err = o.Raw(query,
+		PURCHASE_TYPE_ACTIVATION,
 		startTime.Format("2006-01-02 15:04:05"),
 		endTime.Format("2006-01-02 15:04:05")).QueryRows(&activations)
 	if err != nil {
@@ -387,21 +388,21 @@ func (this *Invoice) purchaseFromActivation(activation Activation,
 	membershipsById map[int64]*Membership) (
 	*Purchase, error) {
 
-	machine, ok := machinesById[activation.MachineId]
+	machine, ok := machinesById[activation.purchase.MachineId]
 	if !ok {
-		return nil, fmt.Errorf("No machine has the ID %v", activation.MachineId)
+		return nil, fmt.Errorf("No machine has the ID %v", activation.purchase.MachineId)
 	}
 
 	purchase := &Purchase{
 		Machine:      machine,
-		MachineUsage: time.Duration(activation.TimeTotal) * time.Second,
+		MachineUsage: time.Duration(activation.purchase.Quantity) * time.Second,
 	}
 
-	if purchase.User, ok = usersById[activation.UserId]; !ok {
-		return nil, fmt.Errorf("No user has the ID %v", activation.MachineId)
+	if purchase.User, ok = usersById[activation.purchase.UserId]; !ok {
+		return nil, fmt.Errorf("No user has the ID %v", activation.purchase.MachineId)
 	}
 
-	usrMemberships, ok := userMembershipsByUserId[activation.UserId]
+	usrMemberships, ok := userMembershipsByUserId[activation.purchase.UserId]
 	if !ok {
 		usrMemberships = []*UserMembership{}
 	}
@@ -422,8 +423,8 @@ func (this *Invoice) purchaseFromActivation(activation Activation,
 
 		// Now that we have membership start and end time, let's check
 		// if this period of time overlaps with the activation
-		if activation.TimeStart.After(usrMem.StartDate) &&
-			activation.TimeStart.Before(usrMem.EndDate) {
+		if activation.purchase.TimeStart.After(usrMem.StartDate) &&
+			activation.purchase.TimeStart.Before(usrMem.EndDate) {
 
 			purchase.Memberships = append(purchase.Memberships, mem)
 		}

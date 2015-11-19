@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/orm"
 	"time"
 )
 
@@ -18,7 +19,7 @@ type Purchase struct {
 	ProductId int64
 	Created   time.Time `orm:"type(datetime)"`
 
-	User   *User `orm:"-"`
+	User   User `orm:"-" json:"-"`
 	UserId int64
 
 	TimeStart    time.Time `orm:"type(datetime)"`
@@ -35,10 +36,10 @@ type Purchase struct {
 	ActivationRunning bool
 
 	// Reservation fields:
-	Disabled bool
+	ReservationDisabled bool
 
 	// Activation+Reservation fields:
-	Machine   Machine `orm:"-"`
+	Machine   *Machine `orm:"-"`
 	MachineId int64
 
 	// Old fields:
@@ -46,6 +47,20 @@ type Purchase struct {
 	Reservation  *Reservation  `orm:"-"`
 	MachineUsage time.Duration `orm:"-"`
 	Memberships  []*Membership `orm:"-"`
+}
+
+func (this *Purchase) TableName() string {
+	return "purchases"
+}
+
+func init() {
+	orm.RegisterModel(new(Purchase))
+}
+
+func DeletePurchase(id int64) (err error) {
+	o := orm.NewOrm()
+	_, err = o.Delete(&Purchase{Id: id})
+	return
 }
 
 func (this *Purchase) MembershipStr() string {
@@ -67,7 +82,7 @@ func (this *Purchase) MembershipStr() string {
 	return membershipStr
 }
 
-func (this *Purchase) PricePerUnit() float64 {
+/*func (this *Purchase) PricePerUnit() float64 {
 	if this.Reservation != nil {
 		if this.Reservation.CurrentPrice != 0 {
 			return this.Reservation.CurrentPrice / 2
@@ -85,7 +100,7 @@ func (this *Purchase) PriceUnit() string {
 	} else {
 		return this.Reservation.PriceUnit()
 	}
-}
+}*/
 
 func (this *Purchase) Usage() float64 {
 	if this.Activation != nil {
@@ -98,18 +113,18 @@ func (this *Purchase) Usage() float64 {
 func PriceTotalExclDisc(p *Purchase) float64 {
 	if p.Activation != nil {
 		var pricePerSecond float64
-		switch p.Activation.CurrentMachinePriceUnit {
+		switch p.PriceUnit {
 		case "minute":
-			pricePerSecond = float64(p.Activation.CurrentMachinePrice) / 60
+			pricePerSecond = float64(p.PricePerUnit) / 60
 			break
 		case "hour":
-			pricePerSecond = float64(p.Activation.CurrentMachinePrice) / 60 / 60
+			pricePerSecond = float64(p.PricePerUnit) / 60 / 60
 			break
 		}
 		ret := p.MachineUsage.Seconds() * pricePerSecond
 		return ret
 	} else {
-		return float64(p.Reservation.Slots()) * p.PricePerUnit()
+		return float64(p.Reservation.Slots()) * p.PricePerUnit
 	}
 }
 
@@ -153,12 +168,12 @@ func (this Purchases) Less(i, j int) bool {
 	var timeStartI time.Time
 	var timeStartJ time.Time
 	if (*this.Data[i]).Activation != nil {
-		timeStartI = (*this.Data[i]).Activation.TimeStart
+		timeStartI = (*this.Data[i]).TimeStart
 	} else {
 		timeStartI = (*this.Data[i]).Reservation.TimeStart
 	}
 	if (*this.Data[j]).Activation != nil {
-		timeStartJ = (*this.Data[j]).Activation.TimeStart
+		timeStartJ = (*this.Data[j]).TimeStart
 	} else {
 		timeStartI = (*this.Data[j]).Reservation.TimeStart
 	}

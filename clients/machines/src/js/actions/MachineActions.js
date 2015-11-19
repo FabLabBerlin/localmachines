@@ -187,7 +187,7 @@ function apiLoadMachineUser(activation) {
 function _formatActivation(rawActivation) {
   return _.map(rawActivation, function(rawActivationItem) {
     var tmpItem = {};
-    ['Id', 'UserId', 'MachineId', 'TimeTotal'].forEach(function(key){
+    ['Id', 'UserId', 'MachineId', 'Quantity'].forEach(function(key){
       tmpItem[key] = rawActivationItem[key];
     });
     return tmpItem;

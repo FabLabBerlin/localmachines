@@ -20,7 +20,7 @@ function activation() {
       Id: 227,
       LastName: 'Admin',
       MachineId: 2,
-      TimeTotal: 1,
+      Quantity: 1,
       UserId: 2
     }
   ];

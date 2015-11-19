@@ -18,7 +18,7 @@ var Timer = React.createClass({
 
   /*
    * Initial State
-   * Take the TimeTotal from activation json
+   * Take the Quantity from activation json
    */
   getInitialState() {
     return {secondsElapsed: this.props.time};
