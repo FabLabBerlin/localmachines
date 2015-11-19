@@ -68,7 +68,7 @@ func GetUserActivations(startTime time.Time,
 	o := orm.NewOrm()
 
 	query := fmt.Sprintf("SELECT a.* FROM %s a JOIN %s u ON a.user_id=u.id "+
-		"WHERE a.type=? AND a.time_start>? AND a.time_end<? AND a.active=false AND a.user_id=? "+
+		"WHERE a.type=? AND a.time_start>? AND a.time_end<? AND a.activation_running=false AND a.user_id=? "+
 		"ORDER BY u.first_name ASC, a.time_start DESC",
 		act.purchase.TableName(),
 		usr.TableName())
@@ -101,7 +101,6 @@ func GetUserActivationsStartTime(userId int64) (startTime time.Time, err error) 
 func GetActivations(startTime time.Time,
 	endTime time.Time,
 	userId int64,
-	includeInvoiced bool,
 	itemsPerPage int64,
 	page int64) (*[]Activation, error) {
 
@@ -119,7 +118,7 @@ func GetActivations(startTime time.Time,
 	pageOffset = itemsPerPage * (page - 1)
 
 	query := fmt.Sprintf("SELECT a.* FROM %s a JOIN %s u ON a.user_id=u.id "+
-		"WHERE a.type=? AND a.time_start>? AND a.time_end<? AND a.invoiced=? AND a.active=false "+
+		"WHERE a.type=? AND a.time_start>? AND a.time_end<? AND a.invoiced=? AND a.activation_running=false "+
 		"ORDER BY u.first_name ASC, a.time_start DESC "+
 		"LIMIT ? OFFSET ?",
 		PURCHASE_TYPE_ACTIVATION,
@@ -129,7 +128,6 @@ func GetActivations(startTime time.Time,
 	num, err := o.Raw(query,
 		startTime.Format("2006-01-02"),
 		endTime.Format("2006-01-02"),
-		includeInvoiced,
 		itemsPerPage,
 		pageOffset).QueryRows(&activations)
 
@@ -147,8 +145,7 @@ func GetActivations(startTime time.Time,
 // Used together with GetActivations.
 func GetNumActivations(startTime time.Time,
 	endTime time.Time,
-	userId int64,
-	includeInvoiced bool) (int64, error) {
+	userId int64) (int64, error) {
 
 	// Count activations matching params
 	o := orm.NewOrm()
@@ -156,7 +153,6 @@ func GetNumActivations(startTime time.Time,
 	cnt, err := o.QueryTable(act.purchase.TableName()).
 		Filter("timeStart__gt", startTime).
 		Filter("timeEnd__lt", endTime).
-		Filter("invoiced", includeInvoiced).
 		//Filter("userId", userId).
 		Filter("ActivationRunning", false).
 		Filter("type", PURCHASE_TYPE_ACTIVATION).
@@ -172,14 +168,14 @@ func GetNumActivations(startTime time.Time,
 	return cnt, nil
 }
 
-// Gets only active activations (active meaning that users are using
+// Gets only activation_running activations (activation_running meaning that users are using
 // the machine/resource currently)
 func GetActiveActivations() ([]*Activation, error) {
 	var purchases []*Purchase
 	o := orm.NewOrm()
 	act := Activation{}
 	num, err := o.QueryTable(act.purchase.TableName()).
-		Filter("ActivationRunning", true).
+		Filter("activation_running", true).
 		Filter("type", PURCHASE_TYPE_ACTIVATION).
 		All(&purchases)
 	if err != nil {
@@ -219,7 +215,7 @@ func CreateActivation(machineId, userId int64, startTime time.Time) (
 	var dupActivations []Activation
 	act := Activation{} // Used to get table name of the model
 	query := fmt.Sprintf("SELECT id FROM %s WHERE machine_id = ? "+
-		"AND user_id = ? AND active = 1 AND type = ?", act.purchase.TableName())
+		"AND user_id = ? AND activation_running = 1 AND type = ?", act.purchase.TableName())
 	numDuplicates, err := o.Raw(query, machineId, userId, PURCHASE_TYPE_ACTIVATION).
 		QueryRows(&dupActivations)
 	if err != nil {
@@ -244,6 +240,7 @@ func CreateActivation(machineId, userId int64, startTime time.Time) (
 	}
 
 	newActivation := Activation{}
+	newActivation.purchase.Type = PURCHASE_TYPE_ACTIVATION
 	newActivation.purchase.UserId = userId
 	newActivation.purchase.MachineId = machineId
 	newActivation.purchase.ActivationRunning = true
@@ -253,7 +250,7 @@ func CreateActivation(machineId, userId int64, startTime time.Time) (
 	newActivation.purchase.PricePerUnit = mch.Price
 	newActivation.purchase.PriceUnit = mch.PriceUnit
 
-	activationId, err = o.Insert(&newActivation)
+	activationId, err = o.Insert(&newActivation.purchase)
 	if err != nil {
 		beego.Error("Failed to insert activation:", err)
 		return 0, fmt.Errorf("Failed to insert activation %v", err)
@@ -328,7 +325,7 @@ func CloseActivation(activationId int64, endTime time.Time) error {
 // existing activation store.
 func UpdateActivation(activation *Activation) error {
 	o := orm.NewOrm()
-	num, err := o.Update(activation)
+	num, err := o.Update(&activation.purchase)
 
 	if err != nil {
 		beego.Error("Failed to update activation:", err)
