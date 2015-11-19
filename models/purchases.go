@@ -6,16 +6,46 @@ import (
 	"time"
 )
 
+const (
+	PURCHASE_TYPE_ACTIVATION  = "activation"
+	PURCHASE_TYPE_RESERVATION = "reservation"
+)
+
 // This is a purchase row that appears in the XLSX file
 type Purchase struct {
-	Activation      *Activation
-	Reservation     *Reservation
-	Machine         *Machine
-	MachineUsage    time.Duration
-	User            User
-	Memberships     []*Membership
-	TotalPrice      float64
-	DiscountedTotal float64
+	Id        int64 `orm:"auto";"pk"`
+	Type      string
+	ProductId int64
+	Created   time.Time `orm:"type(datetime)"`
+
+	User   *User `orm:"-"`
+	UserId int64
+
+	TimeStart    time.Time `orm:"type(datetime)"`
+	TimeEnd      time.Time `orm:"type(datetime)"`
+	Quantity     int64
+	PricePerUnit float64
+	PriceUnit    string
+	Vat          float64
+
+	TotalPrice      float64 `orm:"-"`
+	DiscountedTotal float64 `orm:"-"`
+
+	// Activation fields:
+	ActivationRunning bool
+
+	// Reservation fields:
+	Disabled bool
+
+	// Activation+Reservation fields:
+	Machine   Machine `orm:"-"`
+	MachineId int64
+
+	// Old fields:
+	Activation   *Activation   `orm:"-"`
+	Reservation  *Reservation  `orm:"-"`
+	MachineUsage time.Duration `orm:"-"`
+	Memberships  []*Membership `orm:"-"`
 }
 
 func (this *Purchase) MembershipStr() string {
