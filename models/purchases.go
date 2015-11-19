@@ -82,26 +82,32 @@ func (this *Purchase) MembershipStr() string {
 	return membershipStr
 }
 
-func (this *Purchase) Usage() float64 {
-	if this.Activation != nil {
-		return this.MachineUsage.Minutes()
+func (this *Purchase) quantityFromTimes() (quantity float64) {
+	var timeEnd time.Time
+	if this.TimeEnd.IsZero() {
+		timeEnd = time.Now()
 	} else {
-		return float64(this.Reservation.Slots())
+		timeEnd = this.TimeEnd
 	}
+
+	seconds := timeEnd.Sub(this.TimeStart).Seconds()
+
+	switch this.PriceUnit {
+	case "minute":
+		quantity = float64(seconds) / 60
+	case "30 minutes":
+		quantity = float64(seconds) / 1800
+	case "hour":
+		quantity = float64(seconds) / 3600
+	default:
+		beego.Error("unknown price unit ", this.PriceUnit)
+	}
+
+	return
 }
 
 func PriceTotalExclDisc(p *Purchase) float64 {
-	var pricePerSecond float64
-	switch p.PriceUnit {
-	case "minute":
-		pricePerSecond = float64(p.PricePerUnit) / 60
-		break
-	case "hour":
-		pricePerSecond = float64(p.PricePerUnit) / 60 / 60
-		break
-	}
-	ret := p.Quantity * pricePerSecond
-	return ret
+	return p.Quantity * p.PricePerUnit
 }
 
 func PriceTotalDisc(p *Purchase) (float64, error) {

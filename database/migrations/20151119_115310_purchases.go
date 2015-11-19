@@ -43,7 +43,7 @@ func (m *Purchases_20151119_115310) Up() {
 		       user_id,
 		       time_start,
 		       time_end,
-		       time_total,
+		       time_total / 60,
 		       current_machine_price,
 		       current_machine_price_unit,
 		       vat_rate,
@@ -51,6 +51,23 @@ func (m *Purchases_20151119_115310) Up() {
 		       NULL,
 		       machine_id
 		FROM activations
+		WHERE current_machine_price_unit = "minute"
+		UNION
+		SELECT 'activation',
+		       NULL,
+		       time_start,
+		       user_id,
+		       time_start,
+		       time_end,
+		       time_total / 3600,
+		       current_machine_price,
+		       current_machine_price_unit,
+		       vat_rate,
+		       active,
+		       NULL,
+		       machine_id
+		FROM activations
+		WHERE current_machine_price_unit = "hour"
 	`)
 	m.Sql(`
 		INSERT INTO purchases ( TYPE, product_id, created, user_id, time_start, time_end, quantity, price_per_unit, price_unit, vat, activation_running, reservation_disabled, machine_id )

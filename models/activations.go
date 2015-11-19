@@ -19,37 +19,6 @@ func (this *Activation) MarshalJSON() ([]byte, error) {
 	return json.Marshal(this.purchase)
 }
 
-/*// Activation type/model to hold information of single activation.
-type Activation struct {
-	Id int64 `orm:"auto";"pk"`
-	//[unused]InvoiceId                   int   `orm:"null"`
-	UserId    int64
-	MachineId int64
-	Active    bool
-	TimeStart time.Time
-	TimeEnd   time.Time `orm:"null"`
-	TimeTotal int64
-	//[unused]UsedKwh                     float32
-	//[unused]DiscountPercents            float32
-	//[unused]DiscountFixed               float32
-	//[unused]VatRate                     float32
-	//[unused]CommentRef                  string `orm:"size(255)"`
-	//[unused]Invoiced                    bool
-	//[unused]Changed                     bool
-	//CurrentMachinePrice         float64
-	//CurrentMachinePriceCurrency string
-	//CurrentMachinePriceUnit     string
-}
-
-// Returns mysql table name of the table mapped to the Activation model.
-func (this *Activation) TableName() string {
-	return "activations"
-}
-
-func init() {
-	orm.RegisterModel(new(Activation))
-}*/
-
 // Type to be used as response model for the HTTP GET activations request.
 type GetActivationsResponse struct {
 	NumActivations  int64
@@ -194,9 +163,7 @@ func GetActiveActivations() ([]*Activation, error) {
 		a := &Activation{
 			purchase: *purchase,
 		}
-		timeNow := time.Now()
-		a.purchase.Quantity =
-			float64(timeNow.Sub(purchase.TimeStart).Seconds())
+		a.purchase.Quantity = a.purchase.quantityFromTimes()
 		activations = append(activations, a)
 	}
 
@@ -301,7 +268,7 @@ func CloseActivation(activationId int64, endTime time.Time) error {
 	// Calculate activation duration and update activation.
 	activation.purchase.ActivationRunning = false
 	activation.purchase.TimeEnd = endTime
-	activation.purchase.Quantity = float64(endTime.Sub(activation.purchase.TimeStart).Seconds())
+	activation.purchase.Quantity = activation.purchase.quantityFromTimes()
 
 	err = UpdateActivation(activation)
 	if err != nil {
