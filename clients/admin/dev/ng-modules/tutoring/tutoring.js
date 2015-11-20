@@ -48,6 +48,11 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location',
     })
     .success(function(tutorList) {
       $scope.tutors = tutorList.Data;
+
+      // TODO: Remember to remove this fake data generator
+      _.each($scope.tutors, function(tutor) {
+        tutor.Skills = "Laser Cutter, CNC Mill, MakerBot Replicatior";
+      });
       console.log(tutorList);
     })
     .error(function() {
@@ -65,6 +70,22 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location',
     })
     .success(function(purchaseList) {
       $scope.purchases = purchaseList.Data;
+      _.each($scope.purchases, function(purchase) {
+        purchase.TutorName = 'Tina Atari';
+        purchase.UserName = 'Milda Sane';
+
+        purchase.Created = moment(purchase.StartTime).format('D MMM YY');
+        purchase.TimeStart = moment(purchase.StartTime).format('D MMM YY HH:mm');
+        purchase.TimeEnd = moment(purchase.EndTime).format('D MMM YY HH:mm');
+
+        purchase.ReservedTimeTotalHours = purchase.TotalTime.toFixed(0);
+        purchase.ReservedTimeTotalMinutes = 12;
+
+        purchase.TimerTimeTotalHours = 0;
+        purchase.TimerTimeTotalMinutes = 0;
+
+        purchase.TimeTotal = purchase.TotalTime.toFixed(2);
+      });
       console.log(purchaseList);
     })
     .error(function() {
@@ -76,7 +97,15 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location',
     $location.path('/tutoring/tutor');
   };
 
+  $scope.editTutor = function() {
+    $location.path('/tutoring/tutor');
+  };
+
   $scope.addPurchase = function() {
+    $location.path('/tutoring/purchase');
+  };
+
+  $scope.editPurchase = function() {
     $location.path('/tutoring/purchase');
   };
 
