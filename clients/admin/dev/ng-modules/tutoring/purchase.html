@@ -5,96 +5,119 @@
 
   <div class="form-group">
     <label for="tutor">Tutor</label>
-    <select id="tutor"
-      class="form-control" 
-      ng-model="purchase.TutorId">
-      <option value="" selected disabled>Select tutor</option>
-      <option ng-repeat="tutor in tutors" value="{{tutor.Id}}">
-        {{tutor.Name}}
-      </option>
-    </select>
+    <input
+      type="text"
+      class="form-control"
+      id="tutor"
+      placeholder="Start typing to choose tutor"
+      ng-model="tutor.Name">
   </div>
 
   <div class="form-group">
     <label for="user">User</label>
-    <select id="user"
-      class="form-control" 
-      ng-model="purchase.UserId">
-      <option value="" selected disabled>Select user</option>
-      <option ng-repeat="user in users" value="{{user.Id}}">
-        {{user.Name}}
-      </option>
-    </select>
-  </div>
-
-  <div class="form-group">
-    <label for="start-time">Start time</label>
     <input
       type="text"
       class="form-control"
-      id="start-time"
-      placeholder="Start time"
-      ng-model="purchase.StartTime"> 
+      id="tutor-name"
+      placeholder="Start typing to choose user"
+      ng-model="user.Name">
   </div>
 
   <div class="form-group">
-    <label for="end-time">End time</label>
-    <input
-      type="text"
-      class="form-control"
-      id="end-time"
-      placeholder="End time"
-      ng-model="purchase.EndTime"> 
+    <label for="start-date">Start time</label>
+    <div class="row">
+      <div class="col-xs-6">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            id="start-date"
+            placeholder="Date"
+            ng-model="purchase.StartTimeDate">
+          <span class="input-group-addon">
+            <i class="fa fa-calendar"></i>
+          </span>
+        </div>
+      </div>
+      <div class="col-xs-6">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            id="start-time"
+            placeholder="Time"
+            ng-model="purchase.StartTimeTime">
+          <span class="input-group-addon">
+            <i class="fa fa-clock-o"></i>
+          </span>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="form-group">
-    <label for="total-time">Total time</label>
+    <label for="end-date">End time</label>
+    <div class="row">
+      <div class="col-xs-6">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            id="end-date"
+            placeholder="Date"
+            ng-model="purchase.EndTimeDate">
+          <span class="input-group-addon">
+            <i class="fa fa-calendar"></i>
+          </span>
+        </div>
+      </div>
+      <div class="col-xs-6">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            id="end-time"
+            placeholder="Time"
+            ng-model="purchase.EndTimeTime">
+          <span class="input-group-addon">
+            <i class="fa fa-clock-o"></i>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="total-time">Reserved time</label>
     <input
       type="text"
       class="form-control"
       id="total-time"
-      ng-model="purchase.TotalTime"
+      ng-model="purchase.TimeReserved"
       disabled="disabled"> 
   </div>
 
   <div class="form-group">
-    <label for="vat-percents">VAT %</label>
+    <label for="total-time">Timed time</label>
     <input
       type="text"
       class="form-control"
-      id="vat-percents"
-      placeholder="VAT %"
-      ng-model="purchase.VAT"> 
-  </div>
-
-  <div class="form-group">
-    <label for="total-price-no-vat">Total price (no VAT)</label>
-    <input
-      type="text"
-      class="form-control"
-      id="total-price-no-vat"
-      ng-model="purchase.TotalPriceNoVAT"
+      id="total-time"
+      ng-model="purchase.TimeTimed"
       disabled="disabled"> 
   </div>
 
   <div class="form-group">
-    <label for="vat-value">VAT (19%)</label>
-    <input
-      type="text"
-      class="form-control"
-      id="vat-value"
-      ng-model="purchase.VATValue"
-      disabled="disabled"> 
-  </div>
-
-  <div class="form-group">
-    <label for="total-price-vat">Total price (including VAT)</label>
-    <input
-      type="text"
-      class="form-control"
-      id="total-price-vat"
-      ng-model="purchase.TotalPriceVAT"
-      disabled="disabled"> 
+    <label for="total-price-no-vat">Total price</label>
+    <div class="input-group">
+      <input
+        type="text"
+        class="form-control"
+        id="total-price-no-vat"
+        ng-model="purchase.PriceTotal"
+        disabled="disabled"> 
+      <span class="input-group-addon">€</span>
+    </div>
   </div>
 
   <div class="form-group">
@@ -103,7 +126,7 @@
       class="form-control" 
       rows="3"
       id="comments"
-      ng-model="tutor.Comments">
+      ng-model="purchase.Comments">
     </textarea>
   </div>
 
