@@ -159,6 +159,7 @@ func (this Purchases) Less(i, j int) bool {
 }
 
 func (this Purchase) ProductName() string {
+	beego.Info("Purchase.Type = ", this.Type)
 	switch this.Type {
 	case PURCHASE_TYPE_ACTIVATION:
 		return this.Machine.Name

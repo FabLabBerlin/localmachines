@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
@@ -8,20 +9,22 @@ import (
 )
 
 type Reservation struct {
-	Id                   int64 `orm:"auto";"pk"`
-	MachineId            int64
-	UserId               int64
-	TimeStart            time.Time `orm:"type(datetime)"`
-	TimeEnd              time.Time `orm:"type(datetime)"`
-	Created              time.Time `orm:"type(datetime)"`
-	CurrentPrice         float64
-	CurrentPriceCurrency string
-	CurrentPriceUnit     string
-	Disabled             bool
+	json.Marshaler
+	json.Unmarshaler
+	purchase Purchase
 }
 
-func init() {
-	orm.RegisterModel(new(Reservation))
+func (this *Reservation) MarshalJSON() ([]byte, error) {
+	return json.Marshal(this.purchase)
+}
+
+func (this *Reservation) UnmarshalJSON(data []byte) error {
+	beego.Info("Reservation#UnmarshalJSON: data=", string(data))
+	return json.Unmarshal(data, &this.purchase)
+}
+
+func (this *Reservation) UserId() int64 {
+	return this.purchase.UserId
 }
 
 type ReservationCreatedResponse struct {
@@ -29,12 +32,8 @@ type ReservationCreatedResponse struct {
 }
 
 func (this *Reservation) Slots() int {
-	duration := this.TimeEnd.Unix() - this.TimeStart.Unix()
+	duration := this.purchase.TimeEnd.Unix() - this.purchase.TimeStart.Unix()
 	return int(duration / 1800)
-}
-
-func (this *Reservation) TableName() string {
-	return "reservations"
 }
 
 func (this *Reservation) PriceUnit() string {
@@ -42,17 +41,32 @@ func (this *Reservation) PriceUnit() string {
 }
 
 func GetReservation(id int64) (reservation *Reservation, err error) {
-	r := Reservation{Id: id}
-	reservation = &r
+	reservation = &Reservation{}
+	reservation.purchase.Id = id
+
 	o := orm.NewOrm()
-	err = o.Read(reservation)
+	err = o.Read(&reservation.purchase)
+
 	return
 }
 
 func GetAllReservations() (reservations []*Reservation, err error) {
 	o := orm.NewOrm()
 	r := new(Reservation)
-	_, err = o.QueryTable(r.TableName()).All(&reservations)
+	var purchases []*Purchase
+	_, err = o.QueryTable(r.purchase.TableName()).
+		Filter("type", PURCHASE_TYPE_RESERVATION).
+		All(&purchases)
+	if err != nil {
+		return
+	}
+	reservations = make([]*Reservation, 0, len(purchases))
+	for _, purchase := range purchases {
+		reservation := &Reservation{
+			purchase: *purchase,
+		}
+		reservations = append(reservations, reservation)
+	}
 	return
 }
 
@@ -63,7 +77,7 @@ func GetAllReservationsBetween(startTime, endTime time.Time) (reservations []*Re
 	}
 	reservations = make([]*Reservation, 0, len(allReservations))
 	for _, reservation := range allReservations {
-		if startTime.Before(reservation.TimeStart) && reservation.TimeEnd.Before(endTime) {
+		if startTime.Before(reservation.purchase.TimeStart) && reservation.purchase.TimeEnd.Before(endTime) {
 			reservations = append(reservations, reservation)
 		}
 	}
@@ -73,24 +87,25 @@ func GetAllReservationsBetween(startTime, endTime time.Time) (reservations []*Re
 func CreateReservation(reservation *Reservation) (int64, error) {
 
 	// Get the reservation_price_hourly of the machine being reserved
-	machine := Machine{Id: reservation.MachineId}
+	machine := Machine{Id: reservation.purchase.MachineId}
 	err, _ := machine.Read()
 	if err != nil {
 		beego.Error("Failed to read machine")
 		return 0, fmt.Errorf("Failed to read machine")
 	}
 
-	reservation.CurrentPrice = *machine.ReservationPriceHourly
-	reservation.CurrentPriceCurrency = "€"      // Reserved for possible future use
-	reservation.CurrentPriceUnit = "30 minutes" // Reserved for possible future use
+	reservation.purchase.Type = PURCHASE_TYPE_RESERVATION
+	reservation.purchase.PricePerUnit = *machine.ReservationPriceHourly
+	reservation.purchase.PriceUnit = "30 minutes"
 
 	o := orm.NewOrm()
-	return o.Insert(reservation)
+	return o.Insert(&reservation.purchase)
 }
 
 func UpdateReservation(reservation *Reservation) (err error) {
 	o := orm.NewOrm()
-	_, err = o.Update(reservation)
+	beego.Info("UpdateReservation: reservation=", reservation)
+	_, err = o.Update(&reservation.purchase)
 	return
 }
 
@@ -110,15 +125,15 @@ func DeleteReservation(id int64, isAdmin bool) (err error) {
 	timeNow := time.Now()
 
 	// Check if past reservation
-	if reservation.TimeEnd.Before(timeNow) {
+	if reservation.purchase.TimeEnd.Before(timeNow) {
 		beego.Error("Can not delete reservation from the past")
 		return fmt.Errorf("Can not delete reservation from the past")
 	}
 
 	// Check if happening today
-	if timeNow.Day() == reservation.TimeStart.Day() &&
-		timeNow.Month() == reservation.TimeStart.Month() &&
-		timeNow.Year() == reservation.TimeStart.Year() &&
+	if timeNow.Day() == reservation.purchase.TimeStart.Day() &&
+		timeNow.Month() == reservation.purchase.TimeStart.Month() &&
+		timeNow.Year() == reservation.purchase.TimeStart.Year() &&
 		!isAdmin {
 
 		beego.Error("Can not delete a reservation happening today")
@@ -126,7 +141,5 @@ func DeleteReservation(id int64, isAdmin bool) (err error) {
 	}
 
 	// If we have not returned yet, then let's delete
-	o := orm.NewOrm()
-	_, err = o.Delete(&Reservation{Id: id})
-	return
+	return DeletePurchase(id)
 }

@@ -367,11 +367,6 @@ func (this *Invoice) enhancePurchase(purchase *Purchase,
 		return fmt.Errorf("No machine has the ID %v", purchase.MachineId)
 	}
 
-	/*purchase := &Purchase{
-		Machine:      machine,
-		MachineUsage: time.Duration(purchase.Quantity) * time.Second,
-	}*/
-
 	if purchase.User, ok = usersById[purchase.UserId]; !ok {
 		return fmt.Errorf("No user has the ID %v", purchase.MachineId)
 	}
@@ -405,20 +400,4 @@ func (this *Invoice) enhancePurchase(purchase *Purchase,
 	}
 
 	return nil
-}
-
-func (this *Invoice) purchaseFromReservation(reservation *Reservation, machinesById map[int64]*Machine, usersById map[int64]User) (*Purchase, error) {
-	machine, ok := machinesById[reservation.MachineId]
-	if !ok {
-		return nil, fmt.Errorf("No machine has the ID %v", reservation.MachineId)
-	}
-
-	purchase := &Purchase{
-		Machine:     machine,
-		Reservation: reservation,
-	}
-	if purchase.User, ok = usersById[reservation.UserId]; !ok {
-		return nil, fmt.Errorf("No user has the ID %v", reservation.MachineId)
-	}
-	return purchase, nil
 }
