@@ -14,6 +14,7 @@ var ReservationsActions = require('../../actions/ReservationsActions');
 var ScrollNav = require('../ScrollNav');
 var toastr = require('../../toastr');
 var UserActions = require('../../actions/UserActions');
+var TutoringList = require('./TutoringList');
 
 /*
  * MachinePage:
@@ -148,6 +149,7 @@ var MachinePage = React.createClass({
               {this.state.userInfo.get('FirstName')} {this.state.userInfo.get('LastName')}
             </div>
           </div>
+          <TutoringList />
           <MachineList
             user={this.state.userInfo}
             info={machineInfo}
