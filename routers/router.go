@@ -89,6 +89,11 @@ func Init() {
 				&controllers.SettingsController{},
 			),
 		),
+		beego.NSNamespace("/spaces",
+			beego.NSInclude(
+				&controllers.SpacesController{},
+			),
+		),
 	)
 	beego.AddNamespace(ns)
 }

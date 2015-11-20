@@ -4,6 +4,10 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
+const (
+	PRODUCT_TYPE_SPACE = "space"
+)
+
 type Product struct {
 	Id        int64
 	Type      string `orm:"size(100)"`

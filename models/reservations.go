@@ -19,7 +19,6 @@ func (this *Reservation) MarshalJSON() ([]byte, error) {
 }
 
 func (this *Reservation) UnmarshalJSON(data []byte) error {
-	beego.Info("Reservation#UnmarshalJSON: data=", string(data))
 	return json.Unmarshal(data, &this.purchase)
 }
 
@@ -29,15 +28,6 @@ func (this *Reservation) UserId() int64 {
 
 type ReservationCreatedResponse struct {
 	Id int64
-}
-
-func (this *Reservation) Slots() int {
-	duration := this.purchase.TimeEnd.Unix() - this.purchase.TimeStart.Unix()
-	return int(duration / 1800)
-}
-
-func (this *Reservation) PriceUnit() string {
-	return "30 minute slot"
 }
 
 func GetReservation(id int64) (reservation *Reservation, err error) {
@@ -104,7 +94,6 @@ func CreateReservation(reservation *Reservation) (int64, error) {
 
 func UpdateReservation(reservation *Reservation) (err error) {
 	o := orm.NewOrm()
-	beego.Info("UpdateReservation: reservation=", reservation)
 	_, err = o.Update(&reservation.purchase)
 	return
 }
