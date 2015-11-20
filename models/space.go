@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 )
 
@@ -17,6 +18,22 @@ func CreateSpace(name string) (space Space, err error) {
 	}
 	id, err := CreateProduct(&space.Product)
 	space.Product.Id = id
+	return
+}
+
+func UpdateSpace(space *Space) (err error) {
+	return UpdateProduct(&space.Product)
+}
+
+func GetSpace(id int64) (space *Space, err error) {
+	space = &Space{}
+	space.Product.Id = id
+
+	beego.Info("GetSpace: id=", id)
+
+	o := orm.NewOrm()
+	err = o.Read(&space.Product)
+
 	return
 }
 

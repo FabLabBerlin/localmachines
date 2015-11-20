@@ -16,13 +16,13 @@
     <tbody>
       <tr ng-repeat="space in spaces">
         <td>{{space.Product.Name}}</td>
-        <td>{{space.Product.PricePerUnit}}</td>
+        <td>{{space.Product.Price}}</td>
         <td>{{space.Product.PriceUnit}}</td>
         <td>
           <button 
             type="button" 
             class="btn btn-primary btn-ico pull-right" 
-            ng-click="editReservation(reservation.Id)">
+            ng-click="editSpace(space.Product.Id)">
             <span class="fa fa-edit"></span>
           </button>
         </td>

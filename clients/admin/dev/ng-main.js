@@ -20,6 +20,7 @@ var app = angular.module('fabsmith', [
   'fabsmith.admin.users',
   'fabsmith.admin.randomtoken',
   'fabsmith.admin.settings',
+  'fabsmith.admin.space',
   'fabsmith.admin.spaces',
   'fabsmith.version'
 ]);
