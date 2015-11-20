@@ -9,12 +9,12 @@
       type="text"
       class="form-control"
       id="tutor-name"
-      placeholder="Tutor name"
+      placeholder="Start typing to choose a tutor"
       ng-model="tutor.Name"> 
   </div>
 
   <div class="form-group">
-    <label for="price">Price</label>
+    <label for="price">Price per unit</label>
     <div class="input-group">
       <input
         type="text"
@@ -35,6 +35,26 @@
       value="hour"
       disabled="disabled"
       ng-model="tutor.PriceUnit"> 
+  </div>
+
+  <div class="form-group">
+    <label for="tutor-skills">Skills</label>
+    <div class="well well-sm tag-group">
+      <div class="tag-item">
+        <span class="tag-item-label">MakerBot Replicator</span>
+        <a class="tag-item-btn-remove" href="#"><i class="fa fa-close"></i></a>
+      </div>
+      <div class="tag-item">
+        <span class="tag-item-label">Zing Laser Cutter</span>
+        <a class="tag-item-btn-remove"><i class="fa fa-close"></i></a>
+      </div>
+    </div>
+    <input
+      type="text"
+      class="form-control"
+      id="tutor-skills"
+      placeholder="Start typing here to add a machine skill"
+      ng-model="tutor.Name"> 
   </div>
 
   <div class="form-group">
