@@ -90,6 +90,35 @@ li {
   margin-top: 10px;
   color: #999999;
 }
+/*
+ * Form elements
+ * TODO: improve on this 
+ */
+.tag-group {
+  margin-bottom: 5px;
+  padding: 5px;
+  border-radius: 0;
+  background-color: #ffffff;
+  line-height: 1;
+}
+.tag-item {
+  display: inline-block;
+  border: 1px solid #d9d9d9;
+  margin: 0;
+  margin-right: 5px;
+  padding: 2px;
+  font-size: 10px;
+  line-height: 1;
+}
+.tag-item-label {
+  color: #8d8d8d;
+}
+.tag-item-btn-remove {
+  color: #8d8d8d;
+}
+.tag-item-btn-remove:hover {
+  color: #737373;
+}
 /* 
  * Loading
  */
