@@ -8,9 +8,16 @@ type Space struct {
 	Product Product
 }
 
-func CreateSpace(space *Space) (int64, error) {
-	space.Product.Type = PURCHASE_TYPE_SPACE_RESERVATION
-	return CreateProduct(&space.Product)
+func CreateSpace(name string) (space Space, err error) {
+	space = Space{
+		Product: Product{
+			Name: name,
+			Type: PRODUCT_TYPE_SPACE,
+		},
+	}
+	id, err := CreateProduct(&space.Product)
+	space.Product.Id = id
+	return
 }
 
 func GetAllSpaces() (spaces []*Space, err error) {

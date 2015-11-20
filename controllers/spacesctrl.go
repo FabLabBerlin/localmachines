@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"encoding/json"
 	"github.com/astaxie/beego"
 	"github.com/kr15h/fabsmith/models"
 )
@@ -12,21 +11,20 @@ type SpacesController struct {
 
 // @Title Create
 // @Description Create space
-// @Param	model	body	models.Space	true	"Reservation Name"
+// @Param	name	query	string	true	"Space Name"
 // @Success 200 {object} models.Space
-// @Failure	400	Bad Request
 // @Failure	401	Not authorized
 // @Failure	500	Internal Server Error
 // @router / [post]
 func (this *SpacesController) Create() {
-	dec := json.NewDecoder(this.Ctx.Request.Body)
-	space := models.Space{}
-	if err := dec.Decode(&space); err != nil {
-		beego.Error("Failed to decode json:", err)
-		this.CustomAbort(400, "Failed to create reservation")
+	name := this.GetString("name")
+
+	if !this.IsAdmin() && !this.IsStaff() {
+		beego.Error("Not authorized to create space")
+		this.CustomAbort(401, "Not authorized")
 	}
 
-	_, err := models.CreateSpace(&space)
+	space, err := models.CreateSpace(name)
 	if err != nil {
 		beego.Error("Failed to create space", err)
 		this.CustomAbort(500, "Failed to create space")

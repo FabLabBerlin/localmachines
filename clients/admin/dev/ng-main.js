@@ -16,11 +16,11 @@ var app = angular.module('fabsmith', [
   'fabsmith.admin.membership',
   'fabsmith.admin.reservation',
   'fabsmith.admin.reservations',
-  'fabsmith.admin.bookings',
   'fabsmith.admin.invoices',
   'fabsmith.admin.users',
   'fabsmith.admin.randomtoken',
   'fabsmith.admin.settings',
+  'fabsmith.admin.spaces',
   'fabsmith.version'
 ]);
 
