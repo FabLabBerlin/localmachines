@@ -130,8 +130,8 @@ const getMonthlyBills = [
     }
     var purchases = billInfo.Purchases;
     var purchasesByMonth = _.groupBy(purchases.Data, function(p) {
-      var info = p.Activation ? p.Activation : p.Reservation;
-      return moment(info.TimeStart).format('MMM YYYY');
+      //var info = p.Activation ? p.Activation : p.Reservation;
+      return moment(p.TimeStart).format('MMM YYYY');
     });
     var monthlyBills = _.map(billMonths, function(m) {
       var month = m.format('MMM YYYY');
@@ -159,15 +159,8 @@ const getMonthlyBills = [
        * Collect purchases and sum for the totals
        */
       _.eachRight(purchasesByMonth[month], function(info) {
-        var timeStart;
-        var timeEnd;
-        if (info.Activation) {
-          timeStart = moment(info.Activation.TimeStart);
-          timeEnd = moment(info.Activation.TimeEnd);
-        } else {
-          timeStart = moment(info.Reservation.TimeStart);
-          timeEnd = moment(info.Reservation.TimeEnd);
-        }
+        var timeStart = moment(info.TimeStart);
+        var timeEnd = moment(info.TimeEnd);
 
         var duration = moment.duration(timeEnd.diff(timeStart))
                              .asSeconds();

@@ -761,7 +761,7 @@ func (this *UsersController) GetUserName() {
 	var user *models.User
 	user, err = models.GetUser(uid)
 	if err != nil {
-		beego.Error("Failed not get user name")
+		beego.Error("Failed not get user name:", err)
 		this.CustomAbort(403, "Failed not get user name")
 	}
 	response := models.UserNameResponse{}

@@ -3,19 +3,65 @@ package models
 import (
 	"fmt"
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/orm"
 	"time"
+)
+
+const (
+	PURCHASE_TYPE_ACTIVATION        = "activation"
+	PURCHASE_TYPE_RESERVATION       = "reservation"
+	PURCHASE_TYPE_SPACE_RESERVATION = "space_reservation"
 )
 
 // This is a purchase row that appears in the XLSX file
 type Purchase struct {
-	Activation      *Activation
-	Reservation     *Reservation
-	Machine         *Machine
-	MachineUsage    time.Duration
-	User            User
-	Memberships     []*Membership
-	TotalPrice      float64
-	DiscountedTotal float64
+	Id        int64 `orm:"auto";"pk"`
+	Type      string
+	ProductId int64
+	Created   time.Time `orm:"type(datetime)"`
+
+	User   User `orm:"-" json:"-"`
+	UserId int64
+
+	TimeStart    time.Time `orm:"type(datetime)"`
+	TimeEnd      time.Time `orm:"type(datetime)"`
+	Quantity     float64
+	PricePerUnit float64
+	PriceUnit    string
+	Vat          float64
+
+	TotalPrice      float64 `orm:"-"`
+	DiscountedTotal float64 `orm:"-"`
+
+	// Activation fields:
+	ActivationRunning bool
+
+	// Reservation fields:
+	ReservationDisabled bool
+
+	// Activation+Reservation fields:
+	Machine   *Machine `orm:"-"`
+	MachineId int64
+
+	// Old fields:
+	Activation   *Activation   `orm:"-"`
+	Reservation  *Reservation  `orm:"-"`
+	MachineUsage time.Duration `orm:"-"`
+	Memberships  []*Membership `orm:"-"`
+}
+
+func (this *Purchase) TableName() string {
+	return "purchases"
+}
+
+func init() {
+	orm.RegisterModel(new(Purchase))
+}
+
+func DeletePurchase(id int64) (err error) {
+	o := orm.NewOrm()
+	_, err = o.Delete(&Purchase{Id: id})
+	return
 }
 
 func (this *Purchase) MembershipStr() string {
@@ -37,50 +83,32 @@ func (this *Purchase) MembershipStr() string {
 	return membershipStr
 }
 
-func (this *Purchase) PricePerUnit() float64 {
-	if this.Reservation != nil {
-		if this.Reservation.CurrentPrice != 0 {
-			return this.Reservation.CurrentPrice / 2
-		} else {
-			return 0
-		}
+func (this *Purchase) quantityFromTimes() (quantity float64) {
+	var timeEnd time.Time
+	if this.TimeEnd.IsZero() {
+		timeEnd = time.Now()
 	} else {
-		return this.Activation.CurrentMachinePrice
+		timeEnd = this.TimeEnd
 	}
-}
 
-func (this *Purchase) PriceUnit() string {
-	if this.Activation != nil {
-		return this.Activation.CurrentMachinePriceUnit
-	} else {
-		return this.Reservation.PriceUnit()
-	}
-}
+	seconds := timeEnd.Sub(this.TimeStart).Seconds()
 
-func (this *Purchase) Usage() float64 {
-	if this.Activation != nil {
-		return this.MachineUsage.Minutes()
-	} else {
-		return float64(this.Reservation.Slots())
+	switch this.PriceUnit {
+	case "minute":
+		quantity = float64(seconds) / 60
+	case "30 minutes":
+		quantity = float64(seconds) / 1800
+	case "hour":
+		quantity = float64(seconds) / 3600
+	default:
+		beego.Error("unknown price unit ", this.PriceUnit)
 	}
+
+	return
 }
 
 func PriceTotalExclDisc(p *Purchase) float64 {
-	if p.Activation != nil {
-		var pricePerSecond float64
-		switch p.Activation.CurrentMachinePriceUnit {
-		case "minute":
-			pricePerSecond = float64(p.Activation.CurrentMachinePrice) / 60
-			break
-		case "hour":
-			pricePerSecond = float64(p.Activation.CurrentMachinePrice) / 60 / 60
-			break
-		}
-		ret := p.MachineUsage.Seconds() * pricePerSecond
-		return ret
-	} else {
-		return float64(p.Reservation.Slots()) * p.PricePerUnit()
-	}
+	return p.Quantity * p.PricePerUnit
 }
 
 func PriceTotalDisc(p *Purchase) (float64, error) {
@@ -120,18 +148,8 @@ func (this Purchases) Len() int {
 }
 
 func (this Purchases) Less(i, j int) bool {
-	var timeStartI time.Time
-	var timeStartJ time.Time
-	if (*this.Data[i]).Activation != nil {
-		timeStartI = (*this.Data[i]).Activation.TimeStart
-	} else {
-		timeStartI = (*this.Data[i]).Reservation.TimeStart
-	}
-	if (*this.Data[j]).Activation != nil {
-		timeStartJ = (*this.Data[j]).Activation.TimeStart
-	} else {
-		timeStartI = (*this.Data[j]).Reservation.TimeStart
-	}
+	var timeStartI = (*this.Data[i]).TimeStart
+	var timeStartJ = (*this.Data[j]).TimeStart
 	if timeStartI.Before(timeStartJ) {
 		return true
 	} else if timeStartJ.Before(timeStartI) {
@@ -142,11 +160,14 @@ func (this Purchases) Less(i, j int) bool {
 }
 
 func (this Purchase) ProductName() string {
-	if this.Activation != nil {
+	beego.Info("Purchase.Type = ", this.Type)
+	switch this.Type {
+	case PURCHASE_TYPE_ACTIVATION:
 		return this.Machine.Name
-	} else {
+	case PURCHASE_TYPE_RESERVATION:
 		return "Reservation (" + this.Machine.Name + ")"
 	}
+	return "Unnamed product"
 }
 
 func (this Purchases) Swap(i, j int) {

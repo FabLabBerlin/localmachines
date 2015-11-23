@@ -15,7 +15,6 @@ type ActivationsController struct {
 // @Param	startDate		query 	string	true		"Period start date"
 // @Param	endDate		query 	string	true		"Period end date"
 // @Param	userId		query 	int	true		"User ID"
-// @Param	includeInvoiced		query 	bool	true		"Whether to include already invoiced activations"
 // @Param	itemsPerPage		query 	int	true		"Items per page or max number of items to return"
 // @Param	page		query 	int	true		"Current page to show"
 // @Success 200 {object} models.GetActivationsResponse
@@ -34,7 +33,6 @@ func (this *ActivationsController) GetAll() {
 	var startDate string
 	var endDate string
 	var userId int64
-	var includeInvoiced bool
 	var itemsPerPage int64
 	var page int64
 
@@ -57,12 +55,6 @@ func (this *ActivationsController) GetAll() {
 		this.CustomAbort(403, "Failed to get activations")
 	}
 
-	includeInvoiced, err = this.GetBool("includeInvoiced")
-	if err != nil {
-		beego.Error("Could not get includeInvoiced request variable:", err)
-		this.CustomAbort(403, "Failed to get activations")
-	}
-
 	itemsPerPage, err = this.GetInt64("itemsPerPage")
 	if err != nil {
 		beego.Error("Could not get itemsPerPage request variable:", err)
@@ -78,7 +70,6 @@ func (this *ActivationsController) GetAll() {
 	beego.Trace("startDate:", startDate)
 	beego.Trace("endDate:", endDate)
 	beego.Trace("userId:", userId)
-	beego.Trace("includeInvoiced:", includeInvoiced)
 	beego.Trace("itemsPerPage:", itemsPerPage)
 	beego.Trace("page:", page)
 
@@ -108,7 +99,7 @@ func (this *ActivationsController) GetAll() {
 	// Get activations
 	var activations *[]models.Activation
 	activations, err = models.GetActivations(
-		startTime, endTime, userId, includeInvoiced, itemsPerPage, page)
+		startTime, endTime, userId, itemsPerPage, page)
 	if err != nil {
 		beego.Error("Failed to get activations:", err)
 		this.CustomAbort(403, "Failed to get activations")
@@ -117,7 +108,7 @@ func (this *ActivationsController) GetAll() {
 	// Get total activation count
 	var numActivations int64
 	numActivations, err = models.GetNumActivations(
-		startTime, endTime, userId, includeInvoiced)
+		startTime, endTime, userId)
 	if err != nil {
 		beego.Error("Failed to get number of activations:", err)
 		this.CustomAbort(403, "Failed to get activations")
@@ -231,7 +222,7 @@ func (this *ActivationsController) Create() {
 	var startTime time.Time = time.Now()
 	activationId, err = models.CreateActivation(machineId, userId, startTime)
 	if err != nil {
-		beego.Error("Failed to create activation")
+		beego.Error("Failed to create activation:", err)
 		this.CustomAbort(403, "Failed to create activation")
 	}
 

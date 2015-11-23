@@ -92,11 +92,7 @@ func (this MetricsData) sumActivationsBy(timeFormat string) (sums map[string]flo
 				return nil, fmt.Errorf("PriceTotalDisc: %v", err)
 			}
 			var key string
-			if purchase.Activation != nil {
-				key = purchase.Activation.TimeStart.Format(timeFormat)
-			} else {
-				key = purchase.Reservation.TimeStart.Format(timeFormat)
-			}
+			key = purchase.TimeStart.Format(timeFormat)
 			sums[key] = sums[key] + priceTotalDisc
 		}
 	}
@@ -147,7 +143,7 @@ func (this MetricsData) sumMinutesBy(timeFormat string) (sums map[string]float64
 		if userSummary.User.UserRole != STAFF && userSummary.User.UserRole != ADMIN {
 			for _, purchase := range userSummary.Purchases.Data {
 				if activation := purchase.Activation; activation != nil {
-					key := purchase.Activation.TimeStart.Format(timeFormat)
+					key := purchase.TimeStart.Format(timeFormat)
 					sums[key] = sums[key] + purchase.MachineUsage.Minutes()
 				}
 			}

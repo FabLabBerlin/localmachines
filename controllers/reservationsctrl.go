@@ -88,16 +88,16 @@ func (this *ReservationsController) Put() {
 		this.CustomAbort(401, "Unauthorized")
 	}
 
-	var reservation models.Reservation
+	reservation := &models.Reservation{}
 
 	dec := json.NewDecoder(this.Ctx.Request.Body)
 	defer this.Ctx.Request.Body.Close()
-	if err := dec.Decode(&reservation); err != nil {
+	if err := dec.Decode(reservation); err != nil {
 		beego.Error("Failed to decode json:", err)
 		this.CustomAbort(400, "Failed to update Reservation")
 	}
 
-	if err := models.UpdateReservation(&reservation); err != nil {
+	if err := models.UpdateReservation(reservation); err != nil {
 		beego.Error("Failed to update reservation:", err)
 		this.CustomAbort(500, "Failed to update Reservation")
 	}
@@ -139,7 +139,7 @@ func (this *ReservationsController) Delete() {
 			beego.Error("Failed to get reservation")
 			this.CustomAbort(500, "Internal Server Error")
 		}
-		if reservation.UserId != sessUserId {
+		if reservation.UserId() != sessUserId {
 			beego.Error("Not authorized")
 			this.CustomAbort(401, "Not authorized")
 		}

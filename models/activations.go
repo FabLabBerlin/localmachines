@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -9,35 +10,13 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
-// Activation type/model to hold information of single activation.
 type Activation struct {
-	Id                          int64 `orm:"auto";"pk"`
-	InvoiceId                   int   `orm:"null"`
-	UserId                      int64
-	MachineId                   int64
-	Active                      bool
-	TimeStart                   time.Time
-	TimeEnd                     time.Time `orm:"null"`
-	TimeTotal                   int64
-	UsedKwh                     float32
-	DiscountPercents            float32
-	DiscountFixed               float32
-	VatRate                     float32
-	CommentRef                  string `orm:"size(255)"`
-	Invoiced                    bool
-	Changed                     bool
-	CurrentMachinePrice         float64
-	CurrentMachinePriceCurrency string
-	CurrentMachinePriceUnit     string
+	json.Marshaler
+	purchase Purchase
 }
 
-// Returns mysql table name of the table mapped to the Activation model.
-func (this *Activation) TableName() string {
-	return "activations"
-}
-
-func init() {
-	orm.RegisterModel(new(Activation))
+func (this *Activation) MarshalJSON() ([]byte, error) {
+	return json.Marshal(this.purchase)
 }
 
 // Type to be used as response model for the HTTP GET activations request.
@@ -58,12 +37,13 @@ func GetUserActivations(startTime time.Time,
 	o := orm.NewOrm()
 
 	query := fmt.Sprintf("SELECT a.* FROM %s a JOIN %s u ON a.user_id=u.id "+
-		"WHERE a.time_start>? AND a.time_end<? AND a.active=false AND a.user_id=? "+
+		"WHERE a.type=? AND a.time_start>? AND a.time_end<? AND a.activation_running=false AND a.user_id=? "+
 		"ORDER BY u.first_name ASC, a.time_start DESC",
-		act.TableName(),
+		act.purchase.TableName(),
 		usr.TableName())
 
 	_, err := o.Raw(query,
+		PURCHASE_TYPE_ACTIVATION,
 		startTime.Format("2006-01-02"),
 		endTime.Format("2006-01-02"),
 		userId).QueryRows(&activations)
@@ -90,7 +70,6 @@ func GetUserActivationsStartTime(userId int64) (startTime time.Time, err error) 
 func GetActivations(startTime time.Time,
 	endTime time.Time,
 	userId int64,
-	includeInvoiced bool,
 	itemsPerPage int64,
 	page int64) (*[]Activation, error) {
 
@@ -99,7 +78,7 @@ func GetActivations(startTime time.Time,
 	}
 
 	// Get activations from database
-	activations := []Activation{}
+	purchases := []*Purchase{}
 	act := Activation{}
 	usr := User{}
 	o := orm.NewOrm()
@@ -108,25 +87,31 @@ func GetActivations(startTime time.Time,
 	pageOffset = itemsPerPage * (page - 1)
 
 	query := fmt.Sprintf("SELECT a.* FROM %s a JOIN %s u ON a.user_id=u.id "+
-		"WHERE a.time_start>? AND a.time_end<? AND a.invoiced=? AND a.active=false "+
+		"WHERE a.type=? AND a.time_start>? AND a.time_end<? AND a.activation_running=false "+
 		"ORDER BY u.first_name ASC, a.time_start DESC "+
 		"LIMIT ? OFFSET ?",
-		act.TableName(),
+		act.purchase.TableName(),
 		usr.TableName())
 
-	num, err := o.Raw(query,
+	_, err := o.Raw(query,
+		PURCHASE_TYPE_ACTIVATION,
 		startTime.Format("2006-01-02"),
 		endTime.Format("2006-01-02"),
-		includeInvoiced,
 		itemsPerPage,
-		pageOffset).QueryRows(&activations)
+		pageOffset).QueryRows(&purchases)
 
 	if err != nil {
 		msg := fmt.Sprintf("Failed to get activations: %v", err)
 		return nil, errors.New(msg)
 	}
 
-	beego.Trace("Got num activations:", num)
+	activations := make([]Activation, 0, len(purchases))
+	for _, purchase := range purchases {
+		act := Activation{
+			purchase: *purchase,
+		}
+		activations = append(activations, act)
+	}
 
 	return &activations, nil
 }
@@ -135,18 +120,17 @@ func GetActivations(startTime time.Time,
 // Used together with GetActivations.
 func GetNumActivations(startTime time.Time,
 	endTime time.Time,
-	userId int64,
-	includeInvoiced bool) (int64, error) {
+	userId int64) (int64, error) {
 
 	// Count activations matching params
 	o := orm.NewOrm()
 	act := Activation{}
-	cnt, err := o.QueryTable(act.TableName()).
+	cnt, err := o.QueryTable(act.purchase.TableName()).
 		Filter("timeStart__gt", startTime).
 		Filter("timeEnd__lt", endTime).
-		Filter("invoiced", includeInvoiced).
 		//Filter("userId", userId).
-		Filter("active", false).
+		Filter("ActivationRunning", false).
+		Filter("type", PURCHASE_TYPE_ACTIVATION).
 		Count()
 
 	if err != nil {
@@ -159,24 +143,28 @@ func GetNumActivations(startTime time.Time,
 	return cnt, nil
 }
 
-// Gets only active activations (active meaning that users are using
+// Gets only activation_running activations (activation_running meaning that users are using
 // the machine/resource currently)
 func GetActiveActivations() ([]*Activation, error) {
-	var activations []*Activation
+	var purchases []*Purchase
 	o := orm.NewOrm()
 	act := Activation{}
-	num, err := o.QueryTable(act.TableName()).
-		Filter("active", true).All(&activations)
+	num, err := o.QueryTable(act.purchase.TableName()).
+		Filter("activation_running", true).
+		Filter("type", PURCHASE_TYPE_ACTIVATION).
+		All(&purchases)
 	if err != nil {
 		return nil, errors.New("Failed to get active activations")
 	}
 	beego.Trace("Got num activations:", num)
 
-	// Calculate total time for all activations
-	for i := 0; i < len(activations); i++ {
-		timeNow := time.Now()
-		activations[i].TimeTotal =
-			int64(timeNow.Sub(activations[i].TimeStart).Seconds())
+	activations := make([]*Activation, 0, len(purchases))
+	for _, purchase := range purchases {
+		a := &Activation{
+			purchase: *purchase,
+		}
+		a.purchase.Quantity = a.purchase.quantityFromTimes()
+		activations = append(activations, a)
 	}
 
 	return activations, nil
@@ -200,8 +188,8 @@ func CreateActivation(machineId, userId int64, startTime time.Time) (
 	var dupActivations []Activation
 	act := Activation{} // Used to get table name of the model
 	query := fmt.Sprintf("SELECT id FROM %s WHERE machine_id = ? "+
-		"AND user_id = ? AND active = 1", act.TableName())
-	numDuplicates, err := o.Raw(query, machineId, userId).
+		"AND user_id = ? AND activation_running = 1 AND type = ?", act.purchase.TableName())
+	numDuplicates, err := o.Raw(query, machineId, userId, PURCHASE_TYPE_ACTIVATION).
 		QueryRows(&dupActivations)
 	if err != nil {
 		return 0, fmt.Errorf("Could not get duplicate activations: %v", err)
@@ -225,17 +213,17 @@ func CreateActivation(machineId, userId int64, startTime time.Time) (
 	}
 
 	newActivation := Activation{}
-	newActivation.UserId = userId
-	newActivation.MachineId = machineId
-	newActivation.Active = true
-	newActivation.TimeStart = startTime
+	newActivation.purchase.Type = PURCHASE_TYPE_ACTIVATION
+	newActivation.purchase.UserId = userId
+	newActivation.purchase.MachineId = machineId
+	newActivation.purchase.ActivationRunning = true
+	newActivation.purchase.TimeStart = startTime
 
 	// Save current activation price, currency and price unit (minute, hour, pcs)
-	newActivation.CurrentMachinePrice = mch.Price
-	newActivation.CurrentMachinePriceCurrency = "€"
-	newActivation.CurrentMachinePriceUnit = mch.PriceUnit
+	newActivation.purchase.PricePerUnit = mch.Price
+	newActivation.purchase.PriceUnit = mch.PriceUnit
 
-	activationId, err = o.Insert(&newActivation)
+	activationId, err = o.Insert(&newActivation.purchase)
 	if err != nil {
 		beego.Error("Failed to insert activation:", err)
 		return 0, fmt.Errorf("Failed to insert activation %v", err)
@@ -256,10 +244,10 @@ func CreateActivation(machineId, userId int64, startTime time.Time) (
 // Gets pointer to activation store by activation ID.
 func GetActivation(activationId int64) (activation *Activation, err error) {
 	activation = &Activation{}
-	activation.Id = activationId
+	activation.purchase.Id = activationId
 
 	o := orm.NewOrm()
-	err = o.Read(activation)
+	err = o.Read(&activation.purchase)
 
 	if err != nil {
 		beego.Error("Failed to read activation:", err)
@@ -278,9 +266,9 @@ func CloseActivation(activationId int64, endTime time.Time) error {
 	}
 
 	// Calculate activation duration and update activation.
-	activation.Active = false
-	activation.TimeEnd = endTime
-	activation.TimeTotal = int64(endTime.Sub(activation.TimeStart).Seconds())
+	activation.purchase.ActivationRunning = false
+	activation.purchase.TimeEnd = endTime
+	activation.purchase.Quantity = activation.purchase.quantityFromTimes()
 
 	err = UpdateActivation(activation)
 	if err != nil {
@@ -290,7 +278,7 @@ func CloseActivation(activationId int64, endTime time.Time) error {
 
 	// Make the machine available again.
 	var machine *Machine
-	machine, err = GetMachine(activation.MachineId)
+	machine, err = GetMachine(activation.purchase.MachineId)
 	if err != nil {
 		beego.Error("Failed to get machine:", err)
 		return fmt.Errorf("Failed to get machine: %v", err)
@@ -310,7 +298,7 @@ func CloseActivation(activationId int64, endTime time.Time) error {
 // existing activation store.
 func UpdateActivation(activation *Activation) error {
 	o := orm.NewOrm()
-	num, err := o.Update(activation)
+	num, err := o.Update(&activation.purchase)
 
 	if err != nil {
 		beego.Error("Failed to update activation:", err)
@@ -329,42 +317,37 @@ func DeleteActivation(activationId int64) error {
 	var err error
 	var activation Activation
 	o := orm.NewOrm()
-	err = o.QueryTable(activation.TableName()).
+	err = o.QueryTable(activation.purchase.TableName()).
 		Filter("Id", activationId).
-		One(&activation, "MachineId")
+		Filter("type", PURCHASE_TYPE_ACTIVATION).
+		One(&activation.purchase, "MachineId")
 	if err != nil {
 		beego.Error("Failed to get machine ID of the activation")
 		return err
 	}
 	m := Machine{}
 	_, err = o.QueryTable(m.TableName()).
-		Filter("Id", activation.MachineId).
+		Filter("Id", activation.purchase.MachineId).
 		Update(orm.Params{"available": true})
 	if err != nil {
 		beego.Error("Failed to update machine as available")
 		return err
 	}
 
-	// Remove the activation
-	_, err = o.QueryTable(activation.TableName()).
-		Filter("Id", activationId).Delete()
-	if err != nil {
-		beego.Error("Failed to delete activation")
-		return err
-	}
-	return nil
+	return DeletePurchase(activation.purchase.Id)
 }
 
 // Gets the machine ID of a specific activation defined by activation ID.
 func GetActivationMachineId(activationId int64) (int64, error) {
 	activationModel := Activation{}
 	o := orm.NewOrm()
-	err := o.QueryTable(activationModel.TableName()).
+	err := o.QueryTable(activationModel.purchase.TableName()).
 		Filter("id", activationId).
-		One(&activationModel, "MachineId")
+		Filter("type", PURCHASE_TYPE_ACTIVATION).
+		One(&activationModel.purchase, "MachineId")
 	if err != nil {
 		beego.Error("Could not get activation")
 		return 0, err
 	}
-	return int64(activationModel.MachineId), nil
+	return activationModel.purchase.MachineId, nil
 }

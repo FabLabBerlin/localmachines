@@ -16,7 +16,6 @@ var app = angular.module('fabsmith', [
   'fabsmith.admin.membership',
   'fabsmith.admin.reservation',
   'fabsmith.admin.reservations',
-  'fabsmith.admin.bookings',
   'fabsmith.admin.invoices',
   'fabsmith.admin.users',
   'fabsmith.admin.randomtoken',
@@ -24,7 +23,10 @@ var app = angular.module('fabsmith', [
   'fabsmith.version',
   'fabsmith.admin.tutoring',
   'fabsmith.admin.tutoring.tutor',
-  'fabsmith.admin.tutoring.purchase'
+  'fabsmith.admin.tutoring.purchase',
+  'fabsmith.admin.space',
+  'fabsmith.admin.spaces',
+  'fabsmith.version'
 ]);
 
 // This checks whether an user is logged in always before switching to a new view

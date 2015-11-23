@@ -2,7 +2,6 @@ package models
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/ChimeraCoder/anaconda"
 	"github.com/astaxie/beego"
@@ -146,10 +145,10 @@ func GetAllMachines() ([]*Machine, error) {
 	a := Activation{}
 	for i := 0; i < len(machines); i++ {
 		var numActivations int64
-		query := fmt.Sprintf("SELECT COUNT(*) FROM %s WHERE machine_id=?",
-			a.TableName())
+		query := fmt.Sprintf("SELECT COUNT(*) FROM %s WHERE TYPE=? AND machine_id=?",
+			a.purchase.TableName())
 		//beego.Trace("Counting activations for machine with ID", machines[i].Id)
-		err = o.Raw(query, machines[i].Id).QueryRow(&numActivations)
+		err = o.Raw(query, PURCHASE_TYPE_ACTIVATION, machines[i].Id).QueryRow(&numActivations)
 		if err != nil {
 			return nil, fmt.Errorf("Failed to read activations: %v", err)
 		}
@@ -193,43 +192,6 @@ func UpdateMachine(machine *Machine) error {
 	}
 
 	beego.Trace("UpdateMachine: Rows affected:", num)
-	return nil
-}
-
-// Delete machine from the database
-func DeleteMachine(machineId int64) error {
-	var num int64
-	var err error
-	o := orm.NewOrm()
-
-	// delete machine
-	num, err = o.Delete(&Machine{Id: machineId})
-	if err != nil {
-		return errors.New(
-			fmt.Sprintf("Failed to delete machine: %v", err))
-	}
-	beego.Trace("Deleted num machines:", num)
-
-	// Delete activations assigned to machine
-	act := Activation{}
-	num, err = o.QueryTable(act.TableName()).Filter("machine_id",
-		machineId).Delete()
-	if err != nil {
-		return errors.New(
-			fmt.Sprintf("Failed to delete activations: %v", err))
-	}
-	beego.Trace("Deleted num activations:", num)
-
-	// Delete user machine permissions of this machine
-	perm := Permission{}
-	num, err = o.QueryTable(perm.TableName()).Filter("machine_id",
-		machineId).Delete()
-	if err != nil {
-		return errors.New(
-			fmt.Sprintf("Failed to delete machine permissions: %v", err))
-	}
-	beego.Trace("Deleted num machine permissions:", num)
-
 	return nil
 }
 
