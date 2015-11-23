@@ -47,7 +47,11 @@
   <table class="table table-bordered table-striped table-hover">
     <thead>
       <tr>
-        <th>Name</th>
+        <th>Space</th>
+        <th>User</th>
+        <th>Start</th>
+        <th>End</th>
+        <th>Total time</th>
         <th>Price Per Unit</th>
         <th>Price Unit</th>
         <th></th>
@@ -55,8 +59,12 @@
     </thead>
     <tbody>
       <tr ng-repeat="spacePurchase in spacePurchases">
-        <td>{{spacePurchase.Name}}</td>
-        <td>{{spacePurchase.Price}}</td>
+        <td>{{spacePurchase.Product.Name}}</td>
+        <td>{{spacePurchase.User.FirstName}} {{spacePurchase.User.LastName}} ({{spacePurchase.User.Email}})</td>
+        <td>{{spacePurchase.TimeStartLocal}}</td>
+        <td>{{spacePurchase.TimeEndLocal}}</td>
+        <td>{{spacePurchase.Quantity}}</td>
+        <td>{{spacePurchase.PricePerUnit}}</td>
         <td>{{spacePurchase.PriceUnit}}</td>
         <td>
           <button 

@@ -15,6 +15,8 @@ app.controller('SpacesCtrl',
  function($scope, $routeParams, $http, $location, randomToken) {
 
   $scope.spaces = [];
+  $scope.spacesById = {};
+  $scope.usersById = {};
 
   /*
    *
@@ -34,9 +36,35 @@ app.controller('SpacesCtrl',
       $scope.spaces = _.sortBy(data, function(space) {
         return space.Product.Name;
       });
+      _.each($scope.spaces, function(space) {
+        $scope.spacesById[space.Product.Id] = space;
+      });
+      loadUsers();
     })
     .error(function() {
       toastr.error('Failed to get spaces');
+    });
+  }
+
+  function loadUsers() {
+    $http({
+      method: 'GET',
+      url: '/api/users',
+      params: {
+        ac: new Date().getTime()
+      }
+    })
+    .success(function(data) {
+      $scope.users = _.sortBy(data, function(user) {
+        return user.FirstName + ' ' + user.LastName;
+      });
+      _.each($scope.users, function(user) {
+        $scope.usersById[user.Id] = user;
+      });
+      loadSpacePurchases();
+    })
+    .error(function() {
+      toastr.error('Failed to get reservations');
     });
   }
 
@@ -95,6 +123,17 @@ app.controller('SpacesCtrl',
       $scope.spacePurchases = _.sortBy(data, function(spacePurchase) {
         return spacePurchase.Name;
       });
+      $scope.spacePurchases = _.map($scope.spacePurchases, function(sp) {
+        var space = $scope.spacesById[sp.ProductId];
+        if (space) {
+          sp.Product = space.Product;
+        }
+        var user = $scope.usersById[sp.UserId];
+        sp.User = user;
+        sp.TimeStartLocal = moment(sp.TimeStart).tz('Europe/Berlin').format('YYYY-MM-DD HH:mm');
+        sp.TimeEndLocal = moment(sp.TimeEnd).tz('Europe/Berlin').format('YYYY-MM-DD HH:mm');
+        return sp;
+      });
     })
     .error(function() {
       toastr.error('Failed to get space purchases');
@@ -122,7 +161,6 @@ app.controller('SpacesCtrl',
   };
 
   loadSpaces();
-  loadSpacePurchases();
 
 }]); // app.controller
 

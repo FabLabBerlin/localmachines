@@ -33,6 +33,7 @@ app.controller('SpacePurchaseCtrl',
       $scope.spaces = _.sortBy(data, function(space) {
         return space.Product.Name;
       });
+      loadSpacePurchase();
     })
     .error(function() {
       toastr.error('Failed to get spaces');
@@ -72,6 +73,7 @@ app.controller('SpacePurchaseCtrl',
       _.each($scope.users, function(user) {
         $scope.usersById[user.Id] = user;
       });
+      loadSpaces();
     })
     .error(function() {
       toastr.error('Failed to get reservations');
@@ -108,7 +110,7 @@ app.controller('SpacePurchaseCtrl',
       data: $scope.spacePurchase,
       transformRequest: function(data) {
         var transformed = _.extend({}, data);
-        transformed.SpaceId = parseInt(data.SpaceId);
+        transformed.ProductId = parseInt(data.ProductId);
         transformed.TimeStart = moment.tz(data.TimeStartLocal, 'Europe/Berlin').toDate();
         transformed.TimeEnd = moment.tz(data.TimeEndLocal, 'Europe/Berlin').toDate();
         transformed.UserId = parseInt(data.UserId);
@@ -161,8 +163,6 @@ app.controller('SpacePurchaseCtrl',
     });
   };
 
-  loadSpaces();
-  loadSpacePurchase();
   loadUsers();
 
 }]); // app.controller
