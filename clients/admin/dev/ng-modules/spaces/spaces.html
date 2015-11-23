@@ -40,4 +40,44 @@
     </button>
   </div>
 
+  <hr>
+
+  <h1>Space Reservations</h1>
+
+  <table class="table table-bordered table-striped table-hover">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Price Per Unit</th>
+        <th>Price Unit</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="spaceReservation in spaceReservations">
+        <td>{{spaceReservation.Product.Name}}</td>
+        <td>{{spaceReservation.Product.Price}}</td>
+        <td>{{spaceReservation.Product.PriceUnit}}</td>
+        <td>
+          <button 
+            type="button" 
+            class="btn btn-primary btn-ico pull-right" 
+            ng-click="editSpaceReservation(spaceReservation.Product.Id)">
+            <span class="fa fa-edit"></span>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr>
+
+  <div class="pull-right">
+    <button 
+      class="btn btn-primary btn-lg" 
+      ng-click="addSpacePrompt()">
+      <i class="fa fa-plus"></i>&nbsp;Add
+    </button>
+  </div>
+
 </div> <!-- /container -->
