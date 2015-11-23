@@ -96,6 +96,41 @@ li {
   color: #999999;
 }
 
+/*
+ * Form elements
+ * TODO: improve on this 
+ */
+
+.tag-group {
+  margin-bottom: 5px;
+  padding: 5px;
+  border-radius: 0;
+  background-color: #ffffff;
+  line-height: 1;
+}
+
+.tag-item {
+  display: inline-block;
+  border: 1px solid lighten(@color-neutral, 20%);
+  margin: 0;
+  margin-right: 5px;
+  padding: 2px;
+  font-size: 10px;
+  line-height: 1;
+}
+
+.tag-item-label {
+  color: darken(@color-neutral, 10%);
+}
+
+.tag-item-btn-remove {
+  color: darken(@color-neutral, 10%);
+  &:hover {
+    color: darken(@color-neutral, 20%);
+  }
+}
+  
+
 /* 
  * Loading
  */

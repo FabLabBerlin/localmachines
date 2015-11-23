@@ -1,0 +1,86 @@
+<div id="admin-tutor" class="container-fluid">
+
+  <h1>Tutor</h1>
+  <hr>
+
+  <div class="form-group">
+    <label for="tutor-name">Tutor name</label>
+    <input
+      type="text"
+      class="form-control"
+      id="tutor-name"
+      placeholder="Start typing to choose a tutor"
+      ng-model="tutor.Name"> 
+  </div>
+
+  <div class="form-group">
+    <label for="price">Price per unit</label>
+    <div class="input-group">
+      <input
+        type="text"
+        class="form-control"
+        id="price"
+        placeholder="Price"
+        ng-model="tutor.Price">
+      <span class="input-group-addon">€</span>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="price-unit">Price unit</label>
+    <input
+      type="text"
+      class="form-control"
+      id="price-unit"
+      value="hour"
+      disabled="disabled"
+      ng-model="tutor.PriceUnit"> 
+  </div>
+
+  <div class="form-group">
+    <label for="tutor-skills">Skills</label>
+    <div class="well well-sm tag-group">
+      <div class="tag-item">
+        <span class="tag-item-label">MakerBot Replicator</span>
+        <a class="tag-item-btn-remove" href="#"><i class="fa fa-close"></i></a>
+      </div>
+      <div class="tag-item">
+        <span class="tag-item-label">Zing Laser Cutter</span>
+        <a class="tag-item-btn-remove"><i class="fa fa-close"></i></a>
+      </div>
+    </div>
+    <input
+      type="text"
+      class="form-control"
+      id="tutor-skills"
+      placeholder="Start typing here to add a machine skill"
+      ng-model="tutor.Name"> 
+  </div>
+
+  <div class="form-group">
+    <label for="comments">Comments</label>
+    <textarea 
+      class="form-control" 
+      rows="3"
+      id="comments"
+      ng-model="tutor.Comments">
+    </textarea>
+  </div>
+
+  <hr>
+
+  <div>
+    <button 
+      class="btn btn-lg btn-danger"
+      ng-click="cancel()">
+      Cancel
+    </button>
+  
+    <button 
+      class="btn btn-lg btn-primary"
+      ng-click="save()">
+      Save
+    </button>
+  </div>
+
+</div> <!-- /container -->
