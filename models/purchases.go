@@ -8,9 +8,9 @@ import (
 )
 
 const (
-	PURCHASE_TYPE_ACTIVATION        = "activation"
-	PURCHASE_TYPE_RESERVATION       = "reservation"
-	PURCHASE_TYPE_SPACE_RESERVATION = "space_reservation"
+	PURCHASE_TYPE_ACTIVATION     = "activation"
+	PURCHASE_TYPE_RESERVATION    = "reservation"
+	PURCHASE_TYPE_SPACE_PURCHASE = "space_purchase"
 )
 
 // This is a purchase row that appears in the XLSX file

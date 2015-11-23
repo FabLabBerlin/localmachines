@@ -25,6 +25,7 @@ var app = angular.module('fabsmith', [
   'fabsmith.admin.tutoring.tutor',
   'fabsmith.admin.tutoring.purchase',
   'fabsmith.admin.space',
+  'fabsmith.admin.space.purchase',
   'fabsmith.admin.spaces',
   'fabsmith.version'
 ]);

@@ -16,6 +16,12 @@ app.controller('SpacesCtrl',
 
   $scope.spaces = [];
 
+  /*
+   *
+   * Spaces functions
+   *
+   */
+
   function loadSpaces() {
     $http({
       method: 'GET',
@@ -71,7 +77,52 @@ app.controller('SpacesCtrl',
     $location.path('/spaces/' + id);
   };
 
+  /*
+   *
+   * Space Purchases functions
+   *
+   */
+
+  function loadSpacePurchases() {
+    $http({
+      method: 'GET',
+      url: '/api/space_purchases',
+      params: {
+        ac: new Date().getTime()
+      }
+    })
+    .success(function(data) {
+      $scope.spacePurchases = _.sortBy(data, function(spacePurchase) {
+        return spacePurchase.Name;
+      });
+    })
+    .error(function() {
+      toastr.error('Failed to get space purchases');
+    });
+  }
+
+  $scope.addSpacePurchase = function() {
+    $http({
+      method: 'POST',
+      url: '/api/space_purchases',
+      params: {
+        ac: new Date().getTime()
+      }
+    })
+    .success(function(spacePurchase) {
+      $scope.editSpace(spacePurchase.Id);
+    })
+    .error(function() {
+      toastr.error('Failed to create space purchase');
+    });
+  };
+
+  $scope.editSpacePurchase = function(id) {
+    $location.path('/space_purchases/' + id);
+  };
+
   loadSpaces();
+  loadSpacePurchases();
 
 }]); // app.controller
 

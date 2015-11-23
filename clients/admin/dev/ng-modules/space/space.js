@@ -34,8 +34,7 @@ app.controller('SpaceCtrl',
     .error(function(data, status) {
       toastr.error('Failed to load user data');
     });
-  };
-
+  }
 
   $scope.updateSpace = function() {
     $http({

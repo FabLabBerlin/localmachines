@@ -42,7 +42,7 @@
 
   <hr>
 
-  <h1>Space Reservations</h1>
+  <h1>Space Purchases</h1>
 
   <table class="table table-bordered table-striped table-hover">
     <thead>
@@ -54,15 +54,15 @@
       </tr>
     </thead>
     <tbody>
-      <tr ng-repeat="spaceReservation in spaceReservations">
-        <td>{{spaceReservation.Product.Name}}</td>
-        <td>{{spaceReservation.Product.Price}}</td>
-        <td>{{spaceReservation.Product.PriceUnit}}</td>
+      <tr ng-repeat="spacePurchase in spacePurchases">
+        <td>{{spacePurchase.Name}}</td>
+        <td>{{spacePurchase.Price}}</td>
+        <td>{{spacePurchase.PriceUnit}}</td>
         <td>
           <button 
             type="button" 
             class="btn btn-primary btn-ico pull-right" 
-            ng-click="editSpaceReservation(spaceReservation.Product.Id)">
+            ng-click="editSpacePurchase(spacePurchase.Id)">
             <span class="fa fa-edit"></span>
           </button>
         </td>
@@ -75,7 +75,7 @@
   <div class="pull-right">
     <button 
       class="btn btn-primary btn-lg" 
-      ng-click="addSpacePrompt()">
+      ng-click="addSpacePurchase()">
       <i class="fa fa-plus"></i>&nbsp;Add
     </button>
   </div>

@@ -99,6 +99,11 @@ func Init() {
 				&controllers.SpacesController{},
 			),
 		),
+		beego.NSNamespace("/space_purchases",
+			beego.NSInclude(
+				&controllers.SpacePurchasesController{},
+			),
+		),
 	)
 	beego.AddNamespace(ns)
 }
