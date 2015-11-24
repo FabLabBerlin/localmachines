@@ -30,6 +30,13 @@ func (this *PurchasesController) Create() {
 	var err error
 
 	switch purchaseType {
+	case models.PURCHASE_TYPE_CO_WORKING:
+		cp := &models.CoWorkingPurchase{}
+		_, err = models.CreateCoWorkingPurchase(cp)
+		if err == nil {
+			purchase = cp
+		}
+		break
 	case models.PURCHASE_TYPE_SPACE_PURCHASE:
 		spacePurchase := &models.SpacePurchase{}
 		_, err = models.CreateSpacePurchase(spacePurchase)
@@ -71,6 +78,9 @@ func (this *PurchasesController) GetAll() {
 	var err error
 
 	switch purchaseType {
+	case models.PURCHASE_TYPE_CO_WORKING:
+		purchases, err = models.GetAllCoWorkingPurchases()
+		break
 	case models.PURCHASE_TYPE_SPACE_PURCHASE:
 		purchases, err = models.GetAllSpacePurchases()
 		break
@@ -113,6 +123,9 @@ func (this *PurchasesController) Get() {
 	var purchase interface{}
 
 	switch purchaseType {
+	case models.PURCHASE_TYPE_CO_WORKING:
+		purchase, err = models.GetCoWorkingPurchase(id)
+		break
 	case models.PURCHASE_TYPE_SPACE_PURCHASE:
 		purchase, err = models.GetSpacePurchase(id)
 		break
@@ -149,6 +162,19 @@ func (this *PurchasesController) Put() {
 	var err error
 
 	switch purchaseType {
+	case models.PURCHASE_TYPE_CO_WORKING:
+		cp := &models.CoWorkingPurchase{}
+		dec := json.NewDecoder(this.Ctx.Request.Body)
+		defer this.Ctx.Request.Body.Close()
+		if err := dec.Decode(cp); err != nil {
+			beego.Error("Failed to decode json:", err)
+			this.CustomAbort(400, "Failed to update Co-Working purchase")
+		}
+
+		if err = models.UpdateCoWorkingPurchase(cp); err == nil {
+			response = cp
+		}
+		break
 	case models.PURCHASE_TYPE_SPACE_PURCHASE:
 		spacePurchase := &models.SpacePurchase{}
 		dec := json.NewDecoder(this.Ctx.Request.Body)

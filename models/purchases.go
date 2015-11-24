@@ -9,6 +9,7 @@ import (
 
 const (
 	PURCHASE_TYPE_ACTIVATION     = "activation"
+	PURCHASE_TYPE_CO_WORKING     = "co-working"
 	PURCHASE_TYPE_RESERVATION    = "reservation"
 	PURCHASE_TYPE_SPACE_PURCHASE = "space"
 )

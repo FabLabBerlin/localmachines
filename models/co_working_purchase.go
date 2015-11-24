@@ -23,7 +23,7 @@ func (this *CoWorkingPurchase) UnmarshalJSON(data []byte) error {
 func CreateCoWorkingPurchase(cp *CoWorkingPurchase) (int64, error) {
 	cp.purchase = Purchase{
 		Created:   time.Now(),
-		Type:      PURCHASE_TYPE_SPACE_PURCHASE,
+		Type:      PURCHASE_TYPE_CO_WORKING,
 		TimeStart: time.Now(),
 		TimeEnd:   time.Now(),
 		PriceUnit: "hour",
@@ -44,12 +44,7 @@ func GetCoWorkingPurchase(id int64) (cp *CoWorkingPurchase, err error) {
 }
 
 func GetAllCoWorkingPurchases() (cps []*CoWorkingPurchase, err error) {
-	o := orm.NewOrm()
-	r := new(CoWorkingPurchase)
-	var purchases []*Purchase
-	_, err = o.QueryTable(r.purchase.TableName()).
-		Filter("type", PURCHASE_TYPE_SPACE_PURCHASE).
-		All(&purchases)
+	purchases, err := GetAllPurchasesOfType(PURCHASE_TYPE_CO_WORKING)
 	if err != nil {
 		return
 	}
