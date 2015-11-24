@@ -69,44 +69,6 @@ app.controller('SpacesCtrl',
     });
   }
 
-  $scope.addSpacePrompt = function() {
-    vex.dialog.prompt({
-      message: 'Enter space name',
-      placeholder: 'Space name',
-      callback: $scope.spacePromptCallback
-    });
-  };
-
-  $scope.spacePromptCallback = function(value) {
-    if (value) {    
-      $scope.addSpace(value);
-    } else if (value !== false) {
-      toastr.error('No space name');
-    }
-  };
-
-  $scope.addSpace = function(name) {
-    $http({
-      method: 'POST',
-      url: '/api/products',
-      params: {
-        name: name,
-        ac: new Date().getTime(),
-        type: 'space'
-      }
-    })
-    .success(function(space) {
-      $scope.editSpace(space.Product.Id);
-    })
-    .error(function() {
-      toastr.error('Failed to create space');
-    });
-  };
-
-  $scope.editSpace = function(id) {
-    $location.path('/spaces/' + id);
-  };
-
   /*
    *
    * Space Purchases functions

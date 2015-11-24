@@ -14,6 +14,7 @@ var app = angular.module('fabsmith', [
   'fabsmith.admin.machine',
   'fabsmith.admin.memberships',
   'fabsmith.admin.membership',
+  'fabsmith.admin.productlist',
   'fabsmith.admin.reservation',
   'fabsmith.admin.reservations',
   'fabsmith.admin.invoices',

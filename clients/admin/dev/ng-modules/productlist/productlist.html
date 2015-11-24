@@ -1,0 +1,35 @@
+<table class="table table-bordered table-striped table-hover">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Price Per Unit</th>
+      <th>Price Unit</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="product in products">
+      <td>{{product.Name}}</td>
+      <td>{{product.Price}}</td>
+      <td>{{product.PriceUnit}}</td>
+      <td>
+        <button 
+          type="button" 
+          class="btn btn-primary btn-ico pull-right" 
+          ng-click="editProduct(product.Id)">
+          <span class="fa fa-edit"></span>
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<hr>
+
+<div class="pull-right">
+  <button 
+    class="btn btn-primary btn-lg" 
+    ng-click="addProductPrompt()">
+    <i class="fa fa-plus"></i>&nbsp;Add
+  </button>
+</div>
