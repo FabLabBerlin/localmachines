@@ -149,7 +149,7 @@ app.controller('SpacesCtrl',
       }
     })
     .success(function(spacePurchase) {
-      $scope.editSpace(spacePurchase.Id);
+      $scope.editSpacePurchase(spacePurchase.Id);
     })
     .error(function() {
       toastr.error('Failed to create space purchase');

@@ -18,6 +18,7 @@ app.controller('SpacePurchaseCtrl',
   $scope.spacePurchase = {
     Id: $routeParams.id
   };
+  $scope.spacesById = {};
   $scope.users = [];
   $scope.usersById = {};
 
@@ -32,6 +33,9 @@ app.controller('SpacePurchaseCtrl',
     .success(function(data) {
       $scope.spaces = _.sortBy(data, function(space) {
         return space.Product.Name;
+      });
+      _.each($scope.spaces, function(space) {
+        $scope.spacesById[space.Product.Id] = space;
       });
       loadSpacePurchase();
     })
@@ -50,8 +54,13 @@ app.controller('SpacePurchaseCtrl',
     })
     .success(function(sp) {
       $scope.spacePurchase = sp;
-      sp.TimeStartLocal = moment(sp.TimeStart).tz('Europe/Berlin').format('YYYY-MM-DD HH:mm');
-      sp.TimeEndLocal = moment(sp.TimeEnd).tz('Europe/Berlin').format('YYYY-MM-DD HH:mm');
+      var start = moment(sp.TimeStart).tz('Europe/Berlin');
+      var end = moment(sp.TimeEnd).tz('Europe/Berlin');
+      sp.DateStartLocal = start.format('YYYY-MM-DD');
+      sp.DateEndLocal = end.format('YYYY-MM-DD');
+      sp.TimeStartLocal = start.format('HH:mm');
+      sp.TimeEndLocal = end.format('HH:mm');
+      calculateTotalPrice();
     })
     .error(function(data, status) {
       toastr.error('Failed to load user data');
@@ -80,6 +89,61 @@ app.controller('SpacePurchaseCtrl',
     });
   }
 
+  function parseInputTimes() {
+    var sp = $scope.spacePurchase;
+    sp.TimeStart = moment.tz(sp.DateStartLocal + ' ' + sp.TimeStartLocal, 'Europe/Berlin').toDate();
+    sp.TimeEnd = moment.tz(sp.DateEndLocal + ' ' + sp.TimeEndLocal, 'Europe/Berlin').toDate();
+  }
+
+  function calculateQuantity() {
+    console.log('$scope.timeChange()');
+    parseInputTimes();
+    var start = moment($scope.spacePurchase.TimeStart);
+    var end = moment($scope.spacePurchase.TimeEnd);
+    var duration = end.unix() - start.unix();
+    console.log('duration=', duration);
+    var quantity;
+    switch ($scope.spacePurchase.PriceUnit) {
+    case 'minute':
+      quantity = duration / 60;
+      break;
+    case 'hour':
+      quantity = duration / 3600;
+      break;
+    case 'day':
+      quantity = duration / 24 / 3600;
+      break;
+    default:
+      return;
+    }
+    $scope.spacePurchase.Quantity = quantity;
+  }
+
+  function calculateTotalPrice() {
+    var totalPrice = $scope.spacePurchase.Quantity * $scope.spacePurchase.PricePerUnit;
+    $scope.spacePurchase.TotalPrice = totalPrice.toFixed(2);
+  }
+
+  $scope.spaceChange = function() {
+    console.log('$scope.spaceChange()');
+    var spaceId = parseInt($scope.spacePurchase.ProductId);
+    var space = $scope.spacesById[spaceId];
+    $scope.spacePurchase.PricePerUnit = space.Product.Price;
+    $scope.spacePurchase.PriceUnit = space.Product.PriceUnit;
+    calculateQuantity();
+    calculateTotalPrice();    
+  };
+
+  $scope.timeChange = function() {
+    calculateQuantity();
+    calculateTotalPrice();
+  };
+
+  $scope.priceUnitChange = function() {
+    calculateQuantity();
+    calculateTotalPrice();
+  };
+
   $scope.updateSpacePurchase = function() {
     $http({
       method: 'PUT',
@@ -103,6 +167,7 @@ app.controller('SpacePurchaseCtrl',
   };
 
   $scope.save = function() {
+    parseInputTimes();
     $http({
       method: 'PUT',
       url: '/api/space_purchases/' + $scope.spacePurchase.Id,
@@ -111,10 +176,9 @@ app.controller('SpacePurchaseCtrl',
       transformRequest: function(data) {
         var transformed = _.extend({}, data);
         transformed.ProductId = parseInt(data.ProductId);
-        transformed.TimeStart = moment.tz(data.TimeStartLocal, 'Europe/Berlin').toDate();
-        transformed.TimeEnd = moment.tz(data.TimeEndLocal, 'Europe/Berlin').toDate();
         transformed.UserId = parseInt(data.UserId);
         transformed.Quantity = parseInt(data.Quantity);
+        transformed.TotalPrice = parseFloat(data.TotalPrice);
         console.log('transformed:', transformed);
         return JSON.stringify(transformed);
       },
@@ -162,6 +226,12 @@ app.controller('SpacePurchaseCtrl',
       }
     });
   };
+
+  // Init scope variables
+  var pickadateOptions = {
+    format: 'yyyy-mm-dd'
+  };
+  $('.datepicker').pickadate(pickadateOptions);
 
   loadUsers();
 

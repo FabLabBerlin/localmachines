@@ -5,7 +5,7 @@
 
   <div class="form-group">
     <label for="sp-space">Space</label>
-    <select ng-model="spacePurchase.ProductId" id="sp-space" class="form-control">
+    <select ng-model="spacePurchase.ProductId" ng-change="spaceChange()" id="sp-space" class="form-control">
       <option ng-repeat="space in spaces"
               value="{{space.Product.Id}}">
         {{space.Product.Name}}
@@ -24,24 +24,110 @@
   </div>
 
   <div class="form-group">
-    <label for="sp-start">Start</label>
-    <input type="text" id="sp-start" class="form-control"
-           placeholder="YYYY-MM-DD HH:MM" ng-model="spacePurchase.TimeStartLocal">
+    <label for="start-date">Start time</label>
+    <div class="row">
+      <div class="col-xs-6">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control datepicker"
+            id="start-date"
+            placeholder="Date"
+            ng-model="spacePurchase.DateStartLocal"
+            ng-change="timeChange()">
+          <span class="input-group-addon">
+            <i class="fa fa-calendar"></i>
+          </span>
+        </div>
+      </div>
+      <div class="col-xs-6">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            id="start-time"
+            placeholder="Time"
+            ng-model="spacePurchase.TimeStartLocal"
+            ng-change="timeChange()">
+          <span class="input-group-addon">
+            <i class="fa fa-clock-o"></i>
+          </span>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="form-group">
-    <label for="sp-end">End</label>
-    <input type="text" id="sp-end" class="form-control"
-           placeholder="YYYY-MM-DD HH:MM" ng-model="spacePurchase.TimeEndLocal">
+    <label for="end-date">End time</label>
+    <div class="row">
+      <div class="col-xs-6">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control datepicker"
+            id="end-date"
+            placeholder="Date"
+            ng-model="spacePurchase.DateEndLocal"
+            ng-change="timeChange()">
+          <span class="input-group-addon">
+            <i class="fa fa-calendar"></i>
+          </span>
+        </div>
+      </div>
+      <div class="col-xs-6">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            id="end-time"
+            placeholder="Time"
+            ng-model="spacePurchase.TimeEndLocal"
+            ng-change="timeChange()">
+          <span class="input-group-addon">
+            <i class="fa fa-clock-o"></i>
+          </span>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="form-group">
-    <label for="sp-total-time">Total time</label>
+    <label for="sp-total-time">Total time ({{spacePurchase.PriceUnit}}s)</label>
     <input
       type="text"
       class="form-control"
       id="sp-total-time"
       ng-model="spacePurchase.Quantity">
+  </div>
+
+  <div class="form-group">
+    <label for="sp-price-per-unit">Price Per Unit</label>
+    <input type="text" id="sp-price-per-unit" class="form-control"
+           placeholder="Price Per Unit" ng-model="spacePurchase.PricePerUnit">
+  </div>
+
+  <div class="form-group">
+    <label for="sp-price-unit">Price Unit</label>
+    <select class="form-control" id="sp-price-unit" 
+            ng-model="spacePurchase.PriceUnit"
+            ng-change="priceUnitChange()">
+      <option value="" selected disabled>Select unit</option>
+      <!-- TODO: These have to be loaded via API -->
+      <option value="minute">minute</option>
+      <option value="hour">hour</option>
+      <option value="day">day</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="sp-total-price">Total Price (incl. VAT)</label>
+    <div class="input-group">
+      <input type="text" id="sp-total-price" class="form-control"
+             placeholder="Total price" ng-model="spacePurchase.TotalPrice" disabled>
+      <div class="input-group-addon">
+        <i class="fa fa-euro"></i>
+      </div>
+    </div>
   </div>
 
   <hr>

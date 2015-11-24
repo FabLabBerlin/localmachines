@@ -22,8 +22,11 @@ func (this *SpacePurchase) UnmarshalJSON(data []byte) error {
 
 func CreateSpacePurchase(spacePurchase *SpacePurchase) (int64, error) {
 	spacePurchase.purchase = Purchase{
-		Created: time.Now(),
-		Type:    PURCHASE_TYPE_SPACE_PURCHASE,
+		Created:   time.Now(),
+		Type:      PURCHASE_TYPE_SPACE_PURCHASE,
+		TimeStart: time.Now(),
+		TimeEnd:   time.Now(),
+		PriceUnit: "hour",
 	}
 
 	o := orm.NewOrm()
