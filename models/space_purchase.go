@@ -44,12 +44,7 @@ func GetSpacePurchase(id int64) (spacePurchase *SpacePurchase, err error) {
 }
 
 func GetAllSpacePurchases() (spacePurchases []*SpacePurchase, err error) {
-	o := orm.NewOrm()
-	r := new(SpacePurchase)
-	var purchases []*Purchase
-	_, err = o.QueryTable(r.purchase.TableName()).
-		Filter("type", PURCHASE_TYPE_SPACE_PURCHASE).
-		All(&purchases)
+	purchases, err := GetAllPurchasesOfType(PURCHASE_TYPE_SPACE_PURCHASE)
 	if err != nil {
 		return
 	}

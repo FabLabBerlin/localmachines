@@ -58,6 +58,14 @@ func init() {
 	orm.RegisterModel(new(Purchase))
 }
 
+func GetAllPurchasesOfType(purchaseType string) (purchases []*Purchase, err error) {
+	o := orm.NewOrm()
+	_, err = o.QueryTable(new(Purchase).TableName()).
+		Filter("type", purchaseType).
+		All(&purchases)
+	return
+}
+
 func DeletePurchase(id int64) (err error) {
 	o := orm.NewOrm()
 	_, err = o.Delete(&Purchase{Id: id})
