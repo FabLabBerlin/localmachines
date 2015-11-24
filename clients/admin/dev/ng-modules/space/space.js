@@ -23,9 +23,10 @@ app.controller('SpaceCtrl',
   function loadSpace() {
     $http({
       method: 'GET',
-      url: '/api/spaces/' + $scope.space.Product.Id,
+      url: '/api/products/' + $scope.space.Product.Id,
       params: {
-        ac: new Date().getTime()
+        ac: new Date().getTime(),
+        type: 'space'
       }
     })
     .success(function(space) {
@@ -39,7 +40,7 @@ app.controller('SpaceCtrl',
   $scope.updateSpace = function() {
     $http({
       method: 'PUT',
-      url: '/api/spaces/' + $scope.space.Product.Id,
+      url: '/api/products/' + $scope.space.Product.Id + '?type=space',
       headers: {'Content-Type': 'application/json' },
       data: $scope.space,
       transformRequest: function(data) {

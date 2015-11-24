@@ -94,11 +94,6 @@ func Init() {
 				&controllers.TutoringController{},
 			),
 		),
-		beego.NSNamespace("/spaces",
-			beego.NSInclude(
-				&controllers.SpacesController{},
-			),
-		),
 		beego.NSNamespace("/space_purchases",
 			beego.NSInclude(
 				&controllers.SpacePurchasesController{},

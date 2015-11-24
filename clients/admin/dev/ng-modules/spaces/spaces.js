@@ -27,9 +27,10 @@ app.controller('SpacesCtrl',
   function loadSpaces() {
     $http({
       method: 'GET',
-      url: '/api/spaces',
+      url: '/api/products',
       params: {
-        ac: new Date().getTime()
+        ac: new Date().getTime(),
+        type: 'space'
       }
     })
     .success(function(data) {
@@ -87,10 +88,11 @@ app.controller('SpacesCtrl',
   $scope.addSpace = function(name) {
     $http({
       method: 'POST',
-      url: '/api/spaces',
+      url: '/api/products',
       params: {
         name: name,
-        ac: new Date().getTime()
+        ac: new Date().getTime(),
+        type: 'space'
       }
     })
     .success(function(space) {

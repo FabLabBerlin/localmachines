@@ -25,9 +25,10 @@ app.controller('SpacePurchaseCtrl',
   function loadSpaces() {
     $http({
       method: 'GET',
-      url: '/api/spaces',
+      url: '/api/products',
       params: {
-        ac: new Date().getTime()
+        ac: new Date().getTime(),
+        type: 'space'
       }
     })
     .success(function(data) {
@@ -178,6 +179,7 @@ app.controller('SpacePurchaseCtrl',
         transformed.ProductId = parseInt(data.ProductId);
         transformed.UserId = parseInt(data.UserId);
         transformed.Quantity = parseInt(data.Quantity);
+        transformed.PricePerUnit = parseInt(data.PricePerUnit);
         transformed.TotalPrice = parseFloat(data.TotalPrice);
         console.log('transformed:', transformed);
         return JSON.stringify(transformed);
