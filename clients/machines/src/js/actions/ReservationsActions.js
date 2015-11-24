@@ -104,21 +104,40 @@ var ReservationActions = {
     reactor.dispatch(actionTypes.CREATE_DONE);
   },
 
-  deleteReservation(reservationId) {
-    reactor.dispatch(actionTypes.DELETE_RESERVATION_START);
+  cancelReservation(reservationId) {
+    const reservations = reactor.evaluateToJS(getters.getReservations);
+    var reservation;
+    _.each(reservations, (r) => {
+      console.log('r:', r);
+      if (r.Id === reservationId) {
+        reservation = r;
+      }
+    });
+
+    if (!reservation) {
+      return;
+    }
+
+    reactor.dispatch(actionTypes.CANCEL_RESERVATION_START);
+
+    reservation.Cancelled = true;
+
+    console.log('reservation to send:', reservation);
 
     $.ajax({
+      headers: {'Content-Type': 'application/json'},
       url: '/api/reservations/' + reservationId,
-      type: 'DELETE',
-      cache: false,
+      dataType: 'json',
+      type: 'PUT',
+      data: JSON.stringify(reservation),
       success: function() {
-        reactor.dispatch(actionTypes.DELETE_RESERVATION_SUCCESS);
-        toastr.success('Successfuly deleted reservation');
+        reactor.dispatch(actionTypes.CANCEL_RESERVATION_SUCCESS);
+        toastr.success('Successfuly cancelled reservation');
         ReservationActions.load();
       },
       error: function() {
-        reactor.dispatch(actionTypes.DELETE_RESERVATION_FAIL);
-        toastr.error('Error deleting reservation');
+        reactor.dispatch(actionTypes.CANCEL_RESERVATION_FAIL);
+        toastr.error('Error cancelling reservation');
       }
     });
   }

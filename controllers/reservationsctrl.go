@@ -1,9 +1,11 @@
 package controllers
 
 import (
+	"bytes"
 	"encoding/json"
 	"github.com/astaxie/beego"
 	"github.com/kr15h/fabsmith/models"
+	"io/ioutil"
 )
 
 type ReservationsController struct {
@@ -90,8 +92,17 @@ func (this *ReservationsController) Put() {
 
 	reservation := &models.Reservation{}
 
-	dec := json.NewDecoder(this.Ctx.Request.Body)
+	buf, err := ioutil.ReadAll(this.Ctx.Request.Body)
+	if err != nil {
+		beego.Error("Failed to read all:", err)
+		this.CustomAbort(400, "Failed to read all")
+	}
+	beego.Info("buf:", string(buf))
 	defer this.Ctx.Request.Body.Close()
+
+	data := bytes.NewBuffer(buf)
+
+	dec := json.NewDecoder(data)
 	if err := dec.Decode(reservation); err != nil {
 		beego.Error("Failed to decode json:", err)
 		this.CustomAbort(400, "Failed to update Reservation")

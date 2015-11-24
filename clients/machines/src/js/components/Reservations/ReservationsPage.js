@@ -43,16 +43,15 @@ var ReservationsTable = React.createClass({
     };
   },
 
-  deleteReservation(reservationId) {
+  cancelReservation(reservationId) {
     VexDialog.buttons.YES.text = 'Yes';
     VexDialog.buttons.NO.text = 'No';
 
     VexDialog.confirm({
-      message: 'Do you really want to delete this reservation?',
+      message: 'Do you really want to cancel this reservation?',
       callback: function(confirmed) {
         if (confirmed) {
-          console.log(reservationId);
-          ReservationsActions.deleteReservation(reservationId);
+          ReservationsActions.cancelReservation(reservationId);
         }
         $('.vex').remove();
         $('body').removeClass('vex-open');
@@ -94,7 +93,7 @@ var ReservationsTable = React.createClass({
                   (reservationStart.year() === now.year()) &&
                   (reservationStart.month() === now.month());
 
-                const rowClassName = (isPast || isToday) ? 
+                const rowClassName = (isPast || isToday || reservation.get('Cancelled')) ? 
                   'reservation disabled' : 
                   'reservation'; 
 
@@ -108,12 +107,14 @@ var ReservationsTable = React.createClass({
                       <td>{formatDate(reservation.get('Created'))}</td>
                       <td>
                         {(!isPast && !isToday) ?
-                          <button
-                            type="button"
-                            className="btn btn-danger btn-ico pull-right"
-                            onClick={this.deleteReservation.bind(this, reservationId)}>
-                            <i className="fa fa-remove"></i>
-                          </button>
+                          (!reservation.get('Cancelled') ?
+                            <button
+                              type="button"
+                              className="btn btn-danger btn-ico pull-right"
+                              onClick={this.cancelReservation.bind(this, reservationId)}>
+                              <i className="fa fa-remove"></i>
+                            </button>
+                          : 'Cancelled')
                         : ''}
                       </td>
                     </tr>
