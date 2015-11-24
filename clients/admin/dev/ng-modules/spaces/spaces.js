@@ -65,7 +65,7 @@ app.controller('SpacesCtrl',
       loadSpacePurchases();
     })
     .error(function() {
-      toastr.error('Failed to get reservations');
+      toastr.error('Failed to get users');
     });
   }
 

@@ -32,6 +32,9 @@ func (this *ProductsController) Create() {
 	var err error
 
 	switch productType {
+	case models.PRODUCT_TYPE_CO_WORKING:
+		product, err = models.CreateCoWorkingProduct(name)
+		break
 	case models.PRODUCT_TYPE_SPACE:
 		product, err = models.CreateSpace(name)
 		break
@@ -68,6 +71,9 @@ func (this *ProductsController) Get() {
 	var product interface{}
 
 	switch productType {
+	case models.PRODUCT_TYPE_CO_WORKING:
+		product, err = models.GetCoWorkingProduct(id)
+		break
 	case models.PRODUCT_TYPE_SPACE:
 		product, err = models.GetSpace(id)
 		break
@@ -103,11 +109,16 @@ func (this *ProductsController) GetAll() {
 	var err error
 
 	switch productType {
+	case models.PRODUCT_TYPE_CO_WORKING:
+		products, err = models.GetAllCoWorkingProducts()
+		break
 	case models.PRODUCT_TYPE_SPACE:
 		products, err = models.GetAllSpaces()
 		break
-	default:
+	case "":
 		products, err = models.GetAllProducts()
+	default:
+		err = fmt.Errorf("unknown product type")
 	}
 
 	if err != nil {
@@ -140,6 +151,19 @@ func (this *ProductsController) Put() {
 	var err error
 
 	switch productType {
+	case models.PRODUCT_TYPE_CO_WORKING:
+		table := &models.CoWorkingProduct{}
+		dec := json.NewDecoder(this.Ctx.Request.Body)
+		defer this.Ctx.Request.Body.Close()
+		if err := dec.Decode(table); err != nil {
+			beego.Error("Failed to decode json:", err)
+			this.CustomAbort(400, "Failed to update table")
+		}
+
+		if err = models.UpdateCoWorkingProduct(table); err == nil {
+			response = table
+		}
+		break
 	case models.PRODUCT_TYPE_SPACE:
 		space := &models.Space{}
 		dec := json.NewDecoder(this.Ctx.Request.Body)

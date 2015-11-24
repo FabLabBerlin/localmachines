@@ -38,12 +38,15 @@ angular.module("fabsmith.admin.productlist", [])
           $scope.editProduct(data.Product.Id);
         })
         .error(function() {
-          toastr.error('Failed to create space');
+          toastr.error('Failed to create product');
         });
       };
 
       $scope.editProduct = function(id) {
         switch ($attrs.type) {
+        case 'co-working':
+          $location.path('/coworking/tables/' + id);
+          break;
         case 'space':
           $location.path('/spaces/' + id);
           break;
@@ -51,8 +54,8 @@ angular.module("fabsmith.admin.productlist", [])
           console.log('Product list: $attrs.type = ', $attrs.type);
           toastr.error('Product list: unknown product type');
         }
-        
-      }
+      };
+
       $http({
         method: 'GET',
         url: '/api/products',
@@ -63,8 +66,17 @@ angular.module("fabsmith.admin.productlist", [])
       })
       .success(function(products) {
         $scope.products = products;
-        if ($attrs.type === 'space') {
+        switch ($attrs.type) {
+        case 'co-working':
           $scope.products = _.pluck($scope.products, 'Product');
+          console.log('$scope.products=', $scope.products);
+          break;
+        case 'space':
+          $scope.products = _.pluck($scope.products, 'Product');
+          break;
+        default:
+          console.log('Product list: $attrs.type = "' + $attrs.type + '"');
+          toastr.error('Product list: unknown product type');
         }
       })
       .error(function() {
