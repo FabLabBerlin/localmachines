@@ -48,9 +48,10 @@ app.controller('SpacePurchaseCtrl',
   function loadSpacePurchase() {
     $http({
       method: 'GET',
-      url: '/api/space_purchases/' + $scope.spacePurchase.Id,
+      url: '/api/purchases/' + $scope.spacePurchase.Id,
       params: {
-        ac: new Date().getTime()
+        ac: new Date().getTime(),
+        type: 'space'
       }
     })
     .success(function(sp) {
@@ -148,7 +149,7 @@ app.controller('SpacePurchaseCtrl',
   $scope.updateSpacePurchase = function() {
     $http({
       method: 'PUT',
-      url: '/api/space_purchases/' + $scope.spacePurchase.Id,
+      url: '/api/purchases/' + $scope.spacePurchase.Id + '?type=space',
       headers: {'Content-Type': 'application/json' },
       data: $scope.spacePurchase,
       transformRequest: function(data) {
@@ -171,7 +172,7 @@ app.controller('SpacePurchaseCtrl',
     parseInputTimes();
     $http({
       method: 'PUT',
-      url: '/api/space_purchases/' + $scope.spacePurchase.Id,
+      url: '/api/purchases/' + $scope.spacePurchase.Id + '?type=space',
       headers: {'Content-Type': 'application/json' },
       data: $scope.spacePurchase,
       transformRequest: function(data) {
@@ -193,39 +194,6 @@ app.controller('SpacePurchaseCtrl',
     })
     .error(function(data) {
       toastr.error('Error while trying to save changes');
-    });
-  };
-
-  $scope.remove = function() {
-    var token = randomToken.generate();
-    vex.dialog.prompt({
-      message: 'Enter <span class="delete-prompt-token">' +
-       token + '</span> to delete',
-      placeholder: 'Token',
-      callback: function(value) {
-        if (value) {
-          if (value === token) {
-            $http({
-              method: 'DELETE',
-              url: '/api/space_purchases/' + $scope.spacePurchase.Id,
-              params: {
-                ac: new Date().getTime()
-              }
-            })
-            .success(function() {
-              toastr.success('Space purchase deleted');
-              $location.path('/spaces');
-            })
-            .error(function() {
-              toastr.error('Error while trying to delete Space purchase');
-            });
-          } else {
-            toastr.error('Wrong token');
-          }
-        } else {
-          toastr.warning('Deletion canceled');
-        }
-      }
     });
   };
 

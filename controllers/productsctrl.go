@@ -149,7 +149,7 @@ func (this *ProductsController) Put() {
 			this.CustomAbort(400, "Failed to update space")
 		}
 
-		if err = models.UpdateSpace(space); err != nil {
+		if err = models.UpdateSpace(space); err == nil {
 			response = space
 		}
 		break

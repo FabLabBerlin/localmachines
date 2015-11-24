@@ -116,9 +116,10 @@ app.controller('SpacesCtrl',
   function loadSpacePurchases() {
     $http({
       method: 'GET',
-      url: '/api/space_purchases',
+      url: '/api/purchases',
       params: {
-        ac: new Date().getTime()
+        ac: new Date().getTime(),
+        type: 'space'
       }
     })
     .success(function(data) {
@@ -145,9 +146,10 @@ app.controller('SpacesCtrl',
   $scope.addSpacePurchase = function() {
     $http({
       method: 'POST',
-      url: '/api/space_purchases',
+      url: '/api/purchases',
       params: {
-        ac: new Date().getTime()
+        ac: new Date().getTime(),
+        type: 'space'
       }
     })
     .success(function(spacePurchase) {
