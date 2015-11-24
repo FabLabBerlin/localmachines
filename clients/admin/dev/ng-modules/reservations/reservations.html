@@ -15,6 +15,7 @@
         <th>User</th>
         <th>E-Mail</th>
         <th>Disabled</th>
+        <th>Cancelled</th>
         <th></th>
       </tr>
     </thead>
@@ -25,7 +26,8 @@
         <td>{{reservation.TimeEndLocal}}</td>
         <td>{{reservation.User.FirstName}} {{reservation.User.LastName}}</td>
         <td>{{reservation.User.Email}}</td>
-        <td>{{reservation.ReservationDisabled ? 'True' : 'False'}}</td>
+        <td>{{reservation.ReservationDisabled ? 'X' : ''}}</td>
+        <td>{{reservation.Cancelled ? 'X' : ''}}
         <td>
           <button 
             type="button" 

@@ -85,39 +85,6 @@ app.controller('ReservationCtrl',
     });
   }
 
-  $scope.deleteReservation = function() {
-    var token = randomToken.generate();
-    vex.dialog.prompt({
-      message: 'Enter <span class="delete-prompt-token">' +
-       token + '</span> to delete',
-      placeholder: 'Token',
-      callback: function(value) {
-        if (value) {
-          if (value === token) {
-            $http({
-              method: 'DELETE',
-              url: '/api/reservations/' + $scope.reservation.Id,
-              params: {
-                ac: new Date().getTime()
-              }
-            })
-            .success(function() {
-              toastr.success('Reservation deleted');
-              $location.path('/reservations');
-            })
-            .error(function() {
-              toastr.error('Error while trying to delete Reservation');
-            });
-          } else {
-            toastr.error('Wrong token');
-          }
-        } else {
-          toastr.warning('Deletion canceled');
-        }
-      }
-    });
-  };
-
   $scope.saveReservation = function() {
     $http({
       method: 'PUT',

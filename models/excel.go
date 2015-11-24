@@ -365,8 +365,10 @@ func createXlsxFile(filePath string, invoice *Invoice) error {
 		AddRowActivationsHeaderXlsx(sheet)
 
 		for _, purchase := range purchases {
-			if err := AddRowXlsx(sheet, purchase); err != nil {
-				return fmt.Errorf("AddRowXlsx: %v", err)
+			if !purchase.Cancelled {
+				if err := AddRowXlsx(sheet, purchase); err != nil {
+					return fmt.Errorf("AddRowXlsx: %v", err)
+				}
 			}
 		}
 		printTotal(GREEN)

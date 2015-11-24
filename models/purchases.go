@@ -30,6 +30,7 @@ type Purchase struct {
 	PricePerUnit float64
 	PriceUnit    string
 	Vat          float64
+	Cancelled    bool
 
 	TotalPrice      float64 `orm:"-"`
 	DiscountedTotal float64 `orm:"-"`
