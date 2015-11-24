@@ -5,7 +5,8 @@ import (
 )
 
 const (
-	PRODUCT_TYPE_SPACE = "space"
+	PRODUCT_TYPE_CO_WORKING = "co-working"
+	PRODUCT_TYPE_SPACE      = "space"
 )
 
 type Product struct {
@@ -28,6 +29,14 @@ func CreateProduct(product *Product) (int64, error) {
 func GetAllProducts() (products []*Product, err error) {
 	o := orm.NewOrm()
 	_, err = o.QueryTable(new(Product).TableName()).All(&products)
+	return
+}
+
+func GetAllProductsOfType(productType string) (products []*Product, err error) {
+	o := orm.NewOrm()
+	_, err = o.QueryTable(new(Product).TableName()).
+		Filter("type", productType).
+		All(&products)
 	return
 }
 

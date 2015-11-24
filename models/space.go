@@ -38,12 +38,7 @@ func GetSpace(id int64) (space *Space, err error) {
 }
 
 func GetAllSpaces() (spaces []*Space, err error) {
-	o := orm.NewOrm()
-	var products []*Product
-	_, err = o.QueryTable(new(Product).TableName()).
-		Filter("type", PRODUCT_TYPE_SPACE).
-		All(&products)
-
+	products, err := GetAllProductsOfType(PRODUCT_TYPE_SPACE)
 	if err != nil {
 		return
 	}
