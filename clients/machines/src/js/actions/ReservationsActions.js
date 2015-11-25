@@ -18,13 +18,36 @@ var ReservationActions = {
   STEP_SUCCESS: STEP_SUCCESS,
   STEP_ERROR: STEP_ERROR,
 
+  // load reservations and corresponding user names.
+  //
+  // But only load user names for reservations that are currently active.
   load() {
     ApiActions.getCall('/api/reservations', function(reservations) {
+      var t = moment().unix();
+      var userIds = [];
+
       _.each(reservations, function(reservation) {
-        ApiActions.getCall('/api/users/' + reservation.UserId + '/name', function(userData) {
-          reactor.dispatch(actionTypes.REGISTER_MACHINE_USER, { userData });
-        });
+        var timeStart = moment(reservation.TimeStart).unix();
+        var timeEnd = moment(reservation.TimeEnd).unix();
+        if (timeStart <= t && t <= timeEnd) {
+          userIds.push(reservation.UserId);
+        }
       });
+
+      $.ajax({
+        url: '/api/users/names?uids=' + userIds.join(','),
+        dataType: 'json',
+        type: 'GET',
+        success: function(data) {
+          _.each(data.Users, function(userData) {
+            reactor.dispatch(actionTypes.REGISTER_MACHINE_USER, { userData });
+          });
+        },
+        error: function() {
+            console.log('Error loading names');
+        }
+      });
+
       reactor.dispatch(actionTypes.SET_RESERVATIONS, { reservations });
     });
   },

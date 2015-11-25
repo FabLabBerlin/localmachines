@@ -16,19 +16,8 @@ var toastr = require('../../toastr');
 var UserActions = require('../../actions/UserActions');
 var TutoringList = require('./TutoringList');
 
-/*
- * MachinePage:
- * Root component
- * Fetch the information = require(the store
- * Give it to its children to display the interface
- * TODO: reorganize and documente some function
- */
 var MachinePage = React.createClass({
 
-  /*
-   * Enable some React router function as:
-   *  ReplaceWith
-   */
   mixins: [ Navigation, reactor.ReactMixin, NfcLogoutMixin ],
 
   /*
@@ -43,6 +32,14 @@ var MachinePage = React.createClass({
     }
   },
 
+  getDataBindings() {
+    return {
+      userInfo: getters.getUserInfo,
+      machineInfo: getters.getMachineInfo,
+      activationInfo: getters.getActivationInfo
+    };
+  },
+
   /*
    * Start fetching the data
    * before the component is mounted
@@ -53,43 +50,6 @@ var MachinePage = React.createClass({
     MachineActions.apiGetUserMachines(uid);
     ReservationsActions.load();
     ReservationRulesActions.load();
-  },
-
-  /*
-   * Initial State
-   * fetch data = require(MachineStore
-   */
-  getDataBindings() {
-    return {
-      userInfo: getters.getUserInfo,
-      machineInfo: getters.getMachineInfo,
-      activationInfo: getters.getActivationInfo
-    };
-  },
-
-  /*
-   * Create a table of the Id = require(an array
-   * Used in shouldComponentUpdate to know get the id = require(previous state and next one
-   */
-  createCompareTable(state) {
-    let table = [];
-    for(let i in state) {
-      table.push(state[i].Id);
-    }
-    return table;
-  },
-
-  /*
-   * Look if the activations have a name
-   * if they all have one, return true
-   */
-  hasNameInto(activation) {
-    for(let i in activation ) {
-      if(!activation.FirstName) {
-        return false;
-      }
-    }
-    return true;
   },
 
   /*
@@ -123,14 +83,11 @@ var MachinePage = React.createClass({
    * Activate a polling (1,5s)
    */
   componentDidMount() {
-
     this.nfcOnDidMount();
     MachineStore.onChangeActivation = this.onChangeActivation;
     LoginStore.onChangeLogout = this.onChangeLogout;
     MachineStore.onChangeLogin = this.onChangeLogin;
     this.interval = setInterval(this.update, 1500);
-
-
   },
 
   /*

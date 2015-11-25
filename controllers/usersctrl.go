@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/astaxie/beego"
 	"github.com/kr15h/fabsmith/models"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -734,14 +735,15 @@ func (this *UsersController) PutUserMembership() {
 	this.ServeJson()
 }
 
-// @Title GetUserName
+// @Title GetUserNames
 // @Description Get user name data only
-// @Param	uid		path 	int	true		"User ID"
-// @Success 200 {object} models.UserNameResponse
-// @Failure	403	Failed to get user name
-// @Failure	401	Not loggen
-// @router /:uid/name [get]
-func (this *UsersController) GetUserName() {
+// @Param	uids		query 	string	true		"User IDs"
+// @Success 200 {object} models.UserNamesResponse
+// @Failure	400	Bad request
+// @Failure	401	Not logged in
+// @Failure	500	Internal Server Error
+// @router /names [get]
+func (this *UsersController) GetUserNames() {
 
 	// Check if logged in
 	suid := this.GetSession(SESSION_FIELD_NAME_USER_ID)
@@ -750,24 +752,37 @@ func (this *UsersController) GetUserName() {
 		this.CustomAbort(401, "Not logged in")
 	}
 
-	// Get the user name data
-	var err error
-	var uid int64
-	uid, err = this.GetInt64(":uid")
-	if err != nil {
-		beego.Error("Failed to get :uid")
-		this.CustomAbort(403, "Failed to get user name")
+	// Get the user names data
+	beego.Info("uids:", this.GetString("uids"))
+	uidsList := strings.Split(this.GetString("uids"), ",")
+	uids := make([]int64, 0, len(uidsList))
+	for _, uid := range uidsList {
+		id, err := strconv.ParseInt(uid, 10, 64)
+		if err != nil {
+			beego.Error("Failed to parse uids:", err)
+			this.CustomAbort(400, "Failed to get user name")
+		}
+		uids = append(uids, id)
 	}
-	var user *models.User
-	user, err = models.GetUser(uid)
-	if err != nil {
-		beego.Error("Failed not get user name:", err)
-		this.CustomAbort(403, "Failed not get user name")
+
+	response := models.UserNamesResponse{
+		Users: make([]models.UserNameResponse, 0, len(uids)),
 	}
-	response := models.UserNameResponse{}
-	response.UserId = user.Id
-	response.FirstName = user.FirstName
-	response.LastName = user.LastName
+
+	for _, uid := range uids {
+		user, err := models.GetUser(uid)
+		if err != nil {
+			beego.Error("Failed not get user name:", err)
+			this.CustomAbort(500, "Failed not get user name")
+		}
+		data := models.UserNameResponse{
+			UserId:    user.Id,
+			FirstName: user.FirstName,
+			LastName:  user.LastName,
+		}
+		response.Users = append(response.Users, data)
+	}
+
 	this.Data["json"] = response
 	this.ServeJson()
 }
