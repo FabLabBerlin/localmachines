@@ -71,7 +71,7 @@ app.controller('ActivationsCtrl', ['$scope', '$http', '$location', 'randomToken'
       });
 
       var uniqUserIds = _.pluck(_.uniq(response.ActivationsPage, 'UserId'), 'UserId');
-      _.each(uniqUserIds, $scope.loadUserName);
+      loadUserNames(uniqUserIds);
 
       $scope.activations = response.ActivationsPage;
       $scope.numActivations = response.NumActivations;
@@ -82,17 +82,22 @@ app.controller('ActivationsCtrl', ['$scope', '$http', '$location', 'randomToken'
     });
   };
 
-  $scope.loadUserName = function(userId) {
+  function loadUserNames(userId) {
     $http({
       method: 'GET',
-      url: '/api/users/' + userId + '/name',
+      url: '/api/users/names?uids=' + userId.join(','),
       params: {
         ac: new Date().getTime()
       }
     })
-    .success(function(user) {
+    .success(function(data) {
+      var usersById = {};
+      _.each(data.Users, function(user) {
+        usersById[user.UserId] = user;
+      });
       _.each($scope.activations, function(activation) {
-        if (activation.UserId === user.UserId) {
+        var user = usersById[activation.UserId];
+        if (user) {
           activation.UserName = user.FirstName + ' ' + user.LastName;
         }
       });
@@ -100,7 +105,7 @@ app.controller('ActivationsCtrl', ['$scope', '$http', '$location', 'randomToken'
     .error(function() {
       toastr.error('Failed to load user name');
     });
-  };
+  }
 
   // This is called whenever start or end date changes
   $scope.onFilterChange = function() {
