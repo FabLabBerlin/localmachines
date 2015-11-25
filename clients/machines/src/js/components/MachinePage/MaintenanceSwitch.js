@@ -25,8 +25,6 @@ var MaintenanceSwitch = React.createClass({
   handleClick(onOrOff) {
     const mid = this.props.machineId;
     const machine = this.state.machinesById.get(mid);
-    console.log('this.state.machinesById: ', this.state.machinesById);
-    console.log('mid, machine = ', mid, machine);
     VexDialog.buttons.YES.text = 'Yes';
     VexDialog.buttons.NO.text = 'No';
 
