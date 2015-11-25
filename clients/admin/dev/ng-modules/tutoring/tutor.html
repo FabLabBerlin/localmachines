@@ -4,13 +4,18 @@
   <hr>
 
   <div class="form-group">
-    <label for="tutor-name">Tutor name</label>
-    <input
-      type="text"
-      class="form-control"
-      id="tutor-name"
-      placeholder="Start typing to choose a tutor"
-      ng-model="tutor.Name"> 
+    <label for="tutor-user">Tutor user</label>
+    <select 
+      class="selectpicker"
+      data-live-search="true"
+      data-width="100%"
+      ng-model="tutor.UserId">
+      <option
+        ng-repeat="user in users"
+        value="{{user.Id}}">
+        {{user.FirstName}} {{user.LastName}}
+      </option>
+    </select>
   </div>
 
   <div class="form-group">

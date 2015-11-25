@@ -14,6 +14,29 @@ app.config(['$routeProvider', function($routeProvider) {
 app.controller('TutorCtrl', ['$scope', '$http', '$location', 
   function($scope, $http, $location) {
 
+  $scope.users = [];
+  
+  $scope.getAllUsers = function() {
+    $http({
+      method: 'GET',
+      url: '/api/users',
+      params: {
+        ac: new Date().getTime()
+      }
+    })
+    .success(function(users) {
+      $scope.users = users;
+      setTimeout(function() {
+        $('.selectpicker').selectpicker('refresh');
+      }, 100);
+    })
+    .error(function(data, status) {
+      toastr.error('Failed to get all users');
+    });
+  };
+
+  $scope.getAllUsers();
+
   $scope.tutor = {
     PriceUnit: 'hour'
   };
@@ -39,6 +62,7 @@ app.controller('TutorCtrl', ['$scope', '$http', '$location',
     var tutor = $scope.tutor;
     tutor.Price = parseInt(tutor.Price);
 
+    /*
     $http({
       method: 'PUT',
       url: '/api/tutoring/tutor',
@@ -60,6 +84,40 @@ app.controller('TutorCtrl', ['$scope', '$http', '$location',
     .error(function() {
       toastr.error('Failed to save tutor');
     });
+    */
+
+    $scope.updateTutor = function() {
+      if (!$scope.tutor.Product.Id) {
+        // The backend should create a new product if the Id is 0
+        $scope.tutor.Product.Id = 0;
+      }
+
+      $http({
+        method: 'PUT',
+        url: '/api/products/' + $scope.tutor.Product.Id + '?type=tutor',
+        headers: {'Content-Type': 'application/json' },
+        data: $scope.space,
+        transformRequest: function(data) {
+          var transformed = {
+            Product: _.extend({}, data.Product)
+          };
+          transformed.Product.Id = parseInt(data.Product.Id);
+          transformed.Product.Price = parseFloat(data.Product.Price);
+          return JSON.stringify(transformed);
+        },
+        params: {
+          ac: new Date().getTime()
+        }
+      })
+      .success(function(data) {
+        toastr.success('Update successful');
+      })
+      .error(function(data) {
+        console.log(data);
+        toastr.error('Failed to update');
+      });
+    };
+
   };
 
 }]); // app.controller
