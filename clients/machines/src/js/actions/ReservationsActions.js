@@ -18,13 +18,28 @@ var ReservationActions = {
   STEP_SUCCESS: STEP_SUCCESS,
   STEP_ERROR: STEP_ERROR,
 
+  // load reservations and corresponding user names.
+  //
+  // But only load user names for reservations that are currently active.
   load() {
     ApiActions.getCall('/api/reservations', function(reservations) {
+      var t = moment().unix();
+      var userIds = [];
+
       _.each(reservations, function(reservation) {
-        ApiActions.getCall('/api/users/' + reservation.UserId + '/name', function(userData) {
+        var timeStart = moment(reservation.TimeStart).unix();
+        var timeEnd = moment(reservation.TimeEnd).unix();
+        if (timeStart <= t && t <= timeEnd) {
+          userIds.push(reservation.UserId);
+        }
+      });
+
+      _.each(_.uniq(userIds), function(userId) {
+        ApiActions.getCall('/api/users/' + userId + '/name', function(userData) {
           reactor.dispatch(actionTypes.REGISTER_MACHINE_USER, { userData });
         });
       });
+
       reactor.dispatch(actionTypes.SET_RESERVATIONS, { reservations });
     });
   },
