@@ -15,6 +15,11 @@ app.controller('TutorCtrl', ['$scope', '$http', '$location',
   function($scope, $http, $location) {
 
   $scope.users = [];
+  $scope.machines = [];
+  $scope.tutor = {
+    PriceUnit: 'hour',
+    Skills: []
+  };
   
   $scope.getAllUsers = function() {
     $http({
@@ -35,10 +40,43 @@ app.controller('TutorCtrl', ['$scope', '$http', '$location',
     });
   };
 
-  $scope.getAllUsers();
+  $scope.getAllMachines = function() {
+    $http({
+      method: 'GET',
+      url: '/api/machines',
+      params: {
+        ac: new Date().getTime()
+      }
+    })
+    .success(function(machines) {
+      $scope.machines = machines;
+      setTimeout(function() {
+        $('.selectpicker').selectpicker('refresh');
+      }, 100);
+    })
+    .error(function(data, status) {
+      toastr.error('Failed to get all machines');
+    });
+  }
 
-  $scope.tutor = {
-    PriceUnit: 'hour'
+  $scope.getAllUsers();
+  $scope.getAllMachines();
+
+  $scope.addSkill = function() {
+    $('#skill-picker').selectpicker('refresh');
+    console.log('Adding skill: ' + $scope.tutor.SelectedMachineId);
+
+    // Get machine by id
+    for (var i=0; i<$scope.machines.length; i++) {
+      if (parseInt($scope.tutor.SelectedMachineId) === 
+        parseInt($scope.machines[i].Id)) {
+        
+        $scope.tutor.Skills.push({
+          Id: $scope.machines[i].Id, 
+          Name: $scope.machines[i].Name
+        });
+      }
+    }
   };
 
   $scope.cancel = function() {
