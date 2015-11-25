@@ -34,10 +34,18 @@ var ReservationActions = {
         }
       });
 
-      _.each(_.uniq(userIds), function(userId) {
-        ApiActions.getCall('/api/users/' + userId + '/name', function(userData) {
-          reactor.dispatch(actionTypes.REGISTER_MACHINE_USER, { userData });
-        });
+      $.ajax({
+        url: '/api/users/names?uids=' + userIds.join(','),
+        dataType: 'json',
+        type: 'GET',
+        success: function(data) {
+          _.each(data.Users, function(userData) {
+            reactor.dispatch(actionTypes.REGISTER_MACHINE_USER, { userData });
+          });
+        },
+        error: function() {
+            console.log('Error loading names');
+        }
       });
 
       reactor.dispatch(actionTypes.SET_RESERVATIONS, { reservations });

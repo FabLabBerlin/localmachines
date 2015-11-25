@@ -169,14 +169,23 @@ function apiPostSwitchMachine(mid, onOrOff, aid = '') {
 function apiGetActivationActive() {
   ApiActions.getCall('/api/activations/active', function(data) {
     var activationInfo = _formatActivation(data);
-    _.each(activationInfo, apiLoadMachineUser);
-    reactor.dispatch(actionTypes.SET_ACTIVATION_INFO, { activationInfo });
-  });
-}
+    var userIds = _.uniq(_.pluck(activationInfo, 'UserId'));
 
-function apiLoadMachineUser(activation) {
-  ApiActions.getCall('/api/users/' + activation.UserId + '/name', function(userData) {
-    reactor.dispatch(actionTypes.REGISTER_MACHINE_USER, { userData });
+    $.ajax({
+      url: '/api/users/names?uids=' + userIds.join(','),
+      dataType: 'json',
+      type: 'GET',
+      success: function(data) {
+        _.each(data.Users, function(userData) {
+          reactor.dispatch(actionTypes.REGISTER_MACHINE_USER, { userData });
+        });
+      },
+      error: function() {
+          console.log('Error loading names');
+      }
+    });
+
+    reactor.dispatch(actionTypes.SET_ACTIVATION_INFO, { activationInfo });
   });
 }
 
@@ -203,7 +212,6 @@ function _postActivationSuccess(data, toastrMessage = 'Machine activated') {
   var successFunction = function(getData) {
     var activationInfo = _formatActivation(getData);
     reactor.dispatch(actionTypes.SET_ACTIVATION_INFO, { activationInfo });
-    _.each(activationInfo, apiLoadMachineUser);
   };
   ApiActions.getCall('/api/activations/active', successFunction);
 }

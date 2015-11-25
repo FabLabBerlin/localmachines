@@ -35,6 +35,10 @@ type MachineCreatedResponse struct {
 	MachineId int64
 }
 
+type UserNamesResponse struct {
+	Users []UserNameResponse
+}
+
 // Used to return only the full name of an user
 // {"UserId": 2, "FirstName": "Milov", "LastName": "Milovič"}
 type UserNameResponse struct {
