@@ -110,13 +110,18 @@ app.controller('TutorCtrl', ['$scope', '$http', '$location',
 
   $scope.save = function() {
 
-    if ($scope.tutor.Name === '' || !$scope.tutor.Name) {
-      alert('Enter tutor name');
+    if (!$scope.tutor.UserId) {
+      toastr.error('Select tutor user');
       return;
     }
 
     if ($scope.tutor.Price === '' || !$scope.tutor.Price) {
-      alert('Enter tutor price');
+      toastr.error('Enter tutor price');
+      return;
+    }
+
+    if (isNaN($scope.tutor.Price)) {
+      toastr.error('Tutor price should be a number');
       return;
     }
 
