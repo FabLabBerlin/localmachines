@@ -57,24 +57,42 @@ app.controller('TutorCtrl', ['$scope', '$http', '$location',
     .error(function(data, status) {
       toastr.error('Failed to get all machines');
     });
-  }
+  };
 
   $scope.getAllUsers();
   $scope.getAllMachines();
 
+  $scope.skillAdded = function(skill) {
+    var skillFound = false;
+    for (var i=0; i<$scope.tutor.Skills.length; i++) {
+      if (parseInt($scope.tutor.Skills[i].Id) ===
+        parseInt(skill.Id)) {
+        skillFound = true;
+        break;
+      }
+    }
+    return skillFound;
+  };
+
   $scope.addSkill = function() {
     $('#skill-picker').selectpicker('refresh');
-    console.log('Adding skill: ' + $scope.tutor.SelectedMachineId);
-
+    
     // Get machine by id
     for (var i=0; i<$scope.machines.length; i++) {
       if (parseInt($scope.tutor.SelectedMachineId) === 
         parseInt($scope.machines[i].Id)) {
         
-        $scope.tutor.Skills.push({
+        // Check for existing skill
+        var skill = {
           Id: $scope.machines[i].Id, 
           Name: $scope.machines[i].Name
-        });
+        };
+
+        // Add only if skill is not there yet
+        if (!$scope.skillAdded(skill)) {
+          console.log('Adding skill: ' + $scope.tutor.SelectedMachineId);
+          $scope.tutor.Skills.push(skill);
+        }
       }
     }
   };
