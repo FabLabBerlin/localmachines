@@ -210,13 +210,11 @@ func AutoExtendUserMemberships() error {
 
 	var userMembershipsArr []UserMembership
 	o := orm.NewOrm()
-	num, err := o.QueryTable(um.TableName()).All(&userMembershipsArr)
+	_, err := o.QueryTable(um.TableName()).All(&userMembershipsArr)
 	if err != nil {
 		beego.Error("Failed to get all user memberships:", err)
 		return fmt.Errorf("Failde to get all user memberships")
 	}
-
-	beego.Trace("Total number of user memberships:", num)
 
 	// Loop through the user memberships and check the end date
 	for i := 0; i < len(userMembershipsArr); i++ {

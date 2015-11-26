@@ -63,6 +63,9 @@ app.controller('SpacePurchaseCtrl',
       sp.TimeStartLocal = start.format('HH:mm');
       sp.TimeEndLocal = end.format('HH:mm');
       calculateTotalPrice();
+      setTimeout(function() {
+        $('.selectpicker').selectpicker('refresh');
+      }, 100);
     })
     .error(function(data, status) {
       toastr.error('Failed to load user data');

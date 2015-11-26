@@ -164,7 +164,7 @@ const getMonthlyBills = [
 
         var duration = moment.duration(timeEnd.diff(timeStart))
                              .asSeconds();
-        
+
         monthlyBill.sums.durations += duration;
         var priceInclVAT = toCents(info.DiscountedTotal);
         var priceExclVAT = toCents(subtractVAT(info.DiscountedTotal));

@@ -10,7 +10,7 @@ var DayView = React.createClass({
   handleClick() {
     if (!this.props.header && !this.props.empty && !this.props.notAvailable) {
       var date = this.props.moment;
-      ReservationsActions.createSetDate({ date });
+      ReservationsActions.newReservation.setDate({ date });
     }
   },
 
@@ -125,11 +125,11 @@ var MonthView = React.createClass({
 
 var DatePicker = React.createClass({
   previous() {
-    ReservationsActions.previousStep();
+    ReservationsActions.newReservation.previousStep();
   },
 
   next() {
-    ReservationsActions.nextStep();
+    ReservationsActions.newReservation.nextStep();
   },
 
   render() {

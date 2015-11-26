@@ -146,7 +146,7 @@ func GetAllMachines() ([]*Machine, error) {
 	for i := 0; i < len(machines); i++ {
 		var numActivations int64
 		query := fmt.Sprintf("SELECT COUNT(*) FROM %s WHERE TYPE=? AND machine_id=?",
-			a.purchase.TableName())
+			a.Purchase.TableName())
 		//beego.Trace("Counting activations for machine with ID", machines[i].Id)
 		err = o.Raw(query, PURCHASE_TYPE_ACTIVATION, machines[i].Id).QueryRow(&numActivations)
 		if err != nil {

@@ -119,7 +119,6 @@ func addSeparationRowXlsx(sheet *xlsx.Sheet) {
 
 // Creates a xlsx file.
 func createXlsxFile(filePath string, invoice *Invoice) error {
-
 	sort.Sort(invoice)
 	userSummaries := invoice.UserSummaries
 

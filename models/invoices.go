@@ -134,7 +134,6 @@ func GetInvoice(invoiceId int64) (invoice *Invoice, err error) {
 
 // Returns Invoice and InvoiceSummary objects, error otherwise
 func CalculateInvoiceSummary(startTime, endTime time.Time) (invoice Invoice, err error) {
-
 	// Enhance activations with user and membership data
 	purchases, err := invoice.getPurchases(startTime, endTime)
 	if err != nil {
@@ -215,9 +214,9 @@ func getPurchases(startTime,
 	usr := User{}
 	o := orm.NewOrm()
 
-	query := fmt.Sprintf("SELECT a.* FROM %s a JOIN %s u ON a.user_id=u.id "+
-		"WHERE a.time_start > ? AND a.time_end < ? "+
-		"AND a.activation_running <> true ",
+	query := fmt.Sprintf("SELECT p.* FROM %s p JOIN %s u ON p.user_id=u.id "+
+		"WHERE p.time_start > ? AND p.time_end < ? "+
+		"AND (p.activation_running IS NULL OR p.activation_running = 0)",
 		p.TableName(),
 		usr.TableName())
 
@@ -246,7 +245,6 @@ func (this *Invoice) getInvoiceFileName(startTime,
 }
 
 func (this *Invoice) getPurchases(startTime, endTime time.Time) (purchases []*Purchase, err error) {
-
 	machines, err := GetAllMachines()
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get machines: %v", err)

@@ -17,20 +17,19 @@ func init() {
 // TODO: The way go convey tests are supposed to be written is more
 // human readable than this. Improve on that.
 
-func CreateMembershipsActivation(userId, machineId int64, startTime time.Time, minutes float64) (activationId int64, err error) {
+func CreateMembershipsActivation(userId, machineId int64, startTime time.Time, minutes float64) (id int64, err error) {
 
-	activation := models.Activation{}
-	activation.TimeStart = startTime
-	activation.TimeEnd = activation.TimeStart.Add(time.Duration(minutes) * time.Minute)
-	activation.UserId = userId
-	activation.MachineId = machineId
+	activation := models.Activation{
+		Purchase: models.Purchase{
+			TimeStart: startTime,
+			UserId:    userId,
+			MachineId: machineId,
+		},
+	}
+	activation.Purchase.TimeEnd = activation.Purchase.TimeStart.Add(time.Duration(minutes) * time.Minute)
 
 	o := orm.NewOrm()
-	id, e := o.Insert(&activation)
-
-	activationId = id
-	err = e
-	return
+	return o.Insert(&activation.Purchase)
 }
 
 func TestMemberships(t *testing.T) {

@@ -1,6 +1,7 @@
 package modelTest
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -10,6 +11,20 @@ import (
 
 func init() {
 	ConfigDB()
+}
+
+func CreateMachine(name string) (m *models.Machine, err error) {
+	mid, err := models.CreateMachine(name)
+	if err != nil {
+		return
+	}
+	if m, err = models.GetMachine(mid); err != nil {
+		return
+	}
+	m.Price = 0.1
+	m.PriceUnit = "minute"
+	err = models.UpdateMachine(m)
+	return
 }
 
 func TestActivations(t *testing.T) {
@@ -26,17 +41,23 @@ func TestActivations(t *testing.T) {
 			})
 
 			Convey("Creating activation with non-existing user", func() {
-				mid, _ := models.CreateMachine("lel")
-				_, err := models.CreateActivation(mid, 0, time.Now())
+				machine, _ := CreateMachine("lel")
+				_, err := models.CreateActivation(machine.Id, 0, time.Now())
 				So(err, ShouldBeNil)
 			})
 
 			Convey("Creating activation with existing user and machine", func() {
-				mid, _ := models.CreateMachine("lel")
+				machine, _ := CreateMachine("lel")
 				uid, _ := models.CreateUser(&user)
 				activationStartTime := time.Date(2015, 5, 8, 2, 15, 3, 1, time.Local)
-				aid, err := models.CreateActivation(mid, uid, activationStartTime)
+				aid, err := models.CreateActivation(machine.Id, uid, activationStartTime)
+				if err != nil {
+					panic(fmt.Sprintf("create activation: %v", err))
+				}
 				activation, err2 := models.GetActivation(aid)
+				if err2 != nil {
+					panic(fmt.Sprintf("get activation: %v", err2))
+				}
 
 				Convey("There should be no error", func() {
 					So(err, ShouldBeNil)
@@ -48,40 +69,45 @@ func TestActivations(t *testing.T) {
 
 				Convey("It should be possible to read the activation back", func() {
 					So(err2, ShouldBeNil)
-					So(activation.Id, ShouldEqual, aid)
+					So(activation.Purchase.Id, ShouldEqual, aid)
 				})
 
 				Convey("Activation start time should match current time", func() {
-					t.Logf("activation.TimeStart = %v", activation.TimeStart)
-					t.Logf("activationStartTime = %v", activationStartTime)
-					So(activation.TimeStart, ShouldHappenWithin,
+					So(activation.Purchase.TimeStart, ShouldHappenWithin,
 						time.Duration(1)*time.Second, activationStartTime)
 				})
 
 				Convey("the active flag should be true after creating", func() {
-					So(activation.Active, ShouldBeTrue)
+					So(activation.Purchase.ActivationRunning, ShouldBeTrue)
 				})
 
 				Convey("It should be possible to close the activation", func() {
 					activationEndTime := time.Now()
 					err = models.CloseActivation(aid, activationEndTime)
+					if err != nil {
+						panic(fmt.Sprintf("close activation: %v", err))
+					}
 					So(err, ShouldBeNil)
 
-					activation, _ = models.GetActivation(aid)
+					activation, err = models.GetActivation(aid)
+					if err != nil {
+						panic(fmt.Sprintf("get activation: %v", err))
+					}
 
 					Convey("The end time of the closed activation should be correct", func() {
-						So(activation.TimeEnd, ShouldHappenWithin,
+						So(activation.Purchase.TimeEnd, ShouldHappenWithin,
 							time.Duration(1)*time.Second, activationEndTime)
 					})
 
 					Convey("The total duration of the activation should be correct", func() {
-						totalTime := activation.TimeEnd.Sub(activation.TimeStart)
-						So(activation.TimeTotal, ShouldAlmostEqual,
-							int64(totalTime.Seconds()), 1)
+						totalTime := activation.Purchase.TimeEnd.Sub(activation.Purchase.TimeStart)
+						q := activation.Purchase.Quantity
+						So(q, ShouldAlmostEqual,
+							int64(totalTime.Minutes()), 1)
 					})
 
 					Convey("the active flag should be false after closing", func() {
-						So(activation.Active, ShouldBeFalse)
+						So(activation.Purchase.ActivationRunning, ShouldBeFalse)
 					})
 				})
 			})
@@ -94,23 +120,9 @@ func TestActivations(t *testing.T) {
 				So(err, ShouldNotBeNil)
 			})
 			Convey("Creating an activation and close it", func() {
-				mid, _ := models.CreateMachine("lel")
-				aid, _ := models.CreateActivation(mid, 0, time.Now())
+				machine, _ := CreateMachine("lel")
+				aid, _ := models.CreateActivation(machine.Id, 0, time.Now())
 				err := models.CloseActivation(aid, time.Now())
-
-				So(err, ShouldBeNil)
-			})
-		})
-		Convey("Testing DeleteActivation", func() {
-			Convey("Trying to delete non-existing activation", func() {
-				err := models.DeleteActivation(0)
-
-				So(err, ShouldNotBeNil)
-			})
-			Convey("Creating an activation and delete it", func() {
-				mid, _ := models.CreateMachine("lel")
-				aid, _ := models.CreateActivation(mid, 0, time.Now())
-				err := models.DeleteActivation(aid)
 
 				So(err, ShouldBeNil)
 			})
@@ -122,19 +134,19 @@ func TestActivations(t *testing.T) {
 				So(err, ShouldNotBeNil)
 			})
 			Convey("Getting activation id on non-activated machine", func() {
-				mid, _ := models.CreateMachine("lel")
-				aid, _ := models.CreateActivation(mid, 0, time.Now())
+				machine, _ := CreateMachine("lel")
+				aid, _ := models.CreateActivation(machine.Id, 0, time.Now())
 				models.CloseActivation(aid, time.Now())
 				_, err := models.GetActivationMachineId(aid)
 
 				So(err, ShouldBeNil)
 			})
 			Convey("Creating activation on a machine and get activation's id", func() {
-				mid, _ := models.CreateMachine("lel")
-				aid, _ := models.CreateActivation(mid, 0, time.Now())
+				machine, _ := CreateMachine("lel")
+				aid, _ := models.CreateActivation(machine.Id, 0, time.Now())
 				gmid, _ := models.GetActivationMachineId(aid)
 
-				So(mid, ShouldEqual, gmid)
+				So(machine.Id, ShouldEqual, gmid)
 			})
 		})
 	})

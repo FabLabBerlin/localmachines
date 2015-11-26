@@ -85,8 +85,9 @@ func CreateReservation(reservation *Reservation) (int64, error) {
 	}
 
 	reservation.purchase.Type = PURCHASE_TYPE_RESERVATION
-	reservation.purchase.PricePerUnit = *machine.ReservationPriceHourly
+	reservation.purchase.PricePerUnit = *machine.ReservationPriceHourly / 2
 	reservation.purchase.PriceUnit = "30 minutes"
+	reservation.purchase.Quantity = reservation.purchase.quantityFromTimes()
 
 	o := orm.NewOrm()
 	return o.Insert(&reservation.purchase)
@@ -94,6 +95,7 @@ func CreateReservation(reservation *Reservation) (int64, error) {
 
 func UpdateReservation(reservation *Reservation) (err error) {
 	o := orm.NewOrm()
+	reservation.purchase.Quantity = reservation.purchase.quantityFromTimes()
 	_, err = o.Update(&reservation.purchase)
 	return
 }
