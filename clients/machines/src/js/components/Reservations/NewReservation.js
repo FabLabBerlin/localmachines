@@ -103,13 +103,13 @@ var SelectMachine = React.createClass({
   },
 
   cancel() {
-    ReservationsActions.createDone();
+    ReservationsActions.newReservation.done();
   },
 
   next() {
     this.setMachine();
     if (this.state.newReservation.get('machineId')) {
-      ReservationsActions.nextStep();
+      ReservationsActions.newReservation.nextStep();
     }
   },
 
@@ -118,7 +118,7 @@ var SelectMachine = React.createClass({
     if (mid) {
       mid = parseInt(mid);
       if (mid) {
-        ReservationsActions.createSetMachine({ mid });
+        ReservationsActions.newReservation.setMachine({ mid });
       } else {
         toastr.error('No machine selected');
       }
@@ -141,7 +141,7 @@ var SuccessMsg = React.createClass({
   },
 
   handleClick() {
-    ReservationsActions.createDone();
+    ReservationsActions.newReservation.done();
   },
 
   render() {

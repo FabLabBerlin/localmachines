@@ -148,11 +148,11 @@ var ReservationsPage = React.createClass({
   },
 
   componentWillUnmount() {
-    ReservationsActions.createDone();
+    ReservationsActions.newReservation.done();
   },
 
   clickCreate() {
-    ReservationsActions.createEmpty();
+    ReservationsActions.newReservation.create();
   },
 
   getDataBindings() {

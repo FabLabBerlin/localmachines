@@ -96,7 +96,7 @@ var TimePicker = React.createClass({
   },
 
   previous() {
-    ReservationsActions.previousStep();
+    ReservationsActions.newReservation.previousStep();
   },
 
   setTimes(lastClickIndex) {
@@ -145,11 +145,11 @@ var TimePicker = React.createClass({
       }.bind(this));
     }
 
-    ReservationsActions.createSetTimes({ times });
+    ReservationsActions.newReservation.setTimes({ times });
   },
 
   submit() {
-    ReservationsActions.createSubmit();
+    ReservationsActions.newReservation.submit();
   },
 
   times() {

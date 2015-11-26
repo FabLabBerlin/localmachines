@@ -52,86 +52,87 @@ var ReservationActions = {
     });
   },
 
-  createEmpty() {
-    reactor.dispatch(actionTypes.CREATE_EMPTY);
-  },
+  newReservation: {
+    create() {
+      reactor.dispatch(actionTypes.CREATE_EMPTY);
+    },
 
-  createSetMachine({ mid }) {
-    reactor.dispatch(actionTypes.CREATE_SET_MACHINE, { mid });
-  },
+    setMachine({ mid }) {
+      reactor.dispatch(actionTypes.CREATE_SET_MACHINE, { mid });
+    },
 
-  createSetDate({ date }) {
-    reactor.dispatch(actionTypes.CREATE_SET_DATE, { date });
-    reactor.dispatch(actionTypes.CREATE_SET_STEP, STEP_SET_TIME);
-  },
+    setDate({ date }) {
+      reactor.dispatch(actionTypes.CREATE_SET_DATE, { date });
+      reactor.dispatch(actionTypes.CREATE_SET_STEP, STEP_SET_TIME);
+    },
 
-  createSetTimes({ times }) {
-    reactor.dispatch(actionTypes.CREATE_SET_TIMES, { times });
-  },
+    setTimes({ times }) {
+      reactor.dispatch(actionTypes.CREATE_SET_TIMES, { times });
+    },
 
-  createToggleStartTime({ startTime }) {
-    reactor.dispatch(actionTypes.CREATE_TOGGLE_START_TIME);
-  },
+    toggleStartTime({ startTime }) {
+      reactor.dispatch(actionTypes.CREATE_TOGGLE_START_TIME);
+    },
 
-  previousStep() {
-    var step = reactor.evaluateToJS(getters.getNewReservation).step;
-    if (step > STEP_SET_MACHINE && step !== STEP_ERROR) {
-      step--;
-    }
-    reactor.dispatch(actionTypes.CREATE_SET_STEP, step);
-  },
-
-  nextStep() {
-    var newReservation = reactor.evaluateToJS(getters.getNewReservation);
-    var step = newReservation.step;
-    if (step === STEP_SET_DATE && !newReservation.date) {
-      toastr.error('Please select a date');
-    } else if (step < STEP_SUCCESS && step !== STEP_ERROR) {
-      step++;
-      reactor.dispatch(actionTypes.CREATE_SET_STEP, step);
-    }
-  },
-
-  createSubmit() {
-    const times = reactor.evaluateToJS(getters.getNewReservationTimes);
-    const reservation = reactor.evaluateToJS(getters.getNewReservation);
-    const uid = reactor.evaluateToJS(getters.getUid);
-    var selectedTimes = _.filter(times, function(t) {
-      return t.selected;
-    });
-    var data = {
-      MachineId: reservation.machineId,
-      UserId: uid,
-      TimeStart: reactor.evaluateToJS(getters.getNewReservationFrom),
-      TimeEnd: reactor.evaluateToJS(getters.getNewReservationTo),
-      Created: new Date()
-    };
-    $.ajax({
-      url: '/api/reservations',
-      contentType: 'application/json; charset=utf-8',
-      dataType: 'json',
-      type: 'POST',
-      cache: false,
-      data: JSON.stringify(data),
-      success: function() {
-        reactor.dispatch(actionTypes.CREATE_SET_STEP, STEP_SUCCESS);
-        ReservationActions.load();
-      },
-      error: function() {
-        toastr.error('Error submitting reservation. Please try again later.');
+    previousStep() {
+      var step = reactor.evaluateToJS(getters.getNewReservation).step;
+      if (step > STEP_SET_MACHINE && step !== STEP_ERROR) {
+        step--;
       }
-    });
-  },
+      reactor.dispatch(actionTypes.CREATE_SET_STEP, step);
+    },
 
-  createDone() {
-    reactor.dispatch(actionTypes.CREATE_DONE);
+    nextStep() {
+      var newReservation = reactor.evaluateToJS(getters.getNewReservation);
+      var step = newReservation.step;
+      if (step === STEP_SET_DATE && !newReservation.date) {
+        toastr.error('Please select a date');
+      } else if (step < STEP_SUCCESS && step !== STEP_ERROR) {
+        step++;
+        reactor.dispatch(actionTypes.CREATE_SET_STEP, step);
+      }
+    },
+
+    submit() {
+      const times = reactor.evaluateToJS(getters.getNewReservationTimes);
+      const reservation = reactor.evaluateToJS(getters.getNewReservation);
+      const uid = reactor.evaluateToJS(getters.getUid);
+      var selectedTimes = _.filter(times, function(t) {
+        return t.selected;
+      });
+      var data = {
+        MachineId: reservation.machineId,
+        UserId: uid,
+        TimeStart: reactor.evaluateToJS(getters.getNewReservationFrom),
+        TimeEnd: reactor.evaluateToJS(getters.getNewReservationTo),
+        Created: new Date()
+      };
+      $.ajax({
+        url: '/api/reservations',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        type: 'POST',
+        cache: false,
+        data: JSON.stringify(data),
+        success: function() {
+          reactor.dispatch(actionTypes.CREATE_SET_STEP, STEP_SUCCESS);
+          ReservationActions.load();
+        },
+        error: function() {
+          toastr.error('Error submitting reservation. Please try again later.');
+        }
+      });
+    },
+
+    done() {
+      reactor.dispatch(actionTypes.CREATE_DONE);
+    }
   },
 
   cancelReservation(reservationId) {
     const reservations = reactor.evaluateToJS(getters.getReservations);
     var reservation;
     _.each(reservations, (r) => {
-      console.log('r:', r);
       if (r.Id === reservationId) {
         reservation = r;
       }
