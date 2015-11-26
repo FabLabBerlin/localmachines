@@ -1,6 +1,7 @@
 package modelTest
 
 import (
+	"fmt"
 	"os"
 	"testing"
 	"time"
@@ -26,15 +27,14 @@ func CreateTestPurchase(machineId int64, machineName string,
 	machine.Price = pricePerMinute
 
 	invAct := &models.Purchase{
-		Activation: &models.Activation{
-			Purchase: models.Purchase{
-				TimeStart:    TIME_START,
-				TimeEnd:      TIME_START.Add(time.Minute * time.Duration(minutes)),
-				PricePerUnit: pricePerMinute,
-				PriceUnit:    "minute",
-			},
-		},
+		Type:         models.PURCHASE_TYPE_ACTIVATION,
+		TimeStart:    TIME_START,
+		TimeEnd:      TIME_START.Add(minutes),
+		PricePerUnit: pricePerMinute,
+		PriceUnit:    "minute",
+		Quantity:     minutes.Minutes(),
 		Machine:      &machine,
+		MachineId:    machineId,
 		MachineUsage: minutes,
 		Memberships: []*models.Membership{
 			&models.Membership{
@@ -42,7 +42,7 @@ func CreateTestPurchase(machineId int64, machineName string,
 				Title:                 "Half price",
 				ShortName:             "HP",
 				MachinePriceDeduction: 50,
-				AffectedMachines:      "[22]",
+				AffectedMachines:      fmt.Sprintf("[%v]", machineId),
 			},
 		},
 	}

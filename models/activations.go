@@ -282,33 +282,6 @@ func UpdateActivation(activation *Activation) error {
 	return nil
 }
 
-// Delete activation matching an activation ID.
-func DeleteActivation(activationId int64) error {
-
-	// Set machine of the activation available
-	var err error
-	var activation Activation
-	o := orm.NewOrm()
-	err = o.QueryTable(activation.Purchase.TableName()).
-		Filter("Id", activationId).
-		Filter("type", PURCHASE_TYPE_ACTIVATION).
-		One(&activation.Purchase, "MachineId")
-	if err != nil {
-		beego.Error("Failed to get machine ID of the activation")
-		return err
-	}
-	m := Machine{}
-	_, err = o.QueryTable(m.TableName()).
-		Filter("Id", activation.Purchase.MachineId).
-		Update(orm.Params{"available": true})
-	if err != nil {
-		beego.Error("Failed to update machine as available")
-		return err
-	}
-
-	return DeletePurchase(activation.Purchase.Id)
-}
-
 // Gets the machine ID of a specific activation defined by activation ID.
 func GetActivationMachineId(activationId int64) (int64, error) {
 	activationModel := Activation{}

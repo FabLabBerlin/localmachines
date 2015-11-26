@@ -119,9 +119,9 @@ func ResetDB() {
 		o.Delete(&item)
 	}
 
-	var activations []models.Activation
-	o.QueryTable("activations").All(&activations)
-	for _, item := range activations {
+	var purchases []models.Purchase
+	o.QueryTable("purchases").All(&purchases)
+	for _, item := range purchases {
 		o.Delete(&item)
 	}
 
