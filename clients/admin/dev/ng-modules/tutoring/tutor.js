@@ -169,11 +169,12 @@ app.controller('TutorCtrl', ['$scope', '$http', '$location',
     })
     .success(function(updatedTutor) {
       console.log(updatedTutor);
-      
+
       // Udpdate the id of the tutor if created
       $scope.tutor.Id = updatedTutor.Product.Id;
       $scope.tutor.Name = updatedTutor.Product.Name;
-      toastr.success('Tutor updated');
+      
+      $location.path('/tutoring');
     })
     .error(function(data) {
       console.log(data);
