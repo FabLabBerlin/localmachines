@@ -12,7 +12,7 @@ type Tutor struct {
 }
 
 type TutorList struct {
-	Data []*Tutor
+	Data []*Product
 }
 
 type TutoringPurchase struct {
@@ -37,15 +37,23 @@ func init() {
 
 // Get a list of tutors
 func GetTutorList() (*TutorList, error) {
-	/*
-		tutor1 := Tutor{Id: 1, Name: "Ahmad Taled", Price: 60.0, PriceUnit: "hour"}
-		tutor2 := Tutor{Id: 2, Name: "Tina Atari", Price: 60.0, PriceUnit: "hour"}
-		tutorList := TutorList{}
-		tutorList.Data = append(tutorList.Data, &tutor1, &tutor2)
-		return &tutorList, nil
-	*/
 
-	return nil, nil
+	var tutorsAsProducts []*Product
+	p := Product{}
+	o := orm.NewOrm()
+
+	num, err := o.QueryTable(p.TableName()).All(&tutorsAsProducts)
+	if err != nil {
+		msg := "Failed to get tutors as products"
+		beego.Error(msg)
+		return nil, fmt.Errorf(msg)
+	}
+
+	beego.Trace("Got %d tutors", num)
+
+	tutorList := TutorList{Data: tutorsAsProducts}
+
+	return &tutorList, nil
 }
 
 // Get a list of tutoring purchases

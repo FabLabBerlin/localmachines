@@ -21,6 +21,10 @@ type Product struct {
 	Comments      string `orm:"type(text)"`
 }
 
+type ProductList struct {
+	Data []*Product
+}
+
 func (this *Product) TableName() string {
 	return "products"
 }
