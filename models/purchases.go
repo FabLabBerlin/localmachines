@@ -122,7 +122,7 @@ func PriceTotalExclDisc(p *Purchase) float64 {
 }
 
 func PriceTotalDisc(p *Purchase) (float64, error) {
-	if p.Reservation != nil {
+	if p.Type != PURCHASE_TYPE_ACTIVATION {
 		return PriceTotalExclDisc(p), nil
 	}
 
@@ -164,13 +164,14 @@ func (this Purchases) Less(i, j int) bool {
 		return true
 	} else if timeStartJ.Before(timeStartI) {
 		return false
-	} else {
+	} else if (*this.Data[i]).Machine != nil && (*this.Data[j]).Machine != nil {
 		return (*this.Data[i]).Machine.Name < (*this.Data[j]).Machine.Name
+	} else {
+		return false
 	}
 }
 
 func (this Purchase) ProductName() string {
-	beego.Info("Purchase.Type = ", this.Type)
 	switch this.Type {
 	case PURCHASE_TYPE_ACTIVATION:
 		return this.Machine.Name

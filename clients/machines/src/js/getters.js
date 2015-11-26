@@ -173,8 +173,8 @@ const getMonthlyBills = [
         monthlyBill.sums.purchases.priceExclVAT += priceExclVAT;
         monthlyBill.sums.purchases.priceVAT += priceVAT;
         monthlyBill.purchases.push({
-          MachineName: info.Machine.Name,
-          Type: info.Activation ? 'Activation' : 'Reservation',
+          MachineName: info.Machine ? info.Machine.Name : 'Purchase ' + info.Type,
+          Type: info.Type,
           TimeStart: timeStart,
           duration: duration,
           priceExclVAT: priceExclVAT,

@@ -363,7 +363,7 @@ func (this *Invoice) enhancePurchase(purchase *Purchase,
 
 	var ok bool
 	purchase.Machine, ok = machinesById[purchase.MachineId]
-	if !ok {
+	if !ok && (purchase.Type == PURCHASE_TYPE_ACTIVATION || purchase.Type == PURCHASE_TYPE_RESERVATION) {
 		return fmt.Errorf("No machine has the ID %v", purchase.MachineId)
 	}
 
