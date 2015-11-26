@@ -754,15 +754,19 @@ func (this *UsersController) GetUserNames() {
 
 	// Get the user names data
 	beego.Info("uids:", this.GetString("uids"))
-	uidsList := strings.Split(this.GetString("uids"), ",")
-	uids := make([]int64, 0, len(uidsList))
-	for _, uid := range uidsList {
-		id, err := strconv.ParseInt(uid, 10, 64)
-		if err != nil {
-			beego.Error("Failed to parse uids:", err)
-			this.CustomAbort(400, "Failed to get user name")
+	var uids []int64
+
+	if uidsString := this.GetString("uids"); len(uidsString) > 0 {
+		uidsList := strings.Split(uidsString, ",")
+		uids = make([]int64, 0, len(uidsList))
+		for _, uid := range uidsList {
+			id, err := strconv.ParseInt(uid, 10, 64)
+			if err != nil {
+				beego.Error("Failed to parse uids:", err)
+				this.CustomAbort(400, "Failed to get user name")
+			}
+			uids = append(uids, id)
 		}
-		uids = append(uids, id)
 	}
 
 	response := models.UserNamesResponse{

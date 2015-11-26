@@ -70,19 +70,32 @@ var BillTables = React.createClass({
           </tr>
         );
 
-        _.each(bill.purchases, function(info) {
-          var label = info.MachineName;
-          if (info.Type === 'Reservation') {
+        _.each(bill.purchases, function(purchase) {
+          var label = purchase.MachineName;
+          switch (purchase.Type) {
+          case 'activation':
+            // already okay
+            break;
+          case 'co-working':
+            label = 'Co-Working';
+            break;
+          case 'reservation':
             label += ' (Reservation)';
+            break;
+          case 'space':
+            label = 'Space Booking';
+            break;
+          default:
+            console.log('unhandled purchase type ', purchase.Type);
           }
           tbody.push(
             <tr key={i++}>
               <td>{label}</td>
-              <td>{formatDate(info.TimeStart)}</td>
-              <td>{formatDuration(info.duration)}</td>
-              <td>{toEuro(info.priceExclVAT)}€</td>
-              <td>{toEuro(info.priceVAT)}€</td>
-              <td>{toEuro(info.priceInclVAT)}€</td>
+              <td>{formatDate(purchase.TimeStart)}</td>
+              <td>{formatDuration(purchase.duration)}</td>
+              <td>{toEuro(purchase.priceExclVAT)}€</td>
+              <td>{toEuro(purchase.priceVAT)}€</td>
+              <td>{toEuro(purchase.priceInclVAT)}€</td>
             </tr>
           );
         });

@@ -175,8 +175,8 @@ function apiGetActivationActive() {
       url: '/api/users/names?uids=' + userIds.join(','),
       dataType: 'json',
       type: 'GET',
-      success: function(data) {
-        _.each(data.Users, function(userData) {
+      success: function(response) {
+        _.each(response.Users, function(userData) {
           reactor.dispatch(actionTypes.REGISTER_MACHINE_USER, { userData });
         });
       },
