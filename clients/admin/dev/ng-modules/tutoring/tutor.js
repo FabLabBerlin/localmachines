@@ -90,9 +90,16 @@ app.controller('TutorCtrl', ['$scope', '$http', '$location',
 
         // Add only if skill is not there yet
         if (!$scope.skillAdded(skill)) {
-          console.log('Adding skill: ' + $scope.tutor.SelectedMachineId);
           $scope.tutor.Skills.push(skill);
         }
+      }
+    }
+  };
+
+  $scope.removeSkill = function(skillId) {
+    for (var i=0; i<$scope.tutor.Skills.length; i++) {
+      if (parseInt(skillId) === parseInt($scope.tutor.Skills[i].Id)) {
+        $scope.tutor.Skills.splice(i, 1);
       }
     }
   };

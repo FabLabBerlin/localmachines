@@ -49,7 +49,11 @@
         class="tag-item"
         ng-repeat="skill in tutor.Skills">
         <span class="tag-item-label">{{skill.Name}}</span>
-        <a class="tag-item-btn-remove"><i class="fa fa-close"></i></a>
+        <a 
+          class="tag-item-btn-remove"
+          ng-click="removeSkill(skill.Id)">
+          <i class="fa fa-close"></i>
+        </a>
       </div>
     </div>
 
