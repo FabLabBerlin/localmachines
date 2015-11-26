@@ -127,67 +127,58 @@ app.controller('TutorCtrl', ['$scope', '$http', '$location',
       return;
     }
 
-    console.log($scope.tutor);
+    $scope.updateTutor();
+  };
 
-    var tutor = $scope.tutor;
-    tutor.Price = parseInt(tutor.Price);
-
-    /*
+  $scope.updateTutor = function() {
     $http({
       method: 'PUT',
-      url: '/api/tutoring/tutor',
-      data: tutor,
-      headers: { 
-        'Content-Type': 'application/json' 
-      },
-      params: { 
-        ac: new Date().getTime() 
-      },
-      transformRequest: function(data) {
-        return JSON.stringify(data);
-      }
-    })
-    .success(function(data) {
-      toastr.success('Tutor updated');
-      $location.path('/tutoring');
-    })
-    .error(function() {
-      toastr.error('Failed to save tutor');
-    });
-    */
+      url: '/api/tutoring/tutor',        
+      headers: {'Content-Type': 'application/json' },
+      data: $scope.tutor,
+      transformRequest: function(tutor) {
 
-    $scope.updateTutor = function() {
-      if (!$scope.tutor.Product.Id) {
-        // The backend should create a new product if the Id is 0
-        $scope.tutor.Product.Id = 0;
-      }
+        var transformedTutor = {
+          UserId: parseInt(tutor.UserId),
+          Price: parseFloat(tutor.Price),
+          PriceUnit: tutor.PriceUnit,
+          MachineSkills: ''
+        };
 
-      $http({
-        method: 'PUT',
-        url: '/api/products/' + $scope.tutor.Product.Id + '?type=tutor',
-        headers: {'Content-Type': 'application/json' },
-        data: $scope.space,
-        transformRequest: function(data) {
-          var transformed = {
-            Product: _.extend({}, data.Product)
-          };
-          transformed.Product.Id = parseInt(data.Product.Id);
-          transformed.Product.Price = parseFloat(data.Product.Price);
-          return JSON.stringify(transformed);
-        },
-        params: {
-          ac: new Date().getTime()
+        var tutorSkills = '[';
+        for (var i=0; i<tutor.MachineSkills.length; i++) {
+          tutorSkills += tutor.MachineSkills[i].Id;
+          if (i < tutor.MachineSkills.length - 1) {
+            tutorSkills += ',';
+          }
         }
-      })
-      .success(function(data) {
-        toastr.success('Update successful');
-      })
-      .error(function(data) {
-        console.log(data);
-        toastr.error('Failed to update');
-      });
-    };
+        tutorSkills += ']';
 
+        transformedTutor.MachineSkills = tutorSkills;
+        console.log(transformedTutor);
+
+        var container = {
+          Product: transformedTutor
+        };
+
+        return JSON.stringify(container);
+      },
+      params: {
+        ac: new Date().getTime()
+      }
+    })
+    .success(function(updatedTutor) {
+      console.log(updatedTutor);
+      
+      // Udpdate the id of the tutor if created
+      $scope.tutor.Id = updatedTutor.Product.Id;
+      $scope.tutor.Name = updatedTutor.Product.Name;
+      toastr.success('Tutor updated');
+    })
+    .error(function(data) {
+      console.log(data);
+      toastr.error('Failed to update tutor');
+    });
   };
 
 }]); // app.controller

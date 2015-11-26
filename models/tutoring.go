@@ -1,16 +1,14 @@
 package models
 
 import (
+	"fmt"
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/orm"
 	"time"
 )
 
 type Tutor struct {
-	Id        int64
-	Name      string
-	Price     float64
-	PriceUnit string
-	Comments  string
+	Product Product
 }
 
 type TutorList struct {
@@ -39,11 +37,15 @@ func init() {
 
 // Get a list of tutors
 func GetTutorList() (*TutorList, error) {
-	tutor1 := Tutor{Id: 1, Name: "Ahmad Taled", Price: 60.0, PriceUnit: "hour"}
-	tutor2 := Tutor{Id: 2, Name: "Tina Atari", Price: 60.0, PriceUnit: "hour"}
-	tutorList := TutorList{}
-	tutorList.Data = append(tutorList.Data, &tutor1, &tutor2)
-	return &tutorList, nil
+	/*
+		tutor1 := Tutor{Id: 1, Name: "Ahmad Taled", Price: 60.0, PriceUnit: "hour"}
+		tutor2 := Tutor{Id: 2, Name: "Tina Atari", Price: 60.0, PriceUnit: "hour"}
+		tutorList := TutorList{}
+		tutorList.Data = append(tutorList.Data, &tutor1, &tutor2)
+		return &tutorList, nil
+	*/
+
+	return nil, nil
 }
 
 // Get a list of tutoring purchases
@@ -66,7 +68,35 @@ func GetTutoringPurchaseList() (*TutoringPurchaseList, error) {
 	return &purchaseList, nil
 }
 
-func CreateNewTutor(tutor *Tutor) error {
-	beego.Trace(tutor)
+func CreateTutor(tutor *Tutor) (*Tutor, error) {
+	o := orm.NewOrm()
+
+	// In case the type has not been added in upper layers
+	tutor.Product.Type = PRODUCT_TYPE_TUTOR
+
+	// Get user name by user ID
+	user := User{}
+	user.Id = tutor.Product.UserId
+	err := o.Read(&user)
+	if err != nil {
+		beego.Error("Failed to read user:", err)
+		return nil, fmt.Errorf("Failed to read user: %v", err)
+	}
+
+	tutor.Product.Name = fmt.Sprintf("%s %s", user.FirstName, user.LastName)
+
+	var productId int64
+	productId, err = o.Insert(&tutor.Product)
+	if err != nil {
+		msg := "Failed to insert tutor"
+		beego.Error(msg)
+		return nil, fmt.Errorf(msg)
+	}
+	tutor.Product.Id = productId
+
+	return tutor, nil
+}
+
+func UpdateTutor(tutor *Tutor) error {
 	return nil
 }

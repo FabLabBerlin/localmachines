@@ -7,14 +7,18 @@ import (
 const (
 	PRODUCT_TYPE_CO_WORKING = "co-working"
 	PRODUCT_TYPE_SPACE      = "space"
+	PRODUCT_TYPE_TUTOR      = "tutor"
 )
 
 type Product struct {
-	Id        int64
-	Type      string `orm:"size(100)"`
-	Name      string `orm:"size(100)"`
-	Price     float64
-	PriceUnit string `orm:"size(100)"`
+	Id            int64
+	Type          string `orm:"size(100)"`
+	Name          string `orm:"size(100)"`
+	Price         float64
+	PriceUnit     string `orm:"size(100)"`
+	UserId        int64
+	MachineSkills string `orm:"size(255)"` // JSON string [1, 3, 6]
+	Comments      string `orm:"type(text)"`
 }
 
 func (this *Product) TableName() string {

@@ -90,17 +90,20 @@ func (this *TutoringController) PutTutor() {
 	}
 
 	isNewTutor := false
-	if tutor.Id == 0 {
+	if tutor.Product.Id == 0 {
 		isNewTutor = true
 	}
 
 	if isNewTutor {
-		err = models.CreateNewTutor(&tutor)
+		var tutorWithId *models.Tutor
+		tutorWithId, err = models.CreateTutor(&tutor)
+		beego.Trace(tutorWithId)
 		if err != nil {
 			msg = "Failed to create tutor"
 			beego.Error(msg)
 			this.CustomAbort(500, msg)
 		}
+		this.Data["json"] = tutorWithId
 	} else {
 		/*
 			err = models.UpdateTutor(&tutor)
