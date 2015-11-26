@@ -291,36 +291,6 @@ func (this *ActivationsController) Close() {
 	this.ServeJson()
 }
 
-// @Title Delete Activation
-// @Description Delete an activation
-// @Param	aid		path 	int	true		"Activation ID"
-// @Success 200 string ok
-// @Failure	403	Failed to delete activation
-// @Failure 401 Not authorized
-// @router /:aid [delete]
-func (this *ActivationsController) Delete() {
-
-	if !this.IsAdmin() {
-		beego.Error("Not authorized")
-		this.CustomAbort(401, "Not authorized")
-	}
-
-	aid, err := this.GetInt64(":aid")
-	if err != nil {
-		beego.Error("Failed to get :aid from the request:", err)
-		this.CustomAbort(403, "Failed to delete activation")
-	}
-
-	err = models.DeleteActivation(aid)
-	if err != nil {
-		beego.Error("Failed to delete activation:", err)
-		this.CustomAbort(403, "Failed to delete activation")
-	}
-
-	this.Data["json"] = "ok"
-	this.ServeJson()
-}
-
 // @Title PostFeedback
 // @Description Post feedback
 // @Param	mid	path	int	true	"Machine ID"
