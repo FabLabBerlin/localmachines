@@ -18,7 +18,7 @@ app.controller('TutorCtrl', ['$scope', '$http', '$location',
   $scope.machines = [];
   $scope.tutor = {
     PriceUnit: 'hour',
-    Skills: []
+    MachineSkills: []
   };
   
   $scope.getAllUsers = function() {
@@ -62,11 +62,11 @@ app.controller('TutorCtrl', ['$scope', '$http', '$location',
   $scope.getAllUsers();
   $scope.getAllMachines();
 
-  $scope.skillAdded = function(skill) {
+  $scope.machineSkillAdded = function(machineSkill) {
     var skillFound = false;
-    for (var i=0; i<$scope.tutor.Skills.length; i++) {
-      if (parseInt($scope.tutor.Skills[i].Id) ===
-        parseInt(skill.Id)) {
+    for (var i=0; i<$scope.tutor.MachineSkills.length; i++) {
+      if (parseInt($scope.tutor.MachineSkills[i].Id) ===
+        parseInt(machineSkill.Id)) {
         skillFound = true;
         break;
       }
@@ -74,12 +74,12 @@ app.controller('TutorCtrl', ['$scope', '$http', '$location',
     return skillFound;
   };
 
-  $scope.addSkill = function() {
+  $scope.addMachineSkill = function() {
     $('#skill-picker').selectpicker('refresh');
     
     // Get machine by id
     for (var i=0; i<$scope.machines.length; i++) {
-      if (parseInt($scope.tutor.SelectedMachineId) === 
+      if (parseInt($scope.SelectedMachineId) === 
         parseInt($scope.machines[i].Id)) {
         
         // Check for existing skill
@@ -89,17 +89,19 @@ app.controller('TutorCtrl', ['$scope', '$http', '$location',
         };
 
         // Add only if skill is not there yet
-        if (!$scope.skillAdded(skill)) {
-          $scope.tutor.Skills.push(skill);
+        if (!$scope.machineSkillAdded(skill)) {
+          $scope.tutor.MachineSkills.push(skill);
+        } else {
+          toastr.warning('This skill is already added');
         }
       }
     }
   };
 
-  $scope.removeSkill = function(skillId) {
-    for (var i=0; i<$scope.tutor.Skills.length; i++) {
-      if (parseInt(skillId) === parseInt($scope.tutor.Skills[i].Id)) {
-        $scope.tutor.Skills.splice(i, 1);
+  $scope.removeMachineSkill = function(skillId) {
+    for (var i=0; i<$scope.tutor.MachineSkills.length; i++) {
+      if (parseInt(skillId) === parseInt($scope.tutor.MachineSkills[i].Id)) {
+        $scope.tutor.MachineSkills.splice(i, 1);
       }
     }
   };
@@ -110,13 +112,18 @@ app.controller('TutorCtrl', ['$scope', '$http', '$location',
 
   $scope.save = function() {
 
-    if ($scope.tutor.Name === '' || !$scope.tutor.Name) {
-      alert('Enter tutor name');
+    if (!$scope.tutor.UserId) {
+      toastr.error('Select tutor user');
       return;
     }
 
     if ($scope.tutor.Price === '' || !$scope.tutor.Price) {
-      alert('Enter tutor price');
+      toastr.error('Enter tutor price');
+      return;
+    }
+
+    if (isNaN($scope.tutor.Price)) {
+      toastr.error('Tutor price should be a number');
       return;
     }
 

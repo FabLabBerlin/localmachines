@@ -43,17 +43,22 @@
   </div>
 
   <div class="form-group">
-    <label for="skill-picker">Skills</label>
+    <label for="skill-picker">Machine Skills</label>
     <div class="well well-sm tag-group">
       <div 
         class="tag-item"
-        ng-repeat="skill in tutor.Skills">
+        ng-repeat="skill in tutor.MachineSkills">
         <span class="tag-item-label">{{skill.Name}}</span>
         <a 
           class="tag-item-btn-remove"
-          ng-click="removeSkill(skill.Id)">
+          ng-click="removeMachineSkill(skill.Id)">
           <i class="fa fa-close"></i>
         </a>
+      </div>
+      <div 
+        class="tag-item"
+        ng-hide="tutor.MachineSkills.length">
+        <span class="tag-item-label">This tutor has no skills, add some!</span>
       </div>
     </div>
 
@@ -62,8 +67,8 @@
       id="skill-picker"
       data-live-search="true"
       data-width="100%"
-      ng-model="tutor.SelectedMachineId"
-      ng-change="addSkill()">
+      ng-model="SelectedMachineId"
+      ng-change="addMachineSkill()">
       <option
         ng-repeat="machine in machines"
         value="{{machine.Id}}">
