@@ -26,23 +26,8 @@ function formatTime(date) {
   return date.format('HH:mm');
 }
 
-var ReservationsTable = React.createClass({
-  mixins: [ reactor.ReactMixin ],
 
-  componentWillMount() {
-    const uid = reactor.evaluateToJS(getters.getUid);
-    MachineActions.apiGetUserMachines(uid);
-    ReservationsActions.load();
-    ReservationRulesActions.load();
-  },
-
-  getDataBindings() {
-    return {
-      machinesById: getters.getMachinesById,
-      reservations: getters.getReservations
-    };
-  },
-
+var TableRow = React.createClass({
   cancelReservation(reservationId) {
     VexDialog.buttons.YES.text = 'Yes';
     VexDialog.buttons.NO.text = 'No';
@@ -60,9 +45,73 @@ var ReservationsTable = React.createClass({
   },
 
   render() {
-    console.log('Reservations page render');
+    const reservation = this.props.reservation;
+    const machine = this.props.machine;
+    const reservationId = reservation.get('Id');
+
+    const reservationStart = moment( reservation.get('TimeStart') );
+    const reservationEnd = moment( reservation.get('TimeEnd') );
+    const now = moment();
+
+    const isPast = reservationEnd.isBefore(now);
+    const isToday = (reservationStart.date() === now.date()) &&
+      (reservationStart.year() === now.year()) &&
+      (reservationStart.month() === now.month());
+
+    const rowClassName = (isPast || isToday || reservation.get('Cancelled')) ? 
+      'reservation disabled' : 
+      'reservation'; 
+
+
+    return (
+      <tr className={rowClassName}>
+        <td>{machine.get('Name')}</td>
+        <td>{formatDate(reservation.get('TimeStart'))}</td>
+        <td>{formatTime(reservation.get('TimeStart'))}</td>
+        <td>{formatTime(reservation.get('TimeEnd'))}</td>
+        <td>{formatDate(reservation.get('Created'))}</td>
+        <td>
+          {(!isPast && !isToday) ?
+            (!reservation.get('Cancelled') ?
+              <button
+                type="button"
+                className="btn btn-danger btn-ico pull-right"
+                onClick={this.cancelReservation.bind(this, reservationId)}>
+                <i className="fa fa-remove"></i>
+              </button>
+            : 'Cancelled')
+          : ''}
+        </td>
+      </tr>
+    );
+  }
+});
+
+
+var ReservationsTable = React.createClass({
+  mixins: [ reactor.ReactMixin ],
+
+  componentWillMount() {
+    const uid = reactor.evaluateToJS(getters.getUid);
+    MachineActions.apiGetUserMachines(uid);
+    ReservationsActions.load();
+    ReservationRulesActions.load();
+  },
+
+  getDataBindings() {
+    return {
+      machinesById: getters.getMachinesById,
+      reservations: getters.getReservations
+    };
+  },
+
+  render() {
+    console.log('machinesById:', this.state.machinesById);
     const uid = reactor.evaluateToJS(getters.getUid);
     if (this.state.reservations && this.state.machinesById) {
+      if (this.state.machinesById.size === 0) {
+        return <div/>;
+      }
       return (
         <div className="table-responsive">
           <table className="table table-stripped table-hover">
@@ -82,43 +131,11 @@ var ReservationsTable = React.createClass({
               {_.map(this.state.reservations.toArray(), (reservation, i) => {
                 const machineId = reservation.get('MachineId');
                 const machine = this.state.machinesById.get(machineId);
-                const reservationId = reservation.get('Id');
-
-                const reservationStart = moment( reservation.get('TimeStart') );
-                const reservationEnd = moment( reservation.get('TimeEnd') );
-                const now = moment();
-
-                const isPast = reservationEnd.isBefore(now);
-                const isToday = (reservationStart.date() === now.date()) &&
-                  (reservationStart.year() === now.year()) &&
-                  (reservationStart.month() === now.month());
-
-                const rowClassName = (isPast || isToday || reservation.get('Cancelled')) ? 
-                  'reservation disabled' : 
-                  'reservation'; 
 
                 if (machine && reservation.get('UserId') === uid) {
-                  return (
-                    <tr key={i} className={rowClassName}>
-                      <td>{machine.get('Name')}</td>
-                      <td>{formatDate(reservation.get('TimeStart'))}</td>
-                      <td>{formatTime(reservation.get('TimeStart'))}</td>
-                      <td>{formatTime(reservation.get('TimeEnd'))}</td>
-                      <td>{formatDate(reservation.get('Created'))}</td>
-                      <td>
-                        {(!isPast && !isToday) ?
-                          (!reservation.get('Cancelled') ?
-                            <button
-                              type="button"
-                              className="btn btn-danger btn-ico pull-right"
-                              onClick={this.cancelReservation.bind(this, reservationId)}>
-                              <i className="fa fa-remove"></i>
-                            </button>
-                          : 'Cancelled')
-                        : ''}
-                      </td>
-                    </tr>
-                  );
+                  return <TableRow key={i}
+                                   machine={machine}
+                                   reservation={reservation}/>;
                 } else {
                   console.log('no machine for id ', machineId);
                   console.log('machinesById:', this.state.machinesById);
