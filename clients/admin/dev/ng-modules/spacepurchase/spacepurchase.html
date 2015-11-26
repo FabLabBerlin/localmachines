@@ -5,7 +5,12 @@
 
   <div class="form-group">
     <label for="sp-space">Space</label>
-    <select ng-model="spacePurchase.ProductId" ng-change="spaceChange()" id="sp-space" class="form-control">
+    <select ng-model="spacePurchase.ProductId"
+            ng-change="spaceChange()"
+            id="sp-space"
+            class="form-control selectpicker"
+            data-live-search="true"
+            data-width="100%">
       <option ng-repeat="space in spaces"
               value="{{space.Product.Id}}">
         {{space.Product.Name}}
@@ -15,7 +20,11 @@
 
   <div class="form-group">
     <label for="sp-user">User</label>
-    <select ng-model="spacePurchase.UserId" id="sp-user" class="form-control">
+    <select ng-model="spacePurchase.UserId"
+            id="sp-user"
+            class="form-control selectpicker"
+            data-live-search="true"
+            data-width="100%">
       <option ng-repeat="user in users"
               value="{{user.Id}}">
         {{user.FirstName}} {{user.LastName}} ({{user.Email}})

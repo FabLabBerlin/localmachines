@@ -5,7 +5,12 @@
 
   <div class="form-group">
     <label for="rental-table">Table</label>
-    <select ng-model="rental.ProductId" ng-change="tableChange()" id="rental-table" class="form-control">
+    <select ng-model="rental.ProductId"
+            ng-change="tableChange()"
+            id="rental-table"
+            class="form-control selectpicker"
+            data-live-search="true"
+            data-width="100%">
       <option ng-repeat="table in tables"
               value="{{table.Product.Id}}">
         {{table.Product.Name}}
@@ -15,7 +20,11 @@
 
   <div class="form-group">
     <label for="rental-user">User</label>
-    <select ng-model="rental.UserId" id="rental-user" class="form-control">
+    <select ng-model="rental.UserId"
+            id="rental-user"
+            class="form-control selectpicker"
+            data-live-search="true"
+            data-width="100%">
       <option ng-repeat="user in users"
               value="{{user.Id}}">
         {{user.FirstName}} {{user.LastName}} ({{user.Email}})

@@ -146,8 +146,6 @@ var ReservationActions = {
 
     reservation.Cancelled = true;
 
-    console.log('reservation to send:', reservation);
-
     $.ajax({
       headers: {'Content-Type': 'application/json'},
       url: '/api/reservations/' + reservationId,
