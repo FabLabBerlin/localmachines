@@ -19,11 +19,14 @@ func init() {
 
 func CreateMembershipsActivation(userId, machineId int64, startTime time.Time, minutes float64) (activationId int64, err error) {
 
-	activation := models.Activation{}
-	activation.TimeStart = startTime
-	activation.TimeEnd = activation.TimeStart.Add(time.Duration(minutes) * time.Minute)
-	activation.UserId = userId
-	activation.MachineId = machineId
+	activation := models.Activation{
+		Purchase: models.Purchase{
+			TimeStart: startTime,
+			UserId:    userId,
+			MachineId: machineId,
+		},
+	}
+	activation.Purchase.TimeEnd = activation.Purchase.TimeStart.Add(time.Duration(minutes) * time.Minute)
 
 	o := orm.NewOrm()
 	id, e := o.Insert(&activation)

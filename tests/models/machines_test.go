@@ -15,19 +15,6 @@ func init() {
 func TestMachine(t *testing.T) {
 	Convey("Testing Machine model", t, func() {
 		Reset(ResetDB)
-		Convey("Testing DeleteMachine", func() {
-			machineName := "My lovely machine"
-			Convey("Creating a machine and delete it", func() {
-				mid, _ := models.CreateMachine(machineName)
-
-				err := models.DeleteMachine(mid)
-				So(err, ShouldBeNil)
-			})
-			Convey("Try to delete non-existing machine", func() {
-				err := models.DeleteMachine(0)
-				So(err, ShouldNotBeNil)
-			})
-		})
 		Convey("Testing CreateMachine", func() {
 			machineName := "My lovely machine"
 			Convey("Creating a machine", func() {

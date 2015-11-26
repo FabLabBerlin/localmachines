@@ -27,11 +27,12 @@ func CreateTestPurchase(machineId int64, machineName string,
 
 	invAct := &models.Purchase{
 		Activation: &models.Activation{
-			TimeStart:                   TIME_START,
-			TimeEnd:                     TIME_START.Add(time.Minute * time.Duration(minutes)),
-			CurrentMachinePrice:         pricePerMinute,
-			CurrentMachinePriceUnit:     "minute",
-			CurrentMachinePriceCurrency: "€",
+			Purchase: models.Purchase{
+				TimeStart:    TIME_START,
+				TimeEnd:      TIME_START.Add(time.Minute * time.Duration(minutes)),
+				PricePerUnit: pricePerMinute,
+				PriceUnit:    "minute",
+			},
 		},
 		Machine:      &machine,
 		MachineUsage: minutes,

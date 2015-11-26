@@ -48,18 +48,18 @@ func TestActivations(t *testing.T) {
 
 				Convey("It should be possible to read the activation back", func() {
 					So(err2, ShouldBeNil)
-					So(activation.Id, ShouldEqual, aid)
+					So(activation.Purchase.Id, ShouldEqual, aid)
 				})
 
 				Convey("Activation start time should match current time", func() {
-					t.Logf("activation.TimeStart = %v", activation.TimeStart)
+					t.Logf("activation.Purchase.TimeStart = %v", activation.Purchase.TimeStart)
 					t.Logf("activationStartTime = %v", activationStartTime)
-					So(activation.TimeStart, ShouldHappenWithin,
+					So(activation.Purchase.TimeStart, ShouldHappenWithin,
 						time.Duration(1)*time.Second, activationStartTime)
 				})
 
 				Convey("the active flag should be true after creating", func() {
-					So(activation.Active, ShouldBeTrue)
+					So(activation.Purchase.ActivationRunning, ShouldBeTrue)
 				})
 
 				Convey("It should be possible to close the activation", func() {
@@ -70,18 +70,18 @@ func TestActivations(t *testing.T) {
 					activation, _ = models.GetActivation(aid)
 
 					Convey("The end time of the closed activation should be correct", func() {
-						So(activation.TimeEnd, ShouldHappenWithin,
+						So(activation.Purchase.TimeEnd, ShouldHappenWithin,
 							time.Duration(1)*time.Second, activationEndTime)
 					})
 
 					Convey("The total duration of the activation should be correct", func() {
-						totalTime := activation.TimeEnd.Sub(activation.TimeStart)
-						So(activation.TimeTotal, ShouldAlmostEqual,
+						totalTime := activation.Purchase.TimeEnd.Sub(activation.Purchase.TimeStart)
+						So(activation.Purchase.Quantity, ShouldAlmostEqual,
 							int64(totalTime.Seconds()), 1)
 					})
 
 					Convey("the active flag should be false after closing", func() {
-						So(activation.Active, ShouldBeFalse)
+						So(activation.Purchase.ActivationRunning, ShouldBeFalse)
 					})
 				})
 			})
