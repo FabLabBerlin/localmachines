@@ -25,37 +25,6 @@ type GetActivationsResponse struct {
 	ActivationsPage *[]Activation
 }
 
-// Gets activations of a specific user between specified start and end time.
-func GetUserActivations(startTime time.Time,
-	endTime time.Time,
-	userId int64) (*[]Activation, error) {
-
-	// Get activations from database
-	activations := []Activation{}
-	act := Activation{}
-	usr := User{}
-	o := orm.NewOrm()
-
-	query := fmt.Sprintf("SELECT a.* FROM %s a JOIN %s u ON a.user_id=u.id "+
-		"WHERE a.type=? AND a.time_start>? AND a.time_end<? AND a.activation_running=false AND a.user_id=? "+
-		"ORDER BY u.first_name ASC, a.time_start DESC",
-		act.purchase.TableName(),
-		usr.TableName())
-
-	_, err := o.Raw(query,
-		PURCHASE_TYPE_ACTIVATION,
-		startTime.Format("2006-01-02"),
-		endTime.Format("2006-01-02"),
-		userId).QueryRows(&activations)
-
-	if err != nil {
-		msg := fmt.Sprintf("Failed to get activations: %v", err)
-		return nil, errors.New(msg)
-	}
-
-	return &activations, nil
-}
-
 // Gets activations of a specific user by consuming user ID.
 func GetUserActivationsStartTime(userId int64) (startTime time.Time, err error) {
 	query := "SELECT min(time_start) FROM activations WHERE user_id = ?"
