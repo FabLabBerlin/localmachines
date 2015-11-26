@@ -14,6 +14,9 @@ app.config(['$routeProvider', function($routeProvider) {
 app.controller('TutoringCtrl', ['$scope', '$http', '$location', 
   function($scope, $http, $location) {
 
+  $scope.machines = [];
+  $scope.tutors = [];
+
   // Load global settings for the VAT and currency
   $scope.loadSettings = function() {
     $http({
@@ -38,6 +41,26 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location',
     });
   };
 
+  $scope.getAllMachines = function() {
+    $http({
+      method: 'GET',
+      url: '/api/machines',
+      params: {
+        ac: new Date().getTime()
+      }
+    })
+    .success(function(machines) {
+      $scope.machines = machines;
+      $scope.showTutorSkills();
+      setTimeout(function() {
+        $('.selectpicker').selectpicker('refresh');
+      }, 100);
+    })
+    .error(function(data, status) {
+      toastr.error('Failed to get all machines');
+    });
+  };
+
   $scope.loadTutors = function() {
     $http({
       method: 'GET',
@@ -48,16 +71,42 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location',
     })
     .success(function(tutorList) {
       $scope.tutors = tutorList.Data;
-
-      // TODO: Remember to remove this fake data generator
-      _.each($scope.tutors, function(tutor) {
-        tutor.Skills = "Laser Cutter, CNC Mill, MakerBot Replicatior";
-      });
-      console.log(tutorList);
+      $scope.showTutorSkills();
     })
     .error(function() {
       toastr.error('Failed to load tutor list');
     });
+  };
+
+  $scope.showTutorSkills = function() {
+    if ($scope.machines.length && $scope.tutors.length) {
+      // Translate MachineSkills machine ID's to machine names for each tutor
+      _.each($scope.tutors, function(tutor) {
+        if (tutor.MachineSkills !== '') {
+          var machineSkills = JSON.parse(tutor.MachineSkills);
+          tutor.MachineSkills = machineSkills;
+
+          tutor.Skills = '';
+          _.each(tutor.MachineSkills, function(machineId, key) {
+            tutor.Skills += $scope.getMachineNameById(machineId);
+            if (key < tutor.MachineSkills.length - 1) {
+              tutor.Skills += ', ';
+            }
+          });
+        }
+
+      });
+    }
+  };
+
+  $scope.getMachineNameById = function(machineId) {
+    var machineName = '';
+    _.each($scope.machines, function(machine) {
+      if (parseInt(machine.Id) === parseInt(machineId)) {
+        machineName = machine.Name;
+      }
+    });
+    return machineName;
   };
 
   $scope.loadPurchases = function() {
@@ -110,6 +159,7 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location',
   };
 
   $scope.loadSettings();
+  $scope.getAllMachines();
   $scope.loadTutors();
   $scope.loadPurchases();
 
