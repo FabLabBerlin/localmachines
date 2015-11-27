@@ -1,7 +1,7 @@
 (function(){
 
 'use strict';
-var app = angular.module('fabsmith.admin.space.purchase', ['ngRoute', 'ngCookies', 'fabsmith.admin.randomtoken']);
+var app = angular.module('fabsmith.admin.space.purchase', ['ngRoute', 'ngCookies', 'fabsmith.admin.randomtoken', 'fabsmith.admin.api']);
 
 app.config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/space_purchases/:id', {
@@ -11,8 +11,8 @@ app.config(['$routeProvider', function($routeProvider) {
 }]); // app.config
 
 app.controller('SpacePurchaseCtrl',
- ['$scope', '$routeParams', '$http', '$location', 'randomToken',
- function($scope, $routeParams, $http, $location, randomToken) {
+ ['$scope', '$routeParams', '$http', '$location', 'randomToken', 'api',
+ function($scope, $routeParams, $http, $location, randomToken, api) {
 
   $scope.purchases = [];
   $scope.spacePurchase = {
@@ -21,29 +21,6 @@ app.controller('SpacePurchaseCtrl',
   $scope.spacesById = {};
   $scope.users = [];
   $scope.usersById = {};
-
-  function loadSpaces() {
-    $http({
-      method: 'GET',
-      url: '/api/products',
-      params: {
-        ac: new Date().getTime(),
-        type: 'space'
-      }
-    })
-    .success(function(data) {
-      $scope.spaces = _.sortBy(data, function(space) {
-        return space.Product.Name;
-      });
-      _.each($scope.spaces, function(space) {
-        $scope.spacesById[space.Product.Id] = space;
-      });
-      loadSpacePurchase();
-    })
-    .error(function() {
-      toastr.error('Failed to get spaces');
-    });
-  }
 
   function loadSpacePurchase() {
     $http({
@@ -69,28 +46,6 @@ app.controller('SpacePurchaseCtrl',
     })
     .error(function(data, status) {
       toastr.error('Failed to load user data');
-    });
-  }
-
-  function loadUsers() {
-    $http({
-      method: 'GET',
-      url: '/api/users',
-      params: {
-        ac: new Date().getTime()
-      }
-    })
-    .success(function(data) {
-      $scope.users = _.sortBy(data, function(user) {
-        return user.FirstName + ' ' + user.LastName;
-      });
-      _.each($scope.users, function(user) {
-        $scope.usersById[user.Id] = user;
-      });
-      loadSpaces();
-    })
-    .error(function() {
-      toastr.error('Failed to get reservations');
     });
   }
 
@@ -206,7 +161,15 @@ app.controller('SpacePurchaseCtrl',
   };
   $('.datepicker').pickadate(pickadateOptions);
 
-  loadUsers();
+  api.loadUsers(function(userData) {
+    $scope.users = userData.users;
+    $scope.usersById = userData.usersById;
+    api.loadSpaces(function(spacesData) {
+      $scope.spaces = spacesData.spaces;
+      $scope.spacesById = spacesData.spacesById;
+      loadSpacePurchase();
+    });
+  });
 
 }]); // app.controller
 

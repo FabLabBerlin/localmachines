@@ -1,7 +1,7 @@
 (function(){
 
 'use strict';
-var app = angular.module('fabsmith.admin.coworking.rental', ['ngRoute', 'ngCookies', 'fabsmith.admin.randomtoken']);
+var app = angular.module('fabsmith.admin.coworking.rental', ['ngRoute', 'ngCookies', 'fabsmith.admin.randomtoken', 'fabsmith.admin.api']);
 
 app.config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/coworking/rentals/:id', {
@@ -11,8 +11,8 @@ app.config(['$routeProvider', function($routeProvider) {
 }]); // app.config
 
 app.controller('RentalCtrl',
- ['$scope', '$routeParams', '$http', '$location', 'randomToken',
- function($scope, $routeParams, $http, $location, randomToken) {
+ ['$scope', '$routeParams', '$http', '$location', 'randomToken', 'api',
+ function($scope, $routeParams, $http, $location, randomToken, api) {
 
   $scope.purchases = [];
   $scope.rental = {
@@ -69,28 +69,6 @@ app.controller('RentalCtrl',
     })
     .error(function(data, status) {
       toastr.error('Failed to load user data');
-    });
-  }
-
-  function loadUsers() {
-    $http({
-      method: 'GET',
-      url: '/api/users',
-      params: {
-        ac: new Date().getTime()
-      }
-    })
-    .success(function(data) {
-      $scope.users = _.sortBy(data, function(user) {
-        return user.FirstName + ' ' + user.LastName;
-      });
-      _.each($scope.users, function(user) {
-        $scope.usersById[user.Id] = user;
-      });
-      loadTables();
-    })
-    .error(function() {
-      toastr.error('Failed to get reservations');
     });
   }
 
@@ -184,7 +162,11 @@ app.controller('RentalCtrl',
   };
   $('.datepicker').pickadate(pickadateOptions);
 
-  loadUsers();
+  api.loadUsers(function(userData) {
+    $scope.users = userData.users;
+    $scope.usersById = userData.usersById;
+    loadTables();
+  });
 
 }]); // app.controller
 

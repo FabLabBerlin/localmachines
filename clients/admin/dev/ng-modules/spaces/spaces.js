@@ -1,7 +1,7 @@
 (function(){
 
 'use strict';
-var app = angular.module('fabsmith.admin.spaces', ['ngRoute', 'ngCookies', 'fabsmith.admin.randomtoken']);
+var app = angular.module('fabsmith.admin.spaces', ['ngRoute', 'ngCookies', 'fabsmith.admin.randomtoken', 'fabsmith.admin.api']);
 
 app.config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/spaces', {
@@ -11,63 +11,12 @@ app.config(['$routeProvider', function($routeProvider) {
 }]); // app.config
 
 app.controller('SpacesCtrl',
- ['$scope', '$routeParams', '$http', '$location', 'randomToken',
- function($scope, $routeParams, $http, $location, randomToken) {
+ ['$scope', '$routeParams', '$http', '$location', 'randomToken', 'api',
+ function($scope, $routeParams, $http, $location, randomToken, api) {
 
   $scope.spaces = [];
   $scope.spacesById = {};
   $scope.usersById = {};
-
-  /*
-   *
-   * Spaces functions
-   *
-   */
-
-  function loadSpaces() {
-    $http({
-      method: 'GET',
-      url: '/api/products',
-      params: {
-        ac: new Date().getTime(),
-        type: 'space'
-      }
-    })
-    .success(function(data) {
-      $scope.spaces = _.sortBy(data, function(space) {
-        return space.Product.Name;
-      });
-      _.each($scope.spaces, function(space) {
-        $scope.spacesById[space.Product.Id] = space;
-      });
-      loadUsers();
-    })
-    .error(function() {
-      toastr.error('Failed to get spaces');
-    });
-  }
-
-  function loadUsers() {
-    $http({
-      method: 'GET',
-      url: '/api/users',
-      params: {
-        ac: new Date().getTime()
-      }
-    })
-    .success(function(data) {
-      $scope.users = _.sortBy(data, function(user) {
-        return user.FirstName + ' ' + user.LastName;
-      });
-      _.each($scope.users, function(user) {
-        $scope.usersById[user.Id] = user;
-      });
-      loadSpacePurchases();
-    })
-    .error(function() {
-      toastr.error('Failed to get users');
-    });
-  }
 
   /*
    *
@@ -126,7 +75,15 @@ app.controller('SpacesCtrl',
     $location.path('/space_purchases/' + id);
   };
 
-  loadSpaces();
+  api.loadSpaces(function(spacesData) {
+    $scope.spaces = spacesData.spaces;
+    $scope.spacesById = spacesData.spacesById;
+    api.loadUsers(function(userData) {
+      $scope.users = userData.users;
+      $scope.usersById = userData.usersById;
+      loadSpacePurchases();
+    });
+  });
 
 }]); // app.controller
 

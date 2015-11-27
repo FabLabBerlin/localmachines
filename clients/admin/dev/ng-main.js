@@ -6,6 +6,7 @@
 var app = angular.module('fabsmith', [
   'ngRoute',
   'fabsmith.admin.login',
+  'fabsmith.admin.api',
   'fabsmith.admin.coworking',
   'fabsmith.admin.coworking.rental',
   'fabsmith.admin.coworking.table',
