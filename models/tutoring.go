@@ -1,11 +1,16 @@
 package models
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"time"
 )
+
+///////////////////////
+//      Tutors       //
+///////////////////////
 
 type Tutor struct {
 	Product Product
@@ -13,21 +18,6 @@ type Tutor struct {
 
 type TutorList struct {
 	Data []*Product
-}
-
-type TutoringPurchase struct {
-	Id         int64
-	TutorId    int64
-	UserId     int64
-	StartTime  time.Time
-	EndTime    time.Time
-	TotalTime  float64
-	TotalPrice float64
-	VAT        float64
-}
-
-type TutoringPurchaseList struct {
-	Data []*TutoringPurchase
 }
 
 // Get a list of tutors
@@ -42,26 +32,6 @@ func GetTutorList() (*TutorList, error) {
 	tutorList := TutorList{Data: tutorsAsProducts}
 
 	return &tutorList, nil
-}
-
-// Get a list of tutoring purchases
-func GetTutoringPurchaseList() (*TutoringPurchaseList, error) {
-	purchase1 := TutoringPurchase{Id: 1, TutorId: 1, UserId: 1, VAT: 19.0}
-	purchase1.StartTime = time.Now()
-	purchase1.EndTime = time.Now().Add(time.Duration(time.Hour * 2))
-	purchase1.TotalTime = purchase1.EndTime.Sub(purchase1.StartTime).Hours()
-	purchase1.TotalPrice = purchase1.TotalTime * 60.0
-
-	purchase2 := TutoringPurchase{Id: 2, TutorId: 1, UserId: 1, VAT: 19.0}
-	purchase2.StartTime = time.Now()
-	purchase2.EndTime = time.Now().Add(time.Duration(time.Hour * 2))
-	purchase2.TotalTime = purchase2.EndTime.Sub(purchase2.StartTime).Hours()
-	purchase2.TotalPrice = purchase2.TotalTime * 60.0
-
-	purchaseList := TutoringPurchaseList{}
-	purchaseList.Data = append(purchaseList.Data, &purchase1, &purchase2)
-
-	return &purchaseList, nil
 }
 
 func CreateTutor(tutor *Tutor) (*Tutor, error) {
@@ -95,4 +65,58 @@ func CreateTutor(tutor *Tutor) (*Tutor, error) {
 
 func UpdateTutor(tutor *Tutor) error {
 	return nil
+}
+
+///////////////////////
+//     Tutorings     //
+///////////////////////
+
+type TutoringPurchase struct {
+	json.Marshaler
+	json.Unmarshaler
+	Purchase
+	//TutorId    int64 - Product Id?!
+}
+
+func (this *TutoringPurchase) MarshalJSON() ([]byte, error) {
+	return json.Marshal(this.Purchase)
+}
+
+func (this *TutoringPurchase) UnmarshalJSON(data []byte) error {
+	return json.Unmarshal(data, &this.Purchase)
+}
+
+type TutoringPurchaseList struct {
+	Data []*TutoringPurchase
+}
+
+func CreateTutoringPurchase(tutoringPurchase *TutoringPurchase) (int64, error) {
+	tutoringPurchase.Purchase = Purchase{
+		Created:   time.Now(),
+		Type:      PURCHASE_TYPE_TUTOR,
+		TimeStart: time.Now(),
+		TimeEnd:   time.Now(),
+		PriceUnit: "hour",
+	}
+
+	o := orm.NewOrm()
+	return o.Insert(&tutoringPurchase.Purchase)
+}
+
+// Get a list of tutoring purchases
+func GetTutoringPurchaseList() (tutoringPurchases *TutoringPurchaseList, err error) {
+	purchases, err := GetAllPurchasesOfType(PURCHASE_TYPE_TUTOR)
+	if err != nil {
+		return
+	}
+	tutoringPurchases = &TutoringPurchaseList{
+		Data: make([]*TutoringPurchase, 0, len(purchases)),
+	}
+	for _, purchase := range purchases {
+		tutoringPurchase := &TutoringPurchase{
+			Purchase: *purchase,
+		}
+		tutoringPurchases.Data = append(tutoringPurchases.Data, tutoringPurchase)
+	}
+	return
 }

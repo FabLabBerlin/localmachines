@@ -2,7 +2,7 @@
 
 'use strict';
 
-var app = angular.module('fabsmith.admin.tutoring.tutor', ['ngRoute', 'ngCookies']);
+var app = angular.module('fabsmith.admin.tutoring.tutor', ['ngRoute', 'ngCookies', 'fabsmith.admin.api']);
 
 app.config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/tutoring/tutor', {
@@ -11,8 +11,8 @@ app.config(['$routeProvider', function($routeProvider) {
   });
 }]); // app.config
 
-app.controller('TutorCtrl', ['$scope', '$http', '$location', 
-  function($scope, $http, $location) {
+app.controller('TutorCtrl', ['$scope', '$http', '$location', 'api',
+  function($scope, $http, $location, api) {
 
   $scope.users = [];
   $scope.machines = [];
@@ -21,25 +21,6 @@ app.controller('TutorCtrl', ['$scope', '$http', '$location',
     MachineSkills: []
   };
   
-  $scope.getAllUsers = function() {
-    $http({
-      method: 'GET',
-      url: '/api/users',
-      params: {
-        ac: new Date().getTime()
-      }
-    })
-    .success(function(users) {
-      $scope.users = users;
-      setTimeout(function() {
-        $('.selectpicker').selectpicker('refresh');
-      }, 100);
-    })
-    .error(function(data, status) {
-      toastr.error('Failed to get all users');
-    });
-  };
-
   $scope.getAllMachines = function() {
     $http({
       method: 'GET',
@@ -59,7 +40,12 @@ app.controller('TutorCtrl', ['$scope', '$http', '$location',
     });
   };
 
-  $scope.getAllUsers();
+  api.loadUsers(function(usersData) {
+    $scope.users = usersData.users;
+    setTimeout(function() {
+      $('.selectpicker').selectpicker('refresh');
+    }, 100);
+  });
   $scope.getAllMachines();
 
   $scope.machineSkillAdded = function(machineSkill) {

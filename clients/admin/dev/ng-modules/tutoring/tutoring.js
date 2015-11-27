@@ -2,7 +2,7 @@
 
 'use strict';
 
-var app = angular.module('fabsmith.admin.tutoring', ['ngRoute', 'ngCookies']);
+var app = angular.module('fabsmith.admin.tutoring', ['ngRoute', 'ngCookies', 'fabsmith.admin.api']);
 
 app.config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/tutoring', {
@@ -11,8 +11,8 @@ app.config(['$routeProvider', function($routeProvider) {
   });
 }]); // app.config
 
-app.controller('TutoringCtrl', ['$scope', '$http', '$location', 
-  function($scope, $http, $location) {
+app.controller('TutoringCtrl', ['$scope', '$http', '$location', 'api',
+  function($scope, $http, $location, api) {
 
   $scope.machines = [];
   $scope.tutors = [];
@@ -58,23 +58,6 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location',
     })
     .error(function(data, status) {
       toastr.error('Failed to get all machines');
-    });
-  };
-
-  $scope.loadTutors = function() {
-    $http({
-      method: 'GET',
-      url: '/api/tutoring/tutors',
-      params: {
-        ac: new Date().getTime()
-      }
-    })
-    .success(function(tutorList) {
-      $scope.tutors = tutorList.Data;
-      $scope.showTutorSkills();
-    })
-    .error(function() {
-      toastr.error('Failed to load tutor list');
     });
   };
 
@@ -151,16 +134,32 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location',
   };
 
   $scope.addPurchase = function() {
-    $location.path('/tutoring/purchase');
+    $http({
+      method: 'POST',
+      url: '/api/purchases',
+      params: {
+        ac: new Date().getTime(),
+        type: 'tutor'
+      }
+    })
+    .success(function(tutoringPurchase) {
+      $location.path('/tutoring/purchases/' + tutoringPurchase.Id);
+    })
+    .error(function() {
+      toastr.error('Failed to create tutoring purchase');
+    });
   };
 
-  $scope.editPurchase = function() {
-    $location.path('/tutoring/purchase');
+  $scope.editPurchase = function(id) {
+    $location.path('/tutoring/purchases/' + id);
   };
 
   $scope.loadSettings();
   $scope.getAllMachines();
-  $scope.loadTutors();
+  api.loadTutors(function(tutorData) {
+    $scope.tutors = tutorData.tutors;
+    $scope.showTutorSkills();
+  });
   $scope.loadPurchases();
 
 }]); // app.controller

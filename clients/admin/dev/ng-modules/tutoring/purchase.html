@@ -4,23 +4,31 @@
   <hr>
 
   <div class="form-group">
-    <label for="tutor">Tutor</label>
-    <input
-      type="text"
-      class="form-control"
-      id="tutor"
-      placeholder="Start typing to choose tutor"
-      ng-model="tutor.Name">
+    <label for="tp-tutor">Tutor</label>
+    <select ng-model="purchase.TutorId"
+            id="tp-tutor"
+            class="form-control selectpicker"
+            data-live-search="true"
+            data-width="100%">
+      <option ng-repeat="tutor in tutors"
+              value="{{tutor.Id}}">
+        {{tutor.Name}}
+      </option>
+    </select>
   </div>
 
   <div class="form-group">
-    <label for="user">User</label>
-    <input
-      type="text"
-      class="form-control"
-      id="tutor-name"
-      placeholder="Start typing to choose user"
-      ng-model="user.Name">
+    <label for="tp-user">User</label>
+    <select ng-model="spacePurchase.UserId"
+            id="tp-user"
+            class="form-control selectpicker"
+            data-live-search="true"
+            data-width="100%">
+      <option ng-repeat="user in users"
+              value="{{user.Id}}">
+        {{user.FirstName}} {{user.LastName}} ({{user.Email}})
+      </option>
+    </select>
   </div>
 
   <div class="form-group">

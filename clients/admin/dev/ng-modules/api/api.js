@@ -34,6 +34,26 @@ mod.service('api', function($http) {
     });
   };
 
+  this.loadTutors = function(cb) {
+    $http({
+      method: 'GET',
+      url: '/api/tutoring/tutors',
+      params: {
+        ac: new Date().getTime()
+      }
+    })
+    .success(function(tutorList) {
+      if (cb) {
+        cb({
+          tutors: tutorList.Data
+        });
+      }
+    })
+    .error(function() {
+      toastr.error('Failed to load tutor list');
+    });
+  };
+
   this.loadUsers = function(cb) {
     $http({
       method: 'GET',

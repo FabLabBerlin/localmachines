@@ -44,6 +44,12 @@ func (this *PurchasesController) Create() {
 			purchase = spacePurchase
 		}
 		break
+	case models.PURCHASE_TYPE_TUTOR:
+		tutoringPurchase := &models.TutoringPurchase{}
+		_, err = models.CreateTutoringPurchase(tutoringPurchase)
+		if err == nil {
+			purchase = tutoringPurchase
+		}
 	default:
 		err = fmt.Errorf("unknown purchase type")
 	}
