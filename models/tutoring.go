@@ -30,26 +30,14 @@ type TutoringPurchaseList struct {
 	Data []*TutoringPurchase
 }
 
-func init() {
-	//orm.RegisterModel(new(Tutor))
-	//orm.RegisterModel(new(TutoringPurchase))
-}
-
 // Get a list of tutors
 func GetTutorList() (*TutorList, error) {
-
-	var tutorsAsProducts []*Product
-	p := Product{}
-	o := orm.NewOrm()
-
-	num, err := o.QueryTable(p.TableName()).All(&tutorsAsProducts)
+	tutorsAsProducts, err := GetAllProductsOfType(PRODUCT_TYPE_TUTOR)
 	if err != nil {
 		msg := "Failed to get tutors as products"
 		beego.Error(msg)
 		return nil, fmt.Errorf(msg)
 	}
-
-	beego.Trace("Got %d tutors", num)
 
 	tutorList := TutorList{Data: tutorsAsProducts}
 

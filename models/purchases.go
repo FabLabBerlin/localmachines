@@ -12,6 +12,7 @@ const (
 	PURCHASE_TYPE_CO_WORKING     = "co-working"
 	PURCHASE_TYPE_RESERVATION    = "reservation"
 	PURCHASE_TYPE_SPACE_PURCHASE = "space"
+	PURCHASE_TYPE_TUTOR          = "tutor"
 )
 
 // This is a purchase row that appears in the XLSX file
