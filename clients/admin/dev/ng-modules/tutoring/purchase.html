@@ -5,7 +5,8 @@
 
   <div class="form-group">
     <label for="tp-tutor">Tutor</label>
-    <select ng-model="purchase.TutorId"
+    <select ng-model="purchase.ProductId"
+            ng-change="tutorChange()"
             id="tp-tutor"
             class="form-control selectpicker"
             data-live-search="true"
@@ -19,7 +20,7 @@
 
   <div class="form-group">
     <label for="tp-user">User</label>
-    <select ng-model="spacePurchase.UserId"
+    <select ng-model="purchase.UserId"
             id="tp-user"
             class="form-control selectpicker"
             data-live-search="true"
@@ -38,10 +39,11 @@
         <div class="input-group">
           <input
             type="text"
-            class="form-control"
+            class="form-control datepicker"
             id="start-date"
             placeholder="Date"
-            ng-model="purchase.StartTimeDate">
+            ng-model="purchase.DateStartLocal"
+            ng-change="timeChange()">
           <span class="input-group-addon">
             <i class="fa fa-calendar"></i>
           </span>
@@ -54,7 +56,8 @@
             class="form-control"
             id="start-time"
             placeholder="Time"
-            ng-model="purchase.StartTimeTime">
+            ng-model="purchase.TimeStartLocal"
+            ng-change="timeChange()">
           <span class="input-group-addon">
             <i class="fa fa-clock-o"></i>
           </span>
@@ -70,10 +73,11 @@
         <div class="input-group">
           <input
             type="text"
-            class="form-control"
+            class="form-control datepicker"
             id="end-date"
             placeholder="Date"
-            ng-model="purchase.EndTimeDate">
+            ng-model="purchase.DateEndLocal"
+            ng-change="timeChange()">
           <span class="input-group-addon">
             <i class="fa fa-calendar"></i>
           </span>
@@ -86,7 +90,8 @@
             class="form-control"
             id="end-time"
             placeholder="Time"
-            ng-model="purchase.EndTimeTime">
+            ng-model="purchase.TimeEndLocal"
+            ng-change="timeChange()">
           <span class="input-group-addon">
             <i class="fa fa-clock-o"></i>
           </span>

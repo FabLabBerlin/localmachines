@@ -12,38 +12,83 @@ app.config(['$routeProvider', function($routeProvider) {
   });
 }]); // app.config
 
-app.controller('PurchaseCtrl', ['$scope', '$http', '$location', 'api',
-  function($scope, $http, $location, api) {
+app.controller('PurchaseCtrl', ['$scope', '$routeParams', '$http', '$location', 'api',
+  function($scope, $routeParams, $http, $location, api) {
 
-  $scope.user = {
-    Name: 'Sugru Meyer'
+  $scope.purchase = {
+    Id: $routeParams.id
   };
 
   api.loadTutors(function(tutorData) {
     $scope.tutors = tutorData.tutors;
+    $scope.tutorsById = tutorData.tutorsById;
     console.log('$scope.tutors:', $scope.tutors);
     api.loadUsers(function(userData) {
       $scope.users = userData.users;
       $scope.usersById = userData.usersById;
-      setTimeout(function() {
-        $('.selectpicker').selectpicker('refresh');
-      }, 100);
+      api.loadTutoringPurchase($scope.purchase.Id, function(purchase) {
+        $scope.purchase = purchase;
+        console.log('$scope.purchase = ', $scope.purchase);
+        setTimeout(function() {
+          $('.selectpicker').selectpicker('refresh');
+        }, 100);
+      });
     });
   });
 
-  $scope.purchase = {
-    StartTimeDate: '23 Nov 15',
-    StartTimeTime: '15:00',
-    EndTimeDate: '23 Nov 15',
-    EndTimeTime: '17:00',
-    TimeReserved: '2h 0m',
-    TimeTimed: '1h 12m',
-    PriceTotal: '120.00'
+  // Init scope variables
+  var pickadateOptions = {
+    format: 'yyyy-mm-dd'
+  };
+  $('.datepicker').pickadate(pickadateOptions);
+
+  $scope.tutorChange = function() {
+    var tutorId = parseInt($scope.purchase.ProductId);
+    var tutor = $scope.tutorsById[tutorId];
+    $scope.purchase.PricePerUnit = tutor.Price;
+    $scope.purchase.PriceUnit = tutor.PriceUnit;
+    api.purchase.calculateQuantity($scope.purchase);
+    api.purchase.calculateTotalPrice($scope.purchase);
   };
 
+  $scope.timeChange = function() {
+    api.purchase.calculateQuantity($scope.purchase);
+    api.purchase.calculateTotalPrice($scope.purchase);
+  };
+
+  $scope.priceUnitChange = function() {
+    api.purchase.calculateQuantity($scope.purchase);
+    api.purchase.calculateTotalPrice($scope.purchase);
+  };
+
+
   $scope.save = function() {
-    toastr.success('Tutoring purchase saved');
-    $location.path('/tutoring');
+    api.purchase.parseInputTimes($scope.purchase);
+    $http({
+      method: 'PUT',
+      url: '/api/purchases/' + $scope.purchase.Id + '?type=tutor',
+      headers: {'Content-Type': 'application/json' },
+      data: $scope.purchase,
+      transformRequest: function(data) {
+        var transformed = _.extend({}, data);
+        transformed.ProductId = parseInt(data.ProductId);
+        transformed.UserId = parseInt(data.UserId);
+        transformed.Quantity = parseFloat(data.Quantity);
+        transformed.PricePerUnit = parseInt(data.PricePerUnit);
+        transformed.TotalPrice = parseFloat(data.TotalPrice);
+        console.log('transformed:', transformed);
+        return JSON.stringify(transformed);
+      },
+      params: {
+        ac: new Date().getTime()
+      }
+    })
+    .success(function() {
+      toastr.success('Tutoring purchase updated');
+    })
+    .error(function(data) {
+      toastr.error('Error while trying to save changes');
+    });
   };
 
   $scope.cancel = function() {

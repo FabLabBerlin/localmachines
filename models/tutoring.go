@@ -114,6 +114,16 @@ func CreateTutoringPurchase(tutoringPurchase *TutoringPurchase) (int64, error) {
 	return o.Insert(&tutoringPurchase.Purchase)
 }
 
+func GetTutoringPurchase(id int64) (tutoringPurchase *TutoringPurchase, err error) {
+	tutoringPurchase = &TutoringPurchase{}
+	tutoringPurchase.Purchase.Id = id
+
+	o := orm.NewOrm()
+	err = o.Read(&tutoringPurchase.Purchase)
+
+	return
+}
+
 // Get a list of tutoring purchases
 func GetTutoringPurchaseList() (tutoringPurchases *TutoringPurchaseList, err error) {
 	purchases, err := GetAllPurchasesOfType(PURCHASE_TYPE_TUTOR)
@@ -129,5 +139,11 @@ func GetTutoringPurchaseList() (tutoringPurchases *TutoringPurchaseList, err err
 		}
 		tutoringPurchases.Data = append(tutoringPurchases.Data, tutoringPurchase)
 	}
+	return
+}
+
+func UpdateTutoringPurchase(tutoringPurchase *TutoringPurchase) (err error) {
+	o := orm.NewOrm()
+	_, err = o.Update(&tutoringPurchase.Purchase)
 	return
 }

@@ -135,6 +135,9 @@ func (this *PurchasesController) Get() {
 	case models.PURCHASE_TYPE_SPACE_PURCHASE:
 		purchase, err = models.GetSpacePurchase(id)
 		break
+	case models.PURCHASE_TYPE_TUTOR:
+		purchase, err = models.GetTutoringPurchase(id)
+		break
 	default:
 		err = fmt.Errorf("unknown purchase type")
 	}
@@ -192,6 +195,19 @@ func (this *PurchasesController) Put() {
 
 		if err = models.UpdateSpacePurchase(spacePurchase); err == nil {
 			response = spacePurchase
+		}
+		break
+	case models.PURCHASE_TYPE_TUTOR:
+		tutoringPurchase := &models.TutoringPurchase{}
+		dec := json.NewDecoder(this.Ctx.Request.Body)
+		defer this.Ctx.Request.Body.Close()
+		if err := dec.Decode(tutoringPurchase); err != nil {
+			beego.Error("Failed to decode json:", err)
+			this.CustomAbort(400, "Failed to update Tutoring purchase")
+		}
+
+		if err = models.UpdateTutoringPurchase(tutoringPurchase); err == nil {
+			response = tutoringPurchase
 		}
 		break
 	default:
