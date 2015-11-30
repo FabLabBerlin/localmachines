@@ -33,7 +33,7 @@ app.controller('SpaceCtrl',
       $scope.space = space;
     })
     .error(function(data, status) {
-      toastr.error('Failed to load spaces data');
+      toastr.error('Failed to load space data');
     });
   }
 

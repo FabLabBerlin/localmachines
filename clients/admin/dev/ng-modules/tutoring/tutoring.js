@@ -110,13 +110,13 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location', 'api',
         purchase.TimeStart = moment(purchase.StartTime).format('D MMM YY HH:mm');
         purchase.TimeEnd = moment(purchase.EndTime).format('D MMM YY HH:mm');
 
-        purchase.ReservedTimeTotalHours = purchase.TotalTime.toFixed(0);
+        purchase.ReservedTimeTotalHours = (purchase.TotalTime || 0).toFixed(0);
         purchase.ReservedTimeTotalMinutes = 12;
 
         purchase.TimerTimeTotalHours = 0;
         purchase.TimerTimeTotalMinutes = 0;
 
-        purchase.TimeTotal = purchase.TotalTime.toFixed(2);
+        purchase.TimeTotal = (purchase.TotalTime || 0).toFixed(2);
       });
       console.log(purchaseList);
     })
@@ -126,11 +126,25 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location', 'api',
   };
 
   $scope.addTutor = function() {
-    $location.path('/tutoring/tutor');
+    $http({
+      method: 'POST',
+      url: '/api/products',
+      params: {
+        name: name,
+        ac: new Date().getTime(),
+        type: 'tutor'
+      }
+    })
+    .success(function(data) {
+      $scope.editTutor(data.Product.Id);
+    })
+    .error(function() {
+      toastr.error('Failed to create product');
+    });
   };
 
-  $scope.editTutor = function() {
-    $location.path('/tutoring/tutor');
+  $scope.editTutor = function(id) {
+    $location.path('/tutoring/tutors/' + id);
   };
 
   $scope.addPurchase = function() {

@@ -63,6 +63,16 @@ func CreateTutor(tutor *Tutor) (*Tutor, error) {
 	return tutor, nil
 }
 
+func GetTutor(id int64) (tutor *Tutor, err error) {
+	tutor = &Tutor{}
+	tutor.Product.Id = id
+
+	o := orm.NewOrm()
+	err = o.Read(&tutor.Product)
+
+	return
+}
+
 func UpdateTutor(tutor *Tutor) error {
 	return nil
 }

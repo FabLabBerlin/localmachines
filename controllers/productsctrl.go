@@ -77,6 +77,9 @@ func (this *ProductsController) Get() {
 	case models.PRODUCT_TYPE_SPACE:
 		product, err = models.GetSpace(id)
 		break
+	case models.PRODUCT_TYPE_TUTOR:
+		product, err = models.GetTutor(id)
+		break
 	default:
 		err = fmt.Errorf("unknown product type")
 	}

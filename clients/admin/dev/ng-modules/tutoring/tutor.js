@@ -5,22 +5,57 @@
 var app = angular.module('fabsmith.admin.tutoring.tutor', ['ngRoute', 'ngCookies', 'fabsmith.admin.api']);
 
 app.config(['$routeProvider', function($routeProvider) {
-  $routeProvider.when('/tutoring/tutor', {
+  $routeProvider.when('/tutoring/tutors/:id', {
     templateUrl: 'ng-modules/tutoring/tutor.html',
     controller: 'TutorCtrl'
   });
 }]); // app.config
 
-app.controller('TutorCtrl', ['$scope', '$http', '$location', 'api',
-  function($scope, $http, $location, api) {
+app.controller('TutorCtrl', ['$scope', '$routeParams', '$http', '$location', 'api',
+  function($scope, $routeParams, $http, $location, api) {
 
   $scope.users = [];
   $scope.machines = [];
+  $scope.machinesById = {};
   $scope.tutor = {
-    PriceUnit: 'hour',
-    MachineSkills: []
+    Product: {
+      Id: $routeParams.id,
+      PriceUnit: 'hour',
+      MachineSkills: []
+    }
   };
-  
+
+  function loadTutor() {
+    $http({
+      method: 'GET',
+      url: '/api/products/' + $scope.tutor.Product.Id,
+      params: {
+        ac: new Date().getTime(),
+        type: 'tutor'
+      }
+    })
+    .success(function(tutor) {
+      $scope.tutor = tutor;
+      var machineSkills = [];
+      if ($scope.tutor.Product.MachineSkills) {
+        var tmp = $scope.tutor.Product.MachineSkills;
+        tmp = tmp.slice(1, tmp.length - 1);
+        _.each(tmp.split(','), function(idString) {
+          var id = parseInt(idString);
+          var machine = $scope.machinesById[id];
+          if (machine) {
+            machineSkills.push(machine);
+          }
+        });
+      }
+      $scope.tutor.Product.MachineSkills = machineSkills;
+      console.log('$scope.tutor = ', $scope.tutor);
+    })
+    .error(function(data, status) {
+      toastr.error('Failed to load tutor data');
+    });
+  }
+
   $scope.getAllMachines = function() {
     $http({
       method: 'GET',
@@ -31,9 +66,15 @@ app.controller('TutorCtrl', ['$scope', '$http', '$location', 'api',
     })
     .success(function(machines) {
       $scope.machines = machines;
+      $scope.machinesById = {};
+      _.each(machines, function(machine) {
+        $scope.machinesById[machine.Id] = machine;
+      });
+
       setTimeout(function() {
         $('.selectpicker').selectpicker('refresh');
       }, 100);
+      loadTutor();
     })
     .error(function(data, status) {
       toastr.error('Failed to get all machines');
@@ -46,12 +87,11 @@ app.controller('TutorCtrl', ['$scope', '$http', '$location', 'api',
       $('.selectpicker').selectpicker('refresh');
     }, 100);
   });
-  $scope.getAllMachines();
 
   $scope.machineSkillAdded = function(machineSkill) {
     var skillFound = false;
-    for (var i=0; i<$scope.tutor.MachineSkills.length; i++) {
-      if (parseInt($scope.tutor.MachineSkills[i].Id) ===
+    for (var i=0; i<$scope.tutor.Product.MachineSkills.length; i++) {
+      if (parseInt($scope.tutor.Product.MachineSkills[i].Id) ===
         parseInt(machineSkill.Id)) {
         skillFound = true;
         break;
@@ -76,7 +116,7 @@ app.controller('TutorCtrl', ['$scope', '$http', '$location', 'api',
 
         // Add only if skill is not there yet
         if (!$scope.machineSkillAdded(skill)) {
-          $scope.tutor.MachineSkills.push(skill);
+          $scope.tutor.Product.MachineSkills.push(skill);
         } else {
           toastr.warning('This skill is already added');
         }
@@ -85,9 +125,9 @@ app.controller('TutorCtrl', ['$scope', '$http', '$location', 'api',
   };
 
   $scope.removeMachineSkill = function(skillId) {
-    for (var i=0; i<$scope.tutor.MachineSkills.length; i++) {
-      if (parseInt(skillId) === parseInt($scope.tutor.MachineSkills[i].Id)) {
-        $scope.tutor.MachineSkills.splice(i, 1);
+    for (var i=0; i<$scope.tutor.Product.MachineSkills.length; i++) {
+      if (parseInt(skillId) === parseInt($scope.tutor.Product.MachineSkills[i].Id)) {
+        $scope.tutor.Product.MachineSkills.splice(i, 1);
       }
     }
   };
@@ -98,17 +138,17 @@ app.controller('TutorCtrl', ['$scope', '$http', '$location', 'api',
 
   $scope.save = function() {
 
-    if (!$scope.tutor.UserId) {
+    if (!$scope.tutor.Product.UserId) {
       toastr.error('Select tutor user');
       return;
     }
 
-    if ($scope.tutor.Price === '' || !$scope.tutor.Price) {
+    if ($scope.tutor.Product.Price === '' || !$scope.tutor.Product.Price) {
       toastr.error('Enter tutor price');
       return;
     }
 
-    if (isNaN($scope.tutor.Price)) {
+    if (isNaN($scope.tutor.Product.Price)) {
       toastr.error('Tutor price should be a number');
       return;
     }
@@ -125,29 +165,27 @@ app.controller('TutorCtrl', ['$scope', '$http', '$location', 'api',
       transformRequest: function(tutor) {
 
         var transformedTutor = {
-          UserId: parseInt(tutor.UserId),
-          Price: parseFloat(tutor.Price),
-          PriceUnit: tutor.PriceUnit,
-          MachineSkills: ''
+          Product: {
+            UserId: parseInt(tutor.Product.UserId),
+            Price: parseFloat(tutor.Product.Price),
+            PriceUnit: tutor.Product.PriceUnit,
+            MachineSkills: ''
+          }
         };
 
         var tutorSkills = '[';
-        for (var i=0; i<tutor.MachineSkills.length; i++) {
-          tutorSkills += tutor.MachineSkills[i].Id;
-          if (i < tutor.MachineSkills.length - 1) {
+        for (var i=0; i<tutor.Product.MachineSkills.length; i++) {
+          tutorSkills += tutor.Product.MachineSkills[i].Id;
+          if (i < tutor.Product.MachineSkills.length - 1) {
             tutorSkills += ',';
           }
         }
         tutorSkills += ']';
 
-        transformedTutor.MachineSkills = tutorSkills;
+        transformedTutor.Product.MachineSkills = tutorSkills;
         console.log(transformedTutor);
 
-        var container = {
-          Product: transformedTutor
-        };
-
-        return JSON.stringify(container);
+        return JSON.stringify(transformedTutor);
       },
       params: {
         ac: new Date().getTime()
@@ -167,6 +205,8 @@ app.controller('TutorCtrl', ['$scope', '$http', '$location', 'api',
       toastr.error('Failed to update tutor');
     });
   };
+
+  $scope.getAllMachines();
 
 }]); // app.controller
 
