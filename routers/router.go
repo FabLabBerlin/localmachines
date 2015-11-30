@@ -7,6 +7,7 @@ package routers
 import (
 	"github.com/astaxie/beego"
 	"github.com/kr15h/fabsmith/controllers"
+	"github.com/kr15h/fabsmith/controllers/userctrls"
 )
 
 func init() {
@@ -26,7 +27,13 @@ func Init() {
 	ns := beego.NewNamespace("/api",
 		beego.NSNamespace("/users",
 			beego.NSInclude(
-				&controllers.UsersController{},
+				&userctrls.UsersController{},
+			),
+			beego.NSInclude(
+				&userctrls.UserMembershipsController{},
+			),
+			beego.NSInclude(
+				&userctrls.UserPermissionsController{},
 			),
 		),
 		beego.NSNamespace("/memberships",
