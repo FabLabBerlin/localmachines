@@ -90,6 +90,9 @@ func (this *PurchasesController) GetAll() {
 	case models.PURCHASE_TYPE_SPACE_PURCHASE:
 		purchases, err = models.GetAllSpacePurchases()
 		break
+	case models.PURCHASE_TYPE_TUTOR:
+		purchases, err = models.GetAllTutoringPurchases()
+		break
 	default:
 		err = fmt.Errorf("unknown purchase type")
 	}

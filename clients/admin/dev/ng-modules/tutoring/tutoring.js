@@ -31,7 +31,6 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location', 'api',
         Currency: {},
         VAT: {}
       };
-      console.log(settings);
       _.each(settings, function(setting) {
         $scope.settings[setting.Name] = setting;
       });
@@ -41,42 +40,23 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location', 'api',
     });
   };
 
-  $scope.getAllMachines = function() {
-    $http({
-      method: 'GET',
-      url: '/api/machines',
-      params: {
-        ac: new Date().getTime()
-      }
-    })
-    .success(function(machines) {
-      $scope.machines = machines;
-      $scope.showTutorSkills();
-      setTimeout(function() {
-        $('.selectpicker').selectpicker('refresh');
-      }, 100);
-    })
-    .error(function(data, status) {
-      toastr.error('Failed to get all machines');
-    });
-  };
-
   $scope.showTutorSkills = function() {
     if ($scope.machines.length && $scope.tutors.length) {
       // Translate MachineSkills machine ID's to machine names for each tutor
       _.each($scope.tutors, function(tutor) {
-        if (tutor.MachineSkills !== '') {
-          var machineSkills = JSON.parse(tutor.MachineSkills);
-          tutor.MachineSkills = machineSkills;
-
-          tutor.Skills = '';
-          _.each(tutor.MachineSkills, function(machineId, key) {
-            tutor.Skills += $scope.getMachineNameById(machineId);
-            if (key < tutor.MachineSkills.length - 1) {
-              tutor.Skills += ', ';
+        var machineSkills = [];
+        if (tutor.MachineSkills) {
+          var tmp = tutor.MachineSkills;
+          tmp = tmp.slice(1, tmp.length - 1);
+          _.each(tmp.split(','), function(idString) {
+            var id = parseInt(idString);
+            var machine = $scope.machinesById[id];
+            if (machine) {
+              machineSkills.push(machine);
             }
           });
         }
+        tutor.MachineSkills = machineSkills;
 
       });
     }
@@ -95,33 +75,30 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location', 'api',
   $scope.loadPurchases = function() {
     $http({
       method: 'GET',
-      url: '/api/tutoring/purchases',
+      url: '/api/purchases',
       params: {
-        ac: new Date().getTime()
+        ac: new Date().getTime(),
+        type: 'tutor'
       }
     })
-    .success(function(purchaseList) {
-      $scope.purchases = purchaseList.Data;
-      _.each($scope.purchases, function(purchase) {
-        purchase.TutorName = 'Tina Atari';
-        purchase.UserName = 'Milda Sane';
-
-        purchase.Created = moment(purchase.StartTime).format('D MMM YY');
-        purchase.TimeStart = moment(purchase.StartTime).format('D MMM YY HH:mm');
-        purchase.TimeEnd = moment(purchase.EndTime).format('D MMM YY HH:mm');
-
-        purchase.ReservedTimeTotalHours = (purchase.TotalTime || 0).toFixed(0);
-        purchase.ReservedTimeTotalMinutes = 12;
-
-        purchase.TimerTimeTotalHours = 0;
-        purchase.TimerTimeTotalMinutes = 0;
-
-        purchase.TimeTotal = (purchase.TotalTime || 0).toFixed(2);
+    .success(function(response) {
+      $scope.purchases = _.sortBy(response.Data, function(purchase) {
+        return purchase.Name;
       });
-      console.log(purchaseList);
+      $scope.purchases = _.map($scope.purchases, function(p) {
+        var tutor = $scope.tutorsById[p.ProductId];
+        if (tutor) {
+          p.Product = tutor;
+        }
+        p.User = $scope.usersById[p.UserId];
+        p.TimeStartLocal = moment(p.TimeStart).tz('Europe/Berlin').format('YYYY-MM-DD HH:mm');
+        p.TimeEndLocal = moment(p.TimeEnd).tz('Europe/Berlin').format('YYYY-MM-DD HH:mm');
+        return p;
+      });
+      $scope.showTutorSkills();
     })
     .error(function() {
-      toastr.error('Failed to load purchase list');
+      toastr.error('Failed to load tutoring purchases');
     });
   };
 
@@ -169,12 +146,19 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location', 'api',
   };
 
   $scope.loadSettings();
-  $scope.getAllMachines();
-  api.loadTutors(function(tutorData) {
-    $scope.tutors = tutorData.tutors;
-    $scope.showTutorSkills();
+  api.loadMachines(function(machineData) {
+    $scope.machines = machineData.machines;
+    $scope.machinesById = machineData.machinesById;
+    api.loadTutors(function(tutorData) {
+      $scope.tutors = tutorData.tutors;
+      $scope.tutorsById = tutorData.tutorsById;
+      api.loadUsers(function(userData) {
+        $scope.users = userData.users;
+        $scope.usersById = userData.usersById;
+        $scope.loadPurchases();
+      });
+    });
   });
-  $scope.loadPurchases();
 
 }]); // app.controller
 

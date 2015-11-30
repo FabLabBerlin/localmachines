@@ -80,11 +80,11 @@
       </thead>
       <tbody>
         <tr ng-repeat="purchase in purchases">
-          <td>{{purchase.TutorName}}</td>
-          <td>{{purchase.UserName}}</td>
+          <td>{{purchase.Product.Name}}</td>
+          <td>{{purchase.User.FirstName}} {{purchase.User.LastName}}</td>
           <td>{{purchase.Created}}</td>
-          <td>{{purchase.TimeStart}}</td>
-          <td>{{purchase.TimeEnd}}</td>
+          <td>{{purchase.TimeStartLocal}}</td>
+          <td>{{purchase.TimeEndLocal}}</td>
           <td>{{purchase.ReservedTimeTotalHours}}h {{purchase.ReservedTimeTotalMinutes}}m</td>
           <td>{{purchase.TimerTimeTotalHours}}h {{purchase.TimerTimeTotalMinutes}}m</td>
           <td>{{purchase.TotalPrice | currency:''}}{{settings.Currency.ValueString}}</td>

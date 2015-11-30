@@ -121,6 +121,9 @@ func (this *ProductsController) GetAll() {
 	case models.PRODUCT_TYPE_SPACE:
 		products, err = models.GetAllSpaces()
 		break
+	case models.PRODUCT_TYPE_TUTOR:
+		products, err = models.GetAllTutors()
+		break
 	case "":
 		products, err = models.GetAllProducts()
 	default:

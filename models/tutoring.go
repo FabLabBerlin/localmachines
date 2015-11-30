@@ -21,7 +21,7 @@ type TutorList struct {
 }
 
 // Get a list of tutors
-func GetTutorList() (*TutorList, error) {
+func GetAllTutors() (*TutorList, error) {
 	tutorsAsProducts, err := GetAllProductsOfType(PRODUCT_TYPE_TUTOR)
 	if err != nil {
 		msg := "Failed to get tutors as products"
@@ -125,7 +125,7 @@ func GetTutoringPurchase(id int64) (tutoringPurchase *TutoringPurchase, err erro
 }
 
 // Get a list of tutoring purchases
-func GetTutoringPurchaseList() (tutoringPurchases *TutoringPurchaseList, err error) {
+func GetAllTutoringPurchases() (tutoringPurchases *TutoringPurchaseList, err error) {
 	purchases, err := GetAllPurchasesOfType(PURCHASE_TYPE_TUTOR)
 	if err != nil {
 		return

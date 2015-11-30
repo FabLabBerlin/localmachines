@@ -104,9 +104,10 @@ mod.service('api', function($http) {
   this.loadTutors = function(cb) {
     $http({
       method: 'GET',
-      url: '/api/tutoring/tutors',
+      url: '/api/products',
       params: {
-        ac: new Date().getTime()
+        ac: new Date().getTime(),
+        type: 'tutor'
       }
     })
     .success(function(tutorList) {
