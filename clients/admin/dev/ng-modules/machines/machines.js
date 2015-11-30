@@ -2,7 +2,7 @@
 
 'use strict';
 
-var app = angular.module('fabsmith.admin.machines', ['ngRoute', 'ngCookies']);
+var app = angular.module('fabsmith.admin.machines', ['ngRoute', 'ngCookies', 'fabsmith.admin.api']);
 
 app.config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/machines', {
@@ -11,23 +11,13 @@ app.config(['$routeProvider', function($routeProvider) {
   });
 }]); // app.config
 
-app.controller('MachinesCtrl', ['$scope', '$http', '$location', '$cookieStore', 
- function($scope, $http, $location, $cookieStore) {
+app.controller('MachinesCtrl', ['$scope', '$http', '$location', '$cookieStore', 'api',
+ function($scope, $http, $location, $cookieStore, api) {
 
   $scope.machines = [];
 
-  $http({
-    method: 'GET',
-    url: '/api/machines',
-    params: {
-      ac: new Date().getTime()
-    }
-  })
-  .success(function(data) {
-    $scope.machines = data;
-  })
-  .error(function() {
-    toastr.error('Failed to get machines');
+  api.loadMachines(function(resp) {
+    $scope.machines = resp.machines;
   });
 
   $scope.addMachinePrompt = function() {

@@ -38,6 +38,9 @@ func (this *ProductsController) Create() {
 	case models.PRODUCT_TYPE_SPACE:
 		product, err = models.CreateSpace(name)
 		break
+	case models.PRODUCT_TYPE_TUTOR:
+		product, err = models.CreateTutor(&models.Tutor{})
+		break
 	default:
 		err = fmt.Errorf("unknown product type")
 	}
@@ -180,12 +183,25 @@ func (this *ProductsController) Put() {
 			response = space
 		}
 		break
+	case models.PRODUCT_TYPE_TUTOR:
+		tutor := &models.Tutor{}
+		dec := json.NewDecoder(this.Ctx.Request.Body)
+		defer this.Ctx.Request.Body.Close()
+		if err := dec.Decode(tutor); err != nil {
+			beego.Error("Failed to decode json:", err)
+			this.CustomAbort(400, "Failed to update tutor")
+		}
+
+		if err = models.UpdateTutor(tutor); err == nil {
+			response = tutor
+		}
+		break
 	default:
 		err = fmt.Errorf("unknown product type")
 	}
 
 	if err != nil {
-		beego.Error("Failed to create product:", err, " (productType=", productType, ")")
+		beego.Error("Failed to update product:", err, " (productType=", productType, ")")
 		this.CustomAbort(500, "Failed to update product")
 	}
 

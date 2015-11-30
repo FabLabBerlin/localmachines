@@ -159,45 +159,31 @@ app.controller('TutorCtrl', ['$scope', '$routeParams', '$http', '$location', 'ap
   $scope.updateTutor = function() {
     $http({
       method: 'PUT',
-      url: '/api/tutoring/tutor',        
+      url: '/api/products/' + $scope.tutor.Product.Id + '?type=tutor',
       headers: {'Content-Type': 'application/json' },
       data: $scope.tutor,
       transformRequest: function(tutor) {
-
-        var transformedTutor = {
-          Product: {
-            UserId: parseInt(tutor.Product.UserId),
-            Price: parseFloat(tutor.Product.Price),
-            PriceUnit: tutor.Product.PriceUnit,
-            MachineSkills: ''
-          }
+        var transformed = {
+          Product: _.extend({}, tutor.Product)
         };
+        transformed.Product.Id = parseInt(tutor.Product.Id);
+        transformed.Product.UserId = parseInt(tutor.Product.UserId);
+        transformed.Product.Price = parseFloat(tutor.Product.Price);
 
         var tutorSkills = '[';
-        for (var i=0; i<tutor.Product.MachineSkills.length; i++) {
-          tutorSkills += tutor.Product.MachineSkills[i].Id;
-          if (i < tutor.Product.MachineSkills.length - 1) {
-            tutorSkills += ',';
-          }
-        }
+        tutorSkills += _.pluck(tutor.Product.MachineSkills, 'Id').join(',');
         tutorSkills += ']';
 
-        transformedTutor.Product.MachineSkills = tutorSkills;
-        console.log(transformedTutor);
+        transformed.Product.MachineSkills = tutorSkills;
+        console.log(transformed);
 
-        return JSON.stringify(transformedTutor);
+        return JSON.stringify(transformed);
       },
       params: {
         ac: new Date().getTime()
       }
     })
     .success(function(updatedTutor) {
-      console.log(updatedTutor);
-
-      // Udpdate the id of the tutor if created
-      $scope.tutor.Id = updatedTutor.Product.Id;
-      $scope.tutor.Name = updatedTutor.Product.Name;
-      
       $location.path('/tutoring');
     })
     .error(function(data) {
@@ -206,7 +192,15 @@ app.controller('TutorCtrl', ['$scope', '$routeParams', '$http', '$location', 'ap
     });
   };
 
-  $scope.getAllMachines();
+  api.loadMachines(function(data) {
+    $scope.machines = data.machines;
+    $scope.machinesById = data.machinesById;
+
+    setTimeout(function() {
+      $('.selectpicker').selectpicker('refresh');
+    }, 100);
+    loadTutor();
+  });
 
 }]); // app.controller
 

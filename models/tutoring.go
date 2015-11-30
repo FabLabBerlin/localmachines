@@ -40,19 +40,8 @@ func CreateTutor(tutor *Tutor) (*Tutor, error) {
 	// In case the type has not been added in upper layers
 	tutor.Product.Type = PRODUCT_TYPE_TUTOR
 
-	// Get user name by user ID
-	user := User{}
-	user.Id = tutor.Product.UserId
-	err := o.Read(&user)
-	if err != nil {
-		beego.Error("Failed to read user:", err)
-		return nil, fmt.Errorf("Failed to read user: %v", err)
-	}
-
-	tutor.Product.Name = fmt.Sprintf("%s %s", user.FirstName, user.LastName)
-
 	var productId int64
-	productId, err = o.Insert(&tutor.Product)
+	productId, err := o.Insert(&tutor.Product)
 	if err != nil {
 		msg := "Failed to insert tutor"
 		beego.Error(msg)
@@ -74,7 +63,19 @@ func GetTutor(id int64) (tutor *Tutor, err error) {
 }
 
 func UpdateTutor(tutor *Tutor) error {
-	return nil
+	if tutor.Product.UserId != 0 {
+		o := orm.NewOrm()
+		// Get user name by user ID
+		user := User{}
+		user.Id = tutor.Product.UserId
+		err := o.Read(&user)
+		if err != nil {
+			beego.Error("Failed to read user:", err)
+			return fmt.Errorf("Failed to read user: %v", err)
+		}
+		tutor.Product.Name = fmt.Sprintf("%s %s", user.FirstName, user.LastName)
+	}
+	return UpdateProduct(&tutor.Product)
 }
 
 ///////////////////////

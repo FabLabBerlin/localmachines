@@ -7,6 +7,31 @@ var mod = angular.module("fabsmith.admin.api", []);
 mod.service('api', function($http) {
   // Public Methods
 
+  this.loadMachines = function(cb) {
+    $http({
+      method: 'GET',
+      url: '/api/machines',
+      params: {
+        ac: new Date().getTime()
+      }
+    })
+    .success(function(machines) {
+      var machinesById = {};
+      _.each(machines, function(machine) {
+        machinesById[machine.Id] = machine;
+      });
+      if (cb) {
+        cb({
+          machines: machines,
+          machinesById: machinesById
+        });
+      }
+    })
+    .error(function() {
+      toastr.error('Failed to get machines');
+    });
+  };
+
   this.loadSpaces = function(cb) {
     $http({
       method: 'GET',
