@@ -29,7 +29,7 @@
         <td>{{spacePurchase.User.FirstName}} {{spacePurchase.User.LastName}} ({{spacePurchase.User.Email}})</td>
         <td>{{spacePurchase.TimeStartLocal}}</td>
         <td>{{spacePurchase.TimeEndLocal}}</td>
-        <td>{{spacePurchase.Quantity}}</td>
+        <td>{{(spacePurchase.Quantity || 0).toFixed(2)}} {{spacePurchase.PriceUnit}}s</td>
         <td>{{spacePurchase.PricePerUnit}}</td>
         <td>{{spacePurchase.PriceUnit}}</td>
         <td>

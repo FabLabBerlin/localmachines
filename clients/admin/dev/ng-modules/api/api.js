@@ -5,6 +5,8 @@
 var mod = angular.module("fabsmith.admin.api", []);
 
 mod.service('api', function($http) {
+  // Public Methods
+
   this.loadSpaces = function(cb) {
     $http({
       method: 'GET',
@@ -31,6 +33,26 @@ mod.service('api', function($http) {
     })
     .error(function() {
       toastr.error('Failed to get spaces');
+    });
+  };
+
+  this.loadSpacePurchase = function(id, cb) {
+    $http({
+      method: 'GET',
+      url: '/api/purchases/' + id,
+      params: {
+        ac: new Date().getTime(),
+        type: 'space'
+      }
+    })
+    .success(function(sp) {
+      generateStartEndDateTimesLocal(sp);
+      if (cb) {
+        cb(sp);
+      }
+    })
+    .error(function(data, status) {
+      toastr.error('Failed to load user data');
     });
   };
 
@@ -81,6 +103,18 @@ mod.service('api', function($http) {
       toastr.error('Failed to get reservations');
     });
   };
+
+
+  // Private methods
+
+  function generateStartEndDateTimesLocal(purchase) {
+      var start = moment(purchase.TimeStart).tz('Europe/Berlin');
+      var end = moment(purchase.TimeEnd).tz('Europe/Berlin');
+      purchase.DateStartLocal = start.format('YYYY-MM-DD');
+      purchase.DateEndLocal = end.format('YYYY-MM-DD');
+      purchase.TimeStartLocal = start.format('HH:mm');
+      purchase.TimeEndLocal = end.format('HH:mm');
+  }
 
   return this;
 });

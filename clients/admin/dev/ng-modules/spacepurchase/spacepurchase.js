@@ -22,33 +22,6 @@ app.controller('SpacePurchaseCtrl',
   $scope.users = [];
   $scope.usersById = {};
 
-  function loadSpacePurchase() {
-    $http({
-      method: 'GET',
-      url: '/api/purchases/' + $scope.spacePurchase.Id,
-      params: {
-        ac: new Date().getTime(),
-        type: 'space'
-      }
-    })
-    .success(function(sp) {
-      $scope.spacePurchase = sp;
-      var start = moment(sp.TimeStart).tz('Europe/Berlin');
-      var end = moment(sp.TimeEnd).tz('Europe/Berlin');
-      sp.DateStartLocal = start.format('YYYY-MM-DD');
-      sp.DateEndLocal = end.format('YYYY-MM-DD');
-      sp.TimeStartLocal = start.format('HH:mm');
-      sp.TimeEndLocal = end.format('HH:mm');
-      calculateTotalPrice();
-      setTimeout(function() {
-        $('.selectpicker').selectpicker('refresh');
-      }, 100);
-    })
-    .error(function(data, status) {
-      toastr.error('Failed to load user data');
-    });
-  }
-
   function parseInputTimes() {
     var sp = $scope.spacePurchase;
     sp.TimeStart = moment.tz(sp.DateStartLocal + ' ' + sp.TimeStartLocal, 'Europe/Berlin').toDate();
@@ -137,7 +110,7 @@ app.controller('SpacePurchaseCtrl',
         var transformed = _.extend({}, data);
         transformed.ProductId = parseInt(data.ProductId);
         transformed.UserId = parseInt(data.UserId);
-        transformed.Quantity = parseInt(data.Quantity);
+        transformed.Quantity = parseFloat(data.Quantity);
         transformed.PricePerUnit = parseInt(data.PricePerUnit);
         transformed.TotalPrice = parseFloat(data.TotalPrice);
         console.log('transformed:', transformed);
@@ -167,7 +140,13 @@ app.controller('SpacePurchaseCtrl',
     api.loadSpaces(function(spacesData) {
       $scope.spaces = spacesData.spaces;
       $scope.spacesById = spacesData.spacesById;
-      loadSpacePurchase();
+      api.loadSpacePurchase($scope.spacePurchase.Id, function(spacePurchase) {
+        $scope.spacePurchase = spacePurchase;
+        calculateTotalPrice();
+        setTimeout(function() {
+          $('.selectpicker').selectpicker('refresh');
+        }, 100);
+      });
     });
   });
 
