@@ -5,7 +5,7 @@ fabsmith
 npm-debug.log
 conf/app.conf
 views/prod/*
-routers/commentsRouter_github_com_kr15h_fabsmith_controllers.go
+routers/comments*.go
 files/*
 !files/favicon.*
 !files/apple-touch-icon.png

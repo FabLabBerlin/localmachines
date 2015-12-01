@@ -129,44 +129,48 @@ func (s ExtendedMachineList) Swap(i, j int) {
 	s[i], s[j] = s[j], s[i]
 }
 
-func GetAllMachines() ([]*Machine, error) {
-	var machines []Machine
+func GetAllMachines(sorted bool) (machines []*Machine, err error) {
 	o := orm.NewOrm()
 	m := Machine{}
-	num, err := o.QueryTable(m.TableName()).All(&machines)
+	_, err = o.QueryTable(m.TableName()).All(&machines)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get all machines: %v", err)
 	}
-	beego.Trace("Got num machines:", num)
 
 	var extendedMachines ExtendedMachineList
 
-	// Get sum of activations per machine
-	a := Activation{}
-	for i := 0; i < len(machines); i++ {
-		var numActivations int64
-		query := fmt.Sprintf("SELECT COUNT(*) FROM %s WHERE TYPE=? AND machine_id=?",
-			a.Purchase.TableName())
-		//beego.Trace("Counting activations for machine with ID", machines[i].Id)
-		err = o.Raw(query, PURCHASE_TYPE_ACTIVATION, machines[i].Id).QueryRow(&numActivations)
-		if err != nil {
-			return nil, fmt.Errorf("Failed to read activations: %v", err)
+	if sorted {
+		// Get sum of activations per machine
+		a := Activation{}
+		for i := 0; i < len(machines); i++ {
+			var numActivations int64
+			query := fmt.Sprintf("SELECT COUNT(*) FROM %s WHERE TYPE=? AND machine_id=?",
+				a.Purchase.TableName())
+			//beego.Trace("Counting activations for machine with ID", machines[i].Id)
+			err = o.Raw(query, PURCHASE_TYPE_ACTIVATION, machines[i].Id).QueryRow(&numActivations)
+			if err != nil {
+				return nil, fmt.Errorf("Failed to read activations: %v", err)
+			}
+			extendedMachine := ExtendedMachine{}
+			extendedMachine.NumActivations = numActivations
+			extendedMachine.MachineData = machines[i]
+			extendedMachines = append(extendedMachines, &extendedMachine)
 		}
-		extendedMachine := ExtendedMachine{}
-		extendedMachine.NumActivations = numActivations
-		extendedMachine.MachineData = &machines[i]
-		extendedMachines = append(extendedMachines, &extendedMachine)
+
+		// Sort the machines by number of activations
+		sort.Sort(extendedMachines)
+
+		// Build new machine slice
+		var sortedMachines []*Machine
+		for i := 0; i < len(extendedMachines); i++ {
+			sortedMachines = append(sortedMachines, extendedMachines[i].MachineData)
+		}
+
+		return sortedMachines, nil
+	} else {
+		return machines, nil
 	}
 
-	// Sort the machines by number of activations
-	sort.Sort(extendedMachines)
-	// Build new machine slice
-	var sortedMachines []*Machine
-	for i := 0; i < len(extendedMachines); i++ {
-		sortedMachines = append(sortedMachines, extendedMachines[i].MachineData)
-	}
-
-	return sortedMachines, nil
 }
 
 func CreateMachine(machineName string) (int64, error) {
@@ -249,7 +253,7 @@ func GetConnectableMachines(machineId int64) (*ConnectableMachineList, error) {
 	// All machines can be connectable
 	var machines []*Machine
 	var err error
-	machines, err = GetAllMachines()
+	machines, err = GetAllMachines(true)
 	if err != nil {
 		return nil, err
 	}

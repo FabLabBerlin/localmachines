@@ -367,34 +367,31 @@ func (this *UsersController) GetUserMachines() {
 		}
 	}
 
-	// Get the machines!
-	var machines []*models.Machine
-	if !this.IsAdmin(ruid) {
+	// List all machines if the requested user is admin
+	allMachines, err := models.GetAllMachines(false)
+	if err != nil {
+		beego.Error("Failed to get all machines: ", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
 
-		// If the requested user roles is not admin
-		// we need to get machine permissions first and then the machines
-		var permissions *[]models.Permission
-		permissions, err = models.GetUserPermissions(ruid)
+	// Get the machines!
+	machines := make([]*models.Machine, 0, len(allMachines))
+	if !this.IsAdmin(ruid) {
+		permissions, err := models.GetUserPermissions(ruid)
 		if err != nil {
 			beego.Error("Failed to get user machine permissions: ", err)
 			this.CustomAbort(500, "Internal Server Error")
 		}
 		for _, permission := range *permissions {
-			machine, err := models.GetMachine(permission.MachineId)
-			if err != nil {
-				beego.Warning("Failed to get machine ID", permission.MachineId)
-			} else {
-				machines = append(machines, machine)
+			for _, machine := range machines {
+				if machine.Id == permission.MachineId {
+					machines = append(machines, machine)
+					break
+				}
 			}
 		}
 	} else {
-
-		// List all machines if the requested user is admin
-		machines, err = models.GetAllMachines()
-		if err != nil {
-			beego.Error("Failed to get all machines: ", err)
-			this.CustomAbort(500, "Internal Server Error")
-		}
+		machines = allMachines
 	}
 
 	// Serve machines

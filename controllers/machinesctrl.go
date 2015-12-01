@@ -29,7 +29,7 @@ func (this *MachinesController) GetAll() {
 
 	var machines []*models.Machine
 	var err error
-	machines, err = models.GetAllMachines()
+	machines, err = models.GetAllMachines(true)
 	if err != nil {
 		beego.Error("Failed to get all machines", err)
 		this.CustomAbort(403, "Failed to get all machines")

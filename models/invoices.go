@@ -245,7 +245,7 @@ func (this *Invoice) getInvoiceFileName(startTime,
 }
 
 func (this *Invoice) getPurchases(startTime, endTime time.Time) (purchases []*Purchase, err error) {
-	machines, err := GetAllMachines()
+	machines, err := GetAllMachines(true)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get machines: %v", err)
 	}
