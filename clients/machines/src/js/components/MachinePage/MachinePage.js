@@ -133,8 +133,7 @@ var MachinePage = React.createClass({
    * Need polling for activation status and maintenance status
    */
   update() {
-    MachineActions.pollActivations();
-    MachineActions.pollMachines();
+    MachineActions.pollDashboard();
   }
 });
 

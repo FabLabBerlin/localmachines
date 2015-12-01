@@ -69,17 +69,15 @@ var MachineActions = {
   /*
    * To continue to refresh the view each seconds
    */
-  pollActivations() {
-    ApiActions.getCall('/api/activations/active', function(data) {
-      var activationInfo = _formatActivation(data);
-      reactor.dispatch(actionTypes.SET_ACTIVATION_INFO, { activationInfo });
-    });
-  },
-
-  pollMachines() {
+  pollDashboard() {
     const uid = reactor.evaluateToJS(getters.getUid);
-    ApiActions.getCall('/api/users/' + uid + '/machines', function(machineInfo) {
-      reactor.dispatch(actionTypes.SET_MACHINE_INFO, { machineInfo });
+    ApiActions.getCall('/api/users/' + uid + '/dashboard', function(data) {
+      reactor.dispatch(actionTypes.SET_ACTIVATION_INFO, {
+        activationInfo: data.Activations
+      });
+      reactor.dispatch(actionTypes.SET_MACHINE_INFO, {
+        machineInfo: data.Machines
+      });
     });
   },
 

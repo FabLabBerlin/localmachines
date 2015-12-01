@@ -30,6 +30,9 @@ func Init() {
 				&userctrls.UsersController{},
 			),
 			beego.NSInclude(
+				&userctrls.UserDashboardController{},
+			),
+			beego.NSInclude(
 				&userctrls.UserMembershipsController{},
 			),
 			beego.NSInclude(
