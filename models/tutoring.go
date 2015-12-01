@@ -16,12 +16,8 @@ type Tutor struct {
 	Product Product
 }
 
-type TutorList struct {
-	Data []*Product
-}
-
 // Get a list of tutors
-func GetAllTutors() (*TutorList, error) {
+func GetAllTutors() ([]*Tutor, error) {
 	tutorsAsProducts, err := GetAllProductsOfType(PRODUCT_TYPE_TUTOR)
 	if err != nil {
 		msg := "Failed to get tutors as products"
@@ -29,9 +25,15 @@ func GetAllTutors() (*TutorList, error) {
 		return nil, fmt.Errorf(msg)
 	}
 
-	tutorList := TutorList{Data: tutorsAsProducts}
+	tutorList := make([]*Tutor, 0, len(tutorsAsProducts))
+	for _, product := range tutorsAsProducts {
+		tutor := &Tutor{
+			Product: *product,
+		}
+		tutorList = append(tutorList, tutor)
+	}
 
-	return &tutorList, nil
+	return tutorList, nil
 }
 
 func CreateTutor(tutor *Tutor) (*Tutor, error) {

@@ -21,23 +21,27 @@
       </thead>
       <tbody>
         <tr ng-repeat="tutor in tutors">
-          <td>{{tutor.Name}}</td>
-          <td>{{tutor.Skills}}</td>
-          <td>{{tutor.Price | currency:''}}{{settings.Currency.ValueString}}</td>
-          <td>{{tutor.PriceUnit}}</td>
+          <td>{{tutor.Product.Name}}</td>
+          <td>
+            <span ng-repeat="skill in tutor.MachineSkills">
+              {{skill.Name}}&nbsp;
+            </span>
+          </td>
+          <td>{{tutor.Product.Price | currency:''}}{{settings.Currency.ValueString}}</td>
+          <td>{{tutor.Product.PriceUnit}}</td>
           <td>
             <div class="pull-right">
               <button 
                 type="button" 
                 class="btn btn-primary btn-ico"
-                ng-click="editTutor(tutor.Id)">
+                ng-click="editTutor(tutor.Product.Id)">
                 <span class="fa fa-edit"></span>
               </button>
 
               <button 
                 type="button" 
                 class="btn btn-danger btn-ico"
-                ng-click="deleteTutor(tutor.Id)">
+                ng-click="deleteTutor(tutor.Product.Id)">
                 <span class="fa fa-close"></span>
               </button>
             </div>

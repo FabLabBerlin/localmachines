@@ -24,7 +24,7 @@ func (this *DashboardData) load(isAdmin bool, uid int64) (err error) {
 	if err = this.loadMachines(isAdmin, uid); err != nil {
 		return
 	}
-	if err = this.loadTutorings(); err != nil {
+	if err = this.loadTutorings(uid); err != nil {
 		return
 	}
 	return
@@ -63,8 +63,32 @@ func (this *DashboardData) loadMachines(isAdmin bool, uid int64) (err error) {
 	return
 }
 
-func (this *DashboardData) loadTutorings() (err error) {
-	this.Tutorings, err = models.GetAllTutoringPurchases()
+func (this *DashboardData) loadTutorings(uid int64) (err error) {
+	tutors, err := models.GetAllTutors()
+	if err != nil {
+		return fmt.Errorf("get all tutors: %v", err)
+	}
+	allTutorings, err := models.GetAllTutoringPurchases()
+	var targetTutor *models.Tutor
+	for _, tutor := range tutors {
+		if tutor.Product.UserId == uid {
+			targetTutor = tutor
+			break
+		}
+	}
+	if targetTutor == nil {
+		return fmt.Errorf("could not find Tutor with user id %v", uid)
+	}
+
+	this.Tutorings = &models.TutoringPurchaseList{
+		Data: make([]*models.TutoringPurchase, 0, len(allTutorings.Data)),
+	}
+	for _, tutoring := range allTutorings.Data {
+		if tutoring.ProductId == targetTutor.Product.Id {
+			this.Tutorings.Data = append(this.Tutorings.Data, tutoring)
+		}
+	}
+
 	return
 }
 

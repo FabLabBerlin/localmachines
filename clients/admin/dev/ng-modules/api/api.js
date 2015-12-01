@@ -112,12 +112,12 @@ mod.service('api', function($http) {
     })
     .success(function(tutorList) {
       var tutorsById = {};
-      _.each(tutorList.Data, function(tutor) {
-        tutorsById[tutor.Id] = tutor;
+      _.each(tutorList, function(tutor) {
+        tutorsById[tutor.Product.Id] = tutor;
       });
       if (cb) {
         cb({
-          tutors: tutorList.Data,
+          tutors: tutorList,
           tutorsById: tutorsById
         });
       }

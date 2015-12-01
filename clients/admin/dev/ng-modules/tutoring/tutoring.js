@@ -45,9 +45,11 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location', 'api',
       // Translate MachineSkills machine ID's to machine names for each tutor
       _.each($scope.tutors, function(tutor) {
         var machineSkills = [];
-        if (tutor.MachineSkills) {
-          var tmp = tutor.MachineSkills;
+        if (tutor.Product.MachineSkills) {
+          var tmp = tutor.Product.MachineSkills;
+          console.log('tmp:', tmp);
           tmp = tmp.slice(1, tmp.length - 1);
+          console.log('tmp":', tmp);
           _.each(tmp.split(','), function(idString) {
             var id = parseInt(idString);
             var machine = $scope.machinesById[id];
@@ -56,6 +58,7 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location', 'api',
             }
           });
         }
+        console.log('setting tutor.MachineSkills to ', machineSkills);
         tutor.MachineSkills = machineSkills;
 
       });
@@ -88,7 +91,7 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location', 'api',
       $scope.purchases = _.map($scope.purchases, function(p) {
         var tutor = $scope.tutorsById[p.ProductId];
         if (tutor) {
-          p.Product = tutor;
+          p.Product = tutor.Product;
         }
         p.User = $scope.usersById[p.UserId];
         p.TimeStartLocal = moment(p.TimeStart).tz('Europe/Berlin').format('YYYY-MM-DD HH:mm');
