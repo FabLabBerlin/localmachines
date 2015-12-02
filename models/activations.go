@@ -56,7 +56,7 @@ func GetActivations(startTime time.Time,
 	pageOffset = itemsPerPage * (page - 1)
 
 	query := fmt.Sprintf("SELECT a.* FROM %s a JOIN %s u ON a.user_id=u.id "+
-		"WHERE a.type=? AND a.time_start>? AND a.time_end<? AND a.activation_running=false "+
+		"WHERE a.type=? AND a.time_start>? AND a.time_end<? AND a.running=false "+
 		"ORDER BY u.first_name ASC, a.time_start DESC "+
 		"LIMIT ? OFFSET ?",
 		act.Purchase.TableName(),
@@ -112,14 +112,14 @@ func GetNumActivations(startTime time.Time,
 	return cnt, nil
 }
 
-// Gets only activation_running activations (activation_running meaning that users are using
+// Gets only running activations (activation_running meaning that users are using
 // the machine/resource currently)
 func GetActiveActivations() ([]*Activation, error) {
 	var purchases []*Purchase
 	o := orm.NewOrm()
 	act := Activation{}
 	num, err := o.QueryTable(act.Purchase.TableName()).
-		Filter("activation_running", true).
+		Filter("running", true).
 		Filter("type", PURCHASE_TYPE_ACTIVATION).
 		All(&purchases)
 	if err != nil {
@@ -157,7 +157,7 @@ func CreateActivation(machineId, userId int64, startTime time.Time) (
 	var dupActivations []Activation
 	act := Activation{} // Used to get table name of the model
 	query := fmt.Sprintf("SELECT id FROM %s WHERE machine_id = ? "+
-		"AND user_id = ? AND activation_running = 1 AND type = ?", act.Purchase.TableName())
+		"AND user_id = ? AND running = 1 AND type = ?", act.Purchase.TableName())
 	numDuplicates, err := o.Raw(query, machineId, userId, PURCHASE_TYPE_ACTIVATION).
 		QueryRows(&dupActivations)
 	if err != nil {
@@ -183,11 +183,11 @@ func CreateActivation(machineId, userId int64, startTime time.Time) (
 
 	newActivation := Activation{
 		Purchase: Purchase{
-			Type:              PURCHASE_TYPE_ACTIVATION,
-			UserId:            userId,
-			MachineId:         machineId,
-			ActivationRunning: true,
-			TimeStart:         startTime,
+			Type:      PURCHASE_TYPE_ACTIVATION,
+			UserId:    userId,
+			MachineId: machineId,
+			Running:   true,
+			TimeStart: startTime,
 
 			// Save current activation price, currency and price unit (minute, hour, pcs)
 			PricePerUnit: mch.Price,
@@ -238,7 +238,7 @@ func CloseActivation(activationId int64, endTime time.Time) error {
 	}
 
 	// Calculate activation duration and update activation.
-	activation.Purchase.ActivationRunning = false
+	activation.Purchase.Running = false
 	activation.Purchase.TimeEnd = endTime
 	activation.Purchase.Quantity = activation.Purchase.quantityFromTimes()
 

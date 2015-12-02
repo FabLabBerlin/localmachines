@@ -216,7 +216,7 @@ func getPurchases(startTime,
 
 	query := fmt.Sprintf("SELECT p.* FROM %s p JOIN %s u ON p.user_id=u.id "+
 		"WHERE p.time_start > ? AND p.time_end < ? "+
-		"AND (p.activation_running IS NULL OR p.activation_running = 0)",
+		"AND (p.running IS NULL OR p.running = 0)",
 		p.TableName(),
 		usr.TableName())
 

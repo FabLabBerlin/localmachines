@@ -25,19 +25,17 @@ type Purchase struct {
 	User   User `orm:"-" json:"-"`
 	UserId int64
 
-	TimeStart    time.Time `orm:"type(datetime)"`
-	TimeEnd      time.Time `orm:"type(datetime)"`
-	Quantity     float64
-	PricePerUnit float64
-	PriceUnit    string
-	Vat          float64
-	Cancelled    bool
+	TimeStart     time.Time `orm:"type(datetime)"`
+	TimeEnd       time.Time `orm:"type(datetime)"`
+	TimeEndActual time.Time `orm:"type(datetime)"`
+	Quantity      float64
+	PricePerUnit  float64
+	PriceUnit     string
+	Vat           float64
+	Cancelled     bool
 
 	TotalPrice      float64 `orm:"-"`
 	DiscountedTotal float64 `orm:"-"`
-
-	// Activation fields:
-	ActivationRunning bool
 
 	// Reservation fields:
 	ReservationDisabled bool
@@ -45,6 +43,9 @@ type Purchase struct {
 	// Activation+Reservation fields:
 	Machine   *Machine `orm:"-"`
 	MachineId int64
+
+	// Activation+Tutoring fields:
+	Running bool
 
 	// Old fields:
 	Activation   *Activation   `orm:"-"`
