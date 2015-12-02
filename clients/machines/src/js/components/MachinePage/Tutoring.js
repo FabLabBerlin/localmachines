@@ -1,9 +1,19 @@
+var getters = require('../../getters');
 var moment = require('moment');
 var React = require('react');
+var reactor = require('../../reactor');
 var TutoringActions = require('../../actions/TutoringActions');
 
 
 var Tutoring = React.createClass({
+
+  mixins: [ reactor.ReactMixin ],
+
+  getDataBindings() {
+    return {
+      machineUsers: getters.getMachineUsers
+    };
+  },
 
   startTimer() {
     TutoringActions.startTutoring(this.props.tutoring.Id);
@@ -14,14 +24,27 @@ var Tutoring = React.createClass({
   },
 
   render() {
-    console.log('tutoring: ', this.props.tutoring);
     var start = moment(this.props.tutoring.TimeStart);
-    var end = moment(this.props.tutoring.TimeEndActual || this.props.tutoring.TimeEnd);
+    var end = this.props.tutoring.TimeEndActual || this.props.tutoring.TimeEnd;
     var duration;
+    var user;
+
+    if (end) {
+      end = moment(end);
+      if (end.unix() < 0) {
+        end = null;
+      }
+    }
+
+    if (this.state.machineUsers) {
+      user = this.state.machineUsers.get(this.props.tutoring.UserId);
+    }
 
     if (this.props.tutoring.Running) {
       duration = moment().subtract(start);
       duration = duration.format('HH:mm:ss');
+    } else if (start && end) {
+      duration = end.subtract(start);
     }
 
     return (
@@ -32,7 +55,7 @@ var Tutoring = React.createClass({
               <div className="row">
                 <div className="col-xs-6">
                   <div><b>User</b></div>
-                  <div>Millumin Atari</div>
+                  <div>{user && (user.FirstName + ' ' + user.LastName)}</div>
                 </div>
                 <div className="col-xs-6">
                   <div><b>Timer</b></div>
@@ -42,11 +65,11 @@ var Tutoring = React.createClass({
               <div className="row">
                 <div className="col-xs-6">
                   <div><b>Time from</b></div>
-                  <div>{start.format('YYYY-MM-DD HH:mm')}</div>
+                  <div>{start && start.format('YYYY-MM-DD HH:mm')}</div>
                 </div>
                 <div className="col-xs-6">
                   <div><b>Time to</b></div>
-                  <div>{end.format('YYYY-MM-DD HH:mm')}</div>
+                  <div>{end && end.format('YYYY-MM-DD HH:mm')}</div>
                 </div>
               </div>
             </div>
