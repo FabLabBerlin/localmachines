@@ -22,7 +22,7 @@ func GetAllTutors() ([]*Tutor, error) {
 	if err != nil {
 		msg := "Failed to get tutors as products"
 		beego.Error(msg)
-		return nil, fmt.Errorf(msg)
+		return nil, fmt.Errorf(msg+"%v: ", err)
 	}
 
 	tutorList := make([]*Tutor, 0, len(tutorsAsProducts))
