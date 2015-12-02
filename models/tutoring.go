@@ -104,13 +104,11 @@ type TutoringPurchaseList struct {
 }
 
 func CreateTutoringPurchase(tutoringPurchase *TutoringPurchase) (int64, error) {
-	tutoringPurchase.Purchase = Purchase{
-		Created:   time.Now(),
-		Type:      PURCHASE_TYPE_TUTOR,
-		TimeStart: time.Now(),
-		TimeEnd:   time.Now(),
-		PriceUnit: "hour",
-	}
+	tutoringPurchase.Purchase.Created = time.Now()
+	tutoringPurchase.Purchase.Type = PURCHASE_TYPE_TUTOR
+	tutoringPurchase.Purchase.TimeStart = time.Now()
+	tutoringPurchase.Purchase.TimeEnd = time.Now()
+	tutoringPurchase.Purchase.PriceUnit = "hour"
 
 	o := orm.NewOrm()
 	return o.Insert(&tutoringPurchase.Purchase)
@@ -146,14 +144,30 @@ func GetAllTutoringPurchases() (tutoringPurchases *TutoringPurchaseList, err err
 
 func StartTutoringPurchase(tutoringPurchaseId int64) (err error) {
 	o := orm.NewOrm()
-	t := new(TutoringPurchase)
-	_, err = o.QueryTable(t.Purchase.TableName()).
-		Filter("id", tutoringPurchaseId).
-		Update(orm.Params{
-		"running":    true,
-		"time_start": time.Now(),
-	})
+	tp, exists, err := tutoringPurchaseExists(tutoringPurchaseId)
+	if err != nil {
+		return fmt.Errorf("exists: %v", err)
+	}
+	if exists {
+		newTp := *tp
+		newTp.Id = 0
+		newTp.Running = true
+		newTp.TimeStart = time.Time{}
+		newTp.TimeEnd = time.Time{}
+		newTp.TimeEndActual = time.Time{}
+		newTp.Quantity = 0
+		_, err = CreateTutoringPurchase(&newTp)
+	} else {
+		t := new(TutoringPurchase)
+		_, err = o.QueryTable(t.Purchase.TableName()).
+			Filter("id", tutoringPurchaseId).
+			Update(orm.Params{
+			"running":    true,
+			"time_start": time.Now(),
+		})
+	}
 	return
+
 }
 
 func StopTutoringPurchase(tutoringPurchaseId int64) (err error) {
@@ -171,5 +185,19 @@ func StopTutoringPurchase(tutoringPurchaseId int64) (err error) {
 func UpdateTutoringPurchase(tutoringPurchase *TutoringPurchase) (err error) {
 	o := orm.NewOrm()
 	_, err = o.Update(&tutoringPurchase.Purchase)
+	return
+}
+
+func tutoringPurchaseExists(tutoringPurchaseId int64) (tp *TutoringPurchase, exists bool, err error) {
+	o := orm.NewOrm()
+	tp = &TutoringPurchase{}
+	var tmp []*Purchase
+	num, err := o.QueryTable(new(Purchase).TableName()).
+		Filter("id", tutoringPurchaseId).
+		All(&tmp)
+	exists = num > 0
+	if exists && err == nil {
+		tp.Purchase = *tmp[0]
+	}
 	return
 }
