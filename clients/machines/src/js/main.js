@@ -15,6 +15,7 @@ var ReservationRulesStore = require('./stores/ReservationRulesStore');
 var Router = require('react-router');
 var ScrollNavStore = require('./stores/ScrollNavStore');
 var SpendingsPage = require('./components/UserProfile/SpendingsPage');
+var TutoringsStore = require('./stores/TutoringsStore');
 var UserPage = require('./components/UserProfile/UserPage');
 var UserStore = require('./stores/UserStore');
 var {DefaultRoute, Route, Routes, NotFoundRoute} = require('react-router');
@@ -73,6 +74,7 @@ reactor.registerStores({
   reservationsStore: ReservationsStore,
   reservationRulesStore: ReservationRulesStore,
   scrollNavStore: ScrollNavStore,
+  tutoringsStore: TutoringsStore,
   userStore: UserStore
 });
 

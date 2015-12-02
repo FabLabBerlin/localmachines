@@ -1,3 +1,4 @@
+var moment = require('moment');
 var React = require('react');
 
 var Tutoring = React.createClass({
@@ -17,6 +18,10 @@ var Tutoring = React.createClass({
   },
 
   render() {
+    console.log('Tutoring: t = ', this.props.tutoring);
+    var start = moment(this.props.tutoring.TimeStart);
+    var end = moment(this.props.tutoring.TimeEnd);
+
     return (
       <div className="tutoring-item">
         <div className="container-fluid">
@@ -35,11 +40,11 @@ var Tutoring = React.createClass({
               <div className="row">
                 <div className="col-xs-6">
                   <div><b>Time from</b></div>
-                  <div>Today 15:00</div>
+                  <div>{start.format('YYYY-MM-DD HH:mm')}</div>
                 </div>
                 <div className="col-xs-6">
                   <div><b>Time to</b></div>
-                  <div>Today 17:00</div>
+                  <div>{end.format('YYYY-MM-DD HH:mm')}</div>
                 </div>
               </div>
             </div>

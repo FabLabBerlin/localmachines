@@ -612,10 +612,22 @@ const getScrollPosition = [
   }
 ];
 
+
+/*
+ * Tutorings related getters
+ */
+const getTutorings = [
+  ['tutoringsStore'],
+  (tutoringsStore) => {
+    return tutoringsStore.get('tutorings');
+  }
+];
+
 export default {
   getIsLogged, getUid, getFirstTry, getLoginSuccess, getLastActivity,
   getUserInfo, getActivationInfo, getMachineInfo, getMachinesById, getMachineUsers, getIsLoading, getBillInfo, getBillMonths, getMonthlyBills, getMembership, getMembershipsByMonth,
   getFeedbackSubject, getFeedbackSubjectDropdown, getFeedbackSubjectOtherText, getFeedbackMessage,
   getNewReservation, getNewReservationPrice, getNewReservationTimes, getNewReservationFrom, getNewReservationTo, getReservations, getReservationsByDay, getActiveReservationsByMachineId, getSlotAvailabilities48h,
-  getScrollUpEnabled, getScrollDownEnabled, getScrollPosition
+  getScrollUpEnabled, getScrollDownEnabled, getScrollPosition,
+  getTutorings
 };

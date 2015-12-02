@@ -1,12 +1,28 @@
+var getters = require('../../getters');
 var React = require('react');
+var reactor = require('../../reactor');
 var Tutoring = require('./Tutoring');
 
 var TutoringList = React.createClass({
+
+  mixins: [ reactor.ReactMixin ],
+
+  getDataBindings() {
+    return {
+      tutorings: getters.getTutorings
+    };
+  },
+
   render() {
     var tutorings = [];
     var key = 0;
-    tutorings.push(<Tutoring key={++key}/>);
-    tutorings.push(<Tutoring key={++key}/>);
+
+    if (this.state.tutorings) {
+      _.each(this.state.tutorings.toJS(), function(t) {
+        tutorings.push(<Tutoring key={++key}
+                                 tutoring={t}/>);
+      });
+    }
 
     return (
       <div className="tutoring-list">

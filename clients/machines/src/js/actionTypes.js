@@ -40,5 +40,7 @@ export default keyMirror({
   CANCEL_RESERVATION_SUCCESS: null,
   CANCEL_RESERVATION_FAIL: null,
 
-  SET_RESERVATION_RULES: null
+  SET_RESERVATION_RULES: null,
+
+  SET_TUTORINGS: null
 });

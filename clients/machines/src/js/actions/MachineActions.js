@@ -72,12 +72,14 @@ var MachineActions = {
   pollDashboard() {
     const uid = reactor.evaluateToJS(getters.getUid);
     ApiActions.getCall('/api/users/' + uid + '/dashboard', function(data) {
+      console.log('dddaaaattttaaa:', data);
       reactor.dispatch(actionTypes.SET_ACTIVATION_INFO, {
         activationInfo: data.Activations
       });
       reactor.dispatch(actionTypes.SET_MACHINE_INFO, {
         machineInfo: data.Machines
       });
+      reactor.dispatch(actionTypes.SET_TUTORINGS, data.Tutorings.Data);
     });
   },
 
