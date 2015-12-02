@@ -14,7 +14,7 @@ type PurchasesController struct {
 // @Title Create
 // @Description Create space purchase
 // @Param	type	query	string	true	"Purchase Type"
-// @Success 200 {object} interface{}
+// @Success 200 string
 // @Failure	401	Not authorized
 // @Failure	500	Internal Server Error
 // @router / [post]
@@ -66,7 +66,7 @@ func (this *PurchasesController) Create() {
 // @Title GetAll
 // @Description Get all purchases
 // @Param	type	query	string	true	"Purchase Type"
-// @Success 200 {object} interface{}
+// @Success 200 string
 // @Failure	401 Not authorized
 // @Failure	500	Failed to get all machines
 // @router / [get]
@@ -157,7 +157,7 @@ func (this *PurchasesController) Get() {
 // @Title Put
 // @Description Update space purchase
 // @Param	type	query	string	true	"Purchase Type"
-// @Success 200 {object} interface{}
+// @Success 200 string
 // @Failure	400	Bad Request
 // @Failure	401	Unauthorized
 // @Failure 500 Internal Server Error

@@ -94,7 +94,7 @@ func (this *DashboardData) loadTutorings(uid int64) (err error) {
 
 // @Title GetDashboard
 // @Description Get all data for user dashboard
-// @Success 200 {object} DashboardResponse
+// @Success 200 string
 // @Failure	401	Unauthorized
 // @Failure	500	Internal Server Error
 // @router /:uid/dashboard [get]

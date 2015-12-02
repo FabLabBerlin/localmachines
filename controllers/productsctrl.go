@@ -58,7 +58,7 @@ func (this *ProductsController) Create() {
 // @Description Get product by ID
 // @Param	id		path 	int	true		"Space ID"
 // @Param	type	query	string	true	"Product Type"
-// @Success 200 {object} interface{}
+// @Success 200 string
 // @Failure	400	Bad Request
 // @Failure	500	Failed to get product
 // @router /:id [get]
@@ -143,7 +143,7 @@ func (this *ProductsController) GetAll() {
 // @Title Put
 // @Description Update product
 // @Param	type	query	string	true	"Product Type"
-// @Success 201 {object} interface{}
+// @Success 201 string
 // @Failure	400	Bad Request
 // @Failure	401	Unauthorized
 // @Failure 500 Internal Server Error
@@ -209,5 +209,41 @@ func (this *ProductsController) Put() {
 	}
 
 	this.Data["json"] = response
+	this.ServeJson()
+}
+
+// @Title Archive Product
+// @Description Archive product
+// @Param	productId	query	string	true	"Product ID"
+// @Success 200 string
+// @Failure	400	Bad Request
+// @Failure	401	Unauthorized
+// @Failure 500 Internal Server Error
+// @router /:productId/archive [put]
+func (this *ProductsController) ArchiveProduct() {
+	if !this.IsAdmin() {
+		beego.Error("Unauthorized attempt to archvie product")
+		this.CustomAbort(401, "Unauthorized")
+	}
+
+	productId, err := this.GetInt64(":productId")
+	if err != nil {
+		beego.Error("Failed to get :productId variable")
+		this.CustomAbort(400, "Incorrect productId")
+	}
+
+	var product *models.Product
+	product, err = models.GetProduct(productId)
+	if err != nil {
+		beego.Error("Failed to get product")
+		this.CustomAbort(500, "Failed to get product")
+	}
+
+	err = models.ArchiveProduct(product)
+	if err != nil {
+		beego.Error("Failed to archive product")
+		this.CustomAbort(500, "Failed to archive product")
+	}
+
 	this.ServeJson()
 }

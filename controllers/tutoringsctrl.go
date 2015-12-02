@@ -12,7 +12,7 @@ type TutoringsController struct {
 // @Title Start
 // @Description Start tutoring
 // @Param	id		path 	int	true		"Tutoring ID"
-// @Success 200 {object} models.Tutoring
+// @Success 200
 // @Failure	400	Bad Request
 // @Failure	401	Not authorized
 // @Failure	500	Internal Server Error
@@ -36,7 +36,7 @@ func (this *TutoringsController) Start() {
 // @Title Stop
 // @Description Stop tutoring
 // @Param	id		path 	int	true		"Tutoring ID"
-// @Success 200 {object} models.Tutoring
+// @Success 200
 // @Failure	400	Bad Request
 // @Failure	401	Not authorized
 // @Failure	500	Internal Server Error
