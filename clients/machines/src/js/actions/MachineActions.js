@@ -72,7 +72,6 @@ var MachineActions = {
   pollDashboard() {
     const uid = reactor.evaluateToJS(getters.getUid);
     ApiActions.getCall('/api/users/' + uid + '/dashboard', function(data) {
-      console.log('dddaaaattttaaa:', data);
       reactor.dispatch(actionTypes.SET_ACTIVATION_INFO, {
         activationInfo: data.Activations
       });
@@ -80,6 +79,8 @@ var MachineActions = {
         machineInfo: data.Machines
       });
       reactor.dispatch(actionTypes.SET_TUTORINGS, data.Tutorings.Data);
+      var userIds = _.uniq(_.pluck(data.Tutorings.Data, 'UserId'));
+      apiFetchUserData(userIds);
     });
   },
 
@@ -171,6 +172,20 @@ function apiGetActivationActive() {
     var activationInfo = _formatActivation(data);
     var userIds = _.uniq(_.pluck(activationInfo, 'UserId'));
 
+    apiFetchUserData(userIds);
+
+    reactor.dispatch(actionTypes.SET_ACTIVATION_INFO, { activationInfo });
+  });
+}
+
+function apiFetchUserData(userIds) {
+  var fetchedUserIds = _.keys(reactor.evaluateToJS(getters.getMachineUsers));
+  fetchedUserIds = _.map(fetchedUserIds, function(id) {
+    return parseInt(id, 10);
+  });
+  userIds = _.difference(userIds, fetchedUserIds);
+
+  if (userIds.length > 0) {
     $.ajax({
       url: '/api/users/names?uids=' + userIds.join(','),
       dataType: 'json',
@@ -184,9 +199,7 @@ function apiGetActivationActive() {
           console.log('Error loading names');
       }
     });
-
-    reactor.dispatch(actionTypes.SET_ACTIVATION_INFO, { activationInfo });
-  });
+  }
 }
 
 /*

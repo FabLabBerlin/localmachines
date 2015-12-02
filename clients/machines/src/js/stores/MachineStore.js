@@ -62,7 +62,7 @@ function clearState(state) {
 }
 
 function registerMachineUser(state, { userData }) {
-  return state.set('machineUsers', state.get('machineUsers').set(userData.UserId, userData));
+  return state.set('machineUsers', state.get('machineUsers').set(parseInt(userData.UserId, 10), userData));
 }
 
 function setActivationInfo(state, { activationInfo }) {
