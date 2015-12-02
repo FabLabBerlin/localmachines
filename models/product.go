@@ -19,6 +19,7 @@ type Product struct {
 	UserId        int64
 	MachineSkills string `orm:"size(255)"` // JSON string [1, 3, 6]
 	Comments      string `orm:"type(text)"`
+	Archived      bool
 }
 
 type ProductList struct {
@@ -32,6 +33,13 @@ func (this *Product) TableName() string {
 func CreateProduct(product *Product) (int64, error) {
 	o := orm.NewOrm()
 	return o.Insert(product)
+}
+
+func GetProduct(productId int64) (product *Product, err error) {
+	o := orm.NewOrm()
+	product = &Product{Id: productId}
+	err = o.Read(product)
+	return
 }
 
 func GetAllProducts() (products []*Product, err error) {
@@ -50,6 +58,13 @@ func GetAllProductsOfType(productType string) (products []*Product, err error) {
 
 func UpdateProduct(product *Product) (err error) {
 	o := orm.NewOrm()
+	_, err = o.Update(product)
+	return
+}
+
+func ArchiveProduct(product *Product) (err error) {
+	o := orm.NewOrm()
+	product.Archived = true
 	_, err = o.Update(product)
 	return
 }
