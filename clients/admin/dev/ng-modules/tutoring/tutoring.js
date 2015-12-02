@@ -11,8 +11,8 @@ app.config(['$routeProvider', function($routeProvider) {
   });
 }]); // app.config
 
-app.controller('TutoringCtrl', ['$scope', '$http', '$location', 'api',
-  function($scope, $http, $location, api) {
+app.controller('TutoringCtrl', ['$scope', '$http', '$location', 'api', 'randomToken',
+  function($scope, $http, $location, api, randomToken) {
 
   $scope.machines = [];
   $scope.tutors = [];
@@ -125,6 +125,46 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location', 'api',
 
   $scope.editTutor = function(id) {
     $location.path('/tutoring/tutors/' + id);
+  };
+
+  $scope.archiveTutorPrompt = function(tutorId) {
+    var token = randomToken.generate();
+    vex.dialog.prompt({
+      message: 'Enter <span class="delete-prompt-token">' + 
+       token + '</span> to archive tutor',
+      placeholder: 'Token',
+      callback: $scope.archiveTutorPromptCallback.bind(this, token, tutorId)
+    });
+  };
+
+  $scope.archiveTutorPromptCallback = function(expectedToken, tutorId, value) {
+    if (value) {    
+      if (value === expectedToken) {
+        $scope.archiveTutor(tutorId);
+      } else {
+        toastr.error('Wrong token');
+      }
+    } else if (value !== false) {
+      toastr.error('No token');
+    }
+  };
+
+  $scope.archiveTutor = function(tutorId) {
+    $http({
+      method: 'PUT',
+      url: '/api/products/' + tutorId + '/archive',
+      params: {
+        ac: new Date().getTime()
+      }
+    })
+    .success(function(response) {
+      toastr.success("Tutor has been archived");
+      // Optimistic response remains
+    })
+    .error(function() {
+      toastr.error("Failed to archive tutor");
+      // Optimistic response is being elliminated
+    });
   };
 
   $scope.addPurchase = function() {
