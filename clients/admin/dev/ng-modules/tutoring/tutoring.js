@@ -159,11 +159,13 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location', 'api', 'randomTo
     })
     .success(function(response) {
       toastr.success("Tutor has been archived");
-      // Optimistic response remains
+      api.loadTutors(function(tutorData) {
+        $scope.tutors = tutorData.tutors;
+        $scope.tutorsById = tutorData.tutorsById;
+      });
     })
     .error(function() {
       toastr.error("Failed to archive tutor");
-      // Optimistic response is being elliminated
     });
   };
 
