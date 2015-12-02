@@ -42,6 +42,7 @@ func GetProduct(productId int64) (product *Product, err error) {
 	return
 }
 
+// Filter out archived products
 func GetAllProducts() (products []*Product, err error) {
 	o := orm.NewOrm()
 	_, err = o.QueryTable(new(Product).TableName()).All(&products)
@@ -52,6 +53,7 @@ func GetAllProductsOfType(productType string) (products []*Product, err error) {
 	o := orm.NewOrm()
 	_, err = o.QueryTable(new(Product).TableName()).
 		Filter("type", productType).
+		Exclude("archived", 1).
 		All(&products)
 	return
 }
