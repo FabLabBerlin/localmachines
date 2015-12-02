@@ -144,6 +144,30 @@ func GetAllTutoringPurchases() (tutoringPurchases *TutoringPurchaseList, err err
 	return
 }
 
+func StartTutoringPurchase(tutoringPurchaseId int64) (err error) {
+	o := orm.NewOrm()
+	t := new(TutoringPurchase)
+	_, err = o.QueryTable(t.Purchase.TableName()).
+		Filter("id", tutoringPurchaseId).
+		Update(orm.Params{
+		"running":    true,
+		"time_start": time.Now(),
+	})
+	return
+}
+
+func StopTutoringPurchase(tutoringPurchaseId int64) (err error) {
+	o := orm.NewOrm()
+	t := new(TutoringPurchase)
+	_, err = o.QueryTable(t.Purchase.TableName()).
+		Filter("id", tutoringPurchaseId).
+		Update(orm.Params{
+		"running":         false,
+		"time_end_actual": time.Now(),
+	})
+	return
+}
+
 func UpdateTutoringPurchase(tutoringPurchase *TutoringPurchase) (err error) {
 	o := orm.NewOrm()
 	_, err = o.Update(&tutoringPurchase.Purchase)

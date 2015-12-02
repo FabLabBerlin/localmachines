@@ -1,26 +1,28 @@
 var moment = require('moment');
 var React = require('react');
+var TutoringActions = require('../../actions/TutoringActions');
+
 
 var Tutoring = React.createClass({
 
-  getInitialState() {
-    return {
-      timerRunning: false
-    };
-  },
-
   startTimer() {
-    this.setState({timerRunning: true});
+    TutoringActions.startTutoring(this.props.tutoring.Id);
   },
 
   stopTimer() {
-    this.setState({timerRunning: false});
+    TutoringActions.stopTutoring(this.props.tutoring.Id);
   },
 
   render() {
-    console.log('Tutoring: t = ', this.props.tutoring);
+    console.log('tutoring: ', this.props.tutoring);
     var start = moment(this.props.tutoring.TimeStart);
-    var end = moment(this.props.tutoring.TimeEnd);
+    var end = moment(this.props.tutoring.TimeEndActual || this.props.tutoring.TimeEnd);
+    var duration;
+
+    if (this.props.tutoring.Running) {
+      duration = moment().subtract(start);
+      duration = duration.format('HH:mm:ss');
+    }
 
     return (
       <div className="tutoring-item">
@@ -34,7 +36,7 @@ var Tutoring = React.createClass({
                 </div>
                 <div className="col-xs-6">
                   <div><b>Timer</b></div>
-                  <div>0h 32m</div>
+                  <div>{duration}</div>
                 </div>
               </div>
               <div className="row">
@@ -50,7 +52,7 @@ var Tutoring = React.createClass({
             </div>
             <div className="col-xs-4">
 
-              {this.state.timerRunning ? (
+              {this.props.tutoring.Running ? (
                 <button 
                   className="btn btn-danger btn-lg btn-block"
                   onClick={this.stopTimer}>

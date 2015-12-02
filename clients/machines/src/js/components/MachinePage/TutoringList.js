@@ -15,12 +15,11 @@ var TutoringList = React.createClass({
 
   render() {
     var tutorings = [];
-    var key = 0;
 
     if (this.state.tutorings) {
-      _.each(this.state.tutorings.toJS(), function(t) {
-        tutorings.push(<Tutoring key={++key}
-                                 tutoring={t}/>);
+      tutorings = _.map(this.state.tutorings.toJS(), function(t, i) {
+        return <Tutoring key={i}
+                         tutoring={t}/>;
       });
     }
 

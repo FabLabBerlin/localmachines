@@ -104,6 +104,11 @@ func Init() {
 				&controllers.PurchasesController{},
 			),
 		),
+		beego.NSNamespace("/tutorings",
+			beego.NSInclude(
+				&controllers.TutoringsController{},
+			),
+		),
 	)
 	beego.AddNamespace(ns)
 }
