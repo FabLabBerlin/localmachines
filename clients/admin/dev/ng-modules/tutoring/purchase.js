@@ -115,7 +115,7 @@ app.controller('PurchaseCtrl', ['$scope', '$routeParams', '$http', '$location', 
       }
     })
     .success(function() {
-      toastr.success('Tutoring purchase updated');
+      $location.path('/tutoring');
     })
     .error(function(data) {
       toastr.error('Error while trying to save changes');
