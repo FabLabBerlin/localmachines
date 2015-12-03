@@ -69,7 +69,7 @@ app.controller('SpacePurchaseCtrl',
       }
     })
     .success(function() {
-      toastr.success('Space purchase updated');
+      $location.path('/spaces');
     })
     .error(function(data) {
       toastr.error('Error while trying to save changes');
