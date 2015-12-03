@@ -383,7 +383,7 @@ func (this *UsersController) GetUserMachines() {
 			this.CustomAbort(500, "Internal Server Error")
 		}
 		for _, permission := range *permissions {
-			for _, machine := range machines {
+			for _, machine := range allMachines {
 				if machine.Id == permission.MachineId {
 					machines = append(machines, machine)
 					break
