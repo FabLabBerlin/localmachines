@@ -179,25 +179,42 @@ mod.service('api', function($http) {
     calculateQuantity: function(purchase) {
       console.log('$scope.timeChange()');
       this.parseInputTimes(purchase);
+      console.log('calculateQuantity: purchase.TimeStart=', purchase.TimeStart);
+      console.log('calculateQuantity: purchase.TimeEnd=', purchase.TimeEnd);
+      console.log('calculateQuantity: purchase.TimeEndPlanned=', purchase.TimeEndPlanned);
       var start = moment(purchase.TimeStart);
       var end = moment(purchase.TimeEnd);
-      var duration = end.unix() - start.unix();
-      console.log('duration=', duration);
-      var quantity;
-      switch (purchase.PriceUnit) {
-      case 'minute':
-        quantity = duration / 60;
-        break;
-      case 'hour':
-        quantity = duration / 3600;
-        break;
-      case 'day':
-        quantity = duration / 24 / 3600;
-        break;
-      default:
-        return;
+      var endPlanned = moment(purchase.TimeEndPlanned);
+      if (start.unix() > 0) {
+        console.log('s>0');
+        var duration;
+        if (end.unix() > 0) {
+          console.log('e>0');
+          duration = end.unix() - start.unix();
+        } else if (endPlanned.unix() > 0) {
+          console.log('ep>0');
+          duration = endPlanned.unix() - start.unix();
+        } else {
+          return;
+        }
+        console.log('duration=', duration);
+        var quantity;
+        console.log('purchase.PriceUnit=', purchase.PriceUnit);
+        switch (purchase.PriceUnit) {
+        case 'minute':
+          quantity = duration / 60;
+          break;
+        case 'hour':
+          quantity = duration / 3600;
+          break;
+        case 'day':
+          quantity = duration / 24 / 3600;
+          break;
+        default:
+          return;
+        }
+        purchase.Quantity = quantity;
       }
-      purchase.Quantity = quantity;
     },
 
     calculateTotalPrice: function(purchase) {

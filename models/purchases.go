@@ -25,9 +25,9 @@ type Purchase struct {
 	User   User `orm:"-" json:"-"`
 	UserId int64
 
-	TimeStart      time.Time `orm:"type(datetime)"`
-	TimeEnd        time.Time `orm:"type(datetime)"`
-	TimeEndPlanned time.Time `orm:"type(datetime)"`
+	TimeStart      time.Time `orm:"type(datetime)" json:",omitempty"`
+	TimeEnd        time.Time `orm:"type(datetime)" json:",omitempty"`
+	TimeEndPlanned time.Time `orm:"type(datetime)" json:",omitempty"`
 	Quantity       float64
 	PricePerUnit   float64
 	PriceUnit      string
