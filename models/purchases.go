@@ -75,6 +75,7 @@ func GetAllPurchasesOfType(purchaseType string) (purchases []*Purchase, err erro
 	o := orm.NewOrm()
 	_, err = o.QueryTable(new(Purchase).TableName()).
 		Filter("type", purchaseType).
+		Exclude("archived", 1).
 		All(&purchases)
 	return
 }
