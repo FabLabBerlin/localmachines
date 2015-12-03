@@ -32,6 +32,9 @@ app.controller('PurchaseCtrl', ['$scope', '$routeParams', '$http', '$location', 
         setTimeout(function() {
           $('.selectpicker').selectpicker('refresh');
         }, 100);
+        api.purchase.calculateQuantity($scope.purchase);
+        api.purchase.calculateTotalPrice($scope.purchase);
+        calculateDurations();
       });
     });
   });
@@ -48,8 +51,7 @@ app.controller('PurchaseCtrl', ['$scope', '$routeParams', '$http', '$location', 
     var tutor = $scope.tutorsById[tutorId];
     $scope.purchase.PricePerUnit = tutor.Price;
     $scope.purchase.PriceUnit = tutor.PriceUnit;
-    api.purchase.calculateQuantity($scope.purchase);
-    api.purchase.calculateTotalPrice($scope.purchase);
+    calculateDurations();
   };
 
   $scope.userChange = function() {
@@ -57,9 +59,32 @@ app.controller('PurchaseCtrl', ['$scope', '$routeParams', '$http', '$location', 
   };
 
   $scope.timeChange = function() {
+    calculateDurations();
+  };
+
+  function calculateDurations() {
+    console.log('calculateDurations()');
     api.purchase.calculateQuantity($scope.purchase);
     api.purchase.calculateTotalPrice($scope.purchase);
-  };
+    var start = moment($scope.purchase.TimeStart);
+    var end = moment($scope.purchase.TimeEnd);
+    var endPlanned = moment($scope.purchase.TimeEndPlanned);
+    console.log('start:', start.format('YYYY-MM-DD HH:mm'));
+    console.log('end:', end.format('YYYY-MM-DD HH:mm'));
+    console.log('endPlanned:', endPlanned.format('YYYY-MM-DD HH:mm'));
+    if (start.unix() > 0) {
+      if (endPlanned.unix() > 0) {
+        console.log('setting TimeReserved...');
+        $scope.purchase.TimeReserved = endPlanned.clone().subtract(start).format('HH:mm:ss');
+        console.log('$scope.purchase.TimeReserved:', $scope.purchase.TimeReserved);
+      }
+      if (end.unix() > 0) {
+        console.log('setting TimeTimed...');
+        $scope.purchase.TimeTimed = end.clone().subtract(start).format('HH:mm:ss');
+        console.log('$scope.purchase.TimeTimed:', $scope.purchase.TimeTimed);
+      }
+    }
+  }
 
   $scope.priceUnitChange = function() {
     api.purchase.calculateQuantity($scope.purchase);
