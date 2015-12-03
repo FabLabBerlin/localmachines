@@ -147,6 +147,26 @@ mod.service('api', function($http) {
     });
   };
 
+  this.archivePurchase = function(id, success, error) {
+    $http({
+      method: 'PUT',
+      url: '/api/purchases/' + id + '/archive',
+      params: {
+        ac: new Date().getTime()
+      }
+    })
+    .success(function() {
+      if (success) {
+        success();
+      }
+    })
+    .error(function() {
+      if (error) {
+        error();
+      }
+    });
+  };
+
   this.loadUsers = function(cb) {
     $http({
       method: 'GET',
@@ -172,6 +192,45 @@ mod.service('api', function($http) {
     })
     .error(function() {
       toastr.error('Failed to get reservations');
+    });
+  };
+
+  this.loadPurchases = function(success, error) {
+    $http({
+      method: 'GET',
+      url: '/api/purchases',
+      params: {
+        ac: new Date().getTime(),
+        type: 'tutor'
+      }
+    })
+    .success(function(purchaseList) {
+      if (success) {
+        success(purchaseList);
+      }
+      /*
+      $scope.purchases = _.sortBy(response.Data, function(purchase) {
+        return purchase.Name;
+      });
+      $scope.purchases = _.map($scope.purchases, function(p) {
+        var tutor = $scope.tutorsById[p.ProductId];
+        if (tutor) {
+          p.Product = tutor.Product;
+        }
+        p.User = $scope.usersById[p.UserId];
+        // TODO: What if the timezone changes?
+        p.TimeStartLocal = moment(p.TimeStart).tz('Europe/Berlin').format('YYYY-MM-DD HH:mm');
+        p.TimeEndPlannedLocal = moment(p.TimeEndPlanned).tz('Europe/Berlin').format('YYYY-MM-DD HH:mm');
+        return p;
+      });
+
+      $scope.showTutorSkills();
+      */
+    })
+    .error(function() {
+      if (error) {
+        error();
+      }
     });
   };
 

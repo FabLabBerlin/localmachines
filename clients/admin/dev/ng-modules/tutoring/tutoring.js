@@ -76,16 +76,8 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location', 'api', 'randomTo
   };
 
   $scope.loadPurchases = function() {
-    $http({
-      method: 'GET',
-      url: '/api/purchases',
-      params: {
-        ac: new Date().getTime(),
-        type: 'tutor'
-      }
-    })
-    .success(function(response) {
-      $scope.purchases = _.sortBy(response.Data, function(purchase) {
+    api.loadPurchases(function(purchaseList) {
+      $scope.purchases = _.sortBy(purchaseList.Data, function(purchase) {
         return purchase.Name;
       });
       $scope.purchases = _.map($scope.purchases, function(p) {
@@ -100,9 +92,8 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location', 'api', 'randomTo
         return p;
       });
       $scope.showTutorSkills();
-    })
-    .error(function() {
-      toastr.error('Failed to load tutoring purchases');
+    }, function() {
+      toastr.error('Failed to load purchases');
     });
   };
 
