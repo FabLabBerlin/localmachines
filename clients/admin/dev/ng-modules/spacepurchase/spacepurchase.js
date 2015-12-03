@@ -23,6 +23,7 @@ app.controller('SpacePurchaseCtrl',
   $scope.usersById = {};
 
   $scope.spaceChange = function() {
+    $('#sp-space').selectpicker('refresh');
     console.log('$scope.spaceChange()');
     var spaceId = parseInt($scope.spacePurchase.ProductId);
     var space = $scope.spacesById[spaceId];
@@ -30,6 +31,10 @@ app.controller('SpacePurchaseCtrl',
     $scope.spacePurchase.PriceUnit = space.Product.PriceUnit;
     api.purchase.calculateQuantity($scope.spacePurchase);
     api.purchase.calculateTotalPrice($scope.spacePurchase);
+  };
+
+  $scope.userChange = function() {
+    $('#sp-user').selectpicker('refresh');
   };
 
   $scope.timeChange = function() {

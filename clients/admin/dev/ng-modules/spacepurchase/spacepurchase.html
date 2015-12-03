@@ -21,6 +21,7 @@
   <div class="form-group">
     <label for="sp-user">User</label>
     <select ng-model="spacePurchase.UserId"
+            ng-change="userChange()"
             id="sp-user"
             class="form-control selectpicker"
             data-live-search="true"
