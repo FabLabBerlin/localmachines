@@ -209,6 +209,7 @@ mod.service('api', function($http) {
       var p = purchase;
       p.TimeStart = moment.tz(p.DateStartLocal + ' ' + p.TimeStartLocal, 'Europe/Berlin').toDate();
       p.TimeEnd = moment.tz(p.DateEndLocal + ' ' + p.TimeEndLocal, 'Europe/Berlin').toDate();
+      p.TimeEndPlanned = moment.tz(p.DateEndPlannedLocal + ' ' + p.TimeEndPlannedLocal, 'Europe/Berlin').toDate();
     }
   };
 
@@ -218,10 +219,13 @@ mod.service('api', function($http) {
   function generateStartEndDateTimesLocal(purchase) {
       var start = moment(purchase.TimeStart).tz('Europe/Berlin');
       var end = moment(purchase.TimeEnd).tz('Europe/Berlin');
+      var endPlanned = moment(purchase.TimeEndPlanned).tz('Europe/Berlin');
       purchase.DateStartLocal = start.format('YYYY-MM-DD');
       purchase.DateEndLocal = end.format('YYYY-MM-DD');
+      purchase.DateEndPlannedLocal = endPlanned.format('YYYY-MM-DD');
       purchase.TimeStartLocal = start.format('HH:mm');
       purchase.TimeEndLocal = end.format('HH:mm');
+      purchase.TimeEndPlannedLocal = endPlanned.format('HH:mm');
   }
 
   return this;
