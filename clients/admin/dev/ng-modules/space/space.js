@@ -56,7 +56,7 @@ app.controller('SpaceCtrl',
       }
     })
     .success(function(data) {
-      toastr.success('Update successful');
+      $location.path('/spaces');
     })
     .error(function(data) {
       console.log(data);
