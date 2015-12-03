@@ -149,7 +149,7 @@ app.controller('RentalCtrl',
       }
     })
     .success(function() {
-      toastr.success('Table purchase updated');
+      $location.path('/coworking');
     })
     .error(function(data) {
       toastr.error('Error while trying to save changes');
