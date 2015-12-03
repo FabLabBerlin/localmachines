@@ -94,6 +94,7 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location', 'api', 'randomTo
           p.Product = tutor.Product;
         }
         p.User = $scope.usersById[p.UserId];
+        // TODO: What if the timezone changes?
         p.TimeStartLocal = moment(p.TimeStart).tz('Europe/Berlin').format('YYYY-MM-DD HH:mm');
         p.TimeEndLocal = moment(p.TimeEnd).tz('Europe/Berlin').format('YYYY-MM-DD HH:mm');
         return p;
@@ -162,6 +163,7 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location', 'api', 'randomTo
       api.loadTutors(function(tutorData) {
         $scope.tutors = tutorData.tutors;
         $scope.tutorsById = tutorData.tutorsById;
+        $scope.showTutorSkills();
       });
     })
     .error(function() {
