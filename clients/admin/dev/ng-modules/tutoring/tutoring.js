@@ -151,24 +151,19 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location', 'api', 'randomTo
   };
 
   $scope.archiveTutor = function(tutorId) {
-    $http({
-      method: 'PUT',
-      url: '/api/products/' + tutorId + '/archive',
-      params: {
-        ac: new Date().getTime()
-      }
-    })
-    .success(function(response) {
-      toastr.success("Tutor has been archived");
-      api.loadTutors(function(tutorData) {
-        $scope.tutors = tutorData.tutors;
-        $scope.tutorsById = tutorData.tutorsById;
-        $scope.showTutorSkills();
+    api.archiveProduct(
+      tutorId,
+      function(){
+        toastr.success("Tutor has been archived");
+        api.loadTutors(function(tutorData) {
+          $scope.tutors = tutorData.tutors;
+          $scope.tutorsById = tutorData.tutorsById;
+          $scope.showTutorSkills();
+        });
+      }, 
+      function() {
+        toastr.error("Failed to archive tutor");
       });
-    })
-    .error(function() {
-      toastr.error("Failed to archive tutor");
-    });
   };
 
   $scope.addPurchase = function() {
