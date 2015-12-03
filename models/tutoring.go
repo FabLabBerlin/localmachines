@@ -173,20 +173,27 @@ func StartTutoringPurchase(tutoringPurchaseId int64) (err error) {
 }
 
 func StopTutoringPurchase(tutoringPurchaseId int64) (err error) {
-	o := orm.NewOrm()
-	t := new(TutoringPurchase)
-	_, err = o.QueryTable(t.Purchase.TableName()).
-		Filter("id", tutoringPurchaseId).
-		Update(orm.Params{
-		"quantity": t.Purchase.quantityFromTimes(),
-		"running":  false,
-		"time_end": time.Now(),
-	})
-	return
+	t, err := GetTutoringPurchase(tutoringPurchaseId)
+	if err != nil {
+		return fmt.Errorf("get tutoring purchase: %v", err)
+	}
+	t.Purchase.Quantity = t.Purchase.quantityFromTimes()
+	t.Purchase.Running = false
+	t.Purchase.TimeEnd = time.Now()
+	return UpdateTutoringPurchase(t)
 }
 
 func UpdateTutoringPurchase(tutoringPurchase *TutoringPurchase) (err error) {
 	o := orm.NewOrm()
+	if tutoringPurchase.ProductId > 0 {
+		tutor, err := GetTutor(tutoringPurchase.ProductId)
+		if err != nil {
+			return fmt.Errorf("get tutor: %v", err)
+		}
+		tutoringPurchase.PricePerUnit = tutor.Product.Price
+		tutoringPurchase.PriceUnit = tutor.Product.PriceUnit
+	}
+	tutoringPurchase.Quantity = tutoringPurchase.quantityFromTimes()
 	_, err = o.Update(&tutoringPurchase.Purchase)
 	return
 }
