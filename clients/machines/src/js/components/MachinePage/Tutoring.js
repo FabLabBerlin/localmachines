@@ -25,7 +25,7 @@ var Tutoring = React.createClass({
 
   render() {
     var start = moment(this.props.tutoring.TimeStart);
-    var end = this.props.tutoring.TimeEndActual || this.props.tutoring.TimeEnd;
+    var end = this.props.tutoring.TimeEnd || this.props.tutoring.TimeEndPlanned;
     var duration;
     var user;
 

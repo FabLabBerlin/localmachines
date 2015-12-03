@@ -25,14 +25,14 @@ type Purchase struct {
 	User   User `orm:"-" json:"-"`
 	UserId int64
 
-	TimeStart     time.Time `orm:"type(datetime)"`
-	TimeEnd       time.Time `orm:"type(datetime)"`
-	TimeEndActual time.Time `orm:"type(datetime)"`
-	Quantity      float64
-	PricePerUnit  float64
-	PriceUnit     string
-	Vat           float64
-	Cancelled     bool
+	TimeStart      time.Time `orm:"type(datetime)"`
+	TimeEnd        time.Time `orm:"type(datetime)"`
+	TimeEndPlanned time.Time `orm:"type(datetime)"`
+	Quantity       float64
+	PricePerUnit   float64
+	PriceUnit      string
+	Vat            float64
+	Cancelled      bool
 
 	TotalPrice      float64 `orm:"-"`
 	DiscountedTotal float64 `orm:"-"`
@@ -97,10 +97,10 @@ func (this *Purchase) MembershipStr() string {
 
 func (this *Purchase) quantityFromTimes() (quantity float64) {
 	var timeEnd time.Time
-	if !this.TimeEndActual.IsZero() {
-		timeEnd = this.TimeEndActual
-	} else if !this.TimeEnd.IsZero() {
+	if !this.TimeEnd.IsZero() {
 		timeEnd = this.TimeEnd
+	} else if !this.TimeEndPlanned.IsZero() {
+		timeEnd = this.TimeEndPlanned
 	} else {
 		timeEnd = time.Now()
 	}

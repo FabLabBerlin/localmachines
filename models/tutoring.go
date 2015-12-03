@@ -107,7 +107,7 @@ func CreateTutoringPurchase(tutoringPurchase *TutoringPurchase) (int64, error) {
 	tutoringPurchase.Purchase.Created = time.Now()
 	tutoringPurchase.Purchase.Type = PURCHASE_TYPE_TUTOR
 	tutoringPurchase.Purchase.TimeStart = time.Now()
-	tutoringPurchase.Purchase.TimeEnd = time.Now()
+	tutoringPurchase.Purchase.TimeEndPlanned = time.Now()
 	tutoringPurchase.Purchase.PriceUnit = "hour"
 
 	o := orm.NewOrm()
@@ -148,7 +148,7 @@ func StartTutoringPurchase(tutoringPurchaseId int64) (err error) {
 	if err != nil {
 		return fmt.Errorf("exists: %v", err)
 	}
-	if tp.TimeEndActual.IsZero() {
+	if tp.TimeEnd.IsZero() {
 		t := new(TutoringPurchase)
 		_, err = o.QueryTable(t.Purchase.TableName()).
 			Filter("id", tutoringPurchaseId).
@@ -163,8 +163,8 @@ func StartTutoringPurchase(tutoringPurchaseId int64) (err error) {
 		newTp.ProductId = tp.ProductId
 		newTp.Running = true
 		newTp.TimeStart = time.Now()
-		newTp.TimeEnd = tp.TimeEnd
-		newTp.TimeEndActual = time.Time{}
+		newTp.TimeEndPlanned = tp.TimeEndPlanned
+		newTp.TimeEnd = time.Time{}
 		newTp.Quantity = 0
 		_, err = CreateTutoringPurchase(&newTp)
 	}
@@ -178,9 +178,9 @@ func StopTutoringPurchase(tutoringPurchaseId int64) (err error) {
 	_, err = o.QueryTable(t.Purchase.TableName()).
 		Filter("id", tutoringPurchaseId).
 		Update(orm.Params{
-		"quantity":        t.Purchase.quantityFromTimes(),
-		"running":         false,
-		"time_end_actual": time.Now(),
+		"quantity": t.Purchase.quantityFromTimes(),
+		"running":  false,
+		"time_end": time.Now(),
 	})
 	return
 }

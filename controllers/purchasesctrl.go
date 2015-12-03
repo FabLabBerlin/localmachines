@@ -208,7 +208,7 @@ func (this *PurchasesController) Put() {
 			beego.Error("Failed to decode json:", err)
 			this.CustomAbort(400, "Failed to update Tutoring purchase")
 		}
-
+		beego.Info("tp: time end planned:", tutoringPurchase.TimeEndPlanned)
 		if err = models.UpdateTutoringPurchase(tutoringPurchase); err == nil {
 			response = tutoringPurchase
 		}

@@ -96,7 +96,7 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location', 'api', 'randomTo
         p.User = $scope.usersById[p.UserId];
         // TODO: What if the timezone changes?
         p.TimeStartLocal = moment(p.TimeStart).tz('Europe/Berlin').format('YYYY-MM-DD HH:mm');
-        p.TimeEndLocal = moment(p.TimeEnd).tz('Europe/Berlin').format('YYYY-MM-DD HH:mm');
+        p.TimeEndPlannedLocal = moment(p.TimeEndPlanned).tz('Europe/Berlin').format('YYYY-MM-DD HH:mm');
         return p;
       });
       $scope.showTutorSkills();
