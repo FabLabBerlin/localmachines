@@ -127,6 +127,26 @@ mod.service('api', function($http) {
     });
   };
 
+  this.archiveProduct = function(id, success, error) {
+    $http({
+      method: 'PUT',
+      url: '/api/products/' + id + '/archive',
+      params: {
+        ac: new Date().getTime()
+      }
+    })
+    .success(function() {
+      if (success) {
+        success();
+      }
+    })
+    .error(function() {
+      if (error) {
+        error();
+      }
+    });
+  };
+
   this.loadUsers = function(cb) {
     $http({
       method: 'GET',
