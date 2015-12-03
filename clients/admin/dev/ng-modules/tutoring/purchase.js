@@ -43,12 +43,17 @@ app.controller('PurchaseCtrl', ['$scope', '$routeParams', '$http', '$location', 
   $('.datepicker').pickadate(pickadateOptions);
 
   $scope.tutorChange = function() {
+    $('#tp-tutor').selectpicker('refresh');
     var tutorId = parseInt($scope.purchase.ProductId);
     var tutor = $scope.tutorsById[tutorId];
     $scope.purchase.PricePerUnit = tutor.Price;
     $scope.purchase.PriceUnit = tutor.PriceUnit;
     api.purchase.calculateQuantity($scope.purchase);
     api.purchase.calculateTotalPrice($scope.purchase);
+  };
+
+  $scope.userChange = function() {
+    $('#tp-user').selectpicker('refresh');
   };
 
   $scope.timeChange = function() {
