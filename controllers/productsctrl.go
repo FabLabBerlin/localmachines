@@ -214,7 +214,7 @@ func (this *ProductsController) Put() {
 
 // @Title Archive Product
 // @Description Archive product
-// @Param	productId	query	string	true	"Product ID"
+// @Param	productId	query	int	true	"Product ID"
 // @Success 200 string
 // @Failure	400	Bad Request
 // @Failure	401	Unauthorized

@@ -52,6 +52,8 @@ type Purchase struct {
 	Reservation  *Reservation  `orm:"-"`
 	MachineUsage time.Duration `orm:"-"`
 	Memberships  []*Membership `orm:"-"`
+
+	Archived bool
 }
 
 func (this *Purchase) TableName() string {
@@ -62,10 +64,18 @@ func init() {
 	orm.RegisterModel(new(Purchase))
 }
 
+func GetPurchase(purchaseId int64) (purchase *Purchase, err error) {
+	o := orm.NewOrm()
+	purchase = &Purchase{Id: purchaseId}
+	err = o.Read(purchase)
+	return
+}
+
 func GetAllPurchasesOfType(purchaseType string) (purchases []*Purchase, err error) {
 	o := orm.NewOrm()
 	_, err = o.QueryTable(new(Purchase).TableName()).
 		Filter("type", purchaseType).
+		Exclude("archived", 1).
 		All(&purchases)
 	return
 }
@@ -73,6 +83,13 @@ func GetAllPurchasesOfType(purchaseType string) (purchases []*Purchase, err erro
 func DeletePurchase(id int64) (err error) {
 	o := orm.NewOrm()
 	_, err = o.Delete(&Purchase{Id: id})
+	return
+}
+
+func ArchivePurchase(purchase *Purchase) (err error) {
+	o := orm.NewOrm()
+	purchase.Archived = true
+	_, err = o.Update(purchase)
 	return
 }
 

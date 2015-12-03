@@ -28,14 +28,8 @@ func Init() {
 		beego.NSNamespace("/users",
 			beego.NSInclude(
 				&userctrls.UsersController{},
-			),
-			beego.NSInclude(
 				&userctrls.UserDashboardController{},
-			),
-			beego.NSInclude(
 				&userctrls.UserMembershipsController{},
-			),
-			beego.NSInclude(
 				&userctrls.UserPermissionsController{},
 			),
 		),

@@ -202,6 +202,40 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location', 'api', 'randomTo
     });
   });
 
+  $scope.archivePurchasePrompt = function(purchaseId) {
+    var token = randomToken.generate();
+    vex.dialog.prompt({
+      message: 'Enter <span class="delete-prompt-token">' + 
+       token + '</span> to archive tutor',
+      placeholder: 'Token',
+      callback: $scope.archivePurchasePromptCallback.bind(this, token, purchaseId)
+    });
+  };
+
+  $scope.archivePurchasePromptCallback = function(expectedToken, purchaseId, value) {
+    if (value) {    
+      if (value === expectedToken) {
+        $scope.archivePurchase(purchaseId);
+      } else {
+        toastr.error('Wrong token');
+      }
+    } else if (value !== false) {
+      toastr.error('No token');
+    }
+  };
+
+  $scope.archivePurchase = function(purchaseId) {
+    api.archivePurchase(
+      purchaseId,
+      function(){
+        toastr.success("Purchase has been archived");
+        $scope.loadPurchases();
+      }, 
+      function() {
+        toastr.error("Failed to archive purchase");
+      });
+  };
+
 }]); // app.controller
 
 })(); // closure
