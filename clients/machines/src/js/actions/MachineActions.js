@@ -78,9 +78,11 @@ var MachineActions = {
       reactor.dispatch(actionTypes.SET_MACHINE_INFO, {
         machineInfo: data.Machines
       });
-      reactor.dispatch(actionTypes.SET_TUTORINGS, data.Tutorings.Data);
-      var userIds = _.uniq(_.pluck(data.Tutorings.Data, 'UserId'));
-      apiFetchUserData(userIds);
+      if (data.Tutorings) {
+        reactor.dispatch(actionTypes.SET_TUTORINGS, data.Tutorings.Data);
+        var userIds = _.uniq(_.pluck(data.Tutorings.Data, 'UserId'));
+        apiFetchUserData(userIds);
+      }
     });
   },
 
