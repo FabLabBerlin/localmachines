@@ -225,3 +225,39 @@ func (this *PurchasesController) Put() {
 	this.Data["json"] = response
 	this.ServeJson()
 }
+
+// @Title Archive Purchase
+// @Description Archive a purchase
+// @Param	purchaseId	query	int	true	"Purchase ID"
+// @Success 200 string
+// @Failure	400	Bad Request
+// @Failure	401	Unauthorized
+// @Failure 500 Internal Server Error
+// @router /:purchaseId/archive [put]
+func (this *PurchasesController) ArchivePurchase() {
+	if !this.IsAdmin() {
+		beego.Error("Unauthorized attempt to archive purchase")
+		this.CustomAbort(401, "Unauthorized")
+	}
+
+	purchaseId, err := this.GetInt64(":purchaseId")
+	if err != nil {
+		beego.Error("Failed to get :purchaseId variable")
+		this.CustomAbort(400, "Incorrect purchaseId")
+	}
+
+	var purchase *models.Purchase
+	purchase, err = models.GetPurchase(purchaseId)
+	if err != nil {
+		beego.Error("Failed to get purchase")
+		this.CustomAbort(500, "Failed to get purchase")
+	}
+
+	err = models.ArchivePurchase(purchase)
+	if err != nil {
+		beego.Error("Failed to archive purchase")
+		this.CustomAbort(500, "Failed to archive purchase")
+	}
+
+	this.ServeJson()
+}
