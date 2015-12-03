@@ -54,6 +54,7 @@ type Purchase struct {
 	Memberships  []*Membership `orm:"-"`
 
 	Archived bool
+	Comments string
 }
 
 func (this *Purchase) TableName() string {
