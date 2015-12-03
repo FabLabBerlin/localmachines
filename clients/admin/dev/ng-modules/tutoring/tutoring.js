@@ -163,6 +163,7 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location', 'api', 'randomTo
       api.loadTutors(function(tutorData) {
         $scope.tutors = tutorData.tutors;
         $scope.tutorsById = tutorData.tutorsById;
+        $scope.showTutorSkills();
       });
     })
     .error(function() {
