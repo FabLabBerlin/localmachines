@@ -56,6 +56,10 @@ app.controller('TutorCtrl', ['$scope', '$routeParams', '$http', '$location', 'ap
     });
   }
 
+  $scope.refreshUserPicker = function() {
+    $('#user-picker').selectpicker('refresh');
+  };
+
   $scope.getAllMachines = function() {
     $http({
       method: 'GET',

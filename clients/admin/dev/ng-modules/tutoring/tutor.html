@@ -7,9 +7,11 @@
     <label for="tutor-user">Tutor user</label>
     <select 
       class="selectpicker"
+      id="user-picker"
       data-live-search="true"
       data-width="100%"
-      ng-model="tutor.Product.UserId">
+      ng-model="tutor.Product.UserId"
+      ng-change="refreshUserPicker()">
       <option
         ng-repeat="user in users"
         value="{{user.Id}}">
