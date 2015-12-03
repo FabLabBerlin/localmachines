@@ -76,8 +76,8 @@ describe('MachineActions', function() {
   });
 
   describe('pollActivations', function() {
-    it('GETs /api/activations/active', function() {
-      MachineActions.pollActivations();
+    it('GETs /api/users/active', function() {
+      MachineActions.pollDashboard();
       expect($.ajax).toBeCalledWith({
         url: '/api/activations/active',
         dataType: 'json',

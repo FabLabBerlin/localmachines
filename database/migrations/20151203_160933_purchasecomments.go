@@ -18,7 +18,7 @@ func init() {
 
 // Run the migrations
 func (m *Purchasecomments_20151203_160933) Up() {
-	m.Sql("ALTER TABLE purchases ADD COLUMN comments TEXT DEFAULT ''")
+	m.Sql("ALTER TABLE purchases ADD COLUMN comments TEXT")
 }
 
 // Reverse the migrations

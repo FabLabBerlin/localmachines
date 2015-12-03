@@ -68,7 +68,7 @@ var SpendingsPage = React.createClass({
         <h3>Your Memberships</h3>
         {<Membership info={this.state.membershipInfo} />}
 
-        <h3>Pay-As-You-Go (Machine Usage)</h3>
+        <h3>Pay-As-You-Go</h3>
         <BillTable info={this.state.billInfo} membershipInfo={this.state.membershipInfo}/>
         <ScrollNav/>
       </div>
