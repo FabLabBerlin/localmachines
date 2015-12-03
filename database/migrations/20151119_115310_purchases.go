@@ -78,7 +78,7 @@ func (m *Purchases_20151119_115310) Up() {
 		       time_start,
 		       time_end,
 		       TIME_TO_SEC(TIMEDIFF(time_end, time_start)) / 1800,
-		       current_price,
+		       current_price / 2,
 		       current_price_unit,
 		       NULL,
 		       NULL,
