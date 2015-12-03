@@ -98,7 +98,7 @@ func GetNumActivations(startTime time.Time,
 		Filter("timeStart__gt", startTime).
 		Filter("timeEnd__lt", endTime).
 		//Filter("userId", userId).
-		Filter("ActivationRunning", false).
+		Filter("Running", false).
 		Filter("type", PURCHASE_TYPE_ACTIVATION).
 		Count()
 
@@ -123,7 +123,7 @@ func GetActiveActivations() ([]*Activation, error) {
 		Filter("type", PURCHASE_TYPE_ACTIVATION).
 		All(&purchases)
 	if err != nil {
-		return nil, errors.New("Failed to get active activations")
+		return nil, fmt.Errorf("Failed to get active activations: %v", err)
 	}
 	beego.Trace("Got num activations:", num)
 
