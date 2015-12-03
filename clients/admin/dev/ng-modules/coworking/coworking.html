@@ -6,43 +6,47 @@
 
   <productlist type="co-working"></productlist>
 
-  <hr>
+  <div class="clearfix"></div>
 
   <h1>Rentals</h1>
 
-  <table class="table table-bordered table-striped table-hover">
-    <thead>
-      <tr>
-        <th>Table</th>
-        <th>User</th>
-        <th>Start</th>
-        <th>End</th>
-        <th>Quantity</th>
-        <th>Price Per Unit</th>
-        <th>Price Unit</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr ng-repeat="rental in rentals">
-        <td>{{rental.Product.Name}}</td>
-        <td>{{rental.User.FirstName}} {{rental.User.LastName}} ({{rental.User.Email}})</td>
-        <td>{{rental.TimeStartLocal}}</td>
-        <td>{{rental.TimeEndLocal}}</td>
-        <td>{{rental.Quantity}}</td>
-        <td>{{rental.PricePerUnit}}</td>
-        <td>{{rental.PriceUnit}}</td>
-        <td>
-          <button 
-            type="button" 
-            class="btn btn-primary btn-ico pull-right" 
-            ng-click="editRental(rental.Id)">
-            <span class="fa fa-edit"></span>
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="table-responsive">
+    <table class="table table-striped table-hover">
+      <thead>
+        <tr>
+          <th>Table</th>
+          <th>User</th>
+          <th>Start</th>
+          <th>End</th>
+          <th>Quantity</th>
+          <th>Price Per Unit</th>
+          <th>Price Unit</th>
+          <th>
+            <div class="pull-right">Options</div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="rental in rentals">
+          <td>{{rental.Product.Name}}</td>
+          <td>{{rental.User.FirstName}} {{rental.User.LastName}} ({{rental.User.Email}})</td>
+          <td>{{rental.TimeStartLocal}}</td>
+          <td>{{rental.TimeEndLocal}}</td>
+          <td>{{rental.Quantity}}</td>
+          <td>{{rental.PricePerUnit}}</td>
+          <td>{{rental.PriceUnit}}</td>
+          <td>
+            <button 
+              type="button" 
+              class="btn btn-primary btn-ico pull-right" 
+              ng-click="editRental(rental.Id)">
+              <span class="fa fa-edit"></span>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
   <hr>
 
