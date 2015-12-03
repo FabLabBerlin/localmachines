@@ -44,7 +44,7 @@ var Tutoring = React.createClass({
       duration = moment().subtract(start);
       duration = duration.format('HH:mm:ss');
     } else if (start && end) {
-      duration = end.subtract(start);
+      duration = end.clone().subtract(start).format('HH:mm:ss');
     }
 
     return (
@@ -85,7 +85,11 @@ var Tutoring = React.createClass({
                 <button 
                   className="btn btn-primary btn-lg btn-block"
                   onClick={this.startTimer}>
-                  Start
+                  {this.props.tutoring.TimeEndActual ? (
+                    'Start New'
+                  ) : (
+                    'Start'
+                  )}
                 </button>
               )}
 

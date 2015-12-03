@@ -17,7 +17,14 @@ var TutoringList = React.createClass({
     var tutorings = [];
 
     if (this.state.tutorings) {
-      tutorings = _.map(this.state.tutorings.toJS(), function(t, i) {
+      tutorings = _.sortBy(this.state.tutorings.toJS(), function(t) {
+        if (t.Running) {
+          return -1;
+        } else {
+          return 0;
+        }
+      });
+      tutorings = _.map(tutorings, function(t, i) {
         return <Tutoring key={i}
                          tutoring={t}/>;
       });
