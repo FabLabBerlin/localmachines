@@ -97,10 +97,12 @@ func (this *Purchase) MembershipStr() string {
 
 func (this *Purchase) quantityFromTimes() (quantity float64) {
 	var timeEnd time.Time
-	if this.TimeEnd.IsZero() {
-		timeEnd = time.Now()
-	} else {
+	if !this.TimeEndActual.IsZero() {
+		timeEnd = this.TimeEndActual
+	} else if !this.TimeEnd.IsZero() {
 		timeEnd = this.TimeEnd
+	} else {
+		timeEnd = time.Now()
 	}
 
 	seconds := timeEnd.Sub(this.TimeStart).Seconds()

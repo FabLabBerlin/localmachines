@@ -144,20 +144,11 @@ func GetAllTutoringPurchases() (tutoringPurchases *TutoringPurchaseList, err err
 
 func StartTutoringPurchase(tutoringPurchaseId int64) (err error) {
 	o := orm.NewOrm()
-	tp, exists, err := tutoringPurchaseExists(tutoringPurchaseId)
+	tp, err := GetTutoringPurchase(tutoringPurchaseId)
 	if err != nil {
 		return fmt.Errorf("exists: %v", err)
 	}
-	if exists {
-		newTp := *tp
-		newTp.Id = 0
-		newTp.Running = true
-		newTp.TimeStart = time.Time{}
-		newTp.TimeEnd = time.Time{}
-		newTp.TimeEndActual = time.Time{}
-		newTp.Quantity = 0
-		_, err = CreateTutoringPurchase(&newTp)
-	} else {
+	if tp.TimeEndActual.IsZero() {
 		t := new(TutoringPurchase)
 		_, err = o.QueryTable(t.Purchase.TableName()).
 			Filter("id", tutoringPurchaseId).
@@ -165,6 +156,17 @@ func StartTutoringPurchase(tutoringPurchaseId int64) (err error) {
 			"running":    true,
 			"time_start": time.Now(),
 		})
+	} else {
+		newTp := *tp
+		newTp.Id = 0
+		newTp.UserId = tp.UserId
+		newTp.ProductId = tp.ProductId
+		newTp.Running = true
+		newTp.TimeStart = time.Now()
+		newTp.TimeEnd = tp.TimeEnd
+		newTp.TimeEndActual = time.Time{}
+		newTp.Quantity = 0
+		_, err = CreateTutoringPurchase(&newTp)
 	}
 	return
 
@@ -176,6 +178,7 @@ func StopTutoringPurchase(tutoringPurchaseId int64) (err error) {
 	_, err = o.QueryTable(t.Purchase.TableName()).
 		Filter("id", tutoringPurchaseId).
 		Update(orm.Params{
+		"quantity":        t.Purchase.quantityFromTimes(),
 		"running":         false,
 		"time_end_actual": time.Now(),
 	})
@@ -185,19 +188,5 @@ func StopTutoringPurchase(tutoringPurchaseId int64) (err error) {
 func UpdateTutoringPurchase(tutoringPurchase *TutoringPurchase) (err error) {
 	o := orm.NewOrm()
 	_, err = o.Update(&tutoringPurchase.Purchase)
-	return
-}
-
-func tutoringPurchaseExists(tutoringPurchaseId int64) (tp *TutoringPurchase, exists bool, err error) {
-	o := orm.NewOrm()
-	tp = &TutoringPurchase{}
-	var tmp []*Purchase
-	num, err := o.QueryTable(new(Purchase).TableName()).
-		Filter("id", tutoringPurchaseId).
-		All(&tmp)
-	exists = num > 0
-	if exists && err == nil {
-		tp.Purchase = *tmp[0]
-	}
 	return
 }

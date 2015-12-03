@@ -85,11 +85,7 @@ var Tutoring = React.createClass({
                 <button 
                   className="btn btn-primary btn-lg btn-block"
                   onClick={this.startTimer}>
-                  {this.props.tutoring.TimeEndActual ? (
-                    'Start New'
-                  ) : (
-                    'Start'
-                  )}
+                  Start
                 </button>
               )}
 

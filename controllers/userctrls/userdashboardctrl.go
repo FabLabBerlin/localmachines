@@ -77,15 +77,16 @@ func (this *DashboardData) loadTutorings(uid int64) (err error) {
 		}
 	}
 	if targetTutor == nil {
-		return fmt.Errorf("could not find Tutor with user id %v", uid)
-	}
+		this.Tutorings = nil
+	} else {
 
-	this.Tutorings = &models.TutoringPurchaseList{
-		Data: make([]*models.TutoringPurchase, 0, len(allTutorings.Data)),
-	}
-	for _, tutoring := range allTutorings.Data {
-		if tutoring.ProductId == targetTutor.Product.Id {
-			this.Tutorings.Data = append(this.Tutorings.Data, tutoring)
+		this.Tutorings = &models.TutoringPurchaseList{
+			Data: make([]*models.TutoringPurchase, 0, len(allTutorings.Data)),
+		}
+		for _, tutoring := range allTutorings.Data {
+			if tutoring.ProductId == targetTutor.Product.Id {
+				this.Tutorings.Data = append(this.Tutorings.Data, tutoring)
+			}
 		}
 	}
 
