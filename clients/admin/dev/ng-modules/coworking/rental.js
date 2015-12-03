@@ -108,6 +108,7 @@ app.controller('RentalCtrl',
   }
 
   $scope.tableChange = function() {
+    $('#rental-table').selectpicker('refresh');
     console.log('$scope.tableChange()');
     var tableId = parseInt($scope.rental.ProductId);
     var table = $scope.tablesById[tableId];
@@ -115,6 +116,10 @@ app.controller('RentalCtrl',
     $scope.rental.PriceUnit = table.Product.PriceUnit;
     calculateQuantity();
     calculateTotalPrice();    
+  };
+
+  $scope.userChange = function() {
+    $('#rental-user').selectpicker('refresh');
   };
 
   $scope.timeChange = function() {

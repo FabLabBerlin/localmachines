@@ -21,6 +21,7 @@
   <div class="form-group">
     <label for="rental-user">User</label>
     <select ng-model="rental.UserId"
+            ng-change="userChange()"
             id="rental-user"
             class="form-control selectpicker"
             data-live-search="true"
