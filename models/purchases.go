@@ -64,6 +64,13 @@ func init() {
 	orm.RegisterModel(new(Purchase))
 }
 
+func GetPurchase(purchaseId int64) (purchase *Purchase, err error) {
+	o := orm.NewOrm()
+	purchase = &Purchase{Id: purchaseId}
+	err = o.Read(purchase)
+	return
+}
+
 func GetAllPurchasesOfType(purchaseType string) (purchases []*Purchase, err error) {
 	o := orm.NewOrm()
 	_, err = o.QueryTable(new(Purchase).TableName()).
