@@ -49,8 +49,9 @@ app.controller('PurchaseCtrl', ['$scope', '$routeParams', '$http', '$location', 
     $('#tp-tutor').selectpicker('refresh');
     var tutorId = parseInt($scope.purchase.ProductId);
     var tutor = $scope.tutorsById[tutorId];
-    $scope.purchase.PricePerUnit = tutor.Price;
-    $scope.purchase.PriceUnit = tutor.PriceUnit;
+    console.log('tutor:', tutor);
+    $scope.purchase.PricePerUnit = tutor.Product.Price;
+    $scope.purchase.PriceUnit = tutor.Product.PriceUnit;
     calculateDurations();
   };
 
