@@ -56,7 +56,7 @@ app.controller('TableCtrl',
       }
     })
     .success(function(data) {
-      toastr.success('Update successful');
+      $location.path('/coworking');
     })
     .error(function(data) {
       console.log(data);

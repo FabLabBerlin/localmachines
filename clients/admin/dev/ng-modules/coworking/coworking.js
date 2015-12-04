@@ -18,6 +18,44 @@ app.controller('CoworkingCtrl',
   $scope.tablesById = {};
   $scope.usersById = {};
 
+  $scope.addCoworkingProductPrompt = function() {
+    vex.dialog.prompt({
+      message: 'Enter coworking product name',
+      placeholder: 'Product name',
+      callback: $scope.addCoworkingProductPromptCallback
+    });
+  };
+
+  $scope.addCoworkingProductPromptCallback = function(value) {
+    if (value) {    
+      $scope.addCoworkingProduct(value);
+    } else if (value !== false) {
+      toastr.error('No product name');
+    }
+  };
+
+  $scope.addCoworkingProduct = function(name) {
+    $http({
+      method: 'POST',
+      url: '/api/products',
+      params: {
+        name: name,
+        ac: new Date().getTime(),
+        type: 'co-working'
+      }
+    })
+    .success(function(data) {
+      $scope.editCoworkingProduct(data.Product.Id);
+    })
+    .error(function() {
+      toastr.error('Failed to create product');
+    });
+  };
+
+  $scope.editCoworkingProduct = function(id) {
+    $location.path('/coworking/tables/' + id);
+  };
+
   /*
    *
    * Tables functions
