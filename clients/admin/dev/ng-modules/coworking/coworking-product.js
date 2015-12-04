@@ -1,48 +1,49 @@
 (function(){
 
 'use strict';
-var app = angular.module('fabsmith.admin.coworking.table', ['ngRoute', 'ngCookies', 'fabsmith.admin.randomtoken']);
+var app = angular.module('fabsmith.admin.coworking.product', ['ngRoute', 'ngCookies', 'fabsmith.admin.randomtoken']);
 
 app.config(['$routeProvider', function($routeProvider) {
-  $routeProvider.when('/coworking/tables/:id', {
-    templateUrl: 'ng-modules/coworking/table.html',
-    controller: 'TableCtrl'
+  $routeProvider.when('/coworking/products/:id', {
+    templateUrl: 'ng-modules/coworking/coworking-product.html',
+    controller: 'CoworkingProductCtrl'
   });
 }]); // app.config
 
-app.controller('TableCtrl',
+app.controller('CoworkingProductCtrl',
  ['$scope', '$routeParams', '$http', '$location', 'randomToken',
  function($scope, $routeParams, $http, $location, randomToken) {
 
-  $scope.table = {
+  $scope.product = {
     Product: {
       Id: $routeParams.id
     }
   };
 
-  function loadTable() {
+  function loadProduct() {
     $http({
       method: 'GET',
-      url: '/api/products/' + $scope.table.Product.Id,
+      url: '/api/products/' + $scope.product.Product.Id,
       params: {
         ac: new Date().getTime(),
         type: 'co-working'
       }
     })
-    .success(function(table) {
-      $scope.table = table;
+    .success(function(product) {
+      $scope.product = product;
+      $scope.product.Product.PriceUnit = 'month';
     })
-    .error(function(data, status) {
-      toastr.error('Failed to load tables data');
+    .error(function() {
+      toastr.error('Failed to load product data');
     });
   }
 
-  $scope.updateTable = function() {
+  $scope.updateProduct = function() {
     $http({
       method: 'PUT',
-      url: '/api/products/' + $scope.table.Product.Id + '?type=co-working',
+      url: '/api/products/' + $scope.product.Product.Id + '?type=co-working',
       headers: {'Content-Type': 'application/json' },
-      data: $scope.table,
+      data: $scope.product,
       transformRequest: function(data) {
         var transformed = {
           Product: _.extend({}, data.Product)
@@ -64,7 +65,7 @@ app.controller('TableCtrl',
     });
   };
 
-  loadTable();
+  loadProduct();
 
 }]); // app.controller
 

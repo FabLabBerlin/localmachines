@@ -1,7 +1,8 @@
 (function(){
 
 'use strict';
-var app = angular.module('fabsmith.admin.coworking', ['ngRoute', 'ngCookies', 'fabsmith.admin.randomtoken']);
+var app = angular.module('fabsmith.admin.coworking', 
+  ['ngRoute', 'ngCookies', 'fabsmith.admin.randomtoken']);
 
 app.config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/coworking', {
@@ -14,9 +15,30 @@ app.controller('CoworkingCtrl',
  ['$scope', '$routeParams', '$http', '$location', 'randomToken',
  function($scope, $routeParams, $http, $location, randomToken) {
 
-  $scope.tables = [];
-  $scope.tablesById = {};
+  $scope.products = [];
+  $scope.productsById = {};
   $scope.usersById = {};
+
+  $scope.loadCoworkingProducts = function(success, error) {
+    $http({
+      method: 'GET',
+      url: '/api/products',
+      params: {
+        ac: new Date().getTime(),
+        type: 'co-working'
+      }
+    })
+    .success(function(products) {
+      if (success) {
+        success(products);
+      }
+    })
+    .error(function() {
+      if (error) {
+        error();
+      }
+    });
+  };
 
   $scope.addCoworkingProductPrompt = function() {
     vex.dialog.prompt({
@@ -53,39 +75,10 @@ app.controller('CoworkingCtrl',
   };
 
   $scope.editCoworkingProduct = function(id) {
-    $location.path('/coworking/tables/' + id);
+    $location.path('/coworking/products/' + id);
   };
 
-  /*
-   *
-   * Tables functions
-   *
-   */
-
-  function loadTables() {
-    $http({
-      method: 'GET',
-      url: '/api/products',
-      params: {
-        ac: new Date().getTime(),
-        type: 'co-working'
-      }
-    })
-    .success(function(data) {
-      $scope.tables = _.sortBy(data, function(table) {
-        return table.Product.Name;
-      });
-      _.each($scope.tables, function(table) {
-        $scope.tablesById[table.Product.Id] = table;
-      });
-      loadUsers();
-    })
-    .error(function() {
-      toastr.error('Failed to get tables');
-    });
-  }
-
-  function loadUsers() {
+  $scope.loadUsers = function(success, error) {
     $http({
       method: 'GET',
       url: '/api/users',
@@ -93,27 +86,19 @@ app.controller('CoworkingCtrl',
         ac: new Date().getTime()
       }
     })
-    .success(function(data) {
-      $scope.users = _.sortBy(data, function(user) {
-        return user.FirstName + ' ' + user.LastName;
-      });
-      _.each($scope.users, function(user) {
-        $scope.usersById[user.Id] = user;
-      });
-      loadRentals();
+    .success(function(users) {
+      if (success) {
+        success(users);
+      }
     })
     .error(function() {
-      toastr.error('Failed to get users');
+      if (error) {
+        error();
+      }
     });
-  }
+  };
 
-  /*
-   *
-   * Table Purchases functions
-   *
-   */
-
-  function loadRentals() {
+  $scope.loadCoworkingPurchases = function(success, error) {
     $http({
       method: 'GET',
       url: '/api/purchases',
@@ -122,28 +107,17 @@ app.controller('CoworkingCtrl',
         type: 'co-working'
       }
     })
-    .success(function(data) {
-      $scope.rentals = _.sortBy(data, function(rental) {
-        return rental.Name;
-      });
-      $scope.rentals = _.map($scope.rentals, function(sp) {
-        var table = $scope.tablesById[sp.ProductId];
-        if (table) {
-          sp.Product = table.Product;
-        }
-        var user = $scope.usersById[sp.UserId];
-        sp.User = user;
-        sp.TimeStartLocal = moment(sp.TimeStart).tz('Europe/Berlin').format('YYYY-MM-DD HH:mm');
-        sp.TimeEndLocal = moment(sp.TimeEnd).tz('Europe/Berlin').format('YYYY-MM-DD HH:mm');
-        return sp;
-      });
+    .success(function(purchases) {
+      if (success) {
+        success(purchases);
+      }
     })
     .error(function() {
-      toastr.error('Failed to get table purchases');
+      toastr.error('Failed to get coworking purchases');
     });
-  }
+  };
 
-  $scope.addRental = function() {
+  $scope.addCoworkingPurchase = function() {
     $http({
       method: 'POST',
       url: '/api/purchases',
@@ -152,19 +126,60 @@ app.controller('CoworkingCtrl',
         type: 'co-working'
       }
     })
-    .success(function(rental) {
-      $scope.editRental(rental.Id);
+    .success(function(purchase) {
+      $scope.editCoworkingPurchase(purchase.Id);
     })
     .error(function() {
-      toastr.error('Failed to create table purchase');
+      toastr.error('Failed to create coworking purchase');
     });
   };
 
-  $scope.editRental = function(id) {
-    $location.path('/coworking/rentals/' + id);
+  $scope.editCoworkingPurchase = function(id) {
+    $location.path('/coworking/purchases/' + id);
   };
 
-  loadTables();
+  $scope.loadCoworkingProducts(function(products) {
+    $scope.products = products;
+    $scope.products = _.pluck($scope.products, 'Product');
+    _.each($scope.products, function(product) {
+      $scope.productsById[product.Id] = product;
+    });
+
+    // Continue with loading users
+    $scope.loadUsers(function(users) {
+      $scope.users = _.sortBy(users, function(user) {
+        return user.FirstName + ' ' + user.LastName;
+      });
+      _.each($scope.users, function(user) {
+        $scope.usersById[user.Id] = user;
+      });
+
+      // Continue with loading coworking purchases
+      $scope.loadCoworkingPurchases(function(purchases) {
+        $scope.purchases = _.sortBy(purchases, function(purchase) {
+          return purchase.Name;
+        });
+        $scope.purchases = _.map($scope.purchases, function(purchase) {
+          var product = $scope.productsById[purchase.ProductId];
+          if (product) {
+            purchase.Product = product;
+          }
+          var user = $scope.usersById[purchase.UserId];
+          purchase.User = user;
+          purchase.TimeStartLocal = moment(purchase.TimeStart).tz('Europe/Berlin').format('YYYY-MM-DD HH:mm');
+          purchase.TimeEndLocal = moment(purchase.TimeEnd).tz('Europe/Berlin').format('YYYY-MM-DD HH:mm');
+          return purchase;
+        });
+        console.log($scope.purchases);
+      }, function() {
+        toastr.error('Failed to load coworking purchases');
+      });
+    }, function() {
+      toastr.error('Failed to get users');
+    });
+  }, function() {
+    toastr.error('Failed to get coworking products');
+  });
 
 }]); // app.controller
 

@@ -1,28 +1,29 @@
 (function(){
 
 'use strict';
-var app = angular.module('fabsmith.admin.coworking.rental', ['ngRoute', 'ngCookies', 'fabsmith.admin.randomtoken', 'fabsmith.admin.api']);
+var app = angular.module('fabsmith.admin.coworking.purchase', 
+  ['ngRoute', 'ngCookies', 'fabsmith.admin.randomtoken', 'fabsmith.admin.api']);
 
 app.config(['$routeProvider', function($routeProvider) {
-  $routeProvider.when('/coworking/rentals/:id', {
-    templateUrl: 'ng-modules/coworking/rental.html',
-    controller: 'RentalCtrl'
+  $routeProvider.when('/coworking/purchases/:id', {
+    templateUrl: 'ng-modules/coworking/coworking-purchase.html',
+    controller: 'CoworkingPurchaseCtrl'
   });
 }]); // app.config
 
-app.controller('RentalCtrl',
+app.controller('CoworkingPurchaseCtrl',
  ['$scope', '$routeParams', '$http', '$location', 'randomToken', 'api',
  function($scope, $routeParams, $http, $location, randomToken, api) {
 
   $scope.purchases = [];
-  $scope.rental = {
+  $scope.purchase = {
     Id: $routeParams.id
   };
-  $scope.tablesById = {};
+  $scope.productsById = {};
   $scope.users = [];
   $scope.usersById = {};
 
-  function loadTables() {
+  function loadProducts() {
     $http({
       method: 'GET',
       url: '/api/products',
@@ -32,36 +33,37 @@ app.controller('RentalCtrl',
       }
     })
     .success(function(data) {
-      $scope.tables = _.sortBy(data, function(table) {
-        return table.Product.Name;
+      $scope.products = _.sortBy(data, function(product) {
+        return product.Product.Name;
       });
-      _.each($scope.tables, function(table) {
-        $scope.tablesById[table.Product.Id] = table;
+      _.each($scope.products, function(product) {
+        $scope.productsById[product.Product.Id] = product;
       });
-      loadTablePurchase();
+      loadProductPurchase();
     })
     .error(function() {
-      toastr.error('Failed to get tables');
+      toastr.error('Failed to get products');
     });
   }
 
-  function loadTablePurchase() {
+  function loadProductPurchase() {
     $http({
       method: 'GET',
-      url: '/api/purchases/' + $scope.rental.Id,
+      url: '/api/purchases/' + $scope.purchase.Id,
       params: {
         ac: new Date().getTime(),
         type: 'co-working'
       }
     })
-    .success(function(sp) {
-      $scope.rental = sp;
+    .success(function(sp) { // wtf is sp?
+      $scope.purchase = sp;
       var start = moment(sp.TimeStart).tz('Europe/Berlin');
       var end = moment(sp.TimeEnd).tz('Europe/Berlin');
       sp.DateStartLocal = start.format('YYYY-MM-DD');
       sp.DateEndLocal = end.format('YYYY-MM-DD');
       sp.TimeStartLocal = start.format('HH:mm');
       sp.TimeEndLocal = end.format('HH:mm');
+      sp.PriceUnit = 'month';
       calculateTotalPrice();
       setTimeout(function() {
         $('.selectpicker').selectpicker('refresh');
@@ -73,7 +75,7 @@ app.controller('RentalCtrl',
   }
 
   function parseInputTimes() {
-    var sp = $scope.rental;
+    var sp = $scope.purchase;
     sp.TimeStart = moment.tz(sp.DateStartLocal + ' ' + sp.TimeStartLocal, 'Europe/Berlin').toDate();
     sp.TimeEnd = moment.tz(sp.DateEndLocal + ' ' + sp.TimeEndLocal, 'Europe/Berlin').toDate();
   }
@@ -81,12 +83,12 @@ app.controller('RentalCtrl',
   function calculateQuantity() {
     console.log('$scope.timeChange()');
     parseInputTimes();
-    var start = moment($scope.rental.TimeStart);
-    var end = moment($scope.rental.TimeEnd);
+    var start = moment($scope.purchase.TimeStart);
+    var end = moment($scope.purchase.TimeEnd);
     var duration = end.unix() - start.unix();
     console.log('duration=', duration);
     var quantity;
-    switch ($scope.rental.PriceUnit) {
+    switch ($scope.purchase.PriceUnit) {
     case 'minute':
       quantity = duration / 60;
       break;
@@ -96,31 +98,34 @@ app.controller('RentalCtrl',
     case 'day':
       quantity = duration / 24 / 3600;
       break;
+    case 'month':
+      quantity = duration / 24 / 3600 / 12;
+      break;
     default:
       return;
     }
-    $scope.rental.Quantity = quantity;
+    $scope.purchase.Quantity = quantity;
   }
    
   // https://www.artstation.com/artwork/b5zBn
   function calculateTotalPrice() {
-    var totalPrice = $scope.rental.Quantity * $scope.rental.PricePerUnit;
-    $scope.rental.TotalPrice = totalPrice.toFixed(2);
+    var totalPrice = $scope.purchase.Quantity * $scope.purchase.PricePerUnit;
+    $scope.purchase.TotalPrice = totalPrice.toFixed(2);
   }
 
-  $scope.tableChange = function() {
-    $('#rental-table').selectpicker('refresh');
-    console.log('$scope.tableChange()');
-    var tableId = parseInt($scope.rental.ProductId);
-    var table = $scope.tablesById[tableId];
-    $scope.rental.PricePerUnit = table.Product.Price;
-    $scope.rental.PriceUnit = table.Product.PriceUnit;
+  $scope.productChange = function() {
+    $('#purchase-product').selectpicker('refresh');
+    console.log('$scope.productChange()');
+    var productId = parseInt($scope.purchase.ProductId);
+    var product = $scope.productsById[productId];
+    $scope.purchase.PricePerUnit = product.Product.Price;
+    $scope.purchase.PriceUnit = product.Product.PriceUnit;
     calculateQuantity();
     calculateTotalPrice();    
   };
 
   $scope.userChange = function() {
-    $('#rental-user').selectpicker('refresh');
+    $('#purchase-user').selectpicker('refresh');
   };
 
   $scope.timeChange = function() {
@@ -137,9 +142,9 @@ app.controller('RentalCtrl',
     parseInputTimes();
     $http({
       method: 'PUT',
-      url: '/api/purchases/' + $scope.rental.Id + '?type=co-working',
+      url: '/api/purchases/' + $scope.purchase.Id + '?type=co-working',
       headers: {'Content-Type': 'application/json' },
-      data: $scope.rental,
+      data: $scope.purchase,
       transformRequest: function(data) {
         var transformed = _.extend({}, data);
         transformed.ProductId = parseInt(data.ProductId);
@@ -171,7 +176,7 @@ app.controller('RentalCtrl',
   api.loadUsers(function(userData) {
     $scope.users = userData.users;
     $scope.usersById = userData.usersById;
-    loadTables();
+    loadProducts();
   });
 
 }]); // app.controller

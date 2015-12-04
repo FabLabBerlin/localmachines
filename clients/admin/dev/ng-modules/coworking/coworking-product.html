@@ -1,6 +1,6 @@
 <div id="admin-tables" class="container-fluid">
 
-  <h1>Edit Table</h1>
+  <h1>Edit coworking product</h1>
 
   <hr>
 
@@ -9,8 +9,12 @@
     <div class="col-sm-6">
       <div class="form-group">
         <label for="table-name">Name</label>
-        <input type="text" id="table-name" class="form-control"
-               placeholder="Enter table name" ng-model="table.Product.Name">
+        <input 
+          type="text" 
+          id="table-name" 
+          class="form-control"
+          placeholder="Enter table name" 
+          ng-model="product.Product.Name">
       </div>
     </div>
     
@@ -19,7 +23,7 @@
         <label for="table-price-per-unit">Price Per Unit</label>
         <div class="input-group">
           <input type="text" id="table-price-per-unit" class="form-control"
-                 placeholder="Enter price per unit" ng-model="table.Product.Price">
+                 placeholder="Enter price per unit" ng-model="product.Product.Price">
           <div class="input-group-addon">
             <i class="fa fa-euro"></i>
           </div>
@@ -30,14 +34,11 @@
     <div class="col-sm-3">
       <div class="form-group">
         <label for="table-price-unit">Price Unit</label>
-        <select class="form-control" id="table-price-unit" 
-                ng-model="table.Product.PriceUnit">
-          <option value="" selected disabled>Select unit</option>
-          <!-- TODO: These have to be loaded via API -->
-          <option value="minute">minute</option>
-          <option value="hour">hour</option>
-          <option value="day">day</option>
-        </select>
+        <input type="text"
+          disabled="disabled"
+          value="month"
+          class="form-control"
+          ng-model="product.Product.PriceUnit">
       </div>
     </div>
 
@@ -48,7 +49,7 @@
   <div class="pull-right">
 
     <button class="btn btn-primary btn-lg"
-            ng-click="updateTable()">
+            ng-click="updateProduct()">
       <i class="fa fa-save"></i>&nbsp;Save
     </button>
 
