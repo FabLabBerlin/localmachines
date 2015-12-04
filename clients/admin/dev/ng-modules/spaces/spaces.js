@@ -18,6 +18,44 @@ app.controller('SpacesCtrl',
   $scope.spacesById = {};
   $scope.usersById = {};
 
+  $scope.addSpacesProductPromptCallback = function(value) {
+    if (value) {    
+      $scope.addSpacesProduct(value);
+    } else if (value !== false) {
+      toastr.error('No product name');
+    }
+  };
+
+  $scope.addSpacesProductPrompt = function() {
+    vex.dialog.prompt({
+      message: 'Enter spaces product name',
+      placeholder: 'Product name',
+      callback: $scope.addSpacesProductPromptCallback
+    });
+  };
+
+  $scope.addSpacesProduct = function(name) {
+    $http({
+      method: 'POST',
+      url: '/api/products',
+      params: {
+        name: name,
+        ac: new Date().getTime(),
+        type: 'space'
+      }
+    })
+    .success(function(data) {
+      $scope.editSpacesProduct(data.Product.Id);
+    })
+    .error(function() {
+      toastr.error('Failed to create product');
+    });
+  };
+
+  $scope.editSpacesProduct = function(id) {
+    $location.path('/spaces/' + id);
+  };
+
   /*
    *
    * Space Purchases functions
