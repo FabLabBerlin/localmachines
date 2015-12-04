@@ -101,7 +101,8 @@ app.controller('RentalCtrl',
     }
     $scope.rental.Quantity = quantity;
   }
-
+   
+  // https://www.artstation.com/artwork/b5zBn
   function calculateTotalPrice() {
     var totalPrice = $scope.rental.Quantity * $scope.rental.PricePerUnit;
     $scope.rental.TotalPrice = totalPrice.toFixed(2);
