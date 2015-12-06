@@ -1,0 +1,40 @@
+<div id="admin-global-config" class="container-fluid">
+
+  <h1>Settings</h1>
+
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th>Setting</th>
+        <th>Value</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Currency</td>
+        <td>
+          <input type="text"
+                 ng-model="settings.Currency.ValueString">
+        </td>
+      </tr>
+      <tr>
+        <td>VAT Rate</td>
+        <td>
+          <input type="number"
+                 ng-model="settings.VAT.ValueFloat">
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr>
+
+  <div class="pull-right">
+    <button class="btn btn-primary btn-lg"
+            ng-click="save()">
+      Save
+    </button>
+  </div>
+
+</div> <!-- /container -->

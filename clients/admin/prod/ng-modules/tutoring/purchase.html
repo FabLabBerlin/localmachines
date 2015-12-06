@@ -1,0 +1,163 @@
+<div id="admin-purchase" class="container-fluid">
+
+  <h1>Purchase</h1>
+  <hr>
+
+  <div class="form-group">
+    <label for="tp-tutor">Tutor</label>
+    <select ng-model="purchase.ProductId"
+            ng-change="tutorChange()"
+            id="tp-tutor"
+            class="form-control selectpicker"
+            data-live-search="true"
+            data-width="100%">
+      <option ng-repeat="tutor in tutors"
+              value="{{tutor.Product.Id}}">
+        {{tutor.Product.Name}}
+      </option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="tp-user">User</label>
+    <select ng-model="purchase.UserId"
+            ng-change="userChange()"
+            id="tp-user"
+            class="form-control selectpicker"
+            data-live-search="true"
+            data-width="100%">
+      <option ng-repeat="user in users"
+              value="{{user.Id}}">
+        {{user.FirstName}} {{user.LastName}} ({{user.Email}})
+      </option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="start-date">Start time</label>
+    <div class="row">
+      <div class="col-xs-6">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control datepicker"
+            id="start-date"
+            placeholder="Date"
+            ng-model="purchase.DateStartLocal"
+            ng-change="timeChange()">
+          <span class="input-group-addon">
+            <i class="fa fa-calendar"></i>
+          </span>
+        </div>
+      </div>
+      <div class="col-xs-6">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            id="start-time"
+            placeholder="Time"
+            ng-model="purchase.TimeStartLocal"
+            ng-change="timeChange()">
+          <span class="input-group-addon">
+            <i class="fa fa-clock-o"></i>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="end-date">Planned end time</label>
+    <div class="row">
+      <div class="col-xs-6">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control datepicker"
+            id="end-date"
+            placeholder="Date"
+            ng-model="purchase.DateEndPlannedLocal"
+            ng-change="timeChange()">
+          <span class="input-group-addon">
+            <i class="fa fa-calendar"></i>
+          </span>
+        </div>
+      </div>
+      <div class="col-xs-6">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            id="end-time"
+            placeholder="Time"
+            ng-model="purchase.TimeEndPlannedLocal"
+            ng-change="timeChange()">
+          <span class="input-group-addon">
+            <i class="fa fa-clock-o"></i>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="reserved-time">Reserved time</label>
+    <input
+      type="text"
+      class="form-control"
+      id="reserved-time"
+      ng-model="purchase.TimeReserved"
+      disabled="disabled"> 
+  </div>
+
+  <div class="form-group">
+    <label for="time-timed">Timed time</label>
+    <input
+      type="text"
+      class="form-control"
+      id="time-timed"
+      ng-model="purchase.TimeTimed"
+      disabled="disabled"> 
+  </div>
+
+  <div class="form-group">
+    <label for="total-price-no-vat">Total price</label>
+    <div class="input-group">
+      <input
+        type="text"
+        class="form-control"
+        id="total-price-no-vat"
+        ng-model="purchase.TotalPrice"
+        disabled="disabled"> 
+      <span class="input-group-addon">€</span>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="comments">Comments</label>
+    <textarea 
+      class="form-control" 
+      rows="3"
+      id="comments"
+      ng-model="purchase.Comments">
+    </textarea>
+  </div>
+
+  <hr>
+
+  <div>
+    <button 
+      class="btn btn-lg btn-danger"
+      ng-click="cancel()">
+      Cancel
+    </button>
+  
+    <button 
+      class="btn btn-lg btn-primary"
+      ng-click="save()">
+      Save
+    </button>
+  </div>
+
+</div> <!-- /container -->

@@ -1,0 +1,71 @@
+<div id="admin-spaces" class="container-fluid">
+
+  <h1>Spaces</h1>
+
+  <hr>
+
+  <productlist type="space"></productlist>
+
+  <hr>
+
+  <div class="pull-right">
+    <button 
+      class="btn btn-primary btn-lg" 
+      ng-click="addSpacesProductPrompt()">
+      <i class="fa fa-plus"></i>&nbsp;Add Spaces Product
+    </button>
+  </div>
+
+  <div class="clearfix"></div>
+
+  <h1>Space Purchases</h1>
+
+  <div class="table-responsive">
+    <table class="table table-striped table-hover">
+      <thead>
+        <tr>
+          <th>Space</th>
+          <th>User</th>
+          <th>Start</th>
+          <th>End</th>
+          <th>Total time</th>
+          <th>Price Per Unit</th>
+          <th>Price Unit</th>
+          <th>
+            <div class="pull-right">Options</div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="spacePurchase in spacePurchases">
+          <td>{{spacePurchase.Product.Name}}</td>
+          <td>{{spacePurchase.User.FirstName}} {{spacePurchase.User.LastName}} ({{spacePurchase.User.Email}}) </td>
+          <td>{{spacePurchase.TimeStartLocal}}</td>
+          <td>{{spacePurchase.TimeEndLocal}}</td>
+          <td>{{(spacePurchase.Quantity || 0).toFixed(2)}} {{spacePurchase.PriceUnit}}s</td>
+          <td>{{spacePurchase.PricePerUnit}}</td>
+          <td>{{spacePurchase.PriceUnit}}</td>
+          <td>
+            <button 
+              type="button" 
+              class="btn btn-primary btn-ico pull-right" 
+              ng-click="editSpacePurchase(spacePurchase.Id)">
+              <span class="fa fa-edit"></span>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr>
+
+  <div class="pull-right">
+    <button 
+      class="btn btn-primary btn-lg" 
+      ng-click="addSpacePurchase()">
+      <i class="fa fa-plus"></i>&nbsp;Add
+    </button>
+  </div>
+
+</div> <!-- /container -->

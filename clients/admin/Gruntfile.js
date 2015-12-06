@@ -57,6 +57,7 @@ module.exports = function (grunt) {
 						'dev/bower_components/jquery/dist/jquery.js',
 						'dev/bower_components/bootstrap/js/transition.js',
 						'dev/bower_components/bootstrap/js/collapse.js',
+						'dev/bower_components/bootstrap/js/dropdown.js',
 						'dev/bower_components/vex/js/vex.combined.min.js',
 						'dev/bower_components/pickadate/lib/picker.js',
 						'dev/bower_components/pickadate/lib/picker.date.js',

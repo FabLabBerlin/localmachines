@@ -1,0 +1,126 @@
+<div id="admin-tutoring" class="container-fluid">
+
+  <h1>Tutoring</h1>
+  <hr>
+
+  <h2>Tutors</h2>
+  <hr>
+
+  <div class="table-responsive">
+    <table class="table table-striped table-hover">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Skills</th>
+          <th>Price</th>
+          <th>Price Unit</th>
+          <th>
+            <div class="pull-right">Options</div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="tutor in tutors">
+          <td>{{tutor.Product.Name}}</td>
+          <td>
+            <span ng-repeat="skill in tutor.MachineSkills">
+              {{skill.Name}}&nbsp;
+            </span>
+          </td>
+          <td>{{tutor.Product.Price | currency:''}}{{settings.Currency.ValueString}}</td>
+          <td>{{tutor.Product.PriceUnit}}</td>
+          <td>
+            <div class="pull-right">
+              <button 
+                type="button" 
+                class="btn btn-primary btn-ico"
+                ng-click="editTutor(tutor.Product.Id)">
+                <span class="fa fa-edit"></span>
+              </button>
+
+              <button 
+                type="button" 
+                class="btn btn-danger btn-ico"
+                ng-click="archiveTutorPrompt(tutor.Product.Id)">
+                <span class="fa fa-close"></span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr>
+  <div>
+    <button 
+      class="btn btn-lg btn-primary pull-right"
+      ng-click="addTutor()">
+      <span class="fa fa-plus"></span>&nbsp;Add Tutor
+    </button>
+  </div>
+
+  <div class="clearfix"></div>
+
+  <h2>Tutorings</h2>
+  <hr>
+
+  <div class="table-responsive">
+    <table class="table table-striped table-hover">
+      <thead>
+        <tr>
+          <th>Tutor name</th>
+          <th>User name</th>
+          <th>Created</th>
+          <th>Start time</th>
+          <th>Planned End time</th>
+          <th>Timed End time</th>
+          <th>Reserved time</th>
+          <th>Timer time</th>
+          <th>Total Price</th>
+          <th>
+            <div class="pull-right">Options</div>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="purchase in purchases">
+          <td>{{purchase.Product.Name}}</td>
+          <td>{{purchase.User.FirstName}} {{purchase.User.LastName}}</td>
+          <td>{{purchase.Created}}</td>
+          <td>{{purchase.TimeStartLocal}}</td>
+          <td>{{purchase.TimeEndPlannedLocal}}</td>
+          <td>{{purchase.TimeEndLocal}}</td>
+          <td>{{purchase.ReservedTimeTotalHours}}h {{purchase.ReservedTimeTotalMinutes}}m</td>
+          <td>{{purchase.TimerTimeTotalHours}}h {{purchase.TimerTimeTotalMinutes}}m</td>
+          <td>{{purchase.TotalPrice | currency:''}}{{settings.Currency.ValueString}}</td>
+          <td>
+            <div class="pull-right">
+              <button 
+                type="button" 
+                class="btn btn-primary btn-ico"
+                ng-click="editPurchase(purchase.Id)">
+                <span class="fa fa-edit"></span>
+              </button>
+
+              <button 
+                type="button" 
+                class="btn btn-danger btn-ico"
+                ng-click="archivePurchasePrompt(purchase.Id)">
+                <span class="fa fa-close"></span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr>
+  <button 
+    class="btn btn-lg btn-primary pull-right"
+    ng-click="addPurchase()">
+    <span class="fa fa-plus"></span>&nbsp;Add Purchase
+  </button>
+
+</div> <!-- /container -->
