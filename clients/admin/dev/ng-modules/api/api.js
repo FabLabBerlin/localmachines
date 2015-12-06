@@ -4,7 +4,8 @@
 
 var mod = angular.module("fabsmith.admin.api", []);
 
-mod.service('api', function($http) {
+mod.service('api', ['$http',
+ function($http) {
   // Public Methods
 
   this.loadMachines = function(cb) {
@@ -305,6 +306,6 @@ mod.service('api', function($http) {
   }
 
   return this;
-});
+}]);
 
 })(); // closure

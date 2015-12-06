@@ -81,20 +81,34 @@ module.exports = function (grunt) {
 					'tmp/app.js': [
 						'tmp/dependencies.js',
 						'dev/ng-main.js',
+						'dev/ng-modules/activations/activations.js',
+						'dev/ng-modules/api/api.js',
+						'dev/ng-modules/bookings/bookings.js',
+						'dev/ng-modules/coworking/coworking.js',
+						'dev/ng-modules/coworking/coworking-product.js',
+						'dev/ng-modules/coworking/coworking-purchase.js',
 						'dev/ng-modules/dashboard/dashboard.js',
+						'dev/ng-modules/invoices/invoices.js',
 						'dev/ng-modules/login/login.js',
 						'dev/ng-modules/mainmenu/mainmenu.js',
-						'dev/ng-modules/user/user.js',
-						'dev/ng-modules/activations/activations.js',
 						'dev/ng-modules/machines/machines.js',
 						'dev/ng-modules/machine/machine.js',
 						'dev/ng-modules/memberships/memberships.js',
 						'dev/ng-modules/membership/membership.js',
-						'dev/ng-modules/bookings/bookings.js',
-						'dev/ng-modules/invoices/invoices.js',
-						'dev/ng-modules/users/users.js',
+						'dev/ng-modules/priceunit/priceunit.js',
+						'dev/ng-modules/productlist/productlist.js',
 						'dev/ng-modules/randomtoken/randomtoken.js',
-						'dev/ng-modules/reservations/reservations.js'
+						'dev/ng-modules/reservation/reservation.js',
+						'dev/ng-modules/reservations/reservations.js',
+						'dev/ng-modules/space/space.js',
+						'dev/ng-modules/spacepurchase/spacepurchase.js',
+						'dev/ng-modules/spaces/spaces.js',
+						'dev/ng-modules/tutoring/purchase.js',
+						'dev/ng-modules/settings/settings.js',
+						'dev/ng-modules/tutoring/tutor.js',
+						'dev/ng-modules/tutoring/tutoring.js',
+						'dev/ng-modules/user/user.js',
+						'dev/ng-modules/users/users.js'
 					]
 				}
 			}
@@ -138,6 +152,21 @@ module.exports = function (grunt) {
 				}, {
 					src: 'dev/bower_components/font-awesome/fonts/*',
 					dest: 'prod/assets/fonts/',
+					expand: true,
+					flatten: true
+				}, {
+					src: 'dev/ng-modules/coworking/coworking.html', 
+					dest: 'prod/ng-modules/coworking/',
+					expand: true,
+					flatten: true
+				}, {
+					src: 'dev/ng-modules/coworking/coworking-product.html', 
+					dest: 'prod/ng-modules/coworking/',
+					expand: true,
+					flatten: true
+				}, {
+					src: 'dev/ng-modules/coworking/coworking-purchase.html', 
+					dest: 'prod/ng-modules/coworking/',
 					expand: true,
 					flatten: true
 				}, {
@@ -208,6 +237,41 @@ module.exports = function (grunt) {
 				}, {
 					src: 'dev/ng-modules/reservations/reservations.html', 
 					dest: 'prod/ng-modules/reservations/',
+					expand: true,
+					flatten: true
+				}, {
+					src: 'dev/ng-modules/settings/settings.html', 
+					dest: 'prod/ng-modules/settings/',
+					expand: true,
+					flatten: true
+				}, {
+					src: 'dev/ng-modules/space/space.html', 
+					dest: 'prod/ng-modules/space/',
+					expand: true,
+					flatten: true
+				}, {
+					src: 'dev/ng-modules/spacepurchase/spacepurchase.html', 
+					dest: 'prod/ng-modules/spacepurchase/',
+					expand: true,
+					flatten: true
+				}, {
+					src: 'dev/ng-modules/spaces/spaces.html', 
+					dest: 'prod/ng-modules/spaces/',
+					expand: true,
+					flatten: true
+				}, {
+					src: 'dev/ng-modules/tutoring/purchase.html', 
+					dest: 'prod/ng-modules/tutoring/',
+					expand: true,
+					flatten: true
+				}, {
+					src: 'dev/ng-modules/tutoring/tutor.html', 
+					dest: 'prod/ng-modules/tutoring/',
+					expand: true,
+					flatten: true
+				}, {
+					src: 'dev/ng-modules/tutoring/tutoring.html', 
+					dest: 'prod/ng-modules/tutoring/',
 					expand: true,
 					flatten: true
 				}, {
