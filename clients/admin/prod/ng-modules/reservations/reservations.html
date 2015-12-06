@@ -14,6 +14,8 @@
         <th>End</th>
         <th>User</th>
         <th>E-Mail</th>
+        <th>Disabled</th>
+        <th>Cancelled</th>
         <th></th>
       </tr>
     </thead>
@@ -24,9 +26,14 @@
         <td>{{reservation.TimeEndLocal}}</td>
         <td>{{reservation.User.FirstName}} {{reservation.User.LastName}}</td>
         <td>{{reservation.User.Email}}</td>
+        <td>{{reservation.ReservationDisabled ? 'X' : ''}}</td>
+        <td>{{reservation.Cancelled ? 'X' : ''}}
         <td>
-          <button type="button" class="btn btn-danger btn-ico pull-right" ng-click="deleteReservation(reservation.Id)">
-            <span class="fa fa-close"></span>
+          <button 
+            type="button" 
+            class="btn btn-primary btn-ico pull-right" 
+            ng-click="editReservation(reservation.Id)">
+            <span class="fa fa-edit"></span>
           </button>
         </td>
       </tr>
