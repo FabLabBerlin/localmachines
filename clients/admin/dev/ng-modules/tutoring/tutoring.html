@@ -74,6 +74,7 @@
           <th>Created</th>
           <th>Start time</th>
           <th>Planned End time</th>
+          <th>Timed End time</th>
           <th>Reserved time</th>
           <th>Timer time</th>
           <th>Total Price</th>
@@ -89,6 +90,7 @@
           <td>{{purchase.Created}}</td>
           <td>{{purchase.TimeStartLocal}}</td>
           <td>{{purchase.TimeEndPlannedLocal}}</td>
+          <td>{{purchase.TimeEndLocal}}</td>
           <td>{{purchase.ReservedTimeTotalHours}}h {{purchase.ReservedTimeTotalMinutes}}m</td>
           <td>{{purchase.TimerTimeTotalHours}}h {{purchase.TimerTimeTotalMinutes}}m</td>
           <td>{{purchase.TotalPrice | currency:''}}{{settings.Currency.ValueString}}</td>

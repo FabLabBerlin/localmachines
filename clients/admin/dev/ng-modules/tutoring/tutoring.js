@@ -87,8 +87,25 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location', 'api', 'randomTo
         }
         p.User = $scope.usersById[p.UserId];
         // TODO: What if the timezone changes?
-        p.TimeStartLocal = moment(p.TimeStart).tz('Europe/Berlin').format('YYYY-MM-DD HH:mm');
-        p.TimeEndPlannedLocal = moment(p.TimeEndPlanned).tz('Europe/Berlin').format('YYYY-MM-DD HH:mm');
+        var timeStart = moment(p.TimeStart);
+        var timeEnd = moment(p.TimeEnd);
+        var timeEndPlanned = moment(p.TimeEndPlanned);
+
+        p.TimeStartLocal = timeStart.tz('Europe/Berlin').format('YYYY-MM-DD HH:mm');
+        p.TimeEndPlannedLocal = timeEndPlanned.tz('Europe/Berlin').format('YYYY-MM-DD HH:mm');
+
+        if (timeEnd.unix() > 0) {
+          p.TimeEndLocal = timeEnd.tz('Europe/Berlin').format('YYYY-MM-DD HH:mm');
+          var duration = timeEnd.clone().subtract(timeStart);
+          p.TimerTimeTotalHours = duration.hours();
+          p.TimerTimeTotalMinutes = duration.minutes();
+        }
+
+        if (timeEndPlanned.unix() > 0) {
+          var durationPlanned = timeEndPlanned.clone().subtract(timeStart);
+          p.ReservedTimeTotalHours = durationPlanned.hours();
+          p.ReservedTimeTotalMinutes = durationPlanned.minutes();
+        }
         return p;
       });
       $scope.showTutorSkills();
