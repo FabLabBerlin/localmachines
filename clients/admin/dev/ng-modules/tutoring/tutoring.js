@@ -106,6 +106,9 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location', 'api', 'randomTo
           p.ReservedTimeTotalHours = durationPlanned.hours();
           p.ReservedTimeTotalMinutes = durationPlanned.minutes();
         }
+        if (p.Quantity && p.PricePerUnit) {
+          p.TotalPrice = p.Quantity * p.PricePerUnit;
+        }
         return p;
       });
       $scope.showTutorSkills();
