@@ -2,8 +2,9 @@
 
 'use strict';
 
-angular.module("fabsmith.admin.productlist", [])
-.directive('productlist', function() {
+var app = angular.module("fabsmith.admin.productlist", []);
+
+app.directive('productlist', function() {
   return {
     restrict: 'E',
     templateUrl: 'ng-modules/productlist/productlist.html',

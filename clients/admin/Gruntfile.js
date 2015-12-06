@@ -236,6 +236,21 @@ module.exports = function (grunt) {
 					expand: true,
 					flatten: true
 				}, {
+					src: 'dev/ng-modules/priceunit/priceunit.html', 
+					dest: 'prod/ng-modules/priceunit/',
+					expand: true,
+					flatten: true
+				}, {
+					src: 'dev/ng-modules/productlist/productlist.html', 
+					dest: 'prod/ng-modules/productlist/',
+					expand: true,
+					flatten: true
+				}, {
+					src: 'dev/ng-modules/reservation/reservation.html', 
+					dest: 'prod/ng-modules/reservation/',
+					expand: true,
+					flatten: true
+				}, {
 					src: 'dev/ng-modules/reservations/reservations.html', 
 					dest: 'prod/ng-modules/reservations/',
 					expand: true,

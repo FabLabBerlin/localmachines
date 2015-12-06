@@ -115,6 +115,7 @@ app.controller('SpacesCtrl',
 
   api.loadSpaces(function(spacesData) {
     $scope.spaces = spacesData.spaces;
+    console.log('$scope.spaces= ', $scope.spaces);
     $scope.spacesById = spacesData.spacesById;
     api.loadUsers(function(userData) {
       $scope.users = userData.users;

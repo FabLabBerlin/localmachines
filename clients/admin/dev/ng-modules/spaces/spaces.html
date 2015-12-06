@@ -4,7 +4,38 @@
 
   <hr>
 
-  <productlist type="space"></productlist>
+  <div class="table-responsive">
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Price Per Unit</th>
+        <th>Price Unit</th>
+        <th>
+          <div class="pull-right">Options</div>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="space in spaces">
+        <td>{{space.Product.Name}}</td>
+        <td>{{space.Product.Price}}</td>
+        <td>{{space.Product.PriceUnit}}</td>
+        <td>
+          <button 
+            type="button" 
+            class="btn btn-primary btn-ico pull-right" 
+            ng-click="editSpacesProduct(space.Product.Id)">
+            <span class="fa fa-edit"></span>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+
 
   <hr>
 

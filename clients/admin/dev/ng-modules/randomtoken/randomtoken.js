@@ -4,7 +4,8 @@
 
 var mod = angular.module("fabsmith.admin.randomtoken", []);
 
-mod.service('randomToken', function() {
+mod.service('randomToken', [
+ function() {
   var tokens = [
     'Randy3time',
     'Token2be4me',
@@ -20,6 +21,6 @@ mod.service('randomToken', function() {
   };
 
   return this;
-});
+}]);
 
 })(); // closure
