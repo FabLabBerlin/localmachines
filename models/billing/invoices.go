@@ -1,10 +1,12 @@
-package models
+package billing
 
 import (
 	"errors"
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"github.com/kr15h/fabsmith/models"
+	"github.com/kr15h/fabsmith/models/purchases"
 	"math/rand"
 	"os"
 	"sort"
@@ -51,8 +53,8 @@ func (this *Invoice) TableName() string {
 }
 
 type UserSummary struct {
-	User      User
-	Purchases Purchases
+	User      models.User
+	Purchases purchases.Purchases
 }
 
 // exists returns whether the given file or directory exists or not
@@ -135,14 +137,14 @@ func GetInvoice(invoiceId int64) (invoice *Invoice, err error) {
 // Returns Invoice and InvoiceSummary objects, error otherwise
 func CalculateInvoiceSummary(startTime, endTime time.Time) (invoice Invoice, err error) {
 	// Enhance activations with user and membership data
-	purchases, err := invoice.getPurchases(startTime, endTime)
+	ps, err := invoice.getPurchases(startTime, endTime)
 	if err != nil {
 		err = fmt.Errorf("Failed to get enhanced activations: %v", err)
 		return
 	}
 
-	activationIds := make([]string, 0, len(purchases))
-	for _, p := range purchases {
+	activationIds := make([]string, 0, len(ps))
+	for _, p := range ps {
 		if p.Activation != nil {
 			activationIds = append(activationIds, strconv.FormatInt(p.Id, 10))
 		}
@@ -151,7 +153,9 @@ func CalculateInvoiceSummary(startTime, endTime time.Time) (invoice Invoice, err
 
 	// Create user summaries from invoice activations
 	var userSummaries *[]*UserSummary
-	userSummaries, err = invoice.getUserSummaries(Purchases{Data: purchases})
+	userSummaries, err = invoice.getUserSummaries(purchases.Purchases{
+		Data: ps,
+	})
 	if err != nil {
 		err = fmt.Errorf("Failed to get user summaries: %v", err)
 		return
@@ -160,8 +164,8 @@ func CalculateInvoiceSummary(startTime, endTime time.Time) (invoice Invoice, err
 	for i := 0; i < len(*userSummaries); i++ {
 		sort.Stable((*userSummaries)[i].Purchases)
 		for _, activation := range (*userSummaries)[i].Purchases.Data {
-			activation.TotalPrice = PriceTotalExclDisc(activation)
-			activation.DiscountedTotal, err = PriceTotalDisc(activation)
+			activation.TotalPrice = purchases.PriceTotalExclDisc(activation)
+			activation.DiscountedTotal, err = purchases.PriceTotalDisc(activation)
 			if err != nil {
 				return
 			}
@@ -208,10 +212,10 @@ func DeleteInvoice(invoiceId int64) error {
 
 // Gets purchases that have happened between start and end dates
 func getPurchases(startTime,
-	endTime time.Time) (purchases []*Purchase, err error) {
+	endTime time.Time) (ps []*purchases.Purchase, err error) {
 
-	p := Purchase{}
-	usr := User{}
+	p := purchases.Purchase{}
+	usr := models.User{}
 	o := orm.NewOrm()
 
 	query := fmt.Sprintf("SELECT p.* FROM %s p JOIN %s u ON p.user_id=u.id "+
@@ -222,7 +226,7 @@ func getPurchases(startTime,
 
 	_, err = o.Raw(query,
 		startTime.Format("2006-01-02 15:04:05"),
-		endTime.Format("2006-01-02 15:04:05")).QueryRows(&purchases)
+		endTime.Format("2006-01-02 15:04:05")).QueryRows(&ps)
 
 	return
 }
@@ -244,34 +248,34 @@ func (this *Invoice) getInvoiceFileName(startTime,
 		string(b))
 }
 
-func (this *Invoice) getPurchases(startTime, endTime time.Time) (purchases []*Purchase, err error) {
-	machines, err := GetAllMachines(true)
+func (this *Invoice) getPurchases(startTime, endTime time.Time) (ps []*purchases.Purchase, err error) {
+	machines, err := models.GetAllMachines(true)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get machines: %v", err)
 	}
-	machinesById := make(map[int64]*Machine)
+	machinesById := make(map[int64]*models.Machine)
 	for _, machine := range machines {
 		machinesById[machine.Id] = machine
 	}
 
-	users, err := GetAllUsers()
+	users, err := models.GetAllUsers()
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get users: %v", err)
 	}
-	usersById := make(map[int64]User)
+	usersById := make(map[int64]models.User)
 	for _, user := range users {
 		usersById[user.Id] = *user
 	}
 
-	userMemberships, err := GetAllUserMemberships()
+	userMemberships, err := models.GetAllUserMemberships()
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get user memberships: %v", err)
 	}
-	userMembershipsById := make(map[int64][]*UserMembership)
+	userMembershipsById := make(map[int64][]*models.UserMembership)
 	for _, userMembership := range userMemberships {
 		uid := userMembership.UserId
 		if _, ok := userMembershipsById[uid]; !ok {
-			userMembershipsById[uid] = []*UserMembership{
+			userMembershipsById[uid] = []*models.UserMembership{
 				userMembership,
 			}
 		} else {
@@ -279,38 +283,38 @@ func (this *Invoice) getPurchases(startTime, endTime time.Time) (purchases []*Pu
 		}
 	}
 
-	memberships, err := GetAllMemberships()
+	memberships, err := models.GetAllMemberships()
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get memberships: %v", err)
 	}
-	membershipsById := make(map[int64]*Membership)
+	membershipsById := make(map[int64]*models.Membership)
 	for _, membership := range memberships {
 		membershipsById[membership.Id] = membership
 	}
 
 	// Get all uninvoiced purchases in the time range
-	purchases, err = getPurchases(startTime, endTime)
+	ps, err = getPurchases(startTime, endTime)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get purchases: %v", err)
 	}
 
 	// Enhance purchases
-	for _, purchase := range purchases {
-		err := this.enhancePurchase(purchase, machinesById,
+	for _, p := range ps {
+		err := this.enhancePurchase(p, machinesById,
 			usersById, userMembershipsById, membershipsById)
 		if err != nil {
 			return nil, fmt.Errorf("Failed to enhance purchase: %v", err)
 		}
 	}
 
-	return purchases, nil
+	return
 }
 
 func (this *Invoice) getUserSummaries(
-	purchases Purchases) (*[]*UserSummary, error) {
+	ps purchases.Purchases) (*[]*UserSummary, error) {
 
 	// Create a slice for unique user summaries.
-	users, err := GetAllUsers()
+	users, err := models.GetAllUsers()
 	if err != nil {
 		return nil, err
 	}
@@ -322,13 +326,13 @@ func (this *Invoice) getUserSummaries(
 	}
 
 	// Sort purchases by user.
-	for _, purchase := range purchases.Data {
+	for _, p := range ps.Data {
 
 		uSummaryExists := false
 		var summary *UserSummary
 
 		for _, userSummary := range userSummaries {
-			if purchase.User.Id == userSummary.User.Id {
+			if p.User.Id == userSummary.User.Id {
 				uSummaryExists = true
 				summary = userSummary
 				break
@@ -339,14 +343,14 @@ func (this *Invoice) getUserSummaries(
 		if !uSummaryExists {
 			beego.Warn("Creating user summary for activation that has no matching user")
 			newSummary := UserSummary{}
-			newSummary.User = purchase.User
+			newSummary.User = p.User
 			userSummaries = append(userSummaries, &newSummary)
 			summary = userSummaries[len(userSummaries)-1]
 		}
 
 		// Append the invoice activation to the user summary.
-		if summary.User.Id == purchase.User.Id {
-			summary.Purchases.Data = append(summary.Purchases.Data, purchase)
+		if summary.User.Id == p.User.Id {
+			summary.Purchases.Data = append(summary.Purchases.Data, p)
 		}
 	}
 
@@ -354,14 +358,14 @@ func (this *Invoice) getUserSummaries(
 	return &userSummaries, nil
 }
 
-func (this *Invoice) enhancePurchase(purchase *Purchase,
-	machinesById map[int64]*Machine, usersById map[int64]User,
-	userMembershipsByUserId map[int64][]*UserMembership,
-	membershipsById map[int64]*Membership) error {
+func (this *Invoice) enhancePurchase(purchase *purchases.Purchase,
+	machinesById map[int64]*models.Machine, usersById map[int64]models.User,
+	userMembershipsByUserId map[int64][]*models.UserMembership,
+	membershipsById map[int64]*models.Membership) error {
 
 	var ok bool
 	purchase.Machine, ok = machinesById[purchase.MachineId]
-	if !ok && (purchase.Type == PURCHASE_TYPE_ACTIVATION || purchase.Type == PURCHASE_TYPE_RESERVATION) {
+	if !ok && (purchase.Type == purchases.PURCHASE_TYPE_ACTIVATION || purchase.Type == purchases.PURCHASE_TYPE_RESERVATION) {
 		return fmt.Errorf("No machine has the ID %v", purchase.MachineId)
 	}
 
@@ -371,7 +375,7 @@ func (this *Invoice) enhancePurchase(purchase *Purchase,
 
 	usrMemberships, ok := userMembershipsByUserId[purchase.UserId]
 	if !ok {
-		usrMemberships = []*UserMembership{}
+		usrMemberships = []*models.UserMembership{}
 	}
 
 	// Check if the membership dates of the user overlap with the activation.

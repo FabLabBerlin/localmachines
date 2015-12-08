@@ -1,10 +1,11 @@
-package models
+package purchases
 
 import (
 	"encoding/json"
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"github.com/kr15h/fabsmith/models"
 	"time"
 )
 
@@ -77,7 +78,7 @@ func GetAllReservationsBetween(startTime, endTime time.Time) (reservations []*Re
 func CreateReservation(reservation *Reservation) (int64, error) {
 
 	// Get the reservation_price_hourly of the machine being reserved
-	machine := Machine{Id: reservation.purchase.MachineId}
+	machine := models.Machine{Id: reservation.purchase.MachineId}
 	err, _ := machine.Read()
 	if err != nil {
 		beego.Error("Failed to read machine")

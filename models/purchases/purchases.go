@@ -1,9 +1,10 @@
-package models
+package purchases
 
 import (
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"github.com/kr15h/fabsmith/models"
 	"time"
 )
 
@@ -22,7 +23,7 @@ type Purchase struct {
 	ProductId int64
 	Created   time.Time `orm:"type(datetime)"`
 
-	User   User `orm:"-" json:"-"`
+	User   models.User `orm:"-" json:"-"`
 	UserId int64
 
 	TimeStart      time.Time `orm:"type(datetime)" json:",omitempty"`
@@ -41,17 +42,17 @@ type Purchase struct {
 	ReservationDisabled bool
 
 	// Activation+Reservation fields:
-	Machine   *Machine `orm:"-"`
+	Machine   *models.Machine `orm:"-"`
 	MachineId int64
 
 	// Activation+Tutoring fields:
 	Running bool
 
 	// Old fields:
-	Activation   *Activation   `orm:"-"`
-	Reservation  *Reservation  `orm:"-"`
-	MachineUsage time.Duration `orm:"-"`
-	Memberships  []*Membership `orm:"-"`
+	Activation   *Activation          `orm:"-"`
+	Reservation  *Reservation         `orm:"-"`
+	MachineUsage time.Duration        `orm:"-"`
+	Memberships  []*models.Membership `orm:"-"`
 
 	Archived bool
 	Comments string
@@ -78,6 +79,14 @@ func GetAllPurchasesOfType(purchaseType string) (purchases []*Purchase, err erro
 		Filter("type", purchaseType).
 		Exclude("archived", 1).
 		All(&purchases)
+	return
+}
+
+// Gets purchases of a specific user by consuming user ID.
+func GetUserStartTime(userId int64) (startTime time.Time, err error) {
+	query := "SELECT min(time_start) FROM purchases WHERE user_id = ?"
+	o := orm.NewOrm()
+	err = o.Raw(query, userId).QueryRow(&startTime)
 	return
 }
 

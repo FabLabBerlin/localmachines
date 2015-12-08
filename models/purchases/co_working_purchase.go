@@ -1,4 +1,4 @@
-package models
+package purchases
 
 import (
 	"encoding/json"

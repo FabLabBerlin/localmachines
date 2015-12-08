@@ -1,13 +1,13 @@
-package models
+package purchases
 
 import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"time"
-
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"github.com/kr15h/fabsmith/models"
+	"time"
 )
 
 type Activation struct {
@@ -23,14 +23,6 @@ func (this *Activation) MarshalJSON() ([]byte, error) {
 type GetActivationsResponse struct {
 	NumActivations  int64
 	ActivationsPage *[]Activation
-}
-
-// Gets activations of a specific user by consuming user ID.
-func GetUserActivationsStartTime(userId int64) (startTime time.Time, err error) {
-	query := "SELECT min(time_start) FROM activations WHERE user_id = ?"
-	o := orm.NewOrm()
-	err = o.Raw(query, userId).QueryRow(&startTime)
-	return
 }
 
 // Gets filtered activations in a paged manner between start and end time.
@@ -49,7 +41,7 @@ func GetActivations(startTime time.Time,
 	// Get activations from database
 	purchases := []*Purchase{}
 	act := Activation{}
-	usr := User{}
+	usr := models.User{}
 	o := orm.NewOrm()
 
 	var pageOffset int64
@@ -144,7 +136,7 @@ func CreateActivation(machineId, userId int64, startTime time.Time) (
 	activationId int64, err error) {
 
 	o := orm.NewOrm()
-	mch := Machine{Id: machineId}
+	mch := models.Machine{Id: machineId}
 
 	if !mch.Exists() {
 		activationId = 0
@@ -249,15 +241,15 @@ func CloseActivation(activationId int64, endTime time.Time) error {
 	}
 
 	// Make the machine available again.
-	var machine *Machine
-	machine, err = GetMachine(activation.Purchase.MachineId)
+	var machine *models.Machine
+	machine, err = models.GetMachine(activation.Purchase.MachineId)
 	if err != nil {
 		beego.Error("Failed to get machine:", err)
 		return fmt.Errorf("Failed to get machine: %v", err)
 	}
 
 	machine.Available = true
-	err = UpdateMachine(machine)
+	err = models.UpdateMachine(machine)
 	if err != nil {
 		beego.Error("Failed to update machine:", err)
 		return fmt.Errorf("Failed to update machine: %v", err)

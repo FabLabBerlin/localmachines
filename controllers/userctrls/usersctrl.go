@@ -5,6 +5,8 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/kr15h/fabsmith/controllers"
 	"github.com/kr15h/fabsmith/models"
+	"github.com/kr15h/fabsmith/models/billing"
+	"github.com/kr15h/fabsmith/models/purchases"
 	"strconv"
 	"strings"
 	"time"
@@ -434,20 +436,20 @@ func (this *UsersController) GetUserBill() {
 		this.CustomAbort(401, "Unauthorized")
 	}
 
-	startTime, err := models.GetUserActivationsStartTime(suidInt64)
+	startTime, err := purchases.GetUserStartTime(suidInt64)
 	if err != nil {
-		beego.Error("GetUserActivationsStartTime:", err)
+		beego.Error("GetUserStartTime:", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
 	startTime = startTime.Add(-86400 * time.Second)
 
 	endTime := time.Now().Add(86400 * 30 * time.Second)
-	invoice, err := models.CalculateInvoiceSummary(startTime, endTime)
+	invoice, err := billing.CalculateInvoiceSummary(startTime, endTime)
 	if err != nil {
 		beego.Error("CalculateInvoiceSummary:", err)
 	}
 
-	var userSummary *models.UserSummary
+	var userSummary *billing.UserSummary
 
 	for _, us := range invoice.UserSummaries {
 		if us.User.Id == suid {

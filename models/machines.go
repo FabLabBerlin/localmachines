@@ -7,7 +7,7 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"math/rand"
-	"sort"
+	//"sort"
 	"time"
 )
 
@@ -137,9 +137,9 @@ func GetAllMachines(sorted bool) (machines []*Machine, err error) {
 		return nil, fmt.Errorf("Failed to get all machines: %v", err)
 	}
 
-	var extendedMachines ExtendedMachineList
+	//var extendedMachines ExtendedMachineList
 
-	if sorted {
+	/*if sorted {
 		// Get sum of activations per machine
 		a := Activation{}
 		for i := 0; i < len(machines); i++ {
@@ -167,9 +167,9 @@ func GetAllMachines(sorted bool) (machines []*Machine, err error) {
 		}
 
 		return sortedMachines, nil
-	} else {
-		return machines, nil
-	}
+	} else {*/
+	return machines, nil
+	//}
 
 }
 

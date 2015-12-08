@@ -1,7 +1,10 @@
-package models
+package metrics
 
 import (
 	"fmt"
+	"github.com/kr15h/fabsmith/models"
+	"github.com/kr15h/fabsmith/models/billing"
+	"github.com/kr15h/fabsmith/models/purchases"
 	"time"
 )
 
@@ -51,30 +54,30 @@ func NewMetricsResponse(data MetricsData) (resp MetricsResponse, err error) {
 type MetricsData struct {
 	startTime       time.Time
 	endTime         time.Time
-	invoice         Invoice
-	userMemberships []*UserMembership
-	membershipsById map[int64]*Membership
+	invoice         billing.Invoice
+	userMemberships []*models.UserMembership
+	membershipsById map[int64]*models.Membership
 }
 
 func FetchMetricsData() (data MetricsData, err error) {
 	endTime := time.Now()
 	startTime := endTime.Add(-180 * 24 * time.Hour)
 
-	data.invoice, err = CalculateInvoiceSummary(startTime, endTime)
+	data.invoice, err = billing.CalculateInvoiceSummary(startTime, endTime)
 	if err != nil {
 		return data, fmt.Errorf("Failed to get invoice summary: %v", err)
 	}
 
-	memberships, err := GetAllMemberships()
+	memberships, err := models.GetAllMemberships()
 	if err != nil {
 		return data, fmt.Errorf("Failed to get memberships: %v", err)
 	}
-	data.membershipsById = make(map[int64]*Membership)
+	data.membershipsById = make(map[int64]*models.Membership)
 	for _, membership := range memberships {
 		data.membershipsById[membership.Id] = membership
 	}
 
-	data.userMemberships, err = GetAllUserMemberships()
+	data.userMemberships, err = models.GetAllUserMemberships()
 	if err != nil {
 		return data, fmt.Errorf("Failed to get user memberships: %v", err)
 	}
@@ -87,7 +90,7 @@ func (this MetricsData) sumActivationsBy(timeFormat string) (sums map[string]flo
 
 	for _, userSummary := range this.invoice.UserSummaries {
 		for _, purchase := range userSummary.Purchases.Data {
-			priceTotalDisc, err := PriceTotalDisc(purchase)
+			priceTotalDisc, err := purchases.PriceTotalDisc(purchase)
 			if err != nil {
 				return nil, fmt.Errorf("PriceTotalDisc: %v", err)
 			}
@@ -140,7 +143,7 @@ func (this MetricsData) sumMinutesBy(timeFormat string) (sums map[string]float64
 	sums = make(map[string]float64)
 
 	for _, userSummary := range this.invoice.UserSummaries {
-		if userSummary.User.UserRole != STAFF && userSummary.User.UserRole != ADMIN {
+		if userSummary.User.UserRole != models.STAFF && userSummary.User.UserRole != models.ADMIN {
 			for _, purchase := range userSummary.Purchases.Data {
 				if activation := purchase.Activation; activation != nil {
 					key := purchase.TimeStart.Format(timeFormat)

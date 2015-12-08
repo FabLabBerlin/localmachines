@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/astaxie/beego"
-	"github.com/kr15h/fabsmith/models"
+	"github.com/kr15h/fabsmith/models/purchases"
 )
 
 type PurchasesController struct {
@@ -30,23 +30,23 @@ func (this *PurchasesController) Create() {
 	var err error
 
 	switch purchaseType {
-	case models.PURCHASE_TYPE_CO_WORKING:
-		cp := &models.CoWorkingPurchase{}
-		_, err = models.CreateCoWorkingPurchase(cp)
+	case purchases.PURCHASE_TYPE_CO_WORKING:
+		cp := &purchases.CoWorkingPurchase{}
+		_, err = purchases.CreateCoWorkingPurchase(cp)
 		if err == nil {
 			purchase = cp
 		}
 		break
-	case models.PURCHASE_TYPE_SPACE_PURCHASE:
-		spacePurchase := &models.SpacePurchase{}
-		_, err = models.CreateSpacePurchase(spacePurchase)
+	case purchases.PURCHASE_TYPE_SPACE_PURCHASE:
+		spacePurchase := &purchases.SpacePurchase{}
+		_, err = purchases.CreateSpacePurchase(spacePurchase)
 		if err == nil {
 			purchase = spacePurchase
 		}
 		break
-	case models.PURCHASE_TYPE_TUTOR:
-		tutoringPurchase := &models.TutoringPurchase{}
-		_, err = models.CreateTutoringPurchase(tutoringPurchase)
+	case purchases.PURCHASE_TYPE_TUTOR:
+		tutoringPurchase := &purchases.TutoringPurchase{}
+		_, err = purchases.CreateTutoringPurchase(tutoringPurchase)
 		if err == nil {
 			purchase = tutoringPurchase
 		}
@@ -80,18 +80,18 @@ func (this *PurchasesController) GetAll() {
 
 	purchaseType := this.GetString("type")
 
-	var purchases interface{}
+	var ps interface{}
 	var err error
 
 	switch purchaseType {
-	case models.PURCHASE_TYPE_CO_WORKING:
-		purchases, err = models.GetAllCoWorkingPurchases()
+	case purchases.PURCHASE_TYPE_CO_WORKING:
+		ps, err = purchases.GetAllCoWorkingPurchases()
 		break
-	case models.PURCHASE_TYPE_SPACE_PURCHASE:
-		purchases, err = models.GetAllSpacePurchases()
+	case purchases.PURCHASE_TYPE_SPACE_PURCHASE:
+		ps, err = purchases.GetAllSpacePurchases()
 		break
-	case models.PURCHASE_TYPE_TUTOR:
-		purchases, err = models.GetAllTutoringPurchases()
+	case purchases.PURCHASE_TYPE_TUTOR:
+		ps, err = purchases.GetAllTutoringPurchases()
 		break
 	default:
 		err = fmt.Errorf("unknown purchase type")
@@ -102,7 +102,7 @@ func (this *PurchasesController) GetAll() {
 		this.CustomAbort(500, "Failed to get purchases")
 	}
 
-	this.Data["json"] = purchases
+	this.Data["json"] = ps
 	this.ServeJson()
 }
 
@@ -110,7 +110,7 @@ func (this *PurchasesController) GetAll() {
 // @Description Get purchase by ID
 // @Param	id		path 	int	true		"Space Purchase ID"
 // @Param	type	query	string	true	"Purchase Type"
-// @Success 200 {object} models.SpacePurchase
+// @Success 200 {object} purchases.SpacePurchase
 // @Failure	400	Bad Request
 // @Failure	401 Not authorized
 // @Failure	500	Internal Server Error
@@ -132,14 +132,14 @@ func (this *PurchasesController) Get() {
 	var purchase interface{}
 
 	switch purchaseType {
-	case models.PURCHASE_TYPE_CO_WORKING:
-		purchase, err = models.GetCoWorkingPurchase(id)
+	case purchases.PURCHASE_TYPE_CO_WORKING:
+		purchase, err = purchases.GetCoWorkingPurchase(id)
 		break
-	case models.PURCHASE_TYPE_SPACE_PURCHASE:
-		purchase, err = models.GetSpacePurchase(id)
+	case purchases.PURCHASE_TYPE_SPACE_PURCHASE:
+		purchase, err = purchases.GetSpacePurchase(id)
 		break
-	case models.PURCHASE_TYPE_TUTOR:
-		purchase, err = models.GetTutoringPurchase(id)
+	case purchases.PURCHASE_TYPE_TUTOR:
+		purchase, err = purchases.GetTutoringPurchase(id)
 		break
 	default:
 		err = fmt.Errorf("unknown purchase type")
@@ -174,8 +174,8 @@ func (this *PurchasesController) Put() {
 	var err error
 
 	switch purchaseType {
-	case models.PURCHASE_TYPE_CO_WORKING:
-		cp := &models.CoWorkingPurchase{}
+	case purchases.PURCHASE_TYPE_CO_WORKING:
+		cp := &purchases.CoWorkingPurchase{}
 		dec := json.NewDecoder(this.Ctx.Request.Body)
 		defer this.Ctx.Request.Body.Close()
 		if err := dec.Decode(cp); err != nil {
@@ -183,12 +183,12 @@ func (this *PurchasesController) Put() {
 			this.CustomAbort(400, "Failed to update Co-Working purchase")
 		}
 
-		if err = models.UpdateCoWorkingPurchase(cp); err == nil {
+		if err = purchases.UpdateCoWorkingPurchase(cp); err == nil {
 			response = cp
 		}
 		break
-	case models.PURCHASE_TYPE_SPACE_PURCHASE:
-		spacePurchase := &models.SpacePurchase{}
+	case purchases.PURCHASE_TYPE_SPACE_PURCHASE:
+		spacePurchase := &purchases.SpacePurchase{}
 		dec := json.NewDecoder(this.Ctx.Request.Body)
 		defer this.Ctx.Request.Body.Close()
 		if err := dec.Decode(spacePurchase); err != nil {
@@ -196,12 +196,12 @@ func (this *PurchasesController) Put() {
 			this.CustomAbort(400, "Failed to update Space purchase")
 		}
 
-		if err = models.UpdateSpacePurchase(spacePurchase); err == nil {
+		if err = purchases.UpdateSpacePurchase(spacePurchase); err == nil {
 			response = spacePurchase
 		}
 		break
-	case models.PURCHASE_TYPE_TUTOR:
-		tutoringPurchase := &models.TutoringPurchase{}
+	case purchases.PURCHASE_TYPE_TUTOR:
+		tutoringPurchase := &purchases.TutoringPurchase{}
 		dec := json.NewDecoder(this.Ctx.Request.Body)
 		defer this.Ctx.Request.Body.Close()
 		if err := dec.Decode(tutoringPurchase); err != nil {
@@ -209,7 +209,7 @@ func (this *PurchasesController) Put() {
 			this.CustomAbort(400, "Failed to update Tutoring purchase")
 		}
 		beego.Info("tp: time end planned:", tutoringPurchase.TimeEndPlanned)
-		if err = models.UpdateTutoringPurchase(tutoringPurchase); err == nil {
+		if err = purchases.UpdateTutoringPurchase(tutoringPurchase); err == nil {
 			response = tutoringPurchase
 		}
 		break
@@ -246,14 +246,14 @@ func (this *PurchasesController) ArchivePurchase() {
 		this.CustomAbort(400, "Incorrect purchaseId")
 	}
 
-	var purchase *models.Purchase
-	purchase, err = models.GetPurchase(purchaseId)
+	var purchase *purchases.Purchase
+	purchase, err = purchases.GetPurchase(purchaseId)
 	if err != nil {
 		beego.Error("Failed to get purchase")
 		this.CustomAbort(500, "Failed to get purchase")
 	}
 
-	err = models.ArchivePurchase(purchase)
+	err = purchases.ArchivePurchase(purchase)
 	if err != nil {
 		beego.Error("Failed to archive purchase")
 		this.CustomAbort(500, "Failed to archive purchase")

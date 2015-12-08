@@ -1,7 +1,9 @@
-package models
+package billing
 
 import (
 	"fmt"
+	"github.com/kr15h/fabsmith/models"
+	"github.com/kr15h/fabsmith/models/purchases"
 	"github.com/tealeg/xlsx"
 	"sort"
 	"strconv"
@@ -18,7 +20,7 @@ const (
 	GREEN  = "FF92D050"
 )
 
-type PurchasesXlsx []*Purchase
+type PurchasesXlsx []*purchases.Purchase
 
 func (this PurchasesXlsx) Len() int {
 	return len(this)
@@ -42,7 +44,7 @@ func (this PurchasesXlsx) Swap(i, j int) {
 
 // Adds a row to xlsx sheet by consuming a pointer to
 // InvoiceActivation model based store.
-func AddRowXlsx(sheet *xlsx.Sheet, purchase *Purchase) error {
+func AddRowXlsx(sheet *xlsx.Sheet, purchase *purchases.Purchase) error {
 	timeStart := purchase.TimeStart
 	totalPrice := purchase.TotalPrice
 	discountedTotal := purchase.DiscountedTotal
@@ -154,7 +156,7 @@ func createXlsxFile(filePath string, invoice *Invoice) error {
 	// Fill the xlsx sheet
 	for _, userSummary := range userSummaries {
 
-		memberships, err := GetUserMemberships(userSummary.User.Id)
+		memberships, err := models.GetUserMemberships(userSummary.User.Id)
 		if err != nil {
 			return fmt.Errorf("GetUserMemberships: %v", err)
 		}
@@ -280,9 +282,9 @@ func createXlsxFile(filePath string, invoice *Invoice) error {
 
 		sumTotal := 0.0
 		sumTotalDisc := 0.0
-		purchases := PurchasesXlsx(userSummary.Purchases.Data)
-		sort.Stable(purchases)
-		for _, purchase := range purchases {
+		ps := PurchasesXlsx(userSummary.Purchases.Data)
+		sort.Stable(ps)
+		for _, purchase := range ps {
 			sumTotal += purchase.TotalPrice
 			sumTotalDisc += purchase.DiscountedTotal
 
@@ -293,29 +295,29 @@ func createXlsxFile(filePath string, invoice *Invoice) error {
 		cell.Value = "Activations By Machine"
 		AddRowActivationsHeaderXlsx(sheet)
 
-		byProductNameAndPricePerUnit := make(map[string]map[float64][]*Purchase)
+		byProductNameAndPricePerUnit := make(map[string]map[float64][]*purchases.Purchase)
 		for _, p := range userSummary.Purchases.Data {
 			if _, ok := byProductNameAndPricePerUnit[p.ProductName()]; !ok {
-				byProductNameAndPricePerUnit[p.ProductName()] = make(map[float64][]*Purchase)
+				byProductNameAndPricePerUnit[p.ProductName()] = make(map[float64][]*purchases.Purchase)
 			}
 			if _, ok := byProductNameAndPricePerUnit[p.ProductName()][p.PricePerUnit]; !ok {
-				byProductNameAndPricePerUnit[p.ProductName()][p.PricePerUnit] = make([]*Purchase, 0, 20)
+				byProductNameAndPricePerUnit[p.ProductName()][p.PricePerUnit] = make([]*purchases.Purchase, 0, 20)
 			}
 			byProductNameAndPricePerUnit[p.ProductName()][p.PricePerUnit] = append(byProductNameAndPricePerUnit[p.ProductName()][p.PricePerUnit], p)
 		}
 
 		for productName, byPricePerUnit := range byProductNameAndPricePerUnit {
-			for pricePerUnit, purchases := range byPricePerUnit {
+			for pricePerUnit, ps := range byPricePerUnit {
 				var usage float64
 				var usageUnit string
 				var totalPriceExclDisc float64
 				var discPrice float64
 				var membershipStr string
-				for _, purchase := range purchases {
+				for _, purchase := range ps {
 					usageUnit = purchase.PriceUnit
 					usage += purchase.Quantity
-					totalPriceExclDisc += PriceTotalExclDisc(purchase)
-					priceDisc, err := PriceTotalDisc(purchase)
+					totalPriceExclDisc += purchases.PriceTotalExclDisc(purchase)
+					priceDisc, err := purchases.PriceTotalDisc(purchase)
 					if err != nil {
 						return fmt.Errorf("PriceTotalDisc: %v", err)
 					}
@@ -363,7 +365,7 @@ func createXlsxFile(filePath string, invoice *Invoice) error {
 		cell.Value = "Activations"
 		AddRowActivationsHeaderXlsx(sheet)
 
-		for _, purchase := range purchases {
+		for _, purchase := range ps {
 			if !purchase.Cancelled {
 				if err := AddRowXlsx(sheet, purchase); err != nil {
 					return fmt.Errorf("AddRowXlsx: %v", err)

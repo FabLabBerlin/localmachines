@@ -3,7 +3,7 @@ package controllers
 import (
 	"fmt"
 	"github.com/astaxie/beego"
-	"github.com/kr15h/fabsmith/models"
+	"github.com/kr15h/fabsmith/models/billing"
 	"time"
 )
 
@@ -24,7 +24,7 @@ func (this *InvoicesController) GetAll() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	invoices, err := models.GetAllInvoices()
+	invoices, err := billing.GetAllInvoices()
 	if err != nil {
 		beego.Error("Failed to get all invoices")
 		this.CustomAbort(403, "Failed to get all invoices")
@@ -57,7 +57,7 @@ func (this *InvoicesController) Delete() {
 		this.CustomAbort(403, "Failed to delete invoice")
 	}
 
-	err = models.DeleteInvoice(iid)
+	err = billing.DeleteInvoice(iid)
 	if err != nil {
 		beego.Error("Failed to delete invoice:", err)
 		this.CustomAbort(403, "Failed to delete invoice")
@@ -133,8 +133,8 @@ func (this *InvoicesController) Create() {
 	beego.Trace(endTime)
 
 	// Create invoice
-	var invoice *models.Invoice
-	invoice, err = models.CreateInvoice(startTime, endTime)
+	var invoice *billing.Invoice
+	invoice, err = billing.CreateInvoice(startTime, endTime)
 	if err != nil {
 		beego.Error("Failed to create invoice:", err)
 		this.CustomAbort(403, "Failed to create invoice")

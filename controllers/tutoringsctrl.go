@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"github.com/astaxie/beego"
-	"github.com/kr15h/fabsmith/models"
+	"github.com/kr15h/fabsmith/models/purchases"
 )
 
 type TutoringsController struct {
@@ -24,7 +24,7 @@ func (this *TutoringsController) Start() {
 		this.CustomAbort(400, "Incorrect id")
 	}
 
-	err = models.StartTutoringPurchase(id)
+	err = purchases.StartTutoringPurchase(id)
 	if err != nil {
 		beego.Error("Failed to start tutoring purchase:", err)
 		this.CustomAbort(500, "Internal Server Error")
@@ -48,7 +48,7 @@ func (this *TutoringsController) Stop() {
 		this.CustomAbort(400, "Incorrect id")
 	}
 
-	err = models.StopTutoringPurchase(id)
+	err = purchases.StopTutoringPurchase(id)
 	if err != nil {
 		beego.Error("Failed to stop tutoring purchase:", err)
 		this.CustomAbort(500, "Internal Server Error")

@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"github.com/astaxie/beego"
-	"github.com/kr15h/fabsmith/models"
+	"github.com/kr15h/fabsmith/models/metrics"
 )
 
 type MetricsController struct {
@@ -22,13 +22,13 @@ func (this *MetricsController) GetAll() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	data, err := models.FetchMetricsData()
+	data, err := metrics.FetchMetricsData()
 	if err != nil {
 		beego.Error("Failed to get metrics data:", err)
 		this.CustomAbort(500, "Failed to get metrics data")
 	}
 
-	resp, err := models.NewMetricsResponse(data)
+	resp, err := metrics.NewMetricsResponse(data)
 	if err != nil {
 		beego.Error("Failed to get metrics response:", err)
 		this.CustomAbort(500, "Failed to get metrics response")

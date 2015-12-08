@@ -5,6 +5,8 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/kr15h/fabsmith/controllers"
 	"github.com/kr15h/fabsmith/models"
+	"github.com/kr15h/fabsmith/models/products"
+	"github.com/kr15h/fabsmith/models/purchases"
 )
 
 type UserDashboardController struct {
@@ -12,9 +14,9 @@ type UserDashboardController struct {
 }
 
 type DashboardData struct {
-	Activations []*models.Activation
+	Activations []*purchases.Activation
 	Machines    []*models.Machine
-	Tutorings   *models.TutoringPurchaseList
+	Tutorings   *purchases.TutoringPurchaseList
 }
 
 func (this *DashboardData) load(isAdmin bool, uid int64) (err error) {
@@ -31,7 +33,7 @@ func (this *DashboardData) load(isAdmin bool, uid int64) (err error) {
 }
 
 func (this *DashboardData) loadActivations() (err error) {
-	this.Activations, err = models.GetActiveActivations()
+	this.Activations, err = purchases.GetActiveActivations()
 	return
 }
 
@@ -64,12 +66,12 @@ func (this *DashboardData) loadMachines(isAdmin bool, uid int64) (err error) {
 }
 
 func (this *DashboardData) loadTutorings(uid int64) (err error) {
-	tutors, err := models.GetAllTutors()
+	tutors, err := products.GetAllTutors()
 	if err != nil {
 		return fmt.Errorf("get all tutors: %v", err)
 	}
-	allTutorings, err := models.GetAllTutoringPurchases()
-	var targetTutor *models.Tutor
+	allTutorings, err := purchases.GetAllTutoringPurchases()
+	var targetTutor *products.Tutor
 	for _, tutor := range tutors {
 		if tutor.Product.UserId == uid {
 			targetTutor = tutor
@@ -80,8 +82,8 @@ func (this *DashboardData) loadTutorings(uid int64) (err error) {
 		this.Tutorings = nil
 	} else {
 
-		this.Tutorings = &models.TutoringPurchaseList{
-			Data: make([]*models.TutoringPurchase, 0, len(allTutorings.Data)),
+		this.Tutorings = &purchases.TutoringPurchaseList{
+			Data: make([]*purchases.TutoringPurchase, 0, len(allTutorings.Data)),
 		}
 		for _, tutoring := range allTutorings.Data {
 			if tutoring.ProductId == targetTutor.Product.Id {

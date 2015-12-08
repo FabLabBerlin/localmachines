@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/astaxie/beego"
 	"github.com/kr15h/fabsmith/models"
+	"github.com/kr15h/fabsmith/models/purchases"
 	"time"
 )
 
@@ -97,8 +98,8 @@ func (this *ActivationsController) GetAll() {
 	beego.Trace(endTime)
 
 	// Get activations
-	var activations *[]models.Activation
-	activations, err = models.GetActivations(
+	var activations *[]purchases.Activation
+	activations, err = purchases.GetActivations(
 		startTime, endTime, userId, itemsPerPage, page)
 	if err != nil {
 		beego.Error("Failed to get activations:", err)
@@ -107,14 +108,14 @@ func (this *ActivationsController) GetAll() {
 
 	// Get total activation count
 	var numActivations int64
-	numActivations, err = models.GetNumActivations(
+	numActivations, err = purchases.GetNumActivations(
 		startTime, endTime, userId)
 	if err != nil {
 		beego.Error("Failed to get number of activations:", err)
 		this.CustomAbort(403, "Failed to get activations")
 	}
 
-	r := models.GetActivationsResponse{}
+	r := purchases.GetActivationsResponse{}
 	r.NumActivations = numActivations
 	r.ActivationsPage = activations
 
@@ -139,7 +140,7 @@ func (this *ActivationsController) Get() {
 // @Failure	403	Failed to get active activations
 // @router /active [get]
 func (this *ActivationsController) GetActive() {
-	activations, err := models.GetActiveActivations()
+	activations, err := purchases.GetActiveActivations()
 	if err != nil {
 		beego.Error("Failed to get active activations")
 		this.CustomAbort(403, "Failed to get active activations")
@@ -220,7 +221,7 @@ func (this *ActivationsController) Create() {
 	// Continue with creating activation
 	var activationId int64
 	var startTime time.Time = time.Now()
-	activationId, err = models.CreateActivation(machineId, userId, startTime)
+	activationId, err = purchases.CreateActivation(machineId, userId, startTime)
 	if err != nil {
 		beego.Error("Failed to create activation:", err)
 		this.CustomAbort(403, "Failed to create activation")
@@ -247,7 +248,7 @@ func (this *ActivationsController) Close() {
 	}
 
 	var machineId int64
-	machineId, err = models.GetActivationMachineId(aid)
+	machineId, err = purchases.GetActivationMachineId(aid)
 	if err != nil {
 		beego.Error("Failed to get machine ID")
 		this.CustomAbort(403, "Failed to close activation")
@@ -279,7 +280,7 @@ func (this *ActivationsController) Close() {
 		}
 	}
 
-	err = models.CloseActivation(aid, time.Now())
+	err = purchases.CloseActivation(aid, time.Now())
 	if err != nil {
 		beego.Error("Failed to close activation")
 		this.CustomAbort(403, "Failed to close activation")
