@@ -1,10 +1,10 @@
 package controllers
 
 import (
-	//"encoding/json"
 	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/kr15h/fabsmith/models"
+	"strconv"
 )
 
 type FastBillController struct {
@@ -29,40 +29,33 @@ func (this *FastBillController) GetCustomers() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	fb := models.FastBill{}
-	fb.Email = beego.AppConfig.String("fastbillemail")
-	fb.APIKey = beego.AppConfig.String("fastbillapikey")
+	fb := models.NewFastBill()
 
-	filter := models.FastBillCustomerGetFilter{}
-	filter.TERM = this.GetString("term")
-	beego.Trace(filter.TERM)
+	filter := models.FastBillCustomerGetFilter{
+		TERM: this.GetString("term"),
+	}
 
-	var err error
-	var customerId int64
-	customerId, err = this.GetInt64("customerid")
+	customerId, err := this.GetInt64("customerid")
 	if err != nil {
 		beego.Warning("Failed to get customer ID.")
 	} else {
 		filter.CUSTOMER_ID = fmt.Sprintf("%d", customerId)
 	}
 
-	var customerNumber int64
-	customerNumber, err = this.GetInt64("customernumber")
+	customerNumber, err := this.GetInt64("customernumber")
 	if err != nil {
 		beego.Warning("Failed to get customer number.")
 	} else {
 		filter.CUSTOMER_NUMBER = fmt.Sprintf("%d", customerNumber)
 	}
 
-	var limit int64
-	limit, err = this.GetInt64("limit")
+	limit, err := this.GetInt64("limit")
 	if err != nil {
 		beego.Warning("Failed to get limit")
 		limit = 0
 	}
 
-	var offset int64
-	offset, err = this.GetInt64("offset")
+	offset, err := this.GetInt64("offset")
 	if err != nil {
 		beego.Warning("Failed to get offset")
 		offset = 0
@@ -100,20 +93,19 @@ func (this *FastBillController) CreateCustomer() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	fb := models.FastBill{}
-	fb.Email = beego.AppConfig.String("fastbillemail")
-	fb.APIKey = beego.AppConfig.String("fastbillapikey")
+	fb := models.NewFastBill()
 
-	customer := models.FastBillCustomer{}
-	customer.FIRST_NAME = this.GetString("firstname")
-	customer.LAST_NAME = this.GetString("lastname")
-	customer.EMAIL = this.GetString("email")
-	customer.PHONE = this.GetString("phone")
-	customer.ADDRESS = this.GetString("address")
-	customer.CITY = this.GetString("city")
-	customer.ZIPCODE = this.GetString("zipcode")
-	customer.ORGANIZATION = this.GetString("organization")
-	customer.COUNTRY_CODE = this.GetString("countrycode")
+	customer := models.FastBillCustomer{
+		FIRST_NAME:   this.GetString("firstname"),
+		LAST_NAME:    this.GetString("lastname"),
+		EMAIL:        this.GetString("email"),
+		PHONE:        this.GetString("phone"),
+		ADDRESS:      this.GetString("address"),
+		CITY:         this.GetString("city"),
+		ZIPCODE:      this.GetString("zipcode"),
+		ORGANIZATION: this.GetString("organization"),
+		COUNTRY_CODE: this.GetString("countrycode"),
+	}
 
 	if customer.ORGANIZATION == "" {
 		customer.CUSTOMER_TYPE = models.FASTBILL_CUSTOMER_TYPE_CONSUMER
@@ -127,10 +119,9 @@ func (this *FastBillController) CreateCustomer() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	response := models.FastBillCreateCustomerResponse{}
-	response.CUSTOMER_ID = customerId
-
-	this.Data["json"] = response
+	this.Data["json"] = models.FastBillCreateCustomerResponse{
+		CUSTOMER_ID: customerId,
+	}
 	this.ServeJson()
 }
 
@@ -157,9 +148,7 @@ func (this *FastBillController) UpdateCustomer() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	fb := models.FastBill{}
-	fb.Email = beego.AppConfig.String("fastbillemail")
-	fb.APIKey = beego.AppConfig.String("fastbillapikey")
+	fb := models.NewFastBill()
 
 	customerId, err := this.GetInt64(":customerid")
 	if err != nil {
@@ -168,12 +157,11 @@ func (this *FastBillController) UpdateCustomer() {
 	}
 
 	// Get existing customer
-	filter := models.FastBillCustomerGetFilter{}
-	filter.CUSTOMER_ID = fmt.Sprintf("%d", customerId)
-	beego.Trace(filter.CUSTOMER_ID)
+	filter := models.FastBillCustomerGetFilter{
+		CUSTOMER_ID: strconv.FormatInt(customerId, 10),
+	}
 
-	var fastBillCustomers *models.FastBillCustomerList
-	fastBillCustomers, err = fb.GetCustomers(&filter, 0, 0)
+	fastBillCustomers, err := fb.GetCustomers(&filter, 0, 0)
 	if err != nil {
 		beego.Error("Failed to get FastBill customers:", err)
 		this.CustomAbort(500, "Internal Server Error")
@@ -188,51 +176,40 @@ func (this *FastBillController) UpdateCustomer() {
 	// Update only the fields that have new values
 	customer := fastBillCustomers.Customers[0]
 
-	newFirstName := this.GetString("firstname")
-	if customer.FIRST_NAME != newFirstName && newFirstName != "" {
-		customer.FIRST_NAME = newFirstName
+	if fn := this.GetString("firstname"); fn != "" {
+		customer.FIRST_NAME = fn
 	}
 
-	newLastName := this.GetString("lastname")
-	if customer.LAST_NAME != newLastName && newLastName != "" {
-		customer.LAST_NAME = newLastName
+	if ln := this.GetString("lastname"); ln != "" {
+		customer.LAST_NAME = ln
 	}
 
 	// TODO: Check email address.
-	newEmail := this.GetString("email")
-	if customer.EMAIL != newEmail && newEmail != "" {
-		customer.EMAIL = this.GetString("email")
+	if email := this.GetString("email"); email != "" {
+		customer.EMAIL = email
 	}
 
-	newPhone := this.GetString("phone")
-	if customer.PHONE != newPhone && newPhone != "" {
-		customer.PHONE = newPhone
+	if phone := this.GetString("phone"); phone != "" {
+		customer.PHONE = phone
 	}
 
-	newAddress := this.GetString("address")
-	if customer.ADDRESS != newAddress && newAddress != "" {
-		customer.ADDRESS = newAddress
+	if addr := this.GetString("address"); addr != "" {
+		customer.ADDRESS = addr
 	}
 
-	newCity := this.GetString("city")
-	if customer.CITY != newCity && newCity != "" {
-		customer.CITY = newCity
+	if city := this.GetString("city"); city != "" {
+		customer.CITY = city
 	}
 
-	newZipcode := this.GetString("zipcode")
-	if customer.ZIPCODE != newZipcode && newZipcode != "" {
-		customer.ZIPCODE = newZipcode
+	if zip := this.GetString("zipcode"); zip != "" {
+		customer.ZIPCODE = zip
 	}
 
-	newOrganization := this.GetString("organization")
 	// The organization can be empty
-	if customer.ORGANIZATION != newOrganization {
-		customer.ORGANIZATION = newOrganization
-	}
+	customer.ORGANIZATION = this.GetString("organization")
 
-	newCountryCode := this.GetString("countrycode")
-	if customer.COUNTRY_CODE != newCountryCode && newCountryCode != "" {
-		customer.COUNTRY_CODE = newCountryCode
+	if cc := this.GetString("countrycode"); cc != "" {
+		customer.COUNTRY_CODE = cc
 	}
 
 	// If there is no organization - customer can be considered a plain consumer
@@ -242,17 +219,15 @@ func (this *FastBillController) UpdateCustomer() {
 		customer.CUSTOMER_TYPE = models.FASTBILL_CUSTOMER_TYPE_BUSINESS
 	}
 
-	var customerIdUpd int64
-	customerIdUpd, err = fb.UpdateCustomer(&customer)
+	customerIdUpd, err := fb.UpdateCustomer(&customer)
 	if err != nil {
 		beego.Error("Failed to update FastBill customer:", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	response := models.FastBillUpdateCustomerResponse{}
-	response.CUSTOMER_ID = customerIdUpd
-
-	this.Data["json"] = response
+	this.Data["json"] = models.FastBillUpdateCustomerResponse{
+		CUSTOMER_ID: customerIdUpd,
+	}
 	this.ServeJson()
 }
 
@@ -270,9 +245,7 @@ func (this *FastBillController) DeleteCustomer() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	fb := models.FastBill{}
-	fb.Email = beego.AppConfig.String("fastbillemail")
-	fb.APIKey = beego.AppConfig.String("fastbillapikey")
+	fb := models.NewFastBill()
 
 	customerId, err := this.GetInt64(":customerid")
 	if err != nil {

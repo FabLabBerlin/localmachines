@@ -58,18 +58,14 @@ func (this *MembershipsController) Create() {
 	}
 
 	membershipName := this.GetString("mname")
-	beego.Trace(membershipName)
 
-	// All clear - create membership in the database
-	var membershipId int64
-	var err error
-	membershipId, err = models.CreateMembership(membershipName)
+	id, err := models.CreateMembership(membershipName)
 	if err != nil {
 		beego.Error("Failed to create membership", err)
 		this.CustomAbort(403, "Failed to create membership")
 	}
 
-	this.Data["json"] = membershipId
+	this.Data["json"] = id
 	this.ServeJson()
 }
 
@@ -87,18 +83,13 @@ func (this *MembershipsController) Get() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	var err error
-	var mid int64
-
-	mid, err = this.GetInt64(":mid")
+	mid, err := this.GetInt64(":mid")
 	if err != nil {
 		beego.Error("Could not get mid")
 		this.CustomAbort(403, "Failed to get membership")
 	}
 
-	var membership *models.Membership
-
-	membership, err = models.GetMembership(mid)
+	membership, err := models.GetMembership(mid)
 	if err != nil {
 		beego.Error("Could not get membership")
 		this.CustomAbort(403, "Failed to get membership")
@@ -123,20 +114,16 @@ func (this *MembershipsController) Update() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	var err error
-
 	// Attempt to decode passed json
 	dec := json.NewDecoder(this.Ctx.Request.Body)
 	req := models.Membership{}
-	if err = dec.Decode(&req); err != nil {
+	if err := dec.Decode(&req); err != nil {
 		beego.Error("Failed to decode json:", err)
 		this.CustomAbort(403, "Failed to update membership")
 	}
 
-	var mid int64
-
 	// Get mid and check if it matches with the membership model ID
-	mid, err = this.GetInt64(":mid")
+	mid, err := this.GetInt64(":mid")
 	if err != nil {
 		beego.Error("Could not get :mid:", err)
 		this.CustomAbort(403, "Failed to update membership")
@@ -146,9 +133,7 @@ func (this *MembershipsController) Update() {
 		this.CustomAbort(403, "Failed to update membership")
 	}
 
-	// Update the database
-	err = req.Update()
-	if err != nil {
+	if err = req.Update(); err != nil {
 		beego.Error("Failed updating membership:", err)
 		this.CustomAbort(403, "Failed to update membership")
 	}
@@ -171,10 +156,7 @@ func (this *MembershipsController) Delete() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	var err error
-	var mid int64
-
-	mid, err = this.GetInt64(":mid")
+	mid, err := this.GetInt64(":mid")
 	if err != nil {
 		beego.Error("Failed to get mid:", err)
 		this.CustomAbort(403, "Failed to delete membership")

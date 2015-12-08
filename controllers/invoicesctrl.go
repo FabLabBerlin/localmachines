@@ -48,17 +48,13 @@ func (this *InvoicesController) Delete() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	var err error
-	var iid int64
-
-	iid, err = this.GetInt64(":iid")
+	iid, err := this.GetInt64(":iid")
 	if err != nil {
 		beego.Error("Failed to get iid:", err)
 		this.CustomAbort(403, "Failed to delete invoice")
 	}
 
-	err = invoices.Delete(iid)
-	if err != nil {
+	if err = invoices.Delete(iid); err != nil {
 		beego.Error("Failed to delete invoice:", err)
 		this.CustomAbort(403, "Failed to delete invoice")
 	}
@@ -83,56 +79,40 @@ func (this *InvoicesController) Create() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	var err error
-	var startDate string
-	var endDate string
-
 	// Get variables
-	startDate = this.GetString("startDate")
+	startDate := this.GetString("startDate")
 	if startDate == "" {
 		beego.Error("Missing start date")
 		this.CustomAbort(403, "Failed to create invoice")
 	}
 
-	endDate = this.GetString("endDate")
+	endDate := this.GetString("endDate")
 	if endDate == "" {
 		beego.Error("Missing end date")
 		this.CustomAbort(403, "Failed to create invoice")
 	}
 
-	beego.Trace("startDate:", startDate)
-	beego.Trace("endDate:", endDate)
-
 	// Convert / parse string time values as time.Time
 	var timeForm = "2006-01-02 15:04:05"
-	var startTime time.Time
 
 	// Enhance start date
 	startDate = fmt.Sprintf("%s 00:00:00", startDate)
 
-	startTime, err = time.Parse(
-		timeForm, startDate)
+	startTime, err := time.Parse(timeForm, startDate)
 	if err != nil {
 		beego.Error("Failed to parse startDate:", err)
 		this.CustomAbort(403, "Failed to create invoice")
 	}
 
-	var endTime time.Time
-
 	// Enhance end date, make all the day inclusive
 	endDate = fmt.Sprintf("%s 23:59:59", endDate)
 
-	endTime, err = time.Parse(
-		timeForm, endDate)
+	endTime, err := time.Parse(timeForm, endDate)
 	if err != nil {
 		beego.Error("Failed to parse endDate:", err)
 		this.CustomAbort(403, "Failed to create invoice")
 	}
 
-	beego.Trace(startTime)
-	beego.Trace(endTime)
-
-	// Create invoice
 	invoice, err := invoices.Create(startTime, endTime)
 	if err != nil {
 		beego.Error("Failed to create invoice:", err)

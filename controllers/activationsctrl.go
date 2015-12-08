@@ -30,76 +30,56 @@ func (this *ActivationsController) GetAll() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	var err error
-	var startDate string
-	var endDate string
-	var userId int64
-	var itemsPerPage int64
-	var page int64
-
 	// Get variables
-	startDate = this.GetString("startDate")
+	startDate := this.GetString("startDate")
 	if startDate == "" {
 		beego.Error("Missing start date")
 		this.CustomAbort(403, "Failed to get activations")
 	}
 
-	endDate = this.GetString("endDate")
+	endDate := this.GetString("endDate")
 	if endDate == "" {
 		beego.Error("Missing end date")
 		this.CustomAbort(403, "Failed to get activations")
 	}
 
-	userId, err = this.GetInt64("userId")
+	userId, err := this.GetInt64("userId")
 	if err != nil {
 		beego.Error("Could not get userId request variable:", err)
 		this.CustomAbort(403, "Failed to get activations")
 	}
 
-	itemsPerPage, err = this.GetInt64("itemsPerPage")
+	itemsPerPage, err := this.GetInt64("itemsPerPage")
 	if err != nil {
 		beego.Error("Could not get itemsPerPage request variable:", err)
 		this.CustomAbort(403, "Failed to get activations")
 	}
 
-	page, err = this.GetInt64("page")
+	page, err := this.GetInt64("page")
 	if err != nil {
 		beego.Error("Could not get page request variable:", err)
 		this.CustomAbort(403, "Failed to get activations")
 	}
 
-	beego.Trace("startDate:", startDate)
-	beego.Trace("endDate:", endDate)
-	beego.Trace("userId:", userId)
-	beego.Trace("itemsPerPage:", itemsPerPage)
-	beego.Trace("page:", page)
-
 	// Convert / parse string time values as time.Time
 	var timeForm = "2006-01-02"
-	var startTime time.Time
 
-	startTime, err = time.ParseInLocation(
+	startTime, err := time.ParseInLocation(
 		timeForm, startDate, time.Now().Location())
 	if err != nil {
 		beego.Error("Failed to parse startDate:", err)
 		this.CustomAbort(403, "Failed to get activations")
 	}
 
-	var endTime time.Time
-
-	endTime, err = time.ParseInLocation(
+	endTime, err := time.ParseInLocation(
 		timeForm, endDate, time.Now().Location())
 	if err != nil {
 		beego.Error("Failed to parse endDate:", err)
 		this.CustomAbort(403, "Failed to get activations")
 	}
 
-	beego.Trace(startTime)
-	beego.Trace(endTime)
-
 	// Get activations
-	var activations *[]purchases.Activation
-	activations, err = purchases.GetActivations(
+	activations, err := purchases.GetActivations(
 		startTime, endTime, userId, itemsPerPage, page)
 	if err != nil {
 		beego.Error("Failed to get activations:", err)
@@ -107,19 +87,17 @@ func (this *ActivationsController) GetAll() {
 	}
 
 	// Get total activation count
-	var numActivations int64
-	numActivations, err = purchases.GetNumActivations(
+	numActivations, err := purchases.GetNumActivations(
 		startTime, endTime, userId)
 	if err != nil {
 		beego.Error("Failed to get number of activations:", err)
 		this.CustomAbort(403, "Failed to get activations")
 	}
 
-	r := purchases.GetActivationsResponse{}
-	r.NumActivations = numActivations
-	r.ActivationsPage = activations
-
-	this.Data["json"] = r
+	this.Data["json"] = purchases.GetActivationsResponse{
+		NumActivations:  numActivations,
+		ActivationsPage: activations,
+	}
 	this.ServeJson()
 }
 
@@ -157,17 +135,13 @@ func (this *ActivationsController) GetActive() {
 // @Failure 401 Not authorized
 // @router / [post]
 func (this *ActivationsController) Create() {
-
-	var machineId int64
-	var err error
-
 	userId, ok := this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
 	if ok == false {
 		beego.Error("Failed to get session user ID")
 		this.CustomAbort(403, "Failed to create activation")
 	}
 
-	machineId, err = this.GetInt64("mid")
+	machineId, err := this.GetInt64("mid")
 	if err != nil {
 		beego.Error("Failed to get mid:", err)
 		this.CustomAbort(403, "Failed to create activation")
@@ -178,8 +152,7 @@ func (this *ActivationsController) Create() {
 	if !this.IsAdmin() {
 
 		// Check if user has permissions to create activation for the machine.
-		var userPermissions *[]models.Permission
-		userPermissions, err = models.GetUserPermissions(userId)
+		userPermissions, err := models.GetUserPermissions(userId)
 		if err != nil {
 			beego.Error("Could not get user permissions")
 			this.CustomAbort(403, "Failed to create activation")
@@ -198,17 +171,17 @@ func (this *ActivationsController) Create() {
 	}
 
 	// Turn on the machine
-	machine := models.Machine{}
-	machine.Id = machineId
-	err = machine.On()
-	if err != nil {
+	machine := models.Machine{
+		Id: machineId,
+	}
+
+	if err = machine.On(); err != nil {
 		beego.Error("Failed to turn on machine:", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
 	// Turn on the connected machines
-	var connectedMachines *models.ConnectedMachineList
-	connectedMachines, err = models.GetConnectedMachines(machineId)
+	connectedMachines, err := models.GetConnectedMachines(machineId)
 	if err != nil {
 		beego.Warning("Failed to get connected machines:", err)
 	} else {
@@ -219,17 +192,16 @@ func (this *ActivationsController) Create() {
 	}
 
 	// Continue with creating activation
-	var activationId int64
 	var startTime time.Time = time.Now()
-	activationId, err = purchases.CreateActivation(machineId, userId, startTime)
+	activationId, err := purchases.CreateActivation(machineId, userId, startTime)
 	if err != nil {
 		beego.Error("Failed to create activation:", err)
 		this.CustomAbort(403, "Failed to create activation")
 	}
 
-	response := models.ActivationCreateResponse{}
-	response.ActivationId = activationId
-	this.Data["json"] = response
+	this.Data["json"] = models.ActivationCreateResponse{
+		ActivationId: activationId,
+	}
 	this.ServeJson()
 }
 
@@ -247,8 +219,7 @@ func (this *ActivationsController) Close() {
 		this.CustomAbort(403, "Failed to close activation")
 	}
 
-	var machineId int64
-	machineId, err = purchases.GetActivationMachineId(aid)
+	machineId, err := purchases.GetActivationMachineId(aid)
 	if err != nil {
 		beego.Error("Failed to get machine ID")
 		this.CustomAbort(403, "Failed to close activation")
@@ -257,8 +228,9 @@ func (this *ActivationsController) Close() {
 	// Attempt to switch off the machine first. This is a way to detect
 	// network errors early as the users won't be able to end their activation
 	// unless the error in the network is fixed.
-	machine := models.Machine{}
-	machine.Id = machineId
+	machine := models.Machine{
+		Id: machineId,
+	}
 	if err = machine.Off(); err != nil {
 		beego.Error("Failed to switch off machine")
 		if !this.IsAdmin() {
@@ -267,8 +239,7 @@ func (this *ActivationsController) Close() {
 	}
 
 	// Get connected machines and try to swich them off as well
-	var connectedMachines *models.ConnectedMachineList
-	connectedMachines, err = models.GetConnectedMachines(machineId)
+	connectedMachines, err := models.GetConnectedMachines(machineId)
 	if err != nil {
 		beego.Warning("Failed to get connected machines:", err)
 	} else {
@@ -286,9 +257,9 @@ func (this *ActivationsController) Close() {
 		this.CustomAbort(403, "Failed to close activation")
 	}
 
-	statusResponse := models.StatusResponse{}
-	statusResponse.Status = "ok"
-	this.Data["json"] = statusResponse
+	this.Data["json"] = models.StatusResponse{
+		Status: "ok",
+	}
 	this.ServeJson()
 }
 

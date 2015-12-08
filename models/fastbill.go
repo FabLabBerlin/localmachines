@@ -25,8 +25,16 @@ const (
 
 // Main FastBill object. All the functionality goes through this object.
 type FastBill struct {
-	Email  string
-	APIKey string
+	email  string
+	apiKey string
+}
+
+func NewFastBill() (fb *FastBill) {
+	fb = &FastBill{
+		email:  beego.AppConfig.String("fastbillemail"),
+		apiKey: beego.AppConfig.String("fastbillapikey"),
+	}
+	return
 }
 
 // Base FastBill API request model
@@ -145,11 +153,12 @@ type FastBillCustomerGetFilter struct {
 func (this *FastBill) GetCustomers(filter *FastBillCustomerGetFilter,
 	limit int64, offset int64) (*FastBillCustomerList, error) {
 
-	request := FastBillRequest{}
-	request.SERVICE = FASTBILL_SERVICE_CUSTOMER_GET
-	request.LIMIT = limit
-	request.OFFSET = offset
-	request.FILTER = filter
+	request := FastBillRequest{
+		SERVICE: FASTBILL_SERVICE_CUSTOMER_GET,
+		LIMIT:   limit,
+		OFFSET:  offset,
+		FILTER:  filter,
+	}
 
 	response := FastBillCustomerGetResponse{}
 	err := this.execGetRequest(&request, &response)
@@ -163,10 +172,10 @@ func (this *FastBill) GetCustomers(filter *FastBillCustomerGetFilter,
 // Create FastBill customer, returns Customer ID
 func (this *FastBill) CreateCustomer(customer *FastBillCustomer) (int64, error) {
 
-	request := FastBillRequest{}
-
-	request.SERVICE = FASTBILL_SERVICE_CUSTOMER_CREATE
-	request.DATA = customer
+	request := FastBillRequest{
+		SERVICE: FASTBILL_SERVICE_CUSTOMER_CREATE,
+		DATA:    customer,
+	}
 
 	response := FastBillCustomerCreateResponse{}
 	err := this.execGetRequest(&request, &response)
@@ -189,9 +198,10 @@ func (this *FastBill) CreateCustomer(customer *FastBillCustomer) (int64, error) 
 // Update FastBill customer
 func (this *FastBill) UpdateCustomer(customer *FastBillCustomer) (int64, error) {
 
-	request := FastBillRequest{}
-	request.SERVICE = FASTBILL_SERVICE_CUSTOMER_UPDATE
-	request.DATA = customer
+	request := FastBillRequest{
+		SERVICE: FASTBILL_SERVICE_CUSTOMER_UPDATE,
+		DATA:    customer,
+	}
 
 	response := FastBillCustomerUpdateResponse{}
 	err := this.execGetRequest(&request, &response)
@@ -216,9 +226,12 @@ func (this *FastBill) UpdateCustomer(customer *FastBillCustomer) (int64, error) 
 
 func (this *FastBill) DeleteCustomer(customerId int64) error {
 
-	request := FastBillRequest{}
-	request.SERVICE = FASTBILL_SERVICE_CUSTOMER_DELETE
-	request.DATA = FastBillCustomer{CUSTOMER_ID: strconv.FormatInt(customerId, 10)}
+	request := FastBillRequest{
+		SERVICE: FASTBILL_SERVICE_CUSTOMER_DELETE,
+		DATA: FastBillCustomer{
+			CUSTOMER_ID: strconv.FormatInt(customerId, 10),
+		},
+	}
 
 	response := FastBillCustomerDeleteResponse{}
 	err := this.execGetRequest(&request, &response)
@@ -237,33 +250,26 @@ func (this *FastBill) DeleteCustomer(customerId int64) error {
 // Reusable helper function for the
 func (this *FastBill) execGetRequest(request *FastBillRequest, response interface{}) error {
 
-	var err error
-	var req *http.Request
-	var resp *http.Response
-	var jsonBytes []byte
-
-	jsonBytes, err = json.Marshal(request)
+	jsonBytes, err := json.Marshal(request)
 	if err != nil {
 		return fmt.Errorf("Failed to marshal JSON: %v", err)
 	}
-	beego.Trace("execGetRequest: jsonBytes: " + string(jsonBytes))
 
-	req, err = http.NewRequest("GET", FASTBILL_API_URL, bytes.NewBuffer(jsonBytes))
+	req, err := http.NewRequest("GET", FASTBILL_API_URL, bytes.NewBuffer(jsonBytes))
 	if err != nil {
 		return fmt.Errorf("Failed to create request: %v", err)
 	}
 	req.Header.Add("Content-Type", "application/json")
-	req.SetBasicAuth(this.Email, this.APIKey)
+	req.SetBasicAuth(this.email, this.apiKey)
 	client := &http.Client{}
-	resp, err = client.Do(req)
+	resp, err := client.Do(req)
 	if err != nil {
 		beego.Error("Failed to get response:", err)
 		return fmt.Errorf("Failed to get response")
 	}
 	defer resp.Body.Close()
 
-	var body []byte
-	body, err = ioutil.ReadAll(resp.Body)
+	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		beego.Error("Failed to read response body:", err)
 		return fmt.Errorf("Failed to read response body")

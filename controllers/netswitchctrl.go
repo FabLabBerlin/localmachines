@@ -24,17 +24,13 @@ func (this *NetSwitchController) Get() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	var err error
-	var mid int64
-
-	mid, err = this.GetInt64(":mid")
+	mid, err := this.GetInt64(":mid")
 	if err != nil {
 		beego.Error("Could not get :mid:", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	var mapping *models.NetSwitchMapping
-	mapping, err = models.GetNetSwitchMapping(mid)
+	mapping, err := models.GetNetSwitchMapping(mid)
 	if err != nil {
 		beego.Error("Failed to get NetSwitch maping")
 		this.CustomAbort(500, "Internal Server Error")
@@ -58,18 +54,13 @@ func (this *NetSwitchController) Create() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	var mid int64
-	var err error
-
-	mid, err = this.GetInt64("mid")
+	mid, err := this.GetInt64("mid")
 	if err != nil {
 		beego.Error("Could not get mid:", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	var mappingId int64
-
-	mappingId, err = models.CreateNetSwitchMapping(mid)
+	mappingId, err := models.CreateNetSwitchMapping(mid)
 	if err != nil {
 		beego.Error("Failed to create NetSwitch mapping:", err)
 		this.CustomAbort(500, "Internal Server Error")
@@ -93,10 +84,7 @@ func (this *NetSwitchController) Delete() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	var err error
-	var mid int64
-
-	mid, err = this.GetInt64(":mid")
+	mid, err := this.GetInt64(":mid")
 	if err != nil {
 		beego.Error("Failed to get :mid:", err)
 		this.CustomAbort(403, "Internal Server Error")
