@@ -33,6 +33,7 @@ var OccupiedMachine = React.createClass({
   render() {
     var users = this.state.machineUsers;
     var user = users.get(this.props.activation.UserId) || {};
+    console.log('this.props.activation.Quantity:', this.props.activation.Quantity);
     return (
       <div className="machine occupied">
         <div className="row">
@@ -46,7 +47,7 @@ var OccupiedMachine = React.createClass({
                 <div className="occupied-by-value">
                   {user.FirstName} {user.LastName}
                 </div>
-                <Timer time={this.props.activation.Quantity} />
+                <Timer activation={this.props.activation} />
               </div>
             </div>
   
