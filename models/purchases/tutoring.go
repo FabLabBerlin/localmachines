@@ -28,9 +28,9 @@ type TutoringList struct {
 }
 
 // Create a planned tutoring reservation in the future with blank values.
-func CreateTutoringPurchase(tutoringPurchase *TutoringPurchase) (int64, error) {
+func CreateTutoring(tutoringPurchase *Tutoring) (int64, error) {
 	tutoringPurchase.Purchase.Created = time.Now()
-	tutoringPurchase.Purchase.Type = PURCHASE_TYPE_TUTOR
+	tutoringPurchase.Purchase.Type = TYPE_TUTOR
 	tutoringPurchase.Purchase.TimeStart = time.Now()
 	tutoringPurchase.Purchase.TimeEnd = tutoringPurchase.Purchase.TimeStart.
 		Add(time.Duration(1) * time.Hour)
@@ -38,7 +38,7 @@ func CreateTutoringPurchase(tutoringPurchase *TutoringPurchase) (int64, error) {
 	tutoringPurchase.Purchase.PriceUnit = "hour"
 
 	o := orm.NewOrm()
-	return o.Insert(&tutoring.Purchase)
+	return o.Insert(&tutoringPurchase.Purchase)
 }
 
 func GetTutoring(id int64) (tutoring *Tutoring, err error) {
@@ -70,13 +70,13 @@ func GetAllTutorings() (tutorings *TutoringList, err error) {
 }
 
 // Start the tutoring purchase timer.
-func StartTutoringPurchase(tutoringPurchaseId int64) (err error) {
+func StartTutoring(tutoringPurchaseId int64) (err error) {
 	o := orm.NewOrm()
 
 	// Let's just use full names by convention as code is being copy/pasted
 	// and there is too much human error involved. At the end of the day
 	// the variable names just do not make sense.
-	tutoringPurchase, err := GetTutoringPurchase(tutoringPurchaseId)
+	tutoringPurchase, err := GetTutoring(tutoringPurchaseId)
 	if err != nil {
 		return fmt.Errorf("Failed to get tutoring purchase: %v", err)
 	}
@@ -95,7 +95,7 @@ func StartTutoringPurchase(tutoringPurchaseId int64) (err error) {
 
 // Stop tutoring purchase timer.
 func StopTutoringPurchase(tutoringPurchaseId int64) (err error) {
-	tutoringPurchase, err := GetTutoringPurchase(tutoringPurchaseId)
+	tutoringPurchase, err := GetTutoring(tutoringPurchaseId)
 	if err != nil {
 		return fmt.Errorf("get tutoring purchase: %v", err)
 	}
@@ -143,7 +143,7 @@ func StopTutoringPurchase(tutoringPurchaseId int64) (err error) {
 	return
 }
 
-func UpdateTutoringPurchase(tutoringPurchase *TutoringPurchase) (err error) {
+func UpdateTutoringPurchase(tutoringPurchase *Tutoring) (err error) {
 	o := orm.NewOrm()
 	_, err = o.Update(&tutoringPurchase.Purchase)
 	return
