@@ -78,12 +78,19 @@ app.controller('ReservationCtrl',
       _.each($scope.users, function(user) {
         $scope.usersById[user.Id] = user;
       });
+      setTimeout(function() {
+        $('.selectpicker').selectpicker('refresh');
+      }, 100);
       loadMachines();
     })
     .error(function() {
       toastr.error('Failed to get reservations');
     });
   }
+
+  $scope.refreshUserPicker = function() {
+    $('#reservation-user').selectpicker('refresh');
+  };
 
   $scope.saveReservation = function() {
     $http({

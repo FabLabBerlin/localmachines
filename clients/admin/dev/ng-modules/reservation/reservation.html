@@ -36,20 +36,23 @@
   
   </div><!-- /.row -->
 
-  <div class="row">
-    <div class="col-sm-9">
-      <div class="form-group">
-        <label for="reservation-user">User</label>
-        <select ng-model="reservation.UserId" id="reservation-user" class="form-control">
-          <option ng-repeat="user in users"
-                  value="{{user.Id}}">
-            {{user.FirstName}} {{user.LastName}} ({{user.Email}})
-          </option>
-        </select>
-      </div>
-    </div>
 
-  </div><!-- /.row -->
+  <div class="form-group">
+    <label for="reservation-user">User</label>
+    <select 
+      ng-model="reservation.UserId" 
+      id="reservation-user" 
+      class="selectpicker"
+      ng-change="refreshUserPicker()"
+      data-live-search="true"
+      data-width="100%">
+      <option 
+        ng-repeat="user in users"
+        value="{{user.Id}}">
+        {{user.FirstName}} {{user.LastName}} ({{user.Email}})
+      </option>
+    </select>
+  </div>
 
   <div class="row">
 
