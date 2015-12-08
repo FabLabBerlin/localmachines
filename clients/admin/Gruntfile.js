@@ -39,6 +39,7 @@ module.exports = function (grunt) {
 						'dev/bower_components/pickadate/lib/themes/classic.css',
 						'dev/bower_components/pickadate/lib/themes/classic.date.css',
 						'dev/bower_components/pickadate/lib/themes/classic.time.css',
+						'dev/bower_components/bootstrap-select/less/bootstrap-select.less',
 						'dev/assets/less/main.less'
 					]
 				},
@@ -77,7 +78,8 @@ module.exports = function (grunt) {
 						'dev/ng-components/version/version-directive.js',
 						'dev/ng-components/version/interpolate-filter.js',
 						'dev/ng-components/filters.js',
-						'dev/bower_components/webfontloader/webfontloader.js'
+						'dev/bower_components/webfontloader/webfontloader.js',
+						'dev/bower_components/bootstrap-select/js/bootstrap-select.js'
 					],
 					'tmp/app.js': [
 						'tmp/dependencies.js',
