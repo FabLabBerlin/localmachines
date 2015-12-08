@@ -42,10 +42,10 @@ var MachineChooser = React.createClass({
   forceSwitch(onOrOff) {
     let mid = this.props.info.Id;
     let aid = this.props.activation.Id;
-    if(onOrOff === 'off') {
-      MachineActions.adminTurnOffMachine(mid, aid);
+    if (onOrOff === 'off') {
+      MachineActions.forceTurnOffMachine(mid, aid);
     } else if (onOrOff === 'on') {
-      MachineActions.adminTurnOnMachine(mid);
+      MachineActions.forceTurnOnMachine(mid);
     }
   },
 

@@ -49,13 +49,11 @@ describe('MachineActions', function() {
     });
   });
 
-  describe('adminTurnOffMachine', function() {
+  describe('forceTurnOffMachine', function() {
     it('should POST /api/machines/:mid/turn_off', function() {
-      MachineActions.adminTurnOffMachine(17, 2);
+      MachineActions.forceTurnOffMachine(17, 2);
       expect($.ajax).toBeCalledWith({
         url: '/api/machines/17/turn_off',
-        data: jasmine.any(Object),
-        dataType: 'json',
         type: 'POST',
         success: jasmine.any(Function),
         error: jasmine.any(Function)
@@ -63,13 +61,11 @@ describe('MachineActions', function() {
     });
   });
 
-  describe('adminTurnOnMachine', function() {
+  describe('forceTurnOnMachine', function() {
     it('should POST /api/machines/:mid/turn_on', function() {
-      MachineActions.adminTurnOnMachine(17);
+      MachineActions.forceTurnOnMachine(17);
       expect($.ajax).toBeCalledWith({
         url: '/api/machines/17/turn_on',
-        data: jasmine.any(Object),
-        dataType: 'json',
         type: 'POST',
         success: jasmine.any(Function),
         error: jasmine.any(Function)

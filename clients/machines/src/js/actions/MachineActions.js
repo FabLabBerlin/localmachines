@@ -11,40 +11,72 @@ var toastr = require('../toastr');
 
 var MachineActions = {
 
-  /*
-   * To end an activation
-   * @aid: id of the activation you want to shut down
-   */
-  endActivation(aid, cb) {
-    apiPutActivation(aid, cb);
-    LoginActions.keepAlive();
-  },
-
-  /*
-   * To start an activation
-   * @mid: id of the machine you want to activate
-   */
   startActivation(mid) {
     var dataToSend = {
       mid: mid
     };
-    ApiActions.postCall('/api/activations', dataToSend, _postActivationSuccess, 'Can not activate the machine');
+    $.ajax({
+      url: '/api/activations',
+      dataType: 'json',
+      type: 'POST',
+      data: {
+        mid: mid
+      },
+      success(data) {
+        GlobalActions.hideGlobalLoader();
+        toastr.info('Machine activated');
+      },
+      error(xhr, status, err) {
+        GlobalActions.hideGlobalLoader();
+        toastr.error('Can not activate the machine');
+        console.error(status, err);
+      }
+    });
     LoginActions.keepAlive();
   },
 
-  /*
-   * When an admin want to force on a machine
-   */
-  adminTurnOffMachine(mid, aid) {
-    apiPostSwitchMachine(mid, 'off', aid);
+  endActivation(aid, cb) {
+    endActivation(aid, cb);
     LoginActions.keepAlive();
   },
 
-  /*
-   * When an admin want to force off a machine
-   */
-  adminTurnOnMachine(mid) {
-    apiPostSwitchMachine(mid, 'on');
+  forceTurnOnMachine(mid) {
+    $.ajax({
+      url: '/api/machines/' + mid + '/turn_on',
+      type: 'POST',
+      success(data) {
+        GlobalActions.hideGlobalLoader();
+        toastr.success('Machine on');
+      },
+      error(xhr, status, err) {
+        GlobalActions.hideGlobalLoader();
+        toastr.error('Failed to turn on');
+        console.error(status, err);
+      }
+    });
+    LoginActions.keepAlive();
+  },
+
+  forceTurnOffMachine(mid, aid) {
+    GlobalActions.showGlobalLoader();
+    $.ajax({
+      url: '/api/machines/' + mid + '/turn_off',
+      type: 'POST',
+      success(data) {
+        GlobalActions.hideGlobalLoader();
+        if (aid) {
+          toastr.success('Machine off and activation closed');
+          endActivation(aid);
+        } else {
+          toastr.success('Machine off');
+        }
+      },
+      error(xhr, status, err) {
+        GlobalActions.hideGlobalLoader();
+        toastr.error('Failed to turn off');
+        console.error(status, err);
+      }
+    });
     LoginActions.keepAlive();
   },
 
@@ -55,7 +87,6 @@ var MachineActions = {
   apiGetUserMachines(uid) {
     ApiActions.getCall('/api/users/' + uid + '/machines', function(machineInfo) {
       reactor.dispatch(actionTypes.SET_MACHINE_INFO, { machineInfo });
-      apiGetActivationActive();
     });
   },
 
@@ -110,7 +141,7 @@ var MachineActions = {
  * activation become unactive
  * @aid: activation id you want to shut down
  */
-function apiPutActivation(aid, cb) {
+function endActivation(aid, cb) {
   GlobalActions.showGlobalLoader();
   $.ajax({
     url: '/api/activations/' + aid,
@@ -118,65 +149,18 @@ function apiPutActivation(aid, cb) {
     data: {
       ac: new Date().getTime()
     },
-    success: function(data) {
+    success(data) {
       GlobalActions.hideGlobalLoader();
-      _postActivationSuccess(data, 'Machine deactivated');
+      toastr.info('Machine deactivated');
       if (cb) {
         cb();
       }
-    }.bind(this),
-    error: function(xhr, status, err) {
+    },
+    error(xhr, status, err) {
       GlobalActions.hideGlobalLoader();
       toastr.error('Failed to deactivate');
       console.error('/api/activation/aid', status, err.toString());
-    }.bind(this)
-  });
-}
-
-/*
- * Force a machine to be turned on or off
- * If the machine is active (activation) end the activation
- * @mid: machine you want to turn on or off
- * @onOrOff: action you want to do
- * @aid: activation id in case of turning off a machine
- * TODO: add animation
- */
-function apiPostSwitchMachine(mid, onOrOff, aid = '') {
-  var successFunction;
-  if( onOrOff === 'off') {
-    if(aid === '') {
-      successFunction = function(data) {
-        toastr.success('Machine off');
-      };
-    } else {
-      successFunction = function(data) {
-        toastr.success('Machine off and activation closed');
-        apiPutActivation(aid);
-      };
     }
-  } else {
-    successFunction = function(data) {
-      toastr.success('Machine on');
-    };
-  }
-  var errorFunction = function() {
-  };
-  ApiActions.postCall('/api/machines/' + mid + '/turn_' + onOrOff,
-                   { ac: new Date().getTime() },
-                   successFunction,
-                   'Failed to turn ' + onOrOff,
-                   errorFunction
-                  );
-}
-
-function apiGetActivationActive() {
-  ApiActions.getCall('/api/activations/active', function(data) {
-    var activationInfo = _formatActivation(data);
-    var userIds = _.uniq(_.pluck(activationInfo, 'UserId'));
-
-    apiFetchUserData(userIds);
-
-    reactor.dispatch(actionTypes.SET_ACTIVATION_INFO, { activationInfo });
   });
 }
 
@@ -192,43 +176,16 @@ function apiFetchUserData(userIds) {
       url: '/api/users/names?uids=' + userIds.join(','),
       dataType: 'json',
       type: 'GET',
-      success: function(response) {
+      success(response) {
         _.each(response.Users, function(userData) {
           reactor.dispatch(actionTypes.REGISTER_MACHINE_USER, { userData });
         });
       },
-      error: function() {
-          console.log('Error loading names');
+      error() {
+        console.log('Error loading names');
       }
     });
   }
-}
-
-/*
- * Format rawActivation to have only useful information
- * @rawActivation: response send by the server
- */
-function _formatActivation(rawActivation) {
-  return _.map(rawActivation, function(rawActivationItem) {
-    var tmpItem = {};
-    ['Id', 'UserId', 'MachineId', 'Quantity'].forEach(function(key){
-      tmpItem[key] = rawActivationItem[key];
-    });
-    return tmpItem;
-  });
-}
-
-/*
- * Success Callback
- * Activated when postActivation succeed
- */
-function _postActivationSuccess(data, toastrMessage = 'Machine activated') {
-  toastr.success(toastrMessage);
-  var successFunction = function(getData) {
-    var activationInfo = _formatActivation(getData);
-    reactor.dispatch(actionTypes.SET_ACTIVATION_INFO, { activationInfo });
-  };
-  ApiActions.getCall('/api/activations/active', successFunction);
 }
 
 export default MachineActions;
