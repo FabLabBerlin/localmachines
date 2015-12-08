@@ -54,8 +54,9 @@ type Purchase struct {
 	MachineUsage time.Duration        `orm:"-"`
 	Memberships  []*models.Membership `orm:"-"`
 
-	Archived bool
-	Comments string
+	Archived       bool
+	Comments       string
+	TimerTimeStart time.Time `orm:"type(datetime)" json:",omitempty"`
 }
 
 func (this *Purchase) TableName() string {
