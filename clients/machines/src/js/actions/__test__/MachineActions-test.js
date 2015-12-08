@@ -1,14 +1,23 @@
 jest.dontMock('../../actionTypes');
 jest.dontMock('../ApiActions');
+jest.dontMock('../../getters');
 jest.dontMock('../MachineActions');
 jest.dontMock('nuclear-js');
+jest.dontMock('../../reactor');
+jest.dontMock('../../stores/LoginStore');
 jest.mock('jquery');
-jest.mock('../../reactor');
 
 var $ = require('jquery');
 var actionTypes = require('../../actionTypes');
 var MachineActions = require('../MachineActions');
 var reactor = require('../../reactor');
+var LoginStore = require('../../stores/LoginStore');
+
+
+reactor.registerStores({
+  loginStore: LoginStore
+});
+
 
 describe('MachineActions', function() {
   describe('endActivation', function() {
@@ -68,18 +77,15 @@ describe('MachineActions', function() {
     });
   });
 
-  describe('clearState', function() {
-    it('triggers action MACHINE_STORE_CLEAR_STATE', function() {
-      MachineActions.clearState();
-      expect(reactor.dispatch).toBeCalledWith(actionTypes.MACHINE_STORE_CLEAR_STATE);
-    });
-  });
-
   describe('pollActivations', function() {
-    it('GETs /api/users/active', function() {
+    it('GETs /api/users/:uid/dashboard', function() {
+      var data = {
+        UserId: 11
+      };
+      reactor.dispatch(actionTypes.SUCCESS_LOGIN, { data });
       MachineActions.pollDashboard();
       expect($.ajax).toBeCalledWith({
-        url: '/api/activations/active',
+        url: '/api/users/11/dashboard',
         dataType: 'json',
         type: 'GET',
         cache: false,
