@@ -62,7 +62,6 @@ func (this *Machine) Exists() bool {
 	machineExists := o.QueryTable(this.TableName()).
 		Filter("Id", this.Id).
 		Exist()
-	beego.Trace("Machine with ID", this.Id, "exists:", machineExists)
 	return machineExists
 }
 
@@ -72,7 +71,6 @@ func (this *Machine) IsAvailable() bool {
 		Filter("Id", this.Id).
 		Filter("Available", true).
 		Exist()
-	beego.Trace("Machine with ID", this.Id, "available:", machineAvailable)
 	return machineAvailable
 }
 
@@ -102,15 +100,11 @@ type ConnectableMachineList struct {
 	Data []*ConnectableMachine
 }
 
-func GetMachine(machineId int64) (*Machine, error) {
-	beego.Trace(machineId)
-	machine := Machine{Id: machineId}
+func GetMachine(id int64) (machine *Machine, err error) {
+	machine = &Machine{Id: id}
 	o := orm.NewOrm()
-	err := o.Read(&machine)
-	if err != nil {
-		return nil, err
-	}
-	return &machine, nil
+	err = o.Read(machine)
+	return
 }
 
 type ExtendedMachine struct {
@@ -173,95 +167,74 @@ func GetAllMachines(sorted bool) (machines []*Machine, err error) {
 
 }
 
-func CreateMachine(machineName string) (int64, error) {
+func CreateMachine(machineName string) (id int64, err error) {
 	o := orm.NewOrm()
 	machine := Machine{Name: machineName, Available: true}
-	id, err := o.Insert(&machine)
-	if err == nil {
-		return id, nil
-	} else {
-		return 0, err
-	}
+	return o.Insert(&machine)
 }
 
-// Update existing machine in the database
-func (machine *Machine) Update() error {
-	var err error
-	var num int64
-
+func (machine *Machine) Update() (err error) {
 	o := orm.NewOrm()
-	num, err = o.Update(machine)
-	if err != nil {
-		return err
-	}
-
-	beego.Trace("UpdateMachine: Rows affected:", num)
-	return nil
+	_, err = o.Update(machine)
+	return
 }
 
-func GetConnectedMachines(machineId int64) (*ConnectedMachineList, error) {
+func GetConnectedMachines(id int64) (*ConnectedMachineList, error) {
 
-	machine := Machine{}
-	machine.Id = machineId
+	machine := Machine{
+		Id: id,
+	}
 
 	o := orm.NewOrm()
-	err := o.Read(&machine)
-	if err != nil {
+	if err := o.Read(&machine); err != nil {
 		return nil, fmt.Errorf("Failed to get connected machines: %v", err)
 	}
 
-	beego.Trace("connected machines:", machine.ConnectedMachines)
-
-	machineList := ConnectedMachineList{}
-
 	// Empty string, to not waste resources - return
 	if machine.ConnectedMachines == "" {
-		return &machineList, nil
+		return &ConnectedMachineList{}, nil
 	}
 
 	// Parse string into object we can digest,
 	// so we can load machine data individually
-	var machineIds []int64
-	err = json.Unmarshal([]byte(machine.ConnectedMachines), &machineIds)
+	var ids []int64
+	err := json.Unmarshal([]byte(machine.ConnectedMachines), &ids)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to unmarshal json: %v", err)
 	}
-
-	// Load connected machine data from the database
-	for _, val := range machineIds {
-		m := Machine{}
-		m.Id = val
-		err = o.Read(&m)
-		if err != nil {
-			beego.Error("Failed to get connected machine from db, ID", val)
-			return nil, fmt.Errorf("Failed to get connected machine: %v", err)
-		}
-		cm := ConnectedMachine{}
-		cm.Id = m.Id
-		cm.Name = m.Name
-		machineList.Data = append(machineList.Data, &cm)
+	list := ConnectedMachineList{
+		Data: make([]*ConnectedMachine, 0, len(ids)),
 	}
 
-	//machineList.Data = append(machineList.Data, &machine1)
-	//machineList.Data = append(machineList.Data, &machine2)
+	// Load connected machine data from the database
+	for _, id := range ids {
+		m := Machine{
+			Id: id,
+		}
+		if err = o.Read(&m); err != nil {
+			return nil, fmt.Errorf("Failed to get connected machine: %v", err)
+		}
+		cm := ConnectedMachine{
+			Id:   m.Id,
+			Name: m.Name,
+		}
+		list.Data = append(list.Data, &cm)
+	}
 
-	return &machineList, nil
+	return &list, nil
 }
 
 func GetConnectableMachines(machineId int64) (*ConnectableMachineList, error) {
 
 	// All machines can be connectable
-	var machines []*Machine
-	var err error
-	machines, err = GetAllMachines(true)
+	machines, err := GetAllMachines(true)
 	if err != nil {
 		return nil, err
 	}
 
 	// We have to substract the ones connected already from
 	// the full machine list
-	var machineList *ConnectedMachineList
-	machineList, err = GetConnectedMachines(machineId)
+	machineList, err := GetConnectedMachines(machineId)
 	if err != nil {
 		return nil, err
 	}
@@ -280,26 +253,25 @@ MachineLoop:
 			}
 		}
 
-		cm := ConnectableMachine{}
-		cm.Id = machine.Id
-		cm.Name = machine.Name
+		cm := ConnectableMachine{
+			Id:   machine.Id,
+			Name: machine.Name,
+		}
 		cmList.Data = append(cmList.Data, &cm)
 	}
 
 	return &cmList, nil
 }
 
-func (this *Machine) On() error {
+func (this *Machine) On() (err error) {
 
 	// Get current switch reference count
-	var err error
 	o := orm.NewOrm()
 	if err = o.Read(this); err != nil {
 		return fmt.Errorf("Failed to get machine switch ref count: %v", err)
 	}
 
-	var netSwitchMapping *NetSwitchMapping = nil
-	netSwitchMapping, err = GetNetSwitchMapping(this.Id)
+	netSwitchMapping, err := GetNetSwitchMapping(this.Id)
 	if err != nil {
 		beego.Warning("Failed to get NetSwitch mapping:", err)
 	} else if netSwitchMapping != nil {
@@ -365,10 +337,9 @@ func (this *Machine) SetUnderMaintenance(underMaintenance bool) error {
 	return nil
 }
 
-func (this *Machine) Off() error {
+func (this *Machine) Off() (err error) {
 
 	// Get current switch reference count
-	var err error
 	o := orm.NewOrm()
 	if err = o.Read(this); err != nil {
 		return fmt.Errorf("Failed to get machine switch ref count: %v", err)
@@ -392,8 +363,7 @@ func (this *Machine) Off() error {
 		return nil
 	}
 
-	var netSwitch *NetSwitchMapping = nil
-	netSwitch, err = GetNetSwitchMapping(this.Id)
+	netSwitch, err := GetNetSwitchMapping(this.Id)
 	if err != nil {
 		beego.Warning("Failed to get NetSwitch mapping:", err)
 	} else if netSwitch != nil {

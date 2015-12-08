@@ -27,9 +27,7 @@ func (this *MachinesController) GetAll() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	var machines []*models.Machine
-	var err error
-	machines, err = models.GetAllMachines(true)
+	machines, err := models.GetAllMachines(true)
 	if err != nil {
 		beego.Error("Failed to get all machines", err)
 		this.CustomAbort(403, "Failed to get all machines")
@@ -48,9 +46,7 @@ func (this *MachinesController) GetAll() {
 // @router /:mid [get]
 func (this *MachinesController) Get() {
 
-	var machineId int64
-	var err error
-	machineId, err = this.GetInt64(":mid")
+	machineId, err := this.GetInt64(":mid")
 	if err != nil {
 		beego.Error("Failed to get :mid variable")
 		this.CustomAbort(403, "Failed to get machine")
@@ -65,8 +61,7 @@ func (this *MachinesController) Get() {
 			this.CustomAbort(403, "Failed to get machine")
 		}
 
-		var permissions *[]models.Permission
-		permissions, err = models.GetUserPermissions(sessUserId)
+		permissions, err := models.GetUserPermissions(sessUserId)
 		if err != nil {
 			beego.Error("Failed to get machine permissions", err)
 			this.CustomAbort(401, "Not authorized")
@@ -86,8 +81,7 @@ func (this *MachinesController) Get() {
 		}
 	}
 
-	var machine *models.Machine
-	machine, err = models.GetMachine(machineId)
+	machine, err := models.GetMachine(machineId)
 	if err != nil {
 		beego.Error("Failed to get machine", err)
 		this.CustomAbort(403, "Failed to get machine")
@@ -106,9 +100,7 @@ func (this *MachinesController) Get() {
 // @router /:mid/connections [get]
 func (this *MachinesController) GetConnections() {
 
-	var machineId int64
-	var err error
-	machineId, err = this.GetInt64(":mid")
+	machineId, err := this.GetInt64(":mid")
 	if err != nil {
 		beego.Error("Failed to get :mid variable")
 		this.CustomAbort(500, "Internal Server Error")
@@ -138,9 +130,7 @@ func (this *MachinesController) GetConnections() {
 // @router /:mid/connectable [get]
 func (this *MachinesController) GetConnectable() {
 
-	var machineId int64
-	var err error
-	machineId, err = this.GetInt64(":mid")
+	machineId, err := this.GetInt64(":mid")
 	if err != nil {
 		beego.Error("Failed to get :mid variable")
 		this.CustomAbort(500, "Internal Server Error")
@@ -151,8 +141,7 @@ func (this *MachinesController) GetConnectable() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	var cmList *models.ConnectableMachineList
-	cmList, err = models.GetConnectableMachines(machineId)
+	cmList, err := models.GetConnectableMachines(machineId)
 	if err != nil {
 		beego.Error("Could not get connectable machine list:", err)
 		this.CustomAbort(500, "Internal Server Error")
@@ -179,9 +168,7 @@ func (this *MachinesController) Create() {
 	}
 
 	// All clear - create machine in the database
-	var machineId int64
-	var err error
-	machineId, err = models.CreateMachine(machineName)
+	machineId, err := models.CreateMachine(machineName)
 	if err != nil {
 		beego.Error("Failed to create machine", err)
 		this.CustomAbort(403, "Failed to create machine")
@@ -207,38 +194,15 @@ func (this *MachinesController) Update() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	// expecting the following JSON
-	/*
-		{
-			"Available": true,
-			"Description": "My machine description",
-			"Id": 1,
-			"Image": "/image",
-			"Name": "My Machine Name",
-			"Price": 2.35,
-			"PriceUnit": "minute",
-			"Shortname": "MMN",
-			"UnavailMsg": "Can be empty",
-			"UnavailTill": "2002-10-02T10:00:00-05:00"
-		}
-	*/
-	// The UnavailTill field must be RFC 3339 formatted
-	// https://golang.org/src/time/format.go
-
-	var err error
-
-	// Attempt to decode passed json
 	dec := json.NewDecoder(this.Ctx.Request.Body)
 	req := models.Machine{}
-	if err = dec.Decode(&req); err != nil {
+	if err := dec.Decode(&req); err != nil {
 		beego.Error("Failed to decode json:", err)
 		this.CustomAbort(403, "Failed to update machine")
 	}
 
-	var mid int64
-
 	// Get mid and check if it matches with the machine model ID
-	mid, err = this.GetInt64(":mid")
+	mid, err := this.GetInt64(":mid")
 	if err != nil {
 		beego.Error("Could not get :mid:", err)
 		this.CustomAbort(403, "Failed to update machine")
@@ -248,9 +212,7 @@ func (this *MachinesController) Update() {
 		this.CustomAbort(403, "Failed to update machine")
 	}
 
-	// Update the database
-	err = req.Update()
-	if err != nil {
+	if err = req.Update(); err != nil {
 		beego.Error("Failed updating machine:", err)
 		this.CustomAbort(403, "Failed to update machine")
 	}
@@ -331,9 +293,7 @@ const (
 )
 
 func (this *MachinesController) underMaintenanceOnOrOff(onOrOff int) error {
-	var machineId int64
-	var err error
-	machineId, err = this.GetInt64(":mid")
+	machineId, err := this.GetInt64(":mid")
 	if err != nil {
 		beego.Error("Failed to get :mid variable")
 		this.CustomAbort(500, "Internal Server Error")
@@ -344,8 +304,7 @@ func (this *MachinesController) underMaintenanceOnOrOff(onOrOff int) error {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	var machine *models.Machine
-	machine, err = models.GetMachine(machineId)
+	machine, err := models.GetMachine(machineId)
 	if err != nil {
 		beego.Error("Failed to get machine", err)
 		this.CustomAbort(403, "Failed to get machine")
@@ -363,16 +322,13 @@ func (this *MachinesController) underMaintenanceOnOrOff(onOrOff int) error {
 // @Failure	500 Internal Server Error
 // @router /:mid/report_broken [post]
 func (this *MachinesController) ReportBroken() {
-	var machineId int64
-	var err error
-	machineId, err = this.GetInt64(":mid")
+	machineId, err := this.GetInt64(":mid")
 	if err != nil {
 		beego.Error("Failed to get :mid variable")
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	var machine *models.Machine
-	machine, err = models.GetMachine(machineId)
+	machine, err := models.GetMachine(machineId)
 	if err != nil {
 		beego.Error("Failed to get machine", err)
 		this.CustomAbort(403, "Failed to get machine")
@@ -435,9 +391,7 @@ func (this *MachinesController) UnderMaintenanceOff() {
 }
 
 func (this *MachinesController) switchMachine(onOrOff int) error {
-	var machineId int64
-	var err error
-	machineId, err = this.GetInt64(":mid")
+	machineId, err := this.GetInt64(":mid")
 	if err != nil {
 		beego.Error("Failed to get :mid variable")
 		this.CustomAbort(500, "Internal Server Error")
@@ -448,8 +402,7 @@ func (this *MachinesController) switchMachine(onOrOff int) error {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	var machine *models.Machine
-	machine, err = models.GetMachine(machineId)
+	machine, err := models.GetMachine(machineId)
 	if err != nil {
 		beego.Error("Failed to get machine", err)
 		this.CustomAbort(403, "Failed to get machine")
@@ -473,8 +426,7 @@ func (this *MachinesController) switchMachine(onOrOff int) error {
 // @Failure	500 Internal Server Error
 // @router /:mid/turn_on [post]
 func (this *MachinesController) TurnOn() {
-	err := this.switchMachine(ON)
-	if err != nil {
+	if err := this.switchMachine(ON); err != nil {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 	this.Data["json"] = "ok"
@@ -490,8 +442,7 @@ func (this *MachinesController) TurnOn() {
 // @Failure	500 Internal Server Error
 // @router /:mid/turn_off [post]
 func (this *MachinesController) TurnOff() {
-	err := this.switchMachine(OFF)
-	if err != nil {
+	if err := this.switchMachine(OFF); err != nil {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 	this.Data["json"] = "ok"

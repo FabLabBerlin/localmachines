@@ -23,10 +23,6 @@ func NewEmail() (this Email) {
 
 // Sends an email by consuming an existing Email store.
 func (this Email) Send(to, subject, message string) error {
-	beego.Info("Email#Send: from:", this.from)
-	beego.Info("Email#Send: to:", to)
-	beego.Info("Email#Send: subject:", subject)
-	beego.Info("Email#Send: message:", message)
 	msg := []byte("From: " + this.from + "\r\n" +
 		"To: " + to + "\r\n" +
 		"Subject: " + subject + "\r\n" +
