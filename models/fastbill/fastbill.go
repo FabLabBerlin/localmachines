@@ -1,4 +1,4 @@
-package models
+package fastbill
 
 import (
 	"bytes"
@@ -14,13 +14,13 @@ import (
 
 // API endpoint - all requests go here
 const (
-	FASTBILL_API_URL                 = "https://my.fastbill.com/api/1.0/api.php"
-	FASTBILL_SERVICE_CUSTOMER_GET    = "customer.get"
-	FASTBILL_SERVICE_CUSTOMER_CREATE = "customer.create"
-	FASTBILL_SERVICE_CUSTOMER_UPDATE = "customer.update"
-	FASTBILL_SERVICE_CUSTOMER_DELETE = "customer.delete"
-	FASTBILL_CUSTOMER_TYPE_BUSINESS  = "business"
-	FASTBILL_CUSTOMER_TYPE_CONSUMER  = "consumer"
+	API_URL                 = "https://my.fastbill.com/api/1.0/api.php"
+	SERVICE_CUSTOMER_GET    = "customer.get"
+	SERVICE_CUSTOMER_CREATE = "customer.create"
+	SERVICE_CUSTOMER_UPDATE = "customer.update"
+	SERVICE_CUSTOMER_DELETE = "customer.delete"
+	CUSTOMER_TYPE_BUSINESS  = "business"
+	CUSTOMER_TYPE_CONSUMER  = "consumer"
 )
 
 // Main FastBill object. All the functionality goes through this object.
@@ -29,7 +29,7 @@ type FastBill struct {
 	apiKey string
 }
 
-func NewFastBill() (fb *FastBill) {
+func New() (fb *FastBill) {
 	fb = &FastBill{
 		email:  beego.AppConfig.String("fastbillemail"),
 		apiKey: beego.AppConfig.String("fastbillapikey"),
@@ -38,11 +38,11 @@ func NewFastBill() (fb *FastBill) {
 }
 
 // Base FastBill API request model
-type FastBillRequest struct {
+type Request struct {
 	LIMIT   int64 `json:",omitempty"`
 	OFFSET  int64 `json:",omitempty"`
 	SERVICE string
-	FILTER  *FastBillCustomerGetFilter `json:",omitempty"`
+	FILTER  *CustomerGetFilter `json:",omitempty"`
 	DATA    interface{}
 }
 
@@ -50,15 +50,15 @@ type FastBillRequest struct {
 // For now define a response per request. The interface{} thing
 // does not work well with the JSON unmarshal thing for some reason.
 // But this is more clear in a way.
-type FastBillCustomerGetResponse struct {
-	REQUEST  FastBillRequest
-	RESPONSE FastBillCustomerList
+type CustomerGetResponse struct {
+	REQUEST  Request
+	RESPONSE CustomerList
 }
 
 // Response model that we expect from the FastBill API on customer.create
 // request
-type FastBillCustomerCreateResponse struct {
-	REQUEST  FastBillRequest
+type CustomerCreateResponse struct {
+	REQUEST  Request
 	RESPONSE struct {
 		ERRORS      []string `json:",omitempty"`
 		STATUS      string   `json:",omitempty"`
@@ -67,8 +67,8 @@ type FastBillCustomerCreateResponse struct {
 }
 
 // Model received from FastBill on customer.update
-type FastBillCustomerUpdateResponse struct {
-	REQUEST  FastBillRequest
+type CustomerUpdateResponse struct {
+	REQUEST  Request
 	RESPONSE struct {
 		STATUS      string
 		CUSTOMER_ID string
@@ -76,25 +76,25 @@ type FastBillCustomerUpdateResponse struct {
 }
 
 // FastBill customer.delete response model
-type FastBillCustomerDeleteResponse struct {
-	REQUEST  FastBillRequest
+type CustomerDeleteResponse struct {
+	REQUEST  Request
 	RESPONSE struct {
 		STATUS string
 	}
 }
 
 // Create customer response model returned to THIS API clients
-type FastBillCreateCustomerResponse struct {
+type CreateCustomerResponse struct {
 	CUSTOMER_ID int64
 }
 
 // Update customer response model returned to THIS API clients
-type FastBillUpdateCustomerResponse struct {
+type UpdateCustomerResponse struct {
 	CUSTOMER_ID int64
 }
 
 // FastBill customer model
-type FastBillCustomer struct {
+type Customer struct {
 	CUSTOMER_ID                    string `json:",omitempty"`
 	CUSTOMER_NUMBER                string `json:",omitempty"`
 	DAYS_FOR_PAYMENT               string `json:",omitempty"`
@@ -136,12 +136,12 @@ type FastBillCustomer struct {
 }
 
 // Customer list model
-type FastBillCustomerList struct {
-	Customers []FastBillCustomer
+type CustomerList struct {
+	Customers []Customer
 }
 
 // Filter model for customer.get request
-type FastBillCustomerGetFilter struct {
+type CustomerGetFilter struct {
 	CUSTOMER_ID     string
 	CUSTOMER_NUMBER string
 	COUNTRY_CODE    string
@@ -150,17 +150,17 @@ type FastBillCustomerGetFilter struct {
 }
 
 // Get customers with support for limit and offset
-func (this *FastBill) GetCustomers(filter *FastBillCustomerGetFilter,
-	limit int64, offset int64) (*FastBillCustomerList, error) {
+func (this *FastBill) GetCustomers(filter *CustomerGetFilter,
+	limit int64, offset int64) (*CustomerList, error) {
 
-	request := FastBillRequest{
-		SERVICE: FASTBILL_SERVICE_CUSTOMER_GET,
+	request := Request{
+		SERVICE: SERVICE_CUSTOMER_GET,
 		LIMIT:   limit,
 		OFFSET:  offset,
 		FILTER:  filter,
 	}
 
-	response := FastBillCustomerGetResponse{}
+	response := CustomerGetResponse{}
 	err := this.execGetRequest(&request, &response)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to execute get request: %v", err)
@@ -170,14 +170,14 @@ func (this *FastBill) GetCustomers(filter *FastBillCustomerGetFilter,
 }
 
 // Create FastBill customer, returns Customer ID
-func (this *FastBill) CreateCustomer(customer *FastBillCustomer) (int64, error) {
+func (this *FastBill) CreateCustomer(customer *Customer) (int64, error) {
 
-	request := FastBillRequest{
-		SERVICE: FASTBILL_SERVICE_CUSTOMER_CREATE,
+	request := Request{
+		SERVICE: SERVICE_CUSTOMER_CREATE,
 		DATA:    customer,
 	}
 
-	response := FastBillCustomerCreateResponse{}
+	response := CustomerCreateResponse{}
 	err := this.execGetRequest(&request, &response)
 	if err != nil {
 		return 0, fmt.Errorf("Failed to execute get request: %v", err)
@@ -196,14 +196,14 @@ func (this *FastBill) CreateCustomer(customer *FastBillCustomer) (int64, error) 
 }
 
 // Update FastBill customer
-func (this *FastBill) UpdateCustomer(customer *FastBillCustomer) (int64, error) {
+func (this *FastBill) UpdateCustomer(customer *Customer) (int64, error) {
 
-	request := FastBillRequest{
-		SERVICE: FASTBILL_SERVICE_CUSTOMER_UPDATE,
+	request := Request{
+		SERVICE: SERVICE_CUSTOMER_UPDATE,
 		DATA:    customer,
 	}
 
-	response := FastBillCustomerUpdateResponse{}
+	response := CustomerUpdateResponse{}
 	err := this.execGetRequest(&request, &response)
 	if err != nil {
 		beego.Error("Failed to execute get request:", err)
@@ -226,14 +226,14 @@ func (this *FastBill) UpdateCustomer(customer *FastBillCustomer) (int64, error) 
 
 func (this *FastBill) DeleteCustomer(customerId int64) error {
 
-	request := FastBillRequest{
-		SERVICE: FASTBILL_SERVICE_CUSTOMER_DELETE,
-		DATA: FastBillCustomer{
+	request := Request{
+		SERVICE: SERVICE_CUSTOMER_DELETE,
+		DATA: Customer{
 			CUSTOMER_ID: strconv.FormatInt(customerId, 10),
 		},
 	}
 
-	response := FastBillCustomerDeleteResponse{}
+	response := CustomerDeleteResponse{}
 	err := this.execGetRequest(&request, &response)
 	if err != nil {
 		return fmt.Errorf("Failed to execute get request: %v", err)
@@ -248,14 +248,14 @@ func (this *FastBill) DeleteCustomer(customerId int64) error {
 }
 
 // Reusable helper function for the
-func (this *FastBill) execGetRequest(request *FastBillRequest, response interface{}) error {
+func (this *FastBill) execGetRequest(request *Request, response interface{}) error {
 
 	jsonBytes, err := json.Marshal(request)
 	if err != nil {
 		return fmt.Errorf("Failed to marshal JSON: %v", err)
 	}
 
-	req, err := http.NewRequest("GET", FASTBILL_API_URL, bytes.NewBuffer(jsonBytes))
+	req, err := http.NewRequest("GET", API_URL, bytes.NewBuffer(jsonBytes))
 	if err != nil {
 		return fmt.Errorf("Failed to create request: %v", err)
 	}

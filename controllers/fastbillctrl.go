@@ -3,7 +3,7 @@ package controllers
 import (
 	"fmt"
 	"github.com/astaxie/beego"
-	"github.com/kr15h/fabsmith/models"
+	"github.com/kr15h/fabsmith/models/fastbill"
 	"strconv"
 )
 
@@ -29,9 +29,9 @@ func (this *FastBillController) GetCustomers() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	fb := models.NewFastBill()
+	fb := fastbill.New()
 
-	filter := models.FastBillCustomerGetFilter{
+	filter := fastbill.CustomerGetFilter{
 		TERM: this.GetString("term"),
 	}
 
@@ -93,9 +93,9 @@ func (this *FastBillController) CreateCustomer() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	fb := models.NewFastBill()
+	fb := fastbill.New()
 
-	customer := models.FastBillCustomer{
+	customer := fastbill.Customer{
 		FIRST_NAME:   this.GetString("firstname"),
 		LAST_NAME:    this.GetString("lastname"),
 		EMAIL:        this.GetString("email"),
@@ -108,9 +108,9 @@ func (this *FastBillController) CreateCustomer() {
 	}
 
 	if customer.ORGANIZATION == "" {
-		customer.CUSTOMER_TYPE = models.FASTBILL_CUSTOMER_TYPE_CONSUMER
+		customer.CUSTOMER_TYPE = fastbill.CUSTOMER_TYPE_CONSUMER
 	} else {
-		customer.CUSTOMER_TYPE = models.FASTBILL_CUSTOMER_TYPE_BUSINESS
+		customer.CUSTOMER_TYPE = fastbill.CUSTOMER_TYPE_BUSINESS
 	}
 
 	customerId, err := fb.CreateCustomer(&customer)
@@ -119,7 +119,7 @@ func (this *FastBillController) CreateCustomer() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	this.Data["json"] = models.FastBillCreateCustomerResponse{
+	this.Data["json"] = fastbill.CreateCustomerResponse{
 		CUSTOMER_ID: customerId,
 	}
 	this.ServeJson()
@@ -148,7 +148,7 @@ func (this *FastBillController) UpdateCustomer() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	fb := models.NewFastBill()
+	fb := fastbill.New()
 
 	customerId, err := this.GetInt64(":customerid")
 	if err != nil {
@@ -157,7 +157,7 @@ func (this *FastBillController) UpdateCustomer() {
 	}
 
 	// Get existing customer
-	filter := models.FastBillCustomerGetFilter{
+	filter := fastbill.CustomerGetFilter{
 		CUSTOMER_ID: strconv.FormatInt(customerId, 10),
 	}
 
@@ -214,9 +214,9 @@ func (this *FastBillController) UpdateCustomer() {
 
 	// If there is no organization - customer can be considered a plain consumer
 	if customer.ORGANIZATION == "" {
-		customer.CUSTOMER_TYPE = models.FASTBILL_CUSTOMER_TYPE_CONSUMER
+		customer.CUSTOMER_TYPE = fastbill.CUSTOMER_TYPE_CONSUMER
 	} else {
-		customer.CUSTOMER_TYPE = models.FASTBILL_CUSTOMER_TYPE_BUSINESS
+		customer.CUSTOMER_TYPE = fastbill.CUSTOMER_TYPE_BUSINESS
 	}
 
 	customerIdUpd, err := fb.UpdateCustomer(&customer)
@@ -225,7 +225,7 @@ func (this *FastBillController) UpdateCustomer() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	this.Data["json"] = models.FastBillUpdateCustomerResponse{
+	this.Data["json"] = fastbill.UpdateCustomerResponse{
 		CUSTOMER_ID: customerIdUpd,
 	}
 	this.ServeJson()
@@ -245,7 +245,7 @@ func (this *FastBillController) DeleteCustomer() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	fb := models.NewFastBill()
+	fb := fastbill.New()
 
 	customerId, err := this.GetInt64(":customerid")
 	if err != nil {
