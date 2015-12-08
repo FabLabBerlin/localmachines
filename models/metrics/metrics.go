@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-type MetricsResponse struct {
+type Response struct {
 	MembershipsByDay        map[string]float64
 	MembershipsByMonth      map[string]float64
 	MembershipCountsByMonth map[string]int
@@ -18,7 +18,7 @@ type MetricsResponse struct {
 	MinutesByMonth          map[string]float64
 }
 
-func NewMetricsResponse(data MetricsData) (resp MetricsResponse, err error) {
+func NewResponse(data Data) (resp Response, err error) {
 	resp.MembershipsByDay, err = data.sumMembershipsBy("2006-01-02")
 	if err != nil {
 		return
@@ -51,7 +51,7 @@ func NewMetricsResponse(data MetricsData) (resp MetricsResponse, err error) {
 	return
 }
 
-type MetricsData struct {
+type Data struct {
 	startTime       time.Time
 	endTime         time.Time
 	invoice         invoices.Invoice
@@ -59,7 +59,7 @@ type MetricsData struct {
 	membershipsById map[int64]*models.Membership
 }
 
-func FetchMetricsData() (data MetricsData, err error) {
+func FetchData() (data Data, err error) {
 	endTime := time.Now()
 	startTime := endTime.Add(-180 * 24 * time.Hour)
 
@@ -85,7 +85,7 @@ func FetchMetricsData() (data MetricsData, err error) {
 	return
 }
 
-func (this MetricsData) sumActivationsBy(timeFormat string) (sums map[string]float64, err error) {
+func (this Data) sumActivationsBy(timeFormat string) (sums map[string]float64, err error) {
 	sums = make(map[string]float64)
 
 	for _, userSummary := range this.invoice.UserSummaries {
@@ -103,7 +103,7 @@ func (this MetricsData) sumActivationsBy(timeFormat string) (sums map[string]flo
 	return
 }
 
-func (this MetricsData) sumMembershipsBy(timeFormat string) (sums map[string]float64, err error) {
+func (this Data) sumMembershipsBy(timeFormat string) (sums map[string]float64, err error) {
 	sums = make(map[string]float64)
 
 	for _, userMembership := range this.userMemberships {
@@ -120,7 +120,7 @@ func (this MetricsData) sumMembershipsBy(timeFormat string) (sums map[string]flo
 	return
 }
 
-func (this MetricsData) sumMembershipCountsBy(timeFormat string) (sums map[string]int, err error) {
+func (this Data) sumMembershipCountsBy(timeFormat string) (sums map[string]int, err error) {
 	sums = make(map[string]int)
 
 	for _, userMembership := range this.userMemberships {
@@ -139,7 +139,7 @@ func (this MetricsData) sumMembershipCountsBy(timeFormat string) (sums map[strin
 	return
 }
 
-func (this MetricsData) sumMinutesBy(timeFormat string) (sums map[string]float64, err error) {
+func (this Data) sumMinutesBy(timeFormat string) (sums map[string]float64, err error) {
 	sums = make(map[string]float64)
 
 	for _, userSummary := range this.invoice.UserSummaries {

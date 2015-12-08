@@ -21,8 +21,8 @@ func CreateSpace(name string) (space Space, err error) {
 	return
 }
 
-func UpdateSpace(space *Space) (err error) {
-	return Update(&space.Product)
+func (space *Space) Update() (err error) {
+	return space.Product.Update()
 }
 
 func GetSpace(id int64) (space *Space, err error) {

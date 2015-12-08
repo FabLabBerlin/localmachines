@@ -59,7 +59,7 @@ func GetTutor(id int64) (tutor *Tutor, err error) {
 	return
 }
 
-func UpdateTutor(tutor *Tutor) error {
+func (tutor *Tutor) Update() error {
 	if tutor.Product.UserId != 0 {
 		o := orm.NewOrm()
 		// Get user name by user ID
@@ -72,5 +72,5 @@ func UpdateTutor(tutor *Tutor) error {
 		}
 		tutor.Product.Name = fmt.Sprintf("%s %s", user.FirstName, user.LastName)
 	}
-	return Update(&tutor.Product)
+	return tutor.Product.Update()
 }

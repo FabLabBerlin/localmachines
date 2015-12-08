@@ -20,8 +20,8 @@ func CreateCoWorking(name string) (cp CoWorking, err error) {
 	return
 }
 
-func UpdateCoWorking(cp *CoWorking) (err error) {
-	return Update(&cp.Product)
+func (cp *CoWorking) Update() (err error) {
+	return cp.Product.Update()
 }
 
 func GetCoWorking(id int64) (cp *CoWorking, err error) {

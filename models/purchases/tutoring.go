@@ -104,10 +104,10 @@ func StopTutoring(id int64) (err error) {
 	t.Purchase.Quantity = t.Purchase.quantityFromTimes()
 	t.Purchase.Running = false
 	t.Purchase.TimeEnd = time.Now()
-	return UpdateTutoring(t)
+	return t.Update()
 }
 
-func UpdateTutoring(tutoring *Tutoring) (err error) {
+func (tutoring *Tutoring) Update() (err error) {
 	o := orm.NewOrm()
 	if tutoring.ProductId > 0 {
 		tutor, err := products.GetTutor(tutoring.ProductId)

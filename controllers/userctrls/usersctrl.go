@@ -310,7 +310,7 @@ func (this *UsersController) Put() {
 		}
 	}
 
-	err = models.UpdateUser(&req.User)
+	err = req.User.Update()
 	if err != nil {
 		if strings.Contains(err.Error(), "Error 1062") {
 			beego.Error("Failed to update user due to duplicate entry:", err)

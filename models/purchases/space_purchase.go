@@ -58,7 +58,7 @@ func GetAllSpace() (spacePurchases []*Space, err error) {
 	return
 }
 
-func UpdateSpace(spacePurchase *Space) (err error) {
+func (spacePurchase *Space) Update() (err error) {
 	o := orm.NewOrm()
 	_, err = o.Update(&spacePurchase.purchase)
 	return

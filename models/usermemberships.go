@@ -183,18 +183,10 @@ func DeleteUserMembership(userMembershipId int64) error {
 
 // Updates user membership in the database by using a pointer
 // to user membership store.
-func UpdateUserMembership(userMembership *UserMembership) error {
-	var err error
-	var num int64
-
+func (this *UserMembership) Update() (err error) {
 	o := orm.NewOrm()
-	num, err = o.Update(userMembership)
-	if err != nil {
-		return err
-	}
-
-	beego.Trace("Rows affected:", num)
-	return nil
+	_, err = o.Update(this)
+	return
 }
 
 // Automatically extend user membership end date if auto_extend for the specific

@@ -60,13 +60,13 @@ func GetAllOfType(productType string) (products []*Product, err error) {
 	return
 }
 
-func Update(product *Product) (err error) {
+func (product *Product) Update() (err error) {
 	o := orm.NewOrm()
 	_, err = o.Update(product)
 	return
 }
 
-func Archive(product *Product) (err error) {
+func (product *Product) Archive() (err error) {
 	o := orm.NewOrm()
 	product.Archived = true
 	_, err = o.Update(product)

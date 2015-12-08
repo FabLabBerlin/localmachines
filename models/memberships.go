@@ -114,18 +114,10 @@ func GetMembership(membershipId int64) (*Membership, error) {
 
 // Updates membership in the database by using a pointer to
 // an existing membership store.
-func UpdateMembership(membership *Membership) error {
-	var err error
-	var num int64
-
+func (membership *Membership) Update() (err error) {
 	o := orm.NewOrm()
-	num, err = o.Update(membership)
-	if err != nil {
-		return err
-	}
-
-	beego.Trace("Rows affected:", num)
-	return nil
+	_, err = o.Update(membership)
+	return
 }
 
 // Delete membership from the database by using a

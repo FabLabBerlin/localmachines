@@ -63,8 +63,7 @@ func (this *UserMembershipsController) PostUserMemberships() {
 	}
 
 	// Create user membership by using the model function
-	var userMembershipId int64
-	userMembershipId, err = models.CreateUserMembership(ruid, membershipId, startDate)
+	userMembershipId, err := models.CreateUserMembership(ruid, membershipId, startDate)
 	if err != nil {
 		beego.Error("Error creating user membership:", err)
 		this.CustomAbort(500, "Internal Server Error")
@@ -195,7 +194,7 @@ func (this *UserMembershipsController) PutUserMembership() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	if err := models.UpdateUserMembership(&userMembership); err != nil {
+	if err := userMembership.Update(); err != nil {
 		beego.Error("UpdateMembership: ", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}

@@ -307,7 +307,7 @@ func DeleteUserAuth(userId int64) error {
 }
 
 // Update user
-func UpdateUser(user *User) error {
+func (user *User) Update() error {
 	o := orm.NewOrm()
 
 	// Check if not last admin in case UserRole is not admin

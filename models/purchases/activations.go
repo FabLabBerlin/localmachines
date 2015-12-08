@@ -234,7 +234,7 @@ func CloseActivation(activationId int64, endTime time.Time) error {
 	activation.Purchase.TimeEnd = endTime
 	activation.Purchase.Quantity = activation.Purchase.quantityFromTimes()
 
-	err = UpdateActivation(activation)
+	err = activation.Update()
 	if err != nil {
 		beego.Error("Failed to update activation:", err)
 		return fmt.Errorf("Failed to update activation: %v", err)
@@ -249,7 +249,7 @@ func CloseActivation(activationId int64, endTime time.Time) error {
 	}
 
 	machine.Available = true
-	err = models.UpdateMachine(machine)
+	err = machine.Update()
 	if err != nil {
 		beego.Error("Failed to update machine:", err)
 		return fmt.Errorf("Failed to update machine: %v", err)
@@ -260,7 +260,7 @@ func CloseActivation(activationId int64, endTime time.Time) error {
 
 // Updates existing activation by consuming a pointer to
 // existing activation store.
-func UpdateActivation(activation *Activation) error {
+func (activation *Activation) Update() error {
 	o := orm.NewOrm()
 	num, err := o.Update(&activation.Purchase)
 

@@ -61,9 +61,9 @@ func GetAllSettings() (settings Settings, err error) {
 	return
 }
 
-func UpdateSetting(setting *Setting) (err error) {
+func (this *Setting) Update() (err error) {
 	o := orm.NewOrm()
-	_, err = o.Update(setting)
+	_, err = o.Update(this)
 	return
 }
 

@@ -185,7 +185,7 @@ func CreateMachine(machineName string) (int64, error) {
 }
 
 // Update existing machine in the database
-func UpdateMachine(machine *Machine) error {
+func (machine *Machine) Update() error {
 	var err error
 	var num int64
 
@@ -335,7 +335,7 @@ func (this *Machine) ReportBroken(user User) error {
 func (this *Machine) SetUnderMaintenance(underMaintenance bool) error {
 	this.UnderMaintenance = underMaintenance
 
-	if err := UpdateMachine(this); err != nil {
+	if err := this.Update(); err != nil {
 		return err
 	}
 

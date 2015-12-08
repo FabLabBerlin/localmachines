@@ -58,7 +58,7 @@ func GetAllCoWorking() (cps []*CoWorking, err error) {
 	return
 }
 
-func UpdateCoWorking(cp *CoWorking) (err error) {
+func (cp *CoWorking) Update() (err error) {
 	o := orm.NewOrm()
 	_, err = o.Update(&cp.purchase)
 	return

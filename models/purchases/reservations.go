@@ -94,7 +94,7 @@ func CreateReservation(reservation *Reservation) (int64, error) {
 	return o.Insert(&reservation.purchase)
 }
 
-func UpdateReservation(reservation *Reservation) (err error) {
+func (reservation *Reservation) Update() (err error) {
 	o := orm.NewOrm()
 	reservation.purchase.Quantity = reservation.purchase.quantityFromTimes()
 	_, err = o.Update(&reservation.purchase)

@@ -108,7 +108,7 @@ func (this *ReservationsController) Put() {
 		this.CustomAbort(400, "Failed to update Reservation")
 	}
 
-	if err := purchases.UpdateReservation(reservation); err != nil {
+	if err := reservation.Update(); err != nil {
 		beego.Error("Failed to update reservation:", err)
 		this.CustomAbort(500, "Failed to update Reservation")
 	}

@@ -169,7 +169,7 @@ func (this *ProductsController) Put() {
 			this.CustomAbort(400, "Failed to update table")
 		}
 
-		if err = products.UpdateCoWorking(table); err == nil {
+		if err = table.Update(); err == nil {
 			response = table
 		}
 		break
@@ -182,7 +182,7 @@ func (this *ProductsController) Put() {
 			this.CustomAbort(400, "Failed to update space")
 		}
 
-		if err = products.UpdateSpace(space); err == nil {
+		if err = space.Update(); err == nil {
 			response = space
 		}
 		break
@@ -195,7 +195,7 @@ func (this *ProductsController) Put() {
 			this.CustomAbort(400, "Failed to update tutor")
 		}
 
-		if err = products.UpdateTutor(tutor); err == nil {
+		if err = tutor.Update(); err == nil {
 			response = tutor
 		}
 		break
@@ -239,7 +239,7 @@ func (this *ProductsController) ArchiveProduct() {
 		this.CustomAbort(500, "Failed to get product")
 	}
 
-	err = products.Archive(product)
+	err = product.Archive()
 	if err != nil {
 		beego.Error("Failed to archive product")
 		this.CustomAbort(500, "Failed to archive product")

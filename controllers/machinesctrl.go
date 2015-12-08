@@ -249,7 +249,7 @@ func (this *MachinesController) Update() {
 	}
 
 	// Update the database
-	err = models.UpdateMachine(&req)
+	err = req.Update()
 	if err != nil {
 		beego.Error("Failed updating machine:", err)
 		this.CustomAbort(403, "Failed to update machine")
@@ -315,7 +315,7 @@ func (this *MachinesController) PostImage() {
 		this.CustomAbort(403, "Failed to get machine")
 	}
 	m.Image = fn
-	if err = models.UpdateMachine(m); err != nil {
+	if err = m.Update(); err != nil {
 		beego.Error("Failed updating machine:", err)
 		this.CustomAbort(403, "Failed to update machine")
 	}

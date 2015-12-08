@@ -183,7 +183,7 @@ func (this *PurchasesController) Put() {
 			this.CustomAbort(400, "Failed to update Co-Working purchase")
 		}
 
-		if err = purchases.UpdateCoWorking(cp); err == nil {
+		if err = cp.Update(); err == nil {
 			response = cp
 		}
 		break
@@ -196,7 +196,7 @@ func (this *PurchasesController) Put() {
 			this.CustomAbort(400, "Failed to update Space purchase")
 		}
 
-		if err = purchases.UpdateSpace(sp); err == nil {
+		if err = sp.Update(); err == nil {
 			response = sp
 		}
 		break
@@ -209,7 +209,7 @@ func (this *PurchasesController) Put() {
 			this.CustomAbort(400, "Failed to update Tutoring purchase")
 		}
 		beego.Info("tp: time end planned:", tp.TimeEndPlanned)
-		if err = purchases.UpdateTutoring(tp); err == nil {
+		if err = tp.Update(); err == nil {
 			response = tp
 		}
 		break
