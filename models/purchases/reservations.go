@@ -46,7 +46,7 @@ func GetAllReservations() (reservations []*Reservation, err error) {
 	r := new(Reservation)
 	var purchases []*Purchase
 	_, err = o.QueryTable(r.purchase.TableName()).
-		Filter("type", PURCHASE_TYPE_RESERVATION).
+		Filter("type", TYPE_RESERVATION).
 		All(&purchases)
 	if err != nil {
 		return
@@ -85,7 +85,7 @@ func CreateReservation(reservation *Reservation) (int64, error) {
 		return 0, fmt.Errorf("Failed to read machine")
 	}
 
-	reservation.purchase.Type = PURCHASE_TYPE_RESERVATION
+	reservation.purchase.Type = TYPE_RESERVATION
 	reservation.purchase.PricePerUnit = *machine.ReservationPriceHourly / 2
 	reservation.purchase.PriceUnit = "30 minutes"
 	reservation.purchase.Quantity = reservation.purchase.quantityFromTimes()
@@ -133,5 +133,5 @@ func DeleteReservation(id int64, isAdmin bool) (err error) {
 	}
 
 	// If we have not returned yet, then let's delete
-	return DeletePurchase(id)
+	return Delete(id)
 }

@@ -3,7 +3,7 @@ package metrics
 import (
 	"fmt"
 	"github.com/kr15h/fabsmith/models"
-	"github.com/kr15h/fabsmith/models/billing"
+	"github.com/kr15h/fabsmith/models/invoices"
 	"github.com/kr15h/fabsmith/models/purchases"
 	"time"
 )
@@ -54,7 +54,7 @@ func NewMetricsResponse(data MetricsData) (resp MetricsResponse, err error) {
 type MetricsData struct {
 	startTime       time.Time
 	endTime         time.Time
-	invoice         billing.Invoice
+	invoice         invoices.Invoice
 	userMemberships []*models.UserMembership
 	membershipsById map[int64]*models.Membership
 }
@@ -63,7 +63,7 @@ func FetchMetricsData() (data MetricsData, err error) {
 	endTime := time.Now()
 	startTime := endTime.Add(-180 * 24 * time.Hour)
 
-	data.invoice, err = billing.CalculateInvoiceSummary(startTime, endTime)
+	data.invoice, err = invoices.CalculateSummary(startTime, endTime)
 	if err != nil {
 		return data, fmt.Errorf("Failed to get invoice summary: %v", err)
 	}

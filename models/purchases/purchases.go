@@ -9,11 +9,11 @@ import (
 )
 
 const (
-	PURCHASE_TYPE_ACTIVATION     = "activation"
-	PURCHASE_TYPE_CO_WORKING     = "co-working"
-	PURCHASE_TYPE_RESERVATION    = "reservation"
-	PURCHASE_TYPE_SPACE_PURCHASE = "space"
-	PURCHASE_TYPE_TUTOR          = "tutor"
+	TYPE_ACTIVATION  = "activation"
+	TYPE_CO_WORKING  = "co-working"
+	TYPE_RESERVATION = "reservation"
+	TYPE_SPACE       = "space"
+	TYPE_TUTOR       = "tutor"
 )
 
 // This is a purchase row that appears in the XLSX file
@@ -66,14 +66,14 @@ func init() {
 	orm.RegisterModel(new(Purchase))
 }
 
-func GetPurchase(purchaseId int64) (purchase *Purchase, err error) {
+func Get(purchaseId int64) (purchase *Purchase, err error) {
 	o := orm.NewOrm()
 	purchase = &Purchase{Id: purchaseId}
 	err = o.Read(purchase)
 	return
 }
 
-func GetAllPurchasesOfType(purchaseType string) (purchases []*Purchase, err error) {
+func GetAllOfType(purchaseType string) (purchases []*Purchase, err error) {
 	o := orm.NewOrm()
 	_, err = o.QueryTable(new(Purchase).TableName()).
 		Filter("type", purchaseType).
@@ -90,13 +90,13 @@ func GetUserStartTime(userId int64) (startTime time.Time, err error) {
 	return
 }
 
-func DeletePurchase(id int64) (err error) {
+func Delete(id int64) (err error) {
 	o := orm.NewOrm()
 	_, err = o.Delete(&Purchase{Id: id})
 	return
 }
 
-func ArchivePurchase(purchase *Purchase) (err error) {
+func Archive(purchase *Purchase) (err error) {
 	o := orm.NewOrm()
 	purchase.Archived = true
 	_, err = o.Update(purchase)
@@ -153,7 +153,7 @@ func PriceTotalExclDisc(p *Purchase) float64 {
 }
 
 func PriceTotalDisc(p *Purchase) (float64, error) {
-	if p.Type != PURCHASE_TYPE_ACTIVATION {
+	if p.Type != TYPE_ACTIVATION {
 		return PriceTotalExclDisc(p), nil
 	}
 
@@ -204,9 +204,9 @@ func (this Purchases) Less(i, j int) bool {
 
 func (this Purchase) ProductName() string {
 	switch this.Type {
-	case PURCHASE_TYPE_ACTIVATION:
+	case TYPE_ACTIVATION:
 		return this.Machine.Name
-	case PURCHASE_TYPE_RESERVATION:
+	case TYPE_RESERVATION:
 		return "Reservation (" + this.Machine.Name + ")"
 	}
 	return "Unnamed product"

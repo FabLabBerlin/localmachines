@@ -5,9 +5,9 @@ import (
 )
 
 const (
-	PRODUCT_TYPE_CO_WORKING = "co-working"
-	PRODUCT_TYPE_SPACE      = "space"
-	PRODUCT_TYPE_TUTOR      = "tutor"
+	TYPE_CO_WORKING = "co-working"
+	TYPE_SPACE      = "space"
+	TYPE_TUTOR      = "tutor"
 )
 
 type Product struct {
@@ -30,12 +30,12 @@ func (this *Product) TableName() string {
 	return "products"
 }
 
-func CreateProduct(product *Product) (int64, error) {
+func Create(product *Product) (int64, error) {
 	o := orm.NewOrm()
 	return o.Insert(product)
 }
 
-func GetProduct(productId int64) (product *Product, err error) {
+func Get(productId int64) (product *Product, err error) {
 	o := orm.NewOrm()
 	product = &Product{Id: productId}
 	err = o.Read(product)
@@ -43,7 +43,7 @@ func GetProduct(productId int64) (product *Product, err error) {
 }
 
 // Filter out archived products
-func GetAllProducts() (products []*Product, err error) {
+func GetAll() (products []*Product, err error) {
 	o := orm.NewOrm()
 	_, err = o.QueryTable(new(Product).TableName()).
 		Exclude("archived", 1).
@@ -51,7 +51,7 @@ func GetAllProducts() (products []*Product, err error) {
 	return
 }
 
-func GetAllProductsOfType(productType string) (products []*Product, err error) {
+func GetAllOfType(productType string) (products []*Product, err error) {
 	o := orm.NewOrm()
 	_, err = o.QueryTable(new(Product).TableName()).
 		Filter("type", productType).
@@ -60,13 +60,13 @@ func GetAllProductsOfType(productType string) (products []*Product, err error) {
 	return
 }
 
-func UpdateProduct(product *Product) (err error) {
+func Update(product *Product) (err error) {
 	o := orm.NewOrm()
 	_, err = o.Update(product)
 	return
 }
 
-func ArchiveProduct(product *Product) (err error) {
+func Archive(product *Product) (err error) {
 	o := orm.NewOrm()
 	product.Archived = true
 	_, err = o.Update(product)

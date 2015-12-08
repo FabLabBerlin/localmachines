@@ -16,7 +16,7 @@ type UserDashboardController struct {
 type DashboardData struct {
 	Activations []*purchases.Activation
 	Machines    []*models.Machine
-	Tutorings   *purchases.TutoringPurchaseList
+	Tutorings   *purchases.TutoringList
 }
 
 func (this *DashboardData) load(isAdmin bool, uid int64) (err error) {
@@ -70,7 +70,7 @@ func (this *DashboardData) loadTutorings(uid int64) (err error) {
 	if err != nil {
 		return fmt.Errorf("get all tutors: %v", err)
 	}
-	allTutorings, err := purchases.GetAllTutoringPurchases()
+	allTutorings, err := purchases.GetAllTutorings()
 	var targetTutor *products.Tutor
 	for _, tutor := range tutors {
 		if tutor.Product.UserId == uid {
@@ -82,8 +82,8 @@ func (this *DashboardData) loadTutorings(uid int64) (err error) {
 		this.Tutorings = nil
 	} else {
 
-		this.Tutorings = &purchases.TutoringPurchaseList{
-			Data: make([]*purchases.TutoringPurchase, 0, len(allTutorings.Data)),
+		this.Tutorings = &purchases.TutoringList{
+			Data: make([]*purchases.Tutoring, 0, len(allTutorings.Data)),
 		}
 		for _, tutoring := range allTutorings.Data {
 			if tutoring.ProductId == targetTutor.Product.Id {

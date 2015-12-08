@@ -13,7 +13,7 @@ type Tutor struct {
 
 // Get a list of tutors
 func GetAllTutors() ([]*Tutor, error) {
-	tutorsAsProducts, err := GetAllProductsOfType(PRODUCT_TYPE_TUTOR)
+	tutorsAsProducts, err := GetAllOfType(TYPE_TUTOR)
 	if err != nil {
 		msg := "Failed to get tutors as products"
 		beego.Error(msg)
@@ -35,7 +35,7 @@ func CreateTutor(tutor *Tutor) (*Tutor, error) {
 	o := orm.NewOrm()
 
 	// In case the type has not been added in upper layers
-	tutor.Product.Type = PRODUCT_TYPE_TUTOR
+	tutor.Product.Type = TYPE_TUTOR
 
 	var productId int64
 	productId, err := o.Insert(&tutor.Product)
@@ -72,5 +72,5 @@ func UpdateTutor(tutor *Tutor) error {
 		}
 		tutor.Product.Name = fmt.Sprintf("%s %s", user.FirstName, user.LastName)
 	}
-	return UpdateProduct(&tutor.Product)
+	return Update(&tutor.Product)
 }

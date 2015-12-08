@@ -6,24 +6,24 @@ import (
 	"time"
 )
 
-type SpacePurchase struct {
+type Space struct {
 	json.Marshaler
 	json.Unmarshaler
 	purchase Purchase
 }
 
-func (this *SpacePurchase) MarshalJSON() ([]byte, error) {
+func (this *Space) MarshalJSON() ([]byte, error) {
 	return json.Marshal(this.purchase)
 }
 
-func (this *SpacePurchase) UnmarshalJSON(data []byte) error {
+func (this *Space) UnmarshalJSON(data []byte) error {
 	return json.Unmarshal(data, &this.purchase)
 }
 
-func CreateSpacePurchase(spacePurchase *SpacePurchase) (int64, error) {
+func CreateSpace(spacePurchase *Space) (int64, error) {
 	spacePurchase.purchase = Purchase{
 		Created:   time.Now(),
-		Type:      PURCHASE_TYPE_SPACE_PURCHASE,
+		Type:      TYPE_SPACE,
 		TimeStart: time.Now(),
 		TimeEnd:   time.Now(),
 		PriceUnit: "hour",
@@ -33,8 +33,8 @@ func CreateSpacePurchase(spacePurchase *SpacePurchase) (int64, error) {
 	return o.Insert(&spacePurchase.purchase)
 }
 
-func GetSpacePurchase(id int64) (spacePurchase *SpacePurchase, err error) {
-	spacePurchase = &SpacePurchase{}
+func GetSpace(id int64) (spacePurchase *Space, err error) {
+	spacePurchase = &Space{}
 	spacePurchase.purchase.Id = id
 
 	o := orm.NewOrm()
@@ -43,14 +43,14 @@ func GetSpacePurchase(id int64) (spacePurchase *SpacePurchase, err error) {
 	return
 }
 
-func GetAllSpacePurchases() (spacePurchases []*SpacePurchase, err error) {
-	purchases, err := GetAllPurchasesOfType(PURCHASE_TYPE_SPACE_PURCHASE)
+func GetAllSpace() (spacePurchases []*Space, err error) {
+	purchases, err := GetAllOfType(TYPE_SPACE)
 	if err != nil {
 		return
 	}
-	spacePurchases = make([]*SpacePurchase, 0, len(purchases))
+	spacePurchases = make([]*Space, 0, len(purchases))
 	for _, purchase := range purchases {
-		spacePurchase := &SpacePurchase{
+		spacePurchase := &Space{
 			purchase: *purchase,
 		}
 		spacePurchases = append(spacePurchases, spacePurchase)
@@ -58,12 +58,12 @@ func GetAllSpacePurchases() (spacePurchases []*SpacePurchase, err error) {
 	return
 }
 
-func UpdateSpacePurchase(spacePurchase *SpacePurchase) (err error) {
+func UpdateSpace(spacePurchase *Space) (err error) {
 	o := orm.NewOrm()
 	_, err = o.Update(&spacePurchase.purchase)
 	return
 }
 
-func DeleteSpacePurchase(id int64) (err error) {
-	return DeletePurchase(id)
+func DeleteSpace(id int64) (err error) {
+	return Delete(id)
 }
