@@ -1,7 +1,7 @@
-var getters = require('../../getters');
-var MachineActions = require('../../actions/MachineActions');
+var getters = require('../../../getters');
+var MachineActions = require('../../../actions/MachineActions');
 var React = require('react');
-var reactor = require('../../reactor');
+var reactor = require('../../../reactor');
 var toastr = require('toastr');
 
 // https://github.com/HubSpot/vex/issues/72

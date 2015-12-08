@@ -1,9 +1,9 @@
 var React = require('react');
-var RepairButton = require('../Feedback/RepairButton');
+var RepairButton = require('../../Feedback/RepairButton');
 var Timer = require('./Timer');
 var ForceSwitch = require('./ForceSwitch');
-var ForceSwitchOn = require('../ForceSwitchOn');
-var ForceSwitchOff = require('../ForceSwitchOff');
+var ForceSwitchOn = require('./ForceSwitchOn');
+var ForceSwitchOff = require('./ForceSwitchOff');
 
 /*
  * Div displayed when a machine is busy

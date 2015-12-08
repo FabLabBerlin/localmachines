@@ -2,7 +2,7 @@ var _ = require('lodash');
 var getters = require('../../getters');
 var React = require('react');
 var reactor = require('../../reactor');
-var MachineChooser = require('./MachineChooser');
+var Machine = require('./Machine/Machine');
 
 
 /*
@@ -54,7 +54,7 @@ var MachineList = React.createClass({
           }.bind(this));
         }
         return (
-          <MachineChooser
+          <Machine
             key={machine.Id}
             info={machine}
             user={this.props.user}
