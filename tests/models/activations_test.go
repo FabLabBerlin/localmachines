@@ -78,7 +78,7 @@ func TestActivations(t *testing.T) {
 				})
 
 				Convey("the active flag should be true after creating", func() {
-					So(activation.Purchase.ActivationRunning, ShouldBeTrue)
+					So(activation.Purchase.Running, ShouldBeTrue)
 				})
 
 				Convey("It should be possible to close the activation", func() {
@@ -107,7 +107,7 @@ func TestActivations(t *testing.T) {
 					})
 
 					Convey("the active flag should be false after closing", func() {
-						So(activation.Purchase.ActivationRunning, ShouldBeFalse)
+						So(activation.Purchase.Running, ShouldBeFalse)
 					})
 				})
 			})

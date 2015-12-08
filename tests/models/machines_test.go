@@ -43,7 +43,7 @@ func TestMachine(t *testing.T) {
 			machineOneName := "My first machine"
 			machineTwoName := "My second lovely machine <3"
 			Convey("GetAllMachines when there are no machines in the database", func() {
-				machines, err := models.GetAllMachines()
+				machines, err := models.GetAllMachines(false)
 
 				So(len(machines), ShouldEqual, 0)
 				So(err, ShouldBeNil)
@@ -52,7 +52,7 @@ func TestMachine(t *testing.T) {
 				models.CreateMachine(machineOneName)
 				models.CreateMachine(machineTwoName)
 
-				machines, err := models.GetAllMachines()
+				machines, err := models.GetAllMachines(false)
 
 				So(len(machines), ShouldEqual, 2)
 				So(err, ShouldBeNil)
@@ -69,7 +69,7 @@ func TestMachine(t *testing.T) {
 				uid, _ := models.CreateUser(&user)
 
 				models.CreateActivation(mid, uid, time.Now())
-				allMachines, _ := models.GetAllMachines()
+				allMachines, _ := models.GetAllMachines(true)
 
 				So(allMachines[0].Id, ShouldEqual, mid)
 			})
