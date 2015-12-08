@@ -155,7 +155,7 @@ func (this *PurchasesController) Get() {
 }
 
 // @Title Put
-// @Description Update space purchase
+// @Description Update purchase
 // @Param	type	query	string	true	"Purchase Type"
 // @Success 200 string
 // @Failure	400	Bad Request
