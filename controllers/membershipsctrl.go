@@ -147,7 +147,7 @@ func (this *MembershipsController) Update() {
 	}
 
 	// Update the database
-	err = models.UpdateMembership(&req)
+	err = req.Update()
 	if err != nil {
 		beego.Error("Failed updating membership:", err)
 		this.CustomAbort(403, "Failed to update membership")

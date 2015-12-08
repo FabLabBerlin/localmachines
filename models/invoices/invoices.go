@@ -1,4 +1,4 @@
-package billing
+package invoices
 
 import (
 	"errors"
@@ -70,17 +70,17 @@ func exists(path string) (bool, error) {
 }
 
 // Creates invoice entry in the database
-func CreateInvoice(startTime, endTime time.Time) (*Invoice, error) {
+func Create(startTime, endTime time.Time) (*Invoice, error) {
 
 	var err error
 
-	invoice, err := CalculateInvoiceSummary(startTime, endTime)
+	invoice, err := CalculateSummary(startTime, endTime)
 	if err != nil {
 		return nil, fmt.Errorf("CalculateInvoiceSummary: %v", err)
 	}
 
 	// Create *.xlsx file.
-	fileName := invoice.getInvoiceFileName(startTime, endTime)
+	fileName := invoice.getFileName(startTime, endTime)
 
 	// Make sure the files directory exists
 	exists, _ := exists("files")
@@ -119,7 +119,7 @@ func CreateInvoice(startTime, endTime time.Time) (*Invoice, error) {
 }
 
 // Gets existing invoice from db by invoice ID
-func GetInvoice(invoiceId int64) (invoice *Invoice, err error) {
+func Get(invoiceId int64) (invoice *Invoice, err error) {
 
 	invoice = &Invoice{}
 	invoice.Id = invoiceId
@@ -135,7 +135,7 @@ func GetInvoice(invoiceId int64) (invoice *Invoice, err error) {
 }
 
 // Returns Invoice and InvoiceSummary objects, error otherwise
-func CalculateInvoiceSummary(startTime, endTime time.Time) (invoice Invoice, err error) {
+func CalculateSummary(startTime, endTime time.Time) (invoice Invoice, err error) {
 	// Enhance activations with user and membership data
 	ps, err := invoice.getPurchases(startTime, endTime)
 	if err != nil {
@@ -181,7 +181,7 @@ func CalculateInvoiceSummary(startTime, endTime time.Time) (invoice Invoice, err
 }
 
 // Gets all invoices from the database
-func GetAllInvoices() (invoices *[]Invoice, err error) {
+func GetAll() (invoices *[]Invoice, err error) {
 	inv := Invoice{}
 	var readInvoices []Invoice
 	o := orm.NewOrm()
@@ -197,7 +197,7 @@ func GetAllInvoices() (invoices *[]Invoice, err error) {
 }
 
 // Deletes an invoice by ID
-func DeleteInvoice(invoiceId int64) error {
+func Delete(invoiceId int64) error {
 	invoice := Invoice{}
 	invoice.Id = invoiceId
 	o := orm.NewOrm()
@@ -231,8 +231,7 @@ func getPurchases(startTime,
 	return
 }
 
-func (this *Invoice) getInvoiceFileName(startTime,
-	endTime time.Time) string {
+func (this *Invoice) getFileName(startTime, endTime time.Time) string {
 
 	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
@@ -365,7 +364,7 @@ func (this *Invoice) enhancePurchase(purchase *purchases.Purchase,
 
 	var ok bool
 	purchase.Machine, ok = machinesById[purchase.MachineId]
-	if !ok && (purchase.Type == purchases.PURCHASE_TYPE_ACTIVATION || purchase.Type == purchases.PURCHASE_TYPE_RESERVATION) {
+	if !ok && (purchase.Type == purchases.TYPE_ACTIVATION || purchase.Type == purchases.TYPE_RESERVATION) {
 		return fmt.Errorf("No machine has the ID %v", purchase.MachineId)
 	}
 

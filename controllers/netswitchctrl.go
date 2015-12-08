@@ -151,8 +151,7 @@ func (this *NetSwitchController) Update() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	err = models.UpdateNetSwitchMapping(&req)
-	if err != nil {
+	if err = req.Update(); err != nil {
 		beego.Error("Failed updating mapping:", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}

@@ -32,13 +32,13 @@ func (this *ProductsController) Create() {
 	var err error
 
 	switch productType {
-	case products.PRODUCT_TYPE_CO_WORKING:
-		product, err = products.CreateCoWorkingProduct(name)
+	case products.TYPE_CO_WORKING:
+		product, err = products.CreateCoWorking(name)
 		break
-	case products.PRODUCT_TYPE_SPACE:
+	case products.TYPE_SPACE:
 		product, err = products.CreateSpace(name)
 		break
-	case products.PRODUCT_TYPE_TUTOR:
+	case products.TYPE_TUTOR:
 		product, err = products.CreateTutor(&products.Tutor{})
 		break
 	default:
@@ -74,13 +74,13 @@ func (this *ProductsController) Get() {
 	var product interface{}
 
 	switch productType {
-	case products.PRODUCT_TYPE_CO_WORKING:
-		product, err = products.GetCoWorkingProduct(id)
+	case products.TYPE_CO_WORKING:
+		product, err = products.GetCoWorking(id)
 		break
-	case products.PRODUCT_TYPE_SPACE:
+	case products.TYPE_SPACE:
 		product, err = products.GetSpace(id)
 		break
-	case products.PRODUCT_TYPE_TUTOR:
+	case products.TYPE_TUTOR:
 		product, err = products.GetTutor(id)
 		break
 	default:
@@ -115,17 +115,17 @@ func (this *ProductsController) GetAll() {
 	var err error
 
 	switch productType {
-	case products.PRODUCT_TYPE_CO_WORKING:
-		ps, err = products.GetAllCoWorkingProducts()
+	case products.TYPE_CO_WORKING:
+		ps, err = products.GetAllCoWorking()
 		break
-	case products.PRODUCT_TYPE_SPACE:
+	case products.TYPE_SPACE:
 		ps, err = products.GetAllSpaces()
 		break
-	case products.PRODUCT_TYPE_TUTOR:
+	case products.TYPE_TUTOR:
 		ps, err = products.GetAllTutors()
 		break
 	case "":
-		ps, err = products.GetAllProducts()
+		ps, err = products.GetAll()
 	default:
 		err = fmt.Errorf("unknown product type")
 	}
@@ -160,8 +160,8 @@ func (this *ProductsController) Put() {
 	var err error
 
 	switch productType {
-	case products.PRODUCT_TYPE_CO_WORKING:
-		table := &products.CoWorkingProduct{}
+	case products.TYPE_CO_WORKING:
+		table := &products.CoWorking{}
 		dec := json.NewDecoder(this.Ctx.Request.Body)
 		defer this.Ctx.Request.Body.Close()
 		if err := dec.Decode(table); err != nil {
@@ -169,11 +169,11 @@ func (this *ProductsController) Put() {
 			this.CustomAbort(400, "Failed to update table")
 		}
 
-		if err = products.UpdateCoWorkingProduct(table); err == nil {
+		if err = table.Update(); err == nil {
 			response = table
 		}
 		break
-	case products.PRODUCT_TYPE_SPACE:
+	case products.TYPE_SPACE:
 		space := &products.Space{}
 		dec := json.NewDecoder(this.Ctx.Request.Body)
 		defer this.Ctx.Request.Body.Close()
@@ -182,11 +182,11 @@ func (this *ProductsController) Put() {
 			this.CustomAbort(400, "Failed to update space")
 		}
 
-		if err = products.UpdateSpace(space); err == nil {
+		if err = space.Update(); err == nil {
 			response = space
 		}
 		break
-	case products.PRODUCT_TYPE_TUTOR:
+	case products.TYPE_TUTOR:
 		tutor := &products.Tutor{}
 		dec := json.NewDecoder(this.Ctx.Request.Body)
 		defer this.Ctx.Request.Body.Close()
@@ -195,7 +195,7 @@ func (this *ProductsController) Put() {
 			this.CustomAbort(400, "Failed to update tutor")
 		}
 
-		if err = products.UpdateTutor(tutor); err == nil {
+		if err = tutor.Update(); err == nil {
 			response = tutor
 		}
 		break
@@ -233,13 +233,13 @@ func (this *ProductsController) ArchiveProduct() {
 	}
 
 	var product *products.Product
-	product, err = products.GetProduct(productId)
+	product, err = products.Get(productId)
 	if err != nil {
 		beego.Error("Failed to get product")
 		this.CustomAbort(500, "Failed to get product")
 	}
 
-	err = products.ArchiveProduct(product)
+	err = product.Archive()
 	if err != nil {
 		beego.Error("Failed to archive product")
 		this.CustomAbort(500, "Failed to archive product")

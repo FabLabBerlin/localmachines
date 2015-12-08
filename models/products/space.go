@@ -13,16 +13,16 @@ func CreateSpace(name string) (space Space, err error) {
 	space = Space{
 		Product: Product{
 			Name: name,
-			Type: PRODUCT_TYPE_SPACE,
+			Type: TYPE_SPACE,
 		},
 	}
-	id, err := CreateProduct(&space.Product)
+	id, err := Create(&space.Product)
 	space.Product.Id = id
 	return
 }
 
-func UpdateSpace(space *Space) (err error) {
-	return UpdateProduct(&space.Product)
+func (space *Space) Update() (err error) {
+	return space.Product.Update()
 }
 
 func GetSpace(id int64) (space *Space, err error) {
@@ -38,7 +38,7 @@ func GetSpace(id int64) (space *Space, err error) {
 }
 
 func GetAllSpaces() (spaces []*Space, err error) {
-	products, err := GetAllProductsOfType(PRODUCT_TYPE_SPACE)
+	products, err := GetAllOfType(TYPE_SPACE)
 	if err != nil {
 		return
 	}

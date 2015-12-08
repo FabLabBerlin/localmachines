@@ -55,7 +55,7 @@ func GetActivations(startTime time.Time,
 		usr.TableName())
 
 	_, err := o.Raw(query,
-		PURCHASE_TYPE_ACTIVATION,
+		TYPE_ACTIVATION,
 		startTime.Format("2006-01-02"),
 		endTime.Format("2006-01-02"),
 		itemsPerPage,
@@ -91,7 +91,7 @@ func GetNumActivations(startTime time.Time,
 		Filter("timeEnd__lt", endTime).
 		//Filter("userId", userId).
 		Filter("Running", false).
-		Filter("type", PURCHASE_TYPE_ACTIVATION).
+		Filter("type", TYPE_ACTIVATION).
 		Count()
 
 	if err != nil {
@@ -112,7 +112,7 @@ func GetActiveActivations() ([]*Activation, error) {
 	act := Activation{}
 	_, err := o.QueryTable(act.Purchase.TableName()).
 		Filter("running", true).
-		Filter("type", PURCHASE_TYPE_ACTIVATION).
+		Filter("type", TYPE_ACTIVATION).
 		All(&purchases)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get active activations: %v", err)
@@ -150,7 +150,7 @@ func CreateActivation(machineId, userId int64, startTime time.Time) (
 	act := Activation{} // Used to get table name of the model
 	query := fmt.Sprintf("SELECT id FROM %s WHERE machine_id = ? "+
 		"AND user_id = ? AND running = 1 AND type = ?", act.Purchase.TableName())
-	numDuplicates, err := o.Raw(query, machineId, userId, PURCHASE_TYPE_ACTIVATION).
+	numDuplicates, err := o.Raw(query, machineId, userId, TYPE_ACTIVATION).
 		QueryRows(&dupActivations)
 	if err != nil {
 		return 0, fmt.Errorf("Could not get duplicate activations: %v", err)
@@ -175,7 +175,7 @@ func CreateActivation(machineId, userId int64, startTime time.Time) (
 
 	newActivation := Activation{
 		Purchase: Purchase{
-			Type:      PURCHASE_TYPE_ACTIVATION,
+			Type:      TYPE_ACTIVATION,
 			UserId:    userId,
 			MachineId: machineId,
 			Running:   true,
@@ -234,7 +234,7 @@ func CloseActivation(activationId int64, endTime time.Time) error {
 	activation.Purchase.TimeEnd = endTime
 	activation.Purchase.Quantity = activation.Purchase.quantityFromTimes()
 
-	err = UpdateActivation(activation)
+	err = activation.Update()
 	if err != nil {
 		beego.Error("Failed to update activation:", err)
 		return fmt.Errorf("Failed to update activation: %v", err)
@@ -249,7 +249,7 @@ func CloseActivation(activationId int64, endTime time.Time) error {
 	}
 
 	machine.Available = true
-	err = models.UpdateMachine(machine)
+	err = machine.Update()
 	if err != nil {
 		beego.Error("Failed to update machine:", err)
 		return fmt.Errorf("Failed to update machine: %v", err)
@@ -260,7 +260,7 @@ func CloseActivation(activationId int64, endTime time.Time) error {
 
 // Updates existing activation by consuming a pointer to
 // existing activation store.
-func UpdateActivation(activation *Activation) error {
+func (activation *Activation) Update() error {
 	o := orm.NewOrm()
 	num, err := o.Update(&activation.Purchase)
 
@@ -280,7 +280,7 @@ func GetActivationMachineId(activationId int64) (int64, error) {
 	o := orm.NewOrm()
 	err := o.QueryTable(activationModel.Purchase.TableName()).
 		Filter("id", activationId).
-		Filter("type", PURCHASE_TYPE_ACTIVATION).
+		Filter("type", TYPE_ACTIVATION).
 		One(&activationModel.Purchase, "MachineId")
 	if err != nil {
 		beego.Error("Could not get activation")

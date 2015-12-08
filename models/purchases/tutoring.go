@@ -8,23 +8,23 @@ import (
 	"time"
 )
 
-type TutoringPurchase struct {
+type Tutoring struct {
 	json.Marshaler
 	json.Unmarshaler
 	Purchase
 	//TutorId    int64 - Product Id?!
 }
 
-func (this *TutoringPurchase) MarshalJSON() ([]byte, error) {
+func (this *Tutoring) MarshalJSON() ([]byte, error) {
 	return json.Marshal(this.Purchase)
 }
 
-func (this *TutoringPurchase) UnmarshalJSON(data []byte) error {
+func (this *Tutoring) UnmarshalJSON(data []byte) error {
 	return json.Unmarshal(data, &this.Purchase)
 }
 
-type TutoringPurchaseList struct {
-	Data []*TutoringPurchase
+type TutoringList struct {
+	Data []*Tutoring
 }
 
 // Create a planned tutoring reservation in the future with blank values.
@@ -38,33 +38,33 @@ func CreateTutoringPurchase(tutoringPurchase *TutoringPurchase) (int64, error) {
 	tutoringPurchase.Purchase.PriceUnit = "hour"
 
 	o := orm.NewOrm()
-	return o.Insert(&tutoringPurchase.Purchase)
+	return o.Insert(&tutoring.Purchase)
 }
 
-func GetTutoringPurchase(id int64) (tutoringPurchase *TutoringPurchase, err error) {
-	tutoringPurchase = &TutoringPurchase{}
-	tutoringPurchase.Purchase.Id = id
+func GetTutoring(id int64) (tutoring *Tutoring, err error) {
+	tutoring = &Tutoring{}
+	tutoring.Purchase.Id = id
 
 	o := orm.NewOrm()
-	err = o.Read(&tutoringPurchase.Purchase)
+	err = o.Read(&tutoring.Purchase)
 
 	return
 }
 
 // Get a list of tutoring purchases
-func GetAllTutoringPurchases() (tutoringPurchases *TutoringPurchaseList, err error) {
-	purchases, err := GetAllPurchasesOfType(PURCHASE_TYPE_TUTOR)
+func GetAllTutorings() (tutorings *TutoringList, err error) {
+	purchases, err := GetAllOfType(TYPE_TUTOR)
 	if err != nil {
 		return
 	}
-	tutoringPurchases = &TutoringPurchaseList{
-		Data: make([]*TutoringPurchase, 0, len(purchases)),
+	tutorings = &TutoringList{
+		Data: make([]*Tutoring, 0, len(purchases)),
 	}
 	for _, purchase := range purchases {
-		tutoringPurchase := &TutoringPurchase{
+		t := &Tutoring{
 			Purchase: *purchase,
 		}
-		tutoringPurchases.Data = append(tutoringPurchases.Data, tutoringPurchase)
+		tutorings.Data = append(tutorings.Data, t)
 	}
 	return
 }

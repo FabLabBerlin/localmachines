@@ -58,9 +58,9 @@ func CreateReservationRule(reservationRule *ReservationRule) (int64, error) {
 	return o.Insert(reservationRule)
 }
 
-func UpdateReservationRule(reservationRule *ReservationRule) (err error) {
+func (this *ReservationRule) Update() (err error) {
 	o := orm.NewOrm()
-	_, err = o.Update(reservationRule)
+	_, err = o.Update(this)
 	return
 }
 

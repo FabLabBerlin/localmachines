@@ -61,7 +61,7 @@ func (this *SettingsController) Post() {
 			_, err = models.CreateSetting(setting)
 		} else {
 			msg = "updating existing setting"
-			err = models.UpdateSetting(setting)
+			err = setting.Update()
 		}
 		if err != nil {
 			beego.Error(msg, err)

@@ -30,25 +30,25 @@ func (this *PurchasesController) Create() {
 	var err error
 
 	switch purchaseType {
-	case purchases.PURCHASE_TYPE_CO_WORKING:
-		cp := &purchases.CoWorkingPurchase{}
-		_, err = purchases.CreateCoWorkingPurchase(cp)
+	case purchases.TYPE_CO_WORKING:
+		cp := &purchases.CoWorking{}
+		_, err = purchases.CreateCoWorking(cp)
 		if err == nil {
 			purchase = cp
 		}
 		break
-	case purchases.PURCHASE_TYPE_SPACE_PURCHASE:
-		spacePurchase := &purchases.SpacePurchase{}
-		_, err = purchases.CreateSpacePurchase(spacePurchase)
+	case purchases.TYPE_SPACE:
+		sp := &purchases.Space{}
+		_, err = purchases.CreateSpace(sp)
 		if err == nil {
-			purchase = spacePurchase
+			purchase = sp
 		}
 		break
-	case purchases.PURCHASE_TYPE_TUTOR:
-		tutoringPurchase := &purchases.TutoringPurchase{}
-		_, err = purchases.CreateTutoringPurchase(tutoringPurchase)
+	case purchases.TYPE_TUTOR:
+		tp := &purchases.Tutoring{}
+		_, err = purchases.CreateTutoring(tp)
 		if err == nil {
-			purchase = tutoringPurchase
+			purchase = tp
 		}
 	default:
 		err = fmt.Errorf("unknown purchase type")
@@ -84,14 +84,14 @@ func (this *PurchasesController) GetAll() {
 	var err error
 
 	switch purchaseType {
-	case purchases.PURCHASE_TYPE_CO_WORKING:
-		ps, err = purchases.GetAllCoWorkingPurchases()
+	case purchases.TYPE_CO_WORKING:
+		ps, err = purchases.GetAllCoWorking()
 		break
-	case purchases.PURCHASE_TYPE_SPACE_PURCHASE:
-		ps, err = purchases.GetAllSpacePurchases()
+	case purchases.TYPE_SPACE:
+		ps, err = purchases.GetAllSpace()
 		break
-	case purchases.PURCHASE_TYPE_TUTOR:
-		ps, err = purchases.GetAllTutoringPurchases()
+	case purchases.TYPE_TUTOR:
+		ps, err = purchases.GetAllTutorings()
 		break
 	default:
 		err = fmt.Errorf("unknown purchase type")
@@ -132,14 +132,14 @@ func (this *PurchasesController) Get() {
 	var purchase interface{}
 
 	switch purchaseType {
-	case purchases.PURCHASE_TYPE_CO_WORKING:
-		purchase, err = purchases.GetCoWorkingPurchase(id)
+	case purchases.TYPE_CO_WORKING:
+		purchase, err = purchases.GetCoWorking(id)
 		break
-	case purchases.PURCHASE_TYPE_SPACE_PURCHASE:
-		purchase, err = purchases.GetSpacePurchase(id)
+	case purchases.TYPE_SPACE:
+		purchase, err = purchases.GetSpace(id)
 		break
-	case purchases.PURCHASE_TYPE_TUTOR:
-		purchase, err = purchases.GetTutoringPurchase(id)
+	case purchases.TYPE_TUTOR:
+		purchase, err = purchases.GetTutoring(id)
 		break
 	default:
 		err = fmt.Errorf("unknown purchase type")
@@ -174,8 +174,8 @@ func (this *PurchasesController) Put() {
 	var err error
 
 	switch purchaseType {
-	case purchases.PURCHASE_TYPE_CO_WORKING:
-		cp := &purchases.CoWorkingPurchase{}
+	case purchases.TYPE_CO_WORKING:
+		cp := &purchases.CoWorking{}
 		dec := json.NewDecoder(this.Ctx.Request.Body)
 		defer this.Ctx.Request.Body.Close()
 		if err := dec.Decode(cp); err != nil {
@@ -183,34 +183,34 @@ func (this *PurchasesController) Put() {
 			this.CustomAbort(400, "Failed to update Co-Working purchase")
 		}
 
-		if err = purchases.UpdateCoWorkingPurchase(cp); err == nil {
+		if err = cp.Update(); err == nil {
 			response = cp
 		}
 		break
-	case purchases.PURCHASE_TYPE_SPACE_PURCHASE:
-		spacePurchase := &purchases.SpacePurchase{}
+	case purchases.TYPE_SPACE:
+		sp := &purchases.Space{}
 		dec := json.NewDecoder(this.Ctx.Request.Body)
 		defer this.Ctx.Request.Body.Close()
-		if err := dec.Decode(spacePurchase); err != nil {
+		if err := dec.Decode(sp); err != nil {
 			beego.Error("Failed to decode json:", err)
 			this.CustomAbort(400, "Failed to update Space purchase")
 		}
 
-		if err = purchases.UpdateSpacePurchase(spacePurchase); err == nil {
-			response = spacePurchase
+		if err = sp.Update(); err == nil {
+			response = sp
 		}
 		break
-	case purchases.PURCHASE_TYPE_TUTOR:
-		tutoringPurchase := &purchases.TutoringPurchase{}
+	case purchases.TYPE_TUTOR:
+		tp := &purchases.Tutoring{}
 		dec := json.NewDecoder(this.Ctx.Request.Body)
 		defer this.Ctx.Request.Body.Close()
-		if err := dec.Decode(tutoringPurchase); err != nil {
+		if err := dec.Decode(tp); err != nil {
 			beego.Error("Failed to decode json:", err)
 			this.CustomAbort(400, "Failed to update Tutoring purchase")
 		}
-		beego.Info("tp: time end planned:", tutoringPurchase.TimeEndPlanned)
-		if err = purchases.UpdateTutoringPurchase(tutoringPurchase); err == nil {
-			response = tutoringPurchase
+		beego.Info("tp: time end planned:", tp.TimeEndPlanned)
+		if err = tp.Update(); err == nil {
+			response = tp
 		}
 		break
 	default:
@@ -246,14 +246,13 @@ func (this *PurchasesController) ArchivePurchase() {
 		this.CustomAbort(400, "Incorrect purchaseId")
 	}
 
-	var purchase *purchases.Purchase
-	purchase, err = purchases.GetPurchase(purchaseId)
+	purchase, err := purchases.Get(purchaseId)
 	if err != nil {
 		beego.Error("Failed to get purchase")
 		this.CustomAbort(500, "Failed to get purchase")
 	}
 
-	err = purchases.ArchivePurchase(purchase)
+	err = purchases.Archive(purchase)
 	if err != nil {
 		beego.Error("Failed to archive purchase")
 		this.CustomAbort(500, "Failed to archive purchase")

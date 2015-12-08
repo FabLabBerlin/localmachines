@@ -5,7 +5,7 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/kr15h/fabsmith/controllers"
 	"github.com/kr15h/fabsmith/models"
-	"github.com/kr15h/fabsmith/models/billing"
+	"github.com/kr15h/fabsmith/models/invoices"
 	"github.com/kr15h/fabsmith/models/purchases"
 	"strconv"
 	"strings"
@@ -310,7 +310,7 @@ func (this *UsersController) Put() {
 		}
 	}
 
-	err = models.UpdateUser(&req.User)
+	err = req.User.Update()
 	if err != nil {
 		if strings.Contains(err.Error(), "Error 1062") {
 			beego.Error("Failed to update user due to duplicate entry:", err)
@@ -444,12 +444,12 @@ func (this *UsersController) GetUserBill() {
 	startTime = startTime.Add(-86400 * time.Second)
 
 	endTime := time.Now().Add(86400 * 30 * time.Second)
-	invoice, err := billing.CalculateInvoiceSummary(startTime, endTime)
+	invoice, err := invoices.CalculateSummary(startTime, endTime)
 	if err != nil {
-		beego.Error("CalculateInvoiceSummary:", err)
+		beego.Error("Calculate invoice summary:", err)
 	}
 
-	var userSummary *billing.UserSummary
+	var userSummary *invoices.UserSummary
 
 	for _, us := range invoice.UserSummaries {
 		if us.User.Id == suid {

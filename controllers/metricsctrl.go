@@ -22,13 +22,13 @@ func (this *MetricsController) GetAll() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	data, err := metrics.FetchMetricsData()
+	data, err := metrics.FetchData()
 	if err != nil {
 		beego.Error("Failed to get metrics data:", err)
 		this.CustomAbort(500, "Failed to get metrics data")
 	}
 
-	resp, err := metrics.NewMetricsResponse(data)
+	resp, err := metrics.NewResponse(data)
 	if err != nil {
 		beego.Error("Failed to get metrics response:", err)
 		this.CustomAbort(500, "Failed to get metrics response")

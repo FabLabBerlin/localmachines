@@ -24,7 +24,7 @@ func (this *TutoringsController) Start() {
 		this.CustomAbort(400, "Incorrect id")
 	}
 
-	err = purchases.StartTutoringPurchase(id)
+	err = purchases.StartTutoring(id)
 	if err != nil {
 		beego.Error("Failed to start tutoring purchase:", err)
 		this.CustomAbort(500, "Internal Server Error")
@@ -48,9 +48,9 @@ func (this *TutoringsController) Stop() {
 		this.CustomAbort(400, "Incorrect id")
 	}
 
-	err = purchases.StopTutoringPurchase(id)
+	err = purchases.StopTutoring(id)
 	if err != nil {
-		beego.Error("Failed to stop tutoring purchase:", err)
+		beego.Error("Failed to stop tutoring:", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
 

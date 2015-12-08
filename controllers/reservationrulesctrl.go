@@ -90,10 +90,8 @@ func (this *ReservationRulesController) Update() {
 		beego.Error("Failed to decode json:", err)
 		this.CustomAbort(403, "Failed to update ReservationRule")
 	}
-	beego.Info("create ReservationRule:", req)
 
-	err := models.UpdateReservationRule(&req)
-	if err != nil {
+	if err := req.Update(); err != nil {
 		beego.Error("Failed to update ReservationRule", err)
 		this.CustomAbort(403, "Failed to update ReservationRule")
 	}
