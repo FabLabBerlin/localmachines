@@ -110,14 +110,14 @@ func GetActiveActivations() ([]*Activation, error) {
 	var purchases []*Purchase
 	o := orm.NewOrm()
 	act := Activation{}
-	num, err := o.QueryTable(act.Purchase.TableName()).
+	_, err := o.QueryTable(act.Purchase.TableName()).
 		Filter("running", true).
 		Filter("type", PURCHASE_TYPE_ACTIVATION).
 		All(&purchases)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get active activations: %v", err)
 	}
-	beego.Trace("Got num activations:", num)
+	//beego.Trace("Got num activations:", num)
 
 	activations := make([]*Activation, 0, len(purchases))
 	for _, purchase := range purchases {
