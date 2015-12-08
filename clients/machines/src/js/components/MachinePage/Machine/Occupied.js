@@ -33,7 +33,6 @@ var OccupiedMachine = React.createClass({
   render() {
     var users = this.state.machineUsers;
     var user = users.get(this.props.activation.UserId) || {};
-    console.log('this.props.activation.Quantity:', this.props.activation.Quantity);
     return (
       <div className="machine occupied">
         <div className="row">
