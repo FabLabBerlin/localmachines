@@ -5,16 +5,17 @@ import (
 	"time"
 
 	"github.com/kr15h/fabsmith/models"
+	"github.com/kr15h/fabsmith/tests/setup"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
 func init() {
-	ConfigDB()
+	setup.ConfigDB()
 }
 
 func TestUsers(t *testing.T) {
 	Convey("Testing User model", t, func() {
-		Reset(ResetDB)
+		Reset(setup.ResetDB)
 		Convey("Testing CreateUser", func() {
 			Convey("Creating user with invalid email should not work", func() {
 				user := models.User{}
@@ -275,33 +276,33 @@ func TestUsers(t *testing.T) {
 				user.Id, _ = models.CreateUser(&user)
 
 				user.Email = ""
-				err := models.UpdateUser(&user)
+				err := user.Update()
 				So(err, ShouldNotBeNil)
 
 				user.Email = "invalidemail"
-				err = models.UpdateUser(&user)
+				err = user.Update()
 				So(err, ShouldNotBeNil)
 
 				user.Email = "invalid@email"
-				err = models.UpdateUser(&user)
+				err = user.Update()
 				So(err, ShouldNotBeNil)
 
 				user.Email = "invalid@email."
-				err = models.UpdateUser(&user)
+				err = user.Update()
 				So(err, ShouldNotBeNil)
 			})
 			Convey("Creating a user and try to modify FirstName", func() {
 				uid, _ := models.CreateUser(&u)
 				user, _ := models.GetUser(uid)
 				user.FirstName = "YOLO"
-				err := models.UpdateUser(user)
+				err := user.Update()
 				user, _ = models.GetUser(user.Id)
 
 				So(err, ShouldBeNil)
 				So(user.FirstName, ShouldEqual, "YOLO")
 			})
 			Convey("Try updating non-existing user", func() {
-				err := models.UpdateUser(&u)
+				err := u.Update()
 
 				So(err, ShouldNotBeNil)
 			})
@@ -315,7 +316,7 @@ func TestUsers(t *testing.T) {
 				models.CreateUser(&user1)
 				models.CreateUser(&user2)
 				user2.Username = user1.Username
-				err := models.UpdateUser(&user2)
+				err := user2.Update()
 
 				So(err, ShouldNotBeNil)
 			})
@@ -329,7 +330,7 @@ func TestUsers(t *testing.T) {
 				models.CreateUser(&user1)
 				models.CreateUser(&user2)
 				user2.Email = user1.Email
-				err := models.UpdateUser(&user2)
+				err := user2.Update()
 
 				So(err, ShouldNotBeNil)
 			})

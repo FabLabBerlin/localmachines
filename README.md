@@ -169,6 +169,11 @@ When ready to move the system to `prod` runmode, run `grunt prod` to compile the
 
 More info about the development workflow will be added to Wiki.
 
+## Testing
+
+Use `./testall` to run all tests in the project. Make sure that the file
+`./tests/conf/app.conf` exists.
+
 ### Core Development
 
 Core / API development. Everything that is no in the `clients` directory is relevant to this part.

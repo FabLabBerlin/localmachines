@@ -6,11 +6,13 @@ import (
 	"time"
 
 	"github.com/kr15h/fabsmith/models"
+	"github.com/kr15h/fabsmith/models/purchases"
+	"github.com/kr15h/fabsmith/tests/setup"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
 func init() {
-	ConfigDB()
+	setup.ConfigDB()
 }
 
 func CreateMachine(name string) (m *models.Machine, err error) {
@@ -23,26 +25,26 @@ func CreateMachine(name string) (m *models.Machine, err error) {
 	}
 	m.Price = 0.1
 	m.PriceUnit = "minute"
-	err = models.UpdateMachine(m)
+	err = m.Update()
 	return
 }
 
 func TestActivations(t *testing.T) {
 	Convey("Testing Activation model", t, func() {
 
-		Reset(ResetDB)
+		Reset(setup.ResetDB)
 
 		Convey("Testing CreateActivation", func() {
 			user := models.User{FirstName: "ILoveFabLabs"}
 
 			Convey("Creating activation with non-existing machine", func() {
-				_, err := models.CreateActivation(0, 0, time.Now())
+				_, err := purchases.CreateActivation(0, 0, time.Now())
 				So(err, ShouldNotBeNil)
 			})
 
 			Convey("Creating activation with non-existing user", func() {
 				machine, _ := CreateMachine("lel")
-				_, err := models.CreateActivation(machine.Id, 0, time.Now())
+				_, err := purchases.CreateActivation(machine.Id, 0, time.Now())
 				So(err, ShouldBeNil)
 			})
 
@@ -50,11 +52,11 @@ func TestActivations(t *testing.T) {
 				machine, _ := CreateMachine("lel")
 				uid, _ := models.CreateUser(&user)
 				activationStartTime := time.Date(2015, 5, 8, 2, 15, 3, 1, time.Local)
-				aid, err := models.CreateActivation(machine.Id, uid, activationStartTime)
+				aid, err := purchases.CreateActivation(machine.Id, uid, activationStartTime)
 				if err != nil {
 					panic(fmt.Sprintf("create activation: %v", err))
 				}
-				activation, err2 := models.GetActivation(aid)
+				activation, err2 := purchases.GetActivation(aid)
 				if err2 != nil {
 					panic(fmt.Sprintf("get activation: %v", err2))
 				}
@@ -83,13 +85,13 @@ func TestActivations(t *testing.T) {
 
 				Convey("It should be possible to close the activation", func() {
 					activationEndTime := time.Now()
-					err = models.CloseActivation(aid, activationEndTime)
+					err = purchases.CloseActivation(aid, activationEndTime)
 					if err != nil {
 						panic(fmt.Sprintf("close activation: %v", err))
 					}
 					So(err, ShouldBeNil)
 
-					activation, err = models.GetActivation(aid)
+					activation, err = purchases.GetActivation(aid)
 					if err != nil {
 						panic(fmt.Sprintf("get activation: %v", err))
 					}
@@ -115,36 +117,36 @@ func TestActivations(t *testing.T) {
 
 		Convey("Testing CloseActivation", func() {
 			Convey("Trying to close a non-existing activation", func() {
-				err := models.CloseActivation(0, time.Now())
+				err := purchases.CloseActivation(0, time.Now())
 
 				So(err, ShouldNotBeNil)
 			})
 			Convey("Creating an activation and close it", func() {
 				machine, _ := CreateMachine("lel")
-				aid, _ := models.CreateActivation(machine.Id, 0, time.Now())
-				err := models.CloseActivation(aid, time.Now())
+				aid, _ := purchases.CreateActivation(machine.Id, 0, time.Now())
+				err := purchases.CloseActivation(aid, time.Now())
 
 				So(err, ShouldBeNil)
 			})
 		})
 		Convey("Testing GetActivationMachineId", func() {
 			Convey("Getting activation id on non-existing machine", func() {
-				_, err := models.GetActivationMachineId(0)
+				_, err := purchases.GetActivationMachineId(0)
 
 				So(err, ShouldNotBeNil)
 			})
 			Convey("Getting activation id on non-activated machine", func() {
 				machine, _ := CreateMachine("lel")
-				aid, _ := models.CreateActivation(machine.Id, 0, time.Now())
-				models.CloseActivation(aid, time.Now())
-				_, err := models.GetActivationMachineId(aid)
+				aid, _ := purchases.CreateActivation(machine.Id, 0, time.Now())
+				purchases.CloseActivation(aid, time.Now())
+				_, err := purchases.GetActivationMachineId(aid)
 
 				So(err, ShouldBeNil)
 			})
 			Convey("Creating activation on a machine and get activation's id", func() {
 				machine, _ := CreateMachine("lel")
-				aid, _ := models.CreateActivation(machine.Id, 0, time.Now())
-				gmid, _ := models.GetActivationMachineId(aid)
+				aid, _ := purchases.CreateActivation(machine.Id, 0, time.Now())
+				gmid, _ := purchases.GetActivationMachineId(aid)
 
 				So(machine.Id, ShouldEqual, gmid)
 			})

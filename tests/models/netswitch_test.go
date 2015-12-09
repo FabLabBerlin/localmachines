@@ -4,16 +4,17 @@ import (
 	"testing"
 
 	"github.com/kr15h/fabsmith/models"
+	"github.com/kr15h/fabsmith/tests/setup"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
 func init() {
-	ConfigDB()
+	setup.ConfigDB()
 }
 
 func TestNetswitch(t *testing.T) {
 	Convey("Testing Netswitch model", t, func() {
-		Reset(ResetDB)
+		Reset(setup.ResetDB)
 		Convey("Testing CreateNetswitchMapping", func() {
 			Convey("Creating a netswitch mapping regulary", func() {
 				nid, err := models.CreateNetSwitchMapping(0)
@@ -64,18 +65,11 @@ func TestNetswitch(t *testing.T) {
 				nid, _ := models.CreateNetSwitchMapping(0)
 				netswitch, _ := models.GetNetSwitchMapping(nid)
 				netswitch.UrlOff = urlOffTest
-				err := models.UpdateNetSwitchMapping(netswitch)
+				err := netswitch.Update()
 				netswitch, _ = models.GetNetSwitchMapping(nid)
 
 				So(err, ShouldBeNil)
 				So(netswitch.UrlOff, ShouldEqual, urlOffTest)
-			})
-			Convey("Trying to call the function with null parameter", func() {
-				panicFunc := func() {
-					models.UpdateNetSwitchMapping(nil)
-				}
-
-				So(panicFunc, ShouldPanic)
 			})
 		})
 	})

@@ -8,17 +8,15 @@ import (
 	"strconv"
 	"testing"
 
-	_ "github.com/kr15h/fabsmith/routers"
-
-	"github.com/kr15h/fabsmith/models"
-	. "github.com/kr15h/fabsmith/tests/models"
-
 	"github.com/astaxie/beego"
+	"github.com/kr15h/fabsmith/models"
+	_ "github.com/kr15h/fabsmith/routers"
+	"github.com/kr15h/fabsmith/tests/setup"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
 func init() {
-	ConfigDB()
+	setup.ConfigDB()
 }
 
 // TestMain is a sample to run an endpoint test
@@ -26,7 +24,7 @@ func TestUsersAPI(t *testing.T) {
 
 	Convey("Test users API", t, func() {
 
-		Reset(ResetDB)
+		Reset(setup.ResetDB)
 
 		Convey("Testing POST /users/login/", func() {
 

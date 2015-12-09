@@ -11,6 +11,7 @@ files/*
 !files/apple-touch-icon.png
 !files/README.md
 cert/
+tests/conf/app.conf
 tests/controllers/conf/app.conf
 tests/controllers/routers/
 tests/models/conf/app.conf

@@ -14,7 +14,7 @@ func init() {
 	Init()
 }
 
-// Init must be exportable for out controller tests
+// Init must be exportable for controller tests
 func Init() {
 	// Set main redirect in the MainController
 	beego.Router("/", &controllers.MainController{})

@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"github.com/astaxie/beego"
 	"github.com/kr15h/fabsmith/models/fastbill"
 	"strconv"
@@ -39,14 +38,14 @@ func (this *FastBillController) GetCustomers() {
 	if err != nil {
 		beego.Warning("Failed to get customer ID.")
 	} else {
-		filter.CUSTOMER_ID = fmt.Sprintf("%d", customerId)
+		filter.CUSTOMER_ID = strconv.FormatInt(customerId, 10)
 	}
 
 	customerNumber, err := this.GetInt64("customernumber")
 	if err != nil {
 		beego.Warning("Failed to get customer number.")
 	} else {
-		filter.CUSTOMER_NUMBER = fmt.Sprintf("%d", customerNumber)
+		filter.CUSTOMER_NUMBER = strconv.FormatInt(customerNumber, 10)
 	}
 
 	limit, err := this.GetInt64("limit")

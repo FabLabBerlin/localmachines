@@ -6,17 +6,19 @@ import (
 	"time"
 
 	"github.com/kr15h/fabsmith/models"
+	"github.com/kr15h/fabsmith/models/invoices"
+	"github.com/kr15h/fabsmith/tests/setup"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
 func init() {
-	ConfigDB()
+	setup.ConfigDB()
 }
 
 func TestUserMemberships(t *testing.T) {
 	Convey("Testing UserMembership model", t, func() {
 
-		Reset(ResetDB)
+		Reset(setup.ResetDB)
 
 		Convey("Testing CreateUserMembership", func() {
 
@@ -35,7 +37,7 @@ func TestUserMemberships(t *testing.T) {
 			baseMembership.AutoExtendDurationMonths = 30
 			baseMembership.AffectedMachines = fmt.Sprintf("[%v,%v]", machineIdOne, machineIdTwo)
 
-			models.UpdateMembership(baseMembership)
+			baseMembership.Update()
 			baseMembership, _ = models.GetMembership(baseMembershipId)
 
 			// Create a user
@@ -121,10 +123,10 @@ func TestUserMemberships(t *testing.T) {
 
 				Convey("The activations made during the user membership period should be affected by the base membership discount rules", func() {
 
-					var invoice models.Invoice
+					var invoice invoices.Invoice
 					invoiceStartTime := time.Date(2015, 1, 1, 0, 0, 0, 0, time.UTC)
 					invoiceEndTime := time.Date(2015, 12, 30, 0, 0, 0, 0, time.UTC)
-					invoice, err = models.CalculateInvoiceSummary(
+					invoice, err = invoices.CalculateSummary(
 						invoiceStartTime, invoiceEndTime)
 					if err != nil {
 						panic(err.Error())

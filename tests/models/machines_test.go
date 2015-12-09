@@ -2,19 +2,19 @@ package modelTest
 
 import (
 	"testing"
-	"time"
 
 	"github.com/kr15h/fabsmith/models"
+	"github.com/kr15h/fabsmith/tests/setup"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
 func init() {
-	ConfigDB()
+	setup.ConfigDB()
 }
 
 func TestMachine(t *testing.T) {
 	Convey("Testing Machine model", t, func() {
-		Reset(ResetDB)
+		Reset(setup.ResetDB)
 		Convey("Testing CreateMachine", func() {
 			machineName := "My lovely machine"
 			Convey("Creating a machine", func() {
@@ -32,10 +32,9 @@ func TestMachine(t *testing.T) {
 				So(machine.Name, ShouldEqual, machineName)
 				So(err, ShouldBeNil)
 			})
-			Convey("Trying to get a non-existing machine", func() {
-				machine, err := models.GetMachine(0)
+			Convey("Trying to get a non-existing machine should fail", func() {
+				_, err := models.GetMachine(0)
 
-				So(machine, ShouldBeNil)
 				So(err, ShouldNotBeNil)
 			})
 		})
@@ -57,22 +56,6 @@ func TestMachine(t *testing.T) {
 				So(len(machines), ShouldEqual, 2)
 				So(err, ShouldBeNil)
 			})
-			// TODO: Check if sorting in the right direction
-			Convey("Check if the machines are returned in descending order "+
-				"when ordered by number of activations", func() {
-				models.CreateMachine(machineOneName)
-				mid, _ := models.CreateMachine(machineTwoName)
-
-				user := models.User{}
-				user.Email = "email@example.com"
-				user.Username = "hesus"
-				uid, _ := models.CreateUser(&user)
-
-				models.CreateActivation(mid, uid, time.Now())
-				allMachines, _ := models.GetAllMachines(true)
-
-				So(allMachines[0].Id, ShouldEqual, mid)
-			})
 		})
 		Convey("Testing UpdateMachine", func() {
 			machineName := "My lovely machine"
@@ -82,7 +65,7 @@ func TestMachine(t *testing.T) {
 				machine, _ := models.GetMachine(mid)
 				machine.Name = newMachineName
 
-				err := models.UpdateMachine(machine)
+				err := machine.Update()
 				machine, _ = models.GetMachine(mid)
 				So(err, ShouldBeNil)
 				So(machine.Name, ShouldEqual, newMachineName)

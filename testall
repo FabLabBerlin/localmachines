@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+# Exit on failures and undeclared variables
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+__dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+__root="$(cd "$(dirname "${__dir}")" && pwd)" # <-- change this
+__file="${__dir}/$(basename "${BASH_SOURCE[0]}")"
+__base="$(basename ${__file} .sh)"
+
+arg1="${1:-}"
+
+
+# Perform migrations
+
+bee migrate -conn="root:@tcp(127.0.0.1:3306)/fabsmith_test"
+
+
+
+# Frontend tests
+
+cd $__dir/clients/machines
+npm test
+
+
+
+# Backend tests
+
+cd $__dir/tests
+go test
+
+cd $__dir/tests/controllers
+go test
+
+cd $__dir/tests/models
+go test

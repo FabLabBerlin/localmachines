@@ -7,11 +7,13 @@ import (
 
 	"github.com/astaxie/beego/orm"
 	"github.com/kr15h/fabsmith/models"
+	"github.com/kr15h/fabsmith/models/purchases"
+	"github.com/kr15h/fabsmith/tests/setup"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
 func init() {
-	ConfigDB()
+	setup.ConfigDB()
 }
 
 // TODO: The way go convey tests are supposed to be written is more
@@ -19,8 +21,8 @@ func init() {
 
 func CreateMembershipsActivation(userId, machineId int64, startTime time.Time, minutes float64) (id int64, err error) {
 
-	activation := models.Activation{
-		Purchase: models.Purchase{
+	activation := purchases.Activation{
+		Purchase: purchases.Purchase{
 			TimeStart: startTime,
 			UserId:    userId,
 			MachineId: machineId,
@@ -35,7 +37,7 @@ func CreateMembershipsActivation(userId, machineId int64, startTime time.Time, m
 func TestMemberships(t *testing.T) {
 	Convey("Testing Membership model", t, func() {
 
-		Reset(ResetDB)
+		Reset(setup.ResetDB)
 
 		Convey("Testing CreateMembership", func() {
 			membershipName := "Membership X"
@@ -149,21 +151,11 @@ func TestMemberships(t *testing.T) {
 			membershipName := "Update Membership"
 			newMembershipName := "New Membership Name"
 
-			Convey("Try updating with nil object", func() {
-				panicFunc := func() {
-					models.UpdateMembership(nil)
-				}
-
-				Convey("There should be panic", func() {
-					So(panicFunc, ShouldPanic)
-				})
-			})
-
 			Convey("Try to update non existing membership", func() {
 				m := &models.Membership{
 					Title: membershipName,
 				}
-				err := models.UpdateMembership(m)
+				err := m.Update()
 
 				Convey("There should be error", func() {
 					So(err, ShouldNotBeNil)
@@ -174,7 +166,7 @@ func TestMemberships(t *testing.T) {
 				mid, _ := models.CreateMembership(membershipName)
 				m, _ := models.GetMembership(mid)
 				m.Title = newMembershipName
-				err := models.UpdateMembership(m)
+				err := m.Update()
 				nm, _ := models.GetMembership(mid)
 
 				Convey("There should be no error", func() {

@@ -7,6 +7,9 @@ import (
 	"time"
 
 	"github.com/kr15h/fabsmith/models"
+	"github.com/kr15h/fabsmith/models/invoices"
+	"github.com/kr15h/fabsmith/models/purchases"
+	"github.com/kr15h/fabsmith/tests/setup"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/tealeg/xlsx"
 )
@@ -14,11 +17,11 @@ import (
 var TIME_START = time.Now()
 
 func init() {
-	ConfigDB()
+	setup.ConfigDB()
 }
 
 func CreateTestPurchase(machineId int64, machineName string,
-	minutes time.Duration, pricePerMinute float64) *models.Purchase {
+	minutes time.Duration, pricePerMinute float64) *purchases.Purchase {
 
 	machine := models.Machine{}
 	machine.Id = machineId
@@ -26,8 +29,8 @@ func CreateTestPurchase(machineId int64, machineName string,
 	machine.PriceUnit = "minute"
 	machine.Price = pricePerMinute
 
-	invAct := &models.Purchase{
-		Type:         models.PURCHASE_TYPE_ACTIVATION,
+	invAct := &purchases.Purchase{
+		Type:         purchases.TYPE_ACTIVATION,
 		TimeStart:    TIME_START,
 		TimeEnd:      TIME_START.Add(minutes),
 		PricePerUnit: pricePerMinute,
@@ -46,9 +49,9 @@ func CreateTestPurchase(machineId int64, machineName string,
 			},
 		},
 	}
-	invAct.TotalPrice = models.PriceTotalExclDisc(invAct)
+	invAct.TotalPrice = purchases.PriceTotalExclDisc(invAct)
 	var err error
-	invAct.DiscountedTotal, err = models.PriceTotalDisc(invAct)
+	invAct.DiscountedTotal, err = purchases.PriceTotalDisc(invAct)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -57,7 +60,7 @@ func CreateTestPurchase(machineId int64, machineName string,
 
 func TestInvoiceActivation(t *testing.T) {
 	Convey("Testing InvoiceActivation model", t, func() {
-		Reset(ResetDB)
+		Reset(setup.ResetDB)
 		Convey("Testing MembershipStr", func() {
 			invAct := CreateTestPurchase(22, "Lasercutter",
 				time.Duration(12)*time.Minute, 0.5)
@@ -66,12 +69,12 @@ func TestInvoiceActivation(t *testing.T) {
 		Convey("Testing PriceTotalExclDisc", func() {
 			invAct := CreateTestPurchase(22, "Lasercutter",
 				time.Duration(12)*time.Minute, 0.5)
-			So(models.PriceTotalExclDisc(invAct), ShouldEqual, 6)
+			So(purchases.PriceTotalExclDisc(invAct), ShouldEqual, 6)
 		})
 		Convey("Testing PriceTotalDisc", func() {
 			invAct := CreateTestPurchase(22, "Lasercutter",
 				time.Duration(12)*time.Minute, 0.5)
-			if priceTotalDisc, err := models.PriceTotalDisc(invAct); err == nil {
+			if priceTotalDisc, err := purchases.PriceTotalDisc(invAct); err == nil {
 				So(priceTotalDisc, ShouldEqual, 3)
 			} else {
 				panic(err.Error())
@@ -92,8 +95,8 @@ func TestInvoiceActivation(t *testing.T) {
 				time.Duration(12)*time.Minute, 0.5)
 			file := xlsx.NewFile()
 			sheet, _ := file.AddSheet("User Summaries")
-			models.AddRowActivationsHeaderXlsx(sheet)
-			models.AddRowXlsx(sheet, invAct)
+			invoices.AddRowActivationsHeaderXlsx(sheet)
+			invoices.AddRowXlsx(sheet, invAct)
 			numRows := 2
 
 			Convey("Number of rows in xlsx sheed should be correct", func() {
@@ -117,7 +120,7 @@ func TestInvoiceActivation(t *testing.T) {
 	})
 
 	Convey("Testing InvoiceActivations model", t, func() {
-		Reset(ResetDB)
+		Reset(setup.ResetDB)
 		// TODO: Write tests for this
 	})
 
@@ -126,7 +129,7 @@ func TestInvoiceActivation(t *testing.T) {
 		endTime := time.Now()
 		startTime := endTime.AddDate(0, -1, 0)
 
-		invoice, err := models.CreateInvoice(startTime, endTime)
+		invoice, err := invoices.Create(startTime, endTime)
 
 		Convey("It should not cause any error", func() {
 			So(err, ShouldBeNil)
@@ -137,8 +140,8 @@ func TestInvoiceActivation(t *testing.T) {
 		})
 
 		Convey("When reading back the created invoice from the db", func() {
-			var readbackInvoice *models.Invoice
-			readbackInvoice, err = models.GetInvoice(invoice.Id)
+			var readbackInvoice *invoices.Invoice
+			readbackInvoice, err = invoices.Get(invoice.Id)
 
 			Convey("There should be no error", func() {
 				So(err, ShouldBeNil)
@@ -161,7 +164,7 @@ func TestInvoiceActivation(t *testing.T) {
 		})
 
 		Convey("When trying to get all invoices", func() {
-			invoices, err := models.GetAllInvoices()
+			invoices, err := invoices.GetAll()
 
 			Convey("There should be no error", func() {
 				So(err, ShouldBeNil)
