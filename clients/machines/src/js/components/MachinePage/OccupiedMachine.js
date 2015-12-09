@@ -46,7 +46,7 @@ var OccupiedMachine = React.createClass({
                 <div className="occupied-by-value">
                   {user.FirstName} {user.LastName}
                 </div>
-                <Timer time={this.props.activation.Quantity} />
+                <Timer activation={this.props.activation} />
               </div>
             </div>
   

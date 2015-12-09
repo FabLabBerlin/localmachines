@@ -21,7 +21,24 @@ var Timer = React.createClass({
    * Take the Quantity from activation json
    */
   getInitialState() {
-    return {secondsElapsed: this.props.time};
+    return {
+      secondsElapsed: this.props.activation.Quantity * this.multiplier()
+    };
+  },
+
+  multiplier() {
+    switch (this.props.activation.PriceUnit) {
+    case 'day':
+      return 86400;
+    case 'hour':
+      return 3600;
+    case 'minute':
+      return 60;
+    case 'second':
+      return 1;
+    default:
+      return 0;
+    }
   },
 
   /*

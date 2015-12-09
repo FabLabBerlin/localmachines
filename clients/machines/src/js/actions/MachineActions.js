@@ -211,7 +211,7 @@ function apiFetchUserData(userIds) {
 function _formatActivation(rawActivation) {
   return _.map(rawActivation, function(rawActivationItem) {
     var tmpItem = {};
-    ['Id', 'UserId', 'MachineId', 'Quantity'].forEach(function(key){
+    ['Id', 'UserId', 'MachineId', 'Quantity', 'PriceUnit'].forEach(function(key){
       tmpItem[key] = rawActivationItem[key];
     });
     return tmpItem;
