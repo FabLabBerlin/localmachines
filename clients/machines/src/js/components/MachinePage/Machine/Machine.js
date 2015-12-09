@@ -54,6 +54,8 @@ var MachineChooser = React.createClass({
    * End an activation
    */
   endActivation() {
+    let aid = this.props.activation.Id;
+
     VexDialog.buttons.YES.text = 'Yes';
     VexDialog.buttons.NO.text = 'No';
 
@@ -62,7 +64,6 @@ var MachineChooser = React.createClass({
         this.props.machine.Name + '</b>?',
       callback(confirmed) {
         if (confirmed) {
-          let aid = this.props.activation.Id;
           MachineActions.endActivation(aid, function() {
             //FeedbackDialogs.checkSatisfaction(aid);
           });

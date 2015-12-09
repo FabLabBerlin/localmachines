@@ -103,17 +103,22 @@ var MachineActions = {
   pollDashboard() {
     const uid = reactor.evaluateToJS(getters.getUid);
     ApiActions.getCall('/api/users/' + uid + '/dashboard', function(data) {
+      var userIds = [];
+
       reactor.dispatch(actionTypes.SET_ACTIVATIONS, {
         activations: data.Activations
       });
+      if (data.Activations) {
+        userIds = _.pluck(data.Activations, 'UserId');
+      }
       reactor.dispatch(actionTypes.SET_MACHINES, {
         machines: data.Machines
       });
       if (data.Tutorings) {
         reactor.dispatch(actionTypes.SET_TUTORINGS, data.Tutorings.Data);
-        var userIds = _.uniq(_.pluck(data.Tutorings.Data, 'UserId'));
-        apiFetchUserData(userIds);
+        userIds = _.union(userIds, _.pluck(data.Tutorings.Data, 'UserId'));
       }
+      fetchUserNames(userIds);
     });
   },
 
@@ -164,7 +169,7 @@ function endActivation(aid, cb) {
   });
 }
 
-function apiFetchUserData(userIds) {
+function fetchUserNames(userIds) {
   var fetchedUserIds = _.keys(reactor.evaluateToJS(getters.getMachineUsers));
   fetchedUserIds = _.map(fetchedUserIds, function(id) {
     return parseInt(id, 10);
