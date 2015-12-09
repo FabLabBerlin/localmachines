@@ -67,10 +67,8 @@ func (product *Product) Update() (err error) {
 }
 
 func (product *Product) Archive() (err error) {
-	o := orm.NewOrm()
 	product.Archived = true
-	_, err = o.Update(product)
-	return
+	return product.Update()
 }
 
 func init() {
