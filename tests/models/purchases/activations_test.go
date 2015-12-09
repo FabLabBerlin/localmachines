@@ -1,4 +1,4 @@
-package modelTest
+package purchases
 
 import (
 	"fmt"

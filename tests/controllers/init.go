@@ -6,7 +6,7 @@ import (
 )
 
 func init() {
-	setup.ConfigDir()
+	setup.ConfigDir("/..")
 	setup.ConfigDB()
 	routers.Init()
 }

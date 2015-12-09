@@ -1,4 +1,4 @@
-package modelTest
+package invoices
 
 import (
 	"fmt"

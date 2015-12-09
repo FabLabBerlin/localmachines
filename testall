@@ -16,6 +16,7 @@ arg1="${1:-}"
 
 # Perform migrations
 
+rm -f database/migrations/m.go
 bee migrate -conn="root:@tcp(127.0.0.1:3306)/fabsmith_test"
 
 
@@ -35,5 +36,9 @@ go test
 cd $__dir/tests/controllers
 go test
 
-cd $__dir/tests/models
-go test
+for testDir in `find $__dir/tests/models -type d`
+do
+	echo Testing $testDir...
+	cd $testDir
+	go test
+done

@@ -5,10 +5,10 @@ import (
 	"os"
 )
 
-func ConfigDir() {
+func ConfigDir(dirSuffix string) {
 	modelTestsDir, err := os.Getwd()
 	if err != nil {
 		panic(err.Error())
 	}
-	beego.TestBeegoInit(modelTestsDir + "/..")
+	beego.TestBeegoInit(modelTestsDir + dirSuffix)
 }
