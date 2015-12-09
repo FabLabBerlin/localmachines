@@ -18,17 +18,17 @@ export default {
       dataType: 'json',
       type: 'POST',
       data: content,
-      success: function(data) {
+      success(data) {
         reactor.dispatch(actionTypes.SUCCESS_LOGIN, { data });
         router.transitionTo('/machine');
-      }.bind(this),
-      error: function(xhr, status, err) {
+      },
+      error(xhr, status, err) {
         if (content.username !== '' && content.password !== '') {
           toastr.error('Failed to log in');
         }
         reactor.dispatch(actionTypes.ERROR_LOGIN);
         console.error('/users/login', status, err);
-      }.bind(this)
+      }
     });
   },
 
@@ -43,18 +43,18 @@ export default {
       data: {
         uid: uid
       },
-      success: function(data) {
+      success(data) {
         reactor.dispatch(actionTypes.SUCCESS_LOGIN, { data });
         router.transitionTo('/machine');
-      }.bind(this),
-      error: function(xhr, status, err) {
+      },
+      error(xhr, status, err) {
         toastr.error('Problem with NFC login.  Try again later or talk to us if the problem persists.');
         setTimeout(function() {
           document.location.reload(true);
         }, 2000);
         reactor.dispatch(actionTypes.ERROR_LOGIN);
         //console.error('/users/loginuid', status, err);
-      }.bind(this)
+      }
     });
   },
 
@@ -70,17 +70,17 @@ export default {
       url: '/api/users/logout',
       type: 'GET',
       cache: false,
-      success: function(data) {
+      success(data) {
         reactor.dispatch(actionTypes.SUCCESS_LOGOUT);
         if (router) {
           router.transitionTo('/login');
         } else {
           toastr.info('router not defined');
         }
-      }.bind(this),
-      error: function(xhr, status, err) {
+      },
+      error(xhr, status, err) {
         console.error('/users/logout', status, err);
-      }.bind(this)
+      }
     });
   }
 

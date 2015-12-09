@@ -31,13 +31,13 @@ var MaintenanceSwitch = React.createClass({
     VexDialog.confirm({
       message: 'Do you really want to set "Under Maintenance" to ' + onOrOff + ' for <b>' +
         machine.get('Name') + '</b>?',
-      callback: function(confirmed) {
+      callback(confirmed) {
         if (confirmed) {
           MachineActions.setUnderMaintenance({ mid, onOrOff });
         }
         $('.vex').remove();
         $('body').removeClass('vex-open');
-      }.bind(this)
+      }
     });
 
   },

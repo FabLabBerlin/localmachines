@@ -5,9 +5,7 @@ var reactor = require('../reactor');
 var toastr = require('../toastr');
 var UserStore = require('../stores/UserStore');
 
-/*
- * All the actions called by the UserPage
- */
+
 var UserActions = {
 
   /*
@@ -15,7 +13,7 @@ var UserActions = {
    * @userState: data from userForm
    * call the UserStore to interact with the back-end
    */
-  submitState(uid, user){
+  updateUser(uid, user){
     $.ajax({
       headers: {'Content-Type': 'application/json'},
       url: '/api/users/' + uid,
@@ -23,13 +21,13 @@ var UserActions = {
       data: JSON.stringify({
         User: user
       }),
-      success: function() {
+      success() {
         toastr.success('Status updated');
-      }.bind(this),
-      error: function(xhr, status, err) {
+      },
+      error(xhr, status, err) {
         toastr.error('Error updating');
         console.error('/users/{uid}', status, err.toString());
-      }.bind(this)
+      }
     });
   },
 
@@ -43,29 +41,21 @@ var UserActions = {
     reactor.dispatch(actionTypes.SET_USER_PROPERTY, { key, value });
   },
 
-  /*
-   * Fetch bill information and store them
-   * call getMembershipFromServer if sucessful
-   */
   fetchBill(uid) {
     $.ajax({
       url: '/api/users/' + uid + '/bill',
       dataType: 'json',
       type: 'GET',
-      success: function(data) {
+      success(data) {
         reactor.dispatch(actionTypes.SET_BILL, { data });
-      }.bind(this),
-      error: function(xhr, status, err) {
+      },
+      error(xhr, status, err) {
         toastr.error('Error getting the user\'s bill information');
         console.error('/users/{uid}/bill', status, err.toString());
-      }.bind(this)
+      }
     });
   },
 
-  /*
-   * Fetch the membership the user subscribe and store it
-   * call onChange if successful to alert UserPage
-   */
   fetchMemberships(uid) {
     $.ajax({
       url: '/api/users/' + uid + '/memberships',
@@ -83,10 +73,6 @@ var UserActions = {
 
   },
 
-  /*
-   * Ask the store to update the password
-   * @password: new password the user want to have
-   */
   updatePassword(uid, newPassword) {
     $.ajax({
       url: '/api/users/' + uid + '/password',
@@ -95,13 +81,13 @@ var UserActions = {
       data: {
         password: newPassword
       },
-      success: function() {
+      success() {
         toastr.success('Password successfully updated');
-      }.bind(this),
-      error: function(xhr, status, err) {
+      },
+      error(xhr, status, err) {
         toastr.error('Error while trying to update password');
         console.error('/users/{uid}/password', status, err.toString());
-      }.bind(this)
+      }
     });
   }
 

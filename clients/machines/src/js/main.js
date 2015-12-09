@@ -36,14 +36,14 @@ if (debugNfc) {
   window.libnfc = {
     debug: true,
     cardRead: {
-      connect: function() {},
-      disconnect: function() {}
+      connect() {},
+      disconnect() {}
     },
     cardReaderError: {
-      connect: function() {},
-      disconnect: function() {}
+      connect() {},
+      disconnect() {}
     },
-    asyncScan: function() {}
+    asyncScan() {}
   };
 }
 

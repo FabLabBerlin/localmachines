@@ -20,7 +20,7 @@ export default {
           text: 'Good',
           type: 'button',
           className: 'vex-dialog-button-primary',
-          click: function($vexContent, event) {
+          click($vexContent, event) {
             $vexContent.data().vex.value = 'good';
             return vex.close($vexContent.data().vex.id);
           }
@@ -29,7 +29,7 @@ export default {
           text: 'Neutral',
           type: 'button',
           className: 'vex-dialog-button-primary',
-          click: function($vexContent, event) {
+          click($vexContent, event) {
             $vexContent.data().vex.value = 'neutral';
             return vex.close($vexContent.data().vex.id);
           }
@@ -38,24 +38,24 @@ export default {
           text: 'Bad',
           type: 'button',
           className: 'vex-dialog-button-primary',
-          click: function($vexContent, event) {
+          click($vexContent, event) {
             $vexContent.data().vex.value = 'bad';
             return vex.close($vexContent.data().vex.id);
           }
         }
       },
       message: 'Satisfied with the outcome?',
-      afterOpen: function($vexContent) {
+      afterOpen($vexContent) {
         $vexContent.find('button[type="submit"]').hide();
       },
-      callback: function(satisfaction) {
+      callback(satisfaction) {
         if (satisfaction) {
           $('.vex').remove();
           $('body').removeClass('vex-open');
           console.log('satisfaction:', satisfaction);
           FeedbackActions.reportSatisfaction({ activationId, satisfaction });
         }
-      }.bind(this)
+      }
     });
   },
 
@@ -69,13 +69,13 @@ export default {
     VexDialog.confirm({
       message: 'Do you really want to report machine <b>' +
         machine.Name + '</b> as broken?',
-      callback: function(confirmed) {
+      callback(confirmed) {
         if (confirmed) {
           FeedbackActions.reportMachineBroken({ machineId });
         }
         $('.vex').remove();
         $('body').removeClass('vex-open');
-      }.bind(this)
+      }
     });
   }
 };

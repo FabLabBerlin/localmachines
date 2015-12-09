@@ -38,12 +38,12 @@ var ReservationActions = {
         url: '/api/users/names?uids=' + userIds.join(','),
         dataType: 'json',
         type: 'GET',
-        success: function(data) {
+        success(data) {
           _.each(data.Users, function(userData) {
             reactor.dispatch(actionTypes.REGISTER_MACHINE_USER, { userData });
           });
         },
-        error: function() {
+        error() {
             console.log('Error loading names');
         }
       });
@@ -114,11 +114,11 @@ var ReservationActions = {
         type: 'POST',
         cache: false,
         data: JSON.stringify(data),
-        success: function() {
+        success() {
           reactor.dispatch(actionTypes.CREATE_SET_STEP, STEP_SUCCESS);
           ReservationActions.load();
         },
-        error: function() {
+        error() {
           toastr.error('Error submitting reservation. Please try again later.');
         }
       });
@@ -152,12 +152,12 @@ var ReservationActions = {
       dataType: 'json',
       type: 'PUT',
       data: JSON.stringify(reservation),
-      success: function() {
+      success() {
         reactor.dispatch(actionTypes.CANCEL_RESERVATION_SUCCESS);
         toastr.success('Successfuly cancelled reservation');
         ReservationActions.load();
       },
-      error: function() {
+      error() {
         reactor.dispatch(actionTypes.CANCEL_RESERVATION_FAIL);
         toastr.error('Error cancelling reservation');
       }

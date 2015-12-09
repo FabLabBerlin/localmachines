@@ -72,8 +72,8 @@ describe('UserActions', function() {
     });
   });
 
-  it('test submitState', function() {
-    UserActions.submitState(uidTest, userUpdateState);
+  it('test updateUser', function() {
+    UserActions.updateUser(uidTest, userUpdateState);
     expect($.ajax).toBeCalledWith({
       headers: {'Content-Type': 'application/json'},
       url: '/api/users/5',

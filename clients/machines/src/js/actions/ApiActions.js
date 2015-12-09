@@ -15,10 +15,10 @@ function getCall(url, successFunction, toastrMessage = '', errorFunction = funct
     dataType: 'json',
     type: 'GET',
     cache: false,
-    success: function(data) {
+    success(data) {
       successFunction(data);
     },
-    error: function(xhr, status, err) {
+    error(xhr, status, err) {
       if (toastrMessage) {
         toastr.error(toastrMessage);
       }
@@ -39,11 +39,11 @@ function postCall(url, dataToSend, successFunction, toastrMessage = '', errorFun
     dataType: 'json',
     type: 'POST',
     data: dataToSend,
-    success: function(data) {
+    success(data) {
       GlobalActions.hideGlobalLoader();
       successFunction(data);
     },
-    error: function(xhr, status, err) {
+    error(xhr, status, err) {
       GlobalActions.hideGlobalLoader();
       if (toastrMessage) {
         toastr.error(toastrMessage);

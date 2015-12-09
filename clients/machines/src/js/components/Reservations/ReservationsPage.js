@@ -34,13 +34,13 @@ var TableRow = React.createClass({
 
     VexDialog.confirm({
       message: 'Do you really want to cancel this reservation?',
-      callback: function(confirmed) {
+      callback(confirmed) {
         if (confirmed) {
           ReservationsActions.cancelReservation(reservationId);
         }
         $('.vex').remove();
         $('body').removeClass('vex-open');
-      }.bind(this)
+      }
     });
   },
 

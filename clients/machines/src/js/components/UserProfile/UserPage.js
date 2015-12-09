@@ -51,7 +51,7 @@ var UserPage = React.createClass({
   handleSubmit() {
     const uid = reactor.evaluateToJS(getters.getUid);
     var user = reactor.evaluateToJS(getters.getUser);
-    UserActions.submitState(uid, user);
+    UserActions.updateUser(uid, user);
   },
 
   handleChangeForm(event) {

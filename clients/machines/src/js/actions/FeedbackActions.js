@@ -26,11 +26,11 @@ var FeedbackActions = {
         email: user.Email,
         name: fullName
       },
-      success: function() {
+      success() {
         toastr.info('Thank you for the report 😀 We will have a look at it asap.');
         GlobalActions.hideGlobalLoader();
       },
-      error: function(xhr, status, err) {
+      error(xhr, status, err) {
         toastr.error('Error submitting report.  Please try again later.');
         console.error('/feedback', status, err.toString());
         GlobalActions.hideGlobalLoader();
@@ -48,10 +48,10 @@ var FeedbackActions = {
       data: {
         satisfaction: satisfaction
       },
-      success: function() {
+      success() {
         toastr.info('Feedback submitted');
       },
-      error: function(xhr, status, err) {
+      error(xhr, status, err) {
         console.error(url, status, err.toString());
       }
     });
@@ -79,12 +79,12 @@ var FeedbackActions = {
           email: user.Email,
           name: user.FirstName + ' ' + user.LastName
         },
-        success: function() {
+        success() {
           reactor.dispatch(actionTypes.RESET_FEEDBACK_FORM);
           GlobalActions.hideGlobalLoader();
           toastr.info('Thank you for your feedback 😀');
         },
-        error: function(xhr, status, err) {
+        error(xhr, status, err) {
           toastr.error('Error submitting feedback.  Please try again later.');
           console.error('/feedback', status, err.toString());
           GlobalActions.hideGlobalLoader();

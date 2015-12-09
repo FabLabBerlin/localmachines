@@ -55,7 +55,7 @@ var Timer = React.createClass({
    * Destructor
    * Clear the interval when the component
    */
-  componentWillUnmount: function() {
+  componentWillUnmount() {
     clearInterval(this.interval);
   },
 

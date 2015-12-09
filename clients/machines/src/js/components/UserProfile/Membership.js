@@ -14,7 +14,6 @@ var Membership = React.createClass({
    */
   render() {
     var MembershipNode;
-    console.log('this.props.memberships: ' + this.props.memberships);
     if (this.props.memberships && this.props.memberships.length !== 0) {
       MembershipNode = this.props.memberships.map(function(membership) {
         var startDate = moment(membership.StartDate);

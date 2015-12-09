@@ -60,16 +60,16 @@ var MachineChooser = React.createClass({
     VexDialog.confirm({
       message: 'Do you really want to stop the activation for <b>' +
         this.props.machine.Name + '</b>?',
-      callback: function(confirmed) {
+      callback(confirmed) {
         if (confirmed) {
           let aid = this.props.activation.Id;
           MachineActions.endActivation(aid, function() {
             //FeedbackDialogs.checkSatisfaction(aid);
-          }.bind(this));
+          });
         }
         $('.vex').remove();
         $('body').removeClass('vex-open');
-      }.bind(this)
+      }
     });
 
     LoginActions.keepAlive();
