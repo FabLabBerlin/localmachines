@@ -23,8 +23,8 @@ var FreeMachine = React.createClass({
    */
   render() {
     var imageUrl;
-    if (this.props.info && this.props.info.Image) {
-      imageUrl = '/files/' + this.props.info.Image;
+    if (this.props.machine && this.props.machine.Image) {
+      imageUrl = '/files/' + this.props.machine.Image;
     } else {
       imageUrl = '/machines/img/img-machine-placeholder.svg';
     }

@@ -9,7 +9,7 @@ var getters = require('../../getters');
 var reactor = require('../../reactor');
 
 
-function user() {
+function getUser() {
   return {
     FirstName: 'Regular',
     Id: 2,
@@ -25,12 +25,12 @@ describe('UserStore', function() {
     userStore: UserStore
   });
 
-  describe('SET_USER_INFO', function() {
-    it('does changes visible via getUserInfo', function() {
-      var userInfo = user();
-      reactor.dispatch(actionTypes.SET_USER_INFO, { userInfo });
-      var actual = reactor.evaluateToJS(getters.getUserInfo);
-      expect(actual).toEqual(user());
+  describe('SET_USER', function() {
+    it('does changes visible via getUser', function() {
+      var user = getUser();
+      reactor.dispatch(actionTypes.SET_USER, { user });
+      var actual = reactor.evaluateToJS(getters.getUser);
+      expect(actual).toEqual(getUser());
     });
   });
 });

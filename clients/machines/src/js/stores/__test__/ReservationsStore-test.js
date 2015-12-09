@@ -21,7 +21,7 @@ var ReservationsStore = require('../ReservationsStore');
 var reactor = require('../../reactor');
 
 
-function machines() {
+function getMachines() {
   return {
     1: {
       Id: 1,
@@ -85,8 +85,8 @@ describe('ReservationsStore', function() {
   describe('CREATE_SET_DATE', function() {
     it('sets the date and possible times at that day', function() {
       reactor.dispatch(actionTypes.SET_RESERVATION_RULES, reservationRules());
-      reactor.dispatch(actionTypes.SET_MACHINE_INFO, {
-        machineInfo: machines()
+      reactor.dispatch(actionTypes.SET_MACHINES, {
+        machines: getMachines()
       });
       reactor.dispatch(actionTypes.SET_RESERVATIONS, {
         reservations: []

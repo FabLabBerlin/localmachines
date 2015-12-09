@@ -13,8 +13,8 @@ var FeedbackActions = {
     LoginActions.keepAlive();
     const machinesById = reactor.evaluateToJS(getters.getMachinesById);
     const machine = machinesById[machineId] || {};
-    var userInfo = reactor.evaluateToJS(getters.getUserInfo);
-    var fullName = userInfo.FirstName + ' ' + userInfo.LastName;
+    var user = reactor.evaluateToJS(getters.getUser);
+    var fullName = user.FirstName + ' ' + user.LastName;
     GlobalActions.showGlobalLoader();
     $.ajax({
       url: '/api/machines/' + machine.Id + '/report_broken',
@@ -23,7 +23,7 @@ var FeedbackActions = {
       data: {
         subject: 'Machine Broken',
         message: 'Hi friends,\n\nThe following machine seems broken: ' + machine.Name + '\n\nEasyLab on behalf of ' + fullName,
-        email: userInfo.Email,
+        email: user.Email,
         name: fullName
       },
       success: function() {
@@ -64,7 +64,7 @@ var FeedbackActions = {
 
   submit() {
     LoginActions.keepAlive();
-    var userInfo = reactor.evaluateToJS(getters.getUserInfo);
+    var user = reactor.evaluateToJS(getters.getUser);
     var subject = reactor.evaluateToJS(getters.getFeedbackSubject);
     var message = reactor.evaluateToJS(getters.getFeedbackMessage);
     if (subject && message) {
@@ -76,8 +76,8 @@ var FeedbackActions = {
         data: {
           subject: subject,
           message: message,
-          email: userInfo.Email,
-          name: userInfo.FirstName + ' ' + userInfo.LastName
+          email: user.Email,
+          name: user.FirstName + ' ' + user.LastName
         },
         success: function() {
           reactor.dispatch(actionTypes.RESET_FEEDBACK_FORM);

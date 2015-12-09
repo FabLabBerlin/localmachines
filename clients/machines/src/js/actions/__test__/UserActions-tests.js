@@ -12,11 +12,6 @@ var UserActions = require('../UserActions');
 
 const uidTest = 5;
 
-const loginInfoTest = {
-  username: 'test',
-  password: 'test'
-};
-
 const userUpdateState = {
   FirstName: 'user',
   LastName: 'Update',
@@ -27,9 +22,9 @@ const userUpdateState = {
 };
 
 describe('UserActions', function() {
-  describe('getUserInfoFromServer', function() {
+  describe('fetchUser', function() {
     it('should GET /api/users/:uid', function() {
-      UserActions.getUserInfoFromServer(123);
+      UserActions.fetchUser(123);
       expect($.ajax).toBeCalledWith({
         url: '/api/users/123',
         dataType: 'json',
@@ -41,8 +36,8 @@ describe('UserActions', function() {
     });
   });
 
-  it('test getInfoBillFromServer', function() {
-    UserActions.getInfoBillFromServer(uidTest);
+  it('test fetchBill', function() {
+    UserActions.fetchBill(uidTest);
     expect($.ajax).toBeCalledWith({
       url: '/api/users/5/bill',
       dataType: 'json',
@@ -53,7 +48,7 @@ describe('UserActions', function() {
   });
 
   it('test getMembershipFromServer', function() {
-    UserActions.getMembershipFromServer(uidTest);
+    UserActions.fetchMemberships(uidTest);
     expect($.ajax).toBeCalledWith({
       url: '/api/users/5/memberships',
       dataType: 'json',

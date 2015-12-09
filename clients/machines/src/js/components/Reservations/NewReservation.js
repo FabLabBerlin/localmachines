@@ -38,7 +38,7 @@ var SelectMachine = React.createClass({
 
   getDataBindings() {
     return {
-      machineInfo: getters.getMachineInfo,
+      machines: getters.getMachines,
       machinesById: getters.getMachinesById,
       newReservation: getters.getNewReservation
     };
@@ -49,7 +49,7 @@ var SelectMachine = React.createClass({
   },
 
   render() {
-    if (this.state.machineInfo.length !== 0) {
+    if (this.state.machines.length !== 0) {
       var selectedMachineId;
       var machinePricing;
       if (this.state.newReservation.get('machineId')) {
@@ -69,7 +69,7 @@ var SelectMachine = React.createClass({
               
               <option value="0">Please select a machine</option>
               
-              {_.map(this.state.machineInfo.toArray(), function(machine){
+              {_.map(this.state.machines.toArray(), function(machine){
                 if (_.isNumber(machine.get('ReservationPriceHourly'))) {
                   return (
                     <option value={machine.get('Id')}>
@@ -184,7 +184,7 @@ var NewReservation = React.createClass({
 
   getDataBindings() {
     return {
-      machineInfo: getters.getMachineInfo,
+      machines: getters.getMachines,
       machinesById: getters.getMachinesById,
       newReservation: getters.getNewReservation
     };
@@ -192,12 +192,12 @@ var NewReservation = React.createClass({
 
   componentWillMount() {
     const uid = reactor.evaluateToJS(getters.getUid);
-    UserActions.getUserInfoFromServer(uid);
+    UserActions.fetchUser(uid);
     MachineActions.apiGetUserMachines(uid);
   },
 
   render() {
-    if (this.state.machineInfo && this.state.machinesById) {
+    if (this.state.machines && this.state.machinesById) {
       var dialog;
       var newReservation = this.state.newReservation;
       var selectedTimes = 0;

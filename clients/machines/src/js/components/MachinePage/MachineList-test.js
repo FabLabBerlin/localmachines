@@ -32,7 +32,7 @@ describe('MachineList', function() {
   describe('render', function() {
     it('says access denied when no machines are passed as parameter', function() {
       var ml = new MachineList({
-        info: []
+        machines: []
       });
       var s = React.renderToString(ml);
       expect(s).toContain('You do not have access');
@@ -40,7 +40,7 @@ describe('MachineList', function() {
 
     it('renders the machines that are passed as parameter', function() {
       var ml = new MachineList({
-        info: machines(),
+        machines: machines(),
         user: toImmutable({
           UserRole: 'member'
         })
@@ -53,7 +53,7 @@ describe('MachineList', function() {
     it('shows the force on/off switch if and only if the user is admin', function() {
       [false, true].forEach(function(isAdmin) {
         var ml = new MachineList({
-          info: machines(),
+          machines: machines(),
           user: toImmutable({
             UserRole: isAdmin ? 'admin' : 'member'
           })

@@ -35,10 +35,10 @@ var SpendingsPage = React.createClass({
    */
   getDataBindings() {
     return {
-      userInfo: getters.getUserInfo,
-      machineInfo: getters.getMachineInfo,
-      billInfo: getters.getBillInfo,
-      membershipInfo: getters.getMembership
+      user: getters.getUser,
+      machines: getters.getMachines,
+      bill: getters.getBill,
+      memberships: getters.getMemberships
     };
   },
 
@@ -46,9 +46,9 @@ var SpendingsPage = React.createClass({
     this.nfcOnDidMount();
     const uid = reactor.evaluateToJS(getters.getUid);
     MachineActions.apiGetUserMachines(uid);
-    UserActions.getUserInfoFromServer(uid);
-    UserActions.getInfoBillFromServer(uid);
-    UserActions.getMembershipFromServer(uid);
+    UserActions.fetchUser(uid);
+    UserActions.fetchBill(uid);
+    UserActions.fetchMemberships(uid);
   },
 
   componentWillUnmount() {
@@ -66,10 +66,10 @@ var SpendingsPage = React.createClass({
     return (
       <div className="container">
         <h3>Your Memberships</h3>
-        {<Membership info={this.state.membershipInfo} />}
+        {<Membership memberships={this.state.memberships} />}
 
         <h3>Pay-As-You-Go</h3>
-        <BillTable info={this.state.billInfo} membershipInfo={this.state.membershipInfo}/>
+        <BillTable bill={this.state.bill} membership={this.state.membership}/>
         <ScrollNav/>
       </div>
     );

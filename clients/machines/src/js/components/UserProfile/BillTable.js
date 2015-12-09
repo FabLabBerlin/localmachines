@@ -31,13 +31,13 @@ var BillTables = React.createClass({
 
   getDataBindings() {
     return {
-      billInfo: getters.getBillInfo,
+      bill: getters.getBill,
       monthlyBills: getters.getMonthlyBills
     };
   },
 
   render() {
-    if (this.state.billInfo) {
+    if (this.state.bill) {
 
       var i = 0;
       var tables = [];

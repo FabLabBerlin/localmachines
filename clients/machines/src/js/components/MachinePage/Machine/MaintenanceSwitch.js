@@ -18,7 +18,7 @@ var MaintenanceSwitch = React.createClass({
   getDataBindings() {
     return {
       machinesById: getters.getMachinesById,
-      userInfo: getters.getUserInfo
+      user: getters.getUser
     };
   },
 
@@ -43,7 +43,7 @@ var MaintenanceSwitch = React.createClass({
   },
 
   render() {
-    const isAdmin = this.state.userInfo.get('UserRole') === 'admin';
+    const isAdmin = this.state.user.get('UserRole') === 'admin';
     if (isAdmin) {
       const machine = this.state.machinesById.get(this.props.machineId);
       return (

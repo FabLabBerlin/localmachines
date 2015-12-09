@@ -14,8 +14,9 @@ var Membership = React.createClass({
    */
   render() {
     var MembershipNode;
-    if (this.props.info && this.props.info.length !== 0) {
-      MembershipNode = this.props.info.map(function(membership) {
+    console.log('this.props.memberships: ' + this.props.memberships);
+    if (this.props.memberships && this.props.memberships.length !== 0) {
+      MembershipNode = this.props.memberships.map(function(membership) {
         var startDate = moment(membership.StartDate);
         var endDate = moment(membership.EndDate);
         var totalPrice = toCents(membership.MonthlyPrice);

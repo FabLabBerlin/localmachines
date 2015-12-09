@@ -62,7 +62,7 @@ var MonthView = React.createClass({
 
   getDataBindings() {
     return {
-      userInfo: getters.getUserInfo
+      user: getters.getUser
     };
   },
 
@@ -71,7 +71,7 @@ var MonthView = React.createClass({
     var k = 0;
     var month = this.props.month;
     var days = [];
-    var admin = this.state.userInfo.get('UserRole') === 'admin';
+    var admin = this.state.user.get('UserRole') === 'admin';
     for (var t = month.firstDay(); !t.isAfter(month.lastDay()); t = t.clone().add(1, 'day')) {
       days.push(t);
     }

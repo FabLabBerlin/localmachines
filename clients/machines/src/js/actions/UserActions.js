@@ -15,13 +15,13 @@ var UserActions = {
    * @userState: data from userForm
    * call the UserStore to interact with the back-end
    */
-  submitState(uid, userInfo){
+  submitState(uid, user){
     $.ajax({
       headers: {'Content-Type': 'application/json'},
       url: '/api/users/' + uid,
       type: 'PUT',
       data: JSON.stringify({
-        User: userInfo
+        User: user
       }),
       success: function() {
         toastr.success('Status updated');
@@ -33,25 +33,27 @@ var UserActions = {
     });
   },
 
-  getUserInfoFromServer(uid) {
-    ApiActions.getCall('/api/users/' + uid, _userInfoSuccess);
+  fetchUser(uid) {
+    ApiActions.getCall('/api/users/' + uid, function(user) {
+      reactor.dispatch(actionTypes.SET_USER, { user });      
+    });
   },
 
-  setUserInfoProperty({ key, value }) {
-    reactor.dispatch(actionTypes.SET_USER_INFO_PROPERTY, { key, value });
+  setUserProperty({ key, value }) {
+    reactor.dispatch(actionTypes.SET_USER_PROPERTY, { key, value });
   },
 
   /*
    * Fetch bill information and store them
    * call getMembershipFromServer if sucessful
    */
-  getInfoBillFromServer(uid) {
+  fetchBill(uid) {
     $.ajax({
       url: '/api/users/' + uid + '/bill',
       dataType: 'json',
       type: 'GET',
       success: function(data) {
-        reactor.dispatch(actionTypes.SET_BILL_INFO, { data });
+        reactor.dispatch(actionTypes.SET_BILL, { data });
       }.bind(this),
       error: function(xhr, status, err) {
         toastr.error('Error getting the user\'s bill information');
@@ -64,19 +66,19 @@ var UserActions = {
    * Fetch the membership the user subscribe and store it
    * call onChange if successful to alert UserPage
    */
-  getMembershipFromServer(uid) {
+  fetchMemberships(uid) {
     $.ajax({
       url: '/api/users/' + uid + '/memberships',
       dataType: 'json',
       type: 'GET',
-      success: function(userMembershipList) {
-        var data = userMembershipList.Data ? userMembershipList.Data : [];
-        reactor.dispatch(actionTypes.SET_MEMBERSHIP_INFO, { data });
-      }.bind(this),
-      error: function(xhr, status, err) {
+      success(memberships) {
+        var data = memberships.Data ? memberships.Data : [];
+        reactor.dispatch(actionTypes.SET_MEMBERSHIPS, { data });
+      },
+      error(xhr, status, err) {
         toastr.error('Error getting the membership');
         console.error('/users/{uid}/memberships', status, err.toString());
-      }.bind(this)
+      }
     });
 
   },
@@ -105,34 +107,5 @@ var UserActions = {
 
 
 };
-
-/*
- * Success Callback
- * Activated when getNameLogin succeed
- * MachineStore instead of this otherwe it doesn't work
- */
-function _userInfoSuccess(data) {
-  var uid = data.Id;
-  var usefulInformation = [
-    'Id',
-    'Username',
-    'FirstName',
-    'LastName',
-    'Email',
-    'Phone',
-    'InvoiceAddr',
-    'ZipCode',
-    'City',
-    'CountryCode',
-    'UserRole',
-    'Created',
-    'Company'
-  ];
-  var userInfo = {};
-  for(var index in usefulInformation) {
-    userInfo[usefulInformation[index]] = data[usefulInformation[index]];
-  }
-  reactor.dispatch(actionTypes.SET_USER_INFO, { userInfo });
-}
 
 module.exports = UserActions;

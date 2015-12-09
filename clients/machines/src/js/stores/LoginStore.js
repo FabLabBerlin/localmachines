@@ -80,7 +80,7 @@ function successLogout(state) {
   toastr.success('Bye');
   onChangeLogout();
   return state.set('isLogged', false)
-              .set('userInfo', {});
+              .set('user', {});
 }
 
 function onLoginFailureHandled(state) {

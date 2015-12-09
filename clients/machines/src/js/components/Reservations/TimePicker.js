@@ -43,7 +43,7 @@ var TimePicker = React.createClass({
           {_.map(this.times(), (t, i) => {
             var className = 'time';
             var onChange;
-            var pricingInfo;
+            var pricing;
 
             if (!_.includes(t.availableMachineIds, machineId)) {
               className += ' unavailable';
@@ -56,7 +56,7 @@ var TimePicker = React.createClass({
             }
 
             if ((i + this.state.times.length - this.times().length) === lastIndex) {
-              pricingInfo = (
+              pricing = (
                 <div className="total-price">
                   Total price: €{(this.state.newReservationPrice).toFixed(2)}
                 </div>
@@ -78,7 +78,7 @@ var TimePicker = React.createClass({
                       {t.start.format('HH:mm')} - {t.end.format('HH:mm')}
                     </div>
                     <div className="col-md-3">
-                      {pricingInfo}
+                      {pricing}
                     </div>
                   </div>
                 </label>

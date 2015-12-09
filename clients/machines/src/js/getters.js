@@ -59,28 +59,28 @@ const getLastActivity = [
 /*
  * User (Page) related getters
  */
-const getUserInfo = [
+const getUser = [
   ['userStore'],
   (userStore) => {
-    return userStore.get('userInfo');
+    return userStore.get('user');
   }
 ];
 
 /*
  * Spendings (Page) related getters
  */
-const getBillInfo = [
+const getBill = [
   ['userStore'],
   (userStore) => {
-    return userStore.get('billInfo');
+    return userStore.get('bill');
   }
 ];
 
 const getBillMonths = [
-  getUserInfo,
-  (userInfo) => {
+  getUser,
+  (user) => {
     var months = [];
-    var created = moment(userInfo.get('Created'));
+    var created = moment(user.get('Created'));
     if (created.unix() <= 0) {
       created = moment('2015-07-01');
     }
@@ -94,10 +94,10 @@ const getBillMonths = [
   }
 ];
 
-const getMembership = [
+const getMemberships = [
   ['userStore'],
   (userStore) => {
-    return userStore.get('membershipInfo');
+    return userStore.get('memberships');
   }
 ];
 
@@ -105,7 +105,7 @@ const getMembershipsByMonth = [
   ['userStore'],
   (userStore) => {
     var byMonths = {};
-    _.each(userStore.get('membershipInfo'), function(membership) {
+    _.each(userStore.get('memberships'), function(membership) {
       var start = moment(membership.StartDate);
       var end = moment(membership.EndDate);
       for (var t = start; t.isBefore(end); t = t.add(1, 'M')) {
@@ -121,16 +121,15 @@ const getMembershipsByMonth = [
 ];
 
 const getMonthlyBills = [
-  getBillInfo,
+  getBill,
   getBillMonths,
   getMembershipsByMonth,
-  (billInfo, billMonths, membershipsByMonth) => {
-    if (!billInfo) {
+  (bill, billMonths, membershipsByMonth) => {
+    if (!bill) {
       return undefined;
     }
-    var purchases = billInfo.Purchases;
+    var purchases = bill.Purchases;
     var purchasesByMonth = _.groupBy(purchases.Data, function(p) {
-      //var info = p.Activation ? p.Activation : p.Reservation;
       return moment(p.TimeStart).format('MMM YYYY');
     });
     var monthlyBills = _.map(billMonths, function(m) {
@@ -158,23 +157,23 @@ const getMonthlyBills = [
       /*
        * Collect purchases and sum for the totals
        */
-      _.eachRight(purchasesByMonth[month], function(info) {
-        var timeStart = moment(info.TimeStart);
-        var timeEnd = moment(info.TimeEnd);
+      _.eachRight(purchasesByMonth[month], function(purchase) {
+        var timeStart = moment(purchase.TimeStart);
+        var timeEnd = moment(purchase.TimeEnd);
 
         var duration = moment.duration(timeEnd.diff(timeStart))
                              .asSeconds();
 
         monthlyBill.sums.durations += duration;
-        var priceInclVAT = toCents(info.DiscountedTotal);
-        var priceExclVAT = toCents(subtractVAT(info.DiscountedTotal));
+        var priceInclVAT = toCents(purchase.DiscountedTotal);
+        var priceExclVAT = toCents(subtractVAT(purchase.DiscountedTotal));
         var priceVAT = priceInclVAT - priceExclVAT;
         monthlyBill.sums.purchases.priceInclVAT += priceInclVAT;
         monthlyBill.sums.purchases.priceExclVAT += priceExclVAT;
         monthlyBill.sums.purchases.priceVAT += priceVAT;
         monthlyBill.purchases.push({
-          MachineName: info.Machine ? info.Machine.Name : 'Purchase ' + info.Type,
-          Type: info.Type,
+          MachineName: purchase.Machine ? purchase.Machine.Name : 'Purchase ' + purchase.Type,
+          Type: purchase.Type,
           TimeStart: timeStart,
           duration: duration,
           priceExclVAT: priceExclVAT,
@@ -218,10 +217,10 @@ const getMonthlyBills = [
 /*
  * Machine (Page) related getters
  */
-const getActivationInfo = [
+const getActivations = [
   ['machineStore'],
   (machineStore) => {
-    return machineStore.get('activationInfo');
+    return machineStore.get('activations');
   }
 ];
 
@@ -232,7 +231,7 @@ const getMachinesById = [
   }
 ];
 
-const getMachineInfo = [
+const getMachines = [
   getMachinesById,
   (machinesById) => {
     return machinesById.sortBy(m => m.Name);
@@ -625,7 +624,7 @@ const getTutorings = [
 
 export default {
   getIsLogged, getUid, getFirstTry, getLoginSuccess, getLastActivity,
-  getUserInfo, getActivationInfo, getMachineInfo, getMachinesById, getMachineUsers, getIsLoading, getBillInfo, getBillMonths, getMonthlyBills, getMembership, getMembershipsByMonth,
+  getUser, getActivations, getMachines, getMachinesById, getMachineUsers, getIsLoading, getBill, getBillMonths, getMonthlyBills, getMemberships, getMembershipsByMonth,
   getFeedbackSubject, getFeedbackSubjectDropdown, getFeedbackSubjectOtherText, getFeedbackMessage,
   getNewReservation, getNewReservationPrice, getNewReservationTimes, getNewReservationFrom, getNewReservationTo, getReservations, getReservationsByDay, getActiveReservationsByMachineId, getSlotAvailabilities48h,
   getScrollUpEnabled, getScrollDownEnabled, getScrollPosition,

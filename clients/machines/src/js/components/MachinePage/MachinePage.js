@@ -34,9 +34,9 @@ var MachinePage = React.createClass({
 
   getDataBindings() {
     return {
-      userInfo: getters.getUserInfo,
-      machineInfo: getters.getMachineInfo,
-      activationInfo: getters.getActivationInfo
+      user: getters.getUser,
+      machines: getters.getMachines,
+      activations: getters.getActivations
     };
   },
 
@@ -46,7 +46,7 @@ var MachinePage = React.createClass({
    */
   componentWillMount() {
     const uid = reactor.evaluateToJS(getters.getUid);
-    UserActions.getUserInfoFromServer(uid);
+    UserActions.fetchUser(uid);
     MachineActions.apiGetUserMachines(uid);
     ReservationsActions.load();
     ReservationRulesActions.load();
@@ -96,21 +96,21 @@ var MachinePage = React.createClass({
    * exit button
    */
   render() {
-    var machineInfo = reactor.evaluateToJS(getters.getMachineInfo);
-    if (this.state.activationInfo) {
+    var machines = reactor.evaluateToJS(getters.getMachines);
+    if (this.state.activations) {
       return (
         <div>
           <div className="logged-user-name">
             <div className="text-center ng-binding">
               <i className="fa fa-user-secret"></i>&nbsp;
-              {this.state.userInfo.get('FirstName')} {this.state.userInfo.get('LastName')}
+              {this.state.user.get('FirstName')} {this.state.user.get('LastName')}
             </div>
           </div>
           <TutoringList />
           <MachineList
-            user={this.state.userInfo}
-            info={machineInfo}
-            activation={this.state.activationInfo}
+            user={this.state.user}
+            machines={machines}
+            activation={this.state.activations}
           />
           <div className="container-fluid">
             <button

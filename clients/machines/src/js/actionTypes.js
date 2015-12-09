@@ -9,10 +9,10 @@ export default keyMirror({
   KEEP_ALIVE: null,
 
   MACHINE_STORE_CLEAR_STATE: null,
-  SET_ACTIVATION_INFO: null,
-  SET_USER_INFO: null,
-  SET_USER_INFO_PROPERTY: null,
-  SET_MACHINE_INFO: null,
+  SET_ACTIVATIONS: null,
+  SET_USER: null,
+  SET_USER_PROPERTY: null,
+  SET_MACHINES: null,
   REGISTER_MACHINE_USER: null,
   SET_LOADING: null,
   UNSET_LOADING: null,
@@ -22,8 +22,8 @@ export default keyMirror({
   SCROLL_DOWN: null,
   SET_SCROLL_STEP: null,
 
-  SET_BILL_INFO: null,
-  SET_MEMBERSHIP_INFO: null,
+  SET_BILL: null,
+  SET_MEMBERSHIPS: null,
 
   SET_FEEDBACK_PROPERTY: null,
   RESET_FEEDBACK_FORM: null,

@@ -10,55 +10,39 @@ const initialState = toImmutable({
   userId: 0,
   isLogged: false,
   firstTry: true,
-  billInfo: undefined,
-  membershipInfo: [],
-  userInfo: {}
+  bill: undefined,
+  memberships: [],
+  user: {}
 });
 
-/*
- * @UserStore:
- * All the information about the user are stored here
- * All the interaction between the front-end and the back-end are done here
- * @state
- * @ajax calls:
- *  - PUT
- *  - POST
- *  - GET
- * @formatfunction
- * @getter
- * TODO: It would be possible to have multiple membership
- *       or to keep trace of your spending in membership
- *       Need to Change the reponse of /users/uid/membership by an array
- *
- */
 var UserStore = new Nuclear.Store({
   getInitialState() {
     return initialState;
   },
 
   initialize() {
-    this.on(actionTypes.SET_MEMBERSHIP_INFO, setMembershipInfo);
-    this.on(actionTypes.SET_BILL_INFO, setBillInfo);
-    this.on(actionTypes.SET_USER_INFO, setUserInfo);
-    this.on(actionTypes.SET_USER_INFO_PROPERTY, setUserInfoProperty);
+    this.on(actionTypes.SET_MEMBERSHIPS, setMemberships);
+    this.on(actionTypes.SET_BILL, setBill);
+    this.on(actionTypes.SET_USER, setUser);
+    this.on(actionTypes.SET_USER_PROPERTY, setUserProperty);
   }
 
 });
 
-function setMembershipInfo(state, { data }) {
-  return state.set('membershipInfo', data);
+function setMemberships(state, { data }) {
+  return state.set('memberships', data);
 }
 
-function setBillInfo(state, { data }) {
-  return state.set('billInfo', data);
+function setBill(state, { data }) {
+  return state.set('bill', data);
 }
 
-function setUserInfo(state, { userInfo }) {
-  return state.set('userInfo', toImmutable(userInfo));
+function setUser(state, { user }) {
+  return state.set('user', toImmutable(user));
 }
 
-function setUserInfoProperty(state, { key, value }) {
-  return state.set('userInfo', state.get('userInfo').set(key, value));
+function setUserProperty(state, { key, value }) {
+  return state.set('user', state.get('user').set(key, value));
 }
 
 module.exports = UserStore;

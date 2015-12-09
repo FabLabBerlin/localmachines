@@ -30,7 +30,7 @@ var MachineChooser = React.createClass({
 
   getDataBindings() {
     return {
-      machineInfo: getters.getMachineInfo,
+      machines: getters.getMachines,
       reservationsByMachineId: getters.getActiveReservationsByMachineId
     };
   },
@@ -40,7 +40,7 @@ var MachineChooser = React.createClass({
    * Only admin have to be able to use this function
    */
   forceSwitch(onOrOff) {
-    let mid = this.props.info.Id;
+    let mid = this.props.machine.Id;
     let aid = this.props.activation.Id;
     if (onOrOff === 'off') {
       MachineActions.forceTurnOffMachine(mid, aid);
@@ -59,7 +59,7 @@ var MachineChooser = React.createClass({
 
     VexDialog.confirm({
       message: 'Do you really want to stop the activation for <b>' +
-        this.props.info.Name + '</b>?',
+        this.props.machine.Name + '</b>?',
       callback: function(confirmed) {
         if (confirmed) {
           let aid = this.props.activation.Id;
@@ -80,7 +80,7 @@ var MachineChooser = React.createClass({
    * Start an activation
    */
   startActivation() {
-    let mid = this.props.info.Id;
+    let mid = this.props.machine.Id;
     MachineActions.startActivation(mid);
     LoginActions.keepAlive();
   },
@@ -96,7 +96,7 @@ var MachineChooser = React.createClass({
     let isAdmin = this.props.user.get('UserRole') === 'admin';
     var reservation;
     if (this.state.reservationsByMachineId) {
-      reservation = this.state.reservationsByMachineId.toObject()[this.props.info.Id];
+      reservation = this.state.reservationsByMachineId.toObject()[this.props.machine.Id];
     }
     var machineBody;
     if (reservation && !this.props.busy && !reservation.get('ReservationDisabled') && !reservation.get('Cancelled')) {
@@ -104,7 +104,7 @@ var MachineChooser = React.createClass({
         <ReservedMachine
           activation={this.props.activation}
           busy={this.props.busy}
-          info={this.props.info}
+          machine={this.props.machine}
           isAdmin={isAdmin}
           endActivation={this.endActivation}
           startActivation={this.startActivation}
@@ -113,12 +113,12 @@ var MachineChooser = React.createClass({
           user={this.props.user}
         />
       );
-    } else if (this.props.info.UnderMaintenance) {
+    } else if (this.props.machine.UnderMaintenance) {
       machineBody = (
         <UnavailableMachine
           activation={this.props.activation}
           busy={this.props.busy}
-          info={this.props.info}
+          machine={this.props.machine}
           isAdmin={isAdmin}
           endActivation={this.endActivation}
           startActivation={this.startActivation}
@@ -131,7 +131,7 @@ var MachineChooser = React.createClass({
           machineBody = (
             <BusyMachine
               activation={this.props.activation}
-              info={this.props.info}
+              machine={this.props.machine}
               isAdmin={isAdmin}
               func={this.endActivation}
               force={this.forceSwitch}
@@ -141,7 +141,7 @@ var MachineChooser = React.createClass({
           machineBody = (
             <OccupiedMachine
               activation={this.props.activation}
-              info={this.props.info}
+              machine={this.props.machine}
               isAdmin={isAdmin}
               func={this.endActivation}
               force={this.forceSwitch}
@@ -151,7 +151,7 @@ var MachineChooser = React.createClass({
       } else {
         machineBody = (
           <FreeMachine
-            info={this.props.info}
+            machine={this.props.machine}
             isAdmin={isAdmin}
             func={this.startActivation}
             force={this.forceSwitch}
@@ -160,11 +160,11 @@ var MachineChooser = React.createClass({
       }
     }
     var price;
-    if (this.props.info.Name.indexOf('Tutor') < 0) {
+    if (this.props.machine.Name.indexOf('Tutor') < 0) {
       price = ' [€';
-      price += this.props.info.Price.toFixed(2);
+      price += this.props.machine.Price.toFixed(2);
       price += '/';
-      switch (this.props.info.PriceUnit) {
+      switch (this.props.machine.PriceUnit) {
         case 'hour':
           price += 'h';
           break;
@@ -172,19 +172,19 @@ var MachineChooser = React.createClass({
           price += 'min';
           break;
         default:
-          price += this.props.info.PriceUnit;
+          price += this.props.machine.PriceUnit;
       }
       price += ']';
     }
     var availabilityDisplay;
-    if (_.isNumber(this.props.info.ReservationPriceHourly)) {
-      availabilityDisplay = <AvailabilityDisplay machineId={this.props.info.Id}/>;
+    if (_.isNumber(this.props.machine.ReservationPriceHourly)) {
+      availabilityDisplay = <AvailabilityDisplay machineId={this.props.machine.Id}/>;
     }
     return (
       <div className="machine-container">
         <div className="container-fluid">
           <div className="machine-header">
-            <div className="machine-title pull-left">{this.props.info.Name} {price}</div>
+            <div className="machine-title pull-left">{this.props.machine.Name} {price}</div>
             <div className="clearfix"></div>
           </div>
           <div className="machine-body">
@@ -193,10 +193,10 @@ var MachineChooser = React.createClass({
 
             <ul className="machine-extra-actions">
               <li className="action-item">
-                <MaintenanceSwitch machineId={this.props.info.Id}/>
+                <MaintenanceSwitch machineId={this.props.machine.Id}/>
               </li>
               <li className="action-item">
-                <RepairButton machineId={this.props.info.Id}/>
+                <RepairButton machineId={this.props.machine.Id}/>
               </li>
             </ul>
 

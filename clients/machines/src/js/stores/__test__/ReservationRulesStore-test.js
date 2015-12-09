@@ -200,7 +200,7 @@ function reservationRules() {
   ];
 }
 
-function getMachineInfo() {
+function getMachines() {
   return [
     {
       'Id': 3,
@@ -268,9 +268,9 @@ describe('ReservationRulesStore', function() {
     reservationsStore: ReservationsStore
   });
 
-  var machineInfo = getMachineInfo();
+  var machines = getMachines();
   var reservations = existingReservations();
-  reactor.dispatch(actionTypes.SET_MACHINE_INFO, { machineInfo });
+  reactor.dispatch(actionTypes.SET_MACHINES, { machines });
   reactor.dispatch(actionTypes.SET_RESERVATIONS, { reservations });
   reactor.dispatch(actionTypes.SET_RESERVATION_RULES, reservationRules());
 

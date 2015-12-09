@@ -8,19 +8,9 @@ var reactor = require('../../reactor');
 var UserActions = require('../../actions/UserActions');
 var UserForm = require('./UserForm');
 
-/*
- * UserPage component:
- * manage the interaction with user
- * @children:
- *  - UserForm
- *  - MachineList
- *  - Membership
- */
+
 var UserPage = React.createClass({
 
-  /*
-   * to use transitionTo/replaceWith/redirect and some function related to the router
-   */
   mixins: [ Navigation, reactor.ReactMixin, NfcLogoutMixin ],
 
   /*
@@ -35,15 +25,9 @@ var UserPage = React.createClass({
     }
   },
 
-  /*
-   * Fetching the user state from the store
-   */
   getDataBindings() {
     return {
-      userInfo: getters.getUserInfo,
-      machineInfo: getters.getMachineInfo,
-      billInfo: getters.getBillInfo,
-      membershipInfo: getters.getMembership
+      user: getters.getUser
     };
   },
 
@@ -51,68 +35,41 @@ var UserPage = React.createClass({
     this.nfcOnDidMount();
     const uid = reactor.evaluateToJS(getters.getUid);
     MachineActions.apiGetUserMachines(uid);
-    UserActions.getUserInfoFromServer(uid);
-    UserActions.getInfoBillFromServer(uid);
-    UserActions.getMembershipFromServer(uid);
+    UserActions.fetchUser(uid);
+    UserActions.fetchBill(uid);
+    UserActions.fetchMemberships(uid);
   },
 
   componentWillUnmount() {
     this.nfcOnWillUnmount();
   },
 
-  /*
-   * Logout with the exit button
-   */
   handleLogout() {
     LoginActions.logout();
   },
 
-  /*
-   * Submit the user information to the store via the action
-   */
   handleSubmit() {
     const uid = reactor.evaluateToJS(getters.getUid);
-    var userInfo = reactor.evaluateToJS(getters.getUserInfo);
-    UserActions.submitState(uid, userInfo);
+    var user = reactor.evaluateToJS(getters.getUser);
+    UserActions.submitState(uid, user);
   },
 
-  /*
-   * When a change happend in the form:
-   * @event: the event which occured
-   * change the state to be coherent with the input values
-   */
   handleChangeForm(event) {
-    /*// Create a temporary state to replace the old one
-    var tmpState = this.state.infoUser;
-    tmpState[event.target.id] = event.target.value;
-    this.setState({
-      infoUser: tmpState
-    });*/
     var key = event.target.id;
     var value = event.target.value;
-    UserActions.setUserInfoProperty({ key, value });
+    UserActions.setUserProperty({ key, value });
   },
 
-  /*
-   * Send an action to update the password
-   * @password: your new password
-   */
   updatePassword(password) {
     const uid = reactor.evaluateToJS(getters.getUid);
     UserActions.updatePassword(uid, password);
   },
 
-  /*
-   * Render:
-   *  - UserForm: form to update the user information
-   *  - MachineList: machines the user can access
-   *  - Membership: membership the user subscribe
-   */
   render() {
     return (
       <div className="container">
         <h3>Your information</h3>
-          <UserForm info={this.state.userInfo}
+          <UserForm user={this.state.user}
             func={this.handleChangeForm}
             passwordFunc={this.updatePassword}
             submit={this.handleSubmit}

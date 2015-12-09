@@ -85,8 +85,8 @@ var MachineActions = {
    * callback are defined below
    */
   apiGetUserMachines(uid) {
-    ApiActions.getCall('/api/users/' + uid + '/machines', function(machineInfo) {
-      reactor.dispatch(actionTypes.SET_MACHINE_INFO, { machineInfo });
+    ApiActions.getCall('/api/users/' + uid + '/machines', (machines) => {
+      reactor.dispatch(actionTypes.SET_MACHINES, { machines });
     });
   },
 
@@ -103,11 +103,11 @@ var MachineActions = {
   pollDashboard() {
     const uid = reactor.evaluateToJS(getters.getUid);
     ApiActions.getCall('/api/users/' + uid + '/dashboard', function(data) {
-      reactor.dispatch(actionTypes.SET_ACTIVATION_INFO, {
-        activationInfo: data.Activations
+      reactor.dispatch(actionTypes.SET_ACTIVATIONS, {
+        activations: data.Activations
       });
-      reactor.dispatch(actionTypes.SET_MACHINE_INFO, {
-        machineInfo: data.Machines
+      reactor.dispatch(actionTypes.SET_MACHINES, {
+        machines: data.Machines
       });
       if (data.Tutorings) {
         reactor.dispatch(actionTypes.SET_TUTORINGS, data.Tutorings.Data);

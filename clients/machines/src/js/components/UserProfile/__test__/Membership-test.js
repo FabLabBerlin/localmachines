@@ -19,7 +19,7 @@ var toImmutable = Nuclear.toImmutable;
 
 var state = {
   'userStore': {
-    'membershipInfo': [
+    'memberships': [
       {
         'Id': 1,
         'UserId': 1,
@@ -43,7 +43,7 @@ describe('Membership', function() {
   describe('render', function() {
     it('renders the memberships and the totals', function() {
       var membership = new Membership({
-        info: state.userStore.membershipInfo
+        memberships: state.userStore.memberships
       });
       var html = React.renderToString(membership);
       /* Memberships */

@@ -24,7 +24,7 @@ var state = {
     'userId': 0,
     'isLogged': false,
     'firstTry': true,
-    'billInfo': {
+    'bill': {
       'User': {
         'Id': 19,
         'FirstName': 'Philip',
@@ -213,7 +213,7 @@ var state = {
         ]
       }
     },
-    'membershipInfo': [
+    'memberships': [
       {
         'Id': 62,
         'UserId': 261,
@@ -244,10 +244,10 @@ describe('BillTable', function() {
 
   describe('render', function() {
     it('renders the activations and the totals', function() {
-      var data = state.userStore.billInfo;
-      reactor.dispatch(actionTypes.SET_BILL_INFO, { data });
-      data = state.userStore.membershipInfo;
-      reactor.dispatch(actionTypes.SET_MEMBERSHIP_INFO, { data });
+      var data = state.userStore.bill;
+      reactor.dispatch(actionTypes.SET_BILL, { data });
+      data = state.userStore.memberships;
+      reactor.dispatch(actionTypes.SET_MEMBERSHIPS, { data });
 
       var billTable = new BillTable();
       var html = React.renderToString(billTable);

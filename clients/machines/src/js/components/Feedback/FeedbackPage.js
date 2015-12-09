@@ -34,7 +34,7 @@ var FeedbackPage = React.createClass({
   componentDidMount() {
     this.nfcOnDidMount();
     const uid = reactor.evaluateToJS(getters.getUid);
-    UserActions.getUserInfoFromServer(uid);
+    UserActions.fetchUser(uid);
   },
 
   componentWillUnmount() {

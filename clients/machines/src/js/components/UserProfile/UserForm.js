@@ -77,7 +77,7 @@ var UserForm = React.createClass({
     ];
 
     var NodeInput = _.map(keys, function(key) {
-      var value = this.props.info.get(key);
+      var value = this.props.user.get(key);
       if (key === 'CountryCode') {
         return (
           <div className="col-md-6">

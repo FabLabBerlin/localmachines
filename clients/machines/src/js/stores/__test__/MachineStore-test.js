@@ -13,7 +13,7 @@ var getters = require('../../getters');
 var reactor = require('../../reactor');
 
 
-function activation() {
+function getActivations() {
   return [
     {
       FirstName: 'Regular',
@@ -26,7 +26,7 @@ function activation() {
   ];
 }
 
-function machines() {
+function getMachines() {
   return {
     1: {
       Id: 1,
@@ -51,29 +51,29 @@ describe('MachineStore', function() {
     UserStore: UserStore
   });
 
-  describe('SET_ACTIVATION_INFO', function() {
-    it('does changes visible via getActivationInfo', function() {
-      var activationInfo = activation();
-      reactor.dispatch(actionTypes.SET_ACTIVATION_INFO, { activationInfo });
-      var actual = reactor.evaluateToJS(getters.getActivationInfo);
-      expect(actual).toEqual(activation());
+  describe('SET_ACTIVATIONS', function() {
+    it('does changes visible via getActivations', function() {
+      var activations = getActivations();
+      reactor.dispatch(actionTypes.SET_ACTIVATIONS, { activations });
+      var actual = reactor.evaluateToJS(getters.getActivations);
+      expect(actual).toEqual(getActivations());
     });
   });
 
-  describe('SET_MACHINE_INFO', function() {
-    it('does changes visible via getMachineInfo', function() {
-      var machineInfo = machines();
-      reactor.dispatch(actionTypes.SET_MACHINE_INFO, { machineInfo });
-      var actual = reactor.evaluateToJS(getters.getMachineInfo);
-      expect(actual).toEqual(machines());
+  describe('SET_MACHINES', function() {
+    it('does changes visible via getMachines', function() {
+      var machines = getMachines();
+      reactor.dispatch(actionTypes.SET_MACHINES, { machines });
+      var actual = reactor.evaluateToJS(getters.getMachines);
+      expect(actual).toEqual(getMachines());
     });
   });
 
   describe('MACHINE_STORE_CLEAR_STATE', function() {
     it('clears the state', function() {
       reactor.dispatch(actionTypes.MACHINE_STORE_CLEAR_STATE);
-      expect(reactor.evaluateToJS(getters.getActivationInfo)).toEqual([]);
-      expect(reactor.evaluateToJS(getters.getMachineInfo)).toEqual([]);
+      expect(reactor.evaluateToJS(getters.getActivations)).toEqual([]);
+      expect(reactor.evaluateToJS(getters.getMachines)).toEqual([]);
     });
   });
 });
