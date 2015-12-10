@@ -72,10 +72,9 @@
           <th>Tutor name</th>
           <th>User name</th>
           <th>Created</th>
-          <th>Start time</th>
-          <th>Planned End time</th>
-          <th>Timed End time</th>
-          <th>Reserved time</th>
+          <th>Planned start time</th>
+          <th>Planned end time</th>
+          <th>Planned time</th>
           <th>Timer time</th>
           <th>Total Price</th>
           <th>
@@ -88,11 +87,10 @@
           <td>{{purchase.Product.Name}}</td>
           <td>{{purchase.User.FirstName}} {{purchase.User.LastName}}</td>
           <td>{{purchase.Created}}</td>
-          <td>{{purchase.TimeStartLocal}}</td>
-          <td>{{purchase.TimeEndPlannedLocal}}</td>
-          <td>{{purchase.TimeEndLocal}}</td>
-          <td>{{purchase.ReservedTimeTotalHours}}h {{purchase.ReservedTimeTotalMinutes}}m</td>
-          <td>{{purchase.TimerTimeTotalHours}}h {{purchase.TimerTimeTotalMinutes}}m</td>
+          <td>{{purchase.TimeStart}}</td>
+          <td>{{purchase.TimeEnd}}</td>
+          <td>{{purchase.TimeReserved}}</td>
+          <td>{{purchase.TimeTimed}}</td>
           <td>{{purchase.TotalPrice | currency:''}}{{settings.Currency.ValueString}}</td>
           <td>
             <div class="pull-right">
