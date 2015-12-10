@@ -209,7 +209,7 @@ func (this *PurchasesController) Put() {
 			this.CustomAbort(400, "Failed to update Tutoring purchase")
 		}
 		beego.Info("tp: time end planned:", tp.TimeEndPlanned)
-		if err = purchases.UpdateTutoringPurchase(tp); err == nil {
+		if err = tp.Update(); err == nil {
 			response = tp
 		}
 		break

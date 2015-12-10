@@ -28,17 +28,19 @@ type TutoringList struct {
 }
 
 // Create a planned tutoring reservation in the future with blank values.
-func CreateTutoring(tutoringPurchase *Tutoring) (int64, error) {
-	tutoringPurchase.Purchase.Created = time.Now()
-	tutoringPurchase.Purchase.Type = TYPE_TUTOR
-	tutoringPurchase.Purchase.TimeStart = time.Now()
-	tutoringPurchase.Purchase.TimeEnd = tutoringPurchase.Purchase.TimeStart.
+func CreateTutoring(tp *Tutoring) (id int64, err error) {
+	tp.Purchase.Created = time.Now()
+	tp.Purchase.Type = TYPE_TUTOR
+	tp.Purchase.TimeStart = time.Now()
+	tp.Purchase.TimeEnd = tp.Purchase.TimeStart.
 		Add(time.Duration(1) * time.Hour)
-	//tutoringPurchase.Purchase.TimeEndPlanned = time.Now()
-	tutoringPurchase.Purchase.PriceUnit = "hour"
+	//tp.Purchase.TimeEndPlanned = time.Now()
+	tp.Purchase.PriceUnit = "hour"
 
 	o := orm.NewOrm()
-	return o.Insert(&tutoringPurchase.Purchase)
+	id, err = o.Insert(&tp.Purchase)
+	tp.Purchase.Id = id
+	return
 }
 
 func GetTutoring(id int64) (tutoring *Tutoring, err error) {
@@ -70,22 +72,22 @@ func GetAllTutorings() (tutorings *TutoringList, err error) {
 }
 
 // Start the tutoring purchase timer.
-func StartTutoring(tutoringPurchaseId int64) (err error) {
+func StartTutoring(id int64) (err error) {
 	o := orm.NewOrm()
 
 	// Let's just use full names by convention as code is being copy/pasted
 	// and there is too much human error involved. At the end of the day
 	// the variable names just do not make sense.
-	tutoringPurchase, err := GetTutoring(tutoringPurchaseId)
+	tp, err := GetTutoring(id)
 	if err != nil {
 		return fmt.Errorf("Failed to get tutoring purchase: %v", err)
 	}
 
 	// Mark the timer as running and store current time
 	// so we can make calculation when we stop the timer.
-	tutoringPurchase.Purchase.Running = true
-	tutoringPurchase.Purchase.TimerTimeStart = time.Now()
-	_, err = o.Update(&tutoringPurchase.Purchase)
+	tp.Purchase.Running = true
+	tp.Purchase.TimerTimeStart = time.Now()
+	_, err = o.Update(&tp.Purchase)
 	if err != nil {
 		return fmt.Errorf("Failed to update: %v", err)
 	}
@@ -94,57 +96,57 @@ func StartTutoring(tutoringPurchaseId int64) (err error) {
 }
 
 // Stop tutoring purchase timer.
-func StopTutoringPurchase(tutoringPurchaseId int64) (err error) {
-	tutoringPurchase, err := GetTutoring(tutoringPurchaseId)
+func StopTutoring(id int64) (err error) {
+	tp, err := GetTutoring(id)
 	if err != nil {
 		return fmt.Errorf("get tutoring purchase: %v", err)
 	}
 
 	// Get existing tutoring
-	if tutoringPurchase.ProductId > 0 {
-		tutor, err := products.GetTutor(tutoringPurchase.ProductId)
+	if tp.ProductId > 0 {
+		tutor, err := products.GetTutor(tp.ProductId)
 		if err != nil {
 			return fmt.Errorf("get tutor: %v", err)
 		}
-		tutoringPurchase.PricePerUnit = tutor.Product.Price
-		tutoringPurchase.PriceUnit = tutor.Product.PriceUnit // this should be hour
+		tp.PricePerUnit = tutor.Product.Price
+		tp.PriceUnit = tutor.Product.PriceUnit // this should be hour
 	}
 
 	// OK, now we have to deal with the quantity of the tutoring
 	// purchase we are stoping.
 	var lastTimerSessionQuantity float64
-	switch tutoringPurchase.PriceUnit {
+	switch tp.PriceUnit {
 	case "hour":
 		lastTimerSessionQuantity = time.
-			Since(tutoringPurchase.TimerTimeStart).Hours()
+			Since(tp.TimerTimeStart).Hours()
 		break
 	case "minute":
 		lastTimerSessionQuantity = time.
-			Since(tutoringPurchase.TimerTimeStart).Minutes()
+			Since(tp.TimerTimeStart).Minutes()
 		break
 	case "second":
 		lastTimerSessionQuantity = time.
-			Since(tutoringPurchase.TimerTimeStart).Seconds()
+			Since(tp.TimerTimeStart).Seconds()
 		break
 	default:
 		lastTimerSessionQuantity = time.
-			Since(tutoringPurchase.TimerTimeStart).Hours()
+			Since(tp.TimerTimeStart).Hours()
 	}
 
 	// Add up elapsed time since last timer start time to the existing quantity
-	tutoringPurchase.Purchase.Quantity += lastTimerSessionQuantity
+	tp.Purchase.Quantity += lastTimerSessionQuantity
 
 	// The timer is not running anymore, so we set the running flag to false.
-	tutoringPurchase.Purchase.Running = false
+	tp.Purchase.Running = false
 
 	o := orm.NewOrm()
-	_, err = o.Update(&tutoringPurchase.Purchase)
+	_, err = o.Update(&tp.Purchase)
 
 	return
 }
 
-func UpdateTutoringPurchase(tutoringPurchase *Tutoring) (err error) {
+func (tp *Tutoring) Update() (err error) {
 	o := orm.NewOrm()
-	_, err = o.Update(&tutoringPurchase.Purchase)
+	_, err = o.Update(&tp.Purchase)
 	return
 }

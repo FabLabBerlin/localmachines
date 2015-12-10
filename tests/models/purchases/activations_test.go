@@ -7,6 +7,7 @@ import (
 
 	"github.com/kr15h/fabsmith/models"
 	"github.com/kr15h/fabsmith/models/purchases"
+	"github.com/kr15h/fabsmith/tests/assert"
 	"github.com/kr15h/fabsmith/tests/setup"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -35,7 +36,10 @@ func TestActivations(t *testing.T) {
 		Reset(setup.ResetDB)
 
 		Convey("Testing CreateActivation", func() {
-			user := models.User{FirstName: "ILoveFabLabs"}
+			user := models.User{
+				FirstName: "ILoveFabLabs",
+				Email:     "awesome@example.com",
+			}
 
 			Convey("Creating activation with non-existing machine", func() {
 				_, err := purchases.CreateActivation(0, 0, time.Now())
@@ -49,28 +53,18 @@ func TestActivations(t *testing.T) {
 			})
 
 			Convey("Creating activation with existing user and machine", func() {
-				machine, _ := CreateMachine("lel")
-				uid, _ := models.CreateUser(&user)
+				machine, err1 := CreateMachine("lel")
+				uid, err2 := models.CreateUser(&user)
 				activationStartTime := time.Date(2015, 5, 8, 2, 15, 3, 1, time.Local)
-				aid, err := purchases.CreateActivation(machine.Id, uid, activationStartTime)
-				if err != nil {
-					panic(fmt.Sprintf("create activation: %v", err))
-				}
-				activation, err2 := purchases.GetActivation(aid)
-				if err2 != nil {
-					panic(fmt.Sprintf("get activation: %v", err2))
-				}
-
-				Convey("There should be no error", func() {
-					So(err, ShouldBeNil)
-				})
+				aid, err3 := purchases.CreateActivation(machine.Id, uid, activationStartTime)
+				activation, err4 := purchases.GetActivation(aid)
+				assert.NoErrors(err1, err2, err3, err4)
 
 				Convey("Activation ID should be valid", func() {
 					So(aid, ShouldBeGreaterThan, 0)
 				})
 
 				Convey("It should be possible to read the activation back", func() {
-					So(err2, ShouldBeNil)
 					So(activation.Purchase.Id, ShouldEqual, aid)
 				})
 
@@ -85,11 +79,8 @@ func TestActivations(t *testing.T) {
 
 				Convey("It should be possible to close the activation", func() {
 					activationEndTime := time.Now()
-					err = purchases.CloseActivation(aid, activationEndTime)
-					if err != nil {
-						panic(fmt.Sprintf("close activation: %v", err))
-					}
-					So(err, ShouldBeNil)
+					err := purchases.CloseActivation(aid, activationEndTime)
+					assert.NoErrors(err)
 
 					activation, err = purchases.GetActivation(aid)
 					if err != nil {
@@ -123,10 +114,11 @@ func TestActivations(t *testing.T) {
 			})
 			Convey("Creating an activation and close it", func() {
 				machine, _ := CreateMachine("lel")
-				aid, _ := purchases.CreateActivation(machine.Id, 0, time.Now())
-				err := purchases.CloseActivation(aid, time.Now())
+				aid, err1 := purchases.CreateActivation(machine.Id, 0, time.Now())
+				err2 := purchases.CloseActivation(aid, time.Now())
 
-				So(err, ShouldBeNil)
+				So(err1, ShouldBeNil)
+				So(err2, ShouldBeNil)
 			})
 		})
 		Convey("Testing GetActivationMachineId", func() {
@@ -136,18 +128,20 @@ func TestActivations(t *testing.T) {
 				So(err, ShouldNotBeNil)
 			})
 			Convey("Getting activation id on non-activated machine", func() {
-				machine, _ := CreateMachine("lel")
-				aid, _ := purchases.CreateActivation(machine.Id, 0, time.Now())
-				purchases.CloseActivation(aid, time.Now())
-				_, err := purchases.GetActivationMachineId(aid)
+				machine, err := CreateMachine("lel")
+				aid, err2 := purchases.CreateActivation(machine.Id, 0, time.Now())
+				err3 := purchases.CloseActivation(aid, time.Now())
+				mid, err4 := purchases.GetActivationMachineId(aid)
 
-				So(err, ShouldBeNil)
+				assert.NoErrors(err, err2, err3, err4)
+				So(machine.Id, ShouldEqual, mid)
 			})
 			Convey("Creating activation on a machine and get activation's id", func() {
-				machine, _ := CreateMachine("lel")
-				aid, _ := purchases.CreateActivation(machine.Id, 0, time.Now())
-				gmid, _ := purchases.GetActivationMachineId(aid)
+				machine, err := CreateMachine("lel")
+				aid, err2 := purchases.CreateActivation(machine.Id, 0, time.Now())
+				gmid, err3 := purchases.GetActivationMachineId(aid)
 
+				assert.NoErrors(err, err2, err3)
 				So(machine.Id, ShouldEqual, gmid)
 			})
 		})

@@ -214,7 +214,6 @@ func GetActivation(activationId int64) (activation *Activation, err error) {
 	err = o.Read(&activation.Purchase)
 
 	if err != nil {
-		beego.Error("Failed to read activation:", err)
 		return nil, fmt.Errorf("Failed to read activation: %v", err)
 	}
 
@@ -225,7 +224,6 @@ func GetActivation(activationId int64) (activation *Activation, err error) {
 func CloseActivation(activationId int64, endTime time.Time) error {
 	activation, err := GetActivation(activationId)
 	if err != nil {
-		beego.Error("Failed to get activation:", err)
 		return fmt.Errorf("Failed to get activation: %v", err)
 	}
 
@@ -236,7 +234,6 @@ func CloseActivation(activationId int64, endTime time.Time) error {
 
 	err = activation.Update()
 	if err != nil {
-		beego.Error("Failed to update activation:", err)
 		return fmt.Errorf("Failed to update activation: %v", err)
 	}
 
@@ -283,7 +280,6 @@ func GetActivationMachineId(activationId int64) (int64, error) {
 		Filter("type", TYPE_ACTIVATION).
 		One(&activationModel.Purchase, "MachineId")
 	if err != nil {
-		beego.Error("Could not get activation")
 		return 0, err
 	}
 	return activationModel.Purchase.MachineId, nil
