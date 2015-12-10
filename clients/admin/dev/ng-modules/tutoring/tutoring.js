@@ -91,9 +91,9 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location', 'api', 'randomTo
         var timeStart = moment(p.TimeStart);
         var timeEnd = moment(p.TimeEnd);
 
-        p.Created = timeCreated.tz('Europe/Berlin').format('YYYY-MM-DD');
-        p.TimeStart = timeStart.tz('Europe/Berlin').format('YYYY-MM-DD HH:mm');
-        p.TimeEnd = timeEnd.tz('Europe/Berlin').format('YYYY-MM-DD HH:mm');
+        p.Created = timeCreated.tz('Europe/Berlin').format('D MMM YYYY');
+        p.TimeStart = timeStart.tz('Europe/Berlin').format('D MMM YYYY HH:mm');
+        p.TimeEnd = timeEnd.tz('Europe/Berlin').format('D MMM YYYY HH:mm');
         
         var reservedDuration = timeEnd.clone().subtract(timeStart);
         
