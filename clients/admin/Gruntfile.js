@@ -73,6 +73,7 @@ module.exports = function (grunt) {
 						'dev/bower_components/toastr/toastr.js',
 						'dev/bower_components/lodash/lodash.js',
 						'dev/bower_components/momentjs/min/moment.min.js',
+						'dev/bower_components/moment-duration-format/lib/moment-duration-format.js',
 						'dev/bower_components/moment-timezone/builds/moment-timezone-with-data.min.js',
 						'dev/ng-components/version/version.js',
 						'dev/ng-components/version/version-directive.js',
