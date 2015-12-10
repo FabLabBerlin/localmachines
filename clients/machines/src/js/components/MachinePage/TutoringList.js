@@ -1,5 +1,6 @@
 var getters = require('../../getters');
 var moment = require('moment');
+var momentDurationFormat = require('moment-duration-format');
 var React = require('react');
 var reactor = require('../../reactor');
 var Tutoring = require('./Tutoring');
@@ -25,7 +26,7 @@ var TutoringList = React.createClass({
         }
       });
       tutorings = _.sortBy(tutorings, function(t) {
-        if (t.Running) {
+        if (t.TimeStart) {
           return -1;
         } else {
           return 0;

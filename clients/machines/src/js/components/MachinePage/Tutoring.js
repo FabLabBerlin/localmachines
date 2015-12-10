@@ -4,7 +4,6 @@ var React = require('react');
 var reactor = require('../../reactor');
 var TutoringActions = require('../../actions/TutoringActions');
 
-
 var Tutoring = React.createClass({
 
   mixins: [ reactor.ReactMixin ],
@@ -16,6 +15,7 @@ var Tutoring = React.createClass({
   },
 
   startTimer() {
+    this.props.tutoring.TimerTimeStart = moment().format('YYYY-MM-DD HH:mm:ss');
     TutoringActions.startTutoring(this.props.tutoring.Id);
   },
 
@@ -25,7 +25,17 @@ var Tutoring = React.createClass({
 
   render() {
     var start = moment(this.props.tutoring.TimeStart);
-    var end = this.props.tutoring.TimeEnd || this.props.tutoring.TimeEndPlanned;
+    var end = moment(this.props.tutoring.TimeEnd);
+
+    var currentTimerDuration;
+    if (this.props.tutoring.PriceUnit === 'day') {
+      currentTimerDuration = moment.duration(this.props.tutoring.Quantity, 'days');
+    } else if (this.props.tutoring.PriceUnit === 'hour') {
+      currentTimerDuration = moment.duration(this.props.tutoring.Quantity, 'hours');
+    } else if (this.props.tutoring.PriceUnit === 'minute') {
+      currentTimerDuration = moment.duration(this.props.tutoring.Quantity, 'minutes');
+    }
+
     var duration;
     var user;
 
@@ -41,10 +51,19 @@ var Tutoring = React.createClass({
     }
 
     if (this.props.tutoring.Running) {
-      duration = moment().subtract(start);
-      duration = duration.format('HH:mm:ss');
+
+      var lastTimerStart = moment(this.props.tutoring.TimerTimeStart);
+      var now = moment();
+      var elapsed = moment.duration(now.diff(lastTimerStart));
+
+      duration = currentTimerDuration.add(elapsed).format('h[h] m[m] s[s]')
+
+      //duration = timerStart.add()
+      //duration = moment().subtract(start);
+      //duration = duration.format('HH:mm:ss');
     } else if (start && end) {
-      duration = end.clone().subtract(start).format('HH:mm:ss');
+      duration = currentTimerDuration.format('h[h] m[m] s[s]');
+
     }
 
     return (
@@ -65,11 +84,11 @@ var Tutoring = React.createClass({
               <div className="row">
                 <div className="col-xs-6">
                   <div><b>Time from</b></div>
-                  <div>{start && start.format('YYYY-MM-DD HH:mm')}</div>
+                  <div>{start && start.format('D MMM YYYY HH:mm')}</div>
                 </div>
                 <div className="col-xs-6">
                   <div><b>Time to</b></div>
-                  <div>{end && end.format('YYYY-MM-DD HH:mm')}</div>
+                  <div>{end && end.format('D MMM YYYY HH:mm')}</div>
                 </div>
               </div>
             </div>
