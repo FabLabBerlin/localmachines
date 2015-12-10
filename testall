@@ -14,17 +14,17 @@ __base="$(basename ${__file} .sh)"
 arg1="${1:-}"
 
 
+# Read config
+
+mysqluser=`grep -A 100 "\[test\]" tests/conf/app.conf | grep mysqluser | sed -e "s/ //g" | cut -c 11-`
+mysqlpass=`grep -A 100 "\[test\]" tests/conf/app.conf | grep mysqlpass | sed -e "s/ //g" | cut -c 11-`
+
+
+
 # Perform migrations
 
 rm -f database/migrations/m.go
-bee migrate -conn="root:@tcp(127.0.0.1:3306)/fabsmith_test"
-
-
-
-# Frontend tests
-
-cd $__dir/clients/machines
-npm test
+bee migrate -conn="$mysqluser:$mysqlpass@tcp(127.0.0.1:3306)/fabsmith_test"
 
 
 
@@ -42,3 +42,11 @@ do
 	cd $testDir
 	go test
 done
+
+
+
+# Frontend tests
+
+cd $__dir/clients/machines
+npm test
+
