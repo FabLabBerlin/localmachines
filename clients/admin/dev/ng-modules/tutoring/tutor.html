@@ -33,7 +33,15 @@
     </div>
   </div>
 
-  <priceunit product="tutor.Product"></priceunit>
+  <div class="form-group">
+    <label for="price-unit">Price unit</label>
+    <input 
+      id="price-unit"
+      class="form-control"
+      type="text"
+      disabled="disabled"
+      ng-model="tutor.Product.PriceUnit">
+  </div>
 
   <div class="form-group">
     <label for="skill-picker">Machine Skills</label>

@@ -12,8 +12,8 @@ app.config(['$routeProvider', function($routeProvider) {
   });
 }]); // app.config
 
-app.controller('PurchaseCtrl', ['$scope', '$routeParams', '$http', '$location', 'api',
-  function($scope, $routeParams, $http, $location, api) {
+app.controller('PurchaseCtrl', ['$scope', '$routeParams', '$http', '$location', '$filter', 'api',
+  function($scope, $routeParams, $http, $location, $filter, api) {
 
   $scope.purchase = {
     Id: $routeParams.id
@@ -32,9 +32,21 @@ app.controller('PurchaseCtrl', ['$scope', '$routeParams', '$http', '$location', 
         setTimeout(function() {
           $('.selectpicker').selectpicker('refresh');
         }, 100);
-        api.purchase.calculateQuantity($scope.purchase);
-        api.purchase.calculateTotalPrice($scope.purchase);
+        //api.purchase.calculateQuantity($scope.purchase);
+        // Why would I have to search for this in another place?
+        //api.purchase.calculateTotalPrice($scope.purchase);
+
         calculateDurations();
+
+        // We do not include the following in the calculateDurations
+        // because we won't be able to change the values in the input field.
+        var start = moment($scope.purchase.TimeStart);
+        $scope.purchase.DateStartLocal = start.format('YYYY-MM-DD');
+        $scope.purchase.TimeStartLocal = start.format('HH:mm');
+
+        var end = moment($scope.purchase.TimeEnd);
+        $scope.purchase.DateEndLocal = end.format('YYYY-MM-DD');
+        $scope.purchase.TimeEndLocal = end.format('HH:mm');
       });
     });
   });
@@ -65,24 +77,44 @@ app.controller('PurchaseCtrl', ['$scope', '$routeParams', '$http', '$location', 
 
   function calculateDurations() {
     console.log('calculateDurations()');
-    api.purchase.calculateQuantity($scope.purchase);
-    api.purchase.calculateTotalPrice($scope.purchase);
-    var start = moment($scope.purchase.TimeStart);
-    var end = moment($scope.purchase.TimeEnd);
-    var endPlanned = moment($scope.purchase.TimeEndPlanned);
-    console.log('start:', start.format('YYYY-MM-DD HH:mm'));
-    console.log('end:', end.format('YYYY-MM-DD HH:mm'));
-    console.log('endPlanned:', endPlanned.format('YYYY-MM-DD HH:mm'));
+
+    // These are tutoring specific things,
+    // why would one need to search for them in another file/place?
+    //api.purchase.calculateQuantity($scope.purchase);
+    //api.purchase.calculateTotalPrice($scope.purchase);
+
+    // Combine the date and time of start and end time
+    var startTimeString = $scope.purchase.DateStartLocal + ' ' + $scope.purchase.TimeStartLocal;
+    var endTimeString = $scope.purchase.DateEndLocal + ' ' + $scope.purchase.TimeEndLocal;
+
+    var start = moment(startTimeString);
+    var end = moment(endTimeString);
+    
     if (start.unix() > 0) {
-      if (endPlanned.unix() > 0) {
-        console.log('setting TimeReserved...');
-        $scope.purchase.TimeReserved = endPlanned.clone().subtract(start).format('HH:mm:ss');
-        console.log('$scope.purchase.TimeReserved:', $scope.purchase.TimeReserved);
-      }
       if (end.unix() > 0) {
-        console.log('setting TimeTimed...');
-        $scope.purchase.TimeTimed = end.clone().subtract(start).format('HH:mm:ss');
-        console.log('$scope.purchase.TimeTimed:', $scope.purchase.TimeTimed);
+        var reservedDuration = moment.duration(end.diff(start));
+        $scope.purchase.TimeReserved = reservedDuration.format('h[h] m[m]');
+      }
+      if ($scope.purchase.Quantity > 0) {
+        //$scope.purchase.TimeTimed = end.clone().subtract(start).format('HH:mm:ss');
+        var momentDuration;
+        
+        if ($scope.purchase.PriceUnit === 'hour') {
+          momentDuration = moment.duration($scope.purchase.Quantity, 'hours');
+        } else if ($scope.purchase.PriceUnit === 'minute') {
+          momentDuration = moment.duration($scope.purchase.Quantity, 'minutes');
+        } else if ($scope.purchase.PriceUnit === 'day') {
+          momentDuration = moment.duration($scope.purchase.Quantity, 'days');
+        }
+
+        if (momentDuration.asHours() < 1) {
+          $scope.purchase.TimeTimed = momentDuration.format('m[m] s[s]');
+        } else {
+          $scope.purchase.TimeTimed = momentDuration.format('h[h] m[m]');
+        }
+
+        $scope.purchase.TotalPrice = $scope.purchase.Quantity * $scope.purchase.PricePerUnit;
+        $scope.purchase.TotalPrice = $filter('currency')($scope.purchase.TotalPrice, '');
       }
     }
   }

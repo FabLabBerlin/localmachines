@@ -36,6 +36,10 @@ app.controller('TutorCtrl', ['$scope', '$routeParams', '$http', '$location', 'ap
     })
     .success(function(tutor) {
       $scope.tutor = tutor;
+
+      // Force this in case previously wrong
+      $scope.tutor.Product.PriceUnit = 'hour';
+      
       var machineSkills = [];
       if ($scope.tutor.Product.MachineSkills) {
         var tmp = $scope.tutor.Product.MachineSkills;

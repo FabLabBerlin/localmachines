@@ -94,24 +94,34 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location', 'api', 'randomTo
         p.Created = timeCreated.tz('Europe/Berlin').format('YYYY-MM-DD');
         p.TimeStart = timeStart.tz('Europe/Berlin').format('YYYY-MM-DD HH:mm');
         p.TimeEnd = timeEnd.tz('Europe/Berlin').format('YYYY-MM-DD HH:mm');
+        
+        var reservedDuration = timeEnd.clone().subtract(timeStart);
+        
+        // Show reserved time
+        p.TimeReserved = moment.duration(timeEnd.diff(timeStart)).format('h[h] m[m]');
 
-        if (timeEnd.unix() > 0) {
-          p.TimeEndLocal = timeEnd.tz('Europe/Berlin').format('YYYY-MM-DD HH:mm');
-          var duration = timeEnd.clone().subtract(timeStart);
-          p.TimerTimeTotalHours = duration.hours();
-          p.TimerTimeTotalMinutes = duration.minutes();
+        // Show timer time
+        var timerDuration;
+        if (p.PriceUnit === 'day') {
+          timerDuration = moment.duration(p.Quantity, 'days');
+        } else if (p.PriceUnit === 'hour') {
+          timerDuration = moment.duration(p.Quantity, 'hours');
+        } else if (p.PriceUnit === 'minute') {
+          timerDuration = moment.duration(p.Quantity, 'minutes');
         }
 
-        if (timeEnd.unix() > 0) {
-          var durationPlanned = timeEnd.clone().subtract(timeStart);
-          p.ReservedTimeTotalHours = durationPlanned.hours();
-          p.ReservedTimeTotalMinutes = durationPlanned.minutes();
+        if (timerDuration.asHours() < 1) {
+          p.TimeTimed = timerDuration.format('m[m] s[s]');
+        } else {
+          p.TimeTimed = timerDuration.format('h[h] m[m]');
         }
+
         if (p.Quantity && p.PricePerUnit) {
           p.TotalPrice = p.Quantity * p.PricePerUnit;
         }
         return p;
       });
+
       $scope.showTutorSkills();
     }, function() {
       toastr.error('Failed to load purchases');
