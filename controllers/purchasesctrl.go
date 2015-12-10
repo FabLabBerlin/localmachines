@@ -38,9 +38,8 @@ func (this *PurchasesController) Create() {
 		}
 		break
 	case purchases.TYPE_SPACE:
-		sp := &purchases.Space{}
-		_, err = purchases.CreateSpace(sp)
-		if err == nil {
+		sp := purchases.NewSpace()
+		if err = sp.Save(); err == nil {
 			purchase = sp
 		}
 		break
@@ -50,6 +49,7 @@ func (this *PurchasesController) Create() {
 		if err == nil {
 			purchase = tp
 		}
+		break
 	default:
 		err = fmt.Errorf("unknown purchase type")
 	}

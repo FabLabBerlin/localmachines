@@ -9,36 +9,51 @@ import (
 type Space struct {
 	json.Marshaler
 	json.Unmarshaler
-	purchase Purchase
+	Purchase
+}
+
+func NewSpace() *Space {
+	return &Space{
+		Purchase: Purchase{
+			Created:   time.Now(),
+			Type:      TYPE_SPACE,
+			TimeStart: time.Now(),
+			TimeEnd:   time.Now(),
+			PriceUnit: "hour",
+		},
+	}
 }
 
 func (this *Space) MarshalJSON() ([]byte, error) {
-	return json.Marshal(this.purchase)
+	return json.Marshal(this.Purchase)
 }
 
 func (this *Space) UnmarshalJSON(data []byte) error {
-	return json.Unmarshal(data, &this.purchase)
+	return json.Unmarshal(data, &this.Purchase)
 }
 
-func CreateSpace(spacePurchase *Space) (int64, error) {
-	spacePurchase.purchase = Purchase{
-		Created:   time.Now(),
-		Type:      TYPE_SPACE,
-		TimeStart: time.Now(),
-		TimeEnd:   time.Now(),
-		PriceUnit: "hour",
-	}
-
+func (this *Space) Update() (err error) {
 	o := orm.NewOrm()
-	return o.Insert(&spacePurchase.purchase)
+	_, err = o.Update(&this.Purchase)
+	return
+}
+
+func (this *Space) Save() (err error) {
+	o := orm.NewOrm()
+	if this.Id == 0 {
+		_, err = o.Insert(&this.Purchase)
+	} else {
+		err = this.Update()
+	}
+	return
 }
 
 func GetSpace(id int64) (spacePurchase *Space, err error) {
 	spacePurchase = &Space{}
-	spacePurchase.purchase.Id = id
+	spacePurchase.Id = id
 
 	o := orm.NewOrm()
-	err = o.Read(&spacePurchase.purchase)
+	err = o.Read(&spacePurchase.Purchase)
 
 	return
 }
@@ -51,16 +66,10 @@ func GetAllSpace() (spacePurchases []*Space, err error) {
 	spacePurchases = make([]*Space, 0, len(purchases))
 	for _, purchase := range purchases {
 		spacePurchase := &Space{
-			purchase: *purchase,
+			Purchase: *purchase,
 		}
 		spacePurchases = append(spacePurchases, spacePurchase)
 	}
-	return
-}
-
-func (spacePurchase *Space) Update() (err error) {
-	o := orm.NewOrm()
-	_, err = o.Update(&spacePurchase.purchase)
 	return
 }
 

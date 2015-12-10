@@ -46,7 +46,7 @@ func TestCoWorkingPurchases(t *testing.T) {
 				},
 			}
 			id, err := purchases.CreateCoWorking(c)
-			t.Purchase.UserId = 456
+			c.Purchase.UserId = 456
 			err2 := c.Update()
 			c, err3 := purchases.GetCoWorking(id)
 			assert.NoErrors(err, err2, err3)
