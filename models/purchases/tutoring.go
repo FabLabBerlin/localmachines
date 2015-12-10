@@ -29,13 +29,13 @@ type TutoringList struct {
 
 // Create a planned tutoring reservation in the future with blank values.
 func CreateTutoring(tp *Tutoring) (id int64, err error) {
-	tp.Purchase.Created = time.Now()
-	tp.Purchase.Type = TYPE_TUTOR
-	tp.Purchase.TimeStart = time.Now()
-	tp.Purchase.TimeEnd = tp.Purchase.TimeStart.
+	tp.Created = time.Now()
+	tp.Type = TYPE_TUTOR
+	tp.TimeStart = time.Now()
+	tp.TimeEnd = tp.Purchase.TimeStart.
 		Add(time.Duration(1) * time.Hour)
-	//tp.Purchase.TimeEndPlanned = time.Now()
-	tp.Purchase.PriceUnit = "hour"
+	//tp.TimeEndPlanned = time.Now()
+	tp.PriceUnit = "hour"
 
 	o := orm.NewOrm()
 	id, err = o.Insert(&tp.Purchase)
@@ -45,7 +45,7 @@ func CreateTutoring(tp *Tutoring) (id int64, err error) {
 
 func GetTutoring(id int64) (tutoring *Tutoring, err error) {
 	tutoring = &Tutoring{}
-	tutoring.Purchase.Id = id
+	tutoring.Id = id
 
 	o := orm.NewOrm()
 	err = o.Read(&tutoring.Purchase)
@@ -85,8 +85,8 @@ func StartTutoring(id int64) (err error) {
 
 	// Mark the timer as running and store current time
 	// so we can make calculation when we stop the timer.
-	tp.Purchase.Running = true
-	tp.Purchase.TimerTimeStart = time.Now()
+	tp.Running = true
+	tp.TimerTimeStart = time.Now()
 	_, err = o.Update(&tp.Purchase)
 	if err != nil {
 		return fmt.Errorf("Failed to update: %v", err)

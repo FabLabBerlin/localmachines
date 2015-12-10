@@ -9,36 +9,34 @@ import (
 type CoWorking struct {
 	json.Marshaler
 	json.Unmarshaler
-	purchase Purchase
+	Purchase
 }
 
 func (this *CoWorking) MarshalJSON() ([]byte, error) {
-	return json.Marshal(this.purchase)
+	return json.Marshal(this.Purchase)
 }
 
 func (this *CoWorking) UnmarshalJSON(data []byte) error {
-	return json.Unmarshal(data, &this.purchase)
+	return json.Unmarshal(data, &this.Purchase)
 }
 
 func CreateCoWorking(cp *CoWorking) (int64, error) {
-	cp.purchase = Purchase{
-		Created:   time.Now(),
-		Type:      TYPE_CO_WORKING,
-		TimeStart: time.Now(),
-		TimeEnd:   time.Now(),
-		PriceUnit: "hour",
-	}
+	cp.Created = time.Now()
+	cp.Type = TYPE_CO_WORKING
+	cp.TimeStart = time.Now()
+	cp.TimeEnd = time.Now()
+	cp.PriceUnit = "hour"
 
 	o := orm.NewOrm()
-	return o.Insert(&cp.purchase)
+	return o.Insert(&cp.Purchase)
 }
 
 func GetCoWorking(id int64) (cp *CoWorking, err error) {
 	cp = &CoWorking{}
-	cp.purchase.Id = id
+	cp.Purchase.Id = id
 
 	o := orm.NewOrm()
-	err = o.Read(&cp.purchase)
+	err = o.Read(&cp.Purchase)
 
 	return
 }
@@ -49,9 +47,9 @@ func GetAllCoWorking() (cps []*CoWorking, err error) {
 		return
 	}
 	cps = make([]*CoWorking, 0, len(purchases))
-	for _, purchase := range purchases {
+	for _, Purchase := range purchases {
 		cp := &CoWorking{
-			purchase: *purchase,
+			Purchase: *Purchase,
 		}
 		cps = append(cps, cp)
 	}
@@ -60,7 +58,7 @@ func GetAllCoWorking() (cps []*CoWorking, err error) {
 
 func (cp *CoWorking) Update() (err error) {
 	o := orm.NewOrm()
-	_, err = o.Update(&cp.purchase)
+	_, err = o.Update(&cp.Purchase)
 	return
 }
 
