@@ -51,19 +51,13 @@ var Tutoring = React.createClass({
     }
 
     if (this.props.tutoring.Running) {
-
       var lastTimerStart = moment(this.props.tutoring.TimerTimeStart);
       var now = moment();
       var elapsed = moment.duration(now.diff(lastTimerStart));
 
-      duration = currentTimerDuration.add(elapsed).format('h[h] m[m] s[s]')
-
-      //duration = timerStart.add()
-      //duration = moment().subtract(start);
-      //duration = duration.format('HH:mm:ss');
+      duration = currentTimerDuration.add(elapsed).format('h[h] m[m] s[s]');
     } else if (start && end) {
       duration = currentTimerDuration.format('h[h] m[m] s[s]');
-
     }
 
     return (

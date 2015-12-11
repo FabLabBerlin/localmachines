@@ -161,18 +161,15 @@ func AuthenticateUser(username, password string) (int64, error) {
 	}
 
 	if err != nil {
-		beego.Error("Could not read into AuthModel:", err)
-		return 0, err
+		return 0, fmt.Errorf("Could not read into AuthModel: %v", err)
 	}
 	authModelSalt, err := hex.DecodeString(authModel.Salt)
 	if err != nil {
-		beego.Error("Could not decode authModel.Salt:", err)
-		return 0, err
+		return 0, fmt.Errorf("Could not decode authModel.Salt: %v", err)
 	}
 	hash, err := hash(password, authModelSalt)
 	if err != nil {
-		beego.Error("Could not calculate hash:")
-		return 0, err
+		return 0, fmt.Errorf("Could not calculate hash: %v", err)
 	}
 	isAuthSuccessful := hex.EncodeToString(hash) == authModel.Hash
 	if isAuthSuccessful {
@@ -212,8 +209,7 @@ func AuthenticateUserUid(uid string) (string, int64, error) {
 	// Get user ID
 	err = o.Read(&auth, "NfcKey")
 	if err != nil {
-		beego.Error(err)
-		return "", 0, errors.New("Failed to read auth table")
+		return "", 0, fmt.Errorf("Failed to read auth table: %v", err)
 	}
 
 	// Get user name
@@ -221,8 +217,7 @@ func AuthenticateUserUid(uid string) (string, int64, error) {
 	user.Id = auth.UserId
 	err = o.Read(&user, "Id")
 	if err != nil {
-		return "", 0, errors.New(
-			fmt.Sprintf("Failed to read user table: %v", err))
+		return "", 0, fmt.Errorf("Failed to read user table: %v", err)
 	}
 
 	return user.Username, user.Id, nil
@@ -248,10 +243,8 @@ func AuthSetPassword(userId int64, password string) error {
 	}
 	auth.Hash = hex.EncodeToString(hash)
 	if authRecordMissing {
-		fmt.Printf("insert: auth: %v", auth)
 		_, err = o.Insert(&auth)
 	} else {
-		fmt.Printf("update: auth: %v", auth)
 		_, err = o.Update(&auth)
 	}
 	return err
@@ -387,8 +380,7 @@ func GetUser(userId int64) (*User, error) {
 	o := orm.NewOrm()
 	err := o.Read(&user)
 	if err != nil {
-		beego.Error("Could not get user data, ID:", userId)
-		return nil, err
+		return nil, fmt.Errorf("Could not get user data, ID:", userId)
 	} else {
 		return &user, nil
 	}

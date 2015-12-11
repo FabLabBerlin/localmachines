@@ -75,11 +75,7 @@ func CreateUserMembership(
 	var baseMembership *Membership
 	baseMembership, err = GetMembership(membershipId)
 	if err != nil {
-		beego.Error("Error getting membership:", err)
-
-		userMembershipId = 0
-		err = fmt.Errorf("Failed to get membership")
-		return
+		return 0, fmt.Errorf("Failed to get membership")
 	}
 
 	// Set the auto extend flag of user membership to the one of base membership
@@ -118,7 +114,6 @@ func GetUserMembership(userMembershipId int64) (*UserMembership, error) {
 	o := orm.NewOrm()
 	err := o.Read(&userMembership)
 	if err != nil {
-		beego.Error("Failed to read user membership:", err)
 		return nil, fmt.Errorf("Failed to read user membership")
 	}
 	return &userMembership, nil
@@ -173,7 +168,6 @@ func DeleteUserMembership(userMembershipId int64) error {
 		return errors.New("Failed to delete user membership")
 	}
 	if num <= 0 {
-		beego.Error("Nothing deleted")
 		return fmt.Errorf("Nothing deleted")
 	}
 

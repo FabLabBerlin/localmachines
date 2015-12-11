@@ -72,12 +72,7 @@ func init() {
 func GetAllMemberships() (memberships []*Membership, err error) {
 	m := Membership{} // Used only for the TableName() method
 	o := orm.NewOrm()
-	num, err := o.QueryTable(m.TableName()).All(&memberships)
-	if err != nil {
-		beego.Error("Failed to get all memberships:", err)
-		return nil, errors.New("Failed to get all memberships")
-	}
-	beego.Trace("Got num memberships:", num)
+	_, err = o.QueryTable(m.TableName()).All(&memberships)
 	return
 }
 
@@ -106,7 +101,6 @@ func GetMembership(membershipId int64) (*Membership, error) {
 	o := orm.NewOrm()
 	err := o.Raw(sql, membershipId).QueryRow(&membership)
 	if err != nil {
-		beego.Error("Failed to get membership:", err, membershipId)
 		return nil, fmt.Errorf("Failed to get membership")
 	}
 	return &membership, nil
