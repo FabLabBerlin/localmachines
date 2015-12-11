@@ -29,9 +29,10 @@ func (this PurchasesXlsx) Len() int {
 func (this PurchasesXlsx) Less(i, j int) bool {
 	timeStartI := (*this[i]).TimeStart
 	timeStartJ := (*this[j]).TimeStart
-	if (*this[i]).Machine.Name < (*this[j]).Machine.Name {
+	anyNil := (*this[i]).Machine == nil || (*this[j]).Machine == nil
+	if !anyNil && (*this[i]).Machine.Name < (*this[j]).Machine.Name {
 		return true
-	} else if (*this[j]).Machine.Name < (*this[i]).Machine.Name {
+	} else if !anyNil && (*this[j]).Machine.Name < (*this[i]).Machine.Name {
 		return false
 	} else {
 		return timeStartI.Before(timeStartJ)
