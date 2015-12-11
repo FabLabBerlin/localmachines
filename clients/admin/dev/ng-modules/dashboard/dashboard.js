@@ -93,7 +93,7 @@ app.controller('DashboardCtrl', ['$scope', '$http', '$location',
           f: day
         },
         activationsRevenue,
-        'Activations (€): <b>' + activationsRevenue + '</b><br>' + minutes + ' minutes for non-Admins'
+        moment(day).format('D MMM YYYY') + '<br>Activations (€): <b>' + activationsRevenue + '</b><br>' + minutes + ' minutes for non-Admins'
       ];
     });
 
