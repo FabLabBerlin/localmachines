@@ -209,6 +209,12 @@ func (this Purchase) ProductName() string {
 		return this.Machine.Name
 	case TYPE_RESERVATION:
 		return "Reservation (" + this.Machine.Name + ")"
+	case TYPE_CO_WORKING:
+		return "Co-Working Space Booking"
+	case TYPE_SPACE:
+		return "Lab Space Booking"
+	case TYPE_TUTOR:
+		return "Tutoring"
 	}
 	return "Unnamed product"
 }
