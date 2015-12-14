@@ -47,9 +47,7 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location', 'api', 'randomTo
         var machineSkills = [];
         if (tutor.Product.MachineSkills) {
           var tmp = tutor.Product.MachineSkills;
-          console.log('tmp:', tmp);
           tmp = tmp.slice(1, tmp.length - 1);
-          console.log('tmp":', tmp);
           _.each(tmp.split(','), function(idString) {
             var id = parseInt(idString);
             var machine = $scope.machinesById[id];
@@ -58,7 +56,6 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location', 'api', 'randomTo
             }
           });
         }
-        console.log('setting tutor.MachineSkills to ', machineSkills);
         tutor.MachineSkills = machineSkills;
 
       });
@@ -87,18 +84,18 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location', 'api', 'randomTo
         }
         p.User = $scope.usersById[p.UserId];
 
-        var timeCreated = moment(p.Created);
-        var timeStart = moment(p.TimeStart);
-        var timeEnd = moment(p.TimeEnd);
+        var timeCreated = api.toMoment(p.Created);
+        var timeStart = api.toMoment(p.TimeStart);
+        var timeEnd = api.toMoment(p.TimeEnd);
 
-        p.Created = timeCreated.tz('Europe/Berlin').format('D MMM YYYY');
-        p.TimeStart = timeStart.tz('Europe/Berlin').format('D MMM YYYY HH:mm');
-        p.TimeEnd = timeEnd.tz('Europe/Berlin').format('D MMM YYYY HH:mm');
-        
-        var reservedDuration = timeEnd.clone().subtract(timeStart);
+        p.Created = timeCreated && timeCreated.format('D MMM YYYY');
+        p.TimeStart = timeStart && timeStart.format('D MMM YYYY HH:mm');
+        p.TimeEnd = timeEnd && timeEnd.format('D MMM YYYY HH:mm');
         
         // Show reserved time
-        p.TimeReserved = moment.duration(timeEnd.diff(timeStart)).format('h[h] m[m]');
+        if (timeStart && timeEnd) {
+          p.TimeReserved = moment.duration(timeEnd.diff(timeStart)).format('h[h] m[m]');
+        }
 
         // Show timer time
         var timerDuration;
