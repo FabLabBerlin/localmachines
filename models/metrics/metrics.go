@@ -2,6 +2,7 @@ package metrics
 
 import (
 	"fmt"
+	"github.com/astaxie/beego"
 	"github.com/kr15h/fabsmith/models"
 	"github.com/kr15h/fabsmith/models/invoices"
 	"github.com/kr15h/fabsmith/models/purchases"
@@ -90,13 +91,15 @@ func (this Data) sumActivationsBy(timeFormat string) (sums map[string]float64, e
 
 	for _, userSummary := range this.invoice.UserSummaries {
 		for _, purchase := range userSummary.Purchases.Data {
-			priceTotalDisc, err := purchases.PriceTotalDisc(purchase)
-			if err != nil {
-				return nil, fmt.Errorf("PriceTotalDisc: %v", err)
+			if purchase.Type == purchases.TYPE_ACTIVATION {
+				priceTotalDisc, err := purchases.PriceTotalDisc(purchase)
+				if err != nil {
+					return nil, fmt.Errorf("PriceTotalDisc: %v", err)
+				}
+				var key string
+				key = purchase.TimeStart.Format(timeFormat)
+				sums[key] = sums[key] + priceTotalDisc
 			}
-			var key string
-			key = purchase.TimeStart.Format(timeFormat)
-			sums[key] = sums[key] + priceTotalDisc
 		}
 	}
 
