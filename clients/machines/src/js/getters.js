@@ -165,15 +165,20 @@ const getMonthlyBills = [
         console.log('purchase:', purchase);
         switch (purchase.PriceUnit) {
         case 'month':
-          duration *= 30;
+          duration *= 60 * 60 * 24 * 30;
+          break;
         case 'day':
-          duration *= 24;
+          duration *= 60 * 60 * 24;
+          break;
         case 'hour':
-          duration *= 60;
+          duration *= 60 * 60;
+          break;
         case '30 minutes':
-          duration *= 30;
+          duration *= 60 * 30;
+          break;
         case 'minute':
           duration *= 60;
+          break;
         case 'second':
           break;
         default:

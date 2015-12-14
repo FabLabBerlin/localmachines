@@ -256,7 +256,7 @@ describe('BillTable', function() {
       expect(html).toContain('1m 12s');
       expect(html).toContain('0.96');
       expect(html).toContain('3D Printer - 5 Pumpkin (I3 Berlin)');
-      expect(html).toContain('52s');
+      expect(html).toContain('51s');
       expect(html).toContain('0.00');
       /* Reservations */
       expect(html).toContain('CNC Router (Reservation)');
