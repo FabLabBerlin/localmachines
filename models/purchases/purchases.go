@@ -67,6 +67,16 @@ func init() {
 	orm.RegisterModel(new(Purchase))
 }
 
+func Create(p *Purchase) (id int64, err error) {
+	o := orm.NewOrm()
+	id, err = o.Insert(p)
+	if err != nil {
+		return
+	}
+	p.Id = id
+	return
+}
+
 func Get(purchaseId int64) (purchase *Purchase, err error) {
 	o := orm.NewOrm()
 	purchase = &Purchase{Id: purchaseId}
