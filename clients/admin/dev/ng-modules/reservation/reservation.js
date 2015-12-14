@@ -57,6 +57,9 @@ app.controller('ReservationCtrl',
       $scope.reservation = r;
       r.TimeStartLocal = moment(r.TimeStart).tz('Europe/Berlin').format('YYYY-MM-DD HH:mm');
       r.TimeEndLocal = moment(r.TimeEnd).tz('Europe/Berlin').format('YYYY-MM-DD HH:mm');
+      setTimeout(function() {
+        $('.selectpicker').selectpicker('refresh');
+      }, 100);
     })
     .error(function(data, status) {
       toastr.error('Failed to load user data');
@@ -78,9 +81,6 @@ app.controller('ReservationCtrl',
       _.each($scope.users, function(user) {
         $scope.usersById[user.Id] = user;
       });
-      setTimeout(function() {
-        $('.selectpicker').selectpicker('refresh');
-      }, 100);
       loadMachines();
     })
     .error(function() {
