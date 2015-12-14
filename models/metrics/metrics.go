@@ -2,7 +2,6 @@ package metrics
 
 import (
 	"fmt"
-	"github.com/astaxie/beego"
 	"github.com/kr15h/fabsmith/models"
 	"github.com/kr15h/fabsmith/models/invoices"
 	"github.com/kr15h/fabsmith/models/purchases"
