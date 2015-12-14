@@ -40,7 +40,7 @@ for testDir in `find $__dir/tests/models -type d`
 do
 	echo Testing $testDir...
 	cd $testDir
-	go test
+	go test -v
 done
 
 
