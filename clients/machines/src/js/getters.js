@@ -161,8 +161,24 @@ const getMonthlyBills = [
         var timeStart = moment(purchase.TimeStart);
         var timeEnd = moment(purchase.TimeEnd);
 
-        var duration = moment.duration(timeEnd.diff(timeStart))
-                             .asSeconds();
+        var duration = purchase.Quantity;
+        console.log('purchase:', purchase);
+        switch (purchase.PriceUnit) {
+        case 'month':
+          duration *= 30;
+        case 'day':
+          duration *= 24;
+        case 'hour':
+          duration *= 60;
+        case '30 minutes':
+          duration *= 30;
+        case 'minute':
+          duration *= 60;
+        case 'second':
+          break;
+        default:
+          console.log('unknown price unit', purchase.PriceUnit);
+        }
 
         monthlyBill.sums.durations += duration;
         var priceInclVAT = toCents(purchase.DiscountedTotal);
