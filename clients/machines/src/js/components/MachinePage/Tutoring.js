@@ -6,12 +6,18 @@ var TutoringActions = require('../../actions/TutoringActions');
 
 var Tutoring = React.createClass({
 
-  mixins: [ reactor.ReactMixin ],
-
-  getDataBindings() {
+  getInitialState() {
     return {
-      machineUsers: getters.getMachineUsers
+      secondsElapsed: 0
     };
+  },
+
+  componentDidMount() {
+    this.interval = setInterval(this.tick, 1000);
+  },
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
   },
 
   startTimer() {
@@ -23,9 +29,16 @@ var Tutoring = React.createClass({
     TutoringActions.stopTutoring(this.props.tutoring.Id);
   },
 
+  tick() {
+    this.setState({
+      secondsElapsed: this.state.secondsElapsed + 1
+    });
+  },
+
   render() {
     var start = moment(this.props.tutoring.TimeStart);
     var end = moment(this.props.tutoring.TimeEnd);
+    var machineUsers = reactor.evaluateToJS(getters.getMachineUsers);
 
     var currentTimerDuration;
     if (this.props.tutoring.PriceUnit === 'day') {
@@ -46,8 +59,8 @@ var Tutoring = React.createClass({
       }
     }
 
-    if (this.state.machineUsers) {
-      user = this.state.machineUsers.get(this.props.tutoring.UserId);
+    if (machineUsers) {
+      user = machineUsers[this.props.tutoring.UserId];
     }
 
     if (this.props.tutoring.Running) {

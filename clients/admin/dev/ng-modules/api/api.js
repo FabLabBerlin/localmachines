@@ -272,6 +272,11 @@ mod.service('api', ['$http',
     }
   };
 
+  this.toMoment = function(goDateTime, tz) {
+    if (goDateTime && moment(goDateTime).unix() > 0) {
+      return moment(goDateTime).tz(tz || 'Europe/Berlin');
+    }
+  };
 
   // Private methods
 
