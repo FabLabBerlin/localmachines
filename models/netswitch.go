@@ -10,12 +10,10 @@ import (
 )
 
 type NetSwitchMapping struct {
-	Id          int64 `orm:"auto";"pk"`
-	MachineId   int64
-	UrlOn       string `orm:"size(255)"`
-	UrlOff      string `orm:"size(255)"`
-	RequestType string `orm:"size(10)"`
-	RequestData string `orm:"size(255)"`
+	Id        int64 `orm:"auto";"pk"`
+	MachineId int64
+	UrlOn     string `orm:"size(255)"`
+	UrlOff    string `orm:"size(255)"`
 }
 
 func init() {
@@ -27,10 +25,8 @@ func (u *NetSwitchMapping) TableName() string {
 }
 
 func CreateNetSwitchMapping(machineId int64) (int64, error) {
-	mapping := NetSwitchMapping{
-		MachineId:   machineId,
-		RequestType: "GET",
-	}
+	mapping := NetSwitchMapping{}
+	mapping.MachineId = machineId
 	o := orm.NewOrm()
 	created, id, err := o.ReadOrCreate(&mapping, "MachineId")
 	if err != nil {
