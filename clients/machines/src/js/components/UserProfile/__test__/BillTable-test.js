@@ -244,31 +244,40 @@ describe('BillTable', function() {
 
   describe('render', function() {
     it('renders the activations and the totals', function() {
-      var data = state.userStore.bill;
+      var data;
+
+      var unwatchMs = reactor.observe(getters.getMemberships, function() {
+        var unwatchBl = reactor.observe(getters.getBill, function() {
+          unwatchMs();
+          unwatchBl();
+
+          var billTable = new BillTable();
+          var html = React.renderToString(billTable);
+          /* Activations */
+          expect(html).toContain('Laser Cutter - Epilog Zing 6030');
+          expect(html).toContain('1m 12s');
+          expect(html).toContain('0.96');
+          expect(html).toContain('3D Printer - 5 Pumpkin (I3 Berlin)');
+          expect(html).toContain('51s');
+          expect(html).toContain('0.00');
+          /* Reservations */
+          expect(html).toContain('CNC Router (Reservation)');
+          expect(html).toContain('30m 0s');
+          expect(html).toContain('2.50');
+          /* Totals */
+          expect(html).toContain('Total Pay-As-You-Go');
+          expect(html).toContain('3.46');
+          expect(html).toContain('Total Memberships');
+          expect(html).toContain('10.00');
+          expect(html).toContain('Total');
+          expect(html).toContain('13.46');
+        });
+      });
+
+      data = state.userStore.bill;
       reactor.dispatch(actionTypes.SET_BILL, { data });
       data = state.userStore.memberships;
       reactor.dispatch(actionTypes.SET_MEMBERSHIPS, { data });
-
-      var billTable = new BillTable();
-      var html = React.renderToString(billTable);
-      /* Activations */
-      expect(html).toContain('Laser Cutter - Epilog Zing 6030');
-      expect(html).toContain('1m 12s');
-      expect(html).toContain('0.96');
-      expect(html).toContain('3D Printer - 5 Pumpkin (I3 Berlin)');
-      expect(html).toContain('51s');
-      expect(html).toContain('0.00');
-      /* Reservations */
-      expect(html).toContain('CNC Router (Reservation)');
-      expect(html).toContain('30m 0s');
-      expect(html).toContain('2.50');
-      /* Totals */
-      expect(html).toContain('Total Pay-As-You-Go');
-      expect(html).toContain('3.46');
-      expect(html).toContain('Total Memberships');
-      expect(html).toContain('10.00');
-      expect(html).toContain('Total');
-      expect(html).toContain('13.46');
     });
   });
 });
