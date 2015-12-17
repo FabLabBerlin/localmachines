@@ -15,6 +15,7 @@ var MachineActions = {
     var dataToSend = {
       mid: mid
     };
+    GlobalActions.showGlobalLoader();
     $.ajax({
       url: '/api/activations',
       dataType: 'json',
@@ -41,6 +42,7 @@ var MachineActions = {
   },
 
   forceTurnOnMachine(mid) {
+    GlobalActions.showGlobalLoader();
     $.ajax({
       url: '/api/machines/' + mid + '/turn_on',
       type: 'POST',
