@@ -147,15 +147,39 @@ func (this *Purchase) quantityFromTimes() (quantity float64) {
 
 	switch this.PriceUnit {
 	case "minute":
-		quantity = float64(seconds) / 60
+		return float64(seconds) / 60
 	case "30 minutes":
-		quantity = float64(seconds) / 1800
+		return float64(seconds) / 1800
 	case "hour":
-		quantity = float64(seconds) / 3600
+		return float64(seconds) / 3600
 	default:
 		beego.Error("unknown price unit ", this.PriceUnit)
 	}
 
+	return
+}
+
+func (this *Purchase) Seconds() (seconds float64) {
+	if this.Quantity == 0 {
+		return 0
+	} else {
+		switch this.PriceUnit {
+		case "second":
+			return this.Quantity
+		case "minute":
+			return float64(this.Quantity) * 60
+		case "30 minutes":
+			return float64(this.Quantity) * 60 * 30
+		case "hour":
+			return float64(this.Quantity) * 60 * 60
+		case "day":
+			return float64(this.Quantity) * 60 * 60 * 24
+		case "month":
+			return float64(this.Quantity) * 60 * 60 * 24 * 30
+		default:
+			beego.Error("unknown price unit ", this.PriceUnit)
+		}
+	}
 	return
 }
 

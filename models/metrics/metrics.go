@@ -147,9 +147,9 @@ func (this Data) sumMinutesBy(timeFormat string) (sums map[string]float64, err e
 	for _, userSummary := range this.invoice.UserSummaries {
 		if userSummary.User.UserRole != models.STAFF && userSummary.User.UserRole != models.ADMIN {
 			for _, purchase := range userSummary.Purchases.Data {
-				if activation := purchase.Activation; activation != nil {
+				if purchase.Type == purchases.TYPE_ACTIVATION {
 					key := purchase.TimeStart.Format(timeFormat)
-					sums[key] = sums[key] + purchase.MachineUsage.Minutes()
+					sums[key] = sums[key] + float64(purchase.Seconds())/60
 				}
 			}
 		}
