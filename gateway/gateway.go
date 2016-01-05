@@ -10,6 +10,8 @@ import (
 	"net/url"
 	"os"
 	"os/signal"
+	"strconv"
+	"strings"
 )
 
 type LoginResp struct {
@@ -21,6 +23,7 @@ func (resp *LoginResp) ok() bool {
 	return resp.Status == "ok"
 }
 
+var client *http.Client
 var netSwitches map[int64]*NetSwitch
 
 type NetSwitch struct {
@@ -31,7 +34,7 @@ type NetSwitch struct {
 	On        bool
 }
 
-func Login(client *http.Client, apiUrl, user, key string) (err error) {
+func Login(apiUrl, user, key string) (err error) {
 	resp, err := client.PostForm(apiUrl+"/users/login",
 		url.Values{"username": {user}, "password": {key}})
 	if err != nil {
@@ -50,7 +53,7 @@ func Login(client *http.Client, apiUrl, user, key string) (err error) {
 	return
 }
 
-func Fetch(client *http.Client, apiUrl string) (err error) {
+func Fetch(apiUrl string) (err error) {
 	resp, err := client.Get(apiUrl + "/netswitch")
 	if err != nil {
 		return fmt.Errorf("GET: %v", err)
@@ -69,7 +72,7 @@ func Fetch(client *http.Client, apiUrl string) (err error) {
 	return
 }
 
-func LoadState(filename string) (err error) {
+func loadState(filename string) (err error) {
 	f, err := os.Open(filename)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -94,7 +97,7 @@ func LoadState(filename string) (err error) {
 	return
 }
 
-func SaveState(filename string) (err error) {
+func saveState(filename string) (err error) {
 	f, err := os.Create(filename)
 	if err != nil {
 		return
@@ -108,19 +111,26 @@ func SaveState(filename string) (err error) {
 	return enc.Encode(switchStates)
 }
 
+func SaveState(filename string) {
+	log.Printf("Saving state...")
+	if err := saveState(filename); err != nil {
+		log.Printf("failed saving state: %v", err)
+	}
+}
+
 func Init(apiUrl, user, key, stateFile string) (err error) {
 
-	client := &http.Client{}
+	client = &http.Client{}
 	if client.Jar, err = cookiejar.New(nil); err != nil {
 		return
 	}
-	if err := Login(client, apiUrl, user, key); err != nil {
+	if err := Login(apiUrl, user, key); err != nil {
 		return fmt.Errorf("login: %v", err)
 	}
-	if err := Fetch(client, apiUrl); err != nil {
+	if err := Fetch(apiUrl); err != nil {
 		return fmt.Errorf("fetch: %v", err)
 	}
-	if err := LoadState(stateFile); err != nil {
+	if err := loadState(stateFile); err != nil {
 		return fmt.Errorf("load state: %v", err)
 	}
 
@@ -130,14 +140,63 @@ func Init(apiUrl, user, key, stateFile string) (err error) {
 		for sig := range c {
 			log.Printf("received signal %v", sig)
 			// sig is a ^C, handle it
-			if err := SaveState(stateFile); err != nil {
-				log.Printf("failed saving state: %v", err)
-			}
+			SaveState(stateFile)
 			os.Exit(1)
 		}
 	}()
 
 	return
+}
+
+func runCommand(w http.ResponseWriter, r *http.Request) (err error) {
+	tmp := strings.Split(r.URL.Path, "/")
+	idStr := tmp[len(tmp)-2]
+	cmd := tmp[len(tmp)-1]
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		return fmt.Errorf("parse id: %v", err)
+	}
+	ns, ok := netSwitches[id]
+	if !ok {
+		return fmt.Errorf("there's no netswitch for machine id %v", id)
+	}
+	switch cmd {
+	case "on":
+		resp, err := client.Get(ns.UrlOn)
+		if err != nil {
+			return fmt.Errorf("client get: %v", err)
+		}
+		if resp.StatusCode != 200 {
+			return fmt.Errorf("unexpected status code: %v", resp.StatusCode)
+		}
+		ns.On = true
+		break
+	case "off":
+		resp, err := client.Get(ns.UrlOff)
+		if err != nil {
+			return fmt.Errorf("client get: %v", err)
+		}
+		if resp.StatusCode != 200 {
+			return fmt.Errorf("unexpected status code: %v", resp.StatusCode)
+		}
+		ns.On = false
+		break
+	default:
+		return fmt.Errorf("unknown command '%v'", cmd)
+	}
+	log.Printf("id: %v", id)
+	log.Printf("cmd: %v", cmd)
+	return
+}
+
+func RunCommand(w http.ResponseWriter, r *http.Request) {
+	if err := runCommand(w, r); err == nil {
+		w.WriteHeader(200)
+	} else {
+		w.WriteHeader(500)
+		fmt.Fprintf(w, "Error: %v", err)
+		log.Printf("run command: %v", err)
+	}
 }
 
 func main() {
@@ -150,6 +209,9 @@ func main() {
 		log.Fatalf("Init: %v", err)
 	}
 
-	for true {
+	http.HandleFunc("/machines/", RunCommand)
+
+	if err := http.ListenAndServe(":7070", nil); err != nil {
+		SaveState(*stateFile)
 	}
 }
