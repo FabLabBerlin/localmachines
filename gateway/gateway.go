@@ -14,6 +14,22 @@ import (
 	"strings"
 )
 
+type CommandType string
+
+const (
+	CMD_ON          = "on"
+	CMD_OFF         = "off"
+	CMD_STATE_WATCH = "state_watch"
+)
+
+var ch = make(chan Command, 10)
+
+type Command struct {
+	CommandType
+	MachineId *int64
+	Error     chan error
+}
+
 type LoginResp struct {
 	Status string
 	UserId int64
@@ -24,7 +40,7 @@ func (resp *LoginResp) ok() bool {
 }
 
 var client *http.Client
-var netSwitches map[int64]*NetSwitch
+var netSwitches map[int64]NetSwitch
 
 type NetSwitch struct {
 	Id        int64
@@ -64,10 +80,9 @@ func Fetch(apiUrl string) (err error) {
 	if err := dec.Decode(&nss); err != nil {
 		return fmt.Errorf("json decode: %v", err)
 	}
-	log.Printf("netswitches: %v", nss)
-	netSwitches = make(map[int64]*NetSwitch)
+	netSwitches = make(map[int64]NetSwitch)
 	for _, ns := range nss {
-		netSwitches[ns.MachineId] = &ns
+		netSwitches[ns.MachineId] = ns
 	}
 	return
 }
@@ -90,6 +105,7 @@ func loadState(filename string) (err error) {
 		mid := switchState.MachineId
 		if netswitch, ok := netSwitches[mid]; ok {
 			netswitch.On = switchState.On
+			netSwitches[mid] = netswitch
 		} else {
 			log.Printf("netswitch for machine id %v doesn't exist anymore", mid)
 		}
@@ -106,7 +122,7 @@ func saveState(filename string) (err error) {
 	enc := json.NewEncoder(f)
 	switchStates := make([]NetSwitch, 0, len(netSwitches))
 	for _, ns := range netSwitches {
-		switchStates = append(switchStates, *ns)
+		switchStates = append(switchStates, ns)
 	}
 	return enc.Encode(switchStates)
 }
@@ -115,6 +131,58 @@ func SaveState(filename string) {
 	log.Printf("Saving state...")
 	if err := saveState(filename); err != nil {
 		log.Printf("failed saving state: %v", err)
+	}
+}
+
+func dispatch(cmd Command) (err error) {
+	switch cmd.CommandType {
+	case CMD_ON:
+		ns, ok := netSwitches[*cmd.MachineId]
+		if !ok {
+			return fmt.Errorf("there's no netswitch for machine id %v",
+				cmd.MachineId)
+		}
+		resp, err := client.Get(ns.UrlOn)
+		if err != nil {
+			return fmt.Errorf("client get: %v", err)
+		}
+		if resp.StatusCode != 200 {
+			return fmt.Errorf("unexpected status code: %v", resp.StatusCode)
+		}
+		ns.On = true
+		netSwitches[*cmd.MachineId] = ns
+		break
+	case CMD_OFF:
+		ns, ok := netSwitches[*cmd.MachineId]
+		if !ok {
+			return fmt.Errorf("there's no netswitch for machine id %v",
+				cmd.MachineId)
+		}
+		resp, err := client.Get(ns.UrlOff)
+		if err != nil {
+			return fmt.Errorf("client get: %v", err)
+		}
+		if resp.StatusCode != 200 {
+			return fmt.Errorf("unexpected status code: %v", resp.StatusCode)
+		}
+		ns.On = false
+		netSwitches[*cmd.MachineId] = ns
+		break
+	case CMD_STATE_WATCH:
+		panic("state watch not implemented yet")
+		break
+	default:
+		log.Fatalf("unknown cmd '%v', terminating...", cmd.CommandType)
+	}
+	return
+}
+
+func Loop() {
+	for {
+		select {
+		case cmd := <-ch:
+			cmd.Error <- dispatch(cmd)
+		}
 	}
 }
 
@@ -134,6 +202,8 @@ func Init(apiUrl, user, key, stateFile string) (err error) {
 		return fmt.Errorf("load state: %v", err)
 	}
 
+	log.Printf("netswitches: %v", netSwitches)
+
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 	go func() {
@@ -145,47 +215,38 @@ func Init(apiUrl, user, key, stateFile string) (err error) {
 		}
 	}()
 
+	go Loop()
+
 	return
 }
 
 func runCommand(w http.ResponseWriter, r *http.Request) (err error) {
 	tmp := strings.Split(r.URL.Path, "/")
 	idStr := tmp[len(tmp)-2]
-	cmd := tmp[len(tmp)-1]
+	cmdStr := tmp[len(tmp)-1]
 	id, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
 		return fmt.Errorf("parse id: %v", err)
 	}
-	ns, ok := netSwitches[id]
-	if !ok {
-		return fmt.Errorf("there's no netswitch for machine id %v", id)
-	}
-	switch cmd {
-	case "on":
-		resp, err := client.Get(ns.UrlOn)
-		if err != nil {
-			return fmt.Errorf("client get: %v", err)
+	log.Printf("id: %v", id)
+	log.Printf("cmd: %v", cmdStr)
+
+	switch cmdStr {
+	case CMD_ON, CMD_OFF:
+		commandType := CommandType(cmdStr)
+		cmd := Command{
+			CommandType: commandType,
+			MachineId:   &id,
+			Error:       make(chan error),
 		}
-		if resp.StatusCode != 200 {
-			return fmt.Errorf("unexpected status code: %v", resp.StatusCode)
+		ch <- cmd
+		if err := <-cmd.Error; err != nil {
+			return fmt.Errorf("cmd dispatch: %v", err)
 		}
-		ns.On = true
-		break
-	case "off":
-		resp, err := client.Get(ns.UrlOff)
-		if err != nil {
-			return fmt.Errorf("client get: %v", err)
-		}
-		if resp.StatusCode != 200 {
-			return fmt.Errorf("unexpected status code: %v", resp.StatusCode)
-		}
-		ns.On = false
 		break
 	default:
-		return fmt.Errorf("unknown command '%v'", cmd)
+		return fmt.Errorf("unknown command '%v'", cmdStr)
 	}
-	log.Printf("id: %v", id)
-	log.Printf("cmd: %v", cmd)
 	return
 }
 
