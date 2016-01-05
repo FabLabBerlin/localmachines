@@ -12,6 +12,8 @@ import (
 	"os/signal"
 	"strconv"
 	"strings"
+	"sync"
+	"time"
 )
 
 type CommandType string
@@ -21,6 +23,18 @@ const (
 	CMD_OFF         = "off"
 	CMD_STATE_WATCH = "state_watch"
 )
+
+// Actually timeout and period could be set dynamically depending on the current latencies
+const (
+	STATE_WATCH_TIMEOUT = time.Second
+	STATE_WATCH_PERIOD  = 3 * STATE_WATCH_TIMEOUT
+)
+
+func init() {
+	if STATE_WATCH_TIMEOUT.Seconds() >= STATE_WATCH_PERIOD.Seconds() {
+		panic("timeout should be smaller than the watch period")
+	}
+}
 
 var ch = make(chan Command, 10)
 
@@ -39,7 +53,6 @@ func (resp *LoginResp) ok() bool {
 	return resp.Status == "ok"
 }
 
-var client *http.Client
 var netSwitches map[int64]NetSwitch
 
 type NetSwitch struct {
@@ -50,7 +63,105 @@ type NetSwitch struct {
 	On        bool
 }
 
-func Login(apiUrl, user, key string) (err error) {
+func (ns NetSwitch) stateWatch() (err error) {
+	urlStatus := ns.UrlStatus()
+	log.Printf("urlStatus = %v", urlStatus)
+	if urlStatus == "" {
+		return fmt.Errorf("NetSwitch status url for Machine %v empty", ns.MachineId)
+	}
+	client := http.Client{
+		Timeout: STATE_WATCH_TIMEOUT,
+	}
+	resp, err := client.Get(urlStatus)
+	if err != nil {
+		return fmt.Errorf("http get url status: %v", err)
+	}
+	defer resp.Body.Close()
+	mfi := MfiSwitch{}
+	dec := json.NewDecoder(resp.Body)
+	if err := dec.Decode(&mfi); err != nil {
+		return fmt.Errorf("json decode:", err)
+	}
+	if mfi.On() != ns.On {
+		log.Printf("State for Machine %v must get synchronized", ns.MachineId)
+		if ns.On {
+			if err = ns.TurnOn(); err != nil {
+				return fmt.Errorf("turn on: %v", err)
+			}
+		} else {
+			if err = ns.TurnOff(); err != nil {
+				return fmt.Errorf("turn off: %v", err)
+			}
+		}
+	}
+	return
+}
+
+func (ns NetSwitch) TurnOn() (err error) {
+	log.Printf("turn on %v", ns.UrlOn)
+	resp, err := http.Get(ns.UrlOn)
+	if err != nil {
+		return fmt.Errorf("client get: %v", err)
+	}
+	if resp.StatusCode != 200 {
+		return fmt.Errorf("unexpected status code: %v", resp.StatusCode)
+	}
+	return
+}
+
+func (ns NetSwitch) TurnOff() (err error) {
+	log.Printf("turn off %v", ns.UrlOff)
+	resp, err := http.Get(ns.UrlOff)
+	if err != nil {
+		return fmt.Errorf("client get: %v", err)
+	}
+	if resp.StatusCode != 200 {
+		return fmt.Errorf("unexpected status code: %v", resp.StatusCode)
+	}
+	return
+}
+
+// UrlStatus is a really dirty function.  It's just here for the proof of concept.
+func (ns NetSwitch) UrlStatus() string {
+	tmp := strings.Split(ns.UrlOn, "//")
+	host := strings.Split(tmp[1], "/")[0]
+	return "http://" + host + "/sensors/1"
+}
+
+//{"sensors":[{"output":1,"power":0.0,"energy":0.0,"enabled":0,"current":0.0,"voltage":233.546874046,"powerfactor":0.0,"relay":1,"lock":0}],"status":"success"}
+
+type MfiSwitch struct {
+	Sensors []MfiSensor `json:"sensors"`
+	Status  string      `json:"status"`
+}
+
+func (swi *MfiSwitch) On() bool {
+	relay := swi.Sensors[0].Relay
+	switch relay {
+	case 0:
+		return false
+		break
+	case 1:
+		return true
+		break
+	}
+	log.Fatalf("unknown relay status %v, terminating", relay)
+	return false
+}
+
+type MfiSensor struct {
+	Output      int     `json:"output"`
+	Power       float64 `json:"power"`
+	Energy      float64 `json:"energy"`
+	Enabled     float64 `json:"enabled"`
+	Current     float64 `json:"current"`
+	Voltage     float64 `json:"voltage"`
+	PowerFactor float64 `json:"powerfactor"`
+	Relay       int     `json:"relay"`
+	Lock        int     `json:"lock"`
+}
+
+func Login(client *http.Client, apiUrl, user, key string) (err error) {
 	resp, err := client.PostForm(apiUrl+"/users/login",
 		url.Values{"username": {user}, "password": {key}})
 	if err != nil {
@@ -69,7 +180,7 @@ func Login(apiUrl, user, key string) (err error) {
 	return
 }
 
-func Fetch(apiUrl string) (err error) {
+func Fetch(client *http.Client, apiUrl string) (err error) {
 	resp, err := client.Get(apiUrl + "/netswitch")
 	if err != nil {
 		return fmt.Errorf("GET: %v", err)
@@ -142,12 +253,8 @@ func dispatch(cmd Command) (err error) {
 			return fmt.Errorf("there's no netswitch for machine id %v",
 				cmd.MachineId)
 		}
-		resp, err := client.Get(ns.UrlOn)
-		if err != nil {
-			return fmt.Errorf("client get: %v", err)
-		}
-		if resp.StatusCode != 200 {
-			return fmt.Errorf("unexpected status code: %v", resp.StatusCode)
+		if err = ns.TurnOn(); err != nil {
+			return fmt.Errorf("turn on: %v", err)
 		}
 		ns.On = true
 		netSwitches[*cmd.MachineId] = ns
@@ -158,18 +265,32 @@ func dispatch(cmd Command) (err error) {
 			return fmt.Errorf("there's no netswitch for machine id %v",
 				cmd.MachineId)
 		}
-		resp, err := client.Get(ns.UrlOff)
-		if err != nil {
-			return fmt.Errorf("client get: %v", err)
-		}
-		if resp.StatusCode != 200 {
-			return fmt.Errorf("unexpected status code: %v", resp.StatusCode)
+		if err = ns.TurnOff(); err != nil {
+			return fmt.Errorf("turn off: %v", err)
 		}
 		ns.On = false
 		netSwitches[*cmd.MachineId] = ns
 		break
 	case CMD_STATE_WATCH:
-		panic("state watch not implemented yet")
+		wg := sync.WaitGroup{}
+		var errs error
+		for _, ns := range netSwitches {
+			wg.Add(1)
+			go func(ns NetSwitch) {
+				if err := ns.stateWatch(); err != nil {
+					if errs == nil {
+						errs = err
+					} else {
+						errs = fmt.Errorf("%v; %v", errs, err)
+					}
+				}
+				wg.Done()
+			}(ns)
+		}
+		wg.Wait()
+		if errs != nil {
+			return fmt.Errorf("state watch: %v", errs)
+		}
 		break
 	default:
 		log.Fatalf("unknown cmd '%v', terminating...", cmd.CommandType)
@@ -177,7 +298,7 @@ func dispatch(cmd Command) (err error) {
 	return
 }
 
-func Loop() {
+func DispatchLoop() {
 	for {
 		select {
 		case cmd := <-ch:
@@ -186,16 +307,33 @@ func Loop() {
 	}
 }
 
+func PingLoop() {
+	for {
+		select {
+		case <-time.After(STATE_WATCH_PERIOD):
+			cmd := Command{
+				CommandType: CMD_STATE_WATCH,
+				Error:       make(chan error),
+			}
+			ch <- cmd
+			err := <-cmd.Error
+			if err != nil {
+				log.Printf("state watch err: %v", err)
+			}
+		}
+	}
+}
+
 func Init(apiUrl, user, key, stateFile string) (err error) {
 
-	client = &http.Client{}
+	client := &http.Client{}
 	if client.Jar, err = cookiejar.New(nil); err != nil {
 		return
 	}
-	if err := Login(apiUrl, user, key); err != nil {
+	if err := Login(client, apiUrl, user, key); err != nil {
 		return fmt.Errorf("login: %v", err)
 	}
-	if err := Fetch(apiUrl); err != nil {
+	if err := Fetch(client, apiUrl); err != nil {
 		return fmt.Errorf("fetch: %v", err)
 	}
 	if err := loadState(stateFile); err != nil {
@@ -215,7 +353,8 @@ func Init(apiUrl, user, key, stateFile string) (err error) {
 		}
 	}()
 
-	go Loop()
+	go DispatchLoop()
+	go PingLoop()
 
 	return
 }
