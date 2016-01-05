@@ -10,6 +10,27 @@ type NetSwitchController struct {
 	Controller
 }
 
+// @Title GetAll
+// @Description Get all netswitch mapings
+// @Success 200 {object} models.NetSwitchMapping
+// @Failure	403	Failed to get all netswitch mappings
+// @router / [get]
+func (this *NetSwitchController) GetAll() {
+
+	// This is admin and staff only
+	if !this.IsAdmin() && !this.IsStaff() {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	ms, err := models.GetAllNetSwitchMapping()
+	if err != nil {
+		this.CustomAbort(403, "Failed to get all netswitch mappings")
+	}
+	this.Data["json"] = ms
+	this.ServeJson()
+}
+
 // @Title Get
 // @Description Get NetSwitch mapping by by machine ID
 // @Param	mid		path 	int	true		"Machine ID"

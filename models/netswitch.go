@@ -20,8 +20,14 @@ func init() {
 	orm.RegisterModel(new(NetSwitchMapping))
 }
 
-func (u *NetSwitchMapping) TableName() string {
+func (m *NetSwitchMapping) TableName() string {
 	return "netswitch"
+}
+
+func GetAllNetSwitchMapping() (ms []*NetSwitchMapping, err error) {
+	o := orm.NewOrm()
+	_, err = o.QueryTable(new(NetSwitchMapping).TableName()).All(&ms)
+	return
 }
 
 func CreateNetSwitchMapping(machineId int64) (int64, error) {
