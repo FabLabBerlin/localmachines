@@ -95,7 +95,15 @@ func runCommand(w http.ResponseWriter, r *http.Request) (err error) {
 	switch cmdStr {
 	case CMD_ON, CMD_OFF:
 		netSwitches.SetOn(id, cmdStr == CMD_ON)
-		return netSwitches.Sync(&id)
+		for retries := 0; retries < global.MAX_SYNC_RETRIES; retries++ {
+			if err = netSwitches.Sync(&id); err == nil {
+				if retries > 0 {
+					log.Printf("Synchronized netswitch after %v tries", retries+1)
+				}
+				return
+			}
+		}
+		break
 	default:
 		return fmt.Errorf("unknown command '%v'", cmdStr)
 	}
