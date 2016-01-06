@@ -141,6 +141,7 @@ func main() {
 	go func() {
 		for sig := range chHup {
 			log.Printf("received signal %v", sig)
+			netSwitches.Save()
 			if err := Init(*user, *key); err != nil {
 				log.Fatalf("Init: %v", err)
 			}
