@@ -13,7 +13,7 @@ import (
 
 type NetSwitches struct {
 	syncCh chan syncCommand
-	nss    map[int64]netswitch.NetSwitch
+	nss    map[int64]*netswitch.NetSwitch
 }
 
 type syncCommand struct {
@@ -49,11 +49,11 @@ func (nss *NetSwitches) fetch(client *http.Client) (err error) {
 	}
 	defer resp.Body.Close()
 	dec := json.NewDecoder(resp.Body)
-	list := []netswitch.NetSwitch{}
+	list := []*netswitch.NetSwitch{}
 	if err := dec.Decode(&list); err != nil {
 		return fmt.Errorf("json decode: %v", err)
 	}
-	nss.nss = make(map[int64]netswitch.NetSwitch)
+	nss.nss = make(map[int64]*netswitch.NetSwitch)
 	for _, ns := range list {
 		nss.nss[ns.MachineId] = ns
 	}
@@ -70,14 +70,14 @@ func (nss *NetSwitches) loadOnOff() (err error) {
 	}
 	defer f.Close()
 	dec := json.NewDecoder(f)
-	var switchStates []netswitch.NetSwitch
+	var switchStates []*netswitch.NetSwitch
 	if err := dec.Decode(&switchStates); err != nil {
 		return fmt.Errorf("json decode: %v", err)
 	}
 	for _, switchState := range switchStates {
 		mid := switchState.MachineId
 		if netswitch, ok := nss.nss[mid]; ok {
-			netswitch.On = switchState.On
+			netswitch.SetOn(switchState.On())
 			nss.nss[mid] = netswitch
 		} else {
 			log.Printf("netswitch for machine id %v doesn't exist anymore", mid)
@@ -93,7 +93,7 @@ func (nss *NetSwitches) save(filename string) (err error) {
 	}
 	defer f.Close()
 	enc := json.NewEncoder(f)
-	switchStates := make([]netswitch.NetSwitch, 0, len(nss.nss))
+	switchStates := make([]*netswitch.NetSwitch, 0, len(nss.nss))
 	for _, ns := range nss.nss {
 		switchStates = append(switchStates, ns)
 	}
@@ -109,7 +109,7 @@ func (nss *NetSwitches) Save() {
 
 func (nss *NetSwitches) SetOn(machineId int64, on bool) {
 	ns := nss.nss[machineId]
-	ns.On = on
+	ns.SetOn(on)
 	nss.nss[machineId] = ns
 }
 
@@ -133,7 +133,7 @@ func (nss *NetSwitches) dispatch(cmd syncCommand) (err error) {
 			continue
 		}
 		wg.Add(1)
-		go func(ns netswitch.NetSwitch) {
+		go func(ns *netswitch.NetSwitch) {
 			if err := ns.Sync(); err != nil {
 				if errs == nil {
 					errs = err

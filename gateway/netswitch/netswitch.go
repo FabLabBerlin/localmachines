@@ -14,10 +14,18 @@ type NetSwitch struct {
 	MachineId int64
 	UrlOn     string
 	UrlOff    string
-	On        bool
+	on        bool
 }
 
-func (ns NetSwitch) Sync() (err error) {
+func (ns *NetSwitch) On() bool {
+	return ns.on
+}
+
+func (ns *NetSwitch) SetOn(on bool) {
+	ns.on = on
+}
+
+func (ns *NetSwitch) Sync() (err error) {
 	urlStatus := ns.UrlStatus()
 	log.Printf("urlStatus = %v", urlStatus)
 	if urlStatus == "" {
@@ -36,9 +44,9 @@ func (ns NetSwitch) Sync() (err error) {
 	if err := dec.Decode(&mfi); err != nil {
 		return fmt.Errorf("json decode:", err)
 	}
-	if mfi.On() != ns.On {
+	if mfi.On() != ns.On() {
 		log.Printf("State for Machine %v must get synchronized", ns.MachineId)
-		if ns.On {
+		if ns.On() {
 			if err = ns.TurnOn(); err != nil {
 				return fmt.Errorf("turn on: %v", err)
 			}
@@ -51,7 +59,7 @@ func (ns NetSwitch) Sync() (err error) {
 	return
 }
 
-func (ns NetSwitch) TurnOn() (err error) {
+func (ns *NetSwitch) TurnOn() (err error) {
 	log.Printf("turn on %v", ns.UrlOn)
 	resp, err := http.Get(ns.UrlOn)
 	if err != nil {
@@ -63,7 +71,7 @@ func (ns NetSwitch) TurnOn() (err error) {
 	return
 }
 
-func (ns NetSwitch) TurnOff() (err error) {
+func (ns *NetSwitch) TurnOff() (err error) {
 	log.Printf("turn off %v", ns.UrlOff)
 	resp, err := http.Get(ns.UrlOff)
 	if err != nil {
@@ -76,10 +84,37 @@ func (ns NetSwitch) TurnOff() (err error) {
 }
 
 // UrlStatus is a really dirty function.  It's just here for the proof of concept.
-func (ns NetSwitch) UrlStatus() string {
+func (ns *NetSwitch) UrlStatus() string {
 	tmp := strings.Split(ns.UrlOn, "//")
 	host := strings.Split(tmp[1], "/")[0]
 	return "http://" + host + "/sensors/1"
+}
+
+func (ns *NetSwitch) MarshalJSON() ([]byte, error) {
+	return json.Marshal(map[string]interface{}{
+		"Id":        ns.Id,
+		"MachineId": ns.MachineId,
+		"UrlOn":     ns.UrlOn,
+		"UrlOff":    ns.UrlOff,
+		"on":        ns.on,
+	})
+}
+
+func (ns *NetSwitch) UnmarshalJSON(data []byte) (err error) {
+	var m map[string]interface{}
+	if err = json.Unmarshal(data, &m); err == nil {
+		ns.Id = int64(m["Id"].(float64))
+		ns.MachineId = int64(m["MachineId"].(float64))
+		ns.UrlOn = m["UrlOn"].(string)
+		ns.UrlOff = m["UrlOff"].(string)
+		ns.on, _ = m["on"].(bool)
+	}
+	return
+}
+
+func (ns *NetSwitch) String() string {
+	return fmt.Sprintf("(NetSwitch Id=%v MachineId=%v On=%v)",
+		ns.Id, ns.MachineId, ns.on)
 }
 
 //{"sensors":[{"output":1,"power":0.0,"energy":0.0,"enabled":0,"current":0.0,"voltage":233.546874046,"powerfactor":0.0,"relay":1,"lock":0}],"status":"success"}
