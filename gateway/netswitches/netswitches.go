@@ -21,20 +21,24 @@ type syncCommand struct {
 	Error     chan error
 }
 
-// Load netswitches from EASY LAB API and local state json.  client should
-// be logged in.
-func Load(client *http.Client) (nss *NetSwitches, err error) {
+func New() (nss *NetSwitches) {
 	nss = &NetSwitches{
 		syncCh: make(chan syncCommand, 10),
 	}
+	go nss.dispatchLoop()
+	return
+}
+
+// Load netswitches from EASY LAB API and local state json.  client should
+// be logged in.
+func (nss *NetSwitches) Load(client *http.Client) (err error) {
 	if err = nss.fetch(client); err != nil {
-		return nil, fmt.Errorf("fetch: %v", err)
+		return fmt.Errorf("fetch: %v", err)
 	}
 	if err = nss.loadOnOff(); err != nil {
-		return nil, fmt.Errorf("load on off: %v", err)
+		return fmt.Errorf("load on off: %v", err)
 	}
 	log.Printf("netswitches: %v", nss.nss)
-	go nss.dispatchLoop()
 	return
 }
 

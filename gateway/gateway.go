@@ -14,6 +14,7 @@ import (
 	"os/signal"
 	"strconv"
 	"strings"
+	"syscall"
 	"time"
 )
 
@@ -73,22 +74,9 @@ func Init(user, key string) (err error) {
 	if err := Login(client, user, key); err != nil {
 		return fmt.Errorf("login: %v", err)
 	}
-	if netSwitches, err = netswitches.Load(client); err != nil {
+	if err = netSwitches.Load(client); err != nil {
 		return fmt.Errorf("netswitches load: %v", err)
 	}
-
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
-	go func() {
-		for sig := range c {
-			log.Printf("received signal %v", sig)
-			// sig is a ^C, handle it
-			netSwitches.Save()
-			os.Exit(1)
-		}
-	}()
-
-	go PingLoop()
 
 	return
 }
@@ -130,9 +118,36 @@ func main() {
 	key := flag.String("key", "user", "key")
 	global.StateFilename = *flag.String("stateFile", "state.json", "switches are stateful but they loose state on reset")
 	flag.Parse()
+
+	netSwitches = netswitches.New()
+
 	if err := Init(*user, *key); err != nil {
 		log.Fatalf("Init: %v", err)
 	}
+
+	chTerm := make(chan os.Signal, 1)
+	signal.Notify(chTerm, syscall.SIGINT, syscall.SIGTERM)
+	go func() {
+		for sig := range chTerm {
+			log.Printf("received signal %v", sig)
+			// sig is a ^C, handle it
+			netSwitches.Save()
+			os.Exit(1)
+		}
+	}()
+
+	chHup := make(chan os.Signal, 1)
+	signal.Notify(chHup, syscall.SIGHUP)
+	go func() {
+		for sig := range chHup {
+			log.Printf("received signal %v", sig)
+			if err := Init(*user, *key); err != nil {
+				log.Fatalf("Init: %v", err)
+			}
+		}
+	}()
+
+	go PingLoop()
 
 	http.HandleFunc("/machines/", RunCommand)
 
