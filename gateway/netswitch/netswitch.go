@@ -19,7 +19,7 @@ type NetSwitch struct {
 	MachineId int64
 	UrlOn     string
 	UrlOff    string
-	on        bool
+	On        bool
 	syncCh    chan syncCommand
 }
 
@@ -37,10 +37,6 @@ func (ns *NetSwitch) loop() {
 			cmd.Error <- ns.sync(cmd)
 		}
 	}
-}
-
-func (ns *NetSwitch) On() bool {
-	return ns.on
 }
 
 func (ns *NetSwitch) sync(cmd syncCommand) (err error) {
@@ -62,7 +58,7 @@ func (ns *NetSwitch) sync(cmd syncCommand) (err error) {
 	if err := dec.Decode(&mfi); err != nil {
 		return fmt.Errorf("json decode:", err)
 	}
-	onDesired := ns.on
+	onDesired := ns.On
 	if cmd.SetOn != nil {
 		onDesired = *cmd.SetOn
 	}
@@ -109,7 +105,7 @@ func (ns *NetSwitch) turnOn() (err error) {
 	if resp.StatusCode != 200 {
 		return fmt.Errorf("unexpected status code: %v", resp.StatusCode)
 	}
-	ns.on = true
+	ns.On = true
 	return
 }
 
@@ -122,7 +118,7 @@ func (ns *NetSwitch) turnOff() (err error) {
 	if resp.StatusCode != 200 {
 		return fmt.Errorf("unexpected status code: %v", resp.StatusCode)
 	}
-	ns.on = false
+	ns.On = false
 	return
 }
 
@@ -133,31 +129,9 @@ func (ns *NetSwitch) UrlStatus() string {
 	return "http://" + host + "/sensors/1"
 }
 
-func (ns *NetSwitch) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]interface{}{
-		"Id":        ns.Id,
-		"MachineId": ns.MachineId,
-		"UrlOn":     ns.UrlOn,
-		"UrlOff":    ns.UrlOff,
-		"on":        ns.on,
-	})
-}
-
-func (ns *NetSwitch) UnmarshalJSON(data []byte) (err error) {
-	var m map[string]interface{}
-	if err = json.Unmarshal(data, &m); err == nil {
-		ns.Id = int64(m["Id"].(float64))
-		ns.MachineId = int64(m["MachineId"].(float64))
-		ns.UrlOn = m["UrlOn"].(string)
-		ns.UrlOff = m["UrlOff"].(string)
-		ns.on, _ = m["on"].(bool)
-	}
-	return
-}
-
 func (ns *NetSwitch) String() string {
 	return fmt.Sprintf("(NetSwitch Id=%v MachineId=%v On=%v)",
-		ns.Id, ns.MachineId, ns.on)
+		ns.Id, ns.MachineId, ns.On)
 }
 
 //{"sensors":[{"output":1,"power":0.0,"energy":0.0,"enabled":0,"current":0.0,"voltage":233.546874046,"powerfactor":0.0,"relay":1,"lock":0}],"status":"success"}

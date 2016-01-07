@@ -79,7 +79,7 @@ func (nss *NetSwitches) loadOnOff() (err error) {
 	for _, switchState := range switchStates {
 		mid := switchState.MachineId
 		if netswitch, ok := nss.nss[mid]; ok {
-			netswitch.SetOn(switchState.On())
+			netswitch.On = switchState.On
 		} else {
 			log.Printf("netswitch for machine id %v doesn't exist anymore", mid)
 		}
