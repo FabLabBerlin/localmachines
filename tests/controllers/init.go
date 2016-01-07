@@ -1,8 +1,8 @@
 package controllerTest
 
 import (
-	"github.com/kr15h/fabsmith/routers"
-	"github.com/kr15h/fabsmith/tests/setup"
+	"github.com/FabLabBerlin/localmachines/routers"
+	"github.com/FabLabBerlin/localmachines/tests/setup"
 )
 
 func init() {

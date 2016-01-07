@@ -1,7 +1,7 @@
 package modelTest
 
 import (
-	"github.com/kr15h/fabsmith/tests/setup"
+	"github.com/FabLabBerlin/localmachines/tests/setup"
 )
 
 func init() {

@@ -5,13 +5,13 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 
+	"github.com/FabLabBerlin/localmachines/database/connect"
+	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/invoices"
+	"github.com/FabLabBerlin/localmachines/models/products"
+	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	"github.com/kr15h/fabsmith/database/connect"
-	"github.com/kr15h/fabsmith/models"
-	"github.com/kr15h/fabsmith/models/invoices"
-	"github.com/kr15h/fabsmith/models/products"
-	"github.com/kr15h/fabsmith/models/purchases"
 )
 
 var dbModels = []Model{

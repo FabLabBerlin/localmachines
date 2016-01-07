@@ -2,11 +2,11 @@ package userctrls
 
 import (
 	"encoding/json"
+	"github.com/FabLabBerlin/localmachines/controllers"
+	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/invoices"
+	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/astaxie/beego"
-	"github.com/kr15h/fabsmith/controllers"
-	"github.com/kr15h/fabsmith/models"
-	"github.com/kr15h/fabsmith/models/invoices"
-	"github.com/kr15h/fabsmith/models/purchases"
 	"strconv"
 	"strings"
 	"time"

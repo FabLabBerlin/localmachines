@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kr15h/fabsmith/models"
-	"github.com/kr15h/fabsmith/tests/setup"
+	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/tests/setup"
 	. "github.com/smartystreets/goconvey/convey"
 )
 

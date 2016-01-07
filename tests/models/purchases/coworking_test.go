@@ -1,9 +1,9 @@
 package purchases
 
 import (
-	"github.com/kr15h/fabsmith/models/purchases"
-	"github.com/kr15h/fabsmith/tests/assert"
-	"github.com/kr15h/fabsmith/tests/setup"
+	"github.com/FabLabBerlin/localmachines/models/purchases"
+	"github.com/FabLabBerlin/localmachines/tests/assert"
+	"github.com/FabLabBerlin/localmachines/tests/setup"
 	. "github.com/smartystreets/goconvey/convey"
 	"testing"
 )

@@ -3,8 +3,8 @@ package purchases
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/models/products"
 	"github.com/astaxie/beego/orm"
-	"github.com/kr15h/fabsmith/models/products"
 	"time"
 )
 

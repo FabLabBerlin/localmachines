@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"encoding/json"
+	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/astaxie/beego"
-	"github.com/kr15h/fabsmith/models"
 )
 
 type ReservationRulesController struct {

@@ -2,9 +2,9 @@ package userctrls
 
 import (
 	"encoding/json"
+	"github.com/FabLabBerlin/localmachines/controllers"
+	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/astaxie/beego"
-	"github.com/kr15h/fabsmith/controllers"
-	"github.com/kr15h/fabsmith/models"
 )
 
 type UserPermissionsController struct {

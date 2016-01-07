@@ -3,8 +3,8 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/models/products"
 	"github.com/astaxie/beego"
-	"github.com/kr15h/fabsmith/models/products"
 )
 
 type ProductsController struct {
