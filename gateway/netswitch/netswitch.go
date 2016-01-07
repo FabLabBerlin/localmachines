@@ -1,9 +1,9 @@
 package netswitch
 
 import (
-	"../global"
 	"encoding/json"
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/gateway/global"
 	"log"
 	"net/http"
 	"strings"

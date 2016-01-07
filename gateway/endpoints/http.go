@@ -1,8 +1,8 @@
 package endpoints
 
 import (
-	"../netswitches"
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/gateway/netswitches"
 	"log"
 	"net/http"
 	"strconv"

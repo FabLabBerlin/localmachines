@@ -1,10 +1,10 @@
 package netswitches
 
 import (
-	"../global"
-	"../netswitch"
 	"encoding/json"
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/gateway/global"
+	"github.com/FabLabBerlin/localmachines/gateway/netswitch"
 	"log"
 	"net/http"
 	"os"
