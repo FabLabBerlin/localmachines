@@ -8,24 +8,14 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"sync"
 )
 
 type NetSwitches struct {
-	syncCh chan syncCommand
-	nss    map[int64]*netswitch.NetSwitch
-}
-
-type syncCommand struct {
-	MachineId *int64
-	Error     chan error
+	nss map[int64]*netswitch.NetSwitch
 }
 
 func New() (nss *NetSwitches) {
-	nss = &NetSwitches{
-		syncCh: make(chan syncCommand, 10),
-	}
-	go nss.dispatchLoop()
+	nss = &NetSwitches{}
 	return
 }
 
@@ -42,6 +32,10 @@ func (nss *NetSwitches) Load(client *http.Client) (err error) {
 	return
 }
 
+// fetch netswitch data from EASY LAB API.
+//
+// Each type NetSwitch runs its own dispatch loop.  Make sure no additional
+// loop is started.  TODO: get rid of removed NetSwitches
 func (nss *NetSwitches) fetch(client *http.Client) (err error) {
 	resp, err := client.Get(global.ApiUrl + "/netswitch")
 	if err != nil {
@@ -53,9 +47,17 @@ func (nss *NetSwitches) fetch(client *http.Client) (err error) {
 	if err := dec.Decode(&list); err != nil {
 		return fmt.Errorf("json decode: %v", err)
 	}
-	nss.nss = make(map[int64]*netswitch.NetSwitch)
+	if nss.nss == nil {
+		nss.nss = make(map[int64]*netswitch.NetSwitch)
+	}
 	for _, ns := range list {
-		nss.nss[ns.MachineId] = ns
+		if existing, exists := nss.nss[ns.MachineId]; exists {
+			existing.Id = ns.Id
+			existing.UrlOn = ns.UrlOn
+			existing.UrlOff = ns.UrlOff
+		} else {
+			nss.nss[ns.MachineId] = ns
+		}
 	}
 	return
 }
@@ -78,7 +80,6 @@ func (nss *NetSwitches) loadOnOff() (err error) {
 		mid := switchState.MachineId
 		if netswitch, ok := nss.nss[mid]; ok {
 			netswitch.SetOn(switchState.On())
-			nss.nss[mid] = netswitch
 		} else {
 			log.Printf("netswitch for machine id %v doesn't exist anymore", mid)
 		}
@@ -107,55 +108,34 @@ func (nss *NetSwitches) Save() {
 	}
 }
 
-func (nss *NetSwitches) SetOn(machineId int64, on bool) {
-	ns := nss.nss[machineId]
-	ns.SetOn(on)
-	nss.nss[machineId] = ns
+func (nss *NetSwitches) SetOn(machineId int64, on bool) (err error) {
+	ns, ok := nss.nss[machineId]
+	if !ok {
+		return fmt.Errorf("no netswitch for machine id %v present",
+			machineId)
+	}
+	return ns.SetOn(on)
 }
 
-func (nss *NetSwitches) Sync(machineId *int64) (err error) {
-	cmd := syncCommand{
-		MachineId: machineId,
-		Error:     make(chan error),
+func (nss *NetSwitches) Sync(machineId int64) (err error) {
+	ns, ok := nss.nss[machineId]
+	if !ok {
+		return fmt.Errorf("no netswitch for machine id %v present",
+			machineId)
 	}
-	nss.syncCh <- cmd
-	if err := <-cmd.Error; err != nil {
-		return fmt.Errorf("cmd dispatch: %v", err)
-	}
-	return
+	return ns.Sync()
 }
 
-func (nss *NetSwitches) dispatch(cmd syncCommand) (err error) {
-	wg := sync.WaitGroup{}
+func (nss *NetSwitches) SyncAll() error {
 	var errs error
 	for _, ns := range nss.nss {
-		if mid := cmd.MachineId; mid != nil && *mid != ns.MachineId {
-			continue
-		}
-		wg.Add(1)
-		go func(ns *netswitch.NetSwitch) {
-			if err := ns.Sync(); err != nil {
-				if errs == nil {
-					errs = err
-				} else {
-					errs = fmt.Errorf("%v; %v", errs, err)
-				}
+		if err := ns.Sync(); err != nil {
+			if errs == nil {
+				errs = err
+			} else {
+				errs = fmt.Errorf("%v; %v", errs, err)
 			}
-			wg.Done()
-		}(ns)
-	}
-	wg.Wait()
-	if errs != nil {
-		return fmt.Errorf("state watch: %v", errs)
-	}
-	return
-}
-
-func (nss *NetSwitches) dispatchLoop() {
-	for {
-		select {
-		case cmd := <-nss.syncCh:
-			cmd.Error <- nss.dispatch(cmd)
 		}
 	}
+	return errs
 }

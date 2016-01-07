@@ -59,7 +59,7 @@ func PingLoop() {
 	for {
 		select {
 		case <-time.After(global.STATE_SYNC_PERIOD):
-			if err := netSwitches.Sync(nil); err != nil {
+			if err := netSwitches.SyncAll(); err != nil {
 				log.Printf("state watch err: %v", err)
 			}
 		}
@@ -94,9 +94,8 @@ func runCommand(w http.ResponseWriter, r *http.Request) (err error) {
 
 	switch cmdStr {
 	case CMD_ON, CMD_OFF:
-		netSwitches.SetOn(id, cmdStr == CMD_ON)
 		for retries := 0; retries < global.MAX_SYNC_RETRIES; retries++ {
-			if err = netSwitches.Sync(&id); err == nil {
+			if err = netSwitches.SetOn(id, cmdStr == CMD_ON); err == nil {
 				if retries > 0 {
 					log.Printf("Synchronized netswitch after %v tries", retries+1)
 				}

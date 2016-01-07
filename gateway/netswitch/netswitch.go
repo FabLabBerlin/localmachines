@@ -9,23 +9,41 @@ import (
 	"strings"
 )
 
+type syncCommand struct {
+	SetOn *bool
+	Error chan error
+}
+
 type NetSwitch struct {
 	Id        int64
 	MachineId int64
 	UrlOn     string
 	UrlOff    string
 	on        bool
+	syncCh    chan syncCommand
+}
+
+func (ns *NetSwitch) assertLoopRunning() {
+	if ns.syncCh == nil {
+		ns.syncCh = make(chan syncCommand, 1)
+		go ns.loop()
+	}
+}
+
+func (ns *NetSwitch) loop() {
+	for {
+		select {
+		case cmd := <-ns.syncCh:
+			cmd.Error <- ns.sync(cmd)
+		}
+	}
 }
 
 func (ns *NetSwitch) On() bool {
 	return ns.on
 }
 
-func (ns *NetSwitch) SetOn(on bool) {
-	ns.on = on
-}
-
-func (ns *NetSwitch) Sync() (err error) {
+func (ns *NetSwitch) sync(cmd syncCommand) (err error) {
 	urlStatus := ns.UrlStatus()
 	log.Printf("urlStatus = %v", urlStatus)
 	if urlStatus == "" {
@@ -44,14 +62,18 @@ func (ns *NetSwitch) Sync() (err error) {
 	if err := dec.Decode(&mfi); err != nil {
 		return fmt.Errorf("json decode:", err)
 	}
-	if mfi.On() != ns.On() {
+	onDesired := ns.on
+	if cmd.SetOn != nil {
+		onDesired = *cmd.SetOn
+	}
+	if mfi.On() != onDesired {
 		log.Printf("State for Machine %v must get synchronized", ns.MachineId)
-		if ns.On() {
-			if err = ns.TurnOn(); err != nil {
+		if onDesired {
+			if err = ns.turnOn(); err != nil {
 				return fmt.Errorf("turn on: %v", err)
 			}
 		} else {
-			if err = ns.TurnOff(); err != nil {
+			if err = ns.turnOff(); err != nil {
 				return fmt.Errorf("turn off: %v", err)
 			}
 		}
@@ -59,7 +81,26 @@ func (ns *NetSwitch) Sync() (err error) {
 	return
 }
 
-func (ns *NetSwitch) TurnOn() (err error) {
+func (ns *NetSwitch) SetOn(on bool) (err error) {
+	ns.assertLoopRunning()
+	cmd := syncCommand{
+		SetOn: &on,
+		Error: make(chan error),
+	}
+	ns.syncCh <- cmd
+	return <-cmd.Error
+}
+
+func (ns *NetSwitch) Sync() (err error) {
+	ns.assertLoopRunning()
+	cmd := syncCommand{
+		Error: make(chan error),
+	}
+	ns.syncCh <- cmd
+	return <-cmd.Error
+}
+
+func (ns *NetSwitch) turnOn() (err error) {
 	log.Printf("turn on %v", ns.UrlOn)
 	resp, err := http.Get(ns.UrlOn)
 	if err != nil {
@@ -68,10 +109,11 @@ func (ns *NetSwitch) TurnOn() (err error) {
 	if resp.StatusCode != 200 {
 		return fmt.Errorf("unexpected status code: %v", resp.StatusCode)
 	}
+	ns.on = true
 	return
 }
 
-func (ns *NetSwitch) TurnOff() (err error) {
+func (ns *NetSwitch) turnOff() (err error) {
 	log.Printf("turn off %v", ns.UrlOff)
 	resp, err := http.Get(ns.UrlOff)
 	if err != nil {
@@ -80,6 +122,7 @@ func (ns *NetSwitch) TurnOff() (err error) {
 	if resp.StatusCode != 200 {
 		return fmt.Errorf("unexpected status code: %v", resp.StatusCode)
 	}
+	ns.on = false
 	return
 }
 
