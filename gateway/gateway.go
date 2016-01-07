@@ -1,6 +1,7 @@
 package main
 
 import (
+	"./endpoints"
 	"./global"
 	"./netswitches"
 	"encoding/json"
@@ -12,17 +13,8 @@ import (
 	"net/url"
 	"os"
 	"os/signal"
-	"strconv"
-	"strings"
 	"syscall"
 	"time"
-)
-
-type CommandType string
-
-const (
-	CMD_ON  = "on"
-	CMD_OFF = "off"
 )
 
 var netSwitches *netswitches.NetSwitches
@@ -81,48 +73,13 @@ func Init(user, key string) (err error) {
 	return
 }
 
-func runCommand(w http.ResponseWriter, r *http.Request) (err error) {
-	tmp := strings.Split(r.URL.Path, "/")
-	idStr := tmp[len(tmp)-2]
-	cmdStr := tmp[len(tmp)-1]
-	id, err := strconv.ParseInt(idStr, 10, 64)
-	if err != nil {
-		return fmt.Errorf("parse id: %v", err)
-	}
-	log.Printf("id: %v", id)
-	log.Printf("cmd: %v", cmdStr)
-
-	switch cmdStr {
-	case CMD_ON, CMD_OFF:
-		for retries := 0; retries < global.MAX_SYNC_RETRIES; retries++ {
-			if err = netSwitches.SetOn(id, cmdStr == CMD_ON); err == nil {
-				if retries > 0 {
-					log.Printf("Synchronized netswitch after %v tries", retries+1)
-				}
-				return
-			}
-		}
-		break
-	default:
-		return fmt.Errorf("unknown command '%v'", cmdStr)
-	}
-	return
-}
-
-func RunCommand(w http.ResponseWriter, r *http.Request) {
-	if err := runCommand(w, r); err == nil {
-		w.WriteHeader(200)
-	} else {
-		w.WriteHeader(500)
-		fmt.Fprintf(w, "Error: %v", err)
-		log.Printf("run command: %v", err)
-	}
-}
-
 func main() {
 	global.ApiUrl = *flag.String("apiUrl", "http://localhost:8080/api", "Url of the fabsmith api (http or https)")
 	user := flag.String("id", "user", "id")
 	key := flag.String("key", "user", "key")
+	global.XMPP.Server = *flag.String("xmppServer", "xmpp.example.com:443", "XMPP Server")
+	global.XMPP.User = *flag.String("xmppUser", "user", "XMPP Server Username")
+	global.XMPP.Password = *flag.String("xmppPass", "123456", "XMPP Server Password")
 	global.StateFilename = *flag.String("stateFile", "state.json", "switches are stateful but they loose state on reset")
 	flag.Parse()
 
@@ -157,9 +114,7 @@ func main() {
 
 	go PingLoop()
 
-	http.HandleFunc("/machines/", RunCommand)
+	httpServer := endpoints.NewHttpServer(netSwitches)
+	httpServer.Run()
 
-	if err := http.ListenAndServe(":7070", nil); err != nil {
-		netSwitches.Save()
-	}
 }

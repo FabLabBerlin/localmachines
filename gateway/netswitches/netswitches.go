@@ -109,6 +109,18 @@ func (nss *NetSwitches) Save() {
 }
 
 func (nss *NetSwitches) SetOn(machineId int64, on bool) (err error) {
+	for retries := 0; retries < global.MAX_SYNC_RETRIES; retries++ {
+		if err = nss.SetOn(machineId, on); err == nil {
+			if retries > 0 {
+				log.Printf("Synchronized netswitch after %v tries", retries+1)
+			}
+			return
+		}
+	}
+	return
+}
+
+func (nss *NetSwitches) setOn(machineId int64, on bool) (err error) {
 	ns, ok := nss.nss[machineId]
 	if !ok {
 		return fmt.Errorf("no netswitch for machine id %v present",

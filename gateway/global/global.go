@@ -12,6 +12,11 @@ const (
 var (
 	ApiUrl        string
 	StateFilename string
+	XMPP          struct {
+		Server   string
+		User     string
+		Password string
+	}
 )
 
 func init() {
