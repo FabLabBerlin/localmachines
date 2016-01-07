@@ -1,10 +1,10 @@
 package products
 
 import (
-	"github.com/kr15h/fabsmith/models"
-	"github.com/kr15h/fabsmith/models/products"
-	"github.com/kr15h/fabsmith/tests/assert"
-	"github.com/kr15h/fabsmith/tests/setup"
+	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/products"
+	"github.com/FabLabBerlin/localmachines/tests/assert"
+	"github.com/FabLabBerlin/localmachines/tests/setup"
 	. "github.com/smartystreets/goconvey/convey"
 	"testing"
 )

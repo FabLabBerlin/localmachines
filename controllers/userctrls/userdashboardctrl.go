@@ -2,11 +2,11 @@ package userctrls
 
 import (
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/controllers"
+	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/products"
+	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/astaxie/beego"
-	"github.com/kr15h/fabsmith/controllers"
-	"github.com/kr15h/fabsmith/models"
-	"github.com/kr15h/fabsmith/models/products"
-	"github.com/kr15h/fabsmith/models/purchases"
 )
 
 type UserDashboardController struct {

@@ -5,9 +5,9 @@
 package routers
 
 import (
+	"github.com/FabLabBerlin/localmachines/controllers"
+	"github.com/FabLabBerlin/localmachines/controllers/userctrls"
 	"github.com/astaxie/beego"
-	"github.com/kr15h/fabsmith/controllers"
-	"github.com/kr15h/fabsmith/controllers/userctrls"
 )
 
 func init() {

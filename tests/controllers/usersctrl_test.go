@@ -8,10 +8,10 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/FabLabBerlin/localmachines/models"
+	_ "github.com/FabLabBerlin/localmachines/routers"
+	"github.com/FabLabBerlin/localmachines/tests/setup"
 	"github.com/astaxie/beego"
-	"github.com/kr15h/fabsmith/models"
-	_ "github.com/kr15h/fabsmith/routers"
-	"github.com/kr15h/fabsmith/tests/setup"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
