@@ -1,9 +1,9 @@
 package controllers
 
 import (
+	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/astaxie/beego"
-	"github.com/kr15h/fabsmith/models"
-	"github.com/kr15h/fabsmith/models/purchases"
 	"time"
 )
 

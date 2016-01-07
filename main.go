@@ -2,14 +2,14 @@ package main
 
 import (
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/database/connect"
+	_ "github.com/FabLabBerlin/localmachines/docs"
+	"github.com/FabLabBerlin/localmachines/models"
+	_ "github.com/FabLabBerlin/localmachines/routers"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
 	"github.com/astaxie/beego/toolbox"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/kr15h/fabsmith/database/connect"
-	_ "github.com/kr15h/fabsmith/docs"
-	"github.com/kr15h/fabsmith/models"
-	_ "github.com/kr15h/fabsmith/routers"
 )
 
 func main() {

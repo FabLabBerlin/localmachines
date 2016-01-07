@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/astaxie/beego"
-	"github.com/kr15h/fabsmith/models/invoices"
 	"time"
 )
 

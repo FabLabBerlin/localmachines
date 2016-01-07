@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/kr15h/fabsmith/models"
+	"github.com/FabLabBerlin/localmachines/models"
 	. "github.com/smartystreets/goconvey/convey"
 )
 

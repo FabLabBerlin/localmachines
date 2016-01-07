@@ -3,8 +3,8 @@ package controllers
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/astaxie/beego"
-	"github.com/kr15h/fabsmith/models/purchases"
 	"io/ioutil"
 )
 
