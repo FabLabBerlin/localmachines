@@ -13,17 +13,18 @@ type Xmpp struct {
 	talk *xmpp.Client
 }
 
-func NewXmpp() (x *Xmpp, err error) {
+func NewXmpp(server, user, pass string) (x *Xmpp, err error) {
 	x = &Xmpp{}
 
 	xmpp.DefaultConfig = tls.Config{
-		ServerName:         serverName(*global.XMPP.Server),
+		ServerName:         serverName(server),
 		InsecureSkipVerify: global.XMPP_TLS_INSECURE_SKIP_VERIFY,
 	}
 
-	options := xmpp.Options{Host: *global.XMPP.Server,
-		User:          *global.XMPP.User,
-		Password:      *global.XMPP.Password,
+	options := xmpp.Options{
+		Host:          server,
+		User:          user,
+		Password:      pass,
 		NoTLS:         global.XMPP_NO_TLS,
 		Debug:         global.XMPP_DEBUG,
 		Session:       global.XMPP_USE_SERVER_SESSION,

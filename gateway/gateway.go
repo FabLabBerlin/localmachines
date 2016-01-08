@@ -77,9 +77,9 @@ func main() {
 	global.ApiUrl = *flag.String("apiUrl", "http://localhost:8080/api", "Url of the fabsmith api (http or https)")
 	user := flag.String("id", "user", "id")
 	key := flag.String("key", "user", "key")
-	global.XMPP.Server = flag.String("xmppServer", "xmpp.example.com:443", "XMPP Server")
-	global.XMPP.User = flag.String("xmppUser", "user", "XMPP Server Username")
-	global.XMPP.Password = flag.String("xmppPass", "123456", "XMPP Server Password")
+	xmppServer := flag.String("xmppServer", "xmpp.example.com:443", "XMPP Server")
+	xmppUser := flag.String("xmppUser", "user", "XMPP Server Username")
+	xmppPassword := flag.String("xmppPass", "123456", "XMPP Server Password")
 	global.StateFilename = *flag.String("stateFile", "state.json", "switches are stateful but they loose state on reset")
 	flag.Parse()
 
@@ -114,12 +114,13 @@ func main() {
 
 	go PingLoop()
 
-	xmpp, err := endpoints.NewXmpp()
+	xmpp, err := endpoints.NewXmpp(*xmppServer, *xmppUser, *xmppPassword)
 	if err != nil {
 		log.Fatalf("xmpp: %v", err)
 	}
 	xmpp.Run()
-	xmpp.Send(*global.XMPP.User, "hello xmpp")
+	xmpp.Send(*xmppUser, "Hello there!")
+	xmpp.Send(*xmppUser, "Send me messages like: 2 on")
 
 	httpServer := endpoints.NewHttpServer(netSwitches)
 	httpServer.Run()
