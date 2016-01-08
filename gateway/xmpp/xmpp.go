@@ -10,11 +10,14 @@ import (
 )
 
 type Xmpp struct {
+	ch   chan string
 	talk *xmpp.Client
 }
 
 func NewXmpp(server, user, pass string) (x *Xmpp, err error) {
-	x = &Xmpp{}
+	x = &Xmpp{
+		ch: make(chan string, 10),
+	}
 
 	xmpp.DefaultConfig = tls.Config{
 		ServerName:         serverName(server),
@@ -56,6 +59,7 @@ func (x *Xmpp) Run() {
 			switch v := chat.(type) {
 			case xmpp.Chat:
 				fmt.Println(v.Remote, v.Text)
+				x.ch <- v.Text
 			case xmpp.Presence:
 				if global.XMPP_DEBUG {
 					fmt.Println(v.From, v.Show)
@@ -63,6 +67,10 @@ func (x *Xmpp) Run() {
 			}
 		}
 	}()
+}
+
+func (x *Xmpp) Recv() <-chan string {
+	return x.ch
 }
 
 func (x *Xmpp) Send(remote, text string) (err error) {
