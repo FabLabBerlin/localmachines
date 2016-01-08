@@ -96,14 +96,6 @@
         </label>
       </div>
     </div><!-- -->
-
-    <div class="col-sm-3">
-      <div class="form-group">
-        <label>
-          <input type="checkbox" ng-model="machine.Xmpp"> Use XMPP (EXPERIMENTAL!)
-        </label>
-      </div>
-    </div><!-- -->
   </div><!-- /.row -->
 
   <!-- NetSwitch -->
@@ -168,6 +160,19 @@
     </div>
 
   </div><!-- /.row -->
+
+  <div class="row">
+    <div class="col-sm-3">
+      <div class="form-group">
+        <label>
+          <input type="checkbox"
+                 ng-model="netSwitchMapping.Xmpp"
+                 ng-change="netSwitchMappingChanged=true">
+          Use XMPP (EXPERIMENTAL!)
+        </label>
+      </div>
+    </div><!-- -->
+  </div>
 
   <div class="row">
     <div class="col-sm-6">

@@ -18,10 +18,10 @@ func init() {
 
 // Run the migrations
 func (m *MachineXmpp_20160108_113817) Up() {
-	m.Sql("ALTER TABLE machines ADD COLUMN xmpp tinyint(1)")
+	m.Sql("ALTER TABLE netswitch ADD COLUMN xmpp tinyint(1)")
 }
 
 // Reverse the migrations
 func (m *MachineXmpp_20160108_113817) Down() {
-	m.Sql("ALTER TABLE machines DROP COLUMN xmpp")
+	m.Sql("ALTER TABLE netswitch DROP COLUMN xmpp")
 }

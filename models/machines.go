@@ -49,7 +49,6 @@ type Machine struct {
 	UnderMaintenance       bool
 	ReservationPriceStart  *float64 // Why pointers?
 	ReservationPriceHourly *float64
-	Xmpp                   bool
 }
 
 // Define custom table name as for SQL table with a name "machines"

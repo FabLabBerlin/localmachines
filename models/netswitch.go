@@ -14,6 +14,7 @@ type NetSwitchMapping struct {
 	MachineId int64
 	UrlOn     string `orm:"size(255)"`
 	UrlOff    string `orm:"size(255)"`
+	Xmpp      bool
 }
 
 func init() {
