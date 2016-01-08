@@ -2,6 +2,7 @@ package xmpp
 
 import (
 	"crypto/tls"
+	"encoding/json"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/gateway/global"
 	"github.com/mattn/go-xmpp"
@@ -10,13 +11,25 @@ import (
 )
 
 type Xmpp struct {
-	ch   chan string
+	ch   chan Message
 	talk *xmpp.Client
+}
+
+type Message struct {
+	Remote string
+	Data   Data
+}
+
+type Data struct {
+	Command    string
+	MachineId  int64
+	TrackingId int64
+	Error      bool
 }
 
 func NewXmpp(server, user, pass string) (x *Xmpp, err error) {
 	x = &Xmpp{
-		ch: make(chan string, 10),
+		ch: make(chan Message, 10),
 	}
 
 	xmpp.DefaultConfig = tls.Config{
@@ -59,7 +72,19 @@ func (x *Xmpp) Run() {
 			switch v := chat.(type) {
 			case xmpp.Chat:
 				fmt.Println(v.Remote, v.Text)
-				x.ch <- v.Text
+
+				var data Data
+				err := json.Unmarshal([]byte(v.Text), &data)
+				if err != nil {
+					log.Printf("xmpp: %v", err)
+					log.Printf("remote was: '%v'", v.Remote)
+					log.Printf("text was: '%v'", v.Text)
+				} else {
+					x.ch <- Message{
+						Remote: v.Remote,
+						Data:   data,
+					}
+				}
 			case xmpp.Presence:
 				if global.XMPP_DEBUG {
 					fmt.Println(v.From, v.Show)
@@ -69,15 +94,19 @@ func (x *Xmpp) Run() {
 	}()
 }
 
-func (x *Xmpp) Recv() <-chan string {
+func (x *Xmpp) Recv() <-chan Message {
 	return x.ch
 }
 
-func (x *Xmpp) Send(remote, text string) (err error) {
+func (x *Xmpp) Send(msg Message) (err error) {
+	buf, err := json.Marshal(msg.Data)
+	if err != nil {
+		return
+	}
 	_, err = x.talk.Send(xmpp.Chat{
-		Remote: remote,
+		Remote: msg.Remote,
 		Type:   "chat",
-		Text:   text,
+		Text:   string(buf),
 	})
 	return
 }

@@ -5,8 +5,6 @@ import (
 	"github.com/FabLabBerlin/localmachines/gateway/netswitches"
 	"github.com/FabLabBerlin/localmachines/gateway/xmpp"
 	"log"
-	"strconv"
-	"strings"
 )
 
 type Xmpp struct {
@@ -20,10 +18,6 @@ func NewXmpp(ns *netswitches.NetSwitches, server, user, pw string) (*Xmpp, error
 		ns: ns,
 	}
 	x.x, err = xmpp.NewXmpp(server, user, pw)
-	if err == nil {
-		x.x.Send(user, "Hello there!")
-		x.x.Send(user, "Send me messages like: 2 on")
-	}
 	return x, err
 }
 
@@ -33,8 +27,17 @@ func (x *Xmpp) Run() {
 		for {
 			select {
 			case msg := <-x.x.Recv():
-				if err := x.dispatch(msg); err != nil {
+				err := x.dispatch(msg)
+				if err != nil {
 					log.Printf("xmpp dispatch: %v", err)
+				}
+				response := xmpp.Message{
+					Remote: msg.Remote,
+					Data:   msg.Data,
+				}
+				response.Data.Error = err != nil
+				if err := x.x.Send(response); err != nil {
+					log.Printf("xmpp: failed to send response")
 				}
 			}
 		}
@@ -42,16 +45,11 @@ func (x *Xmpp) Run() {
 	x.x.Run()
 }
 
-func (x *Xmpp) dispatch(msg string) (err error) {
+func (x *Xmpp) dispatch(msg xmpp.Message) (err error) {
 	log.Printf("dispatch(%v)", msg)
-	tmp := strings.Split(msg, " ")
-	machineId, err := strconv.ParseInt(tmp[0], 10, 64)
-	if err != nil {
-		return fmt.Errorf("parse id: %v", err)
-	}
-	cmd := tmp[1]
+	cmd := msg.Data.Command
 	if cmd == "on" || cmd == "off" {
-		return x.ns.SetOn(machineId, cmd == "on")
+		return x.ns.SetOn(msg.Data.MachineId, cmd == "on")
 	}
 	return fmt.Errorf("invalid cmd: %v", cmd)
 }

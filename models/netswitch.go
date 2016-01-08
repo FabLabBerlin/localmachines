@@ -8,12 +8,30 @@ import (
 	"github.com/astaxie/beego/orm"
 	"net/http"
 	"regexp"
+	"sync"
+	"time"
 )
 
+type TrackingId int64
+
 var (
+	mu          sync.Mutex
+	responses   map[TrackingId]chan xmpp.Message
+	trackingIds chan TrackingId
 	xmppClient  *xmpp.Xmpp
 	xmppGateway string
 )
+
+func init() {
+	go func() {
+		var trackingId int64 = 0
+		trackingIds = make(chan TrackingId)
+		for {
+			trackingId++
+			trackingIds <- TrackingId(trackingId)
+		}
+	}()
+}
 
 func init() {
 	server := beego.AppConfig.String("XmppServer")
@@ -26,6 +44,21 @@ func init() {
 		panic(fmt.Sprintf("init xmpp: %v", err))
 	}
 	xmppClient.Run()
+}
+
+func init() {
+	responses = make(map[TrackingId]chan xmpp.Message)
+	go func() {
+		for {
+			select {
+			case resp := <-xmppClient.Recv():
+				mu.Lock()
+				responses[TrackingId(resp.Data.TrackingId)] <- resp
+				mu.Unlock()
+				break
+			}
+		}
+	}()
 }
 
 type ON_OR_OFF string
@@ -155,6 +188,37 @@ func (this *NetSwitchMapping) turnHttp(onOrOff ON_OR_OFF) (err error) {
 }
 
 func (this *NetSwitchMapping) turnXmpp(onOrOff ON_OR_OFF) (err error) {
-	msg := fmt.Sprintf("%v %v", this.MachineId, onOrOff)
-	return xmppClient.Send(xmppGateway, msg)
+	mu.Lock()
+	trackingId := <-trackingIds
+	responses[trackingId] = make(chan xmpp.Message)
+	respCh := responses[trackingId]
+	mu.Unlock()
+	err = xmppClient.Send(xmpp.Message{
+		Remote: xmppGateway,
+		Data: xmpp.Data{
+			Command:    string(onOrOff),
+			MachineId:  this.MachineId,
+			TrackingId: int64(trackingId),
+		},
+	})
+	if err != nil {
+		return fmt.Errorf("send: %v", err)
+	}
+	select {
+	case resp := <-respCh:
+		if resp.Data.Error {
+			err = fmt.Errorf("some error occurred")
+		} else {
+			err = nil
+		}
+		break
+	case <-time.After(20 * time.Second):
+		err = fmt.Errorf("timeout")
+	}
+
+	mu.Lock()
+	delete(responses, trackingId)
+	mu.Unlock()
+
+	return
 }
