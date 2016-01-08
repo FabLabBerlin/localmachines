@@ -1,10 +1,13 @@
 package endpoints
 
 import (
+	"crypto/rand"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/gateway/netswitches"
 	"github.com/FabLabBerlin/localmachines/gateway/xmpp"
 	"log"
+	"math/big"
+	"time"
 )
 
 type Xmpp struct {
@@ -23,6 +26,19 @@ func NewXmpp(ns *netswitches.NetSwitches, server, user, pw string) (*Xmpp, error
 
 func (x *Xmpp) Run() {
 	log.Printf("endpoints: xmpp: Run()")
+	go func() {
+		for {
+			log.Printf("pinnnggggg...")
+			r, err := rand.Int(rand.Reader, big.NewInt(4))
+			if err == nil {
+				n := 1 + r.Int64()
+				<-time.After(time.Duration(n) * time.Second)
+				x.x.Ping()
+			} else {
+				log.Printf("endpoints: xmpp: rand int: %v", err)
+			}
+		}
+	}()
 	go func() {
 		for {
 			select {

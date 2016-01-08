@@ -11,8 +11,10 @@ import (
 )
 
 type Xmpp struct {
-	ch   chan Message
-	talk *xmpp.Client
+	ch     chan Message
+	talk   *xmpp.Client
+	user   string
+	server string
 }
 
 type Message struct {
@@ -29,7 +31,9 @@ type Data struct {
 
 func NewXmpp(server, user, pass string) (x *Xmpp, err error) {
 	x = &Xmpp{
-		ch: make(chan Message, 10),
+		ch:     make(chan Message, 10),
+		user:   user,
+		server: server,
 	}
 
 	xmpp.DefaultConfig = tls.Config{
@@ -92,6 +96,10 @@ func (x *Xmpp) Run() {
 			}
 		}
 	}()
+}
+
+func (x *Xmpp) Ping() {
+	x.talk.PingC2S(x.user, x.server)
 }
 
 func (x *Xmpp) Recv() <-chan Message {
