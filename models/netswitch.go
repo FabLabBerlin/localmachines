@@ -3,10 +3,36 @@ package models
 import (
 	"errors"
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/gateway/xmpp"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"net/http"
 	"regexp"
+)
+
+var (
+	xmppClient  *xmpp.Xmpp
+	xmppGateway string
+)
+
+func init() {
+	server := beego.AppConfig.String("XmppServer")
+	user := beego.AppConfig.String("XmppUser")
+	pass := beego.AppConfig.String("XmppPass")
+	xmppGateway = beego.AppConfig.String("XmppGateway")
+	var err error
+	xmppClient, err = xmpp.NewXmpp(server, user, pass)
+	if err != nil {
+		panic(fmt.Sprintf("init xmpp: %v", err))
+	}
+	xmppClient.Run()
+}
+
+type ON_OR_OFF string
+
+const (
+	ON  ON_OR_OFF = "on"
+	OFF ON_OR_OFF = "off"
 )
 
 type NetSwitchMapping struct {
@@ -83,15 +109,36 @@ func (this *NetSwitchMapping) Update() (err error) {
 }
 
 func (this *NetSwitchMapping) On() error {
-	beego.Info("Attempt to turn NetSwitch on, machine ID", this.MachineId)
-	resp, err := http.Get(this.UrlOn)
+	return this.turn(ON)
+}
+
+func (this *NetSwitchMapping) Off() error {
+	return this.turn(OFF)
+}
+
+func (this *NetSwitchMapping) turn(onOrOff ON_OR_OFF) (err error) {
+	beego.Info("Attempt to turn NetSwitch ", onOrOff, ", machine ID", this.MachineId)
+	if this.Xmpp {
+		return this.turnXmpp(onOrOff)
+	} else {
+		return this.turnHttp(onOrOff)
+	}
+}
+
+func (this *NetSwitchMapping) turnHttp(onOrOff ON_OR_OFF) (err error) {
+	var resp *http.Response
+
+	if onOrOff == ON {
+		resp, err = http.Get(this.UrlOn)
+	} else {
+		resp, err = http.Get(this.UrlOff)
+	}
 
 	if err != nil {
 		// Work around custom HTTP status code the switch returns: "AhmaSwitch"
 		matched, _ := regexp.MatchString("malformed HTTP status code", err.Error())
 		if !matched {
-			beego.Error("Failed to send NetSwitch On URL request:", err)
-			return fmt.Errorf("Failed to send NetSwitch On request: %v", err)
+			return fmt.Errorf("Failed to send NetSwitch %v request: %v", onOrOff, err)
 		}
 	}
 
@@ -107,27 +154,7 @@ func (this *NetSwitchMapping) On() error {
 	return nil
 }
 
-func (this *NetSwitchMapping) Off() error {
-	beego.Info("Attempt to turn NetSwitch off, machine ID", this.MachineId)
-	resp, err := http.Get(this.UrlOff)
-
-	if err != nil {
-		// Work around custom HTTP status code the switch returns: "AhmaSwitch"
-		matched, _ := regexp.MatchString("malformed HTTP status code", err.Error())
-		if !matched {
-			beego.Error("Failed to send NetSwitch Off URL request:", err)
-			return fmt.Errorf("Failed to send NetSwitch Off request: %v", err)
-		}
-	}
-
-	beego.Trace(resp)
-	if resp != nil {
-		defer resp.Body.Close()
-		if resp.StatusCode != 200 {
-			beego.Error("Bad Status Code:", resp.StatusCode)
-			return errors.New("Bad Status Code")
-		}
-	}
-
-	return nil
+func (this *NetSwitchMapping) turnXmpp(onOrOff ON_OR_OFF) (err error) {
+	msg := fmt.Sprintf("%v %v", this.MachineId, onOrOff)
+	return xmppClient.Send(xmppGateway, msg)
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/gateway/endpoints"
 	"github.com/FabLabBerlin/localmachines/gateway/global"
 	"github.com/FabLabBerlin/localmachines/gateway/netswitches"
+	"github.com/FabLabBerlin/localmachines/gateway/xmpp"
 	"log"
 	"net/http"
 	"net/http/cookiejar"
@@ -114,7 +115,7 @@ func main() {
 
 	go PingLoop()
 
-	xmpp, err := endpoints.NewXmpp(*xmppServer, *xmppUser, *xmppPassword)
+	xmpp, err := xmpp.NewXmpp(*xmppServer, *xmppUser, *xmppPassword)
 	if err != nil {
 		log.Fatalf("xmpp: %v", err)
 	}

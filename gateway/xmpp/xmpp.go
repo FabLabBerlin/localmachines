@@ -1,4 +1,4 @@
-package endpoints
+package xmpp
 
 import (
 	"crypto/tls"
