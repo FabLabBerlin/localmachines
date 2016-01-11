@@ -27,7 +27,7 @@ var ReservationActions = {
       var userIds = [];
 
       _.each(reservations, function(reservation) {
-        var twoDays = 2 * 86400
+        var twoDays = 2 * 86400;
         var timeStart = moment(reservation.TimeStart).unix() - twoDays;
         var timeEnd = moment(reservation.TimeEnd).unix() + twoDays;
         if (timeStart <= t && t <= timeEnd) {

@@ -24,36 +24,35 @@ var (
 )
 
 func init() {
-	server := beego.AppConfig.String("XmppServer")
-	user := beego.AppConfig.String("XmppUser")
-	pass := beego.AppConfig.String("XmppPass")
-	xmppGateway = beego.AppConfig.String("XmppGateway")
-	var err error
-	xmppClient, err = xmpp.NewXmpp(server, user, pass)
-	if err != nil {
-		panic(fmt.Sprintf("init xmpp: %v", err))
-	}
-	xmppClient.Run()
-}
-
-func init() {
-	responses = make(map[string]chan xmpp.Message)
-	go func() {
-		for {
-			select {
-			case resp := <-xmppClient.Recv():
-				mu.Lock()
-				tid := resp.Data.TrackingId
-				select {
-				case responses[tid] <- resp:
-				default:
-					beego.Error("package already received: tid:", tid)
-				}
-				mu.Unlock()
-				break
-			}
+	if server := beego.AppConfig.String("XmppServer"); server != "" {
+		user := beego.AppConfig.String("XmppUser")
+		pass := beego.AppConfig.String("XmppPass")
+		xmppGateway = beego.AppConfig.String("XmppGateway")
+		var err error
+		xmppClient, err = xmpp.NewXmpp(server, user, pass)
+		if err != nil {
+			panic(fmt.Sprintf("init xmpp: %v", err))
 		}
-	}()
+		xmppClient.Run()
+
+		responses = make(map[string]chan xmpp.Message)
+		go func() {
+			for {
+				select {
+				case resp := <-xmppClient.Recv():
+					mu.Lock()
+					tid := resp.Data.TrackingId
+					select {
+					case responses[tid] <- resp:
+					default:
+						beego.Error("package already received: tid:", tid)
+					}
+					mu.Unlock()
+					break
+				}
+			}
+		}()
+	}
 }
 
 type ON_OR_OFF string
@@ -147,7 +146,11 @@ func (this *NetSwitchMapping) Off() error {
 func (this *NetSwitchMapping) turn(onOrOff ON_OR_OFF) (err error) {
 	beego.Info("Attempt to turn NetSwitch ", onOrOff, ", machine ID", this.MachineId)
 	if this.Xmpp {
-		return this.turnXmpp(onOrOff)
+		if xmppClient != nil {
+			return this.turnXmpp(onOrOff)
+		} else {
+			return fmt.Errorf("xmpp client is nil!")
+		}
 	} else {
 		return this.turnHttp(onOrOff)
 	}
