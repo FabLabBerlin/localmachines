@@ -8,10 +8,12 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sync"
 )
 
 type NetSwitches struct {
-	nss map[int64]*netswitch.NetSwitch
+	stateFileLock sync.Mutex
+	nss           map[int64]*netswitch.NetSwitch
 }
 
 func New() (nss *NetSwitches) {
@@ -63,6 +65,9 @@ func (nss *NetSwitches) fetch(client *http.Client) (err error) {
 }
 
 func (nss *NetSwitches) loadOnOff() (err error) {
+	nss.stateFileLock.Lock()
+	defer nss.stateFileLock.Unlock()
+
 	f, err := os.Open(global.Cfg.Main.StateFile)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -88,6 +93,9 @@ func (nss *NetSwitches) loadOnOff() (err error) {
 }
 
 func (nss *NetSwitches) save(filename string) (err error) {
+	nss.stateFileLock.Lock()
+	defer nss.stateFileLock.Unlock()
+
 	f, err := os.Create(filename)
 	if err != nil {
 		return
