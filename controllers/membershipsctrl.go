@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"encoding/json"
+	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/astaxie/beego"
-	"github.com/kr15h/fabsmith/models"
 )
 
 type MembershipsController struct {
@@ -23,14 +23,7 @@ func (this *MembershipsController) Prepare() {
 // @router / [get]
 func (this *MembershipsController) GetAll() {
 
-	// Check if logged in
-	uid := this.GetSession(SESSION_FIELD_NAME_USER_ID)
-	if uid == nil {
-		beego.Info("Attempt to get all users while not logged in")
-		this.CustomAbort(401, "Not logged in")
-	}
-
-	if !this.IsAdmin(uid.(int64)) && !this.IsStaff(uid.(int64)) {
+	if !this.IsAdmin() && !this.IsStaff() {
 		beego.Error("Not authorized to get all memberships")
 		this.CustomAbort(401, "Not authorized")
 	}

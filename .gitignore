@@ -10,6 +10,7 @@ files/*
 !files/favicon.*
 !files/apple-touch-icon.png
 !files/README.md
+gateway/conf/gateway.conf
 cert/
 tests/conf/app.conf
 tests/controllers/conf/app.conf

@@ -3,10 +3,63 @@ package models
 import (
 	"errors"
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/gateway/xmpp"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"github.com/satori/go.uuid"
 	"net/http"
 	"regexp"
+	"sync"
+	"time"
+)
+
+var (
+	mu sync.Mutex
+	// responses are matched here to the RPC requests.  We don't want to have
+	// much blocking here, therefore the channels are buffered (capacity 1) and
+	// all reads/writes must happen asynchronously.
+	responses   map[string]chan xmpp.Message
+	xmppClient  *xmpp.Xmpp
+	xmppGateway string
+)
+
+func init() {
+	if server := beego.AppConfig.String("XmppServer"); server != "" {
+		user := beego.AppConfig.String("XmppUser")
+		pass := beego.AppConfig.String("XmppPass")
+		xmppGateway = beego.AppConfig.String("XmppGateway")
+		var err error
+		xmppClient, err = xmpp.NewXmpp(server, user, pass)
+		if err != nil {
+			panic(fmt.Sprintf("init xmpp: %v", err))
+		}
+		xmppClient.Run()
+
+		responses = make(map[string]chan xmpp.Message)
+		go func() {
+			for {
+				select {
+				case resp := <-xmppClient.Recv():
+					mu.Lock()
+					tid := resp.Data.TrackingId
+					select {
+					case responses[tid] <- resp:
+					default:
+						beego.Error("package already received: tid:", tid)
+					}
+					mu.Unlock()
+					break
+				}
+			}
+		}()
+	}
+}
+
+type ON_OR_OFF string
+
+const (
+	ON  ON_OR_OFF = "on"
+	OFF ON_OR_OFF = "off"
 )
 
 type NetSwitchMapping struct {
@@ -14,14 +67,21 @@ type NetSwitchMapping struct {
 	MachineId int64
 	UrlOn     string `orm:"size(255)"`
 	UrlOff    string `orm:"size(255)"`
+	Xmpp      bool
 }
 
 func init() {
 	orm.RegisterModel(new(NetSwitchMapping))
 }
 
-func (u *NetSwitchMapping) TableName() string {
+func (m *NetSwitchMapping) TableName() string {
 	return "netswitch"
+}
+
+func GetAllNetSwitchMapping() (ms []*NetSwitchMapping, err error) {
+	o := orm.NewOrm()
+	_, err = o.QueryTable(new(NetSwitchMapping).TableName()).All(&ms)
+	return
 }
 
 func CreateNetSwitchMapping(machineId int64) (int64, error) {
@@ -71,20 +131,50 @@ func DeleteNetSwitchMapping(machineId int64) error {
 
 func (this *NetSwitchMapping) Update() (err error) {
 	o := orm.NewOrm()
-	_, err = o.Update(this)
+	if _, err = o.Update(this); err != nil {
+		return fmt.Errorf("update: %v", err)
+	}
+	if err = this.sendXmppCommand("reinit", 0); err != nil {
+		return fmt.Errorf("send xmpp cmd: %v", err)
+	}
 	return
 }
 
 func (this *NetSwitchMapping) On() error {
-	beego.Info("Attempt to turn NetSwitch on, machine ID", this.MachineId)
-	resp, err := http.Get(this.UrlOn)
+	return this.turn(ON)
+}
+
+func (this *NetSwitchMapping) Off() error {
+	return this.turn(OFF)
+}
+
+func (this *NetSwitchMapping) turn(onOrOff ON_OR_OFF) (err error) {
+	beego.Info("Attempt to turn NetSwitch ", onOrOff, ", machine ID", this.MachineId)
+	if this.Xmpp {
+		if xmppClient != nil {
+			return this.turnXmpp(onOrOff)
+		} else {
+			return fmt.Errorf("xmpp client is nil!")
+		}
+	} else {
+		return this.turnHttp(onOrOff)
+	}
+}
+
+func (this *NetSwitchMapping) turnHttp(onOrOff ON_OR_OFF) (err error) {
+	var resp *http.Response
+
+	if onOrOff == ON {
+		resp, err = http.Get(this.UrlOn)
+	} else {
+		resp, err = http.Get(this.UrlOff)
+	}
 
 	if err != nil {
 		// Work around custom HTTP status code the switch returns: "AhmaSwitch"
 		matched, _ := regexp.MatchString("malformed HTTP status code", err.Error())
 		if !matched {
-			beego.Error("Failed to send NetSwitch On URL request:", err)
-			return fmt.Errorf("Failed to send NetSwitch On request: %v", err)
+			return fmt.Errorf("Failed to send NetSwitch %v request: %v", onOrOff, err)
 		}
 	}
 
@@ -100,27 +190,42 @@ func (this *NetSwitchMapping) On() error {
 	return nil
 }
 
-func (this *NetSwitchMapping) Off() error {
-	beego.Info("Attempt to turn NetSwitch off, machine ID", this.MachineId)
-	resp, err := http.Get(this.UrlOff)
+func (this *NetSwitchMapping) turnXmpp(onOrOff ON_OR_OFF) (err error) {
+	return this.sendXmppCommand(string(onOrOff), this.MachineId)
+}
 
+func (this *NetSwitchMapping) sendXmppCommand(command string, machineId int64) (err error) {
+	trackingId := uuid.NewV4().String()
+	mu.Lock()
+	responses[trackingId] = make(chan xmpp.Message, 1)
+	respCh := responses[trackingId]
+	mu.Unlock()
+	err = xmppClient.Send(xmpp.Message{
+		Remote: xmppGateway,
+		Data: xmpp.Data{
+			Command:    command,
+			MachineId:  machineId,
+			TrackingId: trackingId,
+		},
+	})
 	if err != nil {
-		// Work around custom HTTP status code the switch returns: "AhmaSwitch"
-		matched, _ := regexp.MatchString("malformed HTTP status code", err.Error())
-		if !matched {
-			beego.Error("Failed to send NetSwitch Off URL request:", err)
-			return fmt.Errorf("Failed to send NetSwitch Off request: %v", err)
+		return fmt.Errorf("send: %v", err)
+	}
+	select {
+	case resp := <-respCh:
+		if resp.Data.Error {
+			err = fmt.Errorf("some error occurred")
+		} else {
+			err = nil
 		}
+		break
+	case <-time.After(20 * time.Second):
+		err = fmt.Errorf("timeout")
 	}
 
-	beego.Trace(resp)
-	if resp != nil {
-		defer resp.Body.Close()
-		if resp.StatusCode != 200 {
-			beego.Error("Bad Status Code:", resp.StatusCode)
-			return errors.New("Bad Status Code")
-		}
-	}
+	mu.Lock()
+	delete(responses, trackingId)
+	mu.Unlock()
 
-	return nil
+	return
 }

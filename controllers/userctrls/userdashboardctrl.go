@@ -2,11 +2,11 @@ package userctrls
 
 import (
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/controllers"
+	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/products"
+	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/astaxie/beego"
-	"github.com/kr15h/fabsmith/controllers"
-	"github.com/kr15h/fabsmith/models"
-	"github.com/kr15h/fabsmith/models/products"
-	"github.com/kr15h/fabsmith/models/purchases"
 )
 
 type UserDashboardController struct {
@@ -105,14 +105,13 @@ func (this *UserDashboardController) GetDashboard() {
 	data := DashboardData{}
 
 	// Check if logged in
-	suid := this.GetSession(controllers.SESSION_FIELD_NAME_USER_ID)
-	if suid == nil {
-		beego.Info("Not logged in")
+	suid, err := this.GetSessionUserId()
+	if err != nil {
+		beego.Info("Not logged in:", err)
 		this.CustomAbort(401, "Unauthorized")
 	}
 
 	// Get requested user ID
-	var err error
 	var ruid int64
 	ruid, err = this.GetInt64(":uid")
 	if err != nil {
@@ -120,13 +119,7 @@ func (this *UserDashboardController) GetDashboard() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	suidInt64, ok := suid.(int64)
-	if !ok {
-		beego.Error("Could not get session user ID as int64")
-		this.CustomAbort(500, "Internal Server Error")
-	}
-
-	if suidInt64 != ruid {
+	if suid != ruid {
 		if !this.IsAdmin() {
 			beego.Error("Not authorized")
 			this.CustomAbort(401, "Unauthorized")

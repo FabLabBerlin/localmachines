@@ -2,9 +2,9 @@ package metrics
 
 import (
 	"fmt"
-	"github.com/kr15h/fabsmith/models"
-	"github.com/kr15h/fabsmith/models/invoices"
-	"github.com/kr15h/fabsmith/models/purchases"
+	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/invoices"
+	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"time"
 )
 

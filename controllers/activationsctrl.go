@@ -1,9 +1,9 @@
 package controllers
 
 import (
+	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/astaxie/beego"
-	"github.com/kr15h/fabsmith/models"
-	"github.com/kr15h/fabsmith/models/purchases"
 	"time"
 )
 
@@ -135,9 +135,9 @@ func (this *ActivationsController) GetActive() {
 // @Failure 401 Not authorized
 // @router / [post]
 func (this *ActivationsController) Create() {
-	userId, ok := this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
-	if ok == false {
-		beego.Error("Failed to get session user ID")
+	userId, err := this.GetSessionUserId()
+	if err != nil {
+		beego.Error("Failed to get session user ID:", err)
 		this.CustomAbort(403, "Failed to create activation")
 	}
 

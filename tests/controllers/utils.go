@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 
+	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/astaxie/beego"
-	"github.com/kr15h/fabsmith/models"
 )
 
 var AdminUID int64

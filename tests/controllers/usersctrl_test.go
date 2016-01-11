@@ -8,10 +8,10 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/FabLabBerlin/localmachines/models"
+	_ "github.com/FabLabBerlin/localmachines/routers"
+	"github.com/FabLabBerlin/localmachines/tests/setup"
 	"github.com/astaxie/beego"
-	"github.com/kr15h/fabsmith/models"
-	_ "github.com/kr15h/fabsmith/routers"
-	"github.com/kr15h/fabsmith/tests/setup"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -92,6 +92,34 @@ func TestUsersAPI(t *testing.T) {
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
 
 				So(w.Code, ShouldEqual, 200)
+			})
+
+			Convey("Try to login with 14 white spaces, should return 401", func() {
+				names := []string{"bar", "foo", "foobar"}
+				for _, name := range names {
+					u := models.User{
+						Username: name,
+						Email:    name + "@easylab.io",
+					}
+					uid, err := models.CreateUser(&u)
+					if err != nil {
+						panic(err.Error())
+					}
+					models.AuthSetPassword(uid, name)
+					if name == "bar" {
+						models.AuthUpdateNfcUid(uid, "123456")
+					}
+				}
+
+				spaces14 := ""
+				for i := 0; i < 5; i++ {
+					spaces14 += " "
+				}
+				r, _ := http.NewRequest("POST", "/api/users/loginuid?uid="+spaces14, nil)
+				w := httptest.NewRecorder()
+				beego.BeeApp.Handlers.ServeHTTP(w, r)
+
+				So(w.Code, ShouldEqual, 401)
 			})
 		})
 

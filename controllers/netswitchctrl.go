@@ -2,12 +2,33 @@ package controllers
 
 import (
 	"encoding/json"
+	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/astaxie/beego"
-	"github.com/kr15h/fabsmith/models"
 )
 
 type NetSwitchController struct {
 	Controller
+}
+
+// @Title GetAll
+// @Description Get all netswitch mapings
+// @Success 200 {object} models.NetSwitchMapping
+// @Failure	403	Failed to get all netswitch mappings
+// @router / [get]
+func (this *NetSwitchController) GetAll() {
+
+	// This is admin and staff only
+	if !this.IsAdmin() && !this.IsStaff() {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	ms, err := models.GetAllNetSwitchMapping()
+	if err != nil {
+		this.CustomAbort(403, "Failed to get all netswitch mappings")
+	}
+	this.Data["json"] = ms
+	this.ServeJson()
 }
 
 // @Title Get

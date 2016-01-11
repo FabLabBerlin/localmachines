@@ -6,15 +6,17 @@ import (
 )
 
 // Field names for session variables
-const SESSION_FIELD_NAME_USER_ID string = "user_id"
-const SESSION_FIELD_NAME_USERNAME string = "username"
+const SESSION_USER_ID string = "user_id"
+const SESSION_USERNAME string = "username"
+const SESSION_BROWSER string = "browser"
+const SESSION_IP string = "ip"
 
 // Field names for request variables
-const REQUEST_FIELD_NAME_USER_ID string = "user_id"
-const REQUEST_FIELD_NAME_USERNAME string = "username"
-const REQUEST_FIELD_NAME_PASSWORD string = "password"
-const REQUEST_FIELD_NAME_MACHINE_ID string = "machine_id"
-const REQUEST_FIELD_NAME_ACTIVATION_ID string = "activation_id"
+const REQUEST_USER_ID string = "user_id"
+const REQUEST_USERNAME string = "username"
+const REQUEST_PASSWORD string = "password"
+const REQUEST_MACHINE_ID string = "machine_id"
+const REQUEST_ACTIVATION_ID string = "activation_id"
 
 // Root container for all fabsmith controllers - contains common functions.
 // It is used for almost every controller, except the login and logout
@@ -37,9 +39,8 @@ func NewErrorResponse() *ErrorResponse {
 // Checks if user is logged in before sending out any data, responds with
 // "Not logged in" error if user not logged in
 func (this *Controller) Prepare() {
-	sessUser := this.GetSession(SESSION_FIELD_NAME_USER_ID)
+	sessUser := this.GetSession(SESSION_USER_ID)
 	if sessUser == nil {
 		this.CustomAbort(401, "Not logged in")
 	}
 }
-
