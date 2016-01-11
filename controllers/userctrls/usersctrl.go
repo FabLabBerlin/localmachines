@@ -37,8 +37,7 @@ func (this *UsersController) Login() {
 		if err != nil {
 			this.CustomAbort(401, "Failed to authenticate")
 		} else {
-			this.SetSession(controllers.SESSION_USERNAME, username)
-			this.SetSession(controllers.SESSION_USER_ID, userId)
+			this.SetLogged(username, userId)
 			this.Data["json"] = models.LoginResponse{"ok", userId}
 		}
 	} else {
@@ -61,8 +60,7 @@ func (this *UsersController) LoginUid() {
 			beego.Error(err)
 			this.CustomAbort(401, "Failed to authenticate")
 		} else {
-			this.SetSession(controllers.SESSION_USERNAME, username)
-			this.SetSession(controllers.SESSION_USER_ID, userId)
+			this.SetLogged(username, userId)
 			this.Data["json"] = models.LoginResponse{"ok", userId}
 		}
 	} else {

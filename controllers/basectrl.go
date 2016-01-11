@@ -8,6 +8,8 @@ import (
 // Field names for session variables
 const SESSION_USER_ID string = "user_id"
 const SESSION_USERNAME string = "username"
+const SESSION_BROWSER string = "browser"
+const SESSION_IP string = "ip"
 
 // Field names for request variables
 const REQUEST_USER_ID string = "user_id"

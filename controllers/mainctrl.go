@@ -28,10 +28,27 @@ func (this *MainController) Get() {
 func (this *Controller) GetSessionUserId() (int64, error) {
 	tmp := this.GetSession(SESSION_USER_ID)
 	if sid, ok := tmp.(int64); ok {
+		browser := this.GetSession(SESSION_BROWSER)
+		if browser != this.Ctx.Input.UserAgent() {
+			beego.Error("GetSessionUserId: wrong browser")
+			return 0, errors.New("user not correctly logged in")
+		}
+		ip := this.GetSession(SESSION_IP)
+		if ip != this.Ctx.Input.IP() {
+			beego.Error("GetSessionUserId: wrong IP")
+			return 0, errors.New("user not correctly logged in")
+		}
 		return sid, nil
 	} else {
 		return 0, errors.New("User not logged in")
 	}
+}
+
+func (this *Controller) SetLogged(username string, userId int64) {
+	this.SetSession(SESSION_USERNAME, username)
+	this.SetSession(SESSION_USER_ID, userId)
+	this.SetSession(SESSION_BROWSER, this.Ctx.Input.UserAgent())
+	this.SetSession(SESSION_IP, this.Ctx.Input.IP())
 }
 
 func (this *Controller) IsLogged() bool {
