@@ -119,6 +119,9 @@ var MachineActions = {
       if (data.Tutorings) {
         reactor.dispatch(actionTypes.SET_TUTORINGS, data.Tutorings.Data);
         userIds = _.union(userIds, _.pluck(data.Tutorings.Data, 'UserId'));
+        userIds = _.filter(userIds, (uid) => {
+          return uid;
+        });
       }
       fetchUserNames(userIds);
     });
