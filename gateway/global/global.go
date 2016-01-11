@@ -14,9 +14,24 @@ const (
 )
 
 var (
-	ApiUrl        string
-	StateFilename string
+	Cfg Config
 )
+
+type Config struct {
+	Main struct {
+		StateFile string
+	}
+	API struct {
+		Id  string
+		Key string
+		Url string
+	}
+	XMPP struct {
+		Server string
+		User   string
+		Pass   string
+	}
+}
 
 func init() {
 	if STATE_SYNC_TIMEOUT.Seconds() >= STATE_SYNC_PERIOD.Seconds() {

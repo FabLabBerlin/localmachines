@@ -3,6 +3,7 @@ package endpoints
 import (
 	"crypto/rand"
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/gateway/global"
 	"github.com/FabLabBerlin/localmachines/gateway/netswitches"
 	"github.com/FabLabBerlin/localmachines/gateway/xmpp"
 	"log"
@@ -11,16 +12,18 @@ import (
 )
 
 type Xmpp struct {
-	ns *netswitches.NetSwitches
-	x  *xmpp.Xmpp
+	ns            *netswitches.NetSwitches
+	x             *xmpp.Xmpp
+	reinitGateway func() error
 }
 
-func NewXmpp(ns *netswitches.NetSwitches, server, user, pw string) (*Xmpp, error) {
+func NewXmpp(ns *netswitches.NetSwitches, reinitGateway func() error) (*Xmpp, error) {
 	var err error
 	x := &Xmpp{
-		ns: ns,
+		ns:            ns,
+		reinitGateway: reinitGateway,
 	}
-	x.x, err = xmpp.NewXmpp(server, user, pw)
+	x.x, err = xmpp.NewXmpp(global.Cfg.XMPP.Server, global.Cfg.XMPP.User, global.Cfg.XMPP.Pass)
 	return x, err
 }
 
@@ -64,8 +67,11 @@ func (x *Xmpp) Run() {
 func (x *Xmpp) dispatch(msg xmpp.Message) (err error) {
 	log.Printf("dispatch(%v)", msg)
 	cmd := msg.Data.Command
-	if cmd == "on" || cmd == "off" {
+	switch cmd {
+	case "on", "off":
 		return x.ns.SetOn(msg.Data.MachineId, cmd == "on")
+	case "reinit":
+		return x.reinitGateway()
 	}
 	return fmt.Errorf("invalid cmd: %v", cmd)
 }

@@ -131,7 +131,12 @@ func DeleteNetSwitchMapping(machineId int64) error {
 
 func (this *NetSwitchMapping) Update() (err error) {
 	o := orm.NewOrm()
-	_, err = o.Update(this)
+	if _, err = o.Update(this); err != nil {
+		return fmt.Errorf("update: %v", err)
+	}
+	if err = this.sendXmppCommand("reinit", 0); err != nil {
+		return fmt.Errorf("send xmpp cmd: %v", err)
+	}
 	return
 }
 
@@ -186,6 +191,10 @@ func (this *NetSwitchMapping) turnHttp(onOrOff ON_OR_OFF) (err error) {
 }
 
 func (this *NetSwitchMapping) turnXmpp(onOrOff ON_OR_OFF) (err error) {
+	return this.sendXmppCommand(string(onOrOff), this.MachineId)
+}
+
+func (this *NetSwitchMapping) sendXmppCommand(command string, machineId int64) (err error) {
 	trackingId := uuid.NewV4().String()
 	mu.Lock()
 	responses[trackingId] = make(chan xmpp.Message, 1)
@@ -194,8 +203,8 @@ func (this *NetSwitchMapping) turnXmpp(onOrOff ON_OR_OFF) (err error) {
 	err = xmppClient.Send(xmpp.Message{
 		Remote: xmppGateway,
 		Data: xmpp.Data{
-			Command:    string(onOrOff),
-			MachineId:  this.MachineId,
+			Command:    command,
+			MachineId:  machineId,
 			TrackingId: trackingId,
 		},
 	})

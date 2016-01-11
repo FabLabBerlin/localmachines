@@ -37,7 +37,7 @@ func (nss *NetSwitches) Load(client *http.Client) (err error) {
 // Each type NetSwitch runs its own dispatch loop.  Make sure no additional
 // loop is started.  TODO: get rid of removed NetSwitches
 func (nss *NetSwitches) fetch(client *http.Client) (err error) {
-	resp, err := client.Get(global.ApiUrl + "/netswitch")
+	resp, err := client.Get(global.Cfg.API.Url + "/netswitch")
 	if err != nil {
 		return fmt.Errorf("GET: %v", err)
 	}
@@ -63,7 +63,7 @@ func (nss *NetSwitches) fetch(client *http.Client) (err error) {
 }
 
 func (nss *NetSwitches) loadOnOff() (err error) {
-	f, err := os.Open(global.StateFilename)
+	f, err := os.Open(global.Cfg.Main.StateFile)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return nil
@@ -103,7 +103,7 @@ func (nss *NetSwitches) save(filename string) (err error) {
 
 func (nss *NetSwitches) Save() {
 	log.Printf("Saving state...")
-	if err := nss.save(global.StateFilename); err != nil {
+	if err := nss.save(global.Cfg.Main.StateFile); err != nil {
 		log.Printf("failed saving state: %v", err)
 	}
 }

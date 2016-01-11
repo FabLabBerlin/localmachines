@@ -17,26 +17,7 @@ import (
 	"time"
 )
 
-var (
-	cfg         Config
-	netSwitches *netswitches.NetSwitches
-)
-
-type Config struct {
-	Main struct {
-		StateFile string
-	}
-	API struct {
-		Id  string
-		Key string
-		Url string
-	}
-	XMPP struct {
-		Server string
-		User   string
-		Pass   string
-	}
-}
+var netSwitches *netswitches.NetSwitches
 
 type LoginResp struct {
 	Status string
@@ -48,7 +29,7 @@ func (resp *LoginResp) ok() bool {
 }
 
 func Login(client *http.Client, user, key string) (err error) {
-	resp, err := client.PostForm(global.ApiUrl+"/users/login",
+	resp, err := client.PostForm(global.Cfg.API.Url+"/users/login",
 		url.Values{"username": {user}, "password": {key}})
 	if err != nil {
 		return fmt.Errorf("POST login: %v", err)
@@ -77,7 +58,10 @@ func PingLoop() {
 	}
 }
 
-func Init(user, key string) (err error) {
+func Init() (err error) {
+	user := global.Cfg.API.Id
+	key := global.Cfg.API.Key
+
 	client := &http.Client{}
 	if client.Jar, err = cookiejar.New(nil); err != nil {
 		return
@@ -92,17 +76,23 @@ func Init(user, key string) (err error) {
 	return
 }
 
+func Reinit() (err error) {
+	netSwitches.Save()
+	if err = Init(); err != nil {
+		return fmt.Errorf("Init: %v", err)
+	}
+	return
+}
+
 func main() {
-	err := gcfg.ReadFileInto(&cfg, "conf/gateway.conf")
+	err := gcfg.ReadFileInto(&global.Cfg, "conf/gateway.conf")
 	if err != nil {
 		log.Fatalf("gcfg read file into: %v", err)
 	}
-	global.ApiUrl = cfg.API.Url
-	global.StateFilename = cfg.Main.StateFile
 
 	netSwitches = netswitches.New()
 
-	if err := Init(cfg.API.Id, cfg.API.Key); err != nil {
+	if err := Init(); err != nil {
 		log.Fatalf("Init: %v", err)
 	}
 
@@ -122,16 +112,13 @@ func main() {
 	go func() {
 		for sig := range chHup {
 			log.Printf("received signal %v", sig)
-			netSwitches.Save()
-			if err := Init(cfg.API.Id, cfg.API.Key); err != nil {
-				log.Fatalf("Init: %v", err)
-			}
+			Reinit()
 		}
 	}()
 
 	go PingLoop()
 
-	xmpp, err := endpoints.NewXmpp(netSwitches, cfg.XMPP.Server, cfg.XMPP.User, cfg.XMPP.Pass)
+	xmpp, err := endpoints.NewXmpp(netSwitches, Reinit)
 	if err != nil {
 		log.Fatalf("xmpp: %v", err)
 	}
