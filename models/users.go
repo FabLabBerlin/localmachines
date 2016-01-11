@@ -196,6 +196,8 @@ func AuthenticateUser(username, password string) (int64, error) {
 func AuthenticateUserUid(uid string) (string, int64, error) {
 	var err error
 
+	uid = strings.TrimSpace(uid)
+
 	// uid can not be empty or less than 4 chars
 	if uid == "" || len(uid) < 4 {
 		err = errors.New("Invalid NFC UID")
