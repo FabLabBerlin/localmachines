@@ -97,6 +97,9 @@ var MachinePage = React.createClass({
    */
   render() {
     var machines = reactor.evaluateToJS(getters.getMachines);
+    machines = _.sortBy(machines, (m) => {
+      return m.Name;
+    });
     if (this.state.activations) {
       return (
         <div>
