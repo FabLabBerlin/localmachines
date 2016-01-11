@@ -53,7 +53,7 @@ func (this *UsersController) Login() {
 // @Failure 401 Failed to authenticate
 // @router /loginuid [post]
 func (this *UsersController) LoginUid() {
-	if sessUserId, err := this.GetSessionUserId(); err == nil {
+	if sessUserId, err := this.GetSessionUserId(); err != nil {
 		uid := this.GetString("uid")
 		username, userId, err := models.AuthenticateUserUid(uid)
 		if err != nil {
