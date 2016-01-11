@@ -139,8 +139,8 @@ func (this *ReservationsController) Delete() {
 	if !this.IsAdmin() {
 
 		// Not an admin, check if owner
-		sessUserId, ok := this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
-		if !ok {
+		sessUserId, err := this.GetSessionUserId()
+		if err != nil {
 			beego.Error("Failed to get session user ID")
 			this.CustomAbort(500, "Internal Server Error")
 		}

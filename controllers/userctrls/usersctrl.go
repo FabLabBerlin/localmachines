@@ -30,23 +30,19 @@ func (this *UsersController) Prepare() {
 // @Failure 401 Failed to authenticate
 // @router /login [post]
 func (this *UsersController) Login() {
-	var userId int64
-	var err error
-	sessUsername := this.GetSession(controllers.SESSION_FIELD_NAME_USERNAME)
-	if sessUsername == nil {
+	if sessUserId, err := this.GetSessionUserId(); err != nil {
 		username := this.GetString("username")
 		password := this.GetString("password")
-		userId, err = models.AuthenticateUser(username, password)
+		userId, err := models.AuthenticateUser(username, password)
 		if err != nil {
 			this.CustomAbort(401, "Failed to authenticate")
 		} else {
-			this.SetSession(controllers.SESSION_FIELD_NAME_USERNAME, username)
-			this.SetSession(controllers.SESSION_FIELD_NAME_USER_ID, userId)
+			this.SetSession(controllers.SESSION_USERNAME, username)
+			this.SetSession(controllers.SESSION_USER_ID, userId)
 			this.Data["json"] = models.LoginResponse{"ok", userId}
 		}
 	} else {
-		userId = this.GetSession(controllers.SESSION_FIELD_NAME_USER_ID).(int64)
-		this.Data["json"] = models.LoginResponse{"logged", userId}
+		this.Data["json"] = models.LoginResponse{"logged", sessUserId}
 	}
 	this.ServeJson()
 }
@@ -58,31 +54,19 @@ func (this *UsersController) Login() {
 // @Failure 401 Failed to authenticate
 // @router /loginuid [post]
 func (this *UsersController) LoginUid() {
-	var username string
-	var userId int64
-	var err error
-
-	sessUsername := this.GetSession(controllers.SESSION_FIELD_NAME_USERNAME)
-
-	if sessUsername == nil {
+	if sessUserId, err := this.GetSessionUserId(); err == nil {
 		uid := this.GetString("uid")
-		username, userId, err = models.AuthenticateUserUid(uid)
+		username, userId, err := models.AuthenticateUserUid(uid)
 		if err != nil {
 			beego.Error(err)
 			this.CustomAbort(401, "Failed to authenticate")
 		} else {
-			this.SetSession(controllers.SESSION_FIELD_NAME_USERNAME, username)
-			this.SetSession(controllers.SESSION_FIELD_NAME_USER_ID, userId)
+			this.SetSession(controllers.SESSION_USERNAME, username)
+			this.SetSession(controllers.SESSION_USER_ID, userId)
 			this.Data["json"] = models.LoginResponse{"ok", userId}
 		}
 	} else {
-		var ok bool
-		userId, ok = this.GetSession(controllers.SESSION_FIELD_NAME_USER_ID).(int64)
-		if !ok {
-			beego.Error("Could not get session user ID")
-			this.CustomAbort(401, "Failed to authenticate")
-		}
-		this.Data["json"] = models.LoginResponse{"logged", userId}
+		this.Data["json"] = models.LoginResponse{"logged", sessUserId}
 	}
 
 	this.ServeJson()
@@ -93,7 +77,7 @@ func (this *UsersController) LoginUid() {
 // @Success 200 {object} models.StatusResponse
 // @router /logout [get]
 func (this *UsersController) Logout() {
-	sessUsername := this.GetSession(controllers.SESSION_FIELD_NAME_USERNAME)
+	sessUsername := this.GetSession(controllers.SESSION_USERNAME)
 	beego.Info("Logging out")
 	this.DestroySession()
 	if sessUsername == nil {
@@ -112,14 +96,7 @@ func (this *UsersController) Logout() {
 // @router / [get]
 func (this *UsersController) GetAll() {
 
-	// Check if logged in
-	uid := this.GetSession(controllers.SESSION_FIELD_NAME_USER_ID)
-	if uid == nil {
-		beego.Info("Attempt to get all users while not logged in")
-		this.CustomAbort(401, "Not logged in")
-	}
-
-	if !this.IsAdmin(uid.(int64)) && !this.IsStaff(uid.(int64)) {
+	if !this.IsAdmin() && !this.IsStaff() {
 		beego.Error("Not authorized to get all users")
 		this.CustomAbort(401, "Not authorized")
 	}
@@ -218,8 +195,8 @@ func (this *UsersController) Get() {
 		this.CustomAbort(403, "Failed to get :uid")
 	}
 
-	suid, ok := this.GetSession(controllers.SESSION_FIELD_NAME_USER_ID).(int64)
-	if !ok {
+	suid, err := this.GetSessionUserId()
+	if err != nil {
 		beego.Error("Can't get data if not logged in")
 		this.CustomAbort(401, "Unauthorized")
 	} else if uid == suid {
@@ -280,8 +257,8 @@ func (this *UsersController) Put() {
 	// If the user is trying update his own information
 	// let him do so. Check that by comparing session user ID
 	// with the one passed as :uid
-	sessUserId, ok := this.GetSession(controllers.SESSION_FIELD_NAME_USER_ID).(int64)
-	if !ok {
+	sessUserId, err := this.GetSessionUserId()
+	if err != nil {
 		beego.Error("Failed to get session user ID")
 		this.CustomAbort(500, "Internal Server Error")
 	}
@@ -341,14 +318,13 @@ func (this *UsersController) Put() {
 func (this *UsersController) GetUserMachines() {
 
 	// Check if logged in
-	suid := this.GetSession(controllers.SESSION_FIELD_NAME_USER_ID)
-	if suid == nil {
+	suid, err := this.GetSessionUserId()
+	if err != nil {
 		beego.Info("Not logged in")
 		this.CustomAbort(401, "Unauthorized")
 	}
 
 	// Get requested user ID
-	var err error
 	var ruid int64
 	ruid, err = this.GetInt64(":uid")
 	if err != nil {
@@ -356,13 +332,7 @@ func (this *UsersController) GetUserMachines() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	suidInt64, ok := suid.(int64)
-	if !ok {
-		beego.Error("Could not get session user ID as int64")
-		this.CustomAbort(500, "Internal Server Error")
-	}
-
-	if suidInt64 != ruid {
+	if suid != ruid {
 		if !this.IsAdmin() {
 			beego.Error("Not authorized")
 			this.CustomAbort(401, "Unauthorized")
@@ -419,24 +389,18 @@ func (this *UsersController) GetUserBill() {
 	}
 
 	// Check if logged in
-	suid := this.GetSession(controllers.SESSION_FIELD_NAME_USER_ID)
-	if suid == nil {
+	suid, err := this.GetSessionUserId()
+	if err != nil {
 		beego.Info("Not logged in")
 		this.CustomAbort(401, "Unauthorized")
 	}
 
-	suidInt64, ok := suid.(int64)
-	if !ok {
-		beego.Error("Could not get session user ID as int64")
-		this.CustomAbort(500, "Internal Server Error")
-	}
-
-	if !this.IsAdmin() && suidInt64 != ruid {
+	if !this.IsAdmin() && suid != ruid {
 		beego.Error("Not authorized")
 		this.CustomAbort(401, "Unauthorized")
 	}
 
-	startTime, err := purchases.GetUserStartTime(suidInt64)
+	startTime, err := purchases.GetUserStartTime(suid)
 	if err != nil {
 		beego.Error("GetUserStartTime:", err)
 		this.CustomAbort(500, "Internal Server Error")
@@ -489,8 +453,7 @@ type MachinesAffectedArray struct {
 func (this *UsersController) GetUserNames() {
 
 	// Check if logged in
-	suid := this.GetSession(controllers.SESSION_FIELD_NAME_USER_ID)
-	if suid == nil {
+	if !this.IsLogged() {
 		beego.Info("Not logged in")
 		this.CustomAbort(401, "Not logged in")
 	}
@@ -543,8 +506,8 @@ func (this *UsersController) GetUserNames() {
 // @router /:uid/password [post]
 func (this *UsersController) PostUserPassword() {
 	// Check if logged in
-	suid := this.GetSession(controllers.SESSION_FIELD_NAME_USER_ID)
-	if suid == nil {
+	suid, err := this.GetSessionUserId()
+	if err != nil {
 		beego.Info("Not logged in")
 		this.CustomAbort(401, "Not logged in")
 	}
@@ -581,8 +544,8 @@ func (this *UsersController) PostUserPassword() {
 // @router /:uid/nfcuid [put]
 func (this *UsersController) UpdateNfcUid() {
 	// Check if logged in
-	suid := this.GetSession(controllers.SESSION_FIELD_NAME_USER_ID)
-	if suid == nil {
+	suid, err := this.GetSessionUserId()
+	if err != nil {
 		beego.Info("Not logged in")
 		this.CustomAbort(401, "Not authorized")
 	}

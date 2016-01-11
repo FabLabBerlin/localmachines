@@ -26,7 +26,7 @@ func (this *MainController) Get() {
 }
 
 func (this *Controller) GetSessionUserId() (int64, error) {
-	tmp := this.GetSession(SESSION_FIELD_NAME_USER_ID)
+	tmp := this.GetSession(SESSION_USER_ID)
 	if sid, ok := tmp.(int64); ok {
 		return sid, nil
 	} else {
@@ -34,15 +34,19 @@ func (this *Controller) GetSessionUserId() (int64, error) {
 	}
 }
 
+func (this *Controller) IsLogged() bool {
+	_, err := this.GetSessionUserId()
+	return err == nil
+}
+
 // Return true if user is admin, if no args are passed, uses session user ID,
 // if single user ID is passed, checks the passed one. Fails otherwise.
 func (this *Controller) IsAdmin(userIds ...int64) bool {
 	var userId int64
-	var ok bool
 	var err error
 	if len(userIds) == 0 {
-		userId, ok = this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
-		if !ok {
+		userId, err = this.GetSessionUserId()
+		if err != nil {
 			return false
 		}
 	} else if len(userIds) == 1 {
@@ -65,7 +69,10 @@ func (this *Controller) IsStaff(userIds ...int64) bool {
 	var userId int64
 	var err error
 	if len(userIds) == 0 {
-		userId = this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
+		userId, err = this.GetSessionUserId()
+		if err != nil {
+			return false
+		}
 	} else if len(userIds) == 1 {
 		userId = userIds[0]
 	} else {

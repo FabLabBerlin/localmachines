@@ -23,13 +23,6 @@ type UserMembershipsController struct {
 // @router /:uid/memberships [post]
 func (this *UserMembershipsController) PostUserMemberships() {
 
-	// Check if logged in
-	suid := this.GetSession(controllers.SESSION_FIELD_NAME_USER_ID)
-	if suid == nil {
-		beego.Info("Not logged in")
-		this.CustomAbort(401, "Not logged in")
-	}
-
 	if !this.IsAdmin() {
 		beego.Error("Not authorized")
 		this.CustomAbort(401, "Not authorized")
@@ -91,14 +84,13 @@ func (this *UserMembershipsController) PostUserMemberships() {
 func (this *UserMembershipsController) GetUserMemberships() {
 
 	// Check if logged in
-	suid := this.GetSession(controllers.SESSION_FIELD_NAME_USER_ID)
-	if suid == nil {
-		beego.Info("Not logged in")
+	suid, err := this.GetSessionUserId()
+	if err != nil {
+		beego.Info("Not logged in:", err)
 		this.CustomAbort(401, "Not logged in")
 	}
 
 	// Get requested user ID
-	var err error
 	var ruid int64
 	ruid, err = this.GetInt64(":uid")
 	if err != nil {
@@ -109,13 +101,7 @@ func (this *UserMembershipsController) GetUserMemberships() {
 	// We need the user roles in order to understand
 	// whether we are allowed to access other user machines
 
-	suidInt64, ok := suid.(int64)
-	if !ok {
-		beego.Error("Failed to get int64 value out of session ID")
-		this.CustomAbort(500, "Internal Server Error")
-	}
-
-	if suidInt64 != ruid {
+	if suid != ruid {
 		if !this.IsAdmin() {
 
 			// The currently logged in user is not allowed to access

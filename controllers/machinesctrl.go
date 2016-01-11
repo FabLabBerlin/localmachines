@@ -55,9 +55,9 @@ func (this *MachinesController) Get() {
 	if !this.IsAdmin() && !this.IsStaff() {
 
 		// Get user permissions to see whether user is allowed to access machine
-		sessUserId, ok := this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
-		if !ok {
-			beego.Error("Failed to get session user ID")
+		sessUserId, err := this.GetSessionUserId()
+		if err != nil {
+			beego.Error("Failed to get session user ID:", err)
 			this.CustomAbort(403, "Failed to get machine")
 		}
 
@@ -334,9 +334,9 @@ func (this *MachinesController) ReportBroken() {
 		this.CustomAbort(403, "Failed to get machine")
 	}
 
-	uid, ok := this.GetSession(SESSION_FIELD_NAME_USER_ID).(int64)
-	if !ok {
-		beego.Info("Not logged in")
+	uid, err := this.GetSessionUserId()
+	if err != nil {
+		beego.Info("Not logged in:", err)
 		this.CustomAbort(401, "Not logged in")
 	}
 	user, err := models.GetUser(uid)
