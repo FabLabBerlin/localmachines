@@ -2,11 +2,11 @@ package main
 
 import (
 	"encoding/json"
-	"flag"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/gateway/endpoints"
 	"github.com/FabLabBerlin/localmachines/gateway/global"
 	"github.com/FabLabBerlin/localmachines/gateway/netswitches"
+	"gopkg.in/gcfg.v1"
 	"log"
 	"net/http"
 	"net/http/cookiejar"
@@ -17,7 +17,26 @@ import (
 	"time"
 )
 
-var netSwitches *netswitches.NetSwitches
+var (
+	cfg         Config
+	netSwitches *netswitches.NetSwitches
+)
+
+type Config struct {
+	Main struct {
+		StateFile string
+	}
+	API struct {
+		Id  string
+		Key string
+		Url string
+	}
+	XMPP struct {
+		Server string
+		User   string
+		Pass   string
+	}
+}
 
 type LoginResp struct {
 	Status string
@@ -74,18 +93,16 @@ func Init(user, key string) (err error) {
 }
 
 func main() {
-	global.ApiUrl = *flag.String("apiUrl", "http://localhost:8080/api", "Url of the fabsmith api (http or https)")
-	user := flag.String("id", "user", "id")
-	key := flag.String("key", "user", "key")
-	xmppServer := flag.String("xmppServer", "xmpp.example.com:443", "XMPP Server")
-	xmppUser := flag.String("xmppUser", "user", "XMPP Server Username")
-	xmppPassword := flag.String("xmppPass", "123456", "XMPP Server Password")
-	global.StateFilename = *flag.String("stateFile", "state.json", "switches are stateful but they loose state on reset")
-	flag.Parse()
+	err := gcfg.ReadFileInto(&cfg, "conf/gateway.conf")
+	if err != nil {
+		log.Fatalf("gcfg read file into: %v", err)
+	}
+	global.ApiUrl = cfg.API.Url
+	global.StateFilename = cfg.Main.StateFile
 
 	netSwitches = netswitches.New()
 
-	if err := Init(*user, *key); err != nil {
+	if err := Init(cfg.API.Id, cfg.API.Key); err != nil {
 		log.Fatalf("Init: %v", err)
 	}
 
@@ -106,7 +123,7 @@ func main() {
 		for sig := range chHup {
 			log.Printf("received signal %v", sig)
 			netSwitches.Save()
-			if err := Init(*user, *key); err != nil {
+			if err := Init(cfg.API.Id, cfg.API.Key); err != nil {
 				log.Fatalf("Init: %v", err)
 			}
 		}
@@ -114,7 +131,7 @@ func main() {
 
 	go PingLoop()
 
-	xmpp, err := endpoints.NewXmpp(netSwitches, *xmppServer, *xmppUser, *xmppPassword)
+	xmpp, err := endpoints.NewXmpp(netSwitches, cfg.XMPP.Server, cfg.XMPP.User, cfg.XMPP.Pass)
 	if err != nil {
 		log.Fatalf("xmpp: %v", err)
 	}
