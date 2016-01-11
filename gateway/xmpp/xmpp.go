@@ -25,7 +25,7 @@ type Message struct {
 type Data struct {
 	Command    string
 	MachineId  int64
-	TrackingId int64
+	TrackingId string
 	Error      bool
 }
 

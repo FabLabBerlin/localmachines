@@ -6,32 +6,22 @@ import (
 	"github.com/FabLabBerlin/localmachines/gateway/xmpp"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"github.com/satori/go.uuid"
 	"net/http"
 	"regexp"
 	"sync"
 	"time"
 )
 
-type TrackingId int64
-
 var (
-	mu          sync.Mutex
-	responses   map[TrackingId]chan xmpp.Message
-	trackingIds chan TrackingId
+	mu sync.Mutex
+	// responses are matched here to the RPC requests.  We don't want to have
+	// much blocking here, therefore the channels are buffered (capacity 1) and
+	// all reads/writes must happen asynchronously.
+	responses   map[string]chan xmpp.Message
 	xmppClient  *xmpp.Xmpp
 	xmppGateway string
 )
-
-func init() {
-	go func() {
-		var trackingId int64 = 0
-		trackingIds = make(chan TrackingId)
-		for {
-			trackingId++
-			trackingIds <- TrackingId(trackingId)
-		}
-	}()
-}
 
 func init() {
 	server := beego.AppConfig.String("XmppServer")
@@ -47,13 +37,18 @@ func init() {
 }
 
 func init() {
-	responses = make(map[TrackingId]chan xmpp.Message)
+	responses = make(map[string]chan xmpp.Message)
 	go func() {
 		for {
 			select {
 			case resp := <-xmppClient.Recv():
 				mu.Lock()
-				responses[TrackingId(resp.Data.TrackingId)] <- resp
+				tid := resp.Data.TrackingId
+				select {
+				case responses[tid] <- resp:
+				default:
+					beego.Error("package already received: tid:", tid)
+				}
 				mu.Unlock()
 				break
 			}
@@ -188,9 +183,9 @@ func (this *NetSwitchMapping) turnHttp(onOrOff ON_OR_OFF) (err error) {
 }
 
 func (this *NetSwitchMapping) turnXmpp(onOrOff ON_OR_OFF) (err error) {
+	trackingId := uuid.NewV4().String()
 	mu.Lock()
-	trackingId := <-trackingIds
-	responses[trackingId] = make(chan xmpp.Message)
+	responses[trackingId] = make(chan xmpp.Message, 1)
 	respCh := responses[trackingId]
 	mu.Unlock()
 	err = xmppClient.Send(xmpp.Message{
@@ -198,7 +193,7 @@ func (this *NetSwitchMapping) turnXmpp(onOrOff ON_OR_OFF) (err error) {
 		Data: xmpp.Data{
 			Command:    string(onOrOff),
 			MachineId:  this.MachineId,
-			TrackingId: int64(trackingId),
+			TrackingId: trackingId,
 		},
 	})
 	if err != nil {
