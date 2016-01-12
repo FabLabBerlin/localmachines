@@ -235,37 +235,6 @@ const getMonthlyBills = [
   }
 ];
 
-/*
- * Machine (Page) related getters
- */
-const getActivations = [
-  ['machineStore'],
-  (machineStore) => {
-    return machineStore.get('activations');
-  }
-];
-
-const getMachinesById = [
-  ['machineStore'],
-  (machineStore) => {
-    return machineStore.get('machinesById') || toImmutable({});
-  }
-];
-
-const getMachines = [
-  getMachinesById,
-  (machinesById) => {
-    return machinesById.sortBy(m => m.Name);
-  }
-];
-
-const getMachineUsers = [
-  ['machineStore'],
-  (machineStore) => {
-    return machineStore.get('machineUsers') || {};
-  }
-];
-
 
 /*
  * Feedback related getters
@@ -632,22 +601,10 @@ const getScrollPosition = [
   }
 ];
 
-
-/*
- * Tutorings related getters
- */
-const getTutorings = [
-  ['tutoringsStore'],
-  (tutoringsStore) => {
-    return tutoringsStore.get('tutorings');
-  }
-];
-
 export default {
   getIsLogged, getUid, getFirstTry, getLoginSuccess, getLastActivity,
   getUser, getActivations, getMachines, getMachinesById, getMachineUsers, getIsLoading, getBill, getBillMonths, getMonthlyBills, getMemberships, getMembershipsByMonth,
   getFeedbackSubject, getFeedbackSubjectDropdown, getFeedbackSubjectOtherText, getFeedbackMessage,
   getNewReservation, getNewReservationPrice, getNewReservationTimes, getNewReservationFrom, getNewReservationTo, getReservations, getReservationsByDay, getActiveReservationsByMachineId, getSlotAvailabilities48h,
-  getScrollUpEnabled, getScrollDownEnabled, getScrollPosition,
-  getTutorings
+  getScrollUpEnabled, getScrollDownEnabled, getScrollPosition
 };

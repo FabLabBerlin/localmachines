@@ -1,7 +1,7 @@
 var reactor = require('../reactor');
 var getters = require('../getters');
 var HeaderNav = require('./HeaderNav');
-var LoginStore = require('../stores/LoginStore');
+var LoginStore = require('../modules/Login/stores/LoginStore');
 var React = require('react');
 var RouteHandler = require('react-router').RouteHandler;
 

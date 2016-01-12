@@ -1,6 +1,6 @@
-var actionTypes = require('../actionTypes');
-var getters = require('../getters');
-var reactor = require('../reactor');
+var actionTypes = require('./actionTypes');
+var getters = require('../../getters');
+var reactor = require('../../reactor');
 
 
 var ScrollNavActions = {

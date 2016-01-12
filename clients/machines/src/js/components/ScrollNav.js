@@ -1,8 +1,8 @@
 var getters = require('../getters');
-var LoginActions = require('../actions/LoginActions');
+var LoginActions = require('../modules/Login/actions');
 var React = require('react');
 var reactor = require('../reactor');
-var ScrollNavActions = require('../actions/ScrollNavActions');
+var ScrollNavActions = require('../modules/ScrollNav/actions');
 
 const TOP = 'top';
 const BOTTOM = 'bottom';

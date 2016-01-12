@@ -1,5 +1,5 @@
-var actionTypes = require('../actionTypes');
-var reactor = require('../reactor');
+var actionTypes = require('./actionTypes');
+var reactor = require('../../reactor');
 
 
 function showGlobalLoader() {

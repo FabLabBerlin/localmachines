@@ -1,7 +1,7 @@
 var $ = require('jquery');
-var actionTypes = require('../actionTypes');
-var reactor = require('../reactor');
-var toastr = require('../toastr');
+var actionTypes = require('./actionTypes');
+var reactor = require('../../reactor');
+var toastr = require('../../toastr');
 
 
 /*

@@ -1,7 +1,7 @@
 var actionTypes = require('../actionTypes');
 var Nuclear = require('nuclear-js');
-var reactor = require('../reactor');
-var toastr = require('../toastr');
+var reactor = require('../../../reactor');
+var toastr = require('../../../toastr');
 var toImmutable = Nuclear.toImmutable;
 
 

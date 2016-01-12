@@ -2,7 +2,7 @@ var getters = require('../../getters');
 var moment = require('moment');
 var React = require('react');
 var reactor = require('../../reactor');
-var TutoringActions = require('../../actions/TutoringActions');
+var TutoringActions = require('../../modules/Tutorings/actions');
 
 var Tutoring = React.createClass({
 

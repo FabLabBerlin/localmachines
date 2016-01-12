@@ -1,5 +1,5 @@
 var getters = require('../../../getters');
-var MachineActions = require('../../../actions/MachineActions');
+var MachineActions = require('../../../modules/Machine/actions');
 var React = require('react');
 var reactor = require('../../../reactor');
 var Timer = require('./Timer');

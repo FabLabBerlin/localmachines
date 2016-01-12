@@ -1,23 +1,23 @@
 var App = require('./components/App');
 var FeedbackPage = require('./components/Feedback/FeedbackPage');
-var FeedbackStore = require('./stores/FeedbackStore');
+var FeedbackStore = require('./modules/Feedback/stores/FeedbackStore');
 var getters = require('./getters');
-var GlobalStore = require('./stores/GlobalStore');
+var GlobalStore = require('./modules/Global/stores/GlobalStore');
 var LoginChooser = require('./components/Login/LoginChooser');
-var LoginStore = require('./stores/LoginStore');
+var LoginStore = require('./modules/Login/stores/LoginStore');
 var MachinePage = require('./components/MachinePage/MachinePage');
-var MachineStore = require('./stores/MachineStore');
+var MachineStore = require('./modules/Machine/stores/MachineStore');
 var React = require('react');
 var reactor = require('./reactor');
 var ReservationsPage = require('./components/Reservations/ReservationsPage');
-var ReservationsStore = require('./stores/ReservationsStore');
-var ReservationRulesStore = require('./stores/ReservationRulesStore');
+var ReservationsStore = require('./modules/Reservations/stores/ReservationsStore');
+var ReservationRulesStore = require('./modules/Reservations/stores/ReservationRulesStore');
 var Router = require('react-router');
-var ScrollNavStore = require('./stores/ScrollNavStore');
+var ScrollNavStore = require('./modules/ScrollNav/stores/ScrollNavStore');
 var SpendingsPage = require('./components/UserProfile/SpendingsPage');
-var TutoringsStore = require('./stores/TutoringsStore');
+var TutoringsStore = require('./modules/Tutorings/stores/TutoringsStore');
 var UserPage = require('./components/UserProfile/UserPage');
-var UserStore = require('./stores/UserStore');
+var UserStore = require('./modules/User/stores/UserStore');
 var {DefaultRoute, Route, Routes, NotFoundRoute} = require('react-router');
 
 /*

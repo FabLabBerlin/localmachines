@@ -2,7 +2,7 @@ var $ = require('jquery');
 var actionTypes = require('../actionTypes');
 var Nuclear = require('nuclear-js');
 var toImmutable = Nuclear.toImmutable;
-var toastr = require('../toastr');
+var toastr = require('../../../toastr');
 
 
 const initialState = toImmutable({

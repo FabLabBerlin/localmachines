@@ -1,6 +1,6 @@
-var ApiActions = require('./ApiActions');
-var getters = require('../getters');
-var reactor = require('../reactor');
+var ApiActions = require('../Api/actions');
+var getters = require('./getters');
+var reactor = require('../../reactor');
 var toastr = require('toastr');
 
 
