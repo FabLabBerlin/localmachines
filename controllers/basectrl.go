@@ -6,17 +6,23 @@ import (
 )
 
 // Field names for session variables
-const SESSION_USER_ID string = "user_id"
-const SESSION_USERNAME string = "username"
-const SESSION_BROWSER string = "browser"
-const SESSION_IP string = "ip"
+const (
+	SESSION_USER_ID         = "user_id"
+	SESSION_USERNAME        = "username"
+	SESSION_BROWSER         = "browser"
+	SESSION_IP              = "ip"
+	SESSION_ACCEPT_LANGUAGE = "accept_language"
+	SESSION_ACCEPT_ENCODING = "accept_encoding"
+)
 
 // Field names for request variables
-const REQUEST_USER_ID string = "user_id"
-const REQUEST_USERNAME string = "username"
-const REQUEST_PASSWORD string = "password"
-const REQUEST_MACHINE_ID string = "machine_id"
-const REQUEST_ACTIVATION_ID string = "activation_id"
+const (
+	REQUEST_USER_ID       = "user_id"
+	REQUEST_USERNAME      = "username"
+	REQUEST_PASSWORD      = "password"
+	REQUEST_MACHINE_ID    = "machine_id"
+	REQUEST_ACTIVATION_ID = "activation_id"
+)
 
 // Root container for all fabsmith controllers - contains common functions.
 // It is used for almost every controller, except the login and logout
