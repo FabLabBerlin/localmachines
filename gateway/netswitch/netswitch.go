@@ -19,6 +19,7 @@ type NetSwitch struct {
 	MachineId int64
 	UrlOn     string
 	UrlOff    string
+	Xmpp      bool
 	On        bool
 	syncCh    chan syncCommand
 }

@@ -53,12 +53,14 @@ func (nss *NetSwitches) fetch(client *http.Client) (err error) {
 		nss.nss = make(map[int64]*netswitch.NetSwitch)
 	}
 	for _, ns := range list {
-		if existing, exists := nss.nss[ns.MachineId]; exists {
-			existing.Id = ns.Id
-			existing.UrlOn = ns.UrlOn
-			existing.UrlOff = ns.UrlOff
-		} else {
-			nss.nss[ns.MachineId] = ns
+		if ns.Xmpp {
+			if existing, exists := nss.nss[ns.MachineId]; exists {
+				existing.Id = ns.Id
+				existing.UrlOn = ns.UrlOn
+				existing.UrlOff = ns.UrlOff
+			} else {
+				nss.nss[ns.MachineId] = ns
+			}
 		}
 	}
 	return
@@ -104,7 +106,9 @@ func (nss *NetSwitches) save(filename string) (err error) {
 	enc := json.NewEncoder(f)
 	switchStates := make([]*netswitch.NetSwitch, 0, len(nss.nss))
 	for _, ns := range nss.nss {
-		switchStates = append(switchStates, ns)
+		if ns.Xmpp {
+			switchStates = append(switchStates, ns)
+		}
 	}
 	return enc.Encode(switchStates)
 }
@@ -149,11 +153,13 @@ func (nss *NetSwitches) Sync(machineId int64) (err error) {
 func (nss *NetSwitches) SyncAll() error {
 	var errs error
 	for _, ns := range nss.nss {
-		if err := ns.Sync(); err != nil {
-			if errs == nil {
-				errs = err
-			} else {
-				errs = fmt.Errorf("%v; %v", errs, err)
+		if ns.Xmpp {
+			if err := ns.Sync(); err != nil {
+				if errs == nil {
+					errs = err
+				} else {
+					errs = fmt.Errorf("%v; %v", errs, err)
+				}
 			}
 		}
 	}
