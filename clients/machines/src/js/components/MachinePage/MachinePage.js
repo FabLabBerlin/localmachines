@@ -1,19 +1,17 @@
 var $ = require('jquery');
-var getters = require('../../getters');
 var MachineList = require('./MachineList');
 var LoginStore = require('../../modules/Login/stores/LoginStore');
 var MachineStore = require('../../modules/Machine/stores/MachineStore');
-var MachineActions = require('../../actions/MachineActions');
+var Machine = require('../../modules/Machine');
 var NfcLogoutMixin = require('../Login/NfcLogoutMixin');
-var LoginActions = require('../../actions/LoginActions');
+var Login = require('../../modules/Login');
 var Navigation = require('react-router').Navigation;
 var React = require('react');
 var reactor = require('../../reactor');
-var ReservationRulesActions = require('../../actions/ReservationRulesActions');
-var ReservationsActions = require('../../actions/ReservationsActions');
+var Reservations = require('../../modules/Reservations');
 var ScrollNav = require('../ScrollNav');
 var toastr = require('../../toastr');
-var UserActions = require('../../actions/UserActions');
+var User = require('../../modules/User');
 var TutoringList = require('./TutoringList');
 
 var MachinePage = React.createClass({
@@ -25,7 +23,7 @@ var MachinePage = React.createClass({
    */
   statics: {
     willTransitionTo(transition) {
-      const isLogged = reactor.evaluateToJS(getters.getIsLogged);
+      const isLogged = reactor.evaluateToJS(Login.getters.getIsLogged);
       if(!isLogged) {
         transition.redirect('login');
       }
@@ -34,9 +32,9 @@ var MachinePage = React.createClass({
 
   getDataBindings() {
     return {
-      user: getters.getUser,
-      machines: getters.getMachines,
-      activations: getters.getActivations
+      user: User.getters.getUser,
+      machines: Machine.getters.getMachines,
+      activations: Machine.getters.getActivations
     };
   },
 
@@ -45,25 +43,25 @@ var MachinePage = React.createClass({
    * before the component is mounted
    */
   componentWillMount() {
-    const uid = reactor.evaluateToJS(getters.getUid);
-    UserActions.fetchUser(uid);
-    MachineActions.apiGetUserMachines(uid);
-    ReservationsActions.load();
-    ReservationRulesActions.load();
+    const uid = reactor.evaluateToJS(Login.getters.getUid);
+    User.actions.fetchUser(uid);
+    Machine.actions.apiGetUserMachines(uid);
+    Reservations.actions.load();
+    Reservations.actions.loadRules();
   },
 
   /*
    * Clear state while logout
    */
   clearState() {
-    MachineActions.clearState();
+    Machine.actions.clearState();
   },
 
   /*
    * Logout with the exit button
    */
   handleLogout() {
-    LoginActions.logout(this.context.router);
+    Login.actions.logout(this.context.router);
   },
 
 
@@ -136,7 +134,7 @@ var MachinePage = React.createClass({
    * Need polling for activation status and maintenance status
    */
   update() {
-    MachineActions.pollDashboard();
+    Machine.actions.pollDashboard();
   }
 });
 

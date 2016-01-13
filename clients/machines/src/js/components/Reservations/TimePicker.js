@@ -1,8 +1,7 @@
 var $ = require('jquery');
-var getters = require('../../getters');
 var React = require('react');
 var reactor = require('../../reactor');
-var ReservationsActions = require('../../actions/ReservationsActions');
+var Reservations = require('../../modules/Reservations');
 
 
 var TimePicker = React.createClass({
@@ -10,9 +9,9 @@ var TimePicker = React.createClass({
 
   getDataBindings() {
     return {
-      newReservation: getters.getNewReservation,
-      newReservationPrice: getters.getNewReservationPrice,
-      times: getters.getNewReservationTimes
+      newReservation: Reservations.getters.getNewReservation,
+      newReservationPrice: Reservations.getters.getNewReservationPrice,
+      times: Reservations.getters.getNewReservationTimes
     };
   },
 
@@ -96,7 +95,7 @@ var TimePicker = React.createClass({
   },
 
   previous() {
-    ReservationsActions.newReservation.previousStep();
+    Reservations.actions.newReservation.previousStep();
   },
 
   setTimes(lastClickIndex) {
@@ -145,11 +144,11 @@ var TimePicker = React.createClass({
       }.bind(this));
     }
 
-    ReservationsActions.newReservation.setTimes({ times });
+    Reservations.actions.newReservation.setTimes({ times });
   },
 
   submit() {
-    ReservationsActions.newReservation.submit();
+    Reservations.actions.newReservation.submit();
   },
 
   times() {

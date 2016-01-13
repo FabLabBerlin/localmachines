@@ -1,9 +1,9 @@
 var $ = require('jquery');
-var actionTypes = require('../actionTypes');
-var ApiActions = require('./ApiActions');
-var reactor = require('../reactor');
-var toastr = require('../toastr');
-var UserStore = require('../stores/UserStore');
+var actionTypes = require('./actionTypes');
+var ApiActions = require('../Api/actions');
+var reactor = require('../../reactor');
+var toastr = require('../../toastr');
+var UserStore = require('./stores/UserStore');
 
 
 var UserActions = {

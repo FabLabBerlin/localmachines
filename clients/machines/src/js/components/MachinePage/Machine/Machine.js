@@ -1,10 +1,11 @@
 var AvailabilityDisplay = require('../../Reservations/AvailabilityDisplay');
 var FeedbackDialogs = require('../../Feedback/FeedbackDialogs');
-var getters = require('../../../getters');
+var Machine = require('../../../modules/Machine');
 var React = require('react');
-var LoginActions = require('../../../actions/LoginActions');
-var MachineActions = require('../../../actions/MachineActions');
+var LoginActions = require('../../../modules/Login/actions');
+var MachineActions = require('../../../modules/Machine/actions');
 var OccupiedMachine = require('./Occupied');
+var Reservations = require('../../../modules/Reservations');
 var BusyMachine = require('./Busy');
 var FreeMachine = require('./Free');
 var MaintenanceSwitch = require('./MaintenanceSwitch');
@@ -30,8 +31,8 @@ var MachineChooser = React.createClass({
 
   getDataBindings() {
     return {
-      machines: getters.getMachines,
-      reservationsByMachineId: getters.getActiveReservationsByMachineId
+      machines: Machine.getters.getMachines,
+      reservationsByMachineId: Reservations.getters.getActiveReservationsByMachineId
     };
   },
 

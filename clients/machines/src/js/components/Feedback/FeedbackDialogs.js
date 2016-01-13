@@ -1,6 +1,5 @@
-var FeedbackActions = require('../../actions/FeedbackActions');
-var getters = require('../../getters');
-var LoginActions = require('../../actions/LoginActions');
+var Feedback = require('../../modules/Feedback');
+var Login = require('../../modules/Login');
 var reactor = require('../../reactor');
 
 // https://github.com/HubSpot/vex/issues/72
@@ -53,15 +52,15 @@ export default {
           $('.vex').remove();
           $('body').removeClass('vex-open');
           console.log('satisfaction:', satisfaction);
-          FeedbackActions.reportSatisfaction({ activationId, satisfaction });
+          Feedback.actions.reportSatisfaction({ activationId, satisfaction });
         }
       }
     });
   },
 
   machineIssue(machineId) {
-    LoginActions.keepAlive();
-    const machinesById = reactor.evaluateToJS(getters.getMachinesById);
+    Login.actions.keepAlive();
+    const machinesById = reactor.evaluateToJS(Machine.getters.getMachinesById);
     const machine = machinesById[machineId] || {};
     VexDialog.buttons.YES.text = 'Yes';
     VexDialog.buttons.NO.text = 'No';
@@ -71,7 +70,7 @@ export default {
         machine.Name + '</b> as broken?',
       callback(confirmed) {
         if (confirmed) {
-          FeedbackActions.reportMachineBroken({ machineId });
+          Feedback.actions.reportMachineBroken({ machineId });
         }
         $('.vex').remove();
         $('body').removeClass('vex-open');

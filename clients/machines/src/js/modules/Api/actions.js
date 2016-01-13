@@ -1,5 +1,5 @@
 var $ = require('jquery');
-var GlobalActions = require('../global/actions');
+var GlobalActions = require('../Global/actions');
 var reactor = require('../../reactor');
 var toastr = require('../../toastr');
 

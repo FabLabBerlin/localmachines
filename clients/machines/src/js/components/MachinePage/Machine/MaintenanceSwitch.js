@@ -1,5 +1,5 @@
-var getters = require('../../../getters');
-var MachineActions = require('../../../actions/MachineActions');
+var Machine = require('../../../modules/Machine');
+var User = require('../../../modules/User');
 var React = require('react');
 var reactor = require('../../../reactor');
 var toastr = require('toastr');
@@ -16,9 +16,10 @@ var MaintenanceSwitch = React.createClass({
   mixins: [ reactor.ReactMixin ],
 
   getDataBindings() {
+    console.log('Machine.getters:', Machine.getters);
     return {
-      machinesById: getters.getMachinesById,
-      user: getters.getUser
+      machinesById: Machine.getters.getMachinesById,
+      user: User.getters.getUser
     };
   },
 
@@ -33,7 +34,7 @@ var MaintenanceSwitch = React.createClass({
         machine.get('Name') + '</b>?',
       callback(confirmed) {
         if (confirmed) {
-          MachineActions.setUnderMaintenance({ mid, onOrOff });
+          Machine.actions.setUnderMaintenance({ mid, onOrOff });
         }
         $('.vex').remove();
         $('body').removeClass('vex-open');

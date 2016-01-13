@@ -1,11 +1,11 @@
 var $ = require('jquery');
-var actionTypes = require('../actionTypes');
-var FeedbackStore = require('../stores/FeedbackStore');
-var getters = require('../getters');
-var GlobalActions = require('./GlobalActions');
-var LoginActions = require('../actions/LoginActions');
-var reactor = require('../reactor');
-var toastr = require('../toastr');
+var actionTypes = require('./actionTypes');
+var FeedbackStore = require('./stores/FeedbackStore');
+var getters = require('./getters');
+var GlobalActions = require('../Global/actions');
+var LoginActions = require('../Login/actions');
+var reactor = require('../../reactor');
+var toastr = require('../../toastr');
 
 var FeedbackActions = {
 

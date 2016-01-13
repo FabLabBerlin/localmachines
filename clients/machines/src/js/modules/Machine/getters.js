@@ -1,3 +1,7 @@
+var Nuclear = require('nuclear-js');
+var toImmutable = Nuclear.toImmutable;
+
+
 /*
  * Machine (Page) related getters
  */

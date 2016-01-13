@@ -1,8 +1,8 @@
-var LoginActions = require('../actions/LoginActions');
+var LoginActions = require('../modules/Login/actions');
 var {Navigation} = require('react-router');
 var React = require('react');
 var Reactor = require('../reactor');
-var Getters = require('../getters');
+var LoginGetters = require('../modules/Login/getters');
 
 
 var HeaderNavBrand = React.createClass({
@@ -122,7 +122,7 @@ var MainMenu = React.createClass({
 
 var HeaderNav = React.createClass({
   render() {
-    const isLogged = Reactor.evaluateToJS(Getters.getIsLogged);
+    const isLogged = Reactor.evaluateToJS(LoginGetters.getIsLogged);
 
     return (
       <div>

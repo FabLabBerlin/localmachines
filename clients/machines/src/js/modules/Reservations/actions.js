@@ -1,8 +1,8 @@
-var actionTypes = require('../actionTypes');
-var ApiActions = require('./ApiActions');
-var getters = require('../getters');
+var actionTypes = require('./actionTypes');
+var ApiActions = require('../Api/actions');
+var getters = require('./getters');
 var moment = require('moment');
-var reactor = require('../reactor');
+var reactor = require('../../reactor');
 var toastr = require('toastr');
 
 const STEP_SET_MACHINE = 1;
@@ -50,6 +50,12 @@ var ReservationActions = {
       });
 
       reactor.dispatch(actionTypes.SET_RESERVATIONS, { reservations });
+    });
+  },
+
+  loadRules() {
+    ApiActions.getCall('/api/reservation_rules', function(reservationRules) {
+      reactor.dispatch(actionTypes.SET_RESERVATION_RULES, reservationRules);
     });
   },
 

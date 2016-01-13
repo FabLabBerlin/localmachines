@@ -1,275 +1,6 @@
-var _ = require('lodash');
-var { Day, Time } = require('./components/Reservations/helpers');
-var { toCents, subtractVAT } = require('./components/UserProfile/helpers');
-var moment = require('moment');
+var Machine = require('../Machine');
 var Nuclear = require('nuclear-js');
 var toImmutable = Nuclear.toImmutable;
-
-
-/*
- * Global state related getters
- */
-const getIsLoading = [
-  ['globalStore'],
-  (machineStore) => {
-    return machineStore.get('loading');
-  }
-];
-
-
-/*
- * Login state related getters
- */
-const getIsLogged = [
-  ['loginStore'],
-  (loginStore) => {
-    return loginStore.get('isLogged');
-  }
-];
-
-const getUid = [
-  ['loginStore'],
-  (loginStore) => {
-    return loginStore.get('uid');
-  }
-];
-
-const getFirstTry = [
-  ['loginStore'],
-  (loginStore) => {
-    return loginStore.get('firstTry');
-  }
-];
-
-const getLoginSuccess = [
-  ['loginStore'],
-  (loginStore) => {
-    return loginStore.get('loginSuccess');
-  }
-];
-
-const getLastActivity = [
-  ['loginStore'],
-  (loginStore) => {
-    return loginStore.get('lastActivity');
-  }
-];
-
-
-/*
- * User (Page) related getters
- */
-const getUser = [
-  ['userStore'],
-  (userStore) => {
-    return userStore.get('user');
-  }
-];
-
-/*
- * Spendings (Page) related getters
- */
-const getBill = [
-  ['userStore'],
-  (userStore) => {
-    return userStore.get('bill');
-  }
-];
-
-const getBillMonths = [
-  getUser,
-  (user) => {
-    var months = [];
-    var created = moment(user.get('Created'));
-    if (created.unix() <= 0) {
-      created = moment('2015-07-01');
-    }
-    for (var t = created; t.isBefore(moment()); t.add(1, 'd')) {
-      months.push(t.clone());
-    }
-    months = _.uniq(months, function(month) {
-      return month.format('MMM YYYY');
-    });
-    return months;
-  }
-];
-
-const getMemberships = [
-  ['userStore'],
-  (userStore) => {
-    return userStore.get('memberships');
-  }
-];
-
-const getMembershipsByMonth = [
-  ['userStore'],
-  (userStore) => {
-    var byMonths = {};
-    _.each(userStore.get('memberships'), function(membership) {
-      var start = moment(membership.StartDate);
-      var end = moment(membership.EndDate);
-      for (var t = start; t.isBefore(end); t = t.add(1, 'M')) {
-        var month = t.format('MMM YYYY');
-        if (!byMonths[month]) {
-          byMonths[month] = [];
-        }
-        byMonths[month].push(membership);
-      }
-    });
-    return byMonths;
-  }
-];
-
-const getMonthlyBills = [
-  getBill,
-  getBillMonths,
-  getMembershipsByMonth,
-  (bill, billMonths, membershipsByMonth) => {
-    if (!bill) {
-      return undefined;
-    }
-    var purchases = bill.Purchases;
-    var purchasesByMonth = _.groupBy(purchases.Data, function(p) {
-      return moment(p.TimeStart).format('MMM YYYY');
-    });
-    var monthlyBills = _.map(billMonths, function(m) {
-      var month = m.format('MMM YYYY');
-      var monthlyBill = {
-        month: month,
-        memberships: [],
-        purchases: [],
-        sums: {
-          memberships: {
-            priceInclVAT: 0,
-            priceExclVAT: 0,
-            priceVAT: 0
-          },
-          purchases: {
-            priceInclVAT: 0,
-            priceExclVAT: 0,
-            priceVAT: 0,
-            durations: 0
-          },
-          total: {}
-        }
-      };
-
-      /*
-       * Collect purchases and sum for the totals
-       */
-      _.eachRight(purchasesByMonth[month], function(purchase) {
-        var timeStart = moment(purchase.TimeStart);
-        var timeEnd = moment(purchase.TimeEnd);
-
-        var duration = purchase.Quantity;
-        console.log('purchase:', purchase);
-        switch (purchase.PriceUnit) {
-        case 'month':
-          duration *= 60 * 60 * 24 * 30;
-          break;
-        case 'day':
-          duration *= 60 * 60 * 24;
-          break;
-        case 'hour':
-          duration *= 60 * 60;
-          break;
-        case '30 minutes':
-          duration *= 60 * 30;
-          break;
-        case 'minute':
-          duration *= 60;
-          break;
-        case 'second':
-          break;
-        default:
-          console.log('unknown price unit', purchase.PriceUnit);
-        }
-
-        monthlyBill.sums.durations += duration;
-        var priceInclVAT = toCents(purchase.DiscountedTotal);
-        var priceExclVAT = toCents(subtractVAT(purchase.DiscountedTotal));
-        var priceVAT = priceInclVAT - priceExclVAT;
-        monthlyBill.sums.purchases.priceInclVAT += priceInclVAT;
-        monthlyBill.sums.purchases.priceExclVAT += priceExclVAT;
-        monthlyBill.sums.purchases.priceVAT += priceVAT;
-        monthlyBill.purchases.push({
-          MachineName: purchase.Machine ? purchase.Machine.Name : 'Purchase ' + purchase.Type,
-          Type: purchase.Type,
-          TimeStart: timeStart,
-          duration: duration,
-          priceExclVAT: priceExclVAT,
-          priceVAT: priceVAT,
-          priceInclVAT: priceInclVAT
-        });
-      });
-
-      /*
-       * Collect memberships for each month
-       */
-      _.each(membershipsByMonth[month], function(membership) {
-        var totalPrice = toCents(membership.MonthlyPrice);
-        var priceExclVat = toCents(subtractVAT(membership.MonthlyPrice));
-        var vat = totalPrice - priceExclVat;
-        monthlyBill.memberships.push({
-          startDate: moment(membership.StartDate),
-          endDate: moment(membership.EndDate),
-          priceExclVAT: priceExclVat,
-          priceVAT: vat,
-          priceInclVAT: totalPrice
-        });
-        monthlyBill.sums.memberships.priceInclVAT += totalPrice;
-        monthlyBill.sums.memberships.priceExclVAT += priceExclVat;
-        monthlyBill.sums.memberships.priceVAT += vat;
-      });
-
-      monthlyBill.sums.total = {
-        priceInclVAT: monthlyBill.sums.purchases.priceInclVAT + monthlyBill.sums.memberships.priceInclVAT,
-        priceExclVAT: monthlyBill.sums.purchases.priceExclVAT + monthlyBill.sums.memberships.priceExclVAT,
-        priceVAT: monthlyBill.sums.purchases.priceVAT + monthlyBill.sums.memberships.priceVAT
-      };
-
-      return monthlyBill;
-    });
-    monthlyBills.reverse();
-    return monthlyBills;
-  }
-];
-
-
-/*
- * Feedback related getters
- */
-const getFeedbackSubject = [
-  ['feedbackStore'],
-  (feedbackStore) => {
-    if (feedbackStore.get('subject-dropdown') === 'Other') {
-      return feedbackStore.get('subject-other-text');
-    } else {
-      return feedbackStore.get('subject-dropdown');
-    }
-  }
-];
-
-const getFeedbackSubjectDropdown = [
-  ['feedbackStore'],
-  (feedbackStore) => {
-    return feedbackStore.get('subject-dropdown');
-  }
-];
-
-const getFeedbackSubjectOtherText = [
-  ['feedbackStore'],
-  (feedbackStore) => {
-    return feedbackStore.get('subject-other-text');
-  }
-];
-
-const getFeedbackMessage = [
-  ['feedbackStore'],
-  (feedbackStore) => {
-    return feedbackStore.get('message');
-  }
-];
 
 
 /*
@@ -459,7 +190,7 @@ const getActiveReservationsByMachineId = [
 ];
 
 const getNewReservationTimes = [
-  getMachinesById,
+  Machine.getters.getMachinesById,
   ['reservationsStore'],
   ['reservationRulesStore'],
   getReservationsByDay,
@@ -517,7 +248,7 @@ const getNewReservationTo = [
 ];
 
 const getNewReservationPrice = [
-  getMachinesById,
+  Machine.getters.getMachinesById,
   getNewReservation,
   getNewReservationTimes,
   (machinesById, newReservation, times) => {
@@ -538,7 +269,7 @@ const getNewReservationPrice = [
 // getSlotAvailabilities48h returns a map...
 // machineId => [reservations in the next 48h]
 const getSlotAvailabilities48h = [
-  getMachinesById,
+  Machine.getters.getMachinesById,
   ['reservationsStore'],
   getReservations,
   (machinesById, reservationsStore, reservations) => {
@@ -576,35 +307,6 @@ const getSlotAvailabilities48h = [
   }
 ];
 
-
-/*
- * Scroll Navigation related getters
- */
-const getScrollUpEnabled = [
-  ['scrollNavStore'],
-  (scrollNavStore) => {
-    return scrollNavStore.get('upEnabled');
-  }
-];
-
-const getScrollDownEnabled = [
-  ['scrollNavStore'],
-  (scrollNavStore) => {
-    return scrollNavStore.get('downEnabled');
-  }
-];
-
-const getScrollPosition = [
-  ['scrollNavStore'],
-  (scrollNavStore) => {
-    return scrollNavStore.get('position');
-  }
-];
-
 export default {
-  getIsLogged, getUid, getFirstTry, getLoginSuccess, getLastActivity,
-  getUser, getActivations, getMachines, getMachinesById, getMachineUsers, getIsLoading, getBill, getBillMonths, getMonthlyBills, getMemberships, getMembershipsByMonth,
-  getFeedbackSubject, getFeedbackSubjectDropdown, getFeedbackSubjectOtherText, getFeedbackMessage,
-  getNewReservation, getNewReservationPrice, getNewReservationTimes, getNewReservationFrom, getNewReservationTo, getReservations, getReservationsByDay, getActiveReservationsByMachineId, getSlotAvailabilities48h,
-  getScrollUpEnabled, getScrollDownEnabled, getScrollPosition
+  getNewReservation, getNewReservationPrice, getNewReservationTimes, getNewReservationFrom, getNewReservationTo, getReservations, getReservationsByDay, getActiveReservationsByMachineId, getSlotAvailabilities48h
 };

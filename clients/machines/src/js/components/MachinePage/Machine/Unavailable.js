@@ -1,5 +1,4 @@
-var getters = require('../../../getters');
-var MachineActions = require('../../../modules/Machine/actions');
+var Machine = require('../../../modules/Machine');
 var React = require('react');
 var reactor = require('../../../reactor');
 var Timer = require('./Timer');
@@ -12,7 +11,7 @@ var UnavailableMachine = React.createClass({
 
   getDataBindings() {
     return {
-      machineUsers: getters.getMachineUsers
+      machineUsers: Machine.getters.getMachineUsers
     };
   },
 

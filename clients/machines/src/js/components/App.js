@@ -1,8 +1,8 @@
-var reactor = require('../reactor');
-var getters = require('../getters');
+var Global = require('../modules/Global');
 var HeaderNav = require('./HeaderNav');
-var LoginStore = require('../modules/Login/stores/LoginStore');
+var Login = require('../modules/Login');
 var React = require('react');
+var reactor = require('../reactor');
 var RouteHandler = require('react-router').RouteHandler;
 
 
@@ -18,8 +18,11 @@ var RouteHandler = require('react-router').RouteHandler;
   mixins: [ reactor.ReactMixin ],
 
   getDataBindings() {
+    console.log('App.js: getDataBindings');
+    console.log('Login.getters:', Login.getters);
+    console.log('Login.getters.getIsLoading:', Login.getters.getIsLoading);
     return {
-      isLoading: getters.getIsLoading
+      isLoading: Global.getters.getIsLoading
     };
   },
 
@@ -32,8 +35,9 @@ var RouteHandler = require('react-router').RouteHandler;
    * If he's logged and there is no nfc port, can switch to user interface
    */
   render() {
+    console.log('App.js: render');
     
-    const isLogged = reactor.evaluateToJS(getters.getIsLogged);
+    const isLogged = reactor.evaluateToJS(Login.getters.getIsLogged);
     
     return (
       <div className="app">

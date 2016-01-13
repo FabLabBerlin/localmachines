@@ -1,9 +1,10 @@
-var getters = require('../../getters');
 var moment = require('moment');
 var momentDurationFormat = require('moment-duration-format');
 var React = require('react');
 var reactor = require('../../reactor');
-var Tutoring = require('./Tutoring');
+var TutoringItem = require('./Tutoring');
+var Tutorings = require('../../modules/Tutorings');
+
 
 var TutoringList = React.createClass({
 
@@ -11,7 +12,7 @@ var TutoringList = React.createClass({
 
   getDataBindings() {
     return {
-      tutorings: getters.getTutorings
+      tutorings: Tutorings.getters.getTutorings
     };
   },
 
@@ -33,8 +34,8 @@ var TutoringList = React.createClass({
         }
       });
       tutorings = _.map(tutorings, function(t, i) {
-        return <Tutoring key={i}
-                         tutoring={t}/>;
+        return <TutoringItem key={i}
+                             tutoring={t}/>;
       });
     }
 

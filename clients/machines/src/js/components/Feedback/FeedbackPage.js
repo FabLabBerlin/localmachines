@@ -1,10 +1,10 @@
-var FeedbackActions = require('../../actions/FeedbackActions');
-var getters = require('../../getters');
+var Feedback = require('../../modules/Feedback');
+var Login = require('../../modules/Login');
 var {Navigation} = require('react-router');
 var NfcLogoutMixin = require('../Login/NfcLogoutMixin');
 var React = require('react');
 var reactor = require('../../reactor');
-var UserActions = require('../../actions/UserActions');
+var User = require('../../modules/User');
 
 
 var FeedbackPage = React.createClass({
@@ -15,7 +15,7 @@ var FeedbackPage = React.createClass({
    */
   statics: {
     willTransitionTo(transition) {
-      const isLogged = reactor.evaluateToJS(getters.getIsLogged);
+      const isLogged = reactor.evaluateToJS(Login.getters.getIsLogged);
       if(!isLogged) {
         transition.redirect('login');
       }
@@ -24,16 +24,16 @@ var FeedbackPage = React.createClass({
 
   getDataBindings() {
     return {
-      subject: getters.getFeedbackSubject,
-      subjectDropdown: getters.getFeedbackSubjectDropdown,
-      subjectOtherText: getters.getFeedbackSubjectOtherText,
-      message: getters.getFeedbackMessage
+      subject: Feedback.getters.getFeedbackSubject,
+      subjectDropdown: Feedback.getters.getFeedbackSubjectDropdown,
+      subjectOtherText: Feedback.getters.getFeedbackSubjectOtherText,
+      message: Feedback.getters.getFeedbackMessage
     };
   },
 
   componentDidMount() {
     this.nfcOnDidMount();
-    const uid = reactor.evaluateToJS(getters.getUid);
+    const uid = reactor.evaluateToJS(Login.getters.getUid);
     UserActions.fetchUser(uid);
   },
 
@@ -44,11 +44,11 @@ var FeedbackPage = React.createClass({
   handleChange(event) {
     var key = event.target.id;
     var value = event.target.value;
-    FeedbackActions.setFeedbackProperty({ key, value });
+    Feedback.actions.setFeedbackProperty({ key, value });
   },
 
   handleSubmit() {
-    FeedbackActions.submit();
+    Feedback.actions.submit();
   },
 
   render() {

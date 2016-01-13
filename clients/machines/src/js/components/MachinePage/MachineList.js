@@ -1,5 +1,4 @@
 var _ = require('lodash');
-var getters = require('../../getters');
 var React = require('react');
 var reactor = require('../../reactor');
 var Machine = require('./Machine/Machine');
@@ -11,7 +10,7 @@ var MachineList = React.createClass({
 
   getDataBindings() {
     return {
-      machines: getters.getMachines
+      machines: Machine.getters.getMachines
     };
   },
 

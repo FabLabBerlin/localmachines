@@ -1,11 +1,12 @@
-var getters = require('../../getters');
-var MachineActions = require('../../actions/MachineActions');
+var LoginGetters = require('../../modules/Login/getters');
+var UserGetters = require('../../modules/User/getters');
+var MachineActions = require('../../modules/Machine/actions');
 var {Navigation} = require('react-router');
-var LoginActions = require('../../actions/LoginActions');
+var LoginActions = require('../../modules/Login/actions');
 var NfcLogoutMixin = require('../Login/NfcLogoutMixin');
 var React = require('react');
 var reactor = require('../../reactor');
-var UserActions = require('../../actions/UserActions');
+var UserActions = require('../../modules/User/actions');
 var UserForm = require('./UserForm');
 
 
@@ -18,7 +19,7 @@ var UserPage = React.createClass({
    */
   statics: {
     willTransitionTo(transition) {
-      const isLogged = reactor.evaluateToJS(getters.getIsLogged);
+      const isLogged = reactor.evaluateToJS(LoginGetters.getIsLogged);
       if(!isLogged) {
         transition.redirect('login');
       }
@@ -27,13 +28,13 @@ var UserPage = React.createClass({
 
   getDataBindings() {
     return {
-      user: getters.getUser
+      user: UserGetters.getUser
     };
   },
 
   componentDidMount() {
     this.nfcOnDidMount();
-    const uid = reactor.evaluateToJS(getters.getUid);
+    const uid = reactor.evaluateToJS(LoginGetters.getUid);
     MachineActions.apiGetUserMachines(uid);
     UserActions.fetchUser(uid);
     UserActions.fetchBill(uid);
@@ -49,8 +50,8 @@ var UserPage = React.createClass({
   },
 
   handleSubmit() {
-    const uid = reactor.evaluateToJS(getters.getUid);
-    var user = reactor.evaluateToJS(getters.getUser);
+    const uid = reactor.evaluateToJS(LoginGetters.getUid);
+    var user = reactor.evaluateToJS(UserGetters.getUser);
     UserActions.updateUser(uid, user);
   },
 
@@ -61,7 +62,7 @@ var UserPage = React.createClass({
   },
 
   updatePassword(password) {
-    const uid = reactor.evaluateToJS(getters.getUid);
+    const uid = reactor.evaluateToJS(LoginGetters.getUid);
     UserActions.updatePassword(uid, password);
   },
 

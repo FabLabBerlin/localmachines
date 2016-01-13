@@ -1,10 +1,10 @@
-var getters = require('../../getters');
+var Machine = require('../../modules/Machine');
 var moment = require('moment');
 var React = require('react');
 var reactor = require('../../reactor');
-var TutoringActions = require('../../modules/Tutorings/actions');
+var Tutorings = require('../../modules/Tutorings');
 
-var Tutoring = React.createClass({
+var TutoringItem = React.createClass({
 
   getInitialState() {
     return {
@@ -22,11 +22,11 @@ var Tutoring = React.createClass({
 
   startTimer() {
     this.props.tutoring.TimerTimeStart = moment().format('YYYY-MM-DD HH:mm:ss');
-    TutoringActions.startTutoring(this.props.tutoring.Id);
+    Tutorings.actions.startTutoring(this.props.tutoring.Id);
   },
 
   stopTimer() {
-    TutoringActions.stopTutoring(this.props.tutoring.Id);
+    Tutorings.actions.stopTutoring(this.props.tutoring.Id);
   },
 
   tick() {
@@ -38,7 +38,7 @@ var Tutoring = React.createClass({
   render() {
     var start = moment(this.props.tutoring.TimeStart);
     var end = moment(this.props.tutoring.TimeEnd);
-    var machineUsers = reactor.evaluateToJS(getters.getMachineUsers);
+    var machineUsers = reactor.evaluateToJS(Machine.getters.getMachineUsers);
 
     var currentTimerDuration;
     if (this.props.tutoring.PriceUnit === 'day') {
@@ -123,4 +123,4 @@ var Tutoring = React.createClass({
   }
 });
 
-export default Tutoring;
+export default TutoringItem;

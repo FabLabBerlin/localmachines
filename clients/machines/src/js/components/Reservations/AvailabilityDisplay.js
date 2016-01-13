@@ -1,4 +1,5 @@
-var getters = require('../../getters');
+var Login = require('../../modules/Login');
+var Machine = require('../../modules/Machine');
 var moment = require('moment');
 var React = require('react');
 var reactor = require('../../reactor');
@@ -20,8 +21,8 @@ var Slot = React.createClass({
 
   getDataBindings() {
     return {
-      userId: getters.getUid,
-      machineUsers: getters.getMachineUsers
+      userId: Login.getters.getUid,
+      machineUsers: Machine.getters.getMachineUsers
     };
   },
 
@@ -84,9 +85,9 @@ var AvailabilityDisplay = React.createClass({
 
   getDataBindings() {
     return {
-      reservations: getters.getReservations,
-      slotAvailabilities48h: getters.getSlotAvailabilities48h,
-      userId: getters.getUid
+      reservations: Reservations.getters.getReservations,
+      slotAvailabilities48h: Reservations.getters.getSlotAvailabilities48h,
+      userId: Login.getters.getUid
     };
   },
 

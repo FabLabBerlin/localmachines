@@ -1,4 +1,4 @@
-var getters = require('../../getters');
+var Login = require('../../modules/Login');
 var reactor = require('../../reactor');
 var toastr = require('../../toastr');
 
@@ -45,7 +45,7 @@ var NfcLogoutMixin = {
   },
 
   checkIdle() {
-    var lastActivity = reactor.evaluateToJS(getters.getLastActivity);
+    var lastActivity = reactor.evaluateToJS(Login.getters.getLastActivity);
     if (lastActivity) {
       var t = new Date();
       var idle = t - lastActivity;

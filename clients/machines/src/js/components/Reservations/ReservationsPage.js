@@ -1,13 +1,12 @@
-var getters = require('../../getters');
-var MachineActions = require('../../actions/MachineActions');
+var Login = require('../../modules/Login');
+var Machine = require('../../modules/Machine');
 var moment = require('moment');
 var Navigation = require('react-router').Navigation;
 var NewReservation = require('./NewReservation');
 var Nuclear = require('nuclear-js');
 var React = require('react');
 var reactor = require('../../reactor');
-var ReservationRulesActions = require('../../actions/ReservationRulesActions');
-var ReservationsActions = require('../../actions/ReservationsActions');
+var Reservations = require('../../modules/Reservations');
 var toImmutable = Nuclear.toImmutable;
 
 // https://github.com/HubSpot/vex/issues/72
@@ -36,7 +35,7 @@ var TableRow = React.createClass({
       message: 'Do you really want to cancel this reservation?',
       callback(confirmed) {
         if (confirmed) {
-          ReservationsActions.cancelReservation(reservationId);
+          Reservations.actions.cancelReservation(reservationId);
         }
         $('.vex').remove();
         $('body').removeClass('vex-open');
@@ -92,22 +91,22 @@ var ReservationsTable = React.createClass({
   mixins: [ reactor.ReactMixin ],
 
   componentWillMount() {
-    const uid = reactor.evaluateToJS(getters.getUid);
-    MachineActions.apiGetUserMachines(uid);
-    ReservationsActions.load();
-    ReservationRulesActions.load();
+    const uid = reactor.evaluateToJS(Login.getters.getUid);
+    Machine.actions.apiGetUserMachines(uid);
+    Reservations.actions.load();
+    Reservations.actions.loadRules();
   },
 
   getDataBindings() {
     return {
-      machinesById: getters.getMachinesById,
-      reservations: getters.getReservations
+      machinesById: Machines.getters.getMachinesById,
+      reservations: Reservations.getters.getReservations
     };
   },
 
   render() {
     console.log('machinesById:', this.state.machinesById);
-    const uid = reactor.evaluateToJS(getters.getUid);
+    const uid = reactor.evaluateToJS(Login.getters.getUid);
     if (this.state.reservations && this.state.machinesById) {
       if (this.state.machinesById.size === 0) {
         return <div/>;
@@ -157,7 +156,7 @@ var ReservationsPage = React.createClass({
 
   statics: {
     willTransitionTo(transition) {
-      const isLogged = reactor.evaluateToJS(getters.getIsLogged);
+      const isLogged = reactor.evaluateToJS(Login.getters.getIsLogged);
       if(!isLogged) {
         transition.redirect('login');
       }
@@ -165,16 +164,16 @@ var ReservationsPage = React.createClass({
   },
 
   componentWillUnmount() {
-    ReservationsActions.newReservation.done();
+    Reservations.actions.newReservation.done();
   },
 
   clickCreate() {
-    ReservationsActions.newReservation.create();
+    Reservations.actions.newReservation.create();
   },
 
   getDataBindings() {
     return {
-      newReservation: getters.getNewReservation
+      newReservation: Reservations.getters.getNewReservation
     };
   },
 

@@ -1,13 +1,13 @@
 var DatePicker = require('./DatePicker');
-var getters = require('../../getters');
-var MachineActions = require('../../actions/MachineActions');
+var Login = require('../../modules/Login');
+var Machine = require('../../modules/Machine');
 var moment = require('moment');
 var React = require('react');
 var reactor = require('../../reactor');
-var ReservationsActions = require('../../actions/ReservationsActions');
+var Reservations = require('../../modules/Reservations');
 var TimePicker = require('./TimePicker');
-var UserActions = require('../../actions/UserActions');
 var toastr = require('../../toastr');
+var User = require('../../modules/User');
 
 
 var MachinePricing = React.createClass({
@@ -38,9 +38,9 @@ var SelectMachine = React.createClass({
 
   getDataBindings() {
     return {
-      machines: getters.getMachines,
-      machinesById: getters.getMachinesById,
-      newReservation: getters.getNewReservation
+      machines: Machine.getters.getMachines,
+      machinesById: Machine.getters.getMachinesById,
+      newReservation: Reservations.getters.getNewReservation
     };
   },
 
@@ -103,13 +103,13 @@ var SelectMachine = React.createClass({
   },
 
   cancel() {
-    ReservationsActions.newReservation.done();
+    Reservations.actions.newReservation.done();
   },
 
   next() {
     this.setMachine();
     if (this.state.newReservation.get('machineId')) {
-      ReservationsActions.newReservation.nextStep();
+      Reservations.actions.newReservation.nextStep();
     }
   },
 
@@ -118,7 +118,7 @@ var SelectMachine = React.createClass({
     if (mid) {
       mid = parseInt(mid);
       if (mid) {
-        ReservationsActions.newReservation.setMachine({ mid });
+        Reservations.actions.newReservation.setMachine({ mid });
       } else {
         toastr.error('No machine selected');
       }
@@ -132,16 +132,16 @@ var SuccessMsg = React.createClass({
 
   getDataBindings() {
     return {
-      machinesById: getters.getMachinesById,
-      newReservation: getters.getNewReservation,
-      newReservationPrice: getters.getNewReservationPrice,
-      from: getters.getNewReservationFrom,
-      to: getters.getNewReservationTo
+      machinesById: Machine.getters.getMachinesById,
+      newReservation: Reservations.getters.getNewReservation,
+      newReservationPrice: Reservations.getters.getNewReservationPrice,
+      from: Reservations.getters.getNewReservationFrom,
+      to: Reservations.getters.getNewReservationTo
     };
   },
 
   handleClick() {
-    ReservationsActions.newReservation.done();
+    Reservations.actions.newReservation.done();
   },
 
   render() {
@@ -184,16 +184,16 @@ var NewReservation = React.createClass({
 
   getDataBindings() {
     return {
-      machines: getters.getMachines,
-      machinesById: getters.getMachinesById,
-      newReservation: getters.getNewReservation
+      machines: Machine.getters.getMachines,
+      machinesById: Machine.getters.getMachinesById,
+      newReservation: Reservations.getters.getNewReservation
     };
   },
 
   componentWillMount() {
-    const uid = reactor.evaluateToJS(getters.getUid);
-    UserActions.fetchUser(uid);
-    MachineActions.apiGetUserMachines(uid);
+    const uid = reactor.evaluateToJS(Login.getters.getUid);
+    User.actions.fetchUser(uid);
+    Machine.actions.apiGetUserMachines(uid);
   },
 
   render() {

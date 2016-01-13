@@ -1,7 +1,6 @@
 var App = require('./components/App');
 var FeedbackPage = require('./components/Feedback/FeedbackPage');
 var FeedbackStore = require('./modules/Feedback/stores/FeedbackStore');
-var getters = require('./getters');
 var GlobalStore = require('./modules/Global/stores/GlobalStore');
 var LoginChooser = require('./components/Login/LoginChooser');
 var LoginStore = require('./modules/Login/stores/LoginStore');

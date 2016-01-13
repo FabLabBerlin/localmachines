@@ -1,21 +1,20 @@
-var getters = require('../getters');
-var LoginActions = require('../modules/Login/actions');
+var Login = require('../modules/Login');
 var React = require('react');
 var reactor = require('../reactor');
-var ScrollNavActions = require('../modules/ScrollNav/actions');
+var ScrollNav = require('../modules/ScrollNav');
 
 const TOP = 'top';
 const BOTTOM = 'bottom';
 
 var Button = React.createClass({
   handleClick() {
-    LoginActions.keepAlive();
+    Login.actions.keepAlive();
     switch (this.props.topOrBottom) {
     case TOP:
-      ScrollNavActions.scrollUp();
+      ScrollNav.actions.scrollUp();
       break;
     case BOTTOM:
-      ScrollNavActions.scrollDown();
+      ScrollNav.actions.scrollDown();
       break;
     }
   },
@@ -36,20 +35,20 @@ var Button = React.createClass({
   }
 });
 
-var ScrollNav = React.createClass({
+export default React.createClass({
   mixins: [ reactor.ReactMixin ],
 
   componentDidMount() {
     window.setTimeout(function() {
       var scrollStep = $(window).height() / 2;
-      ScrollNavActions.setScrollStep(scrollStep);
+      ScrollNav.actions.setScrollStep(scrollStep);
     }, 200);
   },
 
   getDataBindings() {
     return {
-      scrollUpEnabled: getters.getScrollUpEnabled,
-      scrollDownEnabled: getters.getScrollDownEnabled
+      scrollUpEnabled: ScrollNav.getters.getScrollUpEnabled,
+      scrollDownEnabled: ScrollNav.getters.getScrollDownEnabled
     };
   },
 
@@ -63,4 +62,3 @@ var ScrollNav = React.createClass({
   }
 });
 
-export default ScrollNav;

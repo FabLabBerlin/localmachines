@@ -1,16 +1,16 @@
-var getters = require('../../getters');
 var moment = require('moment');
 var { Month } = require('./helpers');
 var React = require('react');
 var reactor = require('../../reactor');
-var ReservationsActions = require('../../actions/ReservationsActions');
+var Reservations = require('../../modules/Reservations');
+var User = require('../../modules/User');
 
 
 var DayView = React.createClass({
   handleClick() {
     if (!this.props.header && !this.props.empty && !this.props.notAvailable) {
       var date = this.props.moment;
-      ReservationsActions.newReservation.setDate({ date });
+      Reservations.actions.newReservation.setDate({ date });
     }
   },
 
@@ -62,7 +62,7 @@ var MonthView = React.createClass({
 
   getDataBindings() {
     return {
-      user: getters.getUser
+      user: User.getters.getUser
     };
   },
 
@@ -125,11 +125,11 @@ var MonthView = React.createClass({
 
 var DatePicker = React.createClass({
   previous() {
-    ReservationsActions.newReservation.previousStep();
+    Reservations.actions.newReservation.previousStep();
   },
 
   next() {
-    ReservationsActions.newReservation.nextStep();
+    Reservations.actions.newReservation.nextStep();
   },
 
   render() {

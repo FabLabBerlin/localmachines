@@ -1,12 +1,10 @@
 var $ = require('jquery');
-var getters = require('../../getters');
-var LoginStore = require('../../stores/LoginStore');
-var LoginActions = require('../../actions/LoginActions');
+var LoginStore = require('../../modules/Login/stores/LoginStore');
+var Login = require('../../modules/Login');
 var {Navigation} = require('react-router');
 var React = require('react');
 var reactor = require('../../reactor');
 var toastr = require('toastr');
-var actionTypes = require('../../actionTypes');
 
 /*
  * LoginNfc
@@ -46,7 +44,7 @@ var LoginNfc = React.createClass({
       console.log(e.message);
     }
 
-    LoginActions.nfcLogin(uid, this.context.router);
+    Login.actions.nfcLogin(uid, this.context.router);
   },
 
   /*

@@ -1,7 +1,7 @@
 var React = require('react');
 var ForceSwitchOn = require('./ForceSwitchOn');
 var ForceSwitchOff = require('./ForceSwitchOff');
-var MachineActions = require('../../../actions/MachineActions');
+var MachineActions = require('../../../modules/Machine/actions');
 
 /*
  * Div displayed the machine is free

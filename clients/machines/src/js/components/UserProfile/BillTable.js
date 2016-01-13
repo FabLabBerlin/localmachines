@@ -1,8 +1,8 @@
 var _ = require('lodash');
-var getters = require('../../getters');
 var moment = require('moment');
 var React = require('react');
 var reactor = require('../../reactor');
+var User = require('../../modules/User');
 var {formatDate, subtractVAT, toEuro, toCents} = require('./helpers');
 
 
@@ -31,8 +31,8 @@ var BillTables = React.createClass({
 
   getDataBindings() {
     return {
-      bill: getters.getBill,
-      monthlyBills: getters.getMonthlyBills
+      bill: User.getters.getBill,
+      monthlyBills: User.getters.getMonthlyBills
     };
   },
 

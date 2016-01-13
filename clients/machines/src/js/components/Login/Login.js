@@ -1,7 +1,6 @@
 var $ = require('jquery');
-var getters = require('../../getters');
-var LoginStore = require('../../stores/LoginStore');
-var LoginActions = require('../../actions/LoginActions');
+var LoginStore = require('../../modules/Login/stores/LoginStore');
+var Login = require('../../modules/Login');
 var {Navigation} = require('react-router');
 var React = require('react');
 var reactor = require('../../reactor');
@@ -12,7 +11,7 @@ var reactor = require('../../reactor');
  * Handle the login page
  * Give permission to edit your information
  */
-var Login = React.createClass({
+export default React.createClass({
 
   /*
    * To use transitionTo/replaceWith/redirect and some function related to the router
@@ -34,7 +33,7 @@ var Login = React.createClass({
       username: this.refs.name.getDOMNode().value,
       password: this.refs.password.getDOMNode().value
     };
-    LoginActions.submitLoginForm(data, this.context.router);
+    Login.actions.submitLoginForm(data, this.context.router);
   },
 
   /*
@@ -56,15 +55,16 @@ var Login = React.createClass({
    * listen to the onChange event from the UserStore
    */
   componentDidMount() {
+    console.log('Login.js: componentDidMount()');
     var data = {
       username: '',
       password: ''
     };
-    LoginActions.submitLoginForm(data, this.context.router);
+    Login.actions.submitLoginForm(data, this.context.router);
 
     this.focus();
 
-    if (reactor.evaluateToJS(getters.getIsLogged)) {
+    if (reactor.evaluateToJS(Login.getters.getIsLogged)) {
       this.replaceWith('/machine');
     }
   },
@@ -73,6 +73,7 @@ var Login = React.createClass({
    * Render the form and the button inside of the App component
    */
   render() {
+    console.log('Login.js: render()');
     return (
       <form className="login-form" method="post" onSubmit={this.handleSubmit}>
         <div className="regular-login">
@@ -112,5 +113,3 @@ var Login = React.createClass({
     );
   }
 });
-
-export default Login;

@@ -1,14 +1,13 @@
 var BillTable = require('./BillTable');
-var getters = require('../../getters');
-var LoginActions = require('../../actions/LoginActions');
-var MachineActions = require('../../actions/MachineActions');
+var Login = require('../../modules/Login');
+var Machine = require('../../modules/Machine');
 var Membership = require('./Membership');
 var NfcLogoutMixin = require('../Login/NfcLogoutMixin');
 var {Navigation} = require('react-router');
 var React = require('react');
 var reactor = require('../../reactor');
 var ScrollNav = require('../ScrollNav');
-var UserActions = require('../../actions/UserActions');
+var User = require('../../modules/User');
 
 
 var SpendingsPage = React.createClass({
@@ -23,7 +22,7 @@ var SpendingsPage = React.createClass({
    */
   statics: {
     willTransitionTo(transition) {
-      const isLogged = reactor.evaluateToJS(getters.getIsLogged);
+      const isLogged = reactor.evaluateToJS(Login.getters.getIsLogged);
       if(!isLogged) {
         transition.redirect('login');
       }
@@ -35,20 +34,20 @@ var SpendingsPage = React.createClass({
    */
   getDataBindings() {
     return {
-      user: getters.getUser,
-      machines: getters.getMachines,
-      bill: getters.getBill,
-      memberships: getters.getMemberships
+      user: User.getters.getUser,
+      machines: Machine.getters.getMachines,
+      bill: User.getters.getBill,
+      memberships: User.getters.getMemberships
     };
   },
 
   componentDidMount() {
     this.nfcOnDidMount();
     const uid = reactor.evaluateToJS(getters.getUid);
-    MachineActions.apiGetUserMachines(uid);
-    UserActions.fetchUser(uid);
-    UserActions.fetchBill(uid);
-    UserActions.fetchMemberships(uid);
+    Machine.actions.apiGetUserMachines(uid);
+    User.actions.fetchUser(uid);
+    User.actions.fetchBill(uid);
+    User.actions.fetchMemberships(uid);
   },
 
   componentWillUnmount() {
@@ -59,7 +58,7 @@ var SpendingsPage = React.createClass({
    * Logout with the exit button
    */
   handleLogout() {
-    LoginActions.logout();
+    Login.actions.logout();
   },
 
   render() {
