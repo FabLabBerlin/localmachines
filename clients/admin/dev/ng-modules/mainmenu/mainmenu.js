@@ -8,7 +8,12 @@ app.directive('mainMenu', function() {
   return {
     templateUrl: 'ng-modules/mainmenu/mainmenu.html',
     restrict: 'E',
-    controller: ['$scope', '$element', function($scope, $element) {
+    controller: [
+      '$scope', '$element', '$cookieStore', 
+      function($scope, $element, $cookieStore) {
+
+      $scope.userFullName = $cookieStore.get('FirstName') +
+    ' ' + $cookieStore.get('LastName');
 
       var links = $($element).find('a');
       links.click(function(){
