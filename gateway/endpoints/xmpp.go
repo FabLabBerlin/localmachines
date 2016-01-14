@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/gateway/global"
 	"github.com/FabLabBerlin/localmachines/gateway/netswitches"
-	"github.com/FabLabBerlin/localmachines/gateway/xmpp"
+	"github.com/FabLabBerlin/localmachines/lib/xmpp"
 	"log"
 	"math/big"
 	"time"

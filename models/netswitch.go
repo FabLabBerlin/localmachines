@@ -3,7 +3,7 @@ package models
 import (
 	"errors"
 	"fmt"
-	"github.com/FabLabBerlin/localmachines/gateway/xmpp"
+	"github.com/FabLabBerlin/localmachines/lib/xmpp"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/satori/go.uuid"

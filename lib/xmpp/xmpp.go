@@ -4,10 +4,17 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"github.com/FabLabBerlin/localmachines/gateway/global"
 	"github.com/mattn/go-xmpp"
 	"log"
 	"strings"
+	"time"
+)
+
+const (
+	DEBUG                    = false
+	NO_TLS                   = false
+	TLS_INSECURE_SKIP_VERIFY = false
+	USE_SERVER_SESSION       = true
 )
 
 type Xmpp struct {
@@ -38,21 +45,33 @@ func NewXmpp(server, user, pass string) (x *Xmpp, err error) {
 
 	xmpp.DefaultConfig = tls.Config{
 		ServerName:         serverName(server),
-		InsecureSkipVerify: global.XMPP_TLS_INSECURE_SKIP_VERIFY,
+		InsecureSkipVerify: TLS_INSECURE_SKIP_VERIFY,
 	}
 
 	options := xmpp.Options{
 		Host:          server,
 		User:          user,
 		Password:      pass,
-		NoTLS:         global.XMPP_NO_TLS,
-		Debug:         global.XMPP_DEBUG,
-		Session:       global.XMPP_USE_SERVER_SESSION,
+		NoTLS:         NO_TLS,
+		Debug:         DEBUG,
+		Session:       USE_SERVER_SESSION,
 		Status:        STATUS,
 		StatusMessage: STATUS_MESSAGE,
 	}
 
 	x.talk, err = options.NewClient()
+
+	if err == nil {
+		go func() {
+			for {
+				<-time.After(time.Second)
+				log.Printf("Pinnnnggggggggg")
+				if err := x.Ping(); err != nil {
+					log.Printf("ping errrrrr: %v", err)
+				}
+			}
+		}()
+	}
 
 	return
 }
@@ -75,6 +94,7 @@ func (x *Xmpp) Run() {
 			}
 			switch v := chat.(type) {
 			case xmpp.Chat:
+				log.Printf("xmpp chat rcvd")
 				fmt.Println(v.Remote, v.Text)
 
 				var data Data
@@ -90,16 +110,23 @@ func (x *Xmpp) Run() {
 					}
 				}
 			case xmpp.Presence:
-				if global.XMPP_DEBUG {
+				log.Printf("xmpp presence rcvd")
+				if DEBUG {
 					fmt.Println(v.From, v.Show)
 				}
+			case xmpp.IQ:
+				log.Printf("xmpp iq rcvd: %v", v)
+			default:
+				log.Printf("1234: unknown msg type")
 			}
 		}
 	}()
 }
 
-func (x *Xmpp) Ping() {
-	x.talk.PingC2S(x.user, x.server)
+func (x *Xmpp) Ping() error {
+	//tmp := fmt.Sprintf("bla%v", time.Now().Unix())
+	//log.Printf("tmp=%v, server=%v\n", tmp, x.server)
+	return x.talk.PingC2S(x.user, "api.easylab.io" /*x.server*/)
 }
 
 func (x *Xmpp) Recv() <-chan Message {
