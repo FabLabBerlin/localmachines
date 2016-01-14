@@ -58,19 +58,33 @@ func PingLoop() {
 	}
 }
 
-func Init() (err error) {
+func Init(retries int) (err error) {
 	user := global.Cfg.API.Id
 	key := global.Cfg.API.Key
 
-	client := &http.Client{}
-	if client.Jar, err = cookiejar.New(nil); err != nil {
-		return
-	}
-	if err := Login(client, user, key); err != nil {
-		return fmt.Errorf("login: %v", err)
-	}
-	if err = netSwitches.Load(client); err != nil {
-		return fmt.Errorf("netswitches load: %v", err)
+	for i := 0; retries <= 0 || i < retries; i++ {
+		client := &http.Client{}
+		if err != nil {
+			log.Printf("gateway: Init: %v", err)
+			log.Printf("gateway: Init: retrying in 5 seconds")
+			<-time.After(5 * time.Second)
+			err = nil
+		}
+		if client.Jar, err = cookiejar.New(nil); err != nil {
+			err = fmt.Errorf("cookie jar: %v", err)
+			continue
+		}
+		if err = Login(client, user, key); err != nil {
+			err = fmt.Errorf("login: %v", err)
+			continue
+		}
+		if err = netSwitches.Load(client); err != nil {
+			err = fmt.Errorf("netswitches load: %v", err)
+			continue
+		}
+		if err == nil {
+			break
+		}
 	}
 
 	return
@@ -78,7 +92,7 @@ func Init() (err error) {
 
 func Reinit() (err error) {
 	netSwitches.Save()
-	if err = Init(); err != nil {
+	if err = Init(2); err != nil {
 		return fmt.Errorf("Init: %v", err)
 	}
 	return
@@ -92,7 +106,7 @@ func main() {
 
 	netSwitches = netswitches.New()
 
-	if err := Init(); err != nil {
+	if err := Init(-1); err != nil {
 		log.Fatalf("Init: %v", err)
 	}
 
