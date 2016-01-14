@@ -38,17 +38,16 @@ func (this *Controller) GetSessionUserId() (int64, error) {
 			beego.Error("GetSessionUserId: wrong IP")
 			return 0, errors.New("user not correctly logged in")
 		}
-		accEnc := this.GetSession(SESSION_ACCEPT_ENCODING)
+		/*accEnc := this.GetSession(SESSION_ACCEPT_ENCODING)
 		if h := this.Ctx.Input.Header("Accept-Encoding"); accEnc != h {
 			beego.Error("GetSessionUserId: wrong Accept-Encoding:", accEnc, "vs", h)
 			return 0, errors.New("user not correctly logged in")
-		}
+		}*/
 		accLang := this.GetSession(SESSION_ACCEPT_LANGUAGE)
 		if accLang != this.Ctx.Input.Header("Accept-Language") {
 			beego.Error("GetSessionUserId: wrong Accept-Language")
 			return 0, errors.New("user not correctly logged in")
 		}
-		beego.Info("acc enc:", accEnc)
 		return sid, nil
 	} else {
 		return 0, errors.New("User not logged in")
@@ -60,7 +59,7 @@ func (this *Controller) SetLogged(username string, userId int64) {
 	this.SetSession(SESSION_USER_ID, userId)
 	this.SetSession(SESSION_BROWSER, this.Ctx.Input.UserAgent())
 	this.SetSession(SESSION_IP, this.Ctx.Input.IP())
-	this.SetSession(SESSION_ACCEPT_ENCODING, this.Ctx.Input.Header("Accept-Encoding"))
+	//this.SetSession(SESSION_ACCEPT_ENCODING, this.Ctx.Input.Header("Accept-Encoding"))
 	this.SetSession(SESSION_ACCEPT_LANGUAGE, this.Ctx.Input.Header("Accept-Language"))
 }
 
