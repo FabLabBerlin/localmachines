@@ -17,14 +17,13 @@ type Xmpp struct {
 	reinitGateway func() error
 }
 
-func NewXmpp(ns *netswitches.NetSwitches, reinitGateway func() error) (*Xmpp, error) {
-	var err error
+func NewXmpp(ns *netswitches.NetSwitches, reinitGateway func() error) *Xmpp {
 	x := &Xmpp{
 		ns:            ns,
 		reinitGateway: reinitGateway,
 	}
-	x.x, err = xmpp.NewXmpp(global.Cfg.XMPP.Server, global.Cfg.XMPP.User, global.Cfg.XMPP.Pass)
-	return x, err
+	x.x = xmpp.NewXmpp(global.Cfg.XMPP.Server, global.Cfg.XMPP.User, global.Cfg.XMPP.Pass)
+	return x
 }
 
 func (x *Xmpp) Run() {

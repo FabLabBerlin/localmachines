@@ -118,10 +118,7 @@ func main() {
 
 	go PingLoop()
 
-	xmpp, err := endpoints.NewXmpp(netSwitches, Reinit)
-	if err != nil {
-		log.Fatalf("xmpp: %v", err)
-	}
+	xmpp := endpoints.NewXmpp(netSwitches, Reinit)
 	xmpp.Run()
 
 	httpServer := endpoints.NewHttpServer(netSwitches)

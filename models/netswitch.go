@@ -28,11 +28,7 @@ func init() {
 		user := beego.AppConfig.String("XmppUser")
 		pass := beego.AppConfig.String("XmppPass")
 		xmppGateway = beego.AppConfig.String("XmppGateway")
-		var err error
-		xmppClient, err = xmpp.NewXmpp(server, user, pass)
-		if err != nil {
-			panic(fmt.Sprintf("init xmpp: %v", err))
-		}
+		xmppClient = xmpp.NewXmpp(server, user, pass)
 		xmppClient.Run()
 
 		responses = make(map[string]chan xmpp.Message)

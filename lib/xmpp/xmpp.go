@@ -15,13 +15,16 @@ const (
 	NO_TLS                   = false
 	TLS_INSECURE_SKIP_VERIFY = false
 	USE_SERVER_SESSION       = true
+	RECONNECT_INIT_WAIT_TIME = time.Second
 )
 
 type Xmpp struct {
-	ch     chan Message
-	talk   *xmpp.Client
-	user   string
-	server string
+	ch       chan Message
+	talk     *xmpp.Client
+	user     string
+	server   string
+	options  xmpp.Options
+	lastPong time.Time
 }
 
 type Message struct {
@@ -36,19 +39,17 @@ type Data struct {
 	Error      bool
 }
 
-func NewXmpp(server, user, pass string) (x *Xmpp, err error) {
+func NewXmpp(server, user, pass string) (x *Xmpp) {
 	x = &Xmpp{
 		ch:     make(chan Message, 10),
 		user:   user,
 		server: server,
 	}
-
 	xmpp.DefaultConfig = tls.Config{
 		ServerName:         serverName(server),
 		InsecureSkipVerify: TLS_INSECURE_SKIP_VERIFY,
 	}
-
-	options := xmpp.Options{
+	x.options = xmpp.Options{
 		Host:          server,
 		User:          user,
 		Password:      pass,
@@ -58,22 +59,42 @@ func NewXmpp(server, user, pass string) (x *Xmpp, err error) {
 		Status:        STATUS,
 		StatusMessage: STATUS_MESSAGE,
 	}
+	go x.connect()
+	return
+}
 
-	x.talk, err = options.NewClient()
-
-	if err == nil {
-		go func() {
+func (x *Xmpp) connect() {
+	waitTime := RECONNECT_INIT_WAIT_TIME
+	for {
+		var err error
+		log.Printf("Xmpp: connecting to Server...")
+		x.talk, err = x.options.NewClient()
+		if err == nil {
+			x.lastPong = time.Now()
+			waitTime = RECONNECT_INIT_WAIT_TIME
 			for {
-				<-time.After(time.Second)
 				log.Printf("Pinnnnggggggggg")
 				if err := x.Ping(); err != nil {
 					log.Printf("ping errrrrr: %v", err)
+					break
 				}
+				if time.Now().Sub(x.lastPong) > 10*time.Second {
+					log.Printf("No Pong since 10 seconds, reconnecting!")
+					break
+				}
+				<-time.After(time.Second)
 			}
-		}()
+			x.talk.Close()
+			x.talk = nil
+		} else {
+			log.Printf("Xmpp: error connecting to server: %v", err)
+			waitTime *= 2
+			if waitTime > 30*time.Second {
+				waitTime = 30 * time.Second
+			}
+		}
+		<-time.After(waitTime)
 	}
-
-	return
 }
 
 func serverName(host string) string {
@@ -88,9 +109,13 @@ const (
 func (x *Xmpp) Run() {
 	go func() {
 		for {
+			if x.talk == nil {
+				<-time.After(time.Second)
+				continue
+			}
 			chat, err := x.talk.Recv()
 			if err != nil {
-				log.Fatal(err)
+				log.Printf("xmpp: receive: %v", err)
 			}
 			switch v := chat.(type) {
 			case xmpp.Chat:
@@ -110,38 +135,45 @@ func (x *Xmpp) Run() {
 					}
 				}
 			case xmpp.Presence:
-				log.Printf("xmpp presence rcvd")
 				if DEBUG {
 					fmt.Println(v.From, v.Show)
 				}
 			case xmpp.IQ:
-				log.Printf("xmpp iq rcvd: %v", v)
+				if v.Type == "result" {
+					log.Printf("Ponnnnggggggggg")
+					x.lastPong = time.Now()
+				}
 			default:
-				log.Printf("1234: unknown msg type")
 			}
 		}
 	}()
 }
 
 func (x *Xmpp) Ping() error {
-	//tmp := fmt.Sprintf("bla%v", time.Now().Unix())
-	//log.Printf("tmp=%v, server=%v\n", tmp, x.server)
-	return x.talk.PingC2S(x.user, "api.easylab.io" /*x.server*/)
+	if x.talk != nil {
+		return x.talk.PingC2S(x.user, serverName(x.server))
+	} else {
+		return fmt.Errorf("xmpp: Ping: xmpp client: not ready")
+	}
 }
 
 func (x *Xmpp) Recv() <-chan Message {
 	return x.ch
 }
 
-func (x *Xmpp) Send(msg Message) (err error) {
-	buf, err := json.Marshal(msg.Data)
-	if err != nil {
-		return
+func (x *Xmpp) Send(msg Message) error {
+	if x.talk != nil {
+		buf, err := json.Marshal(msg.Data)
+		if err != nil {
+			return err
+		}
+		_, err = x.talk.Send(xmpp.Chat{
+			Remote: msg.Remote,
+			Type:   "chat",
+			Text:   string(buf),
+		})
+		return err
+	} else {
+		return fmt.Errorf("xmpp: Send: xmpp client: not ready")
 	}
-	_, err = x.talk.Send(xmpp.Chat{
-		Remote: msg.Remote,
-		Type:   "chat",
-		Text:   string(buf),
-	})
-	return
 }
