@@ -1,11 +1,13 @@
 package xmpp
 
 import (
+	"crypto/rand"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"github.com/mattn/go-xmpp"
 	"log"
+	"math/big"
 	"strings"
 	"time"
 )
@@ -78,11 +80,11 @@ func (x *Xmpp) connect() {
 					log.Printf("ping errrrrr: %v", err)
 					break
 				}
-				if time.Now().Sub(x.lastPong) > 10*time.Second {
-					log.Printf("No Pong since 10 seconds, reconnecting!")
+				if time.Now().Sub(x.lastPong) > 20*time.Second {
+					log.Printf("No Pong since 20 seconds, reconnecting!")
 					break
 				}
-				<-time.After(time.Second)
+				pingWait(0.3, 3)
 			}
 			x.talk.Close()
 			x.talk = nil
@@ -95,6 +97,21 @@ func (x *Xmpp) connect() {
 		}
 		<-time.After(waitTime)
 	}
+}
+
+// Make sure we don't send to many period patterns that could be used to
+// break SSL/TLS using crypto analysis
+func pingWait(min, max float64) {
+	t := time.Second
+	r, err := rand.Int(rand.Reader, big.NewInt(10000))
+	if err == nil {
+		x := float64(r.Int64()) / 10000
+		n := min + x*max
+		t = time.Duration(n) * t
+	} else {
+		log.Printf("endpoints: xmpp: pingWait: %v", err)
+	}
+	<-time.After(t)
 }
 
 func serverName(host string) string {
