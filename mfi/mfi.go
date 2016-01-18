@@ -1,18 +1,25 @@
 // CLI tool for automatic configuration of mfi swithces
 //
 // TODO: use golang.org/x/crypto/ssh
+//       use parser for hwaddr to check for equality
 
 package main
 
 import (
 	"bytes"
+	"encoding/json"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net"
+	"net/http"
 	"os"
 	"os/exec"
 	"strings"
+	"sync"
 	"text/template"
+	"time"
 )
 
 const (
@@ -41,7 +48,7 @@ func (c *Config) Run() (err error) {
 		return fmt.Errorf("generate: %v", err)
 	}
 	fmt.Printf("\nWhen asked for an SSH password, just enter '%v'\n\nPress [enter] to continue...\n", SSH_INITIAL_PASSWORD)
-	var string tmp
+	var tmp string
 	fmt.Scanln(&tmp)
 	if err = c.scp(); err != nil {
 		return fmt.Errorf("scp: %v", err)
@@ -119,8 +126,6 @@ func (c *Config) getHwAddr() (hwAddr string, err error) {
 	if len(tmp) == 0 {
 		return "", fmt.Errorf("unexpected ifconfig output: '%v'", s)
 	}
-	log.Printf("tmp = '%v'", tmp)
-	log.Printf("s = '%v'", s)
 	return tmp[len(tmp)-1], nil
 }
 
@@ -140,12 +145,87 @@ func (c *Config) reboot() (err error) {
 	return
 }
 
+func (c *Config) FindDeviceOn(netmask string) (resultIp net.IP, err error) {
+	ip, ipnet, err := net.ParseCIDR(netmask)
+	if err != nil {
+		return net.IP{}, fmt.Errorf("parse cidr: %v", err)
+	}
+	ch := make(chan net.IP, 1)
+	wg := sync.WaitGroup{}
+	for ip := ip.Mask(ipnet.Mask); ipnet.Contains(ip); incIp(ip) {
+		wg.Add(1)
+		scanIp := make(net.IP, len(ip))
+		copy(scanIp, ip)
+		go func(ip net.IP) {
+			if c.deviceOn(ip) {
+				log.Printf("found it on %v!!!!!!", ip.String())
+				select {
+				case ch <- ip:
+				default:
+					log.Fatalf("fatal error: %v", ip)
+				}
+			}
+			wg.Done()
+		}(scanIp)
+	}
+	wg.Wait()
+	select {
+	case resultIp = <-ch:
+		break
+	case <-time.After(30 * time.Second):
+		err = fmt.Errorf("could not find device")
+	}
+	return
+}
+
+func incIp(ip net.IP) {
+	for j := len(ip) - 1; j >= 0; j-- {
+		ip[j]++
+		if ip[j] > 0 {
+			break
+		}
+	}
+}
+
+type MfiStatus struct {
+	Wlan MfiWlan `json:"wlan"`
+}
+
+type MfiWlan struct {
+	HwAddr string `json:"hwaddr"`
+}
+
+func (c *Config) deviceOn(ip net.IP) bool {
+	resp, err := http.Get("http://" + ip.String() + "/status.cgi")
+	if err != nil {
+		return false
+	}
+	defer resp.Body.Close()
+	dec := json.NewDecoder(resp.Body)
+	status := MfiStatus{}
+	if err := dec.Decode(&status); err != nil {
+		return false
+	}
+	hwAddr := strings.Replace(c.HwAddr, "-", ":", -1)
+	return len(hwAddr) > 10 && strings.HasPrefix(hwAddr, status.Wlan.HwAddr)
+}
+
 func main() {
+	netmask := flag.String("network", "172.26.0.128/24", "Wifi network's netmask on which we auto discover the switch")
+	flag.Parse()
+
 	c := &Config{}
 	if err := c.Run(); err == nil {
-		fmt.Printf("Your switch is properly configured and it's hardware")
+		fmt.Printf("Your switch is properly configured and its hardware")
 		fmt.Printf(" address is: '%v'\n", c.HwAddr)
-		fmt.Printf("Wait until the LED starts blinking blue...\n")
+		fmt.Printf("Wait until the LED starts blinking blue and then press enter...\n")
+		var tmp string
+		fmt.Scanln(&tmp)
+		if ip, err := c.FindDeviceOn(*netmask); err == nil {
+			fmt.Printf("Successfully discovered device: %v\n", ip.String())
+		} else {
+			fmt.Printf("Unable to find device on %v\n.", *netmask)
+		}
 	} else {
 		log.Printf("config: %v", err)
 		fmt.Printf("Make sure the switch is properly connected:\n\n")
