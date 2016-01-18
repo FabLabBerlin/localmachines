@@ -1,0 +1,3 @@
+essid=FabLab-M
+security=wpapsk
+wpakey={{.WifiPassword}}
