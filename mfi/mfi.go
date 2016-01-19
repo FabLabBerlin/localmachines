@@ -17,7 +17,6 @@ import (
 	"os"
 	"os/exec"
 	"strings"
-	"sync"
 	"text/template"
 	"time"
 )
@@ -151,9 +150,7 @@ func (c *Config) FindDeviceOn(netmask string) (resultIp net.IP, err error) {
 		return net.IP{}, fmt.Errorf("parse cidr: %v", err)
 	}
 	ch := make(chan net.IP, 1)
-	wg := sync.WaitGroup{}
 	for ip := ip.Mask(ipnet.Mask); ipnet.Contains(ip); incIp(ip) {
-		wg.Add(1)
 		scanIp := make(net.IP, len(ip))
 		copy(scanIp, ip)
 		go func(ip net.IP) {
@@ -165,10 +162,8 @@ func (c *Config) FindDeviceOn(netmask string) (resultIp net.IP, err error) {
 					log.Fatalf("fatal error: %v", ip)
 				}
 			}
-			wg.Done()
 		}(scanIp)
 	}
-	wg.Wait()
 	select {
 	case resultIp = <-ch:
 		break
