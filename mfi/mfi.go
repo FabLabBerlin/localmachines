@@ -1,6 +1,8 @@
 // CLI tool for automatic configuration of mfi swithces
 //
-// TODO: use golang.org/x/crypto/ssh
+// TODO: use github.com/ziutek/telnet
+//       (golang.org/x/crypto/ssh doesn't support cbc ciphers because they're
+//       unsafe)
 //       use parser for hwaddr to check for equality
 
 package main

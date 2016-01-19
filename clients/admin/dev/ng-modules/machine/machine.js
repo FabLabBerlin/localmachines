@@ -25,6 +25,19 @@ app.controller('MachineCtrl',
   $scope.machineImageNewFileName = undefined;
   $scope.machineImageNewFileSize = undefined;
 
+  $scope.loadLocations = function() {
+    $http({
+      method: 'GET',
+      url: '/api/locations'
+    })
+    .success(function(data) {
+      $scope.locations = data;
+    })
+    .error(function() {
+      toastr.error('Failed to get locations');
+    });
+  };
+
   $scope.loadMachine = function(machineId) {
     $http({
       method: 'GET',
@@ -79,6 +92,7 @@ app.controller('MachineCtrl',
     });
   };
 
+  $scope.loadLocations();
   $scope.loadMachine($scope.machine.Id);
   $scope.loadConnectedMachines($scope.machine.Id);
   $scope.loadConnectableMachines($scope.machine.Id);
@@ -102,6 +116,16 @@ app.controller('MachineCtrl',
       machine.ReservationPriceHourly = parseFloat(machine.ReservationPriceHourly);
     } else {
       machine.ReservationPriceHourly = null;
+    }
+
+    if (!machine.LocationId) {
+      machine.LocationId = 0;
+    }
+    machine.LocationId = parseInt(machine.LocationId);
+
+    if (!machine.LocationId) {
+      toastr.error('Please specify a location.');
+      return;
     }
 
     $http({

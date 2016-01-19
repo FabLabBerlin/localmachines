@@ -32,7 +32,8 @@ func init() {
 }
 
 type Machine struct {
-	Id                     int64  `orm:"auto";"pk"`
+	Id                     int64 `orm:"auto";"pk"`
+	LocationId             int64
 	Name                   string `orm:"size(255)"`
 	Shortname              string `orm:"size(100)"`
 	Description            string `orm:"type(text)"`

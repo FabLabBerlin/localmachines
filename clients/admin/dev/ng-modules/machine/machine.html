@@ -91,6 +91,18 @@
   <div class="row">
     <div class="col-sm-3">
       <div class="form-group">
+        <label for="location">Location</label>
+        <select id="location" class="form-control" ng-model="machine.LocationId">
+          <option value="0">Please select</option>
+          <option ng-repeat="location in locations" value={{location.Id}}>
+            {{location.Name}}
+          </option>
+        </select>
+      </div>
+    </div><!-- -->
+
+    <div class="col-sm-3">
+      <div class="form-group">
         <label>
           <input type="checkbox" ng-model="machine.Visible"> Visible
         </label>
