@@ -215,7 +215,8 @@ func main() {
 	if err := c.Run(); err == nil {
 		fmt.Printf("Your switch is properly configured and its hardware")
 		fmt.Printf(" address is: '%v'\n", c.HwAddr)
-		fmt.Printf("Wait until the LED starts blinking blue and then press enter...\n")
+		fmt.Printf("Wait until the LED starts blinking blue, connect to the")
+		fmt.Printf(" normal Wifi and then press enter...\n")
 		var tmp string
 		fmt.Scanln(&tmp)
 		if ip, err := c.FindDeviceOn(*netmask); err == nil {
