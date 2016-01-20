@@ -6,7 +6,8 @@ import (
 	"github.com/FabLabBerlin/localmachines/gateway/global"
 	"log"
 	"net/http"
-	"strings"
+	"net/url"
+	"strconv"
 )
 
 type syncCommand struct {
@@ -15,13 +16,15 @@ type syncCommand struct {
 }
 
 type NetSwitch struct {
-	Id        int64
-	MachineId int64
-	UrlOn     string
-	UrlOff    string
-	Xmpp      bool
-	On        bool
-	syncCh    chan syncCommand
+	Id         int64
+	MachineId  int64
+	UrlOn      string
+	UrlOff     string
+	Host       string
+	SensorPort int
+	Xmpp       bool
+	On         bool
+	syncCh     chan syncCommand
 }
 
 func (ns *NetSwitch) assertLoopRunning() {
@@ -41,15 +44,14 @@ func (ns *NetSwitch) loop() {
 }
 
 func (ns *NetSwitch) sync(cmd syncCommand) (err error) {
-	urlStatus := ns.UrlStatus()
-	log.Printf("urlStatus = %v", urlStatus)
-	if urlStatus == "" {
-		return fmt.Errorf("NetSwitch status url for Machine %v empty", ns.MachineId)
+	log.Printf("urlStatus = %v", ns.Url())
+	if ns.SensorPort < 1 {
+		return fmt.Errorf("NetSwitch switch port for Machine %v invalid", ns.MachineId)
 	}
 	client := http.Client{
 		Timeout: global.STATE_SYNC_TIMEOUT,
 	}
-	resp, err := client.Get(urlStatus)
+	resp, err := client.Get(ns.Url())
 	if err != nil {
 		return fmt.Errorf("http get url status: %v", err)
 	}
@@ -98,8 +100,8 @@ func (ns *NetSwitch) Sync() (err error) {
 }
 
 func (ns *NetSwitch) turnOn() (err error) {
-	log.Printf("turn on %v", ns.UrlOn)
-	resp, err := http.Get(ns.UrlOn)
+	log.Printf("turn on %v", ns.Url())
+	resp, err := http.PostForm(ns.Url(), url.Values{"output": {"1"}})
 	if err != nil {
 		return fmt.Errorf("client get: %v", err)
 	}
@@ -111,8 +113,8 @@ func (ns *NetSwitch) turnOn() (err error) {
 }
 
 func (ns *NetSwitch) turnOff() (err error) {
-	log.Printf("turn off %v", ns.UrlOff)
-	resp, err := http.Get(ns.UrlOff)
+	log.Printf("turn off %v", ns.Url())
+	resp, err := http.PostForm(ns.Url(), url.Values{"output": {"0"}})
 	if err != nil {
 		return fmt.Errorf("client get: %v", err)
 	}
@@ -123,11 +125,8 @@ func (ns *NetSwitch) turnOff() (err error) {
 	return
 }
 
-// UrlStatus is a really dirty function.  It's just here for the proof of concept.
-func (ns *NetSwitch) UrlStatus() string {
-	tmp := strings.Split(ns.UrlOn, "//")
-	host := strings.Split(tmp[1], "/")[0]
-	return "http://" + host + "/sensors/1"
+func (ns *NetSwitch) Url() string {
+	return "http://" + ns.Host + "/sensors/" + strconv.Itoa(ns.SensorPort)
 }
 
 func (ns *NetSwitch) String() string {
