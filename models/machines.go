@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ChimeraCoder/anaconda"
+	"github.com/FabLabBerlin/localmachines/models/email"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"math/rand"
@@ -294,7 +295,7 @@ func (this *Machine) On() (err error) {
 }
 
 func (this *Machine) ReportBroken(user User) error {
-	email := NewEmail()
+	email := email.New()
 	to := beego.AppConfig.String("trelloemail")
 	subject := this.Name + " reported as broken"
 	message := "The machine " + this.Name + " seems to be broken.\n\n"

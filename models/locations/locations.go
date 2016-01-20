@@ -2,6 +2,8 @@ package locations
 
 import (
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/models/email"
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"strings"
 )
@@ -56,7 +58,23 @@ func (l *Location) Save() (err error) {
 
 	o := orm.NewOrm()
 	_, err = o.Insert(l)
+	if err != nil {
+		return fmt.Errorf("insert: %v", err)
+	}
+	err = l.emailAnnounce()
 	return
+}
+
+func (l *Location) emailAnnounce() (err error) {
+	email := email.New()
+	to := beego.AppConfig.String("mail@fablab.berlin")
+	subject := "New location registered: " + l.Title
+	message := "The location " + l.Title + " in " + l.City + " has been registered.\n\n"
+	message += "The contact is: " + l.FirstName + " " + l.LastName + ",\n"
+	message += l.Email + " (" + l.Phone + "). The location is not active and the approve flag\n"
+	message += "must be set manually by the Database Administrator.\n"
+	message += "Yours sincerely, Local Machines\n\n"
+	return email.Send(to, subject, message)
 }
 
 func (l *Location) TableName() string {
