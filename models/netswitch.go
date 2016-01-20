@@ -63,7 +63,10 @@ type NetSwitchMapping struct {
 	MachineId int64
 	UrlOn     string `orm:"size(255)"`
 	UrlOff    string `orm:"size(255)"`
-	Xmpp      bool
+	// Host and Sensor Port are only relevant for mfi switches
+	Host       string `orm:"size(255)"`
+	SensorPort int
+	Xmpp       bool
 }
 
 func init() {
@@ -83,6 +86,7 @@ func GetAllNetSwitchMapping() (ms []*NetSwitchMapping, err error) {
 func CreateNetSwitchMapping(machineId int64) (int64, error) {
 	mapping := NetSwitchMapping{}
 	mapping.MachineId = machineId
+	mapping.SensorPort = 1
 	o := orm.NewOrm()
 	created, id, err := o.ReadOrCreate(&mapping, "MachineId")
 	if err != nil {

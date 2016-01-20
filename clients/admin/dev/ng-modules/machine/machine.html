@@ -174,7 +174,29 @@
   </div><!-- /.row -->
 
   <div class="row">
-    <div class="col-sm-3">
+    <div class="col-sm-3" ng-show="netSwitchMapping">
+      <div class="form-group">
+        <input type="text" id="machine-netswitch-host" 
+               class="form-control"
+               placeholder="Host (mfi only)"
+               ng-model="netSwitchMapping.Host"
+               ng-change="netSwitchMappingChanged=true">
+      </div>
+    </div><!-- -->
+
+    <div class="col-sm-3" ng-show="netSwitchMapping">
+      <div class="form-group">
+        <input type="number" id="machine-netswitch-sensor-port" 
+               class="form-control"
+               placeholder="Sensor Port (mfi only)"
+               ng-model="netSwitchMapping.SensorPort"
+               ng-change="netSwitchMappingChanged=true">
+      </div>
+    </div><!-- -->
+  </div>
+
+  <div class="row">
+    <div class="col-sm-3" ng-show="netSwitchMapping">
       <div class="form-group">
         <label>
           <input type="checkbox"
