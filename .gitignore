@@ -2,6 +2,7 @@
 *~
 *.swp
 fabsmith
+localmachines
 npm-debug.log
 conf/app.conf
 views/prod/*
