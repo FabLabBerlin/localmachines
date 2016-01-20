@@ -13,7 +13,7 @@ type InvoicesController struct {
 
 // @Title Get All Invoices
 // @Description Get all invoices from the database
-// @Success 200 {object} models.Invoice
+// @Success 200 {object} models.invoices.Invoice
 // @Failure	403	Failed to get all invoices
 // @Failure	401	Not authorized
 // @router / [get]
@@ -67,7 +67,7 @@ func (this *InvoicesController) Delete() {
 // @Description Create invoice from selection of activations
 // @Param	startDate		query 	string	true		"Period start date"
 // @Param	endDate		query 	string	true		"Period end date"
-// @Success 200 {object} models.Invoice
+// @Success 200 {object} models.invoices.Invoice
 // @Failure	403	Failed to create invoice
 // @Failure	401	Not authorized
 // @router / [post]

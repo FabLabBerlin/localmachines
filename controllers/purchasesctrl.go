@@ -110,7 +110,7 @@ func (this *PurchasesController) GetAll() {
 // @Description Get purchase by ID
 // @Param	id		path 	int	true		"Space Purchase ID"
 // @Param	type	query	string	true	"Purchase Type"
-// @Success 200 {object} purchases.SpacePurchase
+// @Success 200 {object}
 // @Failure	400	Bad Request
 // @Failure	401 Not authorized
 // @Failure	500	Internal Server Error

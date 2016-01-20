@@ -18,7 +18,7 @@ type ActivationsController struct {
 // @Param	userId		query 	int	true		"User ID"
 // @Param	itemsPerPage		query 	int	true		"Items per page or max number of items to return"
 // @Param	page		query 	int	true		"Current page to show"
-// @Success 200 {object} models.GetActivationsResponse
+// @Success 200 {object}
 // @Failure	403	Failed to get activations
 // @Failure	401	Not authorized
 // @router / [get]
@@ -104,7 +104,7 @@ func (this *ActivationsController) GetAll() {
 // @Title Get
 // @Description Get activation by activation ID
 // @Param	aid		path 	int	true		"Activation ID"
-// @Success 200 {object} models.Activation
+// @Success 200 {object}
 // @Failure	403	Failed to get activation
 // @Failure	401	Not authorized
 // @router /:aid [get]
@@ -114,7 +114,7 @@ func (this *ActivationsController) Get() {
 
 // @Title Get Active
 // @Description Get all active activations
-// @Success 200 {object} models.Activation
+// @Success 200 {object}
 // @Failure	403	Failed to get active activations
 // @router /active [get]
 func (this *ActivationsController) GetActive() {

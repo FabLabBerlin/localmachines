@@ -15,7 +15,7 @@ type ProductsController struct {
 // @Description Create product with name of specified type
 // @Param	name	query	string	true	"Space Name"
 // @Param	type	query	string	true	"Product Type"
-// @Success 200 {object} models.Space
+// @Success 200 {object}
 // @Failure	401	Not authorized
 // @Failure	500	Internal Server Error
 // @router / [post]

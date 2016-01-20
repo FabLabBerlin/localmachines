@@ -15,7 +15,7 @@ type FeedbackController struct {
 // @Param email    query   string  true     "Email of the customer"
 // @Param subject  query   string  true     "Subject of the Ticket"
 // @Param message  query   string  true     "Message of the Ticket"
-// @Success 200 {object} models.FastBillCreateCustomerResponse
+// @Success 200 {object}
 // @Failure 500 Internal Server Error
 // @Failure 401 Not authorized
 // @router  / [post]

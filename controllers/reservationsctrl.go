@@ -14,7 +14,7 @@ type ReservationsController struct {
 
 // @Title GetAll
 // @Description Get all reservations
-// @Success 200 {object} purchases.Reservation
+// @Success 200 {object}
 // @Failure	403	Failed to get all reservations
 // @Failure	401 Not authorized
 // @router / [get]
@@ -30,7 +30,7 @@ func (this *ReservationsController) GetAll() {
 // @Title Get
 // @Description Get reservation by ID
 // @Param	rid		path 	int	true		"Reservation ID"
-// @Success 200 {object} purchases.Reservation
+// @Success 200 {object}
 // @Failure	403	Failed to get reservation
 // @Failure	401	Not authorized
 // @router /:rid [get]
@@ -53,8 +53,8 @@ func (this *ReservationsController) Get() {
 
 // @Title Create
 // @Description Create reservation
-// @Param	model	body	purchases.Reservation	true	"Reservation Name"
-// @Success 200 {object} purchases.ReservationCreatedResponse
+// @Param	model	body	string	true	"Reservation Name"
+// @Success 200 {object}
 // @Failure	403	Failed to create reservation
 // @Failure	401	Not authorized
 // @router / [post]
@@ -79,7 +79,7 @@ func (this *ReservationsController) Create() {
 
 // @Title Put
 // @Description Update reservation
-// @Success 201 {object} purchases.Reservation
+// @Success 201 {object}
 // @Failure	400	Bad Request
 // @Failure	401	Unauthorized
 // @Failure 500 Internal Server Error

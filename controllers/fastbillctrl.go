@@ -17,7 +17,7 @@ type FastBillController struct {
 // @Param term      					query   string  false    "Filter term in one of the given fields: ORGANIZATION, FIRST_NAME, LAST_NAME, ADDRESS, ADDRESS_2, ZIPCODE, EMAIL, TAGS."
 // @Param customerid      		query   int  		false    "Customer ID"
 // @Param customernumber      query   int  		false    "Customer Number"
-// @Success 200 {object} models.FastBillCustomerList
+// @Success 200 {object}
 // @Failure 500 Internal Server Error
 // @Failure 401 Not authorized
 // @router  /customer [get]
@@ -81,7 +81,7 @@ func (this *FastBillController) GetCustomers() {
 // @Param zipcode       query   string  true     "Customer zip code"
 // @Param phone         query   string  false    "Customer phone number"
 // @Param organization  query   string  false    "Organization of the customer"
-// @Success 200 {object} models.FastBillCreateCustomerResponse
+// @Success 200 {object}
 // @Failure 500 Internal Server Error
 // @Failure 401 Not authorized
 // @router  /customer [post]
@@ -136,7 +136,7 @@ func (this *FastBillController) CreateCustomer() {
 // @Param zipcode       query   string  false     "Customer zip code"
 // @Param phone         query   string  false     "Customer phone number"
 // @Param organization  query   string  false     "Organization of the customer"
-// @Success 200 {object} models.FastBillUpdateCustomerResponse
+// @Success 200 {object}
 // @Failure 500 Internal Server Error
 // @Failure 401 Not authorized
 // @router  /customer/:customerid [put]
