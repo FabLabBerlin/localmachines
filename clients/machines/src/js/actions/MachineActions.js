@@ -11,6 +11,23 @@ var toastr = require('../toastr');
 
 var MachineActions = {
 
+  loadLocations() {
+    $.ajax({
+      url: '/api/locations',
+      success(locations) {
+        reactor.dispatch(actionTypes.SET_LOCATIONS, { locations });
+      },
+      error(xhr, status, err) {
+        toastr.error('Error loading locations');
+        console.error(status, err);
+      }
+    });
+  },
+
+  setLocationId(id) {
+    reactor.dispatch(actionTypes.SET_LOCATION_ID, { id });
+  },
+
   startActivation(mid) {
     var dataToSend = {
       mid: mid

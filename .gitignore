@@ -12,6 +12,9 @@ files/*
 !files/apple-touch-icon.png
 !files/README.md
 gateway/conf/gateway.conf
+gateway/gateway
+gateway/state.json
+mfi/mfi
 cert/
 tests/conf/app.conf
 tests/controllers/conf/app.conf

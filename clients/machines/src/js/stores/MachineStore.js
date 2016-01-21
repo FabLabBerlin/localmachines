@@ -7,6 +7,7 @@ var toImmutable = Nuclear.toImmutable;
 
 const initialState = toImmutable({
   activations: [],
+  locationId: 1,
   machines: [],
   machineUsers: {}
 });
@@ -22,6 +23,8 @@ var MachineStore = new Nuclear.Store({
     this.on(actionTypes.MACHINE_STORE_CLEAR_STATE, clearState);
     this.on(actionTypes.REGISTER_MACHINE_USER, registerMachineUser);
     this.on(actionTypes.SET_ACTIVATIONS, setActivations);
+    this.on(actionTypes.SET_LOCATION_ID, setLocationId);
+    this.on(actionTypes.SET_LOCATIONS, setLocations);
     this.on(actionTypes.SET_MACHINES, setMachines);
     this.on(actionTypes.SET_UNDER_MAINTENANCE, setUnderMaintenance);
   }
@@ -38,6 +41,14 @@ function registerMachineUser(state, { userData }) {
 
 function setActivations(state, { activations }) {
   return state.set('activations', activations);
+}
+
+function setLocationId(state, { id }) {
+  return state.set('locationId', id);
+}
+
+function setLocations(state, { locations }) {
+  return state.set('locations', locations);
 }
 
 function setMachines(state, { machines }) {
