@@ -91,6 +91,18 @@
   <div class="row">
     <div class="col-sm-3">
       <div class="form-group">
+        <label for="location">Location</label>
+        <select id="location" class="form-control" ng-model="machine.LocationId">
+          <option value="0">Please select</option>
+          <option ng-repeat="location in locations" value={{location.Id}}>
+            {{location.Title}}
+          </option>
+        </select>
+      </div>
+    </div><!-- -->
+
+    <div class="col-sm-3">
+      <div class="form-group">
         <label>
           <input type="checkbox" ng-model="machine.Visible"> Visible
         </label>
@@ -106,21 +118,35 @@
       <div class="row">
 
         <div class="col-sm-4">
-          <div class="form-group">
+          <div class="form-group" ng-hide="netSwitchMapping.Xmpp">
             <input type="text" id="machine-netswitch-url-on" 
                    class="form-control"
                    placeholder="On URL"
                    ng-model="netSwitchMapping.UrlOn"
                    ng-change="netSwitchMappingChanged=true">
           </div>
+          <div class="form-group" ng-show="netSwitchMapping.Xmpp">
+            <input type="text" id="machine-netswitch-host" 
+                   class="form-control"
+                   placeholder="Host (mfi only)"
+                   ng-model="netSwitchMapping.Host"
+                   ng-change="netSwitchMappingChanged=true">
+          </div>
         </div>
 
         <div class="col-sm-4">
-          <div class="form-group">
+          <div class="form-group" ng-hide="netSwitchMapping.Xmpp">
             <input type="text" id="machine-netswitch-url-off" 
                    class="form-control"
                    placeholder="Off URL"
                    ng-model="netSwitchMapping.UrlOff"
+                   ng-change="netSwitchMappingChanged=true">
+          </div>
+          <div class="form-group" ng-show="netSwitchMapping.Xmpp">
+            <input type="number" id="machine-netswitch-sensor-port" 
+                   class="form-control"
+                   placeholder="Sensor Port (mfi only)"
+                   ng-model="netSwitchMapping.SensorPort"
                    ng-change="netSwitchMappingChanged=true">
           </div>
         </div>
@@ -161,14 +187,24 @@
 
   </div><!-- /.row -->
 
-  <div class="row">
+  <div class="row" ng-show="netSwitchMapping">
+    <div class="col-sm-3">
+
+    </div><!-- -->
+
+    <div class="col-sm-3">
+
+    </div><!-- -->
+  </div>
+
+  <div class="row" ng-show="netSwitchMapping">
     <div class="col-sm-3">
       <div class="form-group">
         <label>
           <input type="checkbox"
                  ng-model="netSwitchMapping.Xmpp"
                  ng-change="netSwitchMappingChanged=true">
-          Use XMPP (EXPERIMENTAL!)
+          Use mfi switch via XMPP (experimental)
         </label>
       </div>
     </div><!-- -->
