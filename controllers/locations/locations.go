@@ -46,11 +46,6 @@ func (this *Controller) Create() {
 // @Failure	500	Internal Server Error
 // @router / [get]
 func (c *Controller) GetAll() {
-	if !c.IsAdmin() && !c.IsStaff() {
-		beego.Error("Not authorized to get all locations")
-		c.CustomAbort(401, "Not authorized")
-	}
-
 	ls, err := locations.GetAll()
 	if err != nil {
 		c.CustomAbort(500, "Failed to get all locations")
