@@ -35,5 +35,5 @@ func (this *MetricsController) GetAll() {
 	}
 
 	this.Data["json"] = resp
-	this.ServeJson()
+	this.ServeJSON()
 }

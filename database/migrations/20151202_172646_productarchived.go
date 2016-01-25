@@ -18,11 +18,11 @@ func init() {
 
 // Run the migrations
 func (m *Productarchived_20151202_172646) Up() {
-	m.Sql("ALTER TABLE products ADD COLUMN archived TINYINT(1) DEFAULT 0")
+	m.SQL("ALTER TABLE products ADD COLUMN archived TINYINT(1) DEFAULT 0")
 }
 
 // Reverse the migrations
 func (m *Productarchived_20151202_172646) Down() {
-	// use m.Sql("DROP TABLE ...") to reverse schema update
-	m.Sql("ALTER TABLE products DROP COLUMN archived")
+	// use m.SQL("DROP TABLE ...") to reverse schema update
+	m.SQL("ALTER TABLE products DROP COLUMN archived")
 }

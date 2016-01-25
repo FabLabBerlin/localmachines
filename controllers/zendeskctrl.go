@@ -37,7 +37,7 @@ func (this *FeedbackController) PostFeedback() {
 		},
 	}
 	if err := zd.SubmitTicket(ticket); err == nil {
-		this.ServeJson()
+		this.ServeJSON()
 	} else {
 		beego.Error("Error submitting ZenDesk Ticket: ", err)
 		this.CustomAbort(500, "Error submitting Ticket")

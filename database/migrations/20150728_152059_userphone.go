@@ -17,9 +17,9 @@ func init() {
 }
 
 func (m *Userphone_20150728_152059) Up() {
-	m.Sql("ALTER TABLE user ADD COLUMN phone VARCHAR(50)")
+	m.SQL("ALTER TABLE user ADD COLUMN phone VARCHAR(50)")
 }
 
 func (m *Userphone_20150728_152059) Down() {
-	m.Sql("ALTER TABLE user DROP COLUMN phone")
+	m.SQL("ALTER TABLE user DROP COLUMN phone")
 }

@@ -132,5 +132,5 @@ func (this *UserDashboardController) GetDashboard() {
 	}
 
 	this.Data["json"] = data
-	this.ServeJson()
+	this.ServeJSON()
 }

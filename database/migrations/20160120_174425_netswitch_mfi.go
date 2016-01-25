@@ -18,13 +18,13 @@ func init() {
 
 // Run the migrations
 func (m *NetswitchMfi_20160120_174425) Up() {
-	m.Sql("ALTER TABLE netswitch ADD COLUMN host varchar(255) AFTER url_off")
-	m.Sql("ALTER TABLE netswitch ADD COLUMN sensor_port int(5) AFTER url_off")
-	m.Sql("UPDATE netswitch SET sensor_port = 1")
+	m.SQL("ALTER TABLE netswitch ADD COLUMN host varchar(255) AFTER url_off")
+	m.SQL("ALTER TABLE netswitch ADD COLUMN sensor_port int(5) AFTER url_off")
+	m.SQL("UPDATE netswitch SET sensor_port = 1")
 }
 
 // Reverse the migrations
 func (m *NetswitchMfi_20160120_174425) Down() {
-	m.Sql("ALTER TABLE netswitch DROP COLUMN host")
-	m.Sql("ALTER TABLE netswitch DROP COLUMN sensor_port")
+	m.SQL("ALTER TABLE netswitch DROP COLUMN host")
+	m.SQL("ALTER TABLE netswitch DROP COLUMN sensor_port")
 }

@@ -71,7 +71,7 @@ func (this *UserMembershipsController) PostUserMemberships() {
 	}
 
 	this.Data["json"] = userMembership
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title GetUserMemberships
@@ -122,7 +122,7 @@ func (this *UserMembershipsController) GetUserMemberships() {
 
 	// Serve machines
 	this.Data["json"] = ums
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title DeleteUserMembership
@@ -153,7 +153,7 @@ func (this *UserMembershipsController) DeleteUserMembership() {
 	}
 
 	this.Data["json"] = "ok"
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Put
@@ -186,5 +186,5 @@ func (this *UserMembershipsController) PutUserMembership() {
 	}
 
 	this.Data["json"] = "ok"
-	this.ServeJson()
+	this.ServeJSON()
 }

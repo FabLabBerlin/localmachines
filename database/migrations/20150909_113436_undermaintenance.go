@@ -18,10 +18,10 @@ func init() {
 
 // Run the migrations
 func (m *Undermaintenance_20150909_113436) Up() {
-	m.Sql("ALTER TABLE machines ADD under_maintenance tinyint(1)")
+	m.SQL("ALTER TABLE machines ADD under_maintenance tinyint(1)")
 }
 
 // Reverse the migrations
 func (m *Undermaintenance_20150909_113436) Down() {
-	m.Sql("ALTER TABLE machines DROP COLUMN under_maintenance")
+	m.SQL("ALTER TABLE machines DROP COLUMN under_maintenance")
 }

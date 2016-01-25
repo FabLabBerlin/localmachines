@@ -18,10 +18,10 @@ func init() {
 
 // Run the migrations
 func (m *PurchaseTimeEndPlanned_20151203_134204) Up() {
-	m.Sql("ALTER TABLE purchases CHANGE COLUMN time_end_actual time_end_planned datetime")
+	m.SQL("ALTER TABLE purchases CHANGE COLUMN time_end_actual time_end_planned datetime")
 }
 
 // Reverse the migrations
 func (m *PurchaseTimeEndPlanned_20151203_134204) Down() {
-	m.Sql("ALTER TABLE purchases CHANGE COLUMN time_end_planned time_end_actual datetime")
+	m.SQL("ALTER TABLE purchases CHANGE COLUMN time_end_planned time_end_actual datetime")
 }

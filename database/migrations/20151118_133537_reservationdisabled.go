@@ -18,11 +18,11 @@ func init() {
 
 // Run the migrations
 func (m *Reservationdisabled_20151118_133537) Up() {
-	m.Sql("ALTER TABLE reservations ADD COLUMN disabled tinyint(1)")
+	m.SQL("ALTER TABLE reservations ADD COLUMN disabled tinyint(1)")
 
 }
 
 // Reverse the migrations
 func (m *Reservationdisabled_20151118_133537) Down() {
-	m.Sql("ALTER TABLE reservations DROP COLUMN disabled")
+	m.SQL("ALTER TABLE reservations DROP COLUMN disabled")
 }

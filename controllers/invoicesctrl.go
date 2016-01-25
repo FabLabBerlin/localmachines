@@ -31,7 +31,7 @@ func (this *InvoicesController) GetAll() {
 	}
 
 	this.Data["json"] = invoices
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Get All Invoices
@@ -60,7 +60,7 @@ func (this *InvoicesController) Delete() {
 	}
 
 	this.Data["json"] = "ok"
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Create Invoice
@@ -120,5 +120,5 @@ func (this *InvoicesController) Create() {
 	}
 
 	this.Data["json"] = invoice
-	this.ServeJson()
+	this.ServeJSON()
 }

@@ -18,7 +18,7 @@ func init() {
 
 // Run the migrations
 func (m *Usermembershipenddate_20150924_114628) Up() {
-	m.Sql(`
+	m.SQL(`
 UPDATE user_membership
 SET end_date = DATE_ADD(start_date, INTERVAL
                           (SELECT duration_months
@@ -30,5 +30,5 @@ SET end_date = DATE_ADD(start_date, INTERVAL
 
 // Reverse the migrations
 func (m *Usermembershipenddate_20150924_114628) Down() {
-	m.Sql("UPDATE user_membership SET end_date = NULL")
+	m.SQL("UPDATE user_membership SET end_date = NULL")
 }

@@ -18,7 +18,7 @@ func init() {
 
 // Run the migrations
 func (m *Products_20151118_141721) Up() {
-	m.Sql(`CREATE TABLE products (
+	m.SQL(`CREATE TABLE products (
 		id int(11) unsigned NOT NULL AUTO_INCREMENT,
 		type varchar(100),
 		name varchar(100),
@@ -30,5 +30,5 @@ func (m *Products_20151118_141721) Up() {
 
 // Reverse the migrations
 func (m *Products_20151118_141721) Down() {
-	m.Sql("DROP TABLE products")
+	m.SQL("DROP TABLE products")
 }

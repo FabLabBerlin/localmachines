@@ -34,7 +34,7 @@ func (this *MachinesController) GetAll() {
 	}
 
 	this.Data["json"] = machines
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Get
@@ -88,7 +88,7 @@ func (this *MachinesController) Get() {
 	}
 
 	this.Data["json"] = machine
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title GetConnections
@@ -118,7 +118,7 @@ func (this *MachinesController) GetConnections() {
 	}
 
 	this.Data["json"] = machineList
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title GetConnected
@@ -148,7 +148,7 @@ func (this *MachinesController) GetConnectable() {
 	}
 
 	this.Data["json"] = cmList
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Create
@@ -176,7 +176,7 @@ func (this *MachinesController) Create() {
 
 	// Success - we even got an ID!!!
 	this.Data["json"] = &models.MachineCreatedResponse{MachineId: machineId}
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Update
@@ -218,7 +218,7 @@ func (this *MachinesController) Update() {
 	}
 
 	this.Data["json"] = "ok"
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 func decodeDataUri(dataUri string) ([]byte, error) {
@@ -351,7 +351,7 @@ func (this *MachinesController) ReportBroken() {
 		this.CustomAbort(500, "Failed to report machine")
 	}
 	this.Data["json"] = "ok"
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title UnderMaintenanceOn
@@ -369,7 +369,7 @@ func (this *MachinesController) UnderMaintenanceOn() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 	this.Data["json"] = "ok"
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title UnderMaintenanceOff
@@ -387,7 +387,7 @@ func (this *MachinesController) UnderMaintenanceOff() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 	this.Data["json"] = "ok"
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 func (this *MachinesController) switchMachine(onOrOff int) error {
@@ -430,7 +430,7 @@ func (this *MachinesController) TurnOn() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 	this.Data["json"] = "ok"
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title TurnOff
@@ -446,5 +446,5 @@ func (this *MachinesController) TurnOff() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 	this.Data["json"] = "ok"
-	this.ServeJson()
+	this.ServeJSON()
 }

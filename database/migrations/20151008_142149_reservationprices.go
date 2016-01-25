@@ -18,12 +18,12 @@ func init() {
 
 // Run the migrations
 func (m *Reservationprices_20151008_142149) Up() {
-	m.Sql("ALTER TABLE machines ADD COLUMN reservation_price_start double unsigned")
-	m.Sql("ALTER TABLE machines ADD COLUMN reservation_price_hourly double unsigned")
+	m.SQL("ALTER TABLE machines ADD COLUMN reservation_price_start double unsigned")
+	m.SQL("ALTER TABLE machines ADD COLUMN reservation_price_hourly double unsigned")
 }
 
 // Reverse the migrations
 func (m *Reservationprices_20151008_142149) Down() {
-	m.Sql("ALTER TABLE machines DROP COLUMN reservation_price_start")
-	m.Sql("ALTER TABLE machines DROP COLUMN reservation_price_hourly")
+	m.SQL("ALTER TABLE machines DROP COLUMN reservation_price_start")
+	m.SQL("ALTER TABLE machines DROP COLUMN reservation_price_hourly")
 }

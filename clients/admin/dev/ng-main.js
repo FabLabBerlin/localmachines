@@ -1,3 +1,7 @@
+if (window.location.pathname === '/admin') {
+  window.location.href = '/admin/#/login';
+}
+
 (function(){
 
 'use strict';

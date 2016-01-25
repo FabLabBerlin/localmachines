@@ -18,12 +18,12 @@ func init() {
 
 // Run the migrations
 func (m *Autoextenddefaulttrue_20150924_120425) Up() {
-	m.Sql("UPDATE membership SET auto_extend = TRUE, auto_extend_duration_months = 1")
-	m.Sql("UPDATE user_membership SET auto_extend = TRUE")
+	m.SQL("UPDATE membership SET auto_extend = TRUE, auto_extend_duration_months = 1")
+	m.SQL("UPDATE user_membership SET auto_extend = TRUE")
 }
 
 // Reverse the migrations
 func (m *Autoextenddefaulttrue_20150924_120425) Down() {
-	m.Sql("UPDATE membership SET auto_extend = NULL, auto_extend_duration_months = NULL")
-	m.Sql("UPDATE user_membership SET auto_extend = NULL")
+	m.SQL("UPDATE membership SET auto_extend = NULL, auto_extend_duration_months = NULL")
+	m.SQL("UPDATE user_membership SET auto_extend = NULL")
 }

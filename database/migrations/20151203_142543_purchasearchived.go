@@ -18,10 +18,10 @@ func init() {
 
 // Run the migrations
 func (m *Purchasearchived_20151203_142543) Up() {
-	m.Sql("ALTER TABLE purchases ADD COLUMN archived TINYINT(1) DEFAULT 0")
+	m.SQL("ALTER TABLE purchases ADD COLUMN archived TINYINT(1) DEFAULT 0")
 }
 
 // Reverse the migrations
 func (m *Purchasearchived_20151203_142543) Down() {
-	m.Sql("ALTER TABLE purchases DROP COLUMN archived")
+	m.SQL("ALTER TABLE purchases DROP COLUMN archived")
 }

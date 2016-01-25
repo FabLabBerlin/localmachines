@@ -18,10 +18,10 @@ func init() {
 
 // Run the migrations
 func (m *Usermembershipterminate_20150918_115716) Up() {
-	m.Sql("ALTER TABLE user_membership ADD COLUMN is_terminated TINYINT(1)")
+	m.SQL("ALTER TABLE user_membership ADD COLUMN is_terminated TINYINT(1)")
 }
 
 // Reverse the migrations
 func (m *Usermembershipterminate_20150918_115716) Down() {
-	m.Sql("ALTER TABLE user_membership DROP COLUMN is_terminated")
+	m.SQL("ALTER TABLE user_membership DROP COLUMN is_terminated")
 }

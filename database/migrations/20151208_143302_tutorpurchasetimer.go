@@ -18,10 +18,10 @@ func init() {
 
 // Run the migrations
 func (m *Tutorpurchasetimer_20151208_143302) Up() {
-	m.Sql("ALTER TABLE purchases ADD COLUMN timer_time_start DATETIME")
+	m.SQL("ALTER TABLE purchases ADD COLUMN timer_time_start DATETIME")
 }
 
 // Reverse the migrations
 func (m *Tutorpurchasetimer_20151208_143302) Down() {
-	m.Sql("ALTER TABLE purchases DROP COLUMN timer_time_start")
+	m.SQL("ALTER TABLE purchases DROP COLUMN timer_time_start")
 }

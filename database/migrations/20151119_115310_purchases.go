@@ -18,7 +18,7 @@ func init() {
 
 // Run the migrations
 func (m *Purchases_20151119_115310) Up() {
-	m.Sql(`CREATE TABLE purchases (
+	m.SQL(`CREATE TABLE purchases (
 		id int(11) unsigned NOT NULL AUTO_INCREMENT,
 		type varchar(100) NOT NULL,
 		product_id int(11) unsigned,
@@ -35,7 +35,7 @@ func (m *Purchases_20151119_115310) Up() {
 		machine_id int(11) unsigned,
 		PRIMARY KEY (id)
 	)`)
-	m.Sql(`
+	m.SQL(`
 		INSERT INTO purchases ( TYPE, product_id, created, user_id, time_start, time_end, quantity, price_per_unit, price_unit, vat, activation_running, reservation_disabled, machine_id )
 		SELECT 'activation',
 		       NULL,
@@ -69,7 +69,7 @@ func (m *Purchases_20151119_115310) Up() {
 		FROM activations
 		WHERE current_machine_price_unit = "hour"
 	`)
-	m.Sql(`
+	m.SQL(`
 		INSERT INTO purchases ( TYPE, product_id, created, user_id, time_start, time_end, quantity, price_per_unit, price_unit, vat, activation_running, reservation_disabled, machine_id )
 		SELECT 'reservation',
 		       NULL,
@@ -90,5 +90,5 @@ func (m *Purchases_20151119_115310) Up() {
 
 // Reverse the migrations
 func (m *Purchases_20151119_115310) Down() {
-	m.Sql("DROP TABLE purchases")
+	m.SQL("DROP TABLE purchases")
 }

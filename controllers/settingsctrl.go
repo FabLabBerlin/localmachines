@@ -29,7 +29,7 @@ func (this *SettingsController) GetAll() {
 	}
 
 	this.Data["json"] = settings.Data
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Post
@@ -69,5 +69,5 @@ func (this *SettingsController) Post() {
 		}
 	}
 
-	this.ServeJson()
+	this.ServeJSON()
 }

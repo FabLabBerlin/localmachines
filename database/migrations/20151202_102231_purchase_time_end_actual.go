@@ -18,12 +18,12 @@ func init() {
 
 // Run the migrations
 func (m *PurchaseTimeEndActual_20151202_102231) Up() {
-	m.Sql("ALTER TABLE purchases ADD COLUMN time_end_actual datetime AFTER time_end")
-	m.Sql("ALTER TABLE purchases CHANGE COLUMN activation_running running tinyint(1)")
+	m.SQL("ALTER TABLE purchases ADD COLUMN time_end_actual datetime AFTER time_end")
+	m.SQL("ALTER TABLE purchases CHANGE COLUMN activation_running running tinyint(1)")
 }
 
 // Reverse the migrations
 func (m *PurchaseTimeEndActual_20151202_102231) Down() {
-	m.Sql("ALTER TABLE purchases DROP COLUMN time_end_actual")
-	m.Sql("ALTER TABLE purchases CHANGE COLUMN running activation_running tinyint(1)")
+	m.SQL("ALTER TABLE purchases DROP COLUMN time_end_actual")
+	m.SQL("ALTER TABLE purchases CHANGE COLUMN running activation_running tinyint(1)")
 }

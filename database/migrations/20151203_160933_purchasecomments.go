@@ -18,10 +18,10 @@ func init() {
 
 // Run the migrations
 func (m *Purchasecomments_20151203_160933) Up() {
-	m.Sql("ALTER TABLE purchases ADD COLUMN comments TEXT")
+	m.SQL("ALTER TABLE purchases ADD COLUMN comments TEXT")
 }
 
 // Reverse the migrations
 func (m *Purchasecomments_20151203_160933) Down() {
-	m.Sql("ALTER TABLE purchases DROP COLUMN comments")
+	m.SQL("ALTER TABLE purchases DROP COLUMN comments")
 }

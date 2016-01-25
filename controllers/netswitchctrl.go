@@ -28,7 +28,7 @@ func (this *NetSwitchController) GetAll() {
 		this.CustomAbort(403, "Failed to get all netswitch mappings")
 	}
 	this.Data["json"] = ms
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Get
@@ -58,7 +58,7 @@ func (this *NetSwitchController) Get() {
 	}
 
 	this.Data["json"] = mapping
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Create
@@ -88,7 +88,7 @@ func (this *NetSwitchController) Create() {
 	}
 
 	this.Data["json"] = mappingId
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Delete
@@ -118,7 +118,7 @@ func (this *NetSwitchController) Delete() {
 	}
 
 	this.Data["json"] = "ok"
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Update
@@ -166,5 +166,5 @@ func (this *NetSwitchController) Update() {
 	}
 
 	this.Data["json"] = "ok"
-	this.ServeJson()
+	this.ServeJSON()
 }

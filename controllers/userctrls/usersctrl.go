@@ -43,7 +43,7 @@ func (this *UsersController) Login() {
 	} else {
 		this.Data["json"] = models.LoginResponse{"logged", sessUserId}
 	}
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title LoginUid
@@ -67,7 +67,7 @@ func (this *UsersController) LoginUid() {
 		this.Data["json"] = models.LoginResponse{"logged", sessUserId}
 	}
 
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title logout
@@ -84,7 +84,7 @@ func (this *UsersController) Logout() {
 		beego.Info("Logged out user", sessUsername)
 	}
 	this.Data["json"] = models.StatusResponse{"ok"}
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title GetAll
@@ -104,7 +104,7 @@ func (this *UsersController) GetAll() {
 		this.CustomAbort(403, "Failed to get all users")
 	}
 	this.Data["json"] = users
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 type UserSignupRequest struct {
@@ -144,7 +144,7 @@ func (this *UsersController) Signup() {
 	}
 
 	this.Data["json"] = userId
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Post
@@ -173,7 +173,7 @@ func (this *UsersController) Post() {
 	} else {
 		user.Id = userId
 		this.Data["json"] = user
-		this.ServeJson()
+		this.ServeJSON()
 	}
 }
 
@@ -225,7 +225,7 @@ func (this *UsersController) Get() {
 			}
 		}
 	}
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 type UserPutRequest struct {
@@ -303,7 +303,7 @@ func (this *UsersController) Put() {
 	}
 
 	this.Data["json"] = "ok"
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title GetUserMachines
@@ -366,7 +366,7 @@ func (this *UsersController) GetUserMachines() {
 
 	// Serve machines
 	this.Data["json"] = machines
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title GetUserBill
@@ -420,7 +420,7 @@ func (this *UsersController) GetUserBill() {
 	}
 
 	this.Data["json"] = userSummary
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 type TotalUsage struct {
@@ -492,7 +492,7 @@ func (this *UsersController) GetUserNames() {
 	}
 
 	this.Data["json"] = response
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title PostUserPassword
@@ -529,7 +529,7 @@ func (this *UsersController) PostUserPassword() {
 	}
 
 	this.Data["json"] = models.StatusResponse{"Password changed successfully!"}
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title UpdateNfcUid
@@ -575,5 +575,5 @@ func (this *UsersController) UpdateNfcUid() {
 	}
 
 	this.Data["json"] = "ok"
-	this.ServeJson()
+	this.ServeJSON()
 }

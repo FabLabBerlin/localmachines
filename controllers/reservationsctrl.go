@@ -24,7 +24,7 @@ func (this *ReservationsController) GetAll() {
 		this.CustomAbort(403, "Failed to get all reservations")
 	}
 	this.Data["json"] = reservations
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Get
@@ -48,7 +48,7 @@ func (this *ReservationsController) Get() {
 	}
 
 	this.Data["json"] = reservation
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Create
@@ -74,7 +74,7 @@ func (this *ReservationsController) Create() {
 	}
 
 	this.Data["json"] = purchases.ReservationCreatedResponse{Id: id}
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Put
@@ -114,7 +114,7 @@ func (this *ReservationsController) Put() {
 	}
 
 	this.Data["json"] = reservation
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Delete
@@ -163,5 +163,5 @@ func (this *ReservationsController) Delete() {
 	}
 
 	this.Data["json"] = "ok"
-	this.ServeJson()
+	this.ServeJSON()
 }

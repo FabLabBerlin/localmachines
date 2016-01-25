@@ -60,7 +60,7 @@ func (this *PurchasesController) Create() {
 	}
 
 	this.Data["json"] = purchase
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title GetAll
@@ -103,7 +103,7 @@ func (this *PurchasesController) GetAll() {
 	}
 
 	this.Data["json"] = ps
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Get
@@ -151,7 +151,7 @@ func (this *PurchasesController) Get() {
 	}
 
 	this.Data["json"] = purchase
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Put
@@ -223,7 +223,7 @@ func (this *PurchasesController) Put() {
 	}
 
 	this.Data["json"] = response
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Archive Purchase
@@ -258,5 +258,5 @@ func (this *PurchasesController) ArchivePurchase() {
 		this.CustomAbort(500, "Failed to archive purchase")
 	}
 
-	this.ServeJson()
+	this.ServeJSON()
 }

@@ -18,22 +18,22 @@ func init() {
 
 // Run the migrations
 func (m *MergeHostsAndLocations_20160120_163019) Up() {
-	m.Sql("DROP TABLE hosts")
-	m.Sql("ALTER TABLE locations CHANGE name title varchar(100)")
-	m.Sql("ALTER TABLE locations ADD COLUMN first_name varchar(100)")
-	m.Sql("ALTER TABLE locations ADD COLUMN last_name varchar(100)")
-	m.Sql("ALTER TABLE locations ADD COLUMN email varchar(100)")
-	m.Sql("ALTER TABLE locations ADD COLUMN city varchar(100)")
-	m.Sql("ALTER TABLE locations ADD COLUMN organization varchar(100)")
-	m.Sql("ALTER TABLE locations ADD COLUMN phone varchar(100)")
-	m.Sql("ALTER TABLE locations ADD COLUMN comments varchar(100)")
-	m.Sql("ALTER TABLE locations ADD COLUMN approved tinyint(1)")
-	m.Sql("UPDATE locations SET approved = 1 WHERE id = 1")
+	m.SQL("DROP TABLE hosts")
+	m.SQL("ALTER TABLE locations CHANGE name title varchar(100)")
+	m.SQL("ALTER TABLE locations ADD COLUMN first_name varchar(100)")
+	m.SQL("ALTER TABLE locations ADD COLUMN last_name varchar(100)")
+	m.SQL("ALTER TABLE locations ADD COLUMN email varchar(100)")
+	m.SQL("ALTER TABLE locations ADD COLUMN city varchar(100)")
+	m.SQL("ALTER TABLE locations ADD COLUMN organization varchar(100)")
+	m.SQL("ALTER TABLE locations ADD COLUMN phone varchar(100)")
+	m.SQL("ALTER TABLE locations ADD COLUMN comments varchar(100)")
+	m.SQL("ALTER TABLE locations ADD COLUMN approved tinyint(1)")
+	m.SQL("UPDATE locations SET approved = 1 WHERE id = 1")
 }
 
 // Reverse the migrations
 func (m *MergeHostsAndLocations_20160120_163019) Down() {
-	m.Sql(`
+	m.SQL(`
         CREATE TABLE hosts (
             id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
             first_name varchar(100) NOT NULL,
@@ -45,13 +45,13 @@ func (m *MergeHostsAndLocations_20160120_163019) Down() {
             comments text NOT NULL,
             PRIMARY KEY (id)
     )`)
-	m.Sql("ALTER TABLE locations DROP COLUMN first_name")
-	m.Sql("ALTER TABLE locations DROP COLUMN last_name")
-	m.Sql("ALTER TABLE locations DROP COLUMN email")
-	m.Sql("ALTER TABLE locations DROP COLUMN city")
-	m.Sql("ALTER TABLE locations DROP COLUMN organization")
-	m.Sql("ALTER TABLE locations DROP COLUMN phone")
-	m.Sql("ALTER TABLE locations DROP COLUMN comments")
-	m.Sql("ALTER TABLE locations DROP COLUMN approved")
-	m.Sql("ALTER TABLE locations CHANGE title name varchar(100)")
+	m.SQL("ALTER TABLE locations DROP COLUMN first_name")
+	m.SQL("ALTER TABLE locations DROP COLUMN last_name")
+	m.SQL("ALTER TABLE locations DROP COLUMN email")
+	m.SQL("ALTER TABLE locations DROP COLUMN city")
+	m.SQL("ALTER TABLE locations DROP COLUMN organization")
+	m.SQL("ALTER TABLE locations DROP COLUMN phone")
+	m.SQL("ALTER TABLE locations DROP COLUMN comments")
+	m.SQL("ALTER TABLE locations DROP COLUMN approved")
+	m.SQL("ALTER TABLE locations CHANGE title name varchar(100)")
 }

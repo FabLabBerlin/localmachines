@@ -18,8 +18,8 @@ func init() {
 
 // Run the migrations
 func (m *Activationfeedback_20150908_145935) Up() {
-	// use m.Sql("CREATE TABLE ...") to make schema update
-	m.Sql(`
+	// use m.SQL("CREATE TABLE ...") to make schema update
+	m.SQL(`
 		CREATE TABLE activation_feedback (
 			id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 			activation_id int(11) NOT NULL,
@@ -30,5 +30,5 @@ func (m *Activationfeedback_20150908_145935) Up() {
 
 // Reverse the migrations
 func (m *Activationfeedback_20150908_145935) Down() {
-	m.Sql("DROP TABLE activation_feedback")
+	m.SQL("DROP TABLE activation_feedback")
 }

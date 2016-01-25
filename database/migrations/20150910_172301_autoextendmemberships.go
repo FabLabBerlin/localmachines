@@ -18,12 +18,12 @@ func init() {
 
 // Run the migrations
 func (m *Autoextendmemberships_20150910_172301) Up() {
-	m.Sql("ALTER TABLE membership ADD COLUMN auto_extend TINYINT(1)")
-	m.Sql("ALTER TABLE membership ADD COLUMN auto_extend_duration INT(11)")
+	m.SQL("ALTER TABLE membership ADD COLUMN auto_extend TINYINT(1)")
+	m.SQL("ALTER TABLE membership ADD COLUMN auto_extend_duration INT(11)")
 }
 
 // Reverse the migrations
 func (m *Autoextendmemberships_20150910_172301) Down() {
-	m.Sql("ALTER TABLE membership DROP COLUMN auto_extend")
-	m.Sql("ALTER TABLE membership DROP COLUMN auto_extend_duration")
+	m.SQL("ALTER TABLE membership DROP COLUMN auto_extend")
+	m.SQL("ALTER TABLE membership DROP COLUMN auto_extend_duration")
 }

@@ -12,9 +12,23 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func main() {
-	beego.Info("beego.RunMode:", beego.RunMode)
+var runMode string
 
+func init() {
+	beego.AppConfig.Set("DirectoryIndex", "true")
+	beego.SetStaticPath("/swagger", "swagger")
+
+	// Config default files directory
+	beego.SetStaticPath("/files", "files")
+}
+
+func main() {
+	rm, err := beego.GetConfig("String", "RunMode", "undefined")
+	if err != nil {
+		panic(err.Error())
+	}
+	runMode = rm.(string)
+	beego.Info("beego RunMode:", runMode)
 	configClients()
 	configDatabase()
 	setupTasks()
@@ -22,15 +36,14 @@ func main() {
 	defer toolbox.StopTask()
 
 	// Config automatic API docs
-	beego.DirectoryIndex = true
-	beego.StaticDir["/swagger"] = "swagger"
+	beego.AppConfig.Set("DirectoryIndex", "true")
+	beego.SetStaticPath("/swagger", "swagger")
 
 	// Config default files directory
-	beego.StaticDir["/files"] = "files"
+	beego.SetStaticPath("/files", "files")
 
 	// Routing https
 	beego.InsertFilter("/", beego.BeforeRouter, RedirectHttp) // for http://mysite
-
 	beego.Run()
 
 }
@@ -39,7 +52,7 @@ var RedirectHttp = func(ctx *context.Context) {
 	HttpsEnabled, err := beego.AppConfig.Bool("EnableHttpTLS")
 	if HttpsEnabled && err == nil {
 		if !ctx.Input.IsSecure() {
-			url := "https://" + ctx.Input.Domain() + ":" + beego.AppConfig.String("HttpsPort") + ctx.Input.Uri()
+			url := "https://" + ctx.Input.Domain() + ":" + beego.AppConfig.String("HttpsPort") + ctx.Input.URI()
 			ctx.Redirect(302, url)
 		}
 	}
@@ -48,12 +61,12 @@ var RedirectHttp = func(ctx *context.Context) {
 func configClients() {
 
 	// Allow access index.html file
-	beego.DirectoryIndex = true
+	beego.AppConfig.Set("DirectoryIndex", "true")
 
-	beego.Trace(beego.RunMode)
+	beego.Trace(runMode)
 
 	// Serve self-contained Angular JS applications depending on runmode
-	if beego.RunMode == "dev" {
+	if runMode == "dev" {
 		beego.SetStaticPath("/machines", "clients/machines/dev")
 		beego.SetStaticPath("/admin", "clients/admin/dev")
 		beego.SetStaticPath("/signup", "clients/signup/dev")

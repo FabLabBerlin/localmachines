@@ -67,7 +67,7 @@ func (this *FastBillController) GetCustomers() {
 	}
 
 	this.Data["json"] = fastBillCustomers
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title CreateCustomer
@@ -121,7 +121,7 @@ func (this *FastBillController) CreateCustomer() {
 	this.Data["json"] = fastbill.CreateCustomerResponse{
 		CUSTOMER_ID: customerId,
 	}
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title UpdateCustomer
@@ -227,7 +227,7 @@ func (this *FastBillController) UpdateCustomer() {
 	this.Data["json"] = fastbill.UpdateCustomerResponse{
 		CUSTOMER_ID: customerIdUpd,
 	}
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title DeleteCustomer
@@ -259,5 +259,5 @@ func (this *FastBillController) DeleteCustomer() {
 	}
 
 	this.Data["json"] = "ok"
-	this.ServeJson()
+	this.ServeJSON()
 }

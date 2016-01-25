@@ -53,7 +53,7 @@ func (this *UserPermissionsController) CreateUserPermission() {
 
 	// We are done!
 	this.Data["json"] = "ok"
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title DeleteUserPermission
@@ -93,7 +93,7 @@ func (this *UserPermissionsController) DeleteUserPermission() {
 	}
 
 	this.Data["json"] = "ok"
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Update User Machine Permissions
@@ -141,7 +141,7 @@ func (this *UserPermissionsController) UpdateUserPermissions() {
 	}
 
 	this.Data["json"] = "ok"
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Get User Machine Permissions
@@ -191,7 +191,7 @@ func (this *UserPermissionsController) GetUserPermissions() {
 	}
 
 	this.Data["json"] = permissions
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title GetUserMachinePermissions
@@ -248,5 +248,5 @@ func (this *UserPermissionsController) GetUserMachinePermissions() {
 
 	// Serve machines
 	this.Data["json"] = machines
-	this.ServeJson()
+	this.ServeJSON()
 }

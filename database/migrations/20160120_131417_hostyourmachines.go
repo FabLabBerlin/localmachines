@@ -18,7 +18,7 @@ func init() {
 
 // Run the migrations
 func (m *Hostyourmachines_20160120_131417) Up() {
-	m.Sql(`
+	m.SQL(`
         CREATE TABLE hosts (
             id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
             first_name varchar(100) NOT NULL,
@@ -34,5 +34,5 @@ func (m *Hostyourmachines_20160120_131417) Up() {
 
 // Reverse the migrations
 func (m *Hostyourmachines_20160120_131417) Down() {
-	m.Sql("DROP TABLE hosts")
+	m.SQL("DROP TABLE hosts")
 }

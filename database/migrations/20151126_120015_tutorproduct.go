@@ -18,12 +18,12 @@ func init() {
 
 // Run the migrations
 func (m *Tutorproduct_20151126_120015) Up() {
-	m.Sql("ALTER TABLE products ADD COLUMN user_id int(11)")
-	m.Sql("ALTER TABLE products ADD COLUMN machine_skills varchar(255)")
+	m.SQL("ALTER TABLE products ADD COLUMN user_id int(11)")
+	m.SQL("ALTER TABLE products ADD COLUMN machine_skills varchar(255)")
 }
 
 // Reverse the migrations
 func (m *Tutorproduct_20151126_120015) Down() {
-	m.Sql("ALTER TABLE products DROP COLUMN machine_skills")
-	m.Sql("ALTER TABLE products DROP COLUMN user_id")
+	m.SQL("ALTER TABLE products DROP COLUMN machine_skills")
+	m.SQL("ALTER TABLE products DROP COLUMN user_id")
 }

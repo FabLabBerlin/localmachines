@@ -18,14 +18,14 @@ func init() {
 
 // Run the migrations
 func (m *Billingingaddress_20150728_120222) Up() {
-	// use m.Sql("CREATE TABLE ...") to make schema update
-	m.Sql("ALTER TABLE user MODIFY invoice_addr TEXT")
-	m.Sql("ALTER TABLE user MODIFY ship_addr TEXT")
+	// use m.SQL("CREATE TABLE ...") to make schema update
+	m.SQL("ALTER TABLE user MODIFY invoice_addr TEXT")
+	m.SQL("ALTER TABLE user MODIFY ship_addr TEXT")
 }
 
 // Reverse the migrations
 func (m *Billingingaddress_20150728_120222) Down() {
-	// use m.Sql("DROP TABLE ...") to reverse schema update
-	m.Sql("ALTER TABLE user MODIFY invoice_addr INT(11)")
-	m.Sql("ALTER TABLE user MODIFY ship_addr INT(11)")
+	// use m.SQL("DROP TABLE ...") to reverse schema update
+	m.SQL("ALTER TABLE user MODIFY invoice_addr INT(11)")
+	m.SQL("ALTER TABLE user MODIFY ship_addr INT(11)")
 }

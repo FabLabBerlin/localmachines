@@ -18,7 +18,7 @@ func init() {
 
 // Run the migrations
 func (m *Reservationrules_20151001_173125) Up() {
-	m.Sql(`CREATE TABLE reservation_rules (
+	m.SQL(`CREATE TABLE reservation_rules (
 		id int(11) unsigned NOT NULL AUTO_INCREMENT,
 		name varchar(100),
 		machine_id int(11),
@@ -43,5 +43,5 @@ func (m *Reservationrules_20151001_173125) Up() {
 
 // Reverse the migrations
 func (m *Reservationrules_20151001_173125) Down() {
-	m.Sql("DROP TABLE reservation_rules")
+	m.SQL("DROP TABLE reservation_rules")
 }

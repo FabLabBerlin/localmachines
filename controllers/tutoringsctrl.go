@@ -30,7 +30,7 @@ func (this *TutoringsController) Start() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Stop
@@ -54,5 +54,5 @@ func (this *TutoringsController) Stop() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	this.ServeJson()
+	this.ServeJSON()
 }

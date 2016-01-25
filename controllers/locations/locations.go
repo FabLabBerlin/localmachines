@@ -36,7 +36,7 @@ func (this *Controller) Create() {
 	this.Data = map[interface{}]interface{}{
 		"Id": l.Id,
 	}
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title GetAll
@@ -51,5 +51,5 @@ func (c *Controller) GetAll() {
 		c.CustomAbort(500, "Failed to get all locations")
 	}
 	c.Data["json"] = ls
-	c.ServeJson()
+	c.ServeJSON()
 }

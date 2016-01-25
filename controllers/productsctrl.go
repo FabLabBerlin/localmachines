@@ -51,7 +51,7 @@ func (this *ProductsController) Create() {
 	}
 
 	this.Data["json"] = product
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Get
@@ -93,7 +93,7 @@ func (this *ProductsController) Get() {
 	}
 
 	this.Data["json"] = product
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Get All
@@ -137,7 +137,7 @@ func (this *ProductsController) GetAll() {
 
 	this.Data["json"] = ps
 
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Put
@@ -209,7 +209,7 @@ func (this *ProductsController) Put() {
 	}
 
 	this.Data["json"] = response
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Archive Product
@@ -245,5 +245,5 @@ func (this *ProductsController) ArchiveProduct() {
 		this.CustomAbort(500, "Failed to archive product")
 	}
 
-	this.ServeJson()
+	this.ServeJSON()
 }

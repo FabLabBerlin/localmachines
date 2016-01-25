@@ -98,7 +98,7 @@ func (this *ActivationsController) GetAll() {
 		NumActivations:  numActivations,
 		ActivationsPage: activations,
 	}
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Get
@@ -124,7 +124,7 @@ func (this *ActivationsController) GetActive() {
 		this.CustomAbort(403, "Failed to get active activations")
 	}
 	this.Data["json"] = activations
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Create
@@ -202,7 +202,7 @@ func (this *ActivationsController) Create() {
 	this.Data["json"] = models.ActivationCreateResponse{
 		ActivationId: activationId,
 	}
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Close
@@ -260,7 +260,7 @@ func (this *ActivationsController) Close() {
 	this.Data["json"] = models.StatusResponse{
 		Status: "ok",
 	}
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title PostFeedback
@@ -287,5 +287,5 @@ func (this *ActivationsController) PostFeedback() {
 	}
 
 	this.Data["json"] = "ok"
-	this.ServeJson()
+	this.ServeJSON()
 }

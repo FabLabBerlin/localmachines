@@ -12,8 +12,8 @@ var HeaderNavBrand = React.createClass({
         <a 
           className="brand-link" 
           href="/machines/#/machine">
-          <img src="img/logo-easylab.svg" className="brand-image hidden-xs"/>
-          <img src="img/logo-small.svg" className="brand-image visible-xs-block"/>
+          <img src="/machines/img/logo-easylab.svg" className="brand-image hidden-xs"/>
+          <img src="/machines/img/logo-small.svg" className="brand-image visible-xs-block"/>
         </a>
       </div>
     );

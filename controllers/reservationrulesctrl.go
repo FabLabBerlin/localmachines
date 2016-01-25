@@ -23,7 +23,7 @@ func (this *ReservationRulesController) GetAll() {
 		this.CustomAbort(403, "Failed to get all ReservationRules")
 	}
 	this.Data["json"] = ReservationRules
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Get
@@ -47,7 +47,7 @@ func (this *ReservationRulesController) Get() {
 	}
 
 	this.Data["json"] = ReservationRule
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Create
@@ -73,7 +73,7 @@ func (this *ReservationRulesController) Create() {
 	}
 
 	this.Data["json"] = models.ReservationRuleCreatedResponse{Id: id}
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Update
@@ -97,7 +97,7 @@ func (this *ReservationRulesController) Update() {
 	}
 
 	this.Data["json"] = req
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Delete
@@ -126,5 +126,5 @@ func (this *ReservationRulesController) Delete() {
 	}
 
 	this.Data["json"] = "ok"
-	this.ServeJson()
+	this.ServeJSON()
 }

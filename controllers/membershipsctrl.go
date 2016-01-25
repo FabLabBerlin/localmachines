@@ -33,7 +33,7 @@ func (this *MembershipsController) GetAll() {
 		this.CustomAbort(403, "Failed to get all memberships")
 	}
 	this.Data["json"] = memberships
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Create
@@ -59,7 +59,7 @@ func (this *MembershipsController) Create() {
 	}
 
 	this.Data["json"] = id
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Get
@@ -89,7 +89,7 @@ func (this *MembershipsController) Get() {
 	}
 
 	this.Data["json"] = membership
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Update
@@ -132,7 +132,7 @@ func (this *MembershipsController) Update() {
 	}
 
 	this.Data["json"] = "ok"
-	this.ServeJson()
+	this.ServeJSON()
 }
 
 // @Title Delete
@@ -162,5 +162,5 @@ func (this *MembershipsController) Delete() {
 	}
 
 	this.Data["json"] = "ok"
-	this.ServeJson()
+	this.ServeJSON()
 }
