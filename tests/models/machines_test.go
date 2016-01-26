@@ -42,7 +42,7 @@ func TestMachine(t *testing.T) {
 			machineOneName := "My first machine"
 			machineTwoName := "My second lovely machine <3"
 			Convey("GetAllMachines when there are no machines in the database", func() {
-				machines, err := models.GetAllMachines(false)
+				machines, err := models.GetAllMachines()
 
 				So(len(machines), ShouldEqual, 0)
 				So(err, ShouldBeNil)
@@ -51,7 +51,7 @@ func TestMachine(t *testing.T) {
 				models.CreateMachine(machineOneName)
 				models.CreateMachine(machineTwoName)
 
-				machines, err := models.GetAllMachines(false)
+				machines, err := models.GetAllMachines()
 
 				So(len(machines), ShouldEqual, 2)
 				So(err, ShouldBeNil)
