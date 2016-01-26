@@ -39,7 +39,7 @@ func (this *DashboardData) loadActivations() (err error) {
 
 func (this *DashboardData) loadMachines(isAdmin bool, uid int64) (err error) {
 	// List all machines if the requested user is admin
-	allMachines, err := models.GetAllMachines(false)
+	allMachines, err := models.GetAllMachines()
 	if err != nil {
 		return fmt.Errorf("Failed to get all machines: %v", err)
 	}

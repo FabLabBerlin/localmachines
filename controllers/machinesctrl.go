@@ -27,7 +27,7 @@ func (this *MachinesController) GetAll() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	machines, err := models.GetAllMachines(true)
+	machines, err := models.GetAllMachines()
 	if err != nil {
 		beego.Error("Failed to get all machines", err)
 		this.CustomAbort(403, "Failed to get all machines")
@@ -184,8 +184,9 @@ func (this *MachinesController) Create() {
 // @Param	mid	path	int	true	"Machine ID"
 // @Param	model	body	models.Machine	true	"Machine model"
 // @Success 200 string ok
-// @Failure	403	Failed to update machine
+// @Failure	400	Bad Request
 // @Failure	401	Not authorized
+// @Failure	500	Failed to update machine
 // @router /:mid [put]
 func (this *MachinesController) Update() {
 
@@ -198,23 +199,28 @@ func (this *MachinesController) Update() {
 	req := models.Machine{}
 	if err := dec.Decode(&req); err != nil {
 		beego.Error("Failed to decode json:", err)
-		this.CustomAbort(403, "Failed to update machine")
+		this.CustomAbort(400, "Failed to update machine")
 	}
 
 	// Get mid and check if it matches with the machine model ID
 	mid, err := this.GetInt64(":mid")
 	if err != nil {
 		beego.Error("Could not get :mid:", err)
-		this.CustomAbort(403, "Failed to update machine")
+		this.CustomAbort(400, "Failed to update machine")
 	}
 	if mid != req.Id {
 		beego.Error("mid and model ID does not match:", err)
-		this.CustomAbort(403, "Failed to update machine")
+		this.CustomAbort(400, "Failed to update machine")
 	}
 
 	if err = req.Update(); err != nil {
 		beego.Error("Failed updating machine:", err)
-		this.CustomAbort(403, "Failed to update machine")
+		if err == models.ErrDimensions || err == models.ErrWorkspaceDimensions {
+			this.CustomAbort(400, err.Error())
+		} else {
+			this.CustomAbort(500, "Failed to update machine")
+		}
+
 	}
 
 	this.Data["json"] = "ok"

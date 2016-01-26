@@ -144,9 +144,12 @@ app.controller('MachineCtrl',
     .success(function(data) {
       toastr.success('Update successful');
     })
-    .error(function(data) {
-      console.log(data);
-      toastr.error('Failed to update');
+    .error(function(message, statusCode) {
+      if (statusCode === 400 && message.indexOf('Dimensions') >= 0) {
+        toastr.error(message);
+      } else {
+        toastr.error('Failed to update');
+      }
     });
   }; // updateMachine()
 

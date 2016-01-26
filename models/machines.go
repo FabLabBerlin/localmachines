@@ -2,13 +2,15 @@ package models
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/ChimeraCoder/anaconda"
 	"github.com/FabLabBerlin/localmachines/models/email"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"math/rand"
-	//"sort"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -51,6 +53,10 @@ type Machine struct {
 	UnderMaintenance       bool
 	ReservationPriceStart  *float64 // Why pointers?
 	ReservationPriceHourly *float64
+	Type                   string
+	Brand                  string
+	Dimensions             string
+	WorkspaceDimensions    string
 }
 
 // Define custom table name as for SQL table with a name "machines"
@@ -125,48 +131,11 @@ func (s ExtendedMachineList) Swap(i, j int) {
 	s[i], s[j] = s[j], s[i]
 }
 
-func GetAllMachines(sorted bool) (machines []*Machine, err error) {
+func GetAllMachines() (machines []*Machine, err error) {
 	o := orm.NewOrm()
 	m := Machine{}
 	_, err = o.QueryTable(m.TableName()).All(&machines)
-	if err != nil {
-		return nil, fmt.Errorf("Failed to get all machines: %v", err)
-	}
-
-	//var extendedMachines ExtendedMachineList
-
-	/*if sorted {
-		// Get sum of activations per machine
-		a := Activation{}
-		for i := 0; i < len(machines); i++ {
-			var numActivations int64
-			query := fmt.Sprintf("SELECT COUNT(*) FROM %s WHERE TYPE=? AND machine_id=?",
-				a.Purchase.TableName())
-			//beego.Trace("Counting activations for machine with ID", machines[i].Id)
-			err = o.Raw(query, PURCHASE_TYPE_ACTIVATION, machines[i].Id).QueryRow(&numActivations)
-			if err != nil {
-				return nil, fmt.Errorf("Failed to read activations: %v", err)
-			}
-			extendedMachine := ExtendedMachine{}
-			extendedMachine.NumActivations = numActivations
-			extendedMachine.MachineData = machines[i]
-			extendedMachines = append(extendedMachines, &extendedMachine)
-		}
-
-		// Sort the machines by number of activations
-		sort.Sort(extendedMachines)
-
-		// Build new machine slice
-		var sortedMachines []*Machine
-		for i := 0; i < len(extendedMachines); i++ {
-			sortedMachines = append(sortedMachines, extendedMachines[i].MachineData)
-		}
-
-		return sortedMachines, nil
-	} else {*/
-	return machines, nil
-	//}
-
+	return
 }
 
 func CreateMachine(machineName string) (id int64, err error) {
@@ -175,9 +144,57 @@ func CreateMachine(machineName string) (id int64, err error) {
 	return o.Insert(&machine)
 }
 
-func (machine *Machine) Update() (err error) {
+func (m *Machine) Update() (err error) {
 	o := orm.NewOrm()
-	_, err = o.Update(machine)
+	if _, err = parseDimensions(m.Dimensions); err != nil {
+		return ErrDimensions
+	}
+	if _, err = parseDimensions(m.WorkspaceDimensions); err != nil {
+		return ErrWorkspaceDimensions
+	}
+	_, err = o.Update(m)
+	return
+}
+
+var (
+	ErrDimensions          = errors.New("Dimensions must be like 200 mm x 200 mm x 200 mm or 2000 mm x 1500 mm")
+	ErrWorkspaceDimensions = errors.New("Workspace Dimensions must be like 200 mm x 200 mm x 200 mm or 2000 mm x 1500 mm")
+)
+
+type Millimeters float64
+
+func parseDimensions(s string) (lMM []Millimeters, err error) {
+	s = strings.Replace(s, " ", "", -1)
+	if s != "" {
+		tmp := strings.Split(s, "x")
+		lMM = make([]Millimeters, len(tmp))
+		for i, w := range tmp {
+			w = strings.ToLower(w)
+			var scaling float64 = 1
+			if strings.HasSuffix(w, "mm") {
+				w = w[:len(w)-2]
+			} else if strings.HasSuffix(w, "cm") {
+				w = w[:len(w)-2]
+				scaling = 10
+			} else if strings.HasSuffix(w, "m") {
+				w = w[:len(w)-1]
+				scaling = 100
+			} else if strings.HasSuffix(w, "in") {
+				w = w[:len(w)-2]
+				scaling = 25.4
+			} else if strings.HasSuffix(w, "ft") {
+				w = w[:len(w)-2]
+				scaling = 304.8
+			} else {
+				return nil, fmt.Errorf("unknown unit: %v", s)
+			}
+			if f, err := strconv.ParseFloat(w, 64); err == nil {
+				lMM[i] = Millimeters(f * scaling)
+			} else {
+				return nil, err
+			}
+		}
+	}
 	return
 }
 
@@ -229,7 +246,7 @@ func GetConnectedMachines(id int64) (*ConnectedMachineList, error) {
 func GetConnectableMachines(machineId int64) (*ConnectableMachineList, error) {
 
 	// All machines can be connectable
-	machines, err := GetAllMachines(true)
+	machines, err := GetAllMachines()
 	if err != nil {
 		return nil, err
 	}
