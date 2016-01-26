@@ -1,7 +1,3 @@
-if (window.location.pathname === '/admin') {
-  window.location.href = '/admin/#/login';
-}
-
 (function(){
 
 'use strict';
@@ -46,6 +42,9 @@ app.run(['$rootScope', '$location', '$http', '$cookieStore',
   
   $rootScope.$on('$locationChangeStart', 
    function(event, newUrl, oldUrl) {
+    if (window.location.pathname === '/admin') {
+      window.location.href = '/admin/#/login';
+    }
 
     // Get requested angular path
     var newPath = newUrl.split('#')[1];
