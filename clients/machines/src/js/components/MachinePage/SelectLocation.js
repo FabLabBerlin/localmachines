@@ -26,8 +26,17 @@ var SelectLocation = React.createClass({
   render() {
     if (this.state.locations) {
       return (
-        <div className="container-fluid">
-          <select className="form-control" onChange={this.handleChange}>
+        <div className="container-fluid location-picker">
+        <div className="form-horizontal">
+          <div className="form-group">
+          <label 
+            for="location" 
+            className="col-sm-2 control-label">Location</label>
+          <div className="col-sm-10">
+          <select
+            id="location" 
+            className="form-control" 
+            onChange={this.handleChange}>
             {_.map(this.state.locations, (location) => {
               if (location.Approved) {
                 return (
@@ -38,6 +47,9 @@ var SelectLocation = React.createClass({
               }
             })}
           </select>
+          </div>
+          </div>
+        </div>
         </div>
       );
     } else {
