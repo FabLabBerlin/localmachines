@@ -23,6 +23,9 @@ app.config(['$httpProvider', function($httpProvider) {
 // Signup main controller
 app.controller('MainCtrl', ['$scope', '$location',
  function($scope, $location){
+  if (window.location.pathname === '/signup') {
+    window.location.href = '/signup/#/form';
+  }
 
   // Configure toastr default location
   toastr.options.positionClass = 'toast-bottom-left';
