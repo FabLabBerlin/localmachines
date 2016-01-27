@@ -30,17 +30,17 @@ var SelectLocation = React.createClass({
         <div className="form-horizontal">
           <div className="form-group">
           <label 
-            for="location" 
+            htmlFor="location"
             className="col-sm-2 control-label">Location</label>
           <div className="col-sm-10">
           <select
             id="location" 
             className="form-control" 
             onChange={this.handleChange}>
-            {_.map(this.state.locations, (location) => {
+            {_.map(this.state.locations, (location, i) => {
               if (location.Approved) {
                 return (
-                  <option value={location.Id}>
+                  <option key={i} value={location.Id}>
                     {location.Title}
                   </option>
                 );
