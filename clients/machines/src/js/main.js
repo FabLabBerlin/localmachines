@@ -20,8 +20,8 @@ var UserPage = require('./components/UserProfile/UserPage');
 var UserStore = require('./stores/UserStore');
 var {DefaultRoute, Route, Routes, NotFoundRoute} = require('react-router');
 
-if (window.location.pathname === "/machines") {
-  window.location.href = "/machines/#/machine";
+if (window.location.pathname === '/machines') {
+  window.location.href = '/machines/#/machine';
 }
 
 /*

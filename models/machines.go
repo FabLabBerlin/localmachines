@@ -53,7 +53,7 @@ type Machine struct {
 	UnderMaintenance       bool
 	ReservationPriceStart  *float64 // Why pointers?
 	ReservationPriceHourly *float64
-	Type                   string
+	TypeId                 int64
 	Brand                  string
 	Dimensions             string
 	WorkspaceDimensions    string

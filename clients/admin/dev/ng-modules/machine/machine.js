@@ -38,6 +38,7 @@ app.controller('MachineCtrl',
     });
   };
 
+
   $scope.loadMachine = function(machineId) {
     $http({
       method: 'GET',
@@ -56,6 +57,19 @@ app.controller('MachineCtrl',
     })
     .error(function() {
       toastr.error('Failed to get machine');
+    });
+  };
+
+  $scope.loadMachineTypes = function() {
+    $http({
+      method: 'GET',
+      url: '/api/machine_types'
+    })
+    .success(function(data) {
+      $scope.machineTypes = data;
+    })
+    .error(function() {
+      toastr.error('Failed to get machine types');
     });
   };
 
@@ -93,6 +107,7 @@ app.controller('MachineCtrl',
   };
 
   $scope.loadLocations();
+  $scope.loadMachineTypes();
   $scope.loadMachine($scope.machine.Id);
   $scope.loadConnectedMachines($scope.machine.Id);
   $scope.loadConnectableMachines($scope.machine.Id);
@@ -122,6 +137,11 @@ app.controller('MachineCtrl',
       machine.LocationId = 0;
     }
     machine.LocationId = parseInt(machine.LocationId);
+
+    if (!machine.TypeId) {
+      machine.TypeId = 0;
+    }
+    machine.TypeId = parseInt(machine.TypeId);
 
     if (!machine.LocationId) {
       toastr.error('Please specify a location.');

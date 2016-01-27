@@ -49,6 +49,11 @@ func Init() {
 				&controllers.MachinesController{},
 			),
 		),
+		beego.NSNamespace("/machine_types",
+			beego.NSInclude(
+				&controllers.MachineTypeController{},
+			),
+		),
 		beego.NSNamespace("/products",
 			beego.NSInclude(
 				&controllers.ProductsController{},
