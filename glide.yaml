@@ -1,0 +1,41 @@
+# Glide YAML configuration file for localmachines
+package: main
+
+# Declare your project's dependencies.
+import:
+  - package: github.com/azr/backoff
+    ref:     53511d3
+    vcs:     git
+  - package: github.com/FabLabBerlin/localmachines
+    vcs:     git
+  - package: github.com/ChimeraCoder/anaconda
+    ref:     afffdba
+    vcs:     git
+  - package: github.com/satori/go.uuid
+    ref:     d41af8b
+    vcs:     git
+  - package: github.com/golang/crypto 
+    ref:     1f22c01
+    vcs:     git
+  - package: github.com/go-sql-driver/mysql
+    ref:     7c7f556
+    vcs:     git
+  - package: github.com/mattn/go-xmpp
+    ref:     54cdc20
+    vcs:     git
+  - package: github.com/astaxie/beego
+    ref:     fbb98fb
+    vcs:     git
+  - package: github.com/dustin/go-jsonpointer
+    ref:     2efc9fe
+    vcs:     git
+  - package: github.com/ChimeraCoder/tokenbucket
+    ref:     c5a9275
+    vcs:     git
+  - package: github.com/dustin/gojson
+    ref:     af16e0e
+    vcs:     git
+  - package: github.com/tealeg/xlsx
+    ref:     e16993b
+    vcs:     git
+
