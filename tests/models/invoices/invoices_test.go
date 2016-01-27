@@ -64,7 +64,11 @@ func TestInvoiceActivation(t *testing.T) {
 		Convey("Testing MembershipStr", func() {
 			invAct := CreateTestPurchase(22, "Lasercutter",
 				time.Duration(12)*time.Minute, 0.5)
-			So(invAct.MembershipStr(), ShouldEqual, "HP (50%)")
+			membershipStr, err := invAct.MembershipStr()
+			if err != nil {
+				panic(err.Error())
+			}
+			So(membershipStr, ShouldEqual, "HP (50%)")
 		})
 		Convey("Testing PriceTotalExclDisc", func() {
 			invAct := CreateTestPurchase(22, "Lasercutter",

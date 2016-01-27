@@ -7,6 +7,7 @@ package routers
 import (
 	"github.com/FabLabBerlin/localmachines/controllers"
 	"github.com/FabLabBerlin/localmachines/controllers/locations"
+	"github.com/FabLabBerlin/localmachines/controllers/metrics"
 	"github.com/FabLabBerlin/localmachines/controllers/userctrls"
 	"github.com/astaxie/beego"
 )
@@ -86,7 +87,7 @@ func Init() {
 		),
 		beego.NSNamespace("/metrics",
 			beego.NSInclude(
-				&controllers.MetricsController{},
+				&metrics.Controller{},
 			),
 		),
 		beego.NSNamespace("/reservations",

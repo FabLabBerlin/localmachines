@@ -45,7 +45,7 @@ func (this PurchasesXlsx) Swap(i, j int) {
 
 // Adds a row to xlsx sheet by consuming a pointer to
 // InvoiceActivation model based store.
-func AddRowXlsx(sheet *xlsx.Sheet, purchase *purchases.Purchase) error {
+func AddRowXlsx(sheet *xlsx.Sheet, purchase *purchases.Purchase) (err error) {
 	timeStart := purchase.TimeStart
 	totalPrice := purchase.TotalPrice
 	discountedTotal := purchase.DiscountedTotal
@@ -78,7 +78,9 @@ func AddRowXlsx(sheet *xlsx.Sheet, purchase *purchases.Purchase) error {
 	cell.SetFloatWithFormat(totalPrice, FORMAT_2_DIGIT)
 
 	cell = row.AddCell()
-	cell.Value = purchase.MembershipStr()
+	if cell.Value, err = purchase.MembershipStr(); err != nil {
+		return fmt.Errorf("membership string: %v", err)
+	}
 
 	cell = row.AddCell()
 	cell.SetFloatWithFormat(discountedTotal, FORMAT_2_DIGIT)
@@ -323,7 +325,9 @@ func createXlsxFile(filePath string, invoice *Invoice) error {
 						return fmt.Errorf("PriceTotalDisc: %v", err)
 					}
 					discPrice += priceDisc
-					membershipStr = purchase.MembershipStr()
+					if membershipStr, err = purchase.MembershipStr(); err != nil {
+						return fmt.Errorf("membership string: %v", err)
+					}
 				}
 				row = sheet.AddRow()
 				row.AddCell()

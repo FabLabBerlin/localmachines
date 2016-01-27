@@ -114,9 +114,12 @@ func Archive(purchase *Purchase) (err error) {
 	return
 }
 
-func (this *Purchase) MembershipStr() string {
-	membershipStr := ""
-	for _, membership := range this.Memberships {
+func (this *Purchase) MembershipStr() (membershipStr string, err error) {
+	affected, err := AffectedMemberships(this)
+	if err != nil {
+		return "", fmt.Errorf("affected memberships: %v", err)
+	}
+	for _, membership := range affected {
 		memStr := fmt.Sprintf("%s (%d%%)",
 			membership.ShortName,
 			membership.MachinePriceDeduction)
@@ -128,9 +131,9 @@ func (this *Purchase) MembershipStr() string {
 		}
 	}
 	if membershipStr == "" {
-		membershipStr = "None"
+		membershipStr = "Pay-As-You-Go"
 	}
-	return membershipStr
+	return
 }
 
 func (this *Purchase) quantityFromTimes() (quantity float64) {
@@ -193,26 +196,35 @@ func PriceTotalDisc(p *Purchase) (float64, error) {
 	}
 
 	priceTotal := PriceTotalExclDisc(p)
-	for _, membership := range p.Memberships {
-
-		// We need to know whether the machine is affected by the base membership
-		// as well as the individual activation is affected by the user membership
-		isAffected, err := membership.IsMachineAffected(p.Machine.Id)
-		if err != nil {
-			beego.Error(
-				"Failed to check whether machine is affected by membership:", err)
-			return 0, fmt.Errorf(
-				"Failed to check whether machine is affected by membership")
-		}
-
-		machinePriceDeduction := 0.0
-		if isAffected {
-			machinePriceDeduction = float64(membership.MachinePriceDeduction)
-		}
+	affectedMemberships, err := AffectedMemberships(p)
+	if err != nil {
+		return 0, fmt.Errorf("affected memberships: %v", err)
+	}
+	for _, membership := range affectedMemberships {
+		machinePriceDeduction := float64(membership.MachinePriceDeduction)
 		// Discount total price
 		priceTotal = priceTotal - (priceTotal * machinePriceDeduction / 100.0)
 	}
 	return priceTotal, nil
+}
+
+func AffectedMemberships(p *Purchase) (affected []*models.Membership, err error) {
+	affected = make([]*models.Membership, 0, 2)
+
+	for _, membership := range p.Memberships {
+
+		isAffected, err := membership.IsMachineAffected(p.Machine.Id)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"Failed to check whether machine is affected by membership")
+		}
+
+		if isAffected {
+			affected = append(affected, membership)
+		}
+	}
+
+	return
 }
 
 type Purchases struct {
