@@ -115,14 +115,12 @@
       <div class="form-group">
         <label for="machine-type">Machine Type</label>
         <select class="form-control" id="machine-type" 
-                ng-model="machine.Type">
+                ng-model="machine.TypeId">
           <option value="" selected disabled>Select type</option>
-          <option value="3dprinter">3D Printer</option>
-          <option value="cnc">CNC Mill</option>
-          <option value="heatpress">Heatpress</option>
-          <option value="knitting">Knitting Machine</option>
-          <option value="lasercutter">Lasercutter</option>
-          <option value="vinylcutter">Vinylcutter</option>
+          <option ng-repeat="machineType in machineTypes"
+                  value="{{machineType.Id}}">
+            {{machineType.Name}}
+          </option>
         </select>
       </div>
     </div>
