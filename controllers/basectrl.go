@@ -45,8 +45,12 @@ func NewErrorResponse() *ErrorResponse {
 // Checks if user is logged in before sending out any data, responds with
 // "Not logged in" error if user not logged in
 func (this *Controller) Prepare() {
-	sessUser := this.GetSession(SESSION_USER_ID)
-	if sessUser == nil {
-		this.CustomAbort(401, "Not logged in")
+	switch this.Ctx.Request.URL.Path {
+	case "/api/machine_types", "/api/machines/search":
+	default:
+		sessUser := this.GetSession(SESSION_USER_ID)
+		if sessUser == nil {
+			this.CustomAbort(401, "Not logged in")
+		}
 	}
 }

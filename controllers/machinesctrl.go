@@ -454,3 +454,36 @@ func (this *MachinesController) TurnOff() {
 	this.Data["json"] = "ok"
 	this.ServeJSON()
 }
+
+// @Title Search
+// @Description Search machine
+// @Param	machine_type_id	query	int64	true	"Machine Type Id"
+// @Success 200
+// @Failure	400	Client Error
+// @Failure	401	Not authorized
+// @Failure	500	Internal Server Error
+// @router /search [post]
+func (this *MachinesController) Search() {
+	machineTypeId, err := this.GetInt64("machine_type_id")
+	if err != nil {
+		beego.Error("machine_type_id:", err)
+		this.CustomAbort(400, "Client error")
+	}
+
+	ms, err := models.GetAllMachines()
+	if err != nil {
+		beego.Error("get all machines", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	results := make([]*models.Machine, 0, len(ms))
+
+	for _, m := range ms {
+		if m.TypeId == machineTypeId {
+			results = append(results, m)
+		}
+	}
+
+	this.Data["json"] = results
+	this.ServeJSON()
+}
