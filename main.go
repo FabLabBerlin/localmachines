@@ -77,6 +77,7 @@ func configClients() {
 		beego.SetStaticPath("/admin", "clients/admin/prod")
 		beego.SetStaticPath("/signup", "clients/signup/prod")
 		beego.SetStaticPath("/user", "clients/user/prod")
+		beego.SetStaticPath("/landing", "../localmachines-web")
 	}
 }
 
