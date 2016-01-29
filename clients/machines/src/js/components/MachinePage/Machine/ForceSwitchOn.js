@@ -11,7 +11,7 @@ var ForceSwitchOn = React.createClass({
 
     return (
       <a 
-        href="#" 
+        href="javascript:void(0)" 
         onClick={this.handleForceSwitchOn}
         className="force-switch force-switch-on">
         <i className="fa fa-power-off"></i>
