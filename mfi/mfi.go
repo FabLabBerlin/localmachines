@@ -29,19 +29,36 @@ const (
 	TEMPFILE_PREFIX      = "mfi_deploy"
 )
 
-func usage() {
-	fmt.Printf("Please hold the power switch's reset button until it\n")
-	fmt.Printf("blinks blue-orange.  Afterwards wait until a Wifi\n")
-	fmt.Printf("named 'mfi...' comes up and connect to it.\n")
-	fmt.Printf("(The device is now on 192.168.2.20)\n")
-}
-
 type Config struct {
+	EthernetConfig        bool
 	WlanOverwriteFilename string
 	SystemCfgFilename     string
+	WifiSSID              string
 	WifiPassword          string
 	SshPasswordHash       string
 	HwAddr                string
+}
+
+func (c *Config) usage() {
+	fmt.Printf("Please hold the power switch's reset button until it\n")
+	fmt.Printf("blinks blue-orange.  ")
+	if c.EthernetConfig {
+		fmt.Printf("Be sure to be connected with\n")
+		fmt.Printf("the device with an Ethernet cable.\n")
+		fmt.Printf("Be on 192.168.1.x (The device is now on 192.168.1.20)\n")
+	} else {
+		fmt.Printf("Afterwards wait until a Wifi\n")
+		fmt.Printf("named 'mfi...' comes up and connect to it.\n")
+		fmt.Printf("(The device is now on 192.168.2.20)\n")
+	}
+}
+
+func (c *Config) Host() string {
+	if c.EthernetConfig {
+		return "192.168.1.20"
+	} else {
+		return "192.168.2.20"
+	}
 }
 
 func (c *Config) Run() (err error) {
@@ -99,13 +116,13 @@ func (c *Config) generateFromFile(templateFilename string) (resultFilename strin
 }
 
 func (c *Config) scp() (err error) {
-	cmd := exec.Command("scp", c.SystemCfgFilename, "ubnt@192.168.2.20:/tmp/system.cfg")
+	cmd := exec.Command("scp", c.SystemCfgFilename, "ubnt@"+c.Host()+":/tmp/system.cfg")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err = cmd.Run(); err != nil {
 		return fmt.Errorf("scp system.cfg: %v", err)
 	}
-	cmd = exec.Command("scp", c.WlanOverwriteFilename, "ubnt@192.168.2.20:/tmp/wlan_overwrite")
+	cmd = exec.Command("scp", c.WlanOverwriteFilename, "ubnt@"+c.Host()+":/tmp/wlan_overwrite")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err = cmd.Run(); err != nil {
@@ -115,7 +132,7 @@ func (c *Config) scp() (err error) {
 }
 
 func (c *Config) getHwAddr() (hwAddr string, err error) {
-	cmd := exec.Command("ssh", "ubnt@192.168.2.20", "ifconfig | grep wifi0")
+	cmd := exec.Command("ssh", "ubnt@"+c.Host(), "ifconfig | grep wifi0")
 	buf := bytes.NewBufferString("")
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
@@ -131,13 +148,13 @@ func (c *Config) getHwAddr() (hwAddr string, err error) {
 }
 
 func (c *Config) reboot() (err error) {
-	cmd := exec.Command("ssh", "ubnt@192.168.2.20", "cfgmtd -w")
+	cmd := exec.Command("ssh", "ubnt@"+c.Host(), "cfgmtd -w")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err = cmd.Run(); err != nil {
 		return fmt.Errorf("cfgmtd: %v", err)
 	}
-	cmd = exec.Command("ssh", "ubnt@192.168.2.20", "reboot")
+	cmd = exec.Command("ssh", "ubnt@"+c.Host(), "reboot")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err = cmd.Run(); err != nil {
@@ -208,10 +225,15 @@ func (c *Config) deviceOn(ip net.IP) bool {
 }
 
 func main() {
+	ethernetConfig := flag.Bool("ethConfig", false, "Connect Switch to computer via Ethernet Cable (be on 192.168.1.x)")
 	netmask := flag.String("network", "172.26.0.128/24", "Wifi network's netmask on which we auto discover the switch")
+	ssid := flag.String("ssid", "FabLab-M", "Wifi SSID")
 	flag.Parse()
 
-	c := &Config{}
+	c := &Config{
+		EthernetConfig: *ethernetConfig,
+		WifiSSID:       *ssid,
+	}
 	if err := c.Run(); err == nil {
 		fmt.Printf("Your switch is properly configured and its hardware")
 		fmt.Printf(" address is: '%v'\n", c.HwAddr)
@@ -227,6 +249,6 @@ func main() {
 	} else {
 		log.Printf("config: %v", err)
 		fmt.Printf("Make sure the switch is properly connected:\n\n")
-		usage()
+		c.usage()
 	}
 }
