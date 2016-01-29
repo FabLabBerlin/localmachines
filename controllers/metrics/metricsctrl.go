@@ -58,7 +58,7 @@ func (c *Controller) GetActivations() {
 	}
 
 	endTime := time.Now()
-	startTime := endTime.Add(-180 * 24 * time.Hour)
+	startTime := time.Date(2015, time.August, 1, 0, 0, 0, 0, time.UTC)
 
 	invoice, err := invoices.CalculateSummary(startTime, endTime)
 	if err != nil {
@@ -71,8 +71,8 @@ func (c *Controller) GetActivations() {
 	w.Write([]string{
 		"Time Start",
 		"Name",
-		"Machine",
 		"E-Mail",
+		"Machine",
 		"Duration (minutes)",
 		"Membership",
 		"Billed Price (EUR)",
