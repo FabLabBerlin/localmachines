@@ -8,12 +8,8 @@ app.directive('mainMenu', function() {
   return {
     templateUrl: 'ng-modules/mainmenu/mainmenu.html',
     restrict: 'E',
-    controller: [
-      '$scope', '$element', '$cookieStore', 
-      function($scope, $element, $cookieStore) {
-
-      $scope.userFullName = $cookieStore.get('FirstName') +
-    ' ' + $cookieStore.get('LastName');
+    controller: function($rootScope, $scope, $element, $cookieStore) {
+      $scope.data = $rootScope.mainMenu;
 
       var links = $($element).find('a');
       links.click(function(){
@@ -23,9 +19,12 @@ app.directive('mainMenu', function() {
         var navfloat = $('.navbar-header').css('float');
         if (navfloat === 'none') {
           $($element).find('.navbar-collapse').collapse('hide');
-        }       
+        }
       });
-    }]
+    },
+    link: function($rootScope, $scope, $element, $attrs) {
+      console.log('main menu attrs: ', $attrs);
+    }
   };
 });
 

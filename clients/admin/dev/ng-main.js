@@ -64,6 +64,17 @@ app.run(['$rootScope', '$location', '$http', '$cookieStore',
         }
       })
       .success(function(data){
+        $http({
+          method: 'GET',
+          url: '/api/users/current'
+        })
+        .success(function(user) {
+          console.log('ng main:got current resp: ', user);
+          $rootScope.mainMenu.userFullName = user.FirstName + ' ' + user.LastName;
+        })
+        .error(function() {
+          console.log('Cannot display current user, retrying soon');
+        });
         if (data.Status !== 'logged') {
           $rootScope.mainMenu.visible = false;
           $location.path('/login');
@@ -72,7 +83,7 @@ app.run(['$rootScope', '$location', '$http', '$cookieStore',
           if (newPath) {
             $location.path(newPath);
           } else {
-            $location.path('/dashboard');
+            $location.path('/machines');
           }
         }
       })

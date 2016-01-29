@@ -19,8 +19,10 @@ type ErrorResponse struct {
 // {"Status":"ok", 		"UserId":2}
 // {"Status":"logged", 	"UserId":2}
 type LoginResponse struct {
-	Status string
-	UserId int64
+	Status    string
+	UserId    int64
+	FirstName string
+	LastName  string
 }
 
 // Used to return activation ID after it has been created

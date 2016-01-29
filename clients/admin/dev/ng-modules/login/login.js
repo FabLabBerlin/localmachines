@@ -11,7 +11,7 @@ app.config(['$routeProvider', function($routeProvider) {
   });
 }]); // app.config
 
-app.controller('LoginCtrl', ['$scope', '$http', '$location', function($scope, $http, $location) {
+app.controller('LoginCtrl', ['$rootScope', '$scope', '$http', '$location', function($rootScope, $scope, $http, $location) {
   // Local login function - if we do it by entering username and password in the browser
   if (window.libnfc) {
     $scope.nfcSupport = true;
@@ -65,7 +65,8 @@ app.controller('LoginCtrl', ['$scope', '$http', '$location', function($scope, $h
     })
     .success(function(data){
       $scope.$emit('user-login', data);
-      $location.path('/dashboard');
+      $rootScope.mainMenu.userFullName = data.FirstName + ' ' + data.LastName;
+      $location.path('/machines');
     })
     .error(function(data, status){
       console.log('Status: ' + status);

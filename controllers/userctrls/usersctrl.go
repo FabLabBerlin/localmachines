@@ -87,6 +87,27 @@ func (this *UsersController) Logout() {
 	this.ServeJSON()
 }
 
+// @Title GetCurrentUser
+// @Description Get current user
+// @Success 200 {object} models.User
+// @Failure 400 Failed to authenticate
+// @Failure 500 Internal Server Error
+// @router /current [get]
+func (this *UsersController) GetCurrentUser() {
+	uid, err := this.GetSessionUserId()
+	if err != nil {
+		beego.Error("GetUser Not logged in")
+		this.CustomAbort(400, "Not logged in")
+	}
+	u, err := models.GetUser(uid)
+	if err != nil {
+		beego.Error("models.GetUser:", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+	this.Data["json"] = u
+	this.ServeJSON()
+}
+
 // @Title GetAll
 // @Description Get all users
 // @Success 200 {object} models.User
