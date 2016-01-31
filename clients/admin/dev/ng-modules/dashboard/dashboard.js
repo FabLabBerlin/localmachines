@@ -47,19 +47,19 @@ app.controller('DashboardCtrl', ['$scope', '$http', '$location',
           v: month,
           f: month
         },
-        activationsRevenue,
-        'Activations (€): <b>' + activationsRevenue + '</b><br>' + minutes + ' minutes for non-Admins',
         membershipsRevenue,
-        'Memberships (€): <b>' + membershipsRevenue + '</b><br>' + memberships + ' non-free Memberships'
+        'Memberships (€): <b>' + membershipsRevenue + '</b><br>' + memberships + ' non-free Memberships',
+        activationsRevenue,
+        'Activations (€): <b>' + activationsRevenue + '</b><br>' + minutes + ' minutes for non-Admins'
       ];
     });
 
 
     var data = new google.visualization.DataTable();
     data.addColumn('string', 'Month');
-    data.addColumn('number', 'Activations (€)');
-    data.addColumn({'type': 'string', 'role': 'tooltip', 'p': {'html': true}});
     data.addColumn('number', 'Memberships (€)');
+    data.addColumn({'type': 'string', 'role': 'tooltip', 'p': {'html': true}});
+    data.addColumn('number', 'Activations (€)');
     data.addColumn({'type': 'string', 'role': 'tooltip', 'p': {'html': true}});
     data.addRows(byMonth);
 
@@ -71,7 +71,8 @@ app.controller('DashboardCtrl', ['$scope', '$http', '$location',
       vAxis: {
         title: 'Revenue / €'
       },
-      tooltip: {isHtml: true}
+      tooltip: {isHtml: true},
+      isStacked: true
     };
 
     var chart = new google.visualization.ColumnChart(
