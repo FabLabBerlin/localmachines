@@ -21,9 +21,10 @@ const (
 )
 
 const (
-	ADMIN  = "admin"
-	STAFF  = "staff"
-	MEMBER = "member"
+	SUPER_ADMIN = "superadmin"
+	ADMIN       = "admin"
+	STAFF       = "staff"
+	MEMBER      = "member"
 )
 
 // Regular expression for email spec : RFC 5322
@@ -306,9 +307,9 @@ func (user *User) Update() error {
 	o := orm.NewOrm()
 
 	// Check if not last admin in case UserRole is not admin
-	if user.UserRole != "admin" {
+	if user.UserRole != ADMIN {
 		numAdmins, err := o.QueryTable(user.TableName()).
-			Filter("UserRole", "admin").Count()
+			Filter("UserRole", ADMIN).Count()
 		if err != nil {
 			return err
 		}
@@ -317,7 +318,7 @@ func (user *User) Update() error {
 			// Check if the user we are updating is that 1 last admin
 			userIsAdmin := o.QueryTable(user.TableName()).
 				Filter("id", user.Id).
-				Filter("user_role", "admin").Exist()
+				Filter("user_role", ADMIN).Exist()
 			if userIsAdmin {
 				return errors.New("Only one admin left")
 			}

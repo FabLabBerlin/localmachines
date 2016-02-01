@@ -9,18 +9,10 @@ var MachineActions = require('../../../actions/MachineActions');
  */
 var FreeMachine = React.createClass({
 
-  /*
-   * Try to activate the machine
-   */
   startActivation() {
     this.props.func();
   },
 
-  /*
-   * Render Free machine div
-   * If the machine is free, the component will be displayed
-   * If is admin, two button will also be displayed
-   */
   render() {
     var imageUrl;
     if (this.props.machine && this.props.machine.Image) {

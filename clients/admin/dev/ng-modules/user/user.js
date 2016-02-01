@@ -90,9 +90,6 @@ app.controller('UserCtrl',
         user.ClientId = '';
       }
       $scope.user = user;
-      if (user.UserRole === 'admin') {
-        user.Admin = true;
-      }
       $scope.loadAvailableMachines();
       $scope.getUserMemberships(); // This part can happen assync
     })
@@ -404,12 +401,6 @@ app.controller('UserCtrl',
 
   $scope.updateUser = function(callback) {
 
-    if ($scope.user.Admin) {
-      $scope.user.UserRole = 'admin';
-    } else {
-      $scope.user.UserRole = '';
-    }
-
     $http({
       method: 'PUT',
       url: '/api/users/' + $scope.user.Id,
@@ -443,11 +434,9 @@ app.controller('UserCtrl',
       if (data === 'duplicateEntry') {
         toastr.error('Duplicate entry error. Make sure that fields like user name and email are unique.');
       } else if (data === 'lastAdmin') {
-        $scope.user.Admin = true;
         $scope.updateAdminStatus();
         toastr.error('You are the last remaining admin. Remember - power comes with great responsibility!');
       } else if (data === 'selfAdmin') {
-        $scope.user.Admin = true;
         $scope.updateAdminStatus();
         toastr.error('You can not unadmin yourself. Someone else has to do it.');
       } else {
@@ -459,7 +448,8 @@ app.controller('UserCtrl',
   $scope.updateUserMachinePermissions = function(callback) {
     
     // Do not update machine permissions for an admin user
-    if ($scope.user.Admin) {
+    if ($scope.user.UserRole === 'admin' ||
+        $scope.user.UserRole === 'superadmin') {
       if (callback) {
         callback();
       }
@@ -571,7 +561,8 @@ app.controller('UserCtrl',
   };
 
   $scope.updateAdminStatus = function() {
-    if ($scope.user.Admin) {
+    if ($scope.user.UserRole === 'admin' ||
+        $scope.user.UserRole === 'superadmin') {
       _.each($scope.availableMachines, function(machine){
         machine.Checked = true;
         machine.Disabled = true;

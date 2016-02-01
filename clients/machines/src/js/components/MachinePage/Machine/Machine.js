@@ -30,6 +30,7 @@ var MachineChooser = React.createClass({
 
   getDataBindings() {
     return {
+      isAdmin: getters.getIsAdmin,
       machines: getters.getMachines,
       reservationsByMachineId: getters.getActiveReservationsByMachineId
     };
@@ -94,7 +95,7 @@ var MachineChooser = React.createClass({
    * @nothing => FreeMachine
    */
   render() {
-    let isAdmin = this.props.user.get('UserRole') === 'admin';
+    let isAdmin = this.state.isAdmin;
     var reservation;
     if (this.state.reservationsByMachineId) {
       reservation = this.state.reservationsByMachineId.toObject()[this.props.machine.Id];
