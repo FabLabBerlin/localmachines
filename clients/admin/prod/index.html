@@ -14,7 +14,7 @@
 	<title>Admin</title>
 
 	<!-- CSS Style -->
-	<link rel="stylesheet" href="assets/css/app.min.css">
+	<link rel="stylesheet" href="assets/css/app.min.css"/>
 
 	<!-- Load Modernizr before any other JavaScripts -->
 	<script src="/admin/assets/js/modernizr.min.js"></script>
@@ -39,8 +39,8 @@
 	<![endif]-->
 
 	<!-- Main menu of the Admin panel -->
-	<main-menu ng-show="mainMenu.visible"></main-menu>
-
+	<main-menu ng-show="mainMenu.visible"
+	           ng-user-full-name="{{mainMenu.userFullName}}"></main-menu>
 	<!-- Rest of the content -->
 	<div ng-view></div>
 

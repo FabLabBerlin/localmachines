@@ -7,6 +7,12 @@
       placeholder="Username" required autofocus>
     <input ng-model="password" type="password" class="form-control" 
       placeholder="Password" required>
+    <select
+      name="location"
+      class="form-control location-picker"
+      required>
+      <option ng-repeat="location in locations">{{location.Title}}</option>
+    </select>
     <!-- Don't show the Remember me checkbox while it is not working -->
     <!--
     <label class="checkbox">
