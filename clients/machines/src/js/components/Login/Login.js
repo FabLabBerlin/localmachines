@@ -100,11 +100,11 @@ var Login = React.createClass({
           <select
             className="form-control location-picker"
             ref="lab"
-            name="lab"
+            name="location"
             required>
             <option 
               disabled="disabled"
-              selected="selected">Select your lab</option>
+              selected="selected">Select your location</option>
             <option>Fab Lab Berlin</option>
             <option>Fab Lab Kiel</option>
           </select>
