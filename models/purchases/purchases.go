@@ -213,7 +213,7 @@ func AffectedMemberships(p *Purchase) (affected []*models.Membership, err error)
 
 	for _, membership := range p.Memberships {
 
-		isAffected, err := membership.IsMachineAffected(p.Machine.Id)
+		isAffected, err := membership.IsMachineAffected(p.MachineId)
 		if err != nil {
 			return nil, fmt.Errorf(
 				"Failed to check whether machine is affected by membership")
