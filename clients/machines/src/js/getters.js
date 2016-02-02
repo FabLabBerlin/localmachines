@@ -254,16 +254,9 @@ const getActivations = [
 ];
 
 const getLocations = [
-  ['machineStore'],
-  (machineStore) => {
-    return machineStore.get('locations');
-  }
-];
-
-const getAvailableLocations = [
-  ['globalStore'],
-  (globalStore) => {
-    return globalStore.get('locations');
+  ['locationStore'],
+  (locationStore) => {
+    return locationStore.get('locations');
   }
 ];
 
