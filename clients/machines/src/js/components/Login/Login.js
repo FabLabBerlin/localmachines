@@ -1,10 +1,15 @@
 var $ = require('jquery');
+
 var getters = require('../../getters');
+
 var LoginStore = require('../../stores/LoginStore');
+var LocationStore = require('../../stores/LocationStore');
+
 var LoginActions = require('../../actions/LoginActions');
-var MachineActions = require('../../actions/MachineActions');
-var GlobalActions = require('../../actions/GlobalActions');
+var LocationActions = require('../../actions/LocationActions');
+
 var {Navigation} = require('react-router');
+
 var React = require('react');
 var reactor = require('../../reactor');
 
@@ -19,7 +24,7 @@ var Login = React.createClass({
   /*
    * To use transitionTo/replaceWith/redirect and some function related to the router
    */
-  mixins: [ Navigation ],
+  mixins: [ Navigation, reactor.ReactMixin ],
 
   getDataBindings() {
     return {
@@ -28,7 +33,7 @@ var Login = React.createClass({
   },
 
   componentWillMount() {
-    MachineActions.loadLocations();
+    LocationActions.loadLocations();
   },
 
   goToSignUp(event) {
