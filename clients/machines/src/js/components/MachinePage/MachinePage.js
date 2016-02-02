@@ -12,7 +12,7 @@ var reactor = require('../../reactor');
 var ReservationRulesActions = require('../../actions/ReservationRulesActions');
 var ReservationsActions = require('../../actions/ReservationsActions');
 var ScrollNav = require('../ScrollNav');
-var SelectLocation = require('./SelectLocation');
+var Location = require('./Location');
 var toastr = require('../../toastr');
 var UserActions = require('../../actions/UserActions');
 var TutoringList = require('./TutoringList');
@@ -107,10 +107,9 @@ var MachinePage = React.createClass({
           <div className="logged-user-name">
             <div className="text-center ng-binding">
               <i className="fa fa-user-secret"></i>&nbsp;
-              {this.state.user.get('FirstName')} {this.state.user.get('LastName')}
+              {this.state.user.get('FirstName')} {this.state.user.get('LastName')} at the Fab Lab Berlin
             </div>
           </div>
-          <SelectLocation />
           <TutoringList />
           <MachineList
             user={this.state.user}
