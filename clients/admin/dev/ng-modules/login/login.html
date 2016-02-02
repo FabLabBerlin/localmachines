@@ -11,11 +11,7 @@
       name="location"
       class="form-control location-picker"
       required>
-      <option 
-        disabled="disabled"
-        selected="selected">Select your location</option>
-      <option>Fab Lab Berlin</option>
-      <option>Fab Lab Kiel</option>
+      <option ng-repeat="location in locations">{{location.Title}}</option>
     </select>
     <!-- Don't show the Remember me checkbox while it is not working -->
     <!--

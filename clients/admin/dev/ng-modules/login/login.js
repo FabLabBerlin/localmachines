@@ -15,6 +15,7 @@ app.controller('LoginCtrl', ['$rootScope', '$scope', '$http', '$location', funct
   // Local login function - if we do it by entering username and password in the browser
   if (window.libnfc) {
     $scope.nfcSupport = true;
+    $scope.locations = [];
 
     $scope.onNfcError = function(error) {
       window.libnfc.cardRead.disconnect($scope.loginWithUid);
@@ -112,6 +113,24 @@ app.controller('LoginCtrl', ['$rootScope', '$scope', '$http', '$location', funct
       toastr.error('Failed to log in');
     });
   };
+
+  $scope.getLocations = function() {
+    $http({
+      method: 'GET',
+      url: '/api/locations',
+      params: {
+        ac: new Date().getTime()
+      }
+    })
+    .success(function(locations) {
+      $scope.locations = locations;
+    })
+    .error(function() {
+      toastr.error('Failed to load locations');
+    });
+  };
+
+  $scope.getLocations();
   
 }]); // app.controller
 
