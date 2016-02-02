@@ -79,7 +79,7 @@ li {
   border-bottom-left-radius: 0;
 }
 .form-login input[type="password"] {
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
@@ -89,6 +89,10 @@ li {
 .app-meta {
   margin-top: 10px;
   color: #999999;
+}
+.form-login .location-picker {
+  margin-bottom: 10px;
+  height: 40px;
 }
 /*
  * Form elements
