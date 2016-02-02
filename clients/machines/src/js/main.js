@@ -18,6 +18,8 @@ var SpendingsPage = require('./components/UserProfile/SpendingsPage');
 var TutoringsStore = require('./stores/TutoringsStore');
 var UserPage = require('./components/UserProfile/UserPage');
 var UserStore = require('./stores/UserStore');
+var LocationStore = require('./stores/LocationStore');
+
 var {DefaultRoute, Route, Routes, NotFoundRoute} = require('react-router');
 
 if (window.location.pathname === '/machines') {
@@ -79,7 +81,8 @@ reactor.registerStores({
   reservationRulesStore: ReservationRulesStore,
   scrollNavStore: ScrollNavStore,
   tutoringsStore: TutoringsStore,
-  userStore: UserStore
+  userStore: UserStore,
+  locationStore: LocationStore
 });
 
 /*
