@@ -262,11 +262,11 @@ const getLocations = [
 
 const getLocation = [
   getLocations,
-  ['machineStore'],
-  (locations, machineStore) => {
+  ['locationStore'],
+  (locations, locationStore) => {
     var location;
     _.each(locations, (l) => {
-      if (l.Id === machineStore.get('locationId')) {
+      if (l.Id === locationStore.get('locationId')) {
         location = l;
       }
     });

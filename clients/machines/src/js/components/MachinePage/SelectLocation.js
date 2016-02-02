@@ -1,5 +1,6 @@
 var getters = require('../../getters');
 var MachineActions = require('../../actions/MachineActions');
+var LocationActions = require('../../actions/LocationActions');
 var React = require('react');
 var reactor = require('../../reactor');
 
@@ -15,12 +16,12 @@ var SelectLocation = React.createClass({
   },
 
   componentWillMount() {
-    MachineActions.loadLocations();
+    LocationActions.loadLocations();
   },
 
   handleChange(event) {
     var id = parseInt(event.target.value);
-    MachineActions.setLocationId(id);
+    LocationActions.setLocationId(id);
   },
 
   render() {
