@@ -5,7 +5,7 @@ var React = require('react');
 var reactor = require('../../reactor');
 
 
-var SelectLocation = React.createClass({
+var Location = React.createClass({
 
   mixins: [ reactor.ReactMixin ],
 
@@ -60,4 +60,4 @@ var SelectLocation = React.createClass({
 
 });
 
-export default SelectLocation;
+export default Location;
