@@ -6,7 +6,8 @@ var toImmutable = Nuclear.toImmutable;
 
 
 const initialState = toImmutable({
-  loading: false
+  loading: false,
+  locations: []
 });
 
 var GlobalStore = new Nuclear.Store({
@@ -17,6 +18,7 @@ var GlobalStore = new Nuclear.Store({
   initialize() {
     this.on(actionTypes.SET_LOADING, setLoading);
     this.on(actionTypes.UNSET_LOADING, unsetLoading);
+    this.on(actionTypes.SET_LOCATIONS, setLocations);
   }
 });
 
@@ -26,6 +28,10 @@ function setLoading(state) {
 
 function unsetLoading(state) {
   return state.set('loading', false);
+}
+
+function setLocations(state, { locations }) {
+  return state.set('locations', locations);
 }
 
 export default GlobalStore;

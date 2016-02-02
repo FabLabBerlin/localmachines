@@ -260,6 +260,13 @@ const getLocations = [
   }
 ];
 
+const getAvailableLocations = [
+  ['globalStore'],
+  (globalStore) => {
+    return globalStore.get('locations');
+  }
+];
+
 const getLocation = [
   getLocations,
   ['machineStore'],

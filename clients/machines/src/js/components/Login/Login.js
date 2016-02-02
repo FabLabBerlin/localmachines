@@ -2,6 +2,8 @@ var $ = require('jquery');
 var getters = require('../../getters');
 var LoginStore = require('../../stores/LoginStore');
 var LoginActions = require('../../actions/LoginActions');
+var MachineActions = require('../../actions/MachineActions');
+var GlobalActions = require('../../actions/GlobalActions');
 var {Navigation} = require('react-router');
 var React = require('react');
 var reactor = require('../../reactor');
@@ -18,6 +20,16 @@ var Login = React.createClass({
    * To use transitionTo/replaceWith/redirect and some function related to the router
    */
   mixins: [ Navigation ],
+
+  getDataBindings() {
+    return {
+      locations: getters.getLocations
+    };
+  },
+
+  componentWillMount() {
+    MachineActions.loadLocations();
+  },
 
   goToSignUp(event) {
     event.preventDefault();
@@ -73,6 +85,7 @@ var Login = React.createClass({
    * Render the form and the button inside of the App component
    */
   render() {
+    if (this.state.locations) {
     return (
       <form className="login-form" method="post" onSubmit={this.handleSubmit}>
         <div className="regular-login">
@@ -102,11 +115,15 @@ var Login = React.createClass({
             ref="lab"
             name="location"
             required>
-            <option 
-              disabled="disabled"
-              selected="selected">Select your location</option>
-            <option>Fab Lab Berlin</option>
-            <option>Fab Lab Kiel</option>
+            {_.map(this.state.locations, (location, i) => {
+              if (location.Approved) {
+                return (
+                  <option key={i} value={location.Id}>
+                    {location.Title}
+                  </option>
+                );
+              }
+            })}
           </select>
           <button className="btn btn-primary btn-block btn-login"
             type="submit">Log In</button>
@@ -121,6 +138,9 @@ var Login = React.createClass({
         </div>
       </form>
     );
+    } else {
+      return (<div></div>);
+    }
   }
 });
 
