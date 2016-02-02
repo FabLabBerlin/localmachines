@@ -97,6 +97,17 @@ var Login = React.createClass({
             placeholder="password"
             required
           />
+          <select
+            className="form-control location-picker"
+            ref="lab"
+            name="lab"
+            required>
+            <option 
+              disabled="disabled"
+              selected="selected">Select your lab</option>
+            <option>Fab Lab Berlin</option>
+            <option>Fab Lab Kiel</option>
+          </select>
           <button className="btn btn-primary btn-block btn-login"
             type="submit">Log In</button>
 
