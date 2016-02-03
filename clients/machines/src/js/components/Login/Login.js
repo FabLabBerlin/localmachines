@@ -13,6 +13,8 @@ var {Navigation} = require('react-router');
 var React = require('react');
 var reactor = require('../../reactor');
 
+var _ = require('lodash');
+
 
 /*
  * Login component
@@ -90,7 +92,18 @@ var Login = React.createClass({
    * Render the form and the button inside of the App component
    */
   render() {
-    if (this.state.locations) {
+    var locations;
+    if (this.state) {
+      try {
+        locations = this.state.locations;
+      } catch (e) {
+        locations = [];
+      }
+    } else {
+      locations = [];
+    }
+
+    if (locations) {
     return (
       <form className="login-form" method="post" onSubmit={this.handleSubmit}>
         <div className="regular-login">
@@ -120,7 +133,7 @@ var Login = React.createClass({
             ref="lab"
             name="location"
             required>
-            {_.map(this.state.locations, (location, i) => {
+            {_.map(locations, (location, i) => {
               if (location.Approved) {
                 return (
                   <option key={i} value={location.Id}>

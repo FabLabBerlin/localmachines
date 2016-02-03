@@ -44,5 +44,5 @@ export default keyMirror({
 
   SET_RESERVATION_RULES: null,
 
-  SET_TUTORINGS: null,
+  SET_TUTORINGS: null
 });
