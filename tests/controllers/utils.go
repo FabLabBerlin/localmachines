@@ -26,7 +26,7 @@ func LoginAsAdmin() *http.Cookie {
 	w := httptest.NewRecorder()
 	beego.BeeApp.Handlers.ServeHTTP(w, r)
 
-	cookie, _ := r.Cookie("fabsmith")
+	cookie, _ := r.Cookie("localmachines")
 
 	return cookie
 }
@@ -45,7 +45,7 @@ func LoginAsRegular() *http.Cookie {
 	w := httptest.NewRecorder()
 	beego.BeeApp.Handlers.ServeHTTP(w, r)
 
-	cookie, _ := r.Cookie("fabsmith")
+	cookie, _ := r.Cookie("localmachines")
 
 	return cookie
 }
