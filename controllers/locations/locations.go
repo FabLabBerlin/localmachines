@@ -41,7 +41,7 @@ func (this *Controller) Create() {
 
 // @Title GetAll
 // @Description Get all locations
-// @Success 200 {object} locations.Location
+// @Success 200 {object} models.locations.Location
 // @Failure	401	Not authorized
 // @Failure	500	Internal Server Error
 // @router / [get]

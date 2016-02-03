@@ -10,7 +10,7 @@ type MachineTypeController struct {
 
 // @Title GetAll
 // @Description Get all machine_types
-// @Success 200 {object} locations.Location
+// @Success 200 {object} models.locations.Location
 // @Failure	401	Not authorized
 // @Failure	500	Internal Server Error
 // @router / [get]
