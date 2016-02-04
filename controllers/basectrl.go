@@ -9,6 +9,7 @@ import (
 const (
 	SESSION_USER_ID         = "user_id"
 	SESSION_USERNAME        = "username"
+	SESSION_LOCATION_ID     = "location_id"
 	SESSION_BROWSER         = "browser"
 	SESSION_IP              = "ip"
 	SESSION_ACCEPT_LANGUAGE = "accept_language"
