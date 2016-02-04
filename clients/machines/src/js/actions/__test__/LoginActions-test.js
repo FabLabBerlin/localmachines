@@ -32,7 +32,8 @@ describe('LoginActions', function() {
         url: '/api/users/loginuid',
         method: 'POST',
         data: {
-          uid: 123
+          uid: 123,
+          location: 1
         },
         success: jasmine.any(Function),
         error: jasmine.any(Function)
