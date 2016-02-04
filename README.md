@@ -21,6 +21,7 @@ Quickly install Localmachines to get it running on Linux or OS X. For more
    `export GOROOT=/usr/local/go` and
    `export GOPATH=$HOME/go` (you may need `mkdir $HOME/go` beforehands)
 3. Clone the repository:
+
    ```
    mkdir -p $GOPATH/src/github.com/FabLabBerlin
    cd $GOPATH/src/github.com/FabLabBerlin
@@ -41,6 +42,7 @@ Quickly install Localmachines to get it running on Linux or OS X. For more
    npm -g install bower
    ```
 8. Setup React frontend:
+
    ```
    cd clients/machines
    npm install
