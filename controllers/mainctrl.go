@@ -54,9 +54,14 @@ func (this *Controller) GetSessionUserId() (int64, error) {
 	}
 }
 
-func (this *Controller) SetLogged(username string, userId int64) {
+func (this *Controller) GetSessionLocationId() int64 {
+	return this.GetSession(SESSION_LOCATION_ID).(int64)
+}
+
+func (this *Controller) SetLogged(username string, userId int64, locationId int64) {
 	this.SetSession(SESSION_USERNAME, username)
 	this.SetSession(SESSION_USER_ID, userId)
+	this.SetSession(SESSION_LOCATION_ID, locationId)
 	this.SetSession(SESSION_BROWSER, this.Ctx.Input.UserAgent())
 	this.SetSession(SESSION_IP, this.Ctx.Input.IP())
 	//this.SetSession(SESSION_ACCEPT_ENCODING, this.Ctx.Input.Header("Accept-Encoding"))
