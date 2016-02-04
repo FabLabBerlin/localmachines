@@ -26,10 +26,13 @@ func (this *UsersController) Prepare() {
 // @Description Logs user into the system
 // @Param	username		query 	string	true		"The username for login"
 // @Param	password		query 	string	true		"The password for login"
+// @Param	location		query	int		true		"Location ID"
 // @Success 200 {object} models.LoginResponse
 // @Failure 401 Failed to authenticate
 // @router /login [post]
 func (this *UsersController) Login() {
+	locationId, _ := this.GetInt64("location")
+
 	if sessUserId, err := this.GetSessionUserId(); err != nil {
 		username := this.GetString("username")
 		password := this.GetString("password")
@@ -37,22 +40,27 @@ func (this *UsersController) Login() {
 		if err != nil {
 			this.CustomAbort(401, "Failed to authenticate")
 		} else {
-			this.SetLogged(username, userId)
-			this.Data["json"] = models.LoginResponse{"ok", userId}
+			this.SetLogged(username, userId, locationId)
+			this.Data["json"] = models.LoginResponse{"ok", userId, locationId}
 		}
 	} else {
-		this.Data["json"] = models.LoginResponse{"logged", sessUserId}
+		locationId = this.GetSessionLocationId()
+		this.Data["json"] = models.LoginResponse{"logged", sessUserId, locationId}
 	}
+
 	this.ServeJSON()
 }
 
 // @Title LoginUid
 // @Description Logs user into the system by using NFC UID
-// @Param	uid		query 	string	true		"The NFC UID"
+// @Param	uid			query 	string	true		"The NFC UID"
+// @Param 	location	query	int	  	true		"Location ID"
 // @Success 200 {object} models.LoginResponse
 // @Failure 401 Failed to authenticate
 // @router /loginuid [post]
 func (this *UsersController) LoginUid() {
+	locationId, _ := this.GetInt64("location")
+
 	if sessUserId, err := this.GetSessionUserId(); err != nil {
 		uid := this.GetString("uid")
 		username, userId, err := models.AuthenticateUserUid(uid)
@@ -60,11 +68,12 @@ func (this *UsersController) LoginUid() {
 			beego.Error(err)
 			this.CustomAbort(401, "Failed to authenticate")
 		} else {
-			this.SetLogged(username, userId)
-			this.Data["json"] = models.LoginResponse{"ok", userId}
+			this.SetLogged(username, userId, locationId)
+			this.Data["json"] = models.LoginResponse{"ok", userId, locationId}
 		}
 	} else {
-		this.Data["json"] = models.LoginResponse{"logged", sessUserId}
+		locationId = this.GetSessionLocationId()
+		this.Data["json"] = models.LoginResponse{"logged", sessUserId, locationId}
 	}
 
 	this.ServeJSON()
