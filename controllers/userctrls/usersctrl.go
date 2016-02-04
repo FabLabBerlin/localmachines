@@ -12,8 +12,42 @@ import (
 	"time"
 )
 
-type UsersController struct {
+type Controller struct {
 	controllers.Controller
+}
+
+func (this *Controller) GetRouteUid() (uid int64, authorized bool) {
+	// Check if logged in
+	suid, err := this.GetSessionUserId()
+	if err != nil {
+		beego.Info("Not logged in")
+		return 0, false
+	}
+
+	// Get requested user ID
+	var ruid int64
+	ruid, err = this.GetInt64(":uid")
+	if err != nil {
+		beego.Error("Failed to get :uid", err)
+		return 0, false
+	}
+
+	if suid != ruid {
+		if !this.IsAdmin() {
+			beego.Error("Not authorized")
+			return 0, false
+		}
+	}
+
+	if ruid <= 0 {
+		beego.Error("uid < 0")
+		return 0, false
+	}
+	return ruid, true
+}
+
+type UsersController struct {
+	Controller
 }
 
 // Override our custom root controller's Prepare method as it is checking

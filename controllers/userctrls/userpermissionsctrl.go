@@ -2,13 +2,12 @@ package userctrls
 
 import (
 	"encoding/json"
-	"github.com/FabLabBerlin/localmachines/controllers"
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/astaxie/beego"
 )
 
 type UserPermissionsController struct {
-	controllers.Controller
+	Controller
 }
 
 // @Title CreateUserPermission
@@ -24,7 +23,6 @@ func (this *UserPermissionsController) CreateUserPermission() {
 	// TODO: think about bulk permission creation or another way
 	// 		 that does not use a separate table maybe.
 
-	// Only admin
 	if !this.IsAdmin() {
 		this.CustomAbort(401, "Not authorized")
 	}
@@ -66,7 +64,6 @@ func (this *UserPermissionsController) CreateUserPermission() {
 // @router /:uid/permissions [delete]
 func (this *UserPermissionsController) DeleteUserPermission() {
 
-	// Only admin
 	if !this.IsAdmin() {
 		this.CustomAbort(401, "Not authorized")
 	}
@@ -106,7 +103,6 @@ func (this *UserPermissionsController) DeleteUserPermission() {
 // @router /:uid/permissions [put]
 func (this *UserPermissionsController) UpdateUserPermissions() {
 
-	// Only admin can do this
 	if !this.IsAdmin() {
 		this.CustomAbort(401, "Not authorized")
 	}
@@ -153,38 +149,12 @@ func (this *UserPermissionsController) UpdateUserPermissions() {
 // @router /:uid/permissions [get]
 func (this *UserPermissionsController) GetUserPermissions() {
 
-	// Check if logged in
-	suid, err := this.GetSessionUserId()
-	if err != nil {
-		beego.Info("Not logged in")
-		this.CustomAbort(401, "Not logged in")
+	uid, authorized := this.GetRouteUid()
+	if !authorized {
+		this.CustomAbort(400, "Wrong uid in url or not authorized")
 	}
 
-	// Get session user ID as int64
-	var found bool
-	if !found {
-		beego.Error("Could not cast session ID to int64")
-		this.CustomAbort(403, "Failed to get permissions")
-	}
-
-	// Get request user ID
-	var userId int64
-	userId, err = this.GetInt64(":uid")
-	if err != nil {
-		beego.Error("Failed to get requested user ID:", err)
-		this.CustomAbort(403, "Failed to get permissions")
-	}
-
-	// Allow to get other user permissions only if admin
-	if userId != suid {
-		if !this.IsAdmin() {
-			beego.Error("Not authorized to get other user permissions")
-			this.CustomAbort(401, "Not authorized")
-		}
-	}
-
-	var permissions *[]models.Permission
-	permissions, err = models.GetUserPermissions(userId)
+	permissions, err := models.GetUserPermissions(uid)
 	if err != nil {
 		beego.Error("Failed to get user permissions")
 		this.CustomAbort(403, "Failed to get permissions")
@@ -203,34 +173,14 @@ func (this *UserPermissionsController) GetUserPermissions() {
 // @router /:uid/machinepermissions [get]
 func (this *UserPermissionsController) GetUserMachinePermissions() {
 
-	// Check if logged in
-	suid, err := this.GetSessionUserId()
-	if err != nil {
-		beego.Info("Not logged in")
-		this.CustomAbort(401, "Unauthorized")
-	}
-
-	// Get requested user ID
-	var ruid int64
-	ruid, err = this.GetInt64(":uid")
-	if err != nil {
-		beego.Error("Failed to get :uid")
-		this.CustomAbort(500, "Internal Server Error")
-	}
-
-	// If the session user ID and the request user ID does not match
-	// check whether the session user is an admin, return if not
-	if suid != ruid {
-		if !this.IsAdmin() {
-			beego.Error("Not authorized to access other user machine permissions")
-			this.CustomAbort(401, "Unauthorized")
-		}
+	uid, authorized := this.GetRouteUid()
+	if !authorized {
+		this.CustomAbort(400, "Wrong uid in url or not authorized")
 	}
 
 	// We need to get machine permissions first and then the machines
-	var permissions *[]models.Permission
-	var machines []*models.Machine
-	permissions, err = models.GetUserPermissions(ruid)
+	machines := make([]*models.Machine, 0, 20)
+	permissions, err := models.GetUserPermissions(uid)
 	if err != nil {
 		beego.Error("Failed to get user machine permissions: ", err)
 		this.CustomAbort(500, "Internal Server Error")

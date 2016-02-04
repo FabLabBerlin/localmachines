@@ -31,6 +31,7 @@ func Init() {
 			beego.NSInclude(
 				&userctrls.UsersController{},
 				&userctrls.UserDashboardController{},
+				&userctrls.UserLocationsController{},
 				&userctrls.UserMembershipsController{},
 				&userctrls.UserPermissionsController{},
 			),

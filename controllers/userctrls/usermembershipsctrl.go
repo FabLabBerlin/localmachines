@@ -2,14 +2,13 @@ package userctrls
 
 import (
 	"encoding/json"
-	"github.com/FabLabBerlin/localmachines/controllers"
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/astaxie/beego"
 	"time"
 )
 
 type UserMembershipsController struct {
-	controllers.Controller
+	Controller
 }
 
 // @Title PostUserMemberships
@@ -18,25 +17,24 @@ type UserMembershipsController struct {
 // @Param	membershipId		query 	int			true		"Membership ID"
 // @Param	startDate				query 	string	true		"Membership ID"
 // @Success 200 {object} models.UserMembership
-// @Failure	403	Failed to get user memberships
 // @Failure	401	Not authorized
+// @Failure	500	Failed to get user memberships
 // @router /:uid/memberships [post]
 func (this *UserMembershipsController) PostUserMemberships() {
 
 	if !this.IsAdmin() {
-		beego.Error("Not authorized")
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	// Get requested user ID
-	ruid, err := this.GetInt64(":uid")
+	// Get request user ID
+	uid, err := this.GetInt64(":uid")
 	if err != nil {
-		beego.Error("Failed to get :uid")
-		this.CustomAbort(403, "Failed to get :uid")
+		beego.Error("Failed to get requested user ID:", err)
+		this.CustomAbort(403, "Failed to update user memberships")
 	}
-	if ruid <= 0 {
-		beego.Error("Bad :uid")
-		this.CustomAbort(500, "Bad uid")
+	if uid <= 0 {
+		beego.Error("Wrong User ID:", uid)
+		this.CustomAbort(403, "Failed to update user memberships")
 	}
 
 	// Get requested user membership ID
@@ -56,7 +54,7 @@ func (this *UserMembershipsController) PostUserMemberships() {
 	}
 
 	// Create user membership by using the model function
-	userMembershipId, err := models.CreateUserMembership(ruid, membershipId, startDate)
+	userMembershipId, err := models.CreateUserMembership(uid, membershipId, startDate)
 	if err != nil {
 		beego.Error("Error creating user membership:", err)
 		this.CustomAbort(500, "Internal Server Error")
@@ -83,38 +81,14 @@ func (this *UserMembershipsController) PostUserMemberships() {
 // @router /:uid/memberships [get]
 func (this *UserMembershipsController) GetUserMemberships() {
 
-	// Check if logged in
-	suid, err := this.GetSessionUserId()
-	if err != nil {
-		beego.Info("Not logged in:", err)
-		this.CustomAbort(401, "Not logged in")
-	}
-
-	// Get requested user ID
-	var ruid int64
-	ruid, err = this.GetInt64(":uid")
-	if err != nil {
-		beego.Error("Failed to get :uid")
-		this.CustomAbort(403, "Failed to get :uid")
-	}
-
-	// We need the user roles in order to understand
-	// whether we are allowed to access other user machines
-
-	if suid != ruid {
-		if !this.IsAdmin() {
-
-			// The currently logged in user is not allowed to access
-			// other user machines
-			beego.Error("Not authorized")
-			this.CustomAbort(401, "Not authorized")
-		}
+	uid, authorized := this.GetRouteUid()
+	if !authorized {
+		this.CustomAbort(400, "Wrong uid in url or not authorized")
 	}
 
 	// If the requested user roles is not admin and staff
 	// we need to get machine permissions first and then the machines
-	var ums *models.UserMembershipList
-	ums, err = models.GetUserMemberships(ruid)
+	ums, err := models.GetUserMemberships(uid)
 	if err != nil {
 		beego.Error("Failed to get user machine permissions")
 		this.CustomAbort(403, "Failed to get user machines")

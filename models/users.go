@@ -21,10 +21,11 @@ const (
 )
 
 const (
-	SUPER_ADMIN = "superadmin"
-	ADMIN       = "admin"
-	STAFF       = "staff"
-	MEMBER      = "member"
+	SUPER_ADMIN    = "superadmin"
+	ADMIN          = "admin"
+	STAFF          = "staff"
+	MEMBER         = "member"
+	NOT_AFFILIATED = "notaffiliated"
 )
 
 // Regular expression for email spec : RFC 5322

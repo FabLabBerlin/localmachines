@@ -73,9 +73,23 @@ app.controller('UserCtrl',
     format: 'yyyy-mm-dd'
   };
   $('.datepicker').pickadate(pickadateOptions);
+  $scope.userLocations = [];
   $scope.user = { Id: $routeParams.userId };
   $scope.userMachines = [];
   $scope.userMemberships = [];
+
+  $scope.loadUserLocations = function() {
+    $http({
+      method: 'GET',
+      url: '/api/users/' + $scope.user.Id + '/locations'
+    })
+    .success(function(userLocations) {
+      $scope.userLocations = userLocations;
+    })
+    .error(function(data, status) {
+      toastr.error('Failed to load user locations data');
+    });
+  };
 
   $scope.loadUserData = function() {
     $http({
@@ -106,6 +120,7 @@ app.controller('UserCtrl',
   // 4. Load available memberships
   // 5. Load user memberships
 
+  $scope.loadUserLocations();
   $scope.loadUserData();
 
   $scope.loadAvailableMachines = function() {

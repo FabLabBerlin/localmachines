@@ -227,6 +227,7 @@
       <div class="row">
         <div class="col-sm-12">
           <h2>Role</h2>
+          <h3>Global</h3>
         </div>
         <div class="col-sm-6">
           <select ng-model="user.UserRole">
@@ -237,6 +238,23 @@
         </div>
         <div class="col-sm-6 hidden-xs">
           <div class="tip">Admins can access the admin panel - others can not.</div>
+        </div>
+        <div class="col-sm-12">
+          <h3>Local</h3>
+        </div>
+        <div class="col-sm-12">
+          <div class="col-sm-12" ng-repeat="userLocation in userLocations">
+            <div class="col-sm-6">
+              {{userLocation.Location.Title}}
+            </div>
+            <div class="col-sm-6">
+              <select class="form-control" ng-model="userLocation.UserRole">
+                <option value="">Not affiliated</option>
+                <option value="member">Member</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+          </div>
         </div>
       </div>
     </div>
