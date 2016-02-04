@@ -41,7 +41,8 @@ export default {
       url: '/api/users/loginuid',
       method: 'POST',
       data: {
-        uid: uid
+        uid: uid,
+        location: 1 // Hardcoded for now
       },
       success(data) {
         reactor.dispatch(actionTypes.SUCCESS_LOGIN, { data });
