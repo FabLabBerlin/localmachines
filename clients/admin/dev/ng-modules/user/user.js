@@ -415,7 +415,6 @@ app.controller('UserCtrl',
   };
 
   $scope.updateUser = function(callback) {
-
     $http({
       method: 'PUT',
       url: '/api/users/' + $scope.user.Id,
@@ -457,6 +456,27 @@ app.controller('UserCtrl',
       } else {
         toastr.error('Error while trying to save changes');
       }
+    });
+  };
+
+  $scope.updateUserLocations = function(userLocation) {
+    $.ajax({
+      method: 'POST',
+      url: '/api/users/' + $scope.user.Id + '/locations/' + userLocation.LocationId,
+      headers: {'Content-Type': 'application/json' },
+      data: {
+        UserLocation: userLocation
+      },
+      transformRequest: function(data) {
+        return JSON.stringify(data);
+      }
+    })
+    .success(function() {
+      toastr.info('Successfully updated user location role.');
+    })
+    .error(function() {
+      toastr.error('Error while trying to update user location role');
+      $scope.loadUserLocations();
     });
   };
 
