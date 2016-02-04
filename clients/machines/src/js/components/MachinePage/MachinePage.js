@@ -37,7 +37,9 @@ var MachinePage = React.createClass({
     return {
       user: getters.getUser,
       machines: getters.getMachines,
-      activations: getters.getActivations
+      activations: getters.getActivations,
+      locations: getters.getLocations,
+      sessionLocationId: getters.getSessionLocationId
     };
   },
 
@@ -101,13 +103,16 @@ var MachinePage = React.createClass({
     machines = _.sortBy(machines, (m) => {
       return m.Name;
     });
+    var locations = reactor.evaluateToJS(getters.getLocations);
+    var sessionLocationId = reactor.evaluateToJS(getters.getSessionLocationId);
+    var sessionLocation = _.find(locations, {'Id': sessionLocationId});
     if (this.state.activations) {
       return (
         <div>
           <div className="logged-user-name">
             <div className="text-center ng-binding">
               <i className="fa fa-user-secret"></i>&nbsp;
-              {this.state.user.get('FirstName')} {this.state.user.get('LastName')} at the Fab Lab Berlin
+              {this.state.user.get('FirstName')} {this.state.user.get('LastName')} at the {sessionLocation.Title}
             </div>
           </div>
           <TutoringList />
