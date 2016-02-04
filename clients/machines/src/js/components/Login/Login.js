@@ -51,7 +51,8 @@ var Login = React.createClass({
     event.preventDefault();
     var data = {
       username: this.refs.name.getDOMNode().value,
-      password: this.refs.password.getDOMNode().value
+      password: this.refs.password.getDOMNode().value,
+      location: this.refs.location.getDOMNode().value
     };
     LoginActions.submitLoginForm(data, this.context.router);
   },
@@ -130,7 +131,7 @@ var Login = React.createClass({
           />
           <select
             className="form-control location-picker"
-            ref="lab"
+            ref="location"
             name="location"
             required>
             {_.map(locations, (location, i) => {
