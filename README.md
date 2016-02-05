@@ -12,7 +12,7 @@ Machine activation software for Fab Labs. Build with [BeeGo](http://beego.me) fr
 
 ##Quick-Start
 Quickly install Localmachines to get it running on Linux or OS X. For more
- specialized setups, see for instance [Setup on the RaspberryPi](docs/raspi).
+ specialized/detailed setups, see [here](#specialized-setups).
 
 1. Install [Go](https://golang.org). You can download binaries from the
   [Go Download Page](https://golang.org/dl/). For OS X you can get the
@@ -32,31 +32,57 @@ Quickly install Localmachines to get it running on Linux or OS X. For more
    cd localmachines
    go get
    ```
-5. Setup the backend server:
+
+5. Initialize database
+   ```
+   mysql -u user -p fabsmith < fabsmith.sql
+   bee migrate -conn="root:@tcp(127.0.0.1:3306)/fabsmith"
+   ```
+
+6. Setup the backend server:
    ```
    cp conf/app.example.conf conf/app.conf
    ```
-6. Install iojs
-7. Install bower:
+7. Install [Node.js](https://nodejs.org/)
+8. Install [bower](http://bower.io/) and [grunt](http://gruntjs.com/):
+
    ```
    npm -g install bower
+   npm -g install grunt
    ```
-8. Setup React frontend:
+
+9. Setup React frontend:
 
    ```
    cd clients/machines
    npm install
    cd $GOPATH/src/github.com/FabLabBerlin/localmachines
    ```
-9. Now you should be able to start the server with:
+
+10. Now you should be able to start the server with:
+
    ```
    bee run
    ```
+
    or alternatively:
+
    ```
    go build
    ./localmachines
    ```
+
+##Specialized-Setups
+
+###OS X Development Setup
+
+Detailed instruction on how to install Localmachines on OS X are
+[here](docs/osx).
+
+###Raspberry Pi
+
+Instructions on how to install Localmachines on a Raspberry Pi are
+[here](docs/raspi).
 
 ##Versioning
 FabSmith will benefit from semantic versioning. Read about it [here](http://semver.org).
