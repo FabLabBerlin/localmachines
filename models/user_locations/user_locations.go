@@ -1,3 +1,6 @@
+/*
+user_locations package provides location based user permissions.
+*/
 package user_locations
 
 import (

@@ -1,3 +1,4 @@
+// Gateway is a Lab "IoT" gateway server
 package main
 
 import (

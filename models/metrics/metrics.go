@@ -1,3 +1,6 @@
+/*
+metrics package for basic visualization of numbers we have.
+*/
 package metrics
 
 import (

@@ -1,5 +1,3 @@
-// This file contains only specific response types
-// that don't need to be registered with Beego ORM package
 package models
 
 // This is being returned when client awaits a JSON message like

@@ -1,4 +1,4 @@
-// Fabsmith controllers package, handles all the API calls
+// controllers package handles all API calls (/api)
 package controllers
 
 import (

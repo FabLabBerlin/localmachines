@@ -1,3 +1,6 @@
+/*
+netswitches helper functions.
+*/
 package netswitches
 
 import (

@@ -1,3 +1,4 @@
+// /api/locations
 package locations
 
 import (

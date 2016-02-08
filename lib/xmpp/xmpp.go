@@ -1,3 +1,8 @@
+/*
+xmpp for easy communication behind firewalls.
+
+This package is both used by the netswitch model and the Gateway server.
+*/
 package xmpp
 
 import (
