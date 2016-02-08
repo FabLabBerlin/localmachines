@@ -271,6 +271,189 @@ js/stores/                           Flux Stores
 js/stores/__test__/
 ```
 
+#### Writing a new Module
+
+- Create a new file `js/actions/FooActions.js`:
+
+```
+var $ = require('jquery');
+var actionTypes = require('../actionTypes');
+var reactor = require('../reactor');
+
+var FooActions = {
+
+  loadFoos() {
+    $.ajax({
+      url: '/api/foos',
+      success(foos) {
+        reactor.dispatch(actionTypes.SET_FOOS, { foos });
+      },
+      error(xhr, status, err) {
+        toastr.error('Error loading locations');
+      }
+    });
+  }
+
+};
+
+export default FooActions;
+```
+
+Note that we make a lot of use of ECMAScript 6 here.  When calling a function
+`function foobar({data}) {...}`, the function must be called with
+`foobar({data})`.  If you call it with `foobar({baz})`, `data` will be
+undefined.  So parameters names must match!
+
+- Declare the new Action Type `SET_FOOS` in `js/actionTypes.js`:
+
+```
+var keyMirror = require('react/lib/keyMirror');
+
+export default keyMirror({
+  API_GET_LOGOUT: null,
+  SUCCESS_LOGIN: null,
+...
+  SET_FOOS: null
+});
+```
+
+- Create a Flux store in `js/stores/FooStore.js`:
+
+```
+var actionTypes = require('../actionTypes');
+var Nuclear = require('nuclear-js');
+var toImmutable = Nuclear.toImmutable;
+
+
+const initialState = toImmutable({
+  foos: undefined
+});
+
+var FooStore = new Nuclear.Store({
+  getInitialState() {
+    return initialState;
+  },
+
+  initialize() {
+    this.on(actionTypes.SET_FOOS, setFoos);
+  }
+});
+
+function setFoos(state, { foos }) {
+  return state.set('foos', foos);
+}
+
+export default FooStore;
+```
+
+- Register the Flux store in `js/main.js`:
+
+Add
+
+```
+var FooStore = require('./stores/FooStore');
+```
+
+to the imports and register the actual store:
+
+```
+reactor.registerStores({
+  feedbackStore: FeedbackStore,
+  globalStore: GlobalStore,
+  loginStore: LoginStore,
+  machineStore: MachineStore,
+  reservationsStore: ReservationsStore,
+  reservationRulesStore: ReservationRulesStore,
+  scrollNavStore: ScrollNavStore,
+  tutoringsStore: TutoringsStore,
+  userStore: UserStore,
+  locationStore: LocationStore,
+  fooStore: FooStore
+});
+```
+
+- Write a getter in `js/getters.js`:
+
+```
+const getFoos = [
+  ['fooStore'],
+  (fooStore) => {
+    return fooStore.get('foos');
+  }
+];
+```
+
+and export it at the bottom of the file:
+
+```
+export default {
+  ...
+  getTutorings,
+  getFoos
+};
+```
+
+- Write the React Class in `js/components/Foo.js`:
+
+```
+var FooActions = require('../../actions/FooActions');
+var getters = require('../../getters');
+var React = require('react');
+var reactor = require('../../reactor');
+var toastr = require('../../toastr');
+
+
+var FooWidget = React.createClass({
+  mixins: [ reactor.ReactMixin ],
+
+  getDataBindings() {
+    return {
+      foos: getters.getFoos
+    };
+  },
+
+  componentDidMount() {
+    FooActions.loadFoos();
+  },
+
+  click() {
+    toastr.info('Click!');
+  },
+
+  render() {
+    return (
+      <div className="container">
+        {
+          _.isUndefined(this.state.foos) ?
+          (
+            <div>Please be patient, loading data...</div>
+          ) : (
+            <div>
+              <h2>Foos</h2>
+              {this.state.foos.map((foo, i) => {
+                <h3>Foo No. {i} is named {foo.Name}</h3>
+              })}
+              <button onClick={this.click}>Click me</button>
+            </div>
+          )
+        }
+      </div>
+    );
+  }
+});
+
+export default FooWidget;
+```
+
+- Now the component can be used in other components:
+
+```
+var Foo = require('./Foo');
+
+...
+<Foo/>
+```
+
 ### Backend
 
 #### File Structure
