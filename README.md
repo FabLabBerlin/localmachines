@@ -155,8 +155,8 @@ prod/                         Production files ("`grunt prod`"")
 
 #### Writing a new Page
 
-1. Create directory `dev/ng-modules/foobar`
-2. Create a file `dev/ng-modules/foobar/foobar.js`
+- Create directory `dev/ng-modules/foobar`
+- Create a file `dev/ng-modules/foobar/foobar.js`
 
 A basic controller looks like this:
 
@@ -199,7 +199,7 @@ $scope.hello = function() {
 })(); // closure
 ```
 
-3. Create a file `dev/ng-modules/foobar/foobar.html`:
+- Create a file `dev/ng-modules/foobar/foobar.html`:
 
 ```
 <div id="admin-global-config" class="container-fluid">
@@ -216,7 +216,7 @@ $scope.hello = function() {
 </div> <!-- /container -->
 ```
 
-4. Load the JS file in `dev/index.html`:
+- Load the JS file in `dev/index.html`:
 
 Add it after the other module files:
 
@@ -228,7 +228,7 @@ Add it after the other module files:
 <script src="/admin/ng-modules/foobar/foobar.js"></script>
 ```
 
-5. Load the module in `dev/ng-main.js`:
+- Load the module in `dev/ng-main.js`:
 
 Add it after the other modules:
 
