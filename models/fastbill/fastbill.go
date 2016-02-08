@@ -1,3 +1,4 @@
+// FastBill API Wrapper
 package fastbill
 
 import (

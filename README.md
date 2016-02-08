@@ -84,8 +84,54 @@ Detailed instruction on how to install Localmachines on OS X are
 Instructions on how to install Localmachines on a Raspberry Pi are
 [here](docs/raspi).
 
-##Versioning
-FabSmith will benefit from semantic versioning. Read about it [here](http://semver.org).
+## General structure
+
+### Versioning
+localmachines uses versioning scheme that is loosely following the rules of
+[Semantic Versioning](http://semver.org): [MAJOR].[MINOR].[PATH]
+
+### File structure
+
+#### Root directory
+
+```
+clients/      HTML5 Clients for Admins and End-Users
+conf/         Config files
+controllers/  Backend Controllers
+database/     Database Migrations
+docs/         Documentation
+files/        Invoices
+gateway/      Lab "IoT" Gateway Server
+icons/        Icons
+lib/          Reusable general purpose functions
+models/       Backend Models
+netswitch/    NetSwitch TestKit
+pinger/       Ping tool
+routers/      Backend Routes
+scripts/      Scripts
+swagger/      Swagger Documentation Generator
+tests/        Backend Unit Tests
+```
+
+#### Admin Client
+
+#### End-User "Machines" Client
+
+#### Backend
+
+Go uses packages to encapsulate code and data.  In a package, only the
+functions and variables with uppercase names are "public", the others are
+"private".  Declare functions as private to keep the APIs lean.
+
+You can get an overview with the `godoc` tool:
+
+```
+godoc -http=:6060
+```
+
+Now navigate with your Web Browser to the
+[localmachines pkg on localhost:6060](http://localhost:6060/pkg/github.com/FabLabBerlin/localmachines/).
+There you get an interactive overview of the whole Backend code.
 
 ## Development
 

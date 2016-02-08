@@ -1,3 +1,11 @@
+/*
+netswitch control.
+
+The NetSwitches have Relays that must be in sync with our system.  For example
+when a NetSwitch is plugged in, the relay must go into the correct position.
+The mfi Switches are by default switched on and need to turn off after being
+plugged in.
+*/
 package netswitch
 
 import (

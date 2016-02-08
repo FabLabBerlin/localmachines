@@ -1,3 +1,4 @@
+// connect to MySQL database server
 package connect
 
 import (

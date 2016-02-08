@@ -1,3 +1,6 @@
+/*
+global configuration variables.
+*/
 package global
 
 import "time"
