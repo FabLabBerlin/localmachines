@@ -90,9 +90,7 @@ Instructions on how to install Localmachines on a Raspberry Pi are
 localmachines uses versioning scheme that is loosely following the rules of
 [Semantic Versioning](http://semver.org): [MAJOR].[MINOR].[PATCH]
 
-### File structure
-
-#### Root directory
+### Overall File structure
 
 ```
 clients/      HTML5 Clients for Admins and End-Users
@@ -113,7 +111,9 @@ swagger/      Swagger Documentation Generator
 tests/        Backend Unit Tests
 ```
 
-#### Admin Client
+### Admin Client
+
+#### File Structure
 
 ```
 dev/                         Development files
@@ -153,7 +153,99 @@ prod/                         Production files ("`grunt prod`"")
 ...
 ```
 
-#### End-User "Machines" Client
+#### Writing a new Page
+
+1. Create directory `dev/ng-modules/foobar`
+2. Create a file `dev/ng-modules/foobar/foobar.js`
+
+A basic controller looks like this:
+
+```
+(function(){
+
+'use strict';
+
+var app = angular.module('fabsmith.admin.foobar', 
+ ['ngRoute', 'ngCookies']);
+
+app.config(['$routeProvider', function($routeProvider) {
+  $routeProvider.when('/foobar', {
+    templateUrl: 'ng-modules/foobar/foobar.html',
+    controller: 'FoobarCtrl'
+  });
+}]); // app.config
+
+app.controller('FoobarCtrl', ['$scope', '$http', '$location', 'randomToken', 
+ function($scope, $http, $location, randomToken) {
+
+$http({
+  method: 'GET',
+  url: '/api/my_data'
+})
+.success(function(myData) {
+  $scope.myData = myData;
+  toastr.info('My Data successfully loaded.');
+})
+.error(function() {
+  toastr.error('Error loading data');
+});
+
+$scope.hello = function() {
+  toastr.info('Hello World!');
+};
+
+}]); // app.controller
+
+})(); // closure
+```
+
+3. Create a file `dev/ng-modules/foobar/foobar.html`:
+
+```
+<div id="admin-global-config" class="container-fluid">
+
+<h1>Foobar</h1>
+
+<h2>My Data: {{myData.Bar}}</h2>
+
+<button class="btn btn-primary btn-lg"
+        ng-click="hello()">
+  Say hello
+</button>
+
+</div> <!-- /container -->
+```
+
+4. Load the JS file in `dev/index.html`:
+
+Add it after the other module files:
+
+```
+...
+<script src="/admin/ng-modules/tutoring/tutoring.js"></script>
+<script src="/admin/ng-modules/tutoring/tutor.js"></script>
+<script src="/admin/ng-modules/tutoring/purchase.js"></script>
+<script src="/admin/ng-modules/foobar/foobar.js"></script>
+```
+
+5. Load the module in `dev/ng-main.js`:
+
+Add it after the other modules:
+
+```
+var app = angular.module('fabsmith', [
+  'ngRoute',
+  'fabsmith.admin.login',
+  'fabsmith.admin.api',
+  'fabsmith.admin.coworking',
+  ...
+  'fabsmith.admin.foobar'
+]);
+```
+
+### End-User "Machines" Client
+
+#### File Structure
 
 The source code is within the `src/` subdirectory:
 
@@ -179,7 +271,9 @@ js/stores/                           Flux Stores
 js/stores/__test__/
 ```
 
-#### Backend
+### Backend
+
+#### File Structure
 
 Go uses packages to encapsulate code and data.  In a package, only the
 functions and variables with uppercase names are "public", the others are
