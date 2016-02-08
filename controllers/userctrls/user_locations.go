@@ -1,6 +1,7 @@
 package userctrls
 
 import (
+	"encoding/json"
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
@@ -50,5 +51,36 @@ func (c *UserLocationsController) GetUserLocations() {
 		}
 	}
 	c.Data["json"] = uls
+	c.ServeJSON()
+}
+
+// @Title PutUserLocation
+// @Description Put user location
+// @Param	uid		path 	int	true		"User ID"
+// @Param	lid		path 	int	true		"Location ID"
+// @Success 200
+// @Failure	401	Not authorized
+// @Failure	500	Internal Server Error
+// @router /:uid/locations/:lid [put]
+func (c *UserLocationsController) PutUserLocation() {
+	if !c.IsAdmin() {
+		c.CustomAbort(401, "Not authorized")
+	}
+	dec := json.NewDecoder(c.Ctx.Request.Body)
+	defer c.Ctx.Request.Body.Close()
+	var ul user_locations.UserLocation
+	if err := dec.Decode(&ul); err != nil {
+		beego.Error("json decode:", err)
+		c.CustomAbort(400, "Wrong data")
+	}
+	if ul.Id == 0 {
+		if _, err := user_locations.Create(&ul); err != nil {
+			beego.Error("create:", err)
+			c.CustomAbort(500, "Internal Server Error")
+		}
+	} else if err := ul.Update(); err != nil {
+		beego.Error("update:", err)
+		c.CustomAbort(500, "Internal Server Error")
+	}
 	c.ServeJSON()
 }

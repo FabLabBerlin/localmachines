@@ -396,6 +396,7 @@ export default {
 - Write the React Class in `js/components/Foo.js`:
 
 ```
+var _ = require('lodash');
 var FooActions = require('../../actions/FooActions');
 var getters = require('../../getters');
 var React = require('react');

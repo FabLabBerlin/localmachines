@@ -459,16 +459,17 @@ app.controller('UserCtrl',
     });
   };
 
-  $scope.updateUserLocations = function(userLocation) {
-    $.ajax({
-      method: 'POST',
+  $scope.updateUserLocation = function(userLocation) {
+    $http({
+      method: 'PUT',
       url: '/api/users/' + $scope.user.Id + '/locations/' + userLocation.LocationId,
       headers: {'Content-Type': 'application/json' },
-      data: {
-        UserLocation: userLocation
-      },
+      data: userLocation,
       transformRequest: function(data) {
         return JSON.stringify(data);
+      },
+      params: {
+        ac: new Date().getTime()
       }
     })
     .success(function() {
