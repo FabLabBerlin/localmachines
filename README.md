@@ -115,7 +115,69 @@ tests/        Backend Unit Tests
 
 #### Admin Client
 
+```
+dev/                         Development files
+dev/assets/                  Static Assets
+dev/assets/css/              Generated CSS (do not edit)
+dev/assets/img/              Images
+dev/assets/js/               Misc. Javascript (deprecated)
+dev/assets/less/             Less files (edit CSS from here)
+dev/ng-components/           External Angular Modules
+dev/ng-components/version/
+dev/ng-modules/               Angular Modules
+dev/ng-modules/activations/   Activations Page
+dev/ng-modules/api/           HTTP API helper functions
+dev/ng-modules/bookings/      Bookings (obsolete)
+dev/ng-modules/coworking/     Co-Working
+dev/ng-modules/dashboard/     Dashboard with Metrics
+dev/ng-modules/invoices/      Invoices
+dev/ng-modules/login/         Login
+dev/ng-modules/machine/       Edit a Machine
+dev/ng-modules/machines/      Machine List
+dev/ng-modules/mainmenu/      Menu in the Header
+dev/ng-modules/membership/    Edit a Memberhip
+dev/ng-modules/memberships/   Memberships List
+dev/ng-modules/priceunit/     Select box for Price Unit
+dev/ng-modules/productlist/   Generic Product List Table
+dev/ng-modules/randomtoken/   "Are you sure?" generator
+dev/ng-modules/reservation/   Edit a Reservation
+dev/ng-modules/reservations/  Reservations List
+dev/ng-modules/settings/      Settings View
+dev/ng-modules/space/         Edit a Space
+dev/ng-modules/spacepurchase/ Create a Space Purchase
+dev/ng-modules/spaces/        Space List
+dev/ng-modules/tutoring/      Tutoring
+dev/ng-modules/user/          Create/Edit a User
+dev/ng-modules/users/         Users List
+prod/                         Production files ("`grunt prod`"")
+...
+```
+
 #### End-User "Machines" Client
+
+The source code is within the `src/` subdirectory:
+
+```
+assets/                              Static Assets
+assets/less/                         Less files (edit CSS from here)
+js/                                  JS code
+js/actions/                          Flux Actions
+js/actions/__test__/
+js/components/                       React Components
+js/components/Feedback/              Feedback Form
+js/components/Feedback/__test__/
+js/components/Login/                 Login Pages
+js/components/Login/__test__/
+js/components/MachinePage/           Machine Page
+js/components/MachinePage/__test__/
+js/components/MachinePage/Machine/   Machine in the List
+js/components/Reservations/          Reservations Module
+js/components/Reservations/__test__/
+js/components/UserProfile/           User Profile Page
+js/components/UserProfile/__test__/
+js/stores/                           Flux Stores
+js/stores/__test__/
+```
 
 #### Backend
 
