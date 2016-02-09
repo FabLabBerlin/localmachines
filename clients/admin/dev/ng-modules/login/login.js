@@ -99,6 +99,7 @@ app.controller('LoginCtrl', ['$rootScope', '$scope', '$http', '$location', funct
       data: {
         username: $scope.username,
         password: $scope.password,
+        location: $('select[name="location"]').val()
       },
       params: {
         ac: new Date().getTime()

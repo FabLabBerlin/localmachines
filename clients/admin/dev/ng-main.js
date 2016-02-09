@@ -55,39 +55,22 @@ app.run(['$rootScope', '$location', '$http', '$cookieStore',
     if (newPath !== '/login') {
 
       $http({
-        method: 'POST',
-        url: '/api/users/login',
+        method: 'GET',
+        url: '/api/users/current',
         params: {
-          username: 'blank',
-          password: 'blank',
           ac: new Date().getTime()
         }
       })
-      .success(function(data){
-        $http({
-          method: 'GET',
-          url: '/api/users/current'
-        })
-        .success(function(user) {
-          console.log('ng main:got current resp: ', user);
-          $rootScope.mainMenu.userFullName = user.FirstName + ' ' + user.LastName;
-        })
-        .error(function() {
-          console.log('Cannot display current user, retrying soon');
-        });
-        if (data.Status !== 'logged') {
-          $rootScope.mainMenu.visible = false;
-          $location.path('/login');
+      .success(function(user) {
+        $rootScope.mainMenu.visible = true;
+        $rootScope.mainMenu.userFullName = user.FirstName + ' ' + user.LastName;
+        if (newPath) {
+          $location.path(newPath);
         } else {
-          $rootScope.mainMenu.visible = true;
-          if (newPath) {
-            $location.path(newPath);
-          } else {
-            $location.path('/machines');
-          }
+          $location.path('/machines');
         }
       })
-      .error(function(){
+      .error(function() {
         $rootScope.mainMenu.visible = false;
         $location.path('/login');
       });

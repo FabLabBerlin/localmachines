@@ -23,7 +23,7 @@ func LoginAsAdmin() *http.Cookie {
 	AdminUID = uid
 	models.AuthSetPassword(uid, "admin")
 
-	r, _ := http.NewRequest("POST", "/api/users/login?username=admin&password=admin", nil)
+	r, _ := http.NewRequest("POST", "/api/users/login?username=admin&password=admin&location=1", nil)
 	w := httptest.NewRecorder()
 	beego.BeeApp.Handlers.ServeHTTP(w, r)
 
@@ -42,7 +42,7 @@ func LoginAsRegular() *http.Cookie {
 	RegularUID = uid
 	models.AuthSetPassword(uid, "user")
 
-	r, _ := http.NewRequest("POST", "/api/users/login?username=user&password=user", nil)
+	r, _ := http.NewRequest("POST", "/api/users/login?username=user&password=user&location=1", nil)
 	w := httptest.NewRecorder()
 	beego.BeeApp.Handlers.ServeHTTP(w, r)
 

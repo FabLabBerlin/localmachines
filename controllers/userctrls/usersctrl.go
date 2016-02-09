@@ -59,14 +59,19 @@ func (this *UsersController) Prepare() {
 
 // @Title login
 // @Description Logs user into the system
-// @Param	username		query 	string	true		"The username for login"
-// @Param	password		query 	string	true		"The password for login"
-// @Param	location		query	int		true		"Location ID"
+// @Param	username		body 	string	true		"The username for login"
+// @Param	password		body 	string	true		"The password for login"
+// @Param	location		body	int		true		"Location ID"
 // @Success 200 {object} models.LoginResponse
+// @Failure 400 Bad Request
 // @Failure 401 Failed to authenticate
 // @router /login [post]
 func (this *UsersController) Login() {
-	locationId, _ := this.GetInt64("location")
+	locationId, err := this.GetInt64("location")
+	if err != nil {
+		beego.Error("get location:", err)
+		this.CustomAbort(400, "Bad Request")
+	}
 
 	if sessUserId, err := this.GetSessionUserId(); err != nil {
 		username := this.GetString("username")

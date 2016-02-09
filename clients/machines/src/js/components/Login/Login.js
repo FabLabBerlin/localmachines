@@ -76,11 +76,7 @@ var Login = React.createClass({
    * listen to the onChange event from the UserStore
    */
   componentDidMount() {
-    var data = {
-      username: '',
-      password: ''
-    };
-    LoginActions.submitLoginForm(data, this.context.router);
+    LoginActions.tryPassLoginForm(this.context.router);
 
     this.focus();
 

@@ -29,23 +29,23 @@ func TestUsersAPI(t *testing.T) {
 
 		Convey("Testing POST /users/login/", func() {
 
-			Convey("Try to log in without parameters, should return 401", func() {
+			Convey("Try to log in without parameters, should return 400", func() {
 				r, _ := http.NewRequest("POST", "/api/users/login", nil)
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
 
-				So(w.Code, ShouldEqual, 401)
+				So(w.Code, ShouldEqual, 400)
 			})
 
-			Convey("Try to log in with wrong parameters, should return 401", func() {
-				r, _ := http.NewRequest("POST", "/api/users/login?username=a&password=a", nil)
+			Convey("Try to log in with wrong user/pass, should return 401", func() {
+				r, _ := http.NewRequest("POST", "/api/users/login?username=a&password=a&location=1", nil)
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
 
 				So(w.Code, ShouldEqual, 401)
 			})
 
-			Convey("Try to login with good parameters, should return 200", func() {
+			Convey("Try to login with correct user/user, should return 200", func() {
 				u := models.User{
 					Username: "aze",
 					Email:    "aze@easylab.io",
@@ -53,7 +53,7 @@ func TestUsersAPI(t *testing.T) {
 				uid, _ := models.CreateUser(&u)
 				models.AuthSetPassword(uid, "aze")
 
-				r, _ := http.NewRequest("POST", "/api/users/login?username=aze&password=aze", nil)
+				r, _ := http.NewRequest("POST", "/api/users/login?username=aze&password=aze&location=1", nil)
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
 
@@ -315,7 +315,7 @@ func TestUsersAPI(t *testing.T) {
 
 			Convey("Try to modify a user as a regular user, should return 401", func() {
 				var jsonStr = []byte("{}")
-				r, _ := http.NewRequest("PUT", "/api/users/0", bytes.NewBuffer(jsonStr))
+				r, _ := http.NewRequest("PUT", "/api/users/1", bytes.NewBuffer(jsonStr))
 				r.AddCookie(LoginAsRegular())
 				r.Header.Set("Content-Type", "application/json")
 				w := httptest.NewRecorder()
@@ -326,8 +326,9 @@ func TestUsersAPI(t *testing.T) {
 
 			Convey("Try to modify self userRole as a regular user, should return 500", func() {
 				cookie := LoginAsRegular()
-				var jsonStr = []byte(`{"User": {"Id": ` + strconv.FormatInt(RegularUID, 10) + `, "Email": "raaaaaaaaaaaaaaaaadom@easylab.io", "UserRole": "` + user_roles.ADMIN.String() + `"}}`)
-				r, _ := http.NewRequest("PUT", "/api/users/"+strconv.FormatInt(RegularUID, 10), bytes.NewBuffer(jsonStr))
+				uid := strconv.FormatInt(RegularUID, 10)
+				var jsonStr = []byte(`{"User": {"Id": ` + uid + `, "Email": "raaaaaaaaaaaaaaaaadom@easylab.io", "UserRole": "` + user_roles.ADMIN.String() + `"}}`)
+				r, _ := http.NewRequest("PUT", "/api/users/"+uid, bytes.NewBuffer(jsonStr))
 				r.AddCookie(cookie)
 				r.Header.Set("Content-Type", "application/json")
 				w := httptest.NewRecorder()
@@ -338,8 +339,9 @@ func TestUsersAPI(t *testing.T) {
 
 			Convey("Try to modify self user as a regular user, should return 200", func() {
 				cookie := LoginAsRegular()
-				var jsonStr = []byte(`{"User": {"Id": ` + strconv.FormatInt(RegularUID, 10) + `, "Email": "raaaaaaaaaaaaaaaaadom@easylab.io"}}`)
-				r, _ := http.NewRequest("PUT", "/api/users/"+strconv.FormatInt(RegularUID, 10), bytes.NewBuffer(jsonStr))
+				uid := strconv.FormatInt(RegularUID, 10)
+				var jsonStr = []byte(`{"User": {"Id": ` + uid + `, "Email": "raaaaaaaaaaaaaaaaadom@easylab.io"}}`)
+				r, _ := http.NewRequest("PUT", "/api/users/"+uid, bytes.NewBuffer(jsonStr))
 				r.AddCookie(cookie)
 				r.Header.Set("Content-Type", "application/json")
 				w := httptest.NewRecorder()
