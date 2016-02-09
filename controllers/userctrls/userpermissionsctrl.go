@@ -76,8 +76,7 @@ func (this *UserPermissionsController) DeleteUserPermission() {
 	}
 
 	// Get machine ID for the permission being made
-	var machineId int64
-	machineId, err = this.GetInt64("mid")
+	machineId, err := this.GetInt64("mid")
 	if err != nil {
 		beego.Error("Failed to get queried machine ID")
 		this.CustomAbort(403, "Failed to create permission")

@@ -80,7 +80,6 @@ func (x *Xmpp) connect() {
 			x.lastPong = time.Now()
 			waitTime = RECONNECT_INIT_WAIT_TIME
 			for {
-				log.Printf("Pinnnnggggggggg")
 				if err := x.Ping(); err != nil {
 					log.Printf("ping errrrrr: %v", err)
 					break
@@ -162,7 +161,6 @@ func (x *Xmpp) Run() {
 				}
 			case xmpp.IQ:
 				if v.Type == "result" {
-					log.Printf("Ponnnnggggggggg")
 					x.lastPong = time.Now()
 				}
 			default:

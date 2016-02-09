@@ -160,21 +160,18 @@ func (this *MachinesController) GetConnectable() {
 // @router / [post]
 func (this *MachinesController) Create() {
 	machineName := this.GetString("mname")
-	beego.Trace(machineName)
 
 	if !this.IsAdmin() && !this.IsStaff() {
 		beego.Error("Not authorized to create machine")
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	// All clear - create machine in the database
 	machineId, err := models.CreateMachine(machineName)
 	if err != nil {
 		beego.Error("Failed to create machine", err)
 		this.CustomAbort(403, "Failed to create machine")
 	}
 
-	// Success - we even got an ID!!!
 	this.Data["json"] = &models.MachineCreatedResponse{MachineId: machineId}
 	this.ServeJSON()
 }

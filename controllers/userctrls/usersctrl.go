@@ -379,27 +379,9 @@ func (this *UsersController) Put() {
 // @Failure	401	Unauthorized
 // @router /:uid/machines [get]
 func (this *UsersController) GetUserMachines() {
-
-	// Check if logged in
-	suid, err := this.GetSessionUserId()
-	if err != nil {
-		beego.Info("Not logged in")
-		this.CustomAbort(401, "Unauthorized")
-	}
-
-	// Get requested user ID
-	var ruid int64
-	ruid, err = this.GetInt64(":uid")
-	if err != nil {
-		beego.Error("Failed to get :uid", err)
-		this.CustomAbort(500, "Internal Server Error")
-	}
-
-	if suid != ruid {
-		if !this.IsAdmin() {
-			beego.Error("Not authorized")
-			this.CustomAbort(401, "Unauthorized")
-		}
+	uid, authorized := this.GetRouteUid()
+	if !authorized {
+		this.CustomAbort(401, "Wrong uid in url or not authorized")
 	}
 
 	// List all machines if the requested user is admin
@@ -411,8 +393,8 @@ func (this *UsersController) GetUserMachines() {
 
 	// Get the machines!
 	machines := make([]*models.Machine, 0, len(allMachines))
-	if !this.IsAdmin(ruid) {
-		permissions, err := models.GetUserPermissions(ruid)
+	if !this.IsAdmin(uid) {
+		permissions, err := models.GetUserPermissions(uid)
 		if err != nil {
 			beego.Error("Failed to get user machine permissions: ", err)
 			this.CustomAbort(500, "Internal Server Error")
@@ -442,28 +424,12 @@ func (this *UsersController) GetUserMachines() {
 // @Failure	500	Internal Server Error
 // @router /:uid/bill [get]
 func (this *UsersController) GetUserBill() {
-	// Get requested user ID
-	var err error
-	var ruid int64
-	ruid, err = this.GetInt64(":uid")
-	if err != nil {
-		beego.Error("Failed to get :uid", err)
-		this.CustomAbort(500, "Internal Server Error")
+	uid, authorized := this.GetRouteUid()
+	if !authorized {
+		this.CustomAbort(401, "Wrong uid in url or not authorized")
 	}
 
-	// Check if logged in
-	suid, err := this.GetSessionUserId()
-	if err != nil {
-		beego.Info("Not logged in")
-		this.CustomAbort(401, "Unauthorized")
-	}
-
-	if !this.IsAdmin() && suid != ruid {
-		beego.Error("Not authorized")
-		this.CustomAbort(401, "Unauthorized")
-	}
-
-	startTime, err := purchases.GetUserStartTime(suid)
+	startTime, err := purchases.GetUserStartTime(uid)
 	if err != nil {
 		beego.Error("GetUserStartTime:", err)
 		this.CustomAbort(500, "Internal Server Error")
@@ -479,7 +445,7 @@ func (this *UsersController) GetUserBill() {
 	var userSummary *invoices.UserSummary
 
 	for _, us := range invoice.UserSummaries {
-		if us.User.Id == suid {
+		if us.User.Id == uid {
 			userSummary = us
 		}
 	}
@@ -522,7 +488,6 @@ func (this *UsersController) GetUserNames() {
 	}
 
 	// Get the user names data
-	beego.Info("uids:", this.GetString("uids"))
 	var uids []int64
 
 	if uidsString := this.GetString("uids"); len(uidsString) > 0 {
@@ -568,26 +533,12 @@ func (this *UsersController) GetUserNames() {
 // @Failure	401	Not authorized
 // @router /:uid/password [post]
 func (this *UsersController) PostUserPassword() {
-	// Check if logged in
-	suid, err := this.GetSessionUserId()
-	if err != nil {
-		beego.Info("Not logged in")
-		this.CustomAbort(401, "Not logged in")
+	uid, authorized := this.GetRouteUid()
+	if !authorized {
+		this.CustomAbort(400, "Wrong uid in url or not authorized")
 	}
 
-	// Get requested user ID
-	ruid, err := this.GetInt64(":uid")
-	if err != nil {
-		beego.Error("Failed to get :uid")
-		this.CustomAbort(403, "Failed to get :uid")
-	}
-
-	if !this.IsAdmin() && suid != ruid {
-		beego.Error("Not authorized")
-		this.CustomAbort(401, "Not authorized")
-	}
-
-	err = models.AuthSetPassword(ruid, this.GetString("password"))
+	err := models.AuthSetPassword(uid, this.GetString("password"))
 	if err != nil {
 		beego.Error("Unable to update password: ", err)
 		this.CustomAbort(403, "Unable to update password")
@@ -606,24 +557,9 @@ func (this *UsersController) PostUserPassword() {
 // @Failure	401	Not authorized
 // @router /:uid/nfcuid [put]
 func (this *UsersController) UpdateNfcUid() {
-	// Check if logged in
-	suid, err := this.GetSessionUserId()
-	if err != nil {
-		beego.Info("Not logged in")
-		this.CustomAbort(401, "Not authorized")
-	}
-
-	// Get requested user ID
-	ruid, err := this.GetInt64(":uid")
-	if err != nil {
-		beego.Error("Failed to get :ruid")
-		this.CustomAbort(403, "Failed to update NFC UID")
-	}
-
-	// User can't change NFC UID of others if she is not an admin
-	if !this.IsAdmin() && suid != ruid {
-		beego.Error("Not authorized")
-		this.CustomAbort(401, "Not authorized")
+	uid, authorized := this.GetRouteUid()
+	if !authorized {
+		this.CustomAbort(400, "Wrong uid in url or not authorized")
 	}
 
 	// Get the NFC UID
@@ -633,8 +569,7 @@ func (this *UsersController) UpdateNfcUid() {
 		this.CustomAbort(403, "Failed to update NFC UID")
 	}
 
-	err = models.AuthUpdateNfcUid(ruid, nfcuid)
-	if err != nil {
+	if err := models.AuthUpdateNfcUid(uid, nfcuid); err != nil {
 		beego.Error("Unable to update NFC UID: ", err)
 		this.CustomAbort(403, "Failed to update NFC UID")
 	}
