@@ -63,6 +63,14 @@ func (ul *UserLocation) Update() (err error) {
 	return
 }
 
+func Delete(userId, locationId int64) (err error) {
+	_, err = orm.NewOrm().QueryTable(TABLE_NAME).
+		Filter("user_id", userId).
+		Filter("location_id", locationId).
+		Delete()
+	return
+}
+
 func init() {
 	orm.RegisterModel(new(UserLocation))
 }

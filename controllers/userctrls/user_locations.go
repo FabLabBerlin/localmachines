@@ -2,8 +2,6 @@ package userctrls
 
 import (
 	"encoding/json"
-	"github.com/FabLabBerlin/localmachines/models"
-	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/astaxie/beego"
 )
@@ -24,38 +22,46 @@ func (c *UserLocationsController) GetUserLocations() {
 	if !authorized {
 		c.CustomAbort(400, "Wrong uid in url or not authorized")
 	}
-	var err error
-	ls, err := locations.GetAll()
-	if err != nil {
-		beego.Error("locations:", err)
-		c.CustomAbort(500, "Cannot get user locations")
-	}
 	uls, err := user_locations.GetAllForUser(uid)
 	if err != nil {
 		beego.Error("get user locations:", err)
 		c.CustomAbort(500, "Cannot get user locations")
 	}
-	ulsById := make(map[int64]*user_locations.UserLocation)
-	for _, ul := range uls {
-		ulsById[ul.LocationId] = ul
-	}
-	for _, l := range ls {
-		if _, ok := ulsById[l.Id]; !ok {
-			emptyUl := &user_locations.UserLocation{
-				LocationId: l.Id,
-				Location:   l,
-				UserId:     uid,
-				UserRole:   models.NOT_AFFILIATED,
-			}
-			uls = append(uls, emptyUl)
-		}
-	}
 	c.Data["json"] = uls
 	c.ServeJSON()
 }
 
+// @Title PostUserLocation
+// @Description Create new user location
+// @Param	uid		path 	int	true		"User ID"
+// @Param	lid		path 	int	true		"Location ID"
+// @Success 200
+// @Failure	401	Not authorized
+// @Failure	500	Internal Server Error
+// @router /:uid/locations/:lid [post]
+func (c *UserLocationsController) PostUserLocation() {
+	if !c.IsAdmin() {
+		c.CustomAbort(401, "Not authorized")
+	}
+	uid, _ := c.GetRouteUid()
+	lid, err := c.GetInt64(":lid")
+	if err != nil {
+		beego.Error("get int:", err)
+		c.CustomAbort(400, "Client Error")
+	}
+	ul := user_locations.UserLocation{
+		UserId:     uid,
+		LocationId: lid,
+	}
+	if _, err := user_locations.Create(&ul); err != nil {
+		beego.Error("create:", err)
+		c.CustomAbort(500, "Internal Server Error")
+	}
+	c.ServeJSON()
+}
+
 // @Title PutUserLocation
-// @Description Put user location
+// @Description Update existing user location
 // @Param	uid		path 	int	true		"User ID"
 // @Param	lid		path 	int	true		"Location ID"
 // @Success 200
@@ -73,14 +79,39 @@ func (c *UserLocationsController) PutUserLocation() {
 		beego.Error("json decode:", err)
 		c.CustomAbort(400, "Wrong data")
 	}
-	if ul.Id == 0 {
-		if _, err := user_locations.Create(&ul); err != nil {
-			beego.Error("create:", err)
-			c.CustomAbort(500, "Internal Server Error")
-		}
-	} else if err := ul.Update(); err != nil {
+	if err := ul.Update(); err != nil {
 		beego.Error("update:", err)
 		c.CustomAbort(500, "Internal Server Error")
 	}
+	c.ServeJSON()
+}
+
+// @Title DeleteUserLocation
+// @Description Delete user location
+// @Param	uid		path 	int	true		"User ID"
+// @Param	lid	path	int	true			"Location ID"
+// @Success 200
+// @Failure	400 Client Error
+// @Failure	401	Not authorized
+// @Failure	500 Internal Server Error
+// @router /:uid/locations/:lid [delete]
+func (c *UserLocationsController) DeleteUserLocation() {
+	if !c.IsAdmin() {
+		c.CustomAbort(401, "Not authorized")
+	}
+	uid, _ := c.GetRouteUid()
+	lid, err := c.GetInt64(":lid")
+	if err != nil {
+		beego.Error("get int:", err)
+		c.CustomAbort(400, "Client Error")
+	}
+
+	err = user_locations.Delete(uid, lid)
+	if err != nil {
+		beego.Error("Failed to delete user location")
+		c.CustomAbort(500, "Internal Server Error")
+	}
+
+	c.Data["json"] = "ok"
 	c.ServeJSON()
 }

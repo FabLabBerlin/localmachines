@@ -73,10 +73,24 @@ app.controller('UserCtrl',
     format: 'yyyy-mm-dd'
   };
   $('.datepicker').pickadate(pickadateOptions);
+  $scope.locations = [];
   $scope.userLocations = [];
   $scope.user = { Id: $routeParams.userId };
   $scope.userMachines = [];
   $scope.userMemberships = [];
+
+  $scope.loadLocations = function() {
+    $http({
+      method: 'GET',
+      url: '/api/locations'
+    })
+    .success(function(locations) {
+      $scope.locations = locations;
+    })
+    .error(function(data, status) {
+      toastr.error('Failed to load locations data');
+    });
+  };
 
   $scope.loadUserLocations = function() {
     $http({
@@ -120,6 +134,7 @@ app.controller('UserCtrl',
   // 4. Load available memberships
   // 5. Load user memberships
 
+  $scope.loadLocations();
   $scope.loadUserLocations();
   $scope.loadUserData();
 
@@ -459,6 +474,29 @@ app.controller('UserCtrl',
     });
   };
 
+  $scope.addUserLocation = function() {
+    var locationId = $('.add-user-location select').val();
+    if (!locationId) {
+      toastr.error('Please select a location to add');
+      return;
+    }
+
+    $http({
+      method: 'POST',
+      url: '/api/users/' + $scope.user.Id + '/locations/' + locationId,
+      params: {
+        ac: new Date().getTime()
+      }
+    })
+    .success(function() {
+      toastr.success('User location created');
+      $scope.loadUserLocations();
+    })
+    .error(function() {
+      toastr.error('Error while trying to create new User Location');
+    });
+  };
+
   $scope.updateUserLocation = function(userLocation) {
     $http({
       method: 'PUT',
@@ -478,6 +516,43 @@ app.controller('UserCtrl',
     .error(function() {
       toastr.error('Error while trying to update user location role');
       $scope.loadUserLocations();
+    });
+  };
+
+  $scope.deleteUserLocationPrompt = function(userLocationId) {
+    var token = randomToken.generate();
+    vex.dialog.prompt({
+      message: 'Enter <span class="delete-prompt-token">' +
+      token + '</span> to delete',
+      placeholder: 'Token',
+      callback: function(value) {
+        if (value) {
+          if (value === token) {
+            $scope.deleteUserLocation(userLocationId);
+          } else {
+            toastr.error('Wrong token');
+          }
+        } else if (value !== false) {
+          toastr.error('No token');
+        }
+      } // callback
+    });
+  };
+
+  $scope.deleteUserLocation = function(userLocationId) {
+    $http({
+      method: 'DELETE',
+      url: '/api/users/' + $scope.user.Id + '/locations/' + userLocationId,
+      params: {
+        ac: new Date().getTime()
+      }
+    })
+    .success(function() {
+      toastr.success('User location deleted.');
+      $scope.loadUserLocations();
+    })
+    .error(function() {
+      toastr.error('Error while trying to delete user location');
     });
   };
 
