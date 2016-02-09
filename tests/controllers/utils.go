@@ -5,6 +5,7 @@ import (
 	"net/http/httptest"
 
 	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"github.com/astaxie/beego"
 )
 
@@ -16,7 +17,7 @@ func LoginAsAdmin() *http.Cookie {
 	u := models.User{
 		Username: "admin",
 		Email:    "admin@easylab.io",
-		UserRole: models.ADMIN,
+		UserRole: user_roles.ADMIN.String(),
 	}
 	uid, _ := models.CreateUser(&u)
 	AdminUID = uid

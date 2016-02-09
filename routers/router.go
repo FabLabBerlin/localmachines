@@ -7,6 +7,7 @@ package routers
 import (
 	"github.com/FabLabBerlin/localmachines/controllers"
 	"github.com/FabLabBerlin/localmachines/controllers/locations"
+	"github.com/FabLabBerlin/localmachines/controllers/machines"
 	"github.com/FabLabBerlin/localmachines/controllers/metrics"
 	"github.com/FabLabBerlin/localmachines/controllers/userctrls"
 	"github.com/astaxie/beego"
@@ -27,6 +28,16 @@ func Init() {
 	// handled by beego router.go
 
 	ns := beego.NewNamespace("/api",
+		beego.NSNamespace("/locations",
+			beego.NSInclude(
+				&locations.Controller{},
+			),
+		),
+		beego.NSNamespace("/machines",
+			beego.NSInclude(
+				&machines.MachinesController{},
+			),
+		),
 		beego.NSNamespace("/users",
 			beego.NSInclude(
 				&userctrls.UsersController{},
@@ -36,19 +47,9 @@ func Init() {
 				&userctrls.UserPermissionsController{},
 			),
 		),
-		beego.NSNamespace("/locations",
-			beego.NSInclude(
-				&locations.Controller{},
-			),
-		),
 		beego.NSNamespace("/memberships",
 			beego.NSInclude(
 				&controllers.MembershipsController{},
-			),
-		),
-		beego.NSNamespace("/machines",
-			beego.NSInclude(
-				&controllers.MachinesController{},
 			),
 		),
 		beego.NSNamespace("/machine_types",

@@ -3,6 +3,7 @@ package userctrls
 import (
 	"encoding/json"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
+	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"github.com/astaxie/beego"
 )
 
@@ -52,6 +53,7 @@ func (c *UserLocationsController) PostUserLocation() {
 	ul := user_locations.UserLocation{
 		UserId:     uid,
 		LocationId: lid,
+		UserRole:   user_roles.NOT_AFFILIATED.String(),
 	}
 	if _, err := user_locations.Create(&ul); err != nil {
 		beego.Error("create:", err)

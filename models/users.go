@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"golang.org/x/crypto/scrypt"
@@ -18,14 +19,6 @@ import (
 const (
 	PW_SALT_BYTES = 32
 	PW_HASH_BYTES = 64
-)
-
-const (
-	SUPER_ADMIN    = "superadmin"
-	ADMIN          = "admin"
-	STAFF          = "staff"
-	MEMBER         = "member"
-	NOT_AFFILIATED = "notaffiliated"
 )
 
 // Regular expression for email spec : RFC 5322
@@ -196,14 +189,11 @@ func AuthenticateUser(username, password string) (int64, error) {
 // Authenticate user by using NFC uid
 // TODO: provide some kind of basic crypto
 func AuthenticateUserUid(uid string) (string, int64, error) {
-	var err error
-
 	uid = strings.TrimSpace(uid)
 
 	// uid can not be empty or less than 4 chars
 	if uid == "" || len(uid) < 4 {
-		err = errors.New("Invalid NFC UID")
-		return "", 0, err
+		return "", 0, errors.New("Invalid NFC UID")
 	}
 
 	auth := Auth{}
@@ -211,16 +201,16 @@ func AuthenticateUserUid(uid string) (string, int64, error) {
 	o := orm.NewOrm()
 
 	// Get user ID
-	err = o.Read(&auth, "NfcKey")
-	if err != nil {
+	if err := o.Read(&auth, "NfcKey"); err != nil {
 		return "", 0, fmt.Errorf("Failed to read auth table: %v", err)
 	}
 
 	// Get user name
-	user := User{}
-	user.Id = auth.UserId
-	err = o.Read(&user, "Id")
-	if err != nil {
+	user := User{
+		Id: auth.UserId,
+	}
+
+	if err := o.Read(&user, "Id"); err != nil {
 		return "", 0, fmt.Errorf("Failed to read user table: %v", err)
 	}
 
@@ -303,14 +293,18 @@ func DeleteUserAuth(userId int64) error {
 	return err
 }
 
+func (user *User) GetRole() user_roles.Role {
+	return user_roles.Role(user.UserRole)
+}
+
 // Update user
 func (user *User) Update() error {
 	o := orm.NewOrm()
 
 	// Check if not last admin in case UserRole is not admin
-	if user.UserRole != ADMIN {
+	if user.GetRole() != user_roles.ADMIN {
 		numAdmins, err := o.QueryTable(user.TableName()).
-			Filter("UserRole", ADMIN).Count()
+			Filter("UserRole", user_roles.ADMIN).Count()
 		if err != nil {
 			return err
 		}
@@ -319,7 +313,7 @@ func (user *User) Update() error {
 			// Check if the user we are updating is that 1 last admin
 			userIsAdmin := o.QueryTable(user.TableName()).
 				Filter("id", user.Id).
-				Filter("user_role", ADMIN).Exist()
+				Filter("user_role", user_roles.ADMIN).Exist()
 			if userIsAdmin {
 				return errors.New("Only one admin left")
 			}

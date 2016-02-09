@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	_ "github.com/FabLabBerlin/localmachines/routers"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
 	"github.com/astaxie/beego"
@@ -325,7 +326,7 @@ func TestUsersAPI(t *testing.T) {
 
 			Convey("Try to modify self userRole as a regular user, should return 500", func() {
 				cookie := LoginAsRegular()
-				var jsonStr = []byte(`{"User": {"Id": ` + strconv.FormatInt(RegularUID, 10) + `, "Email": "raaaaaaaaaaaaaaaaadom@easylab.io", "UserRole": "` + models.ADMIN + `"}}`)
+				var jsonStr = []byte(`{"User": {"Id": ` + strconv.FormatInt(RegularUID, 10) + `, "Email": "raaaaaaaaaaaaaaaaadom@easylab.io", "UserRole": "` + user_roles.ADMIN.String() + `"}}`)
 				r, _ := http.NewRequest("PUT", "/api/users/"+strconv.FormatInt(RegularUID, 10), bytes.NewBuffer(jsonStr))
 				r.AddCookie(cookie)
 				r.Header.Set("Content-Type", "application/json")

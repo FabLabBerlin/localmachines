@@ -6,6 +6,7 @@ package user_locations
 import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/models/locations"
+	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"github.com/astaxie/beego/orm"
 )
 
@@ -20,6 +21,10 @@ type UserLocation struct {
 	UserId     int64
 	UserRole   string
 	Archived   bool
+}
+
+func (ul *UserLocation) GetRole() user_roles.Role {
+	return user_roles.Role(ul.UserRole)
 }
 
 func (ul *UserLocation) TableName() string {

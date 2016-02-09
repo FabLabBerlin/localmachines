@@ -3,6 +3,7 @@ package controllers
 import (
 	"errors"
 	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"github.com/astaxie/beego"
 )
 
@@ -93,7 +94,7 @@ func (this *Controller) IsAdmin(userIds ...int64) bool {
 	if err != nil {
 		return false
 	}
-	return user.UserRole == models.ADMIN || user.UserRole == models.SUPER_ADMIN
+	return user.GetRole() == user_roles.ADMIN || user.GetRole() == user_roles.SUPER_ADMIN
 }
 
 // Return true if user is staff, if no args are passed, uses session user ID,
@@ -117,5 +118,5 @@ func (this *Controller) IsStaff(userIds ...int64) bool {
 	if err != nil {
 		return false
 	}
-	return user.UserRole == models.STAFF
+	return user.GetRole() == user_roles.STAFF
 }

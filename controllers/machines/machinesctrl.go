@@ -1,23 +1,25 @@
-package controllers
+// /api/machines
+package machines
 
 import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/controllers"
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/astaxie/beego"
 	"strings"
 )
 
 type MachinesController struct {
-	Controller
+	controllers.Controller
 }
 
 // @Title GetAll
 // @Description Get all machines
 // @Success 200 {object} models.Machine
-// @Failure	403	Failed to get all machines
 // @Failure	401 Not authorized
+// @Failure	500	Failed to get all machines
 // @router / [get]
 func (this *MachinesController) GetAll() {
 
@@ -30,7 +32,7 @@ func (this *MachinesController) GetAll() {
 	machines, err := models.GetAllMachines()
 	if err != nil {
 		beego.Error("Failed to get all machines", err)
-		this.CustomAbort(403, "Failed to get all machines")
+		this.CustomAbort(500, "Failed to get all machines")
 	}
 
 	this.Data["json"] = machines

@@ -4,11 +4,42 @@ package locations
 import (
 	"github.com/FabLabBerlin/localmachines/controllers"
 	"github.com/FabLabBerlin/localmachines/models/locations"
+	"github.com/FabLabBerlin/localmachines/models/user_locations"
+	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"github.com/astaxie/beego"
 )
 
 type Controller struct {
 	controllers.Controller
+}
+
+func (this *Controller) GetRouteLid() (lid int64, userRole user_roles.Role) {
+	// Check if logged in
+	suid, err := this.GetSessionUserId()
+	if err != nil {
+		beego.Info("Not logged in")
+		return 0, user_roles.NOT_AFFILIATED
+	}
+
+	// Get requested location ID
+	lid, err = this.GetInt64(":lid")
+	if err != nil {
+		beego.Error("Failed to get :lid", err)
+		return 0, user_roles.NOT_AFFILIATED
+	}
+
+	uls, err := user_locations.GetAllForUser(suid)
+	if err != nil {
+		return 0, user_roles.NOT_AFFILIATED
+	}
+
+	for _, ul := range uls {
+		if ul.LocationId == lid {
+			return lid, ul.GetRole()
+		}
+	}
+
+	return 0, user_roles.NOT_AFFILIATED
 }
 
 // @Title Create

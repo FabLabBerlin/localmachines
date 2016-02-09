@@ -8,6 +8,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
+	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"time"
 )
 
@@ -148,7 +149,7 @@ func (this Data) sumMinutesBy(timeFormat string) (sums map[string]float64, err e
 	sums = make(map[string]float64)
 
 	for _, userSummary := range this.invoice.UserSummaries {
-		if userSummary.User.UserRole != models.STAFF && userSummary.User.UserRole != models.ADMIN {
+		if userSummary.User.GetRole() != user_roles.STAFF && userSummary.User.GetRole() != user_roles.ADMIN {
 			for _, purchase := range userSummary.Purchases.Data {
 				if purchase.Type == purchases.TYPE_ACTIVATION {
 					key := purchase.TimeStart.Format(timeFormat)
