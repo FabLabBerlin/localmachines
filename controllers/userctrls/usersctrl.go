@@ -255,46 +255,18 @@ func (this *UsersController) Post() {
 // @Failure	401	Unauthorized
 // @router /:uid [get]
 func (this *UsersController) Get() {
-	var err error
-	var user *models.User
-	uid, err := this.GetInt64(":uid")
-	if err != nil {
-		beego.Error("Failed to get :uid")
-		this.CustomAbort(403, "Failed to get :uid")
+	uid, authorized := this.GetRouteUid()
+	if !authorized {
+		this.CustomAbort(401, "Not authorized")
 	}
 
-	suid, err := this.GetSessionUserId()
+	user, err := models.GetUser(uid)
 	if err != nil {
-		beego.Error("Can't get data if not logged in")
-		this.CustomAbort(401, "Unauthorized")
-	} else if uid == suid {
-
-		// Request user ID and session user ID match.
-		// The user is logged in and deserves to get her data.
-		user, err = models.GetUser(uid)
-		if err != nil {
-			beego.Error("Failed to get user data")
-			this.CustomAbort(403, "Failed to get user data")
-		} else {
-			this.Data["json"] = user
-		}
-	} else {
-		// Requested user ID and stored session ID does not match,
-		// meaning that the logged user is trying to access other user data.
-		// Don't allow to get data of another user unless session user is admin or staff.
-		if !this.IsAdmin(suid) && !this.IsStaff(suid) {
-			beego.Error("Unauthorized attempt to get other user data")
-			this.CustomAbort(401, "Unauthorized")
-		} else {
-			user, err = models.GetUser(uid)
-			if err != nil {
-				beego.Error("Failed to get other user data")
-				this.CustomAbort(403, "Failed to get other user data")
-			} else {
-				this.Data["json"] = user
-			}
-		}
+		beego.Error("Failed to get user data")
+		this.CustomAbort(403, "Failed to get user data")
 	}
+
+	this.Data["json"] = user
 	this.ServeJSON()
 }
 

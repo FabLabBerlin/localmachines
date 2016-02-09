@@ -263,13 +263,13 @@ func TestUsersAPI(t *testing.T) {
 				So(w.Code, ShouldEqual, 401)
 			})
 
-			Convey("Try to get non-existing user, should return 403", func() {
+			Convey("Try to get non-existing user, should return 401", func() {
 				r, _ := http.NewRequest("GET", "/api/users/0", nil)
 				r.AddCookie(LoginAsAdmin())
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
 
-				So(w.Code, ShouldEqual, 403)
+				So(w.Code, ShouldEqual, 401)
 			})
 
 			Convey("Try to get existing user, should return 200", func() {
