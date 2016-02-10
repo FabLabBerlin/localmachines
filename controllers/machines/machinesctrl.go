@@ -11,28 +11,52 @@ import (
 	"strings"
 )
 
-type MachinesController struct {
+type Controller struct {
 	controllers.Controller
 }
 
+// GetLocIdAdmin gets the location id, if passed as URL parameter, otherwise
+// it will be 0.  0 being synonym for all locations.  Also it returns whether
+// the user is allowed to perform admin tasks at that location.
+func (this *Controller) GetLocIdAdmin() (locId int64, authorized bool) {
+	locId, err := this.GetInt64("location")
+	if err == nil {
+		if !this.IsAdminAt(locId) {
+			return
+		}
+	} else {
+		locId = 0
+		if !this.IsSuperAdmin() {
+			return
+		}
+	}
+	return locId, true
+}
+
 // @Title GetAll
-// @Description Get all machines
+// @Description Get all machines (limited to location, if specified)
+// @Param	location	query	int64	false	"Location ID"
 // @Success 200 {object} models.Machine
 // @Failure	401 Not authorized
 // @Failure	500	Failed to get all machines
 // @router / [get]
-func (this *MachinesController) GetAll() {
-
-	// This is admin and staff only
-	if !this.IsAdmin() && !this.IsStaff() {
-		beego.Error("Not authorized")
+func (this *Controller) GetAll() {
+	locId, authorized := this.GetLocIdAdmin()
+	if !authorized {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	machines, err := models.GetAllMachines()
+	allMachines, err := models.GetAllMachines()
 	if err != nil {
 		beego.Error("Failed to get all machines", err)
 		this.CustomAbort(500, "Failed to get all machines")
+	}
+
+	machines := make([]*models.Machine, 0, len(allMachines))
+	for _, m := range allMachines {
+		if locId == 0 || locId == m.LocationId {
+			machines = append(machines, m)
+		}
 	}
 
 	this.Data["json"] = machines
@@ -46,7 +70,7 @@ func (this *MachinesController) GetAll() {
 // @Failure	403	Failed to get machine
 // @Failure	401	Not authorized
 // @router /:mid [get]
-func (this *MachinesController) Get() {
+func (this *Controller) Get() {
 
 	machineId, err := this.GetInt64(":mid")
 	if err != nil {
@@ -100,7 +124,7 @@ func (this *MachinesController) Get() {
 // @Failure	403	Failed to create machine
 // @Failure	401	Not authorized
 // @router / [post]
-func (this *MachinesController) Create() {
+func (this *Controller) Create() {
 	machineName := this.GetString("mname")
 
 	if !this.IsAdmin() && !this.IsStaff() {
@@ -127,7 +151,7 @@ func (this *MachinesController) Create() {
 // @Failure	401	Not authorized
 // @Failure	500	Failed to update machine
 // @router /:mid [put]
-func (this *MachinesController) Update() {
+func (this *Controller) Update() {
 
 	if !this.IsAdmin() {
 		beego.Error("Not authorized")
@@ -188,7 +212,7 @@ func decodeDataUri(dataUri string) ([]byte, error) {
 // @Failure	401	Not authorized
 // @Failure	500 Internal Server Error
 // @router /:mid/image [post]
-func (this *MachinesController) PostImage() {
+func (this *Controller) PostImage() {
 	if !this.IsAdmin() && !this.IsStaff() {
 		beego.Error("Not authorized to create machine")
 		this.CustomAbort(401, "Not authorized")
@@ -237,7 +261,7 @@ const (
 	OFF
 )
 
-func (this *MachinesController) underMaintenanceOnOrOff(onOrOff int) error {
+func (this *Controller) underMaintenanceOnOrOff(onOrOff int) error {
 	machineId, err := this.GetInt64(":mid")
 	if err != nil {
 		beego.Error("Failed to get :mid variable")
@@ -266,7 +290,7 @@ func (this *MachinesController) underMaintenanceOnOrOff(onOrOff int) error {
 // @Failure	401	Not authorized
 // @Failure	500 Internal Server Error
 // @router /:mid/report_broken [post]
-func (this *MachinesController) ReportBroken() {
+func (this *Controller) ReportBroken() {
 	machineId, err := this.GetInt64(":mid")
 	if err != nil {
 		beego.Error("Failed to get :mid variable")
@@ -307,7 +331,7 @@ func (this *MachinesController) ReportBroken() {
 // @Failure	401	Not authorized
 // @Failure	500 Internal Server Error
 // @router /:mid/under_maintenance/on [post]
-func (this *MachinesController) UnderMaintenanceOn() {
+func (this *Controller) UnderMaintenanceOn() {
 	err := this.underMaintenanceOnOrOff(ON)
 	if err != nil {
 		beego.Error("Failed to set UnderMaintenance: ", err)
@@ -325,7 +349,7 @@ func (this *MachinesController) UnderMaintenanceOn() {
 // @Failure	401	Not authorized
 // @Failure	500 Internal Server Error
 // @router /:mid/under_maintenance/off [post]
-func (this *MachinesController) UnderMaintenanceOff() {
+func (this *Controller) UnderMaintenanceOff() {
 	err := this.underMaintenanceOnOrOff(OFF)
 	if err != nil {
 		beego.Error("Failed to unset UnderMaintenance: ", err)
@@ -335,7 +359,7 @@ func (this *MachinesController) UnderMaintenanceOff() {
 	this.ServeJSON()
 }
 
-func (this *MachinesController) switchMachine(onOrOff int) error {
+func (this *Controller) switchMachine(onOrOff int) error {
 	machineId, err := this.GetInt64(":mid")
 	if err != nil {
 		beego.Error("Failed to get :mid variable")
@@ -370,7 +394,7 @@ func (this *MachinesController) switchMachine(onOrOff int) error {
 // @Failure	401	Not authorized
 // @Failure	500 Internal Server Error
 // @router /:mid/turn_on [post]
-func (this *MachinesController) TurnOn() {
+func (this *Controller) TurnOn() {
 	if err := this.switchMachine(ON); err != nil {
 		this.CustomAbort(500, "Internal Server Error")
 	}
@@ -386,7 +410,7 @@ func (this *MachinesController) TurnOn() {
 // @Failure	401	Not authorized
 // @Failure	500 Internal Server Error
 // @router /:mid/turn_off [post]
-func (this *MachinesController) TurnOff() {
+func (this *Controller) TurnOff() {
 	if err := this.switchMachine(OFF); err != nil {
 		this.CustomAbort(500, "Internal Server Error")
 	}
@@ -402,7 +426,7 @@ func (this *MachinesController) TurnOff() {
 // @Failure	401	Not authorized
 // @Failure	500	Internal Server Error
 // @router /search [post]
-func (this *MachinesController) Search() {
+func (this *Controller) Search() {
 	machineTypeId, err := this.GetInt64("machine_type_id")
 	if err != nil {
 		beego.Error("machine_type_id:", err)

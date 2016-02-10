@@ -4,8 +4,8 @@
 
 var mod = angular.module("fabsmith.admin.api", []);
 
-mod.service('api', ['$http',
- function($http) {
+mod.service('api', ['$http', '$cookies',
+ function($http, $cookies) {
   // Public Methods
 
   this.loadMachines = function(cb) {
@@ -13,7 +13,8 @@ mod.service('api', ['$http',
       method: 'GET',
       url: '/api/machines',
       params: {
-        ac: new Date().getTime()
+        ac: new Date().getTime(),
+        location: $cookies.locationId
       }
     })
     .success(function(machines) {

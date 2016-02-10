@@ -11,7 +11,9 @@ app.config(['$routeProvider', function($routeProvider) {
   });
 }]); // app.config
 
-app.controller('LoginCtrl', ['$rootScope', '$scope', '$http', '$location', function($rootScope, $scope, $http, $location) {
+app.controller('LoginCtrl',
+ ['$rootScope', '$scope', '$http', '$location', '$cookies',
+ function($rootScope, $scope, $http, $location, $cookies) {
   // Local login function - if we do it by entering username and password in the browser
   if (window.libnfc) {
     $scope.nfcSupport = true;
@@ -37,6 +39,7 @@ app.controller('LoginCtrl', ['$rootScope', '$scope', '$http', '$location', funct
       })
       .success(function(data) {
         if (data.UserId) {
+          $cookies.locationId = 1;
           $scope.getUserData(data.UserId);
         }
       })
@@ -93,13 +96,16 @@ app.controller('LoginCtrl', ['$rootScope', '$scope', '$http', '$location', funct
       clearTimeout($scope.nfcErrorTimeout);
     }
 
+    var locationId = $('select[name="location"]').val();
+    locationId = parseInt(locationId);
+
     $http({
       method: 'POST',
       url: '/api/users/login',
       data: {
         username: $scope.username,
         password: $scope.password,
-        location: $('select[name="location"]').val()
+        location: locationId
       },
       params: {
         ac: new Date().getTime()
@@ -107,6 +113,7 @@ app.controller('LoginCtrl', ['$rootScope', '$scope', '$http', '$location', funct
     })
     .success(function(data) {
       if (data.UserId) {
+        $cookies.locationId = locationId;
         $scope.getUserData(data.UserId);
       }
     })

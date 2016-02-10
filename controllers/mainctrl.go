@@ -3,6 +3,7 @@ package controllers
 import (
 	"errors"
 	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"github.com/astaxie/beego"
 )
@@ -74,49 +75,80 @@ func (this *Controller) IsLogged() bool {
 	return err == nil
 }
 
+// Return true if user is super admin, if no args are passed, uses session user ID,
+// if single user ID is passed, checks the passed one. Fails otherwise.
+func (this *Controller) IsSuperAdmin(userIds ...int64) bool {
+	role := this.globalUserRole(userIds...)
+	return role == user_roles.SUPER_ADMIN
+}
+
 // Return true if user is admin, if no args are passed, uses session user ID,
 // if single user ID is passed, checks the passed one. Fails otherwise.
 func (this *Controller) IsAdmin(userIds ...int64) bool {
-	var userId int64
-	var err error
-	if len(userIds) == 0 {
-		userId, err = this.GetSessionUserId()
-		if err != nil {
-			return false
-		}
-	} else if len(userIds) == 1 {
-		userId = userIds[0]
-	} else {
-		beego.Error("Expecting single or no value as input")
-		return false
-	}
-	user, err := models.GetUser(userId)
-	if err != nil {
-		return false
-	}
-	return user.GetRole() == user_roles.ADMIN || user.GetRole() == user_roles.SUPER_ADMIN
+	role := this.globalUserRole(userIds...)
+	return role == user_roles.ADMIN ||
+		role == user_roles.SUPER_ADMIN
 }
 
 // Return true if user is staff, if no args are passed, uses session user ID,
 // if single user ID is passed, checks the passed one. Fails otherwise.
 func (this *Controller) IsStaff(userIds ...int64) bool {
-	var userId int64
-	var err error
+	role := this.globalUserRole(userIds...)
+	return role == user_roles.STAFF ||
+		role == user_roles.ADMIN ||
+		role == user_roles.SUPER_ADMIN
+}
+
+// Return true if user is admin at that location, if only the location id is
+// passed, uses session user ID, if single user ID is passed, checks the passed
+// one. Fails otherwise.
+func (this *Controller) IsAdminAt(locationId int64, userIds ...int64) bool {
+	role := this.localUserRole(locationId, userIds...)
+	return role == user_roles.ADMIN ||
+		role == user_roles.SUPER_ADMIN
+}
+
+func (this *Controller) globalUserRole(userIds ...int64) user_roles.Role {
+	userId, ok := this.getUserId(userIds...)
+	if !ok {
+		return user_roles.NOT_AFFILIATED
+	}
+	user, err := models.GetUser(userId)
+	if err != nil {
+		return user_roles.NOT_AFFILIATED
+	}
+	return user.GetRole()
+}
+
+func (this *Controller) localUserRole(locationId int64, userIds ...int64) user_roles.Role {
+	userId, ok := this.getUserId(userIds...)
+	if !ok {
+		return user_roles.NOT_AFFILIATED
+	}
+	uls, err := user_locations.GetAllForUser(userId)
+	if err != nil {
+		return user_roles.NOT_AFFILIATED
+	}
+	for _, ul := range uls {
+		if ul.LocationId == locationId && ul.UserId == userId {
+			return ul.GetRole()
+		}
+	}
+	return user_roles.NOT_AFFILIATED
+}
+
+func (this *Controller) getUserId(userIds ...int64) (userId int64, ok bool) {
 	if len(userIds) == 0 {
+		var err error
 		userId, err = this.GetSessionUserId()
 		if err != nil {
-			return false
+			return 0, false
 		}
 	} else if len(userIds) == 1 {
 		userId = userIds[0]
 	} else {
 		beego.Error("Expecting single or no value as input")
-		return false
+		return 0, false
 	}
-	var user *models.User
-	user, err = models.GetUser(userId)
-	if err != nil {
-		return false
-	}
-	return user.GetRole() == user_roles.STAFF
+	return userId, true
 }

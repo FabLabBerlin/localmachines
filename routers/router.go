@@ -35,7 +35,7 @@ func Init() {
 		),
 		beego.NSNamespace("/machines",
 			beego.NSInclude(
-				&machines.MachinesController{},
+				&machines.Controller{},
 			),
 		),
 		beego.NSNamespace("/users",
