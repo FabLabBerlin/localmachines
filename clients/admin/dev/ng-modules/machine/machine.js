@@ -73,44 +73,9 @@ app.controller('MachineCtrl',
     });
   };
 
-  $scope.loadConnectedMachines = function(machineId) {
-    $http({
-      method: 'GET',
-      url: '/api/machines/' + machineId + '/connections',
-      params: {
-        ac: new Date().getTime()
-      }
-    })
-    .success(function(machineList) {
-      console.log(machineList);
-      $scope.connectedMachines = machineList.Data;
-    })
-    .error(function() {
-      toastr.error('Failed to load connected machines');
-    });
-  };
-
-  $scope.loadConnectableMachines = function(machineId) {
-    $http({
-      method: 'GET',
-      url: '/api/machines/' + machineId + '/connectable',
-      params: {
-        ac: new Date().getTime()
-      }
-    })
-    .success(function(machineList) {
-      $scope.connectableMachines = machineList.Data;
-    })
-    .error(function() {
-      toastr.error('Failed to load connectable machines');
-    });
-  };
-
   $scope.loadLocations();
   $scope.loadMachineTypes();
   $scope.loadMachine($scope.machine.Id);
-  $scope.loadConnectedMachines($scope.machine.Id);
-  $scope.loadConnectableMachines($scope.machine.Id);
 
   $scope.updateMachine = function() {
 
@@ -308,98 +273,6 @@ app.controller('MachineCtrl',
         toastr.error('Failed to update NetSwitch mapping');
       });
     }
-  };
-
-  // Connected machine stuff
-  // TODO: Put this in separate module / file
-  $scope.addConnectedMachine = function() {
-    var connMachineId = $('#connectable-machine-select').val();
-    if (!connMachineId) {
-      toastr.error('Please select a machine to connect');
-      return;
-    }
-
-    // Store connectable
-    var connMachine = {
-      Id: $('#connectable-machine-select').val(),
-      Name: $('#connectable-machine-select option:selected').text()
-    };
-
-    // Remove the connectable option so we do not repeat ourselves
-    for (var i = 0; i < $scope.connectableMachines.length; i++) {
-      if (parseInt($scope.connectableMachines[i].Id) === parseInt(connMachine.Id)) {
-        $scope.connectableMachines.splice(i, 1);
-        break;
-      }
-    }
-
-    // Add machine to the connected machine list
-    if (!$scope.connectedMachines) {
-      $scope.connectedMachines = [];
-    }
-    $scope.connectedMachines.push(connMachine);
-
-    // And also update the machine.ConnectedMachines string based array
-    var str = '';
-    for (i = 0; i < $scope.connectedMachines.length; i++) {
-      str += $scope.connectedMachines[i].Id + ',';
-    }
-    str = '[' + str.substr(0, str.length - 1) + ']';
-    $scope.machine.ConnectedMachines = str;
-
-    $scope.updateMachine();
-  };
-
-  $scope.removeConnectedMachinePrompt = function(connMachineId) {
-    var token = randomToken.generate();
-    vex.dialog.prompt({
-      message: 'Enter <span class="delete-prompt-token">' + 
-       token + '</span> to remove',
-      placeholder: 'Token',
-      callback: $scope.removeConnectedMachinePromptCallback.
-        bind(this, token, connMachineId)
-    });
-  };
-
-  $scope.removeConnectedMachinePromptCallback = 
-    function(expectedToken, connMachineId, value) {
-    if (value) {    
-      if (value === expectedToken) {
-        $scope.removeConnectedMachine(connMachineId);
-      } else {
-        toastr.error('Wrong token');
-      }
-    } else if (value !== false) {
-      toastr.error('No token');
-    }
-  };
-
-  $scope.removeConnectedMachine = function(connMachineId) {
-
-    // Search for connected machine with the ID so we can swap
-    // move it from connected machines to connectable machines
-    for (var i = 0; i < $scope.connectedMachines.length; i++) {
-      if (parseInt($scope.connectedMachines[i].Id) === parseInt(connMachineId)) {
-        if (!$scope.connectableMachines) {
-          $scope.connectableMachines = [];
-        }
-        $scope.connectableMachines.push($scope.connectedMachines[i]);
-        $scope.connectedMachines.splice(i, 1);
-        $scope.$apply();
-        break;
-      }
-    }
-
-    // And also update the machine.ConnectedMachines string based array
-    // User will have to press `Save` to update the database
-    var str = '';
-    for (i = 0; i < $scope.connectedMachines.length; i++) {
-      str += $scope.connectedMachines[i].Id + ',';
-    }
-    str = '[' + str.substr(0, str.length - 1) + ']';
-    $scope.machine.ConnectedMachines = str;
-
-    $scope.updateMachine();
   };
 
   // cf. http://stackoverflow.com/q/17922557/485185

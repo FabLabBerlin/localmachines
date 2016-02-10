@@ -180,17 +180,6 @@ func (this *ActivationsController) Create() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	// Turn on the connected machines
-	connectedMachines, err := models.GetConnectedMachines(machineId)
-	if err != nil {
-		beego.Warning("Failed to get connected machines:", err)
-	} else {
-		if err = connectedMachines.On(); err != nil {
-			beego.Error("Failed to turn on connected machines:", err)
-			this.CustomAbort(500, "Internal Server Error")
-		}
-	}
-
 	// Continue with creating activation
 	var startTime time.Time = time.Now()
 	activationId, err := purchases.CreateActivation(machineId, userId, startTime)
@@ -235,19 +224,6 @@ func (this *ActivationsController) Close() {
 		beego.Error("Failed to switch off machine")
 		if !this.IsAdmin() {
 			this.CustomAbort(500, "Internal Server Error")
-		}
-	}
-
-	// Get connected machines and try to swich them off as well
-	connectedMachines, err := models.GetConnectedMachines(machineId)
-	if err != nil {
-		beego.Warning("Failed to get connected machines:", err)
-	} else {
-		if err = connectedMachines.Off(); err != nil {
-			beego.Error("Failed to switch off connected machines")
-			if !this.IsAdmin() {
-				this.CustomAbort(500, "Internal Server Error")
-			}
 		}
 	}
 

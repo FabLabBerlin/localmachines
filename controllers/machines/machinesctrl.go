@@ -93,66 +93,6 @@ func (this *MachinesController) Get() {
 	this.ServeJSON()
 }
 
-// @Title GetConnections
-// @Description Get connected machines
-// @Param	mid		path 	int	true		"Machine ID"
-// @Success 200 {object} models.ConnectedMachineList
-// @Failure	401	Not authorized
-// @Failure	500	Internal Server Error
-// @router /:mid/connections [get]
-func (this *MachinesController) GetConnections() {
-
-	machineId, err := this.GetInt64(":mid")
-	if err != nil {
-		beego.Error("Failed to get :mid variable")
-		this.CustomAbort(500, "Internal Server Error")
-	}
-
-	if !this.IsAdmin() {
-		beego.Error("Not authorized")
-		this.CustomAbort(500, "Internal Server Error")
-	}
-
-	machineList, err := models.GetConnectedMachines(machineId)
-	if err != nil {
-		beego.Error("Failed to get connected machines")
-		this.CustomAbort(500, "Internal Server Error")
-	}
-
-	this.Data["json"] = machineList
-	this.ServeJSON()
-}
-
-// @Title GetConnected
-// @Description Get connectable machines
-// @Param	mid		path 	int	true		Machine ID
-// @Success 200 {object} models.ConnectableMachineList
-// @Failure	401	Not authorized
-// @Failure	500	Internal Server Error
-// @router /:mid/connectable [get]
-func (this *MachinesController) GetConnectable() {
-
-	machineId, err := this.GetInt64(":mid")
-	if err != nil {
-		beego.Error("Failed to get :mid variable")
-		this.CustomAbort(500, "Internal Server Error")
-	}
-
-	if !this.IsAdmin() {
-		beego.Error("Not authorized")
-		this.CustomAbort(401, "Not authorized")
-	}
-
-	cmList, err := models.GetConnectableMachines(machineId)
-	if err != nil {
-		beego.Error("Could not get connectable machine list:", err)
-		this.CustomAbort(500, "Internal Server Error")
-	}
-
-	this.Data["json"] = cmList
-	this.ServeJSON()
-}
-
 // @Title Create
 // @Description Create machine
 // @Param	mname	query	string	true	"Machine Name"

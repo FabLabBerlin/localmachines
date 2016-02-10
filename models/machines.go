@@ -1,7 +1,6 @@
 package models
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/ChimeraCoder/anaconda"
@@ -88,24 +87,6 @@ func (this *Machine) Read() (err error, machine *Machine) {
 	err = o.Read(this)
 	machine = this
 	return
-}
-
-type ConnectedMachine struct {
-	Id   int64
-	Name string
-}
-
-type ConnectedMachineList struct {
-	Data []*ConnectedMachine
-}
-
-type ConnectableMachine struct {
-	Id   int64
-	Name string
-}
-
-type ConnectableMachineList struct {
-	Data []*ConnectableMachine
 }
 
 func GetMachine(id int64) (machine *Machine, err error) {
@@ -196,90 +177,6 @@ func parseDimensions(s string) (lMM []Millimeters, err error) {
 		}
 	}
 	return
-}
-
-func GetConnectedMachines(id int64) (*ConnectedMachineList, error) {
-
-	machine := Machine{
-		Id: id,
-	}
-
-	o := orm.NewOrm()
-	if err := o.Read(&machine); err != nil {
-		return nil, fmt.Errorf("Failed to get connected machines: %v", err)
-	}
-
-	// Empty string, to not waste resources - return
-	if machine.ConnectedMachines == "" {
-		return &ConnectedMachineList{}, nil
-	}
-
-	// Parse string into object we can digest,
-	// so we can load machine data individually
-	var ids []int64
-	err := json.Unmarshal([]byte(machine.ConnectedMachines), &ids)
-	if err != nil {
-		return nil, fmt.Errorf("Failed to unmarshal json: %v", err)
-	}
-	list := ConnectedMachineList{
-		Data: make([]*ConnectedMachine, 0, len(ids)),
-	}
-
-	// Load connected machine data from the database
-	for _, id := range ids {
-		m := Machine{
-			Id: id,
-		}
-		if err = o.Read(&m); err != nil {
-			return nil, fmt.Errorf("Failed to get connected machine: %v", err)
-		}
-		cm := ConnectedMachine{
-			Id:   m.Id,
-			Name: m.Name,
-		}
-		list.Data = append(list.Data, &cm)
-	}
-
-	return &list, nil
-}
-
-func GetConnectableMachines(machineId int64) (*ConnectableMachineList, error) {
-
-	// All machines can be connectable
-	machines, err := GetAllMachines()
-	if err != nil {
-		return nil, err
-	}
-
-	// We have to substract the ones connected already from
-	// the full machine list
-	machineList, err := GetConnectedMachines(machineId)
-	if err != nil {
-		return nil, err
-	}
-
-	cmList := ConnectableMachineList{}
-
-MachineLoop:
-	for _, machine := range machines {
-		if machine.Id == machineId {
-			continue MachineLoop
-		}
-
-		for _, connMachine := range machineList.Data {
-			if machine.Id == connMachine.Id {
-				continue MachineLoop
-			}
-		}
-
-		cm := ConnectableMachine{
-			Id:   machine.Id,
-			Name: machine.Name,
-		}
-		cmList.Data = append(cmList.Data, &cm)
-	}
-
-	return &cmList, nil
 }
 
 func (this *Machine) On() (err error) {
@@ -390,31 +287,5 @@ func (this *Machine) Off() (err error) {
 			return fmt.Errorf("Failed to turn off NetSwitch: %v", err)
 		}
 	}
-	return nil
-}
-
-func (this *ConnectedMachineList) On() error {
-
-	for _, cm := range this.Data {
-		m := Machine{}
-		m.Id = cm.Id
-		if err := m.On(); err != nil {
-			return fmt.Errorf("Failed to turn on connected machine: %v", err)
-		}
-	}
-
-	return nil
-}
-
-func (this *ConnectedMachineList) Off() error {
-
-	for _, cm := range this.Data {
-		m := Machine{}
-		m.Id = cm.Id
-		if err := m.Off(); err != nil {
-			return fmt.Errorf("Failed to turn off connected machine: %v", err)
-		}
-	}
-
 	return nil
 }
