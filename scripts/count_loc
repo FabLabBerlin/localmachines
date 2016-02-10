@@ -16,7 +16,7 @@ echo "$LOC_GO lines of Go code"
 echo "$LOC_GO_TESTS lines of Go testing code"
 echo "$LOC_NG lines of Admin Panel code (proprietary JS)"
 echo "$LOC_NG_LESS lines of Admin Panel code (proprietary Less)"
-echo "$LOC_REACT lines of React code (proprietary JS, Less)"
+echo "$LOC_REACT lines of React code (proprietary JS)"
 echo "$LOC_REACT_LESS lines of React code (proprietary Less)"
 echo "$LOC_REACT_TESTS lines of React testing code"
 
