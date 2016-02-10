@@ -12,8 +12,8 @@ app.config(['$routeProvider', function($routeProvider) {
 }]); // app.config
 
 app.controller('MembershipCtrl', 
- ['$scope', '$http', '$location', '$filter', '$routeParams', 'randomToken',
- function($scope, $http, $location, $filter, $routeParams, randomToken) {
+ ['$scope', '$http', '$location', '$filter', '$routeParams', 'randomToken', 'api',
+ function($scope, $http, $location, $filter, $routeParams, randomToken, api) {
 
   $scope.machines = [];
   $scope.membership = {
@@ -24,7 +24,7 @@ app.controller('MembershipCtrl',
 
   // Load machines first
   api.loadMachines(function(resp) {
-    $scope.machines = machines;
+    $scope.machines = resp.machines;
     $scope.loadMembership();
   });
 
