@@ -1,0 +1,22 @@
+#!/bin/bash
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+LOC_GO=`find controllers/ gateway/ lib/ mfi/ models/ netswitch/ routers/ -type f | grep "go$" | xargs cat | wc -l`
+LOC_GO_TESTS=`find tests/ -type f | grep "go$" | xargs cat | wc -l`
+LOC_NG=`find clients/admin/dev/ng-main.js clients/admin/dev/ng-modules/ clients/admin/dev/ng-components/ -type f | grep -v DS_Store | xargs cat | wc -l`
+LOC_NG_LESS=`find clients/admin/dev/assets/less -type f | grep -v DS_Store | xargs cat | wc -l`
+LOC_REACT=`find clients/machines/src/js -type f | grep -v DS_Store | grep -v __test__ | xargs cat | wc -l`
+LOC_REACT_LESS=`find clients/machines/src/assets/less -type f | grep -v DS_Store | grep -E "(main.less|common.less)" | xargs cat | wc -l`
+LOC_REACT_TESTS=`find clients/machines/src/ -type f | grep -v DS_Store | grep __test__ | xargs cat | wc -l`
+
+echo "$LOC_GO lines of Go code"
+echo "$LOC_GO_TESTS lines of Go testing code"
+echo "$LOC_NG lines of Admin Panel code (proprietary JS)"
+echo "$LOC_NG_LESS lines of Admin Panel code (proprietary Less)"
+echo "$LOC_REACT lines of React code (proprietary JS, Less)"
+echo "$LOC_REACT_LESS lines of React code (proprietary Less)"
+echo "$LOC_REACT_TESTS lines of React testing code"
+
