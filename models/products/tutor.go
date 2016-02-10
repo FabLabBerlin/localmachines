@@ -12,23 +12,38 @@ type Tutor struct {
 }
 
 // Get a list of tutors
-func GetAllTutors() ([]*Tutor, error) {
-	tutorsAsProducts, err := GetAllOfType(TYPE_TUTOR)
+func GetAllTutors() (ts []*Tutor, err error) {
+	products, err := GetAllOfType(TYPE_TUTOR)
 	if err != nil {
-		msg := "Failed to get tutors as products"
-		beego.Error(msg)
-		return nil, fmt.Errorf(msg+"%v: ", err)
+		return
 	}
 
-	tutorList := make([]*Tutor, 0, len(tutorsAsProducts))
-	for _, product := range tutorsAsProducts {
-		tutor := &Tutor{
+	ts = make([]*Tutor, 0, len(products))
+	for _, product := range products {
+		t := &Tutor{
 			Product: *product,
 		}
-		tutorList = append(tutorList, tutor)
+		ts = append(ts, t)
 	}
 
-	return tutorList, nil
+	return
+}
+
+func GetAllTutorsAt(locationId int64) (ts []*Tutor, err error) {
+	products, err := GetAllOfTypeAt(locationId, TYPE_TUTOR)
+	if err != nil {
+		return
+	}
+
+	ts = make([]*Tutor, 0, len(products))
+	for _, product := range products {
+		t := &Tutor{
+			Product: *product,
+		}
+		ts = append(ts, t)
+	}
+
+	return
 }
 
 func CreateTutor(tutor *Tutor) (*Tutor, error) {

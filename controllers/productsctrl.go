@@ -13,15 +13,16 @@ type ProductsController struct {
 
 // @Title Create
 // @Description Create product with name of specified type
-// @Param	name	query	string	true	"Space Name"
-// @Param	type	query	string	true	"Product Type"
+// @Param	location	query	int64	false	"Location ID"
+// @Param	name		query	string	true	"Space Name"
+// @Param	type		query	string	true	"Product Type"
 // @Success 200 {object}
 // @Failure	401	Not authorized
 // @Failure	500	Internal Server Error
 // @router / [post]
 func (this *ProductsController) Create() {
-	if !this.IsAdmin() && !this.IsStaff() {
-		beego.Error("Not authorized to create product")
+	locId, authorized := this.GetLocIdAdmin()
+	if !authorized {
 		this.CustomAbort(401, "Not authorized")
 	}
 
@@ -33,13 +34,17 @@ func (this *ProductsController) Create() {
 
 	switch productType {
 	case products.TYPE_CO_WORKING:
-		product, err = products.CreateCoWorking(name)
+		product, err = products.CreateCoWorking(locId, name)
 		break
 	case products.TYPE_SPACE:
-		product, err = products.CreateSpace(name)
+		product, err = products.CreateSpace(locId, name)
 		break
 	case products.TYPE_TUTOR:
-		product, err = products.CreateTutor(&products.Tutor{})
+		product, err = products.CreateTutor(&products.Tutor{
+			Product: products.Product{
+				LocationId: locId,
+			},
+		})
 		break
 	default:
 		err = fmt.Errorf("unknown product type")
@@ -104,8 +109,8 @@ func (this *ProductsController) Get() {
 // @Failure	401	Not authorized
 // @router / [get]
 func (this *ProductsController) GetAll() {
-	if !this.IsAdmin() {
-		beego.Error("Not authorized")
+	locId, authorized := this.GetLocIdAdmin()
+	if !authorized {
 		this.CustomAbort(401, "Not authorized")
 	}
 
@@ -116,16 +121,16 @@ func (this *ProductsController) GetAll() {
 
 	switch productType {
 	case products.TYPE_CO_WORKING:
-		ps, err = products.GetAllCoWorking()
+		ps, err = products.GetAllCoWorkingAt(locId)
 		break
 	case products.TYPE_SPACE:
-		ps, err = products.GetAllSpaces()
+		ps, err = products.GetAllSpacesAt(locId)
 		break
 	case products.TYPE_TUTOR:
-		ps, err = products.GetAllTutors()
+		ps, err = products.GetAllTutorsAt(locId)
 		break
 	case "":
-		ps, err = products.GetAll()
+		ps, err = products.GetAllAt(locId)
 	default:
 		err = fmt.Errorf("unknown product type")
 	}

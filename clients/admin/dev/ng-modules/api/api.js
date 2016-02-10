@@ -4,7 +4,8 @@
 
 var mod = angular.module("fabsmith.admin.api", []);
 
-mod.service('api', ['$http', '$cookies',
+mod.service('api',
+ ['$http', '$cookies',
  function($http, $cookies) {
   // Public Methods
 
@@ -39,6 +40,7 @@ mod.service('api', ['$http', '$cookies',
       method: 'GET',
       url: '/api/products',
       params: {
+        location: $cookies.locationId,
         ac: new Date().getTime(),
         type: 'space'
       }
@@ -108,6 +110,7 @@ mod.service('api', ['$http', '$cookies',
       method: 'GET',
       url: '/api/products',
       params: {
+        location: $cookies.locationId,
         ac: new Date().getTime(),
         type: 'tutor'
       }

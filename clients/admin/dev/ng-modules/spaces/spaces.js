@@ -11,8 +11,8 @@ app.config(['$routeProvider', function($routeProvider) {
 }]); // app.config
 
 app.controller('SpacesCtrl',
- ['$scope', '$routeParams', '$http', '$location', 'randomToken', 'api',
- function($scope, $routeParams, $http, $location, randomToken, api) {
+ ['$scope', '$http', '$location', '$cookies', 'randomToken', 'api',
+ function($scope, $http, $location, $cookies, randomToken, api) {
 
   $scope.spaces = [];
   $scope.spacesById = {};
@@ -39,6 +39,7 @@ app.controller('SpacesCtrl',
       method: 'POST',
       url: '/api/products',
       params: {
+        location: $cookies.locationId,
         name: name,
         ac: new Date().getTime(),
         type: 'space'

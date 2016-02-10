@@ -1,8 +1,11 @@
 package products
 
 import (
+	"errors"
 	"github.com/astaxie/beego/orm"
 )
+
+const TABLE_NAME = "products"
 
 const (
 	TYPE_CO_WORKING = "co-working"
@@ -12,6 +15,7 @@ const (
 
 type Product struct {
 	Id            int64
+	LocationId    int64
 	Type          string `orm:"size(100)"`
 	Name          string `orm:"size(100)"`
 	Price         float64
@@ -27,10 +31,13 @@ type ProductList struct {
 }
 
 func (this *Product) TableName() string {
-	return "products"
+	return TABLE_NAME
 }
 
 func Create(product *Product) (int64, error) {
+	if product.LocationId <= 0 {
+		return 0, errors.New("LocationId must be > 0")
+	}
 	o := orm.NewOrm()
 	return o.Insert(product)
 }
@@ -45,7 +52,17 @@ func Get(productId int64) (product *Product, err error) {
 // Filter out archived products
 func GetAll() (products []*Product, err error) {
 	o := orm.NewOrm()
-	_, err = o.QueryTable(new(Product).TableName()).
+	_, err = o.QueryTable(TABLE_NAME).
+		Exclude("archived", 1).
+		All(&products)
+	return
+}
+
+// Filter out archived products
+func GetAllAt(locationId int64) (products []*Product, err error) {
+	o := orm.NewOrm()
+	_, err = o.QueryTable(TABLE_NAME).
+		Filter("location_id", locationId).
 		Exclude("archived", 1).
 		All(&products)
 	return
@@ -53,10 +70,20 @@ func GetAll() (products []*Product, err error) {
 
 func GetAllOfType(productType string) (products []*Product, err error) {
 	o := orm.NewOrm()
-	_, err = o.QueryTable(new(Product).TableName()).
+	_, err = o.QueryTable(TABLE_NAME).
 		Filter("type", productType).
 		Exclude("archived", 1).
 		All(&products)
+	return
+}
+
+func GetAllOfTypeAt(locationId int64, typ string) (ps []*Product, err error) {
+	o := orm.NewOrm()
+	_, err = o.QueryTable(TABLE_NAME).
+		Filter("location_id", locationId).
+		Filter("type", typ).
+		Exclude("archived", 1).
+		All(&ps)
 	return
 }
 

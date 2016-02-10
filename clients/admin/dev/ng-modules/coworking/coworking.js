@@ -12,8 +12,8 @@ app.config(['$routeProvider', function($routeProvider) {
 }]); // app.config
 
 app.controller('CoworkingCtrl',
- ['$scope', '$routeParams', '$http', '$location', 'randomToken',
- function($scope, $routeParams, $http, $location, randomToken) {
+ ['$scope', '$routeParams', '$http', '$location', '$cookies', 'randomToken',
+ function($scope, $routeParams, $http, $location, $cookies, randomToken) {
 
   $scope.products = [];
   $scope.productsById = {};
@@ -24,6 +24,7 @@ app.controller('CoworkingCtrl',
       method: 'GET',
       url: '/api/products',
       params: {
+        location: $cookies.locationId,
         ac: new Date().getTime(),
         type: 'co-working'
       }
@@ -61,6 +62,7 @@ app.controller('CoworkingCtrl',
       method: 'POST',
       url: '/api/products',
       params: {
+        location: $cookies.locationId,
         name: name,
         ac: new Date().getTime(),
         type: 'co-working'

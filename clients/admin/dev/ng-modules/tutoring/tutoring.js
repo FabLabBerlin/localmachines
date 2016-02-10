@@ -11,8 +11,9 @@ app.config(['$routeProvider', function($routeProvider) {
   });
 }]); // app.config
 
-app.controller('TutoringCtrl', ['$scope', '$http', '$location', 'api', 'randomToken',
-  function($scope, $http, $location, api, randomToken) {
+app.controller('TutoringCtrl',
+ ['$scope', '$http', '$location', '$cookies', 'api', 'randomToken',
+ function($scope, $http, $location, $cookies, api, randomToken) {
 
   $scope.machines = [];
   $scope.tutors = [];
@@ -130,6 +131,7 @@ app.controller('TutoringCtrl', ['$scope', '$http', '$location', 'api', 'randomTo
       method: 'POST',
       url: '/api/products',
       params: {
+        location: $cookies.locationId,
         name: name,
         ac: new Date().getTime(),
         type: 'tutor'

@@ -18,15 +18,15 @@ func TestSpacePurchases(t *testing.T) {
 		Reset(setup.ResetDB)
 
 		Convey("CreateSpace and GetSpace", func() {
-			s, err := products.CreateSpace("foo")
+			s, err := products.CreateSpace(1, "foo")
 			s2, err2 := products.GetSpace(s.Product.Id)
 			assert.NoErrors(err, err2)
 			So(s2.Product.Name, ShouldEqual, "foo")
 		})
 
 		Convey("GetAllSpaces", func() {
-			s1, err1 := products.CreateSpace("foo")
-			s2, err2 := products.CreateSpace("bar")
+			s1, err1 := products.CreateSpace(1, "foo")
+			s2, err2 := products.CreateSpace(1, "bar")
 			l, err := products.GetAllSpaces()
 			assert.NoErrors(err1, err2, err)
 			So(len(l), ShouldEqual, 2)
@@ -35,7 +35,7 @@ func TestSpacePurchases(t *testing.T) {
 		})
 
 		Convey("Update", func() {
-			s, err := products.CreateSpace("foobar")
+			s, err := products.CreateSpace(1, "foobar")
 			s.Product.Name = "foobaz"
 			err2 := s.Update()
 			s2, err3 := products.GetSpace(s.Product.Id)

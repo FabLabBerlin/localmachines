@@ -19,7 +19,8 @@ func TestProducts(t *testing.T) {
 
 		Convey("Create and Get", func() {
 			p := &products.Product{
-				Name: "foo",
+				LocationId: 1,
+				Name:       "foo",
 			}
 			id, err := products.Create(p)
 			if err != nil {
@@ -34,10 +35,12 @@ func TestProducts(t *testing.T) {
 
 		Convey("GetAll", func() {
 			id1, err1 := products.Create(&products.Product{
-				Name: "bar",
+				LocationId: 1,
+				Name:       "bar",
 			})
 			id2, err2 := products.Create(&products.Product{
-				Name: "baz",
+				LocationId: 1,
+				Name:       "baz",
 			})
 			ps, err := products.GetAll()
 			if err1 != nil || err2 != nil || err != nil {
@@ -50,7 +53,8 @@ func TestProducts(t *testing.T) {
 
 		Convey("Update", func() {
 			p := &products.Product{
-				Name: "foo",
+				LocationId: 1,
+				Name:       "foo",
 			}
 			id, err := products.Create(p)
 			p.Name = "foobar"
@@ -64,7 +68,8 @@ func TestProducts(t *testing.T) {
 
 		Convey("Archive", func() {
 			p := &products.Product{
-				Name: "foo",
+				LocationId: 1,
+				Name:       "foo",
 			}
 			_, err := products.Create(p)
 			err2 := p.Archive()
