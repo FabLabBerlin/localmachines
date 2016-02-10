@@ -23,19 +23,9 @@ app.controller('MembershipCtrl',
   };
 
   // Load machines first
-  $http({
-    method: 'GET',
-    url: '/api/machines',
-    params: {
-      ac: new Date().getTime()
-    }
-  })
-  .success(function(machines) {
+  api.loadMachines(function(resp) {
     $scope.machines = machines;
     $scope.loadMembership();
-  })
-  .error(function() {
-    toastr.error('Failed to load machines');
   });
 
   // Load membership

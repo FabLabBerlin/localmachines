@@ -15,24 +15,6 @@ type Controller struct {
 	controllers.Controller
 }
 
-// GetLocIdAdmin gets the location id, if passed as URL parameter, otherwise
-// it will be 0.  0 being synonym for all locations.  Also it returns whether
-// the user is allowed to perform admin tasks at that location.
-func (this *Controller) GetLocIdAdmin() (locId int64, authorized bool) {
-	locId, err := this.GetInt64("location")
-	if err == nil {
-		if !this.IsAdminAt(locId) {
-			return
-		}
-	} else {
-		locId = 0
-		if !this.IsSuperAdmin() {
-			return
-		}
-	}
-	return locId, true
-}
-
 // @Title GetAll
 // @Description Get all machines (limited to location, if specified)
 // @Param	location	query	int64	false	"Location ID"

@@ -12,29 +12,15 @@ app.config(['$routeProvider', function($routeProvider) {
   });
 }]); // app.config
 
-app.controller('ActivationsCtrl', ['$scope', '$http', '$location', 'randomToken', 
- function($scope, $http, $location, randomToken) {
+app.controller('ActivationsCtrl',
+ ['$scope', '$http', '$location', '$cookies', 'randomToken', 'api',
+ function($scope, $http, $location, $cookies, randomToken, api) {
 
   // We need full machine names for the activation table
-  $scope.loadMachines = function() {
-    $http({
-      method: 'GET',
-      url: '/api/machines',
-      params: {
-        ac: new Date().getTime()
-      }
-    })
-    .success(function(machines){
-      $scope.machines = machines;
-    })
-    .error(function(){
-      toastr.error('Failed to get machines');
-    });
-  };
-
-  // Load machines before doing anything else
   if (!$scope.machines) {
-    $scope.loadMachines();
+    api.loadMachines(function(resp) {
+      $scope.machines = resp.machines;
+    });
   }
 
   // Loads and reloads activations according to filter.
@@ -56,11 +42,11 @@ app.controller('ActivationsCtrl', ['$scope', '$http', '$location', 'randomToken'
         includeInvoiced: false,
         itemsPerPage: $scope.itemsPerPage,
         page: $scope.currentPage,
-        ac: new Date().getTime()
+        ac: new Date().getTime(),
+        location: $cookies.locationId
       }
     })
     .success(function(response) {
-      console.log('response:', response);
       _.each(response.ActivationsPage, function(activation){
         var machine = _.find($scope.machines, 'Id', activation.MachineId);
         if (machine) {
