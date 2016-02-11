@@ -111,6 +111,7 @@ func (this *ProductsController) Get() {
 func (this *ProductsController) GetAll() {
 	locId, authorized := this.GetLocIdAdmin()
 	if !authorized {
+		beego.Error("Not authorized")
 		this.CustomAbort(401, "Not authorized")
 	}
 

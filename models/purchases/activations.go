@@ -175,11 +175,12 @@ func CreateActivation(machineId, userId int64, startTime time.Time) (
 
 	newActivation := Activation{
 		Purchase: Purchase{
-			Type:      TYPE_ACTIVATION,
-			UserId:    userId,
-			MachineId: machineId,
-			Running:   true,
-			TimeStart: startTime,
+			LocationId: mch.LocationId,
+			Type:       TYPE_ACTIVATION,
+			UserId:     userId,
+			MachineId:  machineId,
+			Running:    true,
+			TimeStart:  startTime,
 
 			// Save current activation price, currency and price unit (minute, hour, pcs)
 			PricePerUnit: mch.Price,

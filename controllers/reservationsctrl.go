@@ -19,7 +19,13 @@ type ReservationsController struct {
 // @Failure	401 Not authorized
 // @router / [get]
 func (this *ReservationsController) GetAll() {
-	reservations, err := purchases.GetAllReservations()
+	locId, authorized := this.GetLocIdMember()
+	if !authorized {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	reservations, err := purchases.GetAllReservationsAt(locId)
 	if err != nil {
 		this.CustomAbort(403, "Failed to get all reservations")
 	}
@@ -55,25 +61,35 @@ func (this *ReservationsController) Get() {
 // @Description Create reservation
 // @Param	model	body	string	true	"Reservation Name"
 // @Success 200 {object}
-// @Failure	403	Failed to create reservation
+// @Failure	400	Bad request
 // @Failure	401	Not authorized
+// @Failure	500	Failed to create reservation
 // @router / [post]
 func (this *ReservationsController) Create() {
+	locId, authorized := this.GetLocIdMember()
+	if !authorized {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
 	dec := json.NewDecoder(this.Ctx.Request.Body)
 	req := purchases.Reservation{}
 	if err := dec.Decode(&req); err != nil {
 		beego.Error("Failed to decode json:", err)
-		this.CustomAbort(403, "Failed to create reservation")
-	}
-	beego.Info("create reservation:", req)
-
-	id, err := purchases.CreateReservation(&req)
-	if err != nil {
-		beego.Error("Failed to create reservation", err)
-		this.CustomAbort(403, "Failed to create reservation")
+		this.CustomAbort(400, "Bad request")
 	}
 
-	this.Data["json"] = purchases.ReservationCreatedResponse{Id: id}
+	if locId == 0 || locId == req.LocationId() {
+		id, err := purchases.CreateReservation(&req)
+		if err != nil {
+			beego.Error("Failed to create reservation", err)
+			this.CustomAbort(500, "Failed to create reservation")
+		}
+		this.Data["json"] = purchases.ReservationCreatedResponse{Id: id}
+	} else {
+		this.CustomAbort(401, "Not authorized")
+	}
+
 	this.ServeJSON()
 }
 

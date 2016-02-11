@@ -1,3 +1,5 @@
+var _ = require('lodash');
+var $ = require('jquery');
 var getters = require('../../getters');
 var MachineActions = require('../../actions/MachineActions');
 var moment = require('moment');

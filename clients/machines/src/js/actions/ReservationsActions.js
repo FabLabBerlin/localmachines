@@ -1,5 +1,8 @@
+var _ = require('lodash');
+var $ = require('jquery');
 var actionTypes = require('../actionTypes');
 var ApiActions = require('./ApiActions');
+var Cookies = require('js-cookie');
 var getters = require('../getters');
 var moment = require('moment');
 var reactor = require('../reactor');
@@ -22,7 +25,8 @@ var ReservationActions = {
   //
   // But only load user names for reservations that are currently active.
   load() {
-    ApiActions.getCall('/api/reservations', function(reservations) {
+    const lid = Cookies.get('location');
+    ApiActions.getCall('/api/reservations?location=' + lid, function(reservations) {
       var t = moment().unix();
       var userIds = [];
 
@@ -95,6 +99,7 @@ var ReservationActions = {
     },
 
     submit() {
+      const lid = parseInt(Cookies.get('location'));
       const times = reactor.evaluateToJS(getters.getNewReservationTimes);
       const reservation = reactor.evaluateToJS(getters.getNewReservation);
       const uid = reactor.evaluateToJS(getters.getUid);
@@ -102,6 +107,7 @@ var ReservationActions = {
         return t.selected;
       });
       var data = {
+        LocationId: lid,
         MachineId: reservation.machineId,
         UserId: uid,
         TimeStart: reactor.evaluateToJS(getters.getNewReservationFrom),
@@ -109,7 +115,7 @@ var ReservationActions = {
         Created: new Date()
       };
       $.ajax({
-        url: '/api/reservations',
+        url: '/api/reservations?location=' + lid,
         contentType: 'application/json; charset=utf-8',
         dataType: 'json',
         type: 'POST',

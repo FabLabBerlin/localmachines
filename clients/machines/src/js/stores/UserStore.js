@@ -45,4 +45,4 @@ function setUserProperty(state, { key, value }) {
   return state.set('user', state.get('user').set(key, value));
 }
 
-module.exports = UserStore;
+export default UserStore;

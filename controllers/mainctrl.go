@@ -108,6 +108,16 @@ func (this *Controller) IsAdminAt(locationId int64, userIds ...int64) bool {
 		role == user_roles.SUPER_ADMIN
 }
 
+// Return true if user is member at that location, if only the location id is
+// passed, uses session user ID, if single user ID is passed, checks the passed
+// one. Fails otherwise.
+func (this *Controller) IsMemberAt(locationId int64, userIds ...int64) bool {
+	role := this.localUserRole(locationId, userIds...)
+	return role == user_roles.MEMBER ||
+		role == user_roles.ADMIN ||
+		role == user_roles.SUPER_ADMIN
+}
+
 func (this *Controller) globalUserRole(userIds ...int64) user_roles.Role {
 	userId, ok := this.getUserId(userIds...)
 	if !ok {
@@ -160,6 +170,25 @@ func (this *Controller) GetLocIdAdmin() (locId int64, authorized bool) {
 	locId, err := this.GetInt64("location")
 	if err == nil {
 		if !this.IsAdminAt(locId) {
+			return
+		}
+	} else {
+		locId = 0
+		if !this.IsSuperAdmin() {
+			return
+		}
+	}
+	return locId, true
+}
+
+// GetLocIdAdmin gets the location id, if passed as URL parameter, otherwise
+// it will be 0.  0 being synonym for all locations.  Also it returns whether
+// the user is allowed to perform member tasks at that location.
+func (this *Controller) GetLocIdMember() (locId int64, authorized bool) {
+	locId, err := this.GetInt64("location")
+	beego.Info("GetLocIdMember: locId=", locId)
+	if err == nil {
+		if !this.IsMemberAt(locId) {
 			return
 		}
 	} else {

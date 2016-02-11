@@ -1,3 +1,4 @@
+var $ = require('jquery');
 var getters = require('../../../getters');
 var MachineActions = require('../../../actions/MachineActions');
 var React = require('react');

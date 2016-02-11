@@ -71,6 +71,24 @@ func GetAllTutorings() (tutorings *TutoringList, err error) {
 	return
 }
 
+// Get a list of tutoring purchases
+func GetAllTutoringsAt(locationId int64) (tutorings *TutoringList, err error) {
+	purchases, err := GetAllOfTypeAt(locationId, TYPE_TUTOR)
+	if err != nil {
+		return
+	}
+	tutorings = &TutoringList{
+		Data: make([]*Tutoring, 0, len(purchases)),
+	}
+	for _, purchase := range purchases {
+		t := &Tutoring{
+			Purchase: *purchase,
+		}
+		tutorings.Data = append(tutorings.Data, t)
+	}
+	return
+}
+
 // Start the tutoring purchase timer.
 func StartTutoring(id int64) (err error) {
 	o := orm.NewOrm()

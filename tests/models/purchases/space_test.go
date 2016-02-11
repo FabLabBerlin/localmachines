@@ -18,7 +18,7 @@ func TestSpacePurchases(t *testing.T) {
 		Reset(setup.ResetDB)
 
 		Convey("CreateSpace and GetSpace", func() {
-			s := purchases.NewSpace()
+			s := purchases.NewSpace(1)
 			s.UserId = 234
 			err1 := s.Save()
 			s, err2 := purchases.GetSpace(s.Id)
@@ -27,9 +27,9 @@ func TestSpacePurchases(t *testing.T) {
 		})
 
 		Convey("GetAllSpaces", func() {
-			s1 := purchases.NewSpace()
+			s1 := purchases.NewSpace(1)
 			err1 := s1.Save()
-			s2 := purchases.NewSpace()
+			s2 := purchases.NewSpace(1)
 			err2 := s2.Save()
 			l, err := purchases.GetAllSpace()
 			assert.NoErrors(err1, err2, err)
@@ -39,7 +39,7 @@ func TestSpacePurchases(t *testing.T) {
 		})
 
 		Convey("Update", func() {
-			s := purchases.NewSpace()
+			s := purchases.NewSpace(1)
 			s.UserId = 234
 			err := s.Save()
 			s.UserId = 456

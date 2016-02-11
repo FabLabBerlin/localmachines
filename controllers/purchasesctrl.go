@@ -19,8 +19,8 @@ type PurchasesController struct {
 // @Failure	500	Internal Server Error
 // @router / [post]
 func (this *PurchasesController) Create() {
-	if !this.IsAdmin() {
-		beego.Error("Not authorized")
+	locId, authorized := this.GetLocIdAdmin()
+	if !authorized {
 		this.CustomAbort(401, "Not authorized")
 	}
 
@@ -31,20 +31,28 @@ func (this *PurchasesController) Create() {
 
 	switch purchaseType {
 	case purchases.TYPE_CO_WORKING:
-		cp := &purchases.CoWorking{}
+		cp := &purchases.CoWorking{
+			Purchase: purchases.Purchase{
+				LocationId: locId,
+			},
+		}
 		_, err = purchases.CreateCoWorking(cp)
 		if err == nil {
 			purchase = cp
 		}
 		break
 	case purchases.TYPE_SPACE:
-		sp := purchases.NewSpace()
+		sp := purchases.NewSpace(locId)
 		if err = sp.Save(); err == nil {
 			purchase = sp
 		}
 		break
 	case purchases.TYPE_TUTOR:
-		tp := &purchases.Tutoring{}
+		tp := &purchases.Tutoring{
+			Purchase: purchases.Purchase{
+				LocationId: locId,
+			},
+		}
 		_, err = purchases.CreateTutoring(tp)
 		if err == nil {
 			purchase = tp
@@ -71,6 +79,11 @@ func (this *PurchasesController) Create() {
 // @Failure	500	Failed to get all machines
 // @router / [get]
 func (this *PurchasesController) GetAll() {
+	locId, authorized := this.GetLocIdAdmin()
+	if !authorized {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
 
 	// This is admin and staff only
 	if !this.IsAdmin() && !this.IsStaff() {
@@ -85,13 +98,13 @@ func (this *PurchasesController) GetAll() {
 
 	switch purchaseType {
 	case purchases.TYPE_CO_WORKING:
-		ps, err = purchases.GetAllCoWorking()
+		ps, err = purchases.GetAllCoWorkingAt(locId)
 		break
 	case purchases.TYPE_SPACE:
-		ps, err = purchases.GetAllSpace()
+		ps, err = purchases.GetAllSpaceAt(locId)
 		break
 	case purchases.TYPE_TUTOR:
-		ps, err = purchases.GetAllTutorings()
+		ps, err = purchases.GetAllTutoringsAt(locId)
 		break
 	default:
 		err = fmt.Errorf("unknown purchase type")

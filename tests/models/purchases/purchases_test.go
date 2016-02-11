@@ -18,7 +18,9 @@ func TestPurchases(t *testing.T) {
 		Reset(setup.ResetDB)
 
 		Convey("Creating a purchase", func() {
-			purchase := purchases.Purchase{}
+			purchase := purchases.Purchase{
+				LocationId: 1,
+			}
 			id, err := purchases.Create(&purchase)
 			Convey("should return no error", func() {
 				So(err, ShouldBeNil)
@@ -37,6 +39,7 @@ func TestPurchases(t *testing.T) {
 
 			// I am adding all of the following fields because we should not lose
 			// lose the values during archiving.
+			purchase.LocationId = 1
 			purchase.Type = purchases.TYPE_TUTOR
 			purchase.ProductId = 2
 			purchase.Created = time.Now()

@@ -1,3 +1,4 @@
+var $ = require('jquery');
 var FeedbackActions = require('../../actions/FeedbackActions');
 var getters = require('../../getters');
 var LoginActions = require('../../actions/LoginActions');

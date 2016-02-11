@@ -24,4 +24,4 @@ function setTutorings(state, tutorings) {
   return state.set('tutorings', toImmutable(tutorings));
 }
 
-module.exports = TutoringsStore;
+export default TutoringsStore;

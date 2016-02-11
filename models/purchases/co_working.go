@@ -56,6 +56,21 @@ func GetAllCoWorking() (cps []*CoWorking, err error) {
 	return
 }
 
+func GetAllCoWorkingAt(locationId int64) (cps []*CoWorking, err error) {
+	purchases, err := GetAllOfTypeAt(locationId, TYPE_CO_WORKING)
+	if err != nil {
+		return
+	}
+	cps = make([]*CoWorking, 0, len(purchases))
+	for _, Purchase := range purchases {
+		cp := &CoWorking{
+			Purchase: *Purchase,
+		}
+		cps = append(cps, cp)
+	}
+	return
+}
+
 func (cp *CoWorking) Update() (err error) {
 	o := orm.NewOrm()
 	_, err = o.Update(&cp.Purchase)

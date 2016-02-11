@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var getters = require('../../getters');
 var moment = require('moment');
 var { Month } = require('./helpers');

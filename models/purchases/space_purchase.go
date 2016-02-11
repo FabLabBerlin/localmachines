@@ -12,14 +12,15 @@ type Space struct {
 	Purchase
 }
 
-func NewSpace() *Space {
+func NewSpace(locationId int64) *Space {
 	return &Space{
 		Purchase: Purchase{
-			Created:   time.Now(),
-			Type:      TYPE_SPACE,
-			TimeStart: time.Now(),
-			TimeEnd:   time.Now(),
-			PriceUnit: "hour",
+			LocationId: locationId,
+			Created:    time.Now(),
+			Type:       TYPE_SPACE,
+			TimeStart:  time.Now(),
+			TimeEnd:    time.Now(),
+			PriceUnit:  "hour",
 		},
 	}
 }
@@ -60,6 +61,21 @@ func GetSpace(id int64) (spacePurchase *Space, err error) {
 
 func GetAllSpace() (spacePurchases []*Space, err error) {
 	purchases, err := GetAllOfType(TYPE_SPACE)
+	if err != nil {
+		return
+	}
+	spacePurchases = make([]*Space, 0, len(purchases))
+	for _, purchase := range purchases {
+		spacePurchase := &Space{
+			Purchase: *purchase,
+		}
+		spacePurchases = append(spacePurchases, spacePurchase)
+	}
+	return
+}
+
+func GetAllSpaceAt(locationId int64) (spacePurchases []*Space, err error) {
+	purchases, err := GetAllOfTypeAt(locationId, TYPE_SPACE)
 	if err != nil {
 		return
 	}

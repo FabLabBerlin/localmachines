@@ -1,3 +1,5 @@
+var _ = require('lodash');
+var $ = require('jquery');
 var AvailabilityDisplay = require('../../Reservations/AvailabilityDisplay');
 var FeedbackDialogs = require('../../Feedback/FeedbackDialogs');
 var getters = require('../../../getters');

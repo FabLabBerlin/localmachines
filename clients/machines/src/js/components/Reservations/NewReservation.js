@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var DatePicker = require('./DatePicker');
 var getters = require('../../getters');
 var MachineActions = require('../../actions/MachineActions');

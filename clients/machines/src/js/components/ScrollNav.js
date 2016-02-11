@@ -1,3 +1,4 @@
+var $ = require('jquery');
 var getters = require('../getters');
 var LoginActions = require('../actions/LoginActions');
 var React = require('react');

@@ -1,5 +1,7 @@
 var $ = require('jquery');
 var actionTypes = require('../actionTypes');
+var reactor = require('../reactor');
+
 
 function showGlobalLoader() {
   reactor.dispatch(actionTypes.SET_LOADING);

@@ -1,12 +1,15 @@
 package purchases
 
 import (
+	"errors"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"time"
 )
+
+const TABLE_NAME = "purchases"
 
 const (
 	TYPE_ACTIVATION  = "activation"
@@ -18,10 +21,11 @@ const (
 
 // This is a purchase row that appears in the XLSX file
 type Purchase struct {
-	Id        int64 `orm:"auto";"pk"`
-	Type      string
-	ProductId int64
-	Created   time.Time `orm:"type(datetime)"`
+	Id         int64 `orm:"auto";"pk"`
+	LocationId int64
+	Type       string
+	ProductId  int64
+	Created    time.Time `orm:"type(datetime)"`
 
 	User   models.User `orm:"-" json:"-"`
 	UserId int64
@@ -60,7 +64,7 @@ type Purchase struct {
 }
 
 func (this *Purchase) TableName() string {
-	return "purchases"
+	return TABLE_NAME
 }
 
 func init() {
@@ -68,6 +72,9 @@ func init() {
 }
 
 func Create(p *Purchase) (id int64, err error) {
+	if p.LocationId <= 0 {
+		return 0, errors.New("LocationId must be > 0")
+	}
 	o := orm.NewOrm()
 	id, err = o.Insert(p)
 	if err != nil {
@@ -86,10 +93,20 @@ func Get(purchaseId int64) (purchase *Purchase, err error) {
 
 func GetAllOfType(purchaseType string) (purchases []*Purchase, err error) {
 	o := orm.NewOrm()
-	_, err = o.QueryTable(new(Purchase).TableName()).
+	_, err = o.QueryTable(TABLE_NAME).
 		Filter("type", purchaseType).
 		Exclude("archived", 1).
 		All(&purchases)
+	return
+}
+
+func GetAllOfTypeAt(locationId int64, typ string) (ps []*Purchase, err error) {
+	o := orm.NewOrm()
+	_, err = o.QueryTable(TABLE_NAME).
+		Filter("location_id", locationId).
+		Filter("type", typ).
+		Exclude("archived", 1).
+		All(&ps)
 	return
 }
 

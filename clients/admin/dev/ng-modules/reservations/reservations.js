@@ -11,8 +11,9 @@ app.config(['$routeProvider', function($routeProvider) {
   });
 }]); // app.config
 
-app.controller('ReservationsCtrl', ['$scope', '$http', '$location', '$cookieStore', 'randomToken', 
- function($scope, $http, $location, $cookieStore, randomToken) {
+app.controller('ReservationsCtrl',
+ ['$scope', '$http', '$location', '$cookies', 'randomToken', 'api',
+ function($scope, $http, $location, $cookies, randomToken, api) {
 
   $scope.machines = [];
   $scope.reservationRules = [];
@@ -54,6 +55,7 @@ app.controller('ReservationsCtrl', ['$scope', '$http', '$location', '$cookieStor
       method: 'GET',
       url: '/api/reservation_rules',
       params: {
+        location: $cookies.locationId,
         ac: new Date().getTime()
       }
     })
@@ -74,6 +76,7 @@ app.controller('ReservationsCtrl', ['$scope', '$http', '$location', '$cookieStor
       method: 'GET',
       url: '/api/reservations',
       params: {
+        location: $cookies.locationId,
         ac: new Date().getTime()
       }
     })
@@ -94,15 +97,8 @@ app.controller('ReservationsCtrl', ['$scope', '$http', '$location', '$cookieStor
     });
   }
 
-  $http({
-    method: 'GET',
-    url: '/api/machines',
-    params: {
-      ac: new Date().getTime()
-    }
-  })
-  .success(function(data) {
-    $scope.machines = data;
+  api.loadMachines(function(resp) {
+    $scope.machines = resp.machines;
     _.each($scope.machines, function(machine) {
       if (_.isNumber(machine.ReservationPriceHourly)) {
         machine.ReservationPriceHalfHourly = machine.ReservationPriceHourly / 2;
@@ -111,9 +107,6 @@ app.controller('ReservationsCtrl', ['$scope', '$http', '$location', '$cookieStor
     });
     loadReservationRules();
     loadReservations();
-  })
-  .error(function() {
-    toastr.error('Failed to get machines');
   });
 
 

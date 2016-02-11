@@ -1,3 +1,4 @@
+var $ = require('jquery');
 var actionTypes = require('../actionTypes');
 var getters = require('../getters');
 var reactor = require('../reactor');

@@ -94,4 +94,4 @@ var UserActions = {
 
 };
 
-module.exports = UserActions;
+export default UserActions;

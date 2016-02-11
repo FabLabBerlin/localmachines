@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var getters = require('../../getters');
 var MachineActions = require('../../actions/MachineActions');
 var LocationActions = require('../../actions/LocationActions');

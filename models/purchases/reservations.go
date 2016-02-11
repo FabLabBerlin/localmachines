@@ -23,6 +23,10 @@ func (this *Reservation) UnmarshalJSON(data []byte) error {
 	return json.Unmarshal(data, &this.purchase)
 }
 
+func (this *Reservation) LocationId() int64 {
+	return this.purchase.LocationId
+}
+
 func (this *Reservation) UserId() int64 {
 	return this.purchase.UserId
 }
@@ -41,11 +45,12 @@ func GetReservation(id int64) (reservation *Reservation, err error) {
 	return
 }
 
-func GetAllReservations() (reservations []*Reservation, err error) {
+func GetAllReservationsAt(locationId int64) (reservations []*Reservation, err error) {
 	o := orm.NewOrm()
 	r := new(Reservation)
 	var purchases []*Purchase
 	_, err = o.QueryTable(r.purchase.TableName()).
+		Filter("location_id", locationId).
 		Filter("type", TYPE_RESERVATION).
 		All(&purchases)
 	if err != nil {
@@ -61,7 +66,7 @@ func GetAllReservations() (reservations []*Reservation, err error) {
 	return
 }
 
-func GetAllReservationsBetween(startTime, endTime time.Time) (reservations []*Reservation, err error) {
+/*func GetAllReservationsBetween(startTime, endTime time.Time) (reservations []*Reservation, err error) {
 	allReservations, err := GetAllReservations()
 	if err != nil {
 		return
@@ -73,7 +78,7 @@ func GetAllReservationsBetween(startTime, endTime time.Time) (reservations []*Re
 		}
 	}
 	return
-}
+}*/
 
 func CreateReservation(reservation *Reservation) (int64, error) {
 

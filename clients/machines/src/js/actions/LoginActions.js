@@ -1,5 +1,6 @@
 var $ = require('jquery');
 var actionTypes = require('../actionTypes');
+var Cookies = require('js-cookie');
 var reactor = require('../reactor');
 var toastr = require('../toastr');
 
@@ -20,6 +21,7 @@ export default {
       data: content,
       success(data) {
         reactor.dispatch(actionTypes.SUCCESS_LOGIN, { data });
+        Cookies.set('location', String(data.LocationId));
         router.transitionTo('/machine');
       },
       error(xhr, status, err) {

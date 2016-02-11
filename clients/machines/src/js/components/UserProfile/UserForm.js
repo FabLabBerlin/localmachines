@@ -177,4 +177,4 @@ var UserForm = React.createClass({
   }
 });
 
-module.exports = UserForm;
+export default UserForm;
