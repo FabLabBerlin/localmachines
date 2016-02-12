@@ -151,17 +151,11 @@ func (c *Config) getHwAddr() (hwAddr string, err error) {
 }
 
 func (c *Config) reboot() (err error) {
-	cmd := exec.Command("ssh", "ubnt@"+c.Host(), "cfgmtd -w")
+	cmd := exec.Command("ssh", "ubnt@"+c.Host(), "cfgmtd -w && reboot")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err = cmd.Run(); err != nil {
-		return fmt.Errorf("cfgmtd: %v", err)
-	}
-	cmd = exec.Command("ssh", "ubnt@"+c.Host(), "reboot")
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if err = cmd.Run(); err != nil {
-		return fmt.Errorf("reboot: %v", err)
+		return fmt.Errorf("cfgmtd and reboot: %v", err)
 	}
 	return
 }
