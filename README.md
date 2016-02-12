@@ -1,5 +1,6 @@
-# Localmachines
-Machine activation software for Fab Labs. Build with [BeeGo](http://beego.me) framework for [GoLang](https://golang.org) and [Angular.js](https://angularjs.org).
+# Local Machines
+
+Resource management software for Fab Labs. REST API built with the [BeeGo](http://beego.me) framework. Front end clients currently build with [AngularJS](https://angularjs.org) and [ReactJS](https://facebook.github.io/react/). 
 
 ## Table of contents
 - [Quick-start](#quick-start)
