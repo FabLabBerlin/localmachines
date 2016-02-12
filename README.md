@@ -1,5 +1,6 @@
-# Localmachines
-Machine activation software for Fab Labs. Build with [BeeGo](http://beego.me) framework for [GoLang](https://golang.org) and [Angular.js](https://angularjs.org).
+# Local Machines
+
+Resource management software for Fab Labs. REST API built with the [BeeGo](http://beego.me) framework. Front end clients currently build with [AngularJS](https://angularjs.org) and [ReactJS](https://facebook.github.io/react/). 
 
 ## Table of contents
 - [Quick-start](#quick-start)
@@ -10,7 +11,8 @@ Machine activation software for Fab Labs. Build with [BeeGo](http://beego.me) fr
   - [Clients Development](#clients-development)
 - [API Documentation](#api-documentation)
 
-##Quick-Start
+## Quick-Start
+
 Quickly install Localmachines to get it running on Linux or OS X. For more
  specialized/detailed setups, see [here](#specialized-setups).
 
@@ -72,14 +74,14 @@ Quickly install Localmachines to get it running on Linux or OS X. For more
    ./localmachines
    ```
 
-##Specialized-Setups
+## Specialized-Setups
 
-###OS X Development Setup
+### OS X Development Setup
 
 Detailed instruction on how to install Localmachines on OS X are
 [here](docs/osx).
 
-###Raspberry Pi
+### Raspberry Pi
 
 Instructions on how to install Localmachines on a Raspberry Pi are
 [here](docs/raspi).
@@ -87,6 +89,7 @@ Instructions on how to install Localmachines on a Raspberry Pi are
 ## General structure
 
 ### Versioning
+
 localmachines uses versioning scheme that is loosely following the rules of
 [Semantic Versioning](http://semver.org): [MAJOR].[MINOR].[PATCH]
 
@@ -513,28 +516,20 @@ Whenever you are finished with the client development, remember to run `grunt pr
 
 We use [Automated API Document](http://beego.me/docs/advantage/docs.md) feature of the Beego framework. It makes use of Beego router namespaces and documentation comments in the router and controller files.
 
-To view the documetntation, compile and run with the following command:
+1. Compile the documentation by using the following command
 
-```
-bee run watchall true -downdoc=true -gendoc=true
-```
+  ```
+  bee generate docs
+  ```
 
-It seems that it works also with plain:
+2. Run the server
 
-```
-bee run
-```
+  ```
+  bee run
+  ```
 
-Then access API documentation via: 
+3. Access API documentation via: 
 
-```
-http://localhost:8080/swagger
-```
-
-The port number and host is the same you have set in your `config/app.conf` file.
-
-After you have done some changes to the code, run the following to update API documentation: 
-
-```
-bee generate docs
-```
+  ```
+  http://localhost:8080/swagger/
+  ```
