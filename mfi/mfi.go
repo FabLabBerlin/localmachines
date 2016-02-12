@@ -89,19 +89,20 @@ func (c *Config) generate() (err error) {
 	if _, err = fmt.Scanln(&c.WifiPassword); err != nil {
 		return fmt.Errorf("scan ln: %v", err)
 	}
-	c.SystemCfgFilename, err = c.generateFromFile("templates/system.cfg")
+	c.SystemCfgFilename, err = c.generateFromTemplate(SYSTEM_CFG)
 	if err != nil {
 		return fmt.Errorf("generate from system.cfg: %v", err)
 	}
-	c.WlanOverwriteFilename, err = c.generateFromFile("templates/wlan_overwrite")
+	c.WlanOverwriteFilename, err = c.generateFromTemplate(WLAN_OVERWRITE)
 	if err != nil {
 		return fmt.Errorf("generate from wlan_overwrite: %v", err)
 	}
 	return
 }
 
-func (c *Config) generateFromFile(templateFilename string) (resultFilename string, err error) {
-	t, err := template.ParseFiles(templateFilename)
+func (c *Config) generateFromTemplate(templateText string) (resultFilename string, err error) {
+	t := template.New("cfg")
+	t, err = t.Parse(templateText)
 	if err != nil {
 		return "", fmt.Errorf("parse template: %v", err)
 	}

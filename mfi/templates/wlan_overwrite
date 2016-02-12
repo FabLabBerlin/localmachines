@@ -1,3 +1,0 @@
-essid={{.WifiSSID}}
-security=wpapsk
-wpakey={{.WifiPassword}}

@@ -1,3 +1,6 @@
+package main
+
+const SYSTEM_CFG = `
 aaa.status=disabled
 wpasupplicant.status=enabled
 wireless.status=enabled
@@ -150,3 +153,10 @@ wpasupplicant.profile.1.name=WPA-PSK
 wpasupplicant.profile.1.network.1.key_mgmt.1.name=WPA-PSK
 wpasupplicant.profile.1.network.1.psk={{.WifiPassword}}
 wpasupplicant.profile.1.network.1.eap.1.status=disabled
+`
+
+const WLAN_OVERWRITE = `
+essid={{.WifiSSID}}
+security=wpapsk
+wpakey={{.WifiPassword}}
+`
