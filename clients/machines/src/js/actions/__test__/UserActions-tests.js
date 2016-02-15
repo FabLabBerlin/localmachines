@@ -48,9 +48,9 @@ describe('UserActions', function() {
   });
 
   it('test getMembershipFromServer', function() {
-    UserActions.fetchMemberships(uidTest);
+    UserActions.fetchMemberships(1, uidTest);
     expect($.ajax).toBeCalledWith({
-      url: '/api/users/5/memberships',
+      url: '/api/users/5/memberships?location=1',
       dataType: 'json',
       type: 'GET',
       success: jasmine.any(Function),

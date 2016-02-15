@@ -52,6 +52,7 @@ app.controller('MembershipsCtrl',
       method: 'POST',
       url: '/api/memberships',
       params: {
+        location: $cookies.locationId,
         mname: membershipName,
         ac: new Date().getTime()
       }

@@ -85,17 +85,24 @@ func (this *UserMembershipsController) GetUserMemberships() {
 	if !authorized {
 		this.CustomAbort(400, "Wrong uid in url or not authorized")
 	}
+	locationId, _ := this.GetInt64("location")
 
-	// If the requested user roles is not admin and staff
-	// we need to get machine permissions first and then the machines
-	ums, err := models.GetUserMemberships(uid)
+	all, err := models.GetUserMemberships(uid)
 	if err != nil {
 		beego.Error("Failed to get user machine permissions")
 		this.CustomAbort(403, "Failed to get user machines")
 	}
 
-	// Serve machines
-	this.Data["json"] = ums
+	userMemberships := &models.UserMembershipList{
+		Data: make([]models.UserMembershipCombo, 0, len(all.Data)),
+	}
+	for _, um := range all.Data {
+		if locationId <= 0 || locationId == um.LocationId {
+			userMemberships.Data = append(userMemberships.Data, um)
+		}
+	}
+
+	this.Data["json"] = userMemberships
 	this.ServeJSON()
 }
 

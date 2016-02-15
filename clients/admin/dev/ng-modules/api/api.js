@@ -205,6 +205,7 @@ mod.service('api',
       method: 'GET',
       url: '/api/purchases',
       params: {
+        location: $cookies.locationId,
         ac: new Date().getTime(),
         type: 'tutor'
       }

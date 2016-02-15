@@ -192,6 +192,7 @@ app.controller('TutoringCtrl',
       method: 'POST',
       url: '/api/purchases',
       params: {
+        location: $cookies.locationId,
         ac: new Date().getTime(),
         type: 'tutor'
       }

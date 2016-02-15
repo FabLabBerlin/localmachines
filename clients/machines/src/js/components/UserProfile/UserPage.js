@@ -33,11 +33,12 @@ var UserPage = React.createClass({
 
   componentDidMount() {
     this.nfcOnDidMount();
+    const locationId = reactor.evaluateToJS(getters.getLocation).Id;
     const uid = reactor.evaluateToJS(getters.getUid);
     MachineActions.apiGetUserMachines(uid);
     UserActions.fetchUser(uid);
-    UserActions.fetchBill(reactor.evaluateToJS(getters.getLocation).Id, uid);
-    UserActions.fetchMemberships(uid);
+    UserActions.fetchBill(locationId, uid);
+    UserActions.fetchMemberships(locationId, uid);
   },
 
   componentWillUnmount() {

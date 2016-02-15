@@ -105,6 +105,7 @@ app.controller('CoworkingCtrl',
       method: 'GET',
       url: '/api/purchases',
       params: {
+        location: $cookies.locationId,
         ac: new Date().getTime(),
         type: 'co-working'
       }
@@ -124,6 +125,7 @@ app.controller('CoworkingCtrl',
       method: 'POST',
       url: '/api/purchases',
       params: {
+        location: $cookies.locationId,
         ac: new Date().getTime(),
         type: 'co-working'
       }

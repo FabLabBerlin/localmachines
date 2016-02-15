@@ -11,8 +11,8 @@ app.config(['$routeProvider', function($routeProvider) {
 }]); // app.config
 
 app.controller('ReservationCtrl',
- ['$scope', '$routeParams', '$http', '$location', 'randomToken',
- function($scope, $routeParams, $http, $location, randomToken) {
+ ['$scope', '$routeParams', '$http', '$location', 'randomToken', 'api',
+ function($scope, $routeParams, $http, $location, randomToken, api) {
 
   $scope.reservation = {
     Id: $routeParams.reservationId
@@ -24,24 +24,14 @@ app.controller('ReservationCtrl',
   $scope.usersById = {};
 
   function loadMachines() {
-    $http({
-      method: 'GET',
-      url: '/api/machines',
-      params: {
-        ac: new Date().getTime()
-      }
-    })
-    .success(function(data) {
-      $scope.machines = _.sortBy(data, function(machine) {
+    api.loadMachines(function(resp) {
+      $scope.machines = _.sortBy(resp.machines, function(machine) {
         return machine.Name;
       });
       _.each($scope.machines, function(machine) {
         $scope.machinesById[machine.Id] = machine;
       });
       loadReservation($scope.reservation.Id);
-    })
-    .error(function() {
-      toastr.error('Failed to get machines');
     });
   }
 

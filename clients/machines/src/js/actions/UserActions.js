@@ -42,7 +42,6 @@ var UserActions = {
   },
 
   fetchBill(locationId, uid) {
-    console.log('fetchBill(locationId=', locationId, ',uid=', uid, ')');
     $.ajax({
       url: '/api/users/' + uid + '/bill?location=' + locationId,
       dataType: 'json',
@@ -57,9 +56,9 @@ var UserActions = {
     });
   },
 
-  fetchMemberships(uid) {
+  fetchMemberships(locationId, uid) {
     $.ajax({
-      url: '/api/users/' + uid + '/memberships',
+      url: '/api/users/' + uid + '/memberships?location=' + locationId,
       dataType: 'json',
       type: 'GET',
       success(memberships) {
