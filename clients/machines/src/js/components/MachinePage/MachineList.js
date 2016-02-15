@@ -23,6 +23,7 @@ var MachineList = React.createClass({
       var machines = _.filter(this.props.machines, function(machine) {
         return machine.Visible;
       });
+      console.log('this.state.location.Id:', this.state.location.Id);
       MachineNode = _.map(machines, function(machine) {
         if (machine.LocationId === this.state.location.Id) {
           let activationProps = false;

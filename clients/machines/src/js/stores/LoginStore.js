@@ -44,6 +44,7 @@ var LoginStore = new Nuclear.Store({
  */
 function successLogin(state, { data }) {
   if (data.UserId) {
+    console.log('successLogin: data:', data);
     return putLoginState(state.set('uid', data.UserId)
                               .set('locationId', data.LocationId));
   } else {

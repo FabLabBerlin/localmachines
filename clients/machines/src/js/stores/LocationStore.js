@@ -1,11 +1,12 @@
 var actionTypes = require('../actionTypes');
+var Cookies = require('js-cookie');
 var Nuclear = require('nuclear-js');
 var toImmutable = Nuclear.toImmutable;
 
 
 const initialState = toImmutable({
   locations: [],
-  locationId: 1
+  locationId: parseInt(Cookies.get('location'))
 });
 
 var LocationStore = new Nuclear.Store({

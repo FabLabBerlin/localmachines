@@ -40,7 +40,7 @@ var MachinePage = React.createClass({
       machines: getters.getMachines,
       activations: getters.getActivations,
       locations: getters.getLocations,
-      sessionLocationId: getters.getSessionLocationId
+      location: getters.getLocation
     };
   },
 
@@ -104,16 +104,14 @@ var MachinePage = React.createClass({
     machines = _.sortBy(machines, (m) => {
       return m.Name;
     });
-    var locations = reactor.evaluateToJS(getters.getLocations);
-    var sessionLocationId = reactor.evaluateToJS(getters.getSessionLocationId);
-    var sessionLocation = _.find(locations, {'Id': sessionLocationId});
+    var locationTitle = this.state.location.Title;
     if (this.state.activations) {
       return (
         <div>
           <div className="logged-user-name">
             <div className="text-center ng-binding">
               <i className="fa fa-user-secret"></i>&nbsp;
-              {this.state.user.get('FirstName')} {this.state.user.get('LastName')} at the {sessionLocation.Title}
+              {this.state.user.get('FirstName')} {this.state.user.get('LastName')} at the {locationTitle}
             </div>
           </div>
           <TutoringList />
