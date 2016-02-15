@@ -6,7 +6,6 @@ var LoginStore = require('../../stores/LoginStore');
 var LocationStore = require('../../stores/LocationStore');
 
 var LoginActions = require('../../actions/LoginActions');
-var LocationActions = require('../../actions/LocationActions');
 
 var {Navigation} = require('react-router');
 
@@ -32,10 +31,6 @@ var Login = React.createClass({
     return {
       locations: getters.getLocations
     };
-  },
-
-  componentWillMount() {
-    LocationActions.loadLocations();
   },
 
   goToSignUp(event) {

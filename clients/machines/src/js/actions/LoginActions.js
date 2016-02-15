@@ -73,6 +73,7 @@ export default {
       },
       success(data) {
         reactor.dispatch(actionTypes.SUCCESS_LOGIN, { data });
+        LocationActions.setLocationId(1);
         router.transitionTo('/machine');
       },
       error(xhr, status, err) {

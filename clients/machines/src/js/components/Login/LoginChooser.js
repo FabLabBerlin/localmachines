@@ -1,3 +1,4 @@
+var LocationActions = require('../../actions/LocationActions');
 var Login = require('./Login');
 var LoginNfc = require('./LoginNfc');
 var React = require('react');
@@ -9,6 +10,10 @@ var React = require('react');
  * depending of the presence of window.libnfc
  */
 var LoginChooser = React.createClass({
+  componentWillMount() {
+    LocationActions.loadLocations();
+  },
+
   render() {
     return (
       <div className="login">
