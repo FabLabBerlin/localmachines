@@ -74,7 +74,8 @@ func (this *UserMembershipsController) PostUserMemberships() {
 
 // @Title GetUserMemberships
 // @Description Get user memberships
-// @Param	uid		path 	int	true		"User ID"
+// @Param	uid			path 	int	true		"User ID"
+// @Param	location	query	int	false		"Location ID"
 // @Success 200 {object} models.UserMembershipList
 // @Failure	403	Failed to get user memberships
 // @Failure	401	Not authorized

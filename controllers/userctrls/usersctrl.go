@@ -351,6 +351,7 @@ func (this *UsersController) Put() {
 // @Title GetUserMachines
 // @Description Get user machines, all machines for admin user
 // @Param	uid		path 	int	true		"User ID"
+// @Param	location	query	int	false		"Location ID"
 // @Success 200 {object} models.Machine
 // @Failure	500	Internal Server Error
 // @Failure	401	Unauthorized
@@ -360,6 +361,7 @@ func (this *UsersController) GetUserMachines() {
 	if !authorized {
 		this.CustomAbort(401, "Wrong uid in url or not authorized")
 	}
+	locationId, _ := this.GetInt64("location")
 
 	// List all machines if the requested user is admin
 	allMachines, err := models.GetAllMachines()
@@ -388,8 +390,15 @@ func (this *UsersController) GetUserMachines() {
 		machines = allMachines
 	}
 
+	filteredByLocation := make([]*models.Machine, 0, len(machines))
+	for _, m := range machines {
+		if locationId <= 0 || locationId == m.LocationId {
+			filteredByLocation = append(filteredByLocation, m)
+		}
+	}
+
 	// Serve machines
-	this.Data["json"] = machines
+	this.Data["json"] = filteredByLocation
 	this.ServeJSON()
 }
 

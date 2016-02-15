@@ -17,7 +17,13 @@ type ReservationRulesController struct {
 // @Failure	401 Not authorized
 // @router / [get]
 func (this *ReservationRulesController) GetAll() {
-	ReservationRules, err := models.GetAllReservationRules()
+	locId, authorized := this.GetLocIdMember()
+	if !authorized {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	ReservationRules, err := models.GetAllReservationRulesAt(locId)
 	if err != nil {
 		beego.Error("Failed to get all ReservationRules:", err)
 		this.CustomAbort(403, "Failed to get all ReservationRules")
@@ -58,6 +64,12 @@ func (this *ReservationRulesController) Get() {
 // @Failure	401	Not authorized
 // @router / [post]
 func (this *ReservationRulesController) Create() {
+	locId, authorized := this.GetLocIdAdmin()
+	if !authorized {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
 	dec := json.NewDecoder(this.Ctx.Request.Body)
 	req := models.ReservationRule{}
 	if err := dec.Decode(&req); err != nil {
@@ -65,6 +77,7 @@ func (this *ReservationRulesController) Create() {
 		this.CustomAbort(403, "Failed to create ReservationRule")
 	}
 	beego.Info("create ReservationRule:", req)
+	req.LocationId = locId
 
 	id, err := models.CreateReservationRule(&req)
 	if err != nil {

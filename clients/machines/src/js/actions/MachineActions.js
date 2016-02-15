@@ -87,8 +87,9 @@ var MachineActions = {
    * Use GET call to get the machines the user can use
    * callback are defined below
    */
-  apiGetUserMachines(uid) {
-    ApiActions.getCall('/api/users/' + uid + '/machines', (machines) => {
+  apiGetUserMachines(locationId, uid) {
+    var url = '/api/users/' + uid + '/machines?location=' + locationId;
+    ApiActions.getCall(url, (machines) => {
       reactor.dispatch(actionTypes.SET_MACHINES, { machines });
     });
   },

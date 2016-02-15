@@ -3,8 +3,9 @@ var ApiActions = require('./ApiActions');
 var reactor = require('../reactor');
 
 var ReservationRulesActions = {
-  load() {
-    ApiActions.getCall('/api/reservation_rules', function(reservationRules) {
+  load(locationId) {
+    var url = '/api/reservation_rules?location=' + locationId;
+    ApiActions.getCall(url, function(reservationRules) {
       reactor.dispatch(actionTypes.SET_RESERVATION_RULES, reservationRules);
     });
   }

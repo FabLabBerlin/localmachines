@@ -94,10 +94,11 @@ var ReservationsTable = React.createClass({
   mixins: [ reactor.ReactMixin ],
 
   componentWillMount() {
+    const locationId = reactor.evaluateToJS(getters.getLocation).Id;
     const uid = reactor.evaluateToJS(getters.getUid);
-    MachineActions.apiGetUserMachines(uid);
+    MachineActions.apiGetUserMachines(locationId, uid);
     ReservationsActions.load();
-    ReservationRulesActions.load();
+    ReservationRulesActions.load(locationId);
   },
 
   getDataBindings() {

@@ -49,11 +49,12 @@ var MachinePage = React.createClass({
    * before the component is mounted
    */
   componentWillMount() {
+    const locationId = reactor.evaluateToJS(getters.getLocation).Id;
     const uid = reactor.evaluateToJS(getters.getUid);
     UserActions.fetchUser(uid);
-    MachineActions.apiGetUserMachines(uid);
+    MachineActions.apiGetUserMachines(locationId, uid);
     ReservationsActions.load();
-    ReservationRulesActions.load();
+    ReservationRulesActions.load(locationId);
   },
 
   /*

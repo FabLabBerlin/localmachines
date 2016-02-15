@@ -18,6 +18,7 @@ func init() {
  */
 type ReservationRule struct {
 	Id          int64 `orm:"auto";"pk"`
+	LocationId  int64
 	Name        string
 	MachineId   int64
 	Available   bool
@@ -46,10 +47,12 @@ func GetReservationRule(id int64) (reservationRule *ReservationRule, err error) 
 	return
 }
 
-func GetAllReservationRules() (reservationRules []ReservationRule, err error) {
+func GetAllReservationRulesAt(locId int64) (rules []ReservationRule, err error) {
 	o := orm.NewOrm()
 	r := new(ReservationRule)
-	_, err = o.QueryTable(r.TableName()).All(&reservationRules)
+	_, err = o.QueryTable(r.TableName()).
+		Filter("location_id", locId).
+		All(&rules)
 	return
 }
 

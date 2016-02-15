@@ -158,7 +158,7 @@ app.controller('ReservationsCtrl',
   $scope.addReservationRule = function() {
     $http({
       method: 'POST',
-      url: '/api/reservation_rules',
+      url: '/api/reservation_rules?location=' + $cookies.locationId,
       headers: {'Content-Type': 'application/json' },
       data: {
         MachineId: parseInt($('select').val()),
