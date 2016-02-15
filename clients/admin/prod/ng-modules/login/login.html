@@ -11,7 +11,10 @@
       name="location"
       class="form-control location-picker"
       required>
-      <option ng-repeat="location in locations">{{location.Title}}</option>
+      <option ng-repeat="location in locations"
+              value="{{location.Id}}">
+        {{location.Title}}
+      </option>
     </select>
     <!-- Don't show the Remember me checkbox while it is not working -->
     <!--
