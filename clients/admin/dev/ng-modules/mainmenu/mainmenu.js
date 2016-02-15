@@ -8,7 +8,7 @@ app.directive('mainMenu', function() {
   return {
     templateUrl: 'ng-modules/mainmenu/mainmenu.html',
     restrict: 'E',
-    controller: function($rootScope, $scope, $element, $cookieStore) {
+    controller: ['$rootScope', '$scope', '$element', '$cookieStore', function($rootScope, $scope, $element, $cookieStore) {
       $scope.data = $rootScope.mainMenu;
 
       var links = $($element).find('a');
@@ -21,7 +21,7 @@ app.directive('mainMenu', function() {
           $($element).find('.navbar-collapse').collapse('hide');
         }
       });
-    },
+    }],
     link: function($rootScope, $scope, $element, $attrs) {
       console.log('main menu attrs: ', $attrs);
     }
