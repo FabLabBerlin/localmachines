@@ -34,13 +34,6 @@ const getUid = [
   }
 ];
 
-const getSessionLocationId = [
-  ['loginStore'],
-  (loginStore) => {
-    return loginStore.get('locationId');
-  }
-];
-
 const getFirstTry = [
   ['loginStore'],
   (loginStore) => {
@@ -177,7 +170,6 @@ const getMonthlyBills = [
         var timeEnd = moment(purchase.TimeEnd);
 
         var duration = purchase.Quantity;
-        console.log('purchase:', purchase);
         switch (purchase.PriceUnit) {
         case 'month':
           duration *= 60 * 60 * 24 * 30;
@@ -680,7 +672,7 @@ const getTutorings = [
 ];
 
 export default {
-  getIsLogged, getUid, getSessionLocationId, getFirstTry, getLoginSuccess, getLastActivity,
+  getIsLogged, getUid, getFirstTry, getLoginSuccess, getLastActivity,
   getUser, getIsAdmin,
   getActivations, getLocation, getLocations, getMachines, getMachinesById, getMachineUsers, getIsLoading, getBill, getBillMonths, getMonthlyBills, getMemberships, getMembershipsByMonth,
   getFeedbackSubject, getFeedbackSubjectDropdown, getFeedbackSubjectOtherText, getFeedbackMessage,

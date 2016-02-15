@@ -10,7 +10,6 @@ const initialState = toImmutable({
   isLogged: false,
   loginSuccess: true,
   uid: {},
-  locationId: {},
   lastActivity: new Date()
 });
 
@@ -45,8 +44,7 @@ var LoginStore = new Nuclear.Store({
 function successLogin(state, { data }) {
   if (data.UserId) {
     console.log('successLogin: data:', data);
-    return putLoginState(state.set('uid', data.UserId)
-                              .set('locationId', data.LocationId));
+    return putLoginState(state.set('uid', data.UserId));
   } else {
     toastr.error('Failed to log in');
     return putLoginState(state, false);
@@ -63,24 +61,6 @@ function errorLogin(state) {
   } else {
     return state.set('loginSuccess', false);
   }
-}
-
-/*
- * Return the uid of the user
- */
-function getUid() {
-  return this.state.uid;
-}
-
-function getIsLogged() {
-  return this.state.isLogged;
-}
-
-/*
- * Return the location ID that was used while logging in
- */
-function getLocationId() {
-  return this.state.locationId;
 }
 
 /*
