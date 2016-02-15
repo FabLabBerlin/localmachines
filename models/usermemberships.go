@@ -99,10 +99,24 @@ func CreateUserMembership(
 	return
 }
 
-func GetAllUserMemberships() (userMemberships []*UserMembership, err error) {
+func GetAllUserMembershipsAt(locationId int64) (userMemberships []*UserMembership, err error) {
 	o := orm.NewOrm()
+	m := new(Membership)
 	um := new(UserMembership)
-	_, err = o.QueryTable(um.TableName()).All(&userMemberships)
+
+	qb, err := orm.NewQueryBuilder("mysql")
+	if err != nil {
+		return nil, fmt.Errorf("new query builder: %v", err)
+	}
+
+	qb.Select(um.TableName() + ".*").
+		From(um.TableName()).
+		InnerJoin(m.TableName()).
+		On("membership.id = membership_id").
+		Where("location_id = ?")
+
+	_, err = o.Raw(qb.String(), locationId).
+		QueryRows(&userMemberships)
 	return
 }
 

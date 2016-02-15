@@ -25,13 +25,13 @@ type Controller struct {
 // @Failure	401	Not authorized
 // @router / [get]
 func (c *Controller) GetAll() {
-	// Only admin can use this API call
-	if !c.IsAdmin() {
-		beego.Error("Not authorized")
+	// Only local admin can use this API call
+	locId, authorized := c.GetLocIdAdmin()
+	if !authorized {
 		c.CustomAbort(401, "Not authorized")
 	}
 
-	data, err := metrics.FetchData()
+	data, err := metrics.FetchData(locId)
 	if err != nil {
 		beego.Error("Failed to get metrics data:", err)
 		c.CustomAbort(500, "Failed to get metrics data")
@@ -54,14 +54,15 @@ func (c *Controller) GetAll() {
 // @Failure	401	Not authorized
 // @router /activations [get]
 func (c *Controller) GetActivations() {
-	if !c.IsAdmin() {
+	locId, authorized := c.GetLocIdAdmin()
+	if !authorized {
 		c.CustomAbort(401, "Not authorized")
 	}
 
 	endTime := time.Now()
 	startTime := time.Date(2015, time.August, 1, 0, 0, 0, 0, time.UTC)
 
-	invoice, err := invoices.CalculateSummary(startTime, endTime)
+	invoice, err := invoices.CalculateSummary(locId, startTime, endTime)
 	if err != nil {
 		c.CustomAbort(500, err.Error())
 	}

@@ -393,7 +393,7 @@ func TestUsersAPI(t *testing.T) {
 			err := jsonDecoder.Decode(&user)
 
 			// Create base membership
-			mr, _ := http.NewRequest("POST", "/api/memberships/?mname=MyMembership", nil)
+			mr, _ := http.NewRequest("POST", "/api/memberships/?mname=MyMembership&location=1", nil)
 			mr.AddCookie(adminCookie)
 			mw := httptest.NewRecorder()
 			beego.BeeApp.Handlers.ServeHTTP(mw, mr)

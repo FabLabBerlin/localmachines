@@ -48,7 +48,7 @@ func TestMemberships(t *testing.T) {
 			membershipName := "Membership X"
 
 			Convey("When creating a single membership", func() {
-				membershipId, err := models.CreateMembership(membershipName)
+				membershipId, err := models.CreateMembership(1, membershipName)
 				if err != nil {
 					panic(err.Error())
 				}
@@ -101,7 +101,7 @@ func TestMemberships(t *testing.T) {
 			membershipName := "The Membership"
 
 			Convey("Getting all memberships with empty database", func() {
-				memberships, err := models.GetAllMemberships()
+				memberships, err := models.GetAllMembershipsAt(1)
 
 				Convey("Should return no error", func() {
 					So(err, ShouldBeNil)
@@ -113,9 +113,9 @@ func TestMemberships(t *testing.T) {
 			})
 
 			Convey("Getting existing memberships", func() {
-				models.CreateMembership(membershipName)
-				models.CreateMembership(membershipName)
-				memberships, err := models.GetAllMemberships()
+				models.CreateMembership(1, membershipName)
+				models.CreateMembership(1, membershipName)
+				memberships, err := models.GetAllMembershipsAt(1)
 
 				Convey("Shoud return no error", func() {
 					So(err, ShouldBeNil)
@@ -139,7 +139,7 @@ func TestMemberships(t *testing.T) {
 			})
 
 			Convey("Creating a membership and getting it", func() {
-				mid, _ := models.CreateMembership(membershipName)
+				mid, _ := models.CreateMembership(1, membershipName)
 				membership, err := models.GetMembership(mid)
 
 				Convey("There should be no error", func() {
@@ -168,7 +168,7 @@ func TestMemberships(t *testing.T) {
 			})
 
 			Convey("Create membership and update it", func() {
-				mid, _ := models.CreateMembership(membershipName)
+				mid, _ := models.CreateMembership(1, membershipName)
 				m, _ := models.GetMembership(mid)
 				m.Title = newMembershipName
 				err := m.Update()
@@ -196,7 +196,7 @@ func TestMemberships(t *testing.T) {
 			})
 
 			Convey("Creating a membership and delete it", func() {
-				mid, _ := models.CreateMembership(membershipName)
+				mid, _ := models.CreateMembership(1, membershipName)
 				err := models.DeleteMembership(mid)
 
 				Convey("There should be no error", func() {

@@ -11,8 +11,9 @@ app.config(['$routeProvider', function($routeProvider) {
   });
 }]); // app.config
 
-app.controller('DashboardCtrl', ['$scope', '$http', '$location', 
- function($scope, $http, $location) {
+app.controller('DashboardCtrl',
+ ['$scope', '$http', '$location', '$cookies',
+ function($scope, $http, $location, $cookies) {
 
   $scope.metrics = [];
 
@@ -21,6 +22,7 @@ app.controller('DashboardCtrl', ['$scope', '$http', '$location',
       method: 'GET',
       url: '/api/metrics',
       params: {
+        location: $cookies.locationId,
         ac: new Date().getTime()
       }
     })

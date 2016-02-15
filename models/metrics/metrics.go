@@ -63,16 +63,16 @@ type Data struct {
 	membershipsById map[int64]*models.Membership
 }
 
-func FetchData() (data Data, err error) {
+func FetchData(locationId int64) (data Data, err error) {
 	endTime := time.Now()
 	startTime := time.Date(2015, time.August, 1, 0, 0, 0, 0, time.UTC)
 
-	data.invoice, err = invoices.CalculateSummary(startTime, endTime)
+	data.invoice, err = invoices.CalculateSummary(locationId, startTime, endTime)
 	if err != nil {
 		return data, fmt.Errorf("Failed to get invoice summary: %v", err)
 	}
 
-	memberships, err := models.GetAllMemberships()
+	memberships, err := models.GetAllMembershipsAt(locationId)
 	if err != nil {
 		return data, fmt.Errorf("Failed to get memberships: %v", err)
 	}
@@ -81,7 +81,7 @@ func FetchData() (data Data, err error) {
 		data.membershipsById[membership.Id] = membership
 	}
 
-	data.userMemberships, err = models.GetAllUserMemberships()
+	data.userMemberships, err = models.GetAllUserMembershipsAt(locationId)
 	if err != nil {
 		return data, fmt.Errorf("Failed to get user memberships: %v", err)
 	}

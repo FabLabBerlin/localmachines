@@ -36,7 +36,7 @@ var UserPage = React.createClass({
     const uid = reactor.evaluateToJS(getters.getUid);
     MachineActions.apiGetUserMachines(uid);
     UserActions.fetchUser(uid);
-    UserActions.fetchBill(uid);
+    UserActions.fetchBill(reactor.evaluateToJS(getters.getLocation).Id, uid);
     UserActions.fetchMemberships(uid);
   },
 

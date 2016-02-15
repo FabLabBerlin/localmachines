@@ -70,11 +70,11 @@ func exists(path string) (bool, error) {
 }
 
 // Creates invoice entry in the database
-func Create(startTime, endTime time.Time) (*Invoice, error) {
+func Create(locationId int64, startTime, endTime time.Time) (*Invoice, error) {
 
 	var err error
 
-	invoice, err := CalculateSummary(startTime, endTime)
+	invoice, err := CalculateSummary(locationId, startTime, endTime)
 	if err != nil {
 		return nil, fmt.Errorf("CalculateInvoiceSummary: %v", err)
 	}
@@ -135,9 +135,9 @@ func Get(invoiceId int64) (invoice *Invoice, err error) {
 }
 
 // Returns Invoice and InvoiceSummary objects, error otherwise
-func CalculateSummary(startTime, endTime time.Time) (invoice Invoice, err error) {
+func CalculateSummary(locationId int64, startTime, endTime time.Time) (invoice Invoice, err error) {
 	// Enhance activations with user and membership data
-	ps, err := invoice.getPurchases(startTime, endTime)
+	ps, err := invoice.getPurchases(locationId, startTime, endTime)
 	if err != nil {
 		err = fmt.Errorf("Failed to get enhanced activations: %v", err)
 		return
@@ -211,7 +211,7 @@ func Delete(invoiceId int64) error {
 }
 
 // Gets purchases that have happened between start and end dates
-func getPurchases(startTime,
+func getPurchases(locationId int64, startTime,
 	endTime time.Time) (ps []*purchases.Purchase, err error) {
 
 	p := purchases.Purchase{}
@@ -220,13 +220,14 @@ func getPurchases(startTime,
 
 	query := fmt.Sprintf("SELECT p.* FROM %s p JOIN %s u ON p.user_id=u.id "+
 		"WHERE p.time_start > ? AND p.time_end < ? "+
-		"AND (p.running IS NULL OR p.running = 0)",
+		"AND (p.running IS NULL OR p.running = 0) AND location_id = ?",
 		p.TableName(),
 		usr.TableName())
 
 	_, err = o.Raw(query,
 		startTime.Format("2006-01-02 15:04:05"),
-		endTime.Format("2006-01-02 15:04:05")).QueryRows(&ps)
+		endTime.Format("2006-01-02 15:04:05"),
+		locationId).QueryRows(&ps)
 
 	return
 }
@@ -247,7 +248,7 @@ func (this *Invoice) getFileName(startTime, endTime time.Time) string {
 		string(b))
 }
 
-func (this *Invoice) getPurchases(startTime, endTime time.Time) (ps []*purchases.Purchase, err error) {
+func (this *Invoice) getPurchases(locationId int64, startTime, endTime time.Time) (ps []*purchases.Purchase, err error) {
 	machines, err := models.GetAllMachines()
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get machines: %v", err)
@@ -266,7 +267,7 @@ func (this *Invoice) getPurchases(startTime, endTime time.Time) (ps []*purchases
 		usersById[user.Id] = *user
 	}
 
-	userMemberships, err := models.GetAllUserMemberships()
+	userMemberships, err := models.GetAllUserMembershipsAt(locationId)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get user memberships: %v", err)
 	}
@@ -282,7 +283,7 @@ func (this *Invoice) getPurchases(startTime, endTime time.Time) (ps []*purchases
 		}
 	}
 
-	memberships, err := models.GetAllMemberships()
+	memberships, err := models.GetAllMembershipsAt(locationId)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get memberships: %v", err)
 	}
@@ -292,7 +293,7 @@ func (this *Invoice) getPurchases(startTime, endTime time.Time) (ps []*purchases
 	}
 
 	// Get all uninvoiced purchases in the time range
-	ps, err = getPurchases(startTime, endTime)
+	ps, err = getPurchases(locationId, startTime, endTime)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get purchases: %v", err)
 	}

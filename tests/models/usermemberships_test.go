@@ -26,19 +26,27 @@ func TestUserMemberships(t *testing.T) {
 			machineIdOne, _ := models.CreateMachine("Machine One")
 			machineIdTwo, _ := models.CreateMachine("Machine Two")
 
-			baseMembership := &models.Membership{}
+			baseMembership := &models.Membership{
+				LocationId: 1,
+			}
 			baseMembership.Title = "Test Membership"
 
-			baseMembershipId, _ := models.CreateMembership(baseMembership.Title)
+			baseMembershipId, err := models.CreateMembership(1, baseMembership.Title)
+			if err != nil {
+				panic(err.Error())
+			}
 			baseMembership.Id = baseMembershipId
 			baseMembership.DurationMonths = 1
 			baseMembership.MachinePriceDeduction = 50
 			baseMembership.AutoExtend = true
 			baseMembership.AutoExtendDurationMonths = 30
 			baseMembership.AffectedMachines = fmt.Sprintf("[%v,%v]", machineIdOne, machineIdTwo)
-
-			baseMembership.Update()
-			baseMembership, _ = models.GetMembership(baseMembershipId)
+			if err := baseMembership.Update(); err != nil {
+				panic(err.Error())
+			}
+			if baseMembership, err = models.GetMembership(baseMembershipId); err != nil {
+				panic(err.Error())
+			}
 
 			// Create a user
 			user := models.User{}
@@ -127,7 +135,7 @@ func TestUserMemberships(t *testing.T) {
 					invoiceStartTime := time.Date(2015, 1, 1, 0, 0, 0, 0, time.UTC)
 					invoiceEndTime := time.Date(2015, 12, 30, 0, 0, 0, 0, time.UTC)
 					invoice, err = invoices.CalculateSummary(
-						invoiceStartTime, invoiceEndTime)
+						1, invoiceStartTime, invoiceEndTime)
 					if err != nil {
 						panic(err.Error())
 					}
@@ -167,7 +175,7 @@ func TestUserMemberships(t *testing.T) {
 		Convey("Testing DeleteUserMembership", func() {
 			baseMembership := models.Membership{}
 			baseMembership.Title = "Test Membership"
-			baseMembershipId, _ := models.CreateMembership(baseMembership.Title)
+			baseMembershipId, _ := models.CreateMembership(1, baseMembership.Title)
 			baseMembership.Id = baseMembershipId
 
 			Convey("When deleting non-existent user membership", func() {
@@ -196,7 +204,7 @@ func TestUserMemberships(t *testing.T) {
 		Convey("When automatically extending user membership", func() {
 
 			// Create empty base membership
-			baseMembershipId, err := models.CreateMembership("Test Membership")
+			baseMembershipId, err := models.CreateMembership(1, "Test Membership")
 			So(baseMembershipId, ShouldBeGreaterThan, 0)
 			So(err, ShouldBeNil)
 

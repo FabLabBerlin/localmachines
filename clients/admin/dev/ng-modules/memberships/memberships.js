@@ -11,14 +11,16 @@ app.config(['$routeProvider', function($routeProvider) {
   });
 }]); // app.config
 
-app.controller('MembershipsCtrl', ['$scope', '$http', '$location', 
- function($scope, $http, $location) {
+app.controller('MembershipsCtrl',
+ ['$scope', '$http', '$location', '$cookies',
+ function($scope, $http, $location, $cookies) {
 
   // Load all memberships
   $http({
     method: 'GET',
     url: '/api/memberships',
     params: {
+      location: $cookies.locationId,
       ac: new Date().getTime()
     }
   })

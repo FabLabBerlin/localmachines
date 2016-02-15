@@ -41,9 +41,10 @@ var UserActions = {
     reactor.dispatch(actionTypes.SET_USER_PROPERTY, { key, value });
   },
 
-  fetchBill(uid) {
+  fetchBill(locationId, uid) {
+    console.log('fetchBill(locationId=', locationId, ',uid=', uid, ')');
     $.ajax({
-      url: '/api/users/' + uid + '/bill',
+      url: '/api/users/' + uid + '/bill?location=' + locationId,
       dataType: 'json',
       type: 'GET',
       success(data) {

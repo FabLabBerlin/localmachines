@@ -37,9 +37,9 @@ describe('UserActions', function() {
   });
 
   it('test fetchBill', function() {
-    UserActions.fetchBill(uidTest);
+    UserActions.fetchBill(1, uidTest);
     expect($.ajax).toBeCalledWith({
-      url: '/api/users/5/bill',
+      url: '/api/users/5/bill?location=1',
       dataType: 'json',
       type: 'GET',
       success: jasmine.any(Function),

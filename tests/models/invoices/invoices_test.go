@@ -133,7 +133,7 @@ func TestInvoiceActivation(t *testing.T) {
 		endTime := time.Now()
 		startTime := endTime.AddDate(0, -1, 0)
 
-		invoice, err := invoices.Create(startTime, endTime)
+		invoice, err := invoices.Create(1, startTime, endTime)
 
 		Convey("It should not cause any error", func() {
 			So(err, ShouldBeNil)

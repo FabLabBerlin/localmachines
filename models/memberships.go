@@ -14,7 +14,8 @@ import (
 // about a mase membership and is mapper to a table in
 // the database.
 type Membership struct {
-	Id                       int64  `orm:"auto";"pk"`
+	Id                       int64 `orm:"auto";"pk"`
+	LocationId               int64
 	Title                    string `orm:"size(100)"`
 	ShortName                string `orm:"size(100)"`
 	DurationMonths           int64
@@ -69,29 +70,27 @@ func init() {
 }
 
 // Gets all base memberships from database.
-func GetAllMemberships() (memberships []*Membership, err error) {
+func GetAllMembershipsAt(locationId int64) (memberships []*Membership, err error) {
 	m := Membership{} // Used only for the TableName() method
 	o := orm.NewOrm()
-	_, err = o.QueryTable(m.TableName()).All(&memberships)
+	_, err = o.QueryTable(m.TableName()).
+		Filter("location_id", locationId).
+		All(&memberships)
 	return
 }
 
 // Creates a new membership in the database with the given name.
-func CreateMembership(membershipName string) (int64, error) {
+func CreateMembership(locationId int64, membershipName string) (int64, error) {
 	o := orm.NewOrm()
-	membership := Membership{}
-	membership.Title = membershipName
-	membership.AutoExtend = true
-	membership.DurationMonths = 1
-	membership.AutoExtendDurationMonths = 1
-
-	id, err := o.Insert(&membership)
-	beego.Trace("Created membershipId:", id)
-	if err == nil {
-		return id, nil
-	} else {
-		return 0, fmt.Errorf("Failed to create membership: %v", err)
+	membership := Membership{
+		LocationId:               locationId,
+		Title:                    membershipName,
+		AutoExtend:               true,
+		DurationMonths:           1,
+		AutoExtendDurationMonths: 1,
 	}
+
+	return o.Insert(&membership)
 }
 
 // Gets single membership from database using membership unique ID

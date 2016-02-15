@@ -73,9 +73,9 @@ func (this *InvoicesController) Delete() {
 // @router / [post]
 func (this *InvoicesController) Create() {
 
-	// Only admin can use this API call
-	if !this.IsAdmin() {
-		beego.Error("Not authorized")
+	// Only local admin can use this API call
+	locId, authorized := this.GetLocIdAdmin()
+	if !authorized {
 		this.CustomAbort(401, "Not authorized")
 	}
 
@@ -113,7 +113,7 @@ func (this *InvoicesController) Create() {
 		this.CustomAbort(403, "Failed to create invoice")
 	}
 
-	invoice, err := invoices.Create(startTime, endTime)
+	invoice, err := invoices.Create(locId, startTime, endTime)
 	if err != nil {
 		beego.Error("Failed to create invoice:", err)
 		this.CustomAbort(403, "Failed to create invoice")

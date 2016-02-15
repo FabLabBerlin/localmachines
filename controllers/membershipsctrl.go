@@ -22,13 +22,12 @@ func (this *MembershipsController) Prepare() {
 // @Failure	403	Failed to get all memberships
 // @router / [get]
 func (this *MembershipsController) GetAll() {
-
-	if !this.IsAdmin() && !this.IsStaff() {
-		beego.Error("Not authorized to get all memberships")
+	locId, authorized := this.GetLocIdAdmin()
+	if !authorized {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	memberships, err := models.GetAllMemberships()
+	memberships, err := models.GetAllMembershipsAt(locId)
 	if err != nil {
 		this.CustomAbort(403, "Failed to get all memberships")
 	}
@@ -44,15 +43,14 @@ func (this *MembershipsController) GetAll() {
 // @Failure	401	Not authorized
 // @router / [post]
 func (this *MembershipsController) Create() {
-
-	if !this.IsAdmin() {
-		beego.Error("Not authorized to create membership")
+	locId, authorized := this.GetLocIdAdmin()
+	if !authorized {
 		this.CustomAbort(401, "Not authorized")
 	}
 
 	membershipName := this.GetString("mname")
 
-	id, err := models.CreateMembership(membershipName)
+	id, err := models.CreateMembership(locId, membershipName)
 	if err != nil {
 		beego.Error("Failed to create membership", err)
 		this.CustomAbort(403, "Failed to create membership")
