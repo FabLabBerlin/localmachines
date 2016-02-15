@@ -11,8 +11,8 @@ app.config(['$routeProvider', function($routeProvider) {
 }]); // app.config
 
 app.controller('UserCtrl',
- ['$scope', '$routeParams', '$http', '$location', 'randomToken',
- function($scope, $routeParams, $http, $location, randomToken) {
+ ['$scope', '$routeParams', '$http', '$location', '$cookies', 'randomToken', 'api',
+ function($scope, $routeParams, $http, $location, $cookies, randomToken, api) {
 
   // Check for NFC browser
   if (window.libnfc) {
@@ -139,15 +139,8 @@ app.controller('UserCtrl',
   $scope.loadUserData();
 
   $scope.loadAvailableMachines = function() {
-    $http({
-      method: 'GET',
-      url: '/api/machines',
-      params: {
-        ac: new Date().getTime()
-      }
-    })
-    .success(function(availableMachines) {
-      $scope.availableMachines = availableMachines;
+    api.loadMachines(function(resp) {
+      $scope.availableMachines = resp.machines;
 
       if ($scope.user.UserRole === 'admin') {
         _.each($scope.availableMachines, function(machine){
@@ -158,10 +151,6 @@ app.controller('UserCtrl',
       } else {
         $scope.loadUserMachinePermissions($scope.getAvailableMemberships);
       }
-
-    })
-    .error(function() {
-      console.log('Could not get machines');
     });
   };
 
