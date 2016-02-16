@@ -36,7 +36,7 @@ go test
 cd $__dir/tests/controllers
 go test
 
-for testDir in `find $__dir/tests/models -type d`
+for testDir in `find $__dir/tests/gateway/netswitch $__dir/tests/models -type d`
 do
 	echo Testing $testDir...
 	cd $testDir
