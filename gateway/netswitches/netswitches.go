@@ -61,6 +61,8 @@ func (nss *NetSwitches) fetch(client *http.Client) (err error) {
 				existing.Id = ns.Id
 				existing.UrlOn = ns.UrlOn
 				existing.UrlOff = ns.UrlOff
+				existing.Host = ns.Host
+				existing.SensorPort = ns.SensorPort
 			} else {
 				nss.nss[ns.MachineId] = ns
 			}
