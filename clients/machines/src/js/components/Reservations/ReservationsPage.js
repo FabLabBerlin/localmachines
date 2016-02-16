@@ -109,7 +109,6 @@ var ReservationsTable = React.createClass({
   },
 
   render() {
-    console.log('machinesById:', this.state.machinesById);
     const uid = reactor.evaluateToJS(getters.getUid);
     if (this.state.reservations && this.state.machinesById) {
       if (this.state.machinesById.size === 0) {
@@ -139,9 +138,6 @@ var ReservationsTable = React.createClass({
                   return <TableRow key={i}
                                    machine={machine}
                                    reservation={reservation}/>;
-                } else {
-                  console.log('no machine for id ', machineId);
-                  console.log('machinesById:', this.state.machinesById);
                 }
               })}
             </tbody>
@@ -149,7 +145,13 @@ var ReservationsTable = React.createClass({
         </div>
       );
     } else {
-      return <div>'Loading reservations...'</div>;
+      return (
+        <div className="loader-local">
+          <div className="spinner">
+            <i className="fa fa-cog fa-spin"></i>
+          </div>
+        </div>
+      );
     }
   }
 });
