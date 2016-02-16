@@ -288,6 +288,11 @@ func (this *UsersController) Post() {
 // @Failure	401	Unauthorized
 // @router /:uid [get]
 func (this *UsersController) Get() {
+	if this.GetString(":uid") == "current" {
+		this.GetCurrentUser()
+		return
+	}
+
 	uid, authorized := this.GetRouteUid()
 	if !authorized {
 		this.CustomAbort(401, "Not authorized")
