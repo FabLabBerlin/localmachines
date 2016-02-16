@@ -30,8 +30,8 @@ func (resp *LoginResp) ok() bool {
 }
 
 func Login(client *http.Client, user, key string) (err error) {
-	resp, err := client.PostForm(global.Cfg.API.Url+"/users/login",
-		url.Values{"username": {user}, "password": {key}})
+	resp, err := client.PostForm(global.Cfg.API.Url+"/users/login?location=1",
+		url.Values{"username": {user}, "password": {key}, "location": {"1"}})
 	if err != nil {
 		return fmt.Errorf("POST login: %v", err)
 	}
