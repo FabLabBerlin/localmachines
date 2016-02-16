@@ -264,7 +264,19 @@ func TestUsers(t *testing.T) {
 				So(err, ShouldBeNil)
 			})
 		})
-		Convey("Testing UpdateUser", func() {
+		Convey("Testing CheckEmail", func() {
+			validAddresses := []string{
+				"a@fablab.berlin",
+				"piet@fun.mobi",
+				"jimbo+foo@gmail.com",
+			}
+			u := models.User{}
+			for _, addr := range validAddresses {
+				u.Email = addr
+				So(u.CheckEmail(), ShouldBeNil)
+			}
+		})
+		Convey("Testing Update", func() {
 			u := models.User{
 				Username: "test",
 				Email:    "test@example.com",

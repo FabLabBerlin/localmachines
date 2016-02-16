@@ -22,7 +22,7 @@ const (
 )
 
 // Regular expression for email spec : RFC 5322
-const _EXP_EMAIL = `(?i)[-a-z0-9~!$%^*_=+}{\'?]+(\.[-a-z0-9~!$%^*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?`
+var _EXP_EMAIL = regexp.MustCompile(`(?i)[-a-z0-9~!$%^*_=+}{\'?]+(\.[-a-z0-9~!$%^*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?`)
 
 type User struct {
 	Id          int64  `orm:"auto";"pk"`
@@ -79,15 +79,8 @@ func CreateUser(user *User) (userId int64, er error) {
 	o := orm.NewOrm()
 
 	// Validate email
-	if user.Email == "" {
-		return 0, errors.New("Email field should not be blank")
-	}
-	exp, err := regexp.Compile(_EXP_EMAIL)
-	if err != nil {
-		return 0, fmt.Errorf("Failed to compile rexex: %v", err)
-	}
-	if !exp.MatchString(user.Email) {
-		return 0, errors.New("Invalid email")
+	if err := user.CheckEmail(); err != nil {
+		return 0, err
 	}
 
 	// Check if user with the same username does exist
@@ -293,6 +286,16 @@ func DeleteUserAuth(userId int64) error {
 	return err
 }
 
+func (user *User) CheckEmail() (err error) {
+	if strings.TrimSpace(user.Email) == "" {
+		return errors.New("Email field should not be blank")
+	}
+	if !_EXP_EMAIL.MatchString(user.Email) {
+		return errors.New("Invalid email")
+	}
+	return
+}
+
 func (user *User) GetRole() user_roles.Role {
 	return user_roles.Role(user.UserRole)
 }
@@ -321,15 +324,8 @@ func (user *User) Update() error {
 	}
 
 	// Validate email
-	if user.Email == "" {
-		return errors.New("Email field should not be blank")
-	}
-	exp, err := regexp.Compile(_EXP_EMAIL)
-	if err != nil {
-		return fmt.Errorf("Failed to compile rexex: %v", err)
-	}
-	if !exp.MatchString(user.Email) {
-		return errors.New("Invalid email")
+	if err := user.CheckEmail(); err != nil {
+		return err
 	}
 
 	// Check for duplicate username and email entries
