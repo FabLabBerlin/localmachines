@@ -9,6 +9,7 @@ import (
 	"github.com/satori/go.uuid"
 	"net/http"
 	"regexp"
+	"strings"
 	"sync"
 	"time"
 )
@@ -18,13 +19,16 @@ var (
 	// responses are matched here to the RPC requests.  We don't want to have
 	// much blocking here, therefore the channels are buffered (capacity 1) and
 	// all reads/writes must happen asynchronously.
-	responses   map[string]chan xmpp.Message
-	xmppClient  *xmpp.Xmpp
-	xmppGateway string
+	responses            map[string]chan xmpp.Message
+	xmppClient           *xmpp.Xmpp
+	xmppGateway          string
+	xmppServerConfigured bool
 )
 
 func init() {
-	if server := beego.AppConfig.String("XmppServer"); server != "" {
+	server := beego.AppConfig.String("XmppServer")
+	xmppServerConfigured = server != ""
+	if xmppServerConfigured {
 		user := beego.AppConfig.String("XmppUser")
 		pass := beego.AppConfig.String("XmppPass")
 		xmppGateway = beego.AppConfig.String("XmppGateway")
@@ -121,11 +125,30 @@ func DeleteNetSwitchMapping(machineId int64) (err error) {
 
 func (this *NetSwitchMapping) Update() (err error) {
 	o := orm.NewOrm()
+
+	// Check for duplicate host entries
+	this.Host = strings.TrimSpace(this.Host)
+	if this.Host != "" {
+		netswitch := NetSwitchMapping{}
+		query := fmt.Sprintf("SELECT * FROM %v WHERE host=? AND sensor_port=? AND id<>?",
+			netswitch.TableName())
+		var nsms []NetSwitchMapping
+		num, err := o.Raw(query, this.Host, this.SensorPort, this.Id).QueryRows(&nsms)
+		if err != nil {
+			return fmt.Errorf("failed to query db: %v", err)
+		}
+		if num > 0 {
+			return fmt.Errorf("Found %v machines with same netswitch host", num)
+		}
+	}
+
 	if _, err = o.Update(this); err != nil {
 		return fmt.Errorf("update: %v", err)
 	}
-	if err = this.sendXmppCommand("reinit", 0); err != nil {
-		return fmt.Errorf("send xmpp cmd: %v", err)
+	if xmppServerConfigured {
+		if err = this.sendXmppCommand("reinit", 0); err != nil {
+			return fmt.Errorf("send xmpp cmd: %v", err)
+		}
 	}
 	return
 }

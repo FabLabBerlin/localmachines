@@ -33,6 +33,30 @@ func TestNetswitch(t *testing.T) {
 				So(err2, ShouldBeNil)
 				So(nid2, ShouldBeGreaterThan, 0)
 			})
+			Convey("Creating same netswitch mapping for two machines", func() {
+				_, err := models.CreateNetSwitchMapping(1)
+				if err != nil {
+					panic(err.Error())
+				}
+				_, err = models.CreateNetSwitchMapping(2)
+				if err != nil {
+					panic(err.Error())
+				}
+				n1, err := models.GetNetSwitchMapping(1)
+				if err != nil {
+					panic(err.Error())
+				}
+				n2, err := models.GetNetSwitchMapping(2)
+				if err != nil {
+					panic(err.Error())
+				}
+				n1.Host = "example.com"
+				err = n1.Update()
+				So(err, ShouldBeNil)
+				n2.Host = "example.com"
+				err = n2.Update()
+				So(err, ShouldNotBeNil)
+			})
 		})
 		Convey("Testing GetNetSwitchMapping", func() {
 			Convey("Getting netswith on non-existing machine", func() {
