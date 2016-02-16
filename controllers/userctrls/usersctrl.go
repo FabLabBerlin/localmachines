@@ -7,6 +7,8 @@ import (
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
+	"github.com/FabLabBerlin/localmachines/models/user_locations"
+	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"github.com/astaxie/beego"
 	"strconv"
 	"strings"
@@ -192,6 +194,8 @@ func (this *UsersController) Signup() {
 	var err error
 	var userId int64
 
+	locId, _ := this.GetInt64("location")
+
 	// Get body as array of models.User
 	// Attempt to decode passed json
 	jsonDecoder := json.NewDecoder(this.Ctx.Request.Body)
@@ -200,6 +204,8 @@ func (this *UsersController) Signup() {
 		beego.Error("Failed to decode json:", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
+
+	data.User.UserRole = user_roles.MEMBER.String()
 
 	// Attempt to create the user
 	if userId, err = models.CreateUser(&data.User); err != nil {
@@ -213,13 +219,25 @@ func (this *UsersController) Signup() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
+	if locId > 0 {
+		ul := &user_locations.UserLocation{
+			UserId:     userId,
+			LocationId: locId,
+			UserRole:   user_roles.MEMBER.String(),
+		}
+		if _, err := user_locations.Create(ul); err != nil {
+			beego.Error("Failed to create user location for new user: %v", err)
+		}
+	}
+
 	this.Data["json"] = userId
 	this.ServeJSON()
 }
 
 // @Title Post
 // @Description create user and associated tables
-// @Param	email		query 	string	true		"The new user's E-Mail"
+// @Param	email			query 	string	true		"The new user's E-Mail"
+// @Param	location		query 	int64	false		"Make user member of location id"
 // @Success 201 {object} models.User
 // @Failure	401	Unauthorized
 // @Failure 500 Internal Server Error
@@ -232,7 +250,12 @@ func (this *UsersController) Post() {
 		this.CustomAbort(401, "Unauthorized")
 	}
 
-	user := models.User{Email: email}
+	locId, _ := this.GetInt64("location")
+
+	user := models.User{
+		Email:    email,
+		UserRole: user_roles.MEMBER.String(),
+	}
 
 	// Attempt to create the user.
 	// The CreateUser function takes (or should take)
@@ -242,6 +265,16 @@ func (this *UsersController) Post() {
 		this.CustomAbort(500, "Internal Server Error")
 	} else {
 		user.Id = userId
+		if locId > 0 {
+			ul := &user_locations.UserLocation{
+				UserId:     userId,
+				LocationId: locId,
+				UserRole:   user_roles.MEMBER.String(),
+			}
+			if _, err := user_locations.Create(ul); err != nil {
+				beego.Error("Failed to create user location for new user: %v", err)
+			}
+		}
 		this.Data["json"] = user
 		this.ServeJSON()
 	}

@@ -11,8 +11,9 @@ app.config(['$routeProvider', function($routeProvider) {
   });
 }]); // app.config
 
-app.controller('UsersCtrl', ['$scope', '$http', '$location', 
- function($scope, $http, $location) {
+app.controller('UsersCtrl',
+ ['$scope', '$http', '$location', '$cookies',
+ function($scope, $http, $location, $cookies) {
 
   $scope.users = [];
 
@@ -54,7 +55,8 @@ app.controller('UsersCtrl', ['$scope', '$http', '$location',
       method: 'POST',
       url: '/api/users',
       data: {
-        email: email
+        email: email,
+        location: $cookies.locationId
       },
       params: {
         ac: new Date().getTime()

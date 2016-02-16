@@ -115,7 +115,7 @@ angular.module('fabsmith.signup.form', ['ngRoute'])
 
     $http({
       method: 'POST',
-      url: '/api/users/signup',
+      url: '/api/users/signup?location=1',
       data: {
         "User": {
           "Email": $scope.email,
