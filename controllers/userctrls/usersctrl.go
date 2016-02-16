@@ -162,7 +162,7 @@ func (this *UsersController) GetCurrentUser() {
 // @Title GetAll
 // @Description Get all users
 // @Success 200 {object} models.User
-// @Failure	403	Failed to get all users
+// @Failure	500	Failed to get all users
 // @router / [get]
 func (this *UsersController) GetAll() {
 
@@ -173,7 +173,7 @@ func (this *UsersController) GetAll() {
 
 	users, err := models.GetAllUsers()
 	if err != nil {
-		this.CustomAbort(403, "Failed to get all users")
+		this.CustomAbort(500, "Failed to get all users")
 	}
 	this.Data["json"] = users
 	this.ServeJSON()

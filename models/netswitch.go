@@ -105,28 +105,18 @@ func GetNetSwitchMapping(machineId int64) (*NetSwitchMapping, error) {
 	mapping.MachineId = machineId
 	o := orm.NewOrm()
 	err := o.Read(&mapping, "MachineId")
-	if err != nil {
-		return &mapping, err
-	}
-	return &mapping, nil
+	return &mapping, err
 }
 
-func DeleteNetSwitchMapping(machineId int64) error {
+func DeleteNetSwitchMapping(machineId int64) (err error) {
 	mapping, err := GetNetSwitchMapping(machineId)
 	if err != nil {
 		return err
 	}
 
-	var num int64
-
 	o := orm.NewOrm()
-	num, err = o.Delete(mapping)
-	if err != nil {
-		return err
-	}
-
-	beego.Trace("Affected num rows:", num)
-	return nil
+	_, err = o.Delete(mapping)
+	return
 }
 
 func (this *NetSwitchMapping) Update() (err error) {

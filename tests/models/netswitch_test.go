@@ -1,6 +1,8 @@
 package modelTest
 
 import (
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/FabLabBerlin/localmachines/models"
@@ -71,6 +73,34 @@ func TestNetswitch(t *testing.T) {
 				So(err, ShouldBeNil)
 				So(netswitch.UrlOff, ShouldEqual, urlOffTest)
 			})
+		})
+		Convey("Netswitch url on/off 200 with should give no error", func() {
+			ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusOK)
+			}))
+			defer ts.Close()
+
+			ns := models.NetSwitchMapping{
+				UrlOn:  ts.URL + "?method=on",
+				UrlOff: ts.URL + "?method=off",
+				Xmpp:   false,
+			}
+			So(ns.On(), ShouldBeNil)
+			So(ns.Off(), ShouldBeNil)
+		})
+		Convey("Netswitch url on/off 500 with should give an error", func() {
+			ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusInternalServerError)
+			}))
+			defer ts.Close()
+
+			ns := models.NetSwitchMapping{
+				UrlOn:  ts.URL + "?method=on",
+				UrlOff: ts.URL + "?method=off",
+				Xmpp:   false,
+			}
+			So(ns.On(), ShouldNotBeNil)
+			So(ns.Off(), ShouldNotBeNil)
 		})
 	})
 }
