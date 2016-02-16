@@ -48,7 +48,7 @@ func (rt *Realtime) users() (n int64, err error) {
 		SELECT Count(*) AS N
 		FROM   user
 		       LEFT JOIN user_membership
-		         ON user_membership.user_id = purchases.user_id
+		         ON user_membership.user_id = user.id
 		       LEFT JOIN membership
 		         ON user_membership.membership_id = membership.id
 		WHERE  monthly_price > 0 OR monthly_price IS NULL
