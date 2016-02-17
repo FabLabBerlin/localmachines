@@ -18,13 +18,16 @@ import (
 )
 
 func TestNetswitches(t *testing.T) {
-	netSwitchRequests := 0
+	pollRequests := 0
+	switchRequests := 0
 
 	netSwitch := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/sensors/1" {
-			netSwitchRequests++
+		if r.Method == "GET" {
+			pollRequests++
 			w.WriteHeader(http.StatusOK)
 			fmt.Fprintf(w, `{"sensors":[{"output":0,"power":0.0,"energy":0.0,"enabled":0,"current":0.0,"voltage":0.0,"powerfactor":0.0,"relay":0,"lock":0}],"status":"success"}`)
+		} else {
+			switchRequests++
 		}
 	}))
 	defer netSwitch.Close()
@@ -87,23 +90,42 @@ func TestNetswitches(t *testing.T) {
 
 	Convey("Testing Sync", t, func() {
 		Convey("It should poll the Xmpp switch", func() {
-			before := netSwitchRequests
+			before := pollRequests
 			err := netSwitches.Sync(11)
 			So(err, ShouldBeNil)
 			<-time.After(time.Second)
-			after := netSwitchRequests
+			after := pollRequests
 			So(after-before, ShouldEqual, 1)
 		})
 	})
 
 	Convey("Testing SyncAll", t, func() {
 		Convey("It should poll the Xmpp switches", func() {
-			before := netSwitchRequests
+			before := pollRequests
 			err := netSwitches.SyncAll()
 			So(err, ShouldBeNil)
 			<-time.After(time.Second)
-			after := netSwitchRequests
+			after := pollRequests
 			So(after-before, ShouldEqual, 1)
+		})
+	})
+
+	// SetOn affects synchronization. So it's best to do this test *after*
+	// playing around with Sync methods.
+	Convey("Testing SetOn", t, func() {
+		pollBefore := pollRequests
+		switchBefore := switchRequests
+		netSwitches.SetOn(11, true)
+		<-time.After(time.Second)
+
+		Convey("It should trigger one poll request", func() {
+			after := pollRequests
+			So(after-pollBefore, ShouldEqual, 1)
+		})
+
+		Convey("It should trigger one switch request", func() {
+			after := switchRequests
+			So(after-switchBefore, ShouldEqual, 1)
 		})
 	})
 }
