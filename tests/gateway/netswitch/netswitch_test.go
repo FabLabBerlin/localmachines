@@ -1,6 +1,7 @@
 package gatewayNetswitchTest
 
 import (
+	"github.com/FabLabBerlin/localmachines/tests/gateway/mocks"
 	"testing"
 	"time"
 
@@ -10,31 +11,35 @@ import (
 func TestNetswitch(t *testing.T) {
 	Convey("Testing Sync", t, func() {
 		Convey("A switch that is off and supposed to be off stays off", func() {
-			mock := NewMockNetSwitch(DESIRED_OFF, RELAY_OFF)
+			mock := mocks.NewNetSwitch(mocks.DESIRED_OFF, mocks.RELAY_OFF)
 			So(mock.NetSwitch.Sync(), ShouldBeNil)
 			<-time.After(time.Second)
-			So(mock.UrlCalled, ShouldEqual, 1)
+			So(mock.PollRequests, ShouldEqual, 1)
+			So(mock.SwitchRequests, ShouldEqual, 0)
 		})
 
 		Convey("A switch that is on and supposed to be off goes off", func() {
-			mock := NewMockNetSwitch(DESIRED_OFF, RELAY_ON)
+			mock := mocks.NewNetSwitch(mocks.DESIRED_OFF, mocks.RELAY_ON)
 			So(mock.NetSwitch.Sync(), ShouldBeNil)
 			<-time.After(time.Second)
-			So(mock.UrlCalled, ShouldEqual, 2)
+			So(mock.PollRequests, ShouldEqual, 1)
+			So(mock.SwitchRequests, ShouldEqual, 1)
 		})
 
 		Convey("A switch that is off and supposed to be on goes on", func() {
-			mock := NewMockNetSwitch(DESIRED_ON, RELAY_OFF)
+			mock := mocks.NewNetSwitch(mocks.DESIRED_ON, mocks.RELAY_OFF)
 			So(mock.NetSwitch.Sync(), ShouldBeNil)
 			<-time.After(time.Second)
-			So(mock.UrlCalled, ShouldEqual, 2)
+			So(mock.PollRequests, ShouldEqual, 1)
+			So(mock.SwitchRequests, ShouldEqual, 1)
 		})
 
 		Convey("A switch that is on and supposed to be on stays on", func() {
-			mock := NewMockNetSwitch(DESIRED_ON, RELAY_ON)
+			mock := mocks.NewNetSwitch(mocks.DESIRED_ON, mocks.RELAY_ON)
 			So(mock.NetSwitch.Sync(), ShouldBeNil)
 			<-time.After(time.Second)
-			So(mock.UrlCalled, ShouldEqual, 1)
+			So(mock.PollRequests, ShouldEqual, 1)
+			So(mock.SwitchRequests, ShouldEqual, 0)
 		})
 	})
 }

@@ -2,14 +2,12 @@ package gatewayNetswitchesTest
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/FabLabBerlin/localmachines/gateway/global"
 	"github.com/FabLabBerlin/localmachines/gateway/netswitch"
 	"github.com/FabLabBerlin/localmachines/gateway/netswitches"
 	modelsNetswitch "github.com/FabLabBerlin/localmachines/models/netswitch"
+	"github.com/FabLabBerlin/localmachines/tests/gateway/mocks"
 	"net/http"
-	"net/http/httptest"
-	"net/url"
 	"os"
 	"testing"
 	"time"
@@ -18,55 +16,33 @@ import (
 )
 
 func TestNetswitches(t *testing.T) {
-	pollRequests := 0
-	switchRequests := 0
-
-	netSwitch := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == "GET" {
-			pollRequests++
-			w.WriteHeader(http.StatusOK)
-			fmt.Fprintf(w, `{"sensors":[{"output":0,"power":0.0,"energy":0.0,"enabled":0,"current":0.0,"voltage":0.0,"powerfactor":0.0,"relay":0,"lock":0}],"status":"success"}`)
-		} else {
-			switchRequests++
-		}
-	}))
+	netSwitch := mocks.NewNetSwitch(mocks.DESIRED_OFF, mocks.RELAY_OFF)
 	defer netSwitch.Close()
 
-	url, err := url.Parse(netSwitch.URL)
-	if err != nil {
-		panic(err.Error())
-	}
+	lmApi := mocks.NewLmApi()
+	defer lmApi.Close()
+	lmApi.AddMapping(modelsNetswitch.Mapping{
+		Id:         1,
+		MachineId:  11,
+		Host:       netSwitch.Host(),
+		SensorPort: 1,
+		Xmpp:       true,
+	})
+	lmApi.AddMapping(modelsNetswitch.Mapping{
+		Id:        2,
+		MachineId: 22,
+		Host:      netSwitch.Host(),
+		Xmpp:      false,
+	})
 
-	easylabApi := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		state := []modelsNetswitch.Mapping{
-			modelsNetswitch.Mapping{
-				Id:         1,
-				MachineId:  11,
-				Host:       url.Host,
-				SensorPort: 1,
-				Xmpp:       true,
-			},
-			modelsNetswitch.Mapping{
-				Id:        2,
-				MachineId: 22,
-				Host:      url.Host,
-				Xmpp:      false,
-			},
-		}
-		enc := json.NewEncoder(w)
-		w.WriteHeader(http.StatusOK)
-		enc.Encode(state)
-	}))
-	defer easylabApi.Close()
-
-	global.Cfg.API.Url = easylabApi.URL
+	global.Cfg.API.Url = lmApi.URL()
 	global.Cfg.Main.StateFile = "foo.state.test"
 
 	netSwitches := netswitches.New()
 
 	Convey("Testing Load", t, func() {
 		client := &http.Client{}
-		err = netSwitches.Load(client)
+		err := netSwitches.Load(client)
 		So(err, ShouldBeNil)
 		Convey("It should load the Xmpp switches and discard the others", func() {
 			netSwitches.Save()
@@ -82,7 +58,7 @@ func TestNetswitches(t *testing.T) {
 			ns := nss[0]
 			So(ns.Id, ShouldEqual, 1)
 			So(ns.MachineId, ShouldEqual, 11)
-			So(ns.Host, ShouldEqual, url.Host)
+			So(ns.Host, ShouldEqual, netSwitch.Host())
 			So(ns.SensorPort, ShouldEqual, 1)
 			So(ns.Xmpp, ShouldBeTrue)
 		})
@@ -90,22 +66,22 @@ func TestNetswitches(t *testing.T) {
 
 	Convey("Testing Sync", t, func() {
 		Convey("It should poll the Xmpp switch", func() {
-			before := pollRequests
+			before := netSwitch.PollRequests
 			err := netSwitches.Sync(11)
 			So(err, ShouldBeNil)
 			<-time.After(time.Second)
-			after := pollRequests
+			after := netSwitch.PollRequests
 			So(after-before, ShouldEqual, 1)
 		})
 	})
 
 	Convey("Testing SyncAll", t, func() {
 		Convey("It should poll the Xmpp switches", func() {
-			before := pollRequests
+			before := netSwitch.PollRequests
 			err := netSwitches.SyncAll()
 			So(err, ShouldBeNil)
 			<-time.After(time.Second)
-			after := pollRequests
+			after := netSwitch.PollRequests
 			So(after-before, ShouldEqual, 1)
 		})
 	})
@@ -113,18 +89,18 @@ func TestNetswitches(t *testing.T) {
 	// SetOn affects synchronization. So it's best to do this test *after*
 	// playing around with Sync methods.
 	Convey("Testing SetOn", t, func() {
-		pollBefore := pollRequests
-		switchBefore := switchRequests
+		pollBefore := netSwitch.PollRequests
+		switchBefore := netSwitch.SwitchRequests
 		netSwitches.SetOn(11, true)
 		<-time.After(time.Second)
 
 		Convey("It should trigger one poll request", func() {
-			after := pollRequests
+			after := netSwitch.PollRequests
 			So(after-pollBefore, ShouldEqual, 1)
 		})
 
 		Convey("It should trigger one switch request", func() {
-			after := switchRequests
+			after := netSwitch.SwitchRequests
 			So(after-switchBefore, ShouldEqual, 1)
 		})
 	})
