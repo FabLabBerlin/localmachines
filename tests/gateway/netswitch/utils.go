@@ -3,6 +3,7 @@ package gatewayNetswitchTest
 import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/gateway/netswitch"
+	modelsNetswitch "github.com/FabLabBerlin/localmachines/models/netswitch"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -46,9 +47,11 @@ func NewMockNetSwitch(desired DesiredState, relay RelayState) *MockNetSwitch {
 		panic(err.Error())
 	}
 	mock.NetSwitch = &netswitch.NetSwitch{
-		Host:       url.Host,
-		SensorPort: 1,
-		On:         bool(desired),
+		Mapping: modelsNetswitch.Mapping{
+			Host:       url.Host,
+			SensorPort: 1,
+		},
+		On: bool(desired),
 	}
 	return mock
 }

@@ -12,6 +12,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/gateway/global"
+	"github.com/FabLabBerlin/localmachines/models/netswitch"
 	"log"
 	"net/http"
 	"net/url"
@@ -24,15 +25,10 @@ type syncCommand struct {
 }
 
 type NetSwitch struct {
-	Id         int64
-	MachineId  int64
-	UrlOn      string
-	UrlOff     string
-	Host       string
-	SensorPort int
-	Xmpp       bool
-	On         bool
-	syncCh     chan syncCommand
+	netswitch.Mapping
+	Xmpp   bool
+	On     bool
+	syncCh chan syncCommand
 }
 
 func (ns *NetSwitch) assertLoopRunning() {

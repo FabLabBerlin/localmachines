@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/gateway/global"
 	"github.com/FabLabBerlin/localmachines/gateway/netswitch"
+	modelsNetswitch "github.com/FabLabBerlin/localmachines/models/netswitch"
 	"log"
 	"net/http"
 	"os"
@@ -48,23 +49,21 @@ func (nss *NetSwitches) fetch(client *http.Client) (err error) {
 	}
 	defer resp.Body.Close()
 	dec := json.NewDecoder(resp.Body)
-	list := []*netswitch.NetSwitch{}
-	if err := dec.Decode(&list); err != nil {
+	mappings := []modelsNetswitch.Mapping{}
+	if err := dec.Decode(&mappings); err != nil {
 		return fmt.Errorf("json decode: %v", err)
 	}
 	if nss.nss == nil {
 		nss.nss = make(map[int64]*netswitch.NetSwitch)
 	}
-	for _, ns := range list {
-		if ns.Xmpp {
-			if existing, exists := nss.nss[ns.MachineId]; exists {
-				existing.Id = ns.Id
-				existing.UrlOn = ns.UrlOn
-				existing.UrlOff = ns.UrlOff
-				existing.Host = ns.Host
-				existing.SensorPort = ns.SensorPort
+	for _, mapping := range mappings {
+		if mapping.Xmpp {
+			if existing, exists := nss.nss[mapping.MachineId]; exists {
+				existing.Mapping = mapping
 			} else {
-				nss.nss[ns.MachineId] = ns
+				nss.nss[mapping.MachineId] = &netswitch.NetSwitch{
+					Mapping: mapping,
+				}
 			}
 		}
 	}
