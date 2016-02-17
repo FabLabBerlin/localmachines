@@ -206,6 +206,7 @@ app.controller('UserCtrl',
       method: 'GET',
       url: '/api/memberships',
       params: {
+        location: $cookies.locationId,
         ac: new Date().getTime()
       }
     })
