@@ -1,4 +1,4 @@
-package models
+package netswitch
 
 import (
 	"errors"
@@ -62,7 +62,7 @@ const (
 	OFF ON_OR_OFF = "off"
 )
 
-type NetSwitchMapping struct {
+type Mapping struct {
 	Id        int64 `orm:"auto";"pk"`
 	MachineId int64
 	UrlOn     string `orm:"size(255)"`
@@ -74,21 +74,21 @@ type NetSwitchMapping struct {
 }
 
 func init() {
-	orm.RegisterModel(new(NetSwitchMapping))
+	orm.RegisterModel(new(Mapping))
 }
 
-func (m *NetSwitchMapping) TableName() string {
+func (m *Mapping) TableName() string {
 	return "netswitch"
 }
 
-func GetAllNetSwitchMapping() (ms []*NetSwitchMapping, err error) {
+func GetAllMappings() (ms []*Mapping, err error) {
 	o := orm.NewOrm()
-	_, err = o.QueryTable(new(NetSwitchMapping).TableName()).All(&ms)
+	_, err = o.QueryTable(new(Mapping).TableName()).All(&ms)
 	return
 }
 
-func CreateNetSwitchMapping(machineId int64) (int64, error) {
-	mapping := NetSwitchMapping{}
+func CreateMapping(machineId int64) (int64, error) {
+	mapping := Mapping{}
 	mapping.MachineId = machineId
 	mapping.SensorPort = 1
 	o := orm.NewOrm()
@@ -104,16 +104,16 @@ func CreateNetSwitchMapping(machineId int64) (int64, error) {
 	return id, nil
 }
 
-func GetNetSwitchMapping(machineId int64) (*NetSwitchMapping, error) {
-	mapping := NetSwitchMapping{}
+func GetMapping(machineId int64) (*Mapping, error) {
+	mapping := Mapping{}
 	mapping.MachineId = machineId
 	o := orm.NewOrm()
 	err := o.Read(&mapping, "MachineId")
 	return &mapping, err
 }
 
-func DeleteNetSwitchMapping(machineId int64) (err error) {
-	mapping, err := GetNetSwitchMapping(machineId)
+func DeleteMapping(machineId int64) (err error) {
+	mapping, err := GetMapping(machineId)
 	if err != nil {
 		return err
 	}
@@ -123,16 +123,16 @@ func DeleteNetSwitchMapping(machineId int64) (err error) {
 	return
 }
 
-func (this *NetSwitchMapping) Update() (err error) {
+func (this *Mapping) Update() (err error) {
 	o := orm.NewOrm()
 
 	// Check for duplicate host entries
 	this.Host = strings.TrimSpace(this.Host)
 	if this.Host != "" {
-		netswitch := NetSwitchMapping{}
+		netswitch := Mapping{}
 		query := fmt.Sprintf("SELECT * FROM %v WHERE host=? AND sensor_port=? AND id<>?",
 			netswitch.TableName())
-		var nsms []NetSwitchMapping
+		var nsms []Mapping
 		num, err := o.Raw(query, this.Host, this.SensorPort, this.Id).QueryRows(&nsms)
 		if err != nil {
 			return fmt.Errorf("failed to query db: %v", err)
@@ -153,15 +153,15 @@ func (this *NetSwitchMapping) Update() (err error) {
 	return
 }
 
-func (this *NetSwitchMapping) On() error {
+func (this *Mapping) On() error {
 	return this.turn(ON)
 }
 
-func (this *NetSwitchMapping) Off() error {
+func (this *Mapping) Off() error {
 	return this.turn(OFF)
 }
 
-func (this *NetSwitchMapping) turn(onOrOff ON_OR_OFF) (err error) {
+func (this *Mapping) turn(onOrOff ON_OR_OFF) (err error) {
 	beego.Info("Attempt to turn NetSwitch ", onOrOff, ", machine ID", this.MachineId)
 	if this.Xmpp {
 		if xmppClient != nil {
@@ -174,7 +174,7 @@ func (this *NetSwitchMapping) turn(onOrOff ON_OR_OFF) (err error) {
 	}
 }
 
-func (this *NetSwitchMapping) turnHttp(onOrOff ON_OR_OFF) (err error) {
+func (this *Mapping) turnHttp(onOrOff ON_OR_OFF) (err error) {
 	var resp *http.Response
 
 	if onOrOff == ON {
@@ -203,11 +203,11 @@ func (this *NetSwitchMapping) turnHttp(onOrOff ON_OR_OFF) (err error) {
 	return nil
 }
 
-func (this *NetSwitchMapping) turnXmpp(onOrOff ON_OR_OFF) (err error) {
+func (this *Mapping) turnXmpp(onOrOff ON_OR_OFF) (err error) {
 	return this.sendXmppCommand(string(onOrOff), this.MachineId)
 }
 
-func (this *NetSwitchMapping) sendXmppCommand(command string, machineId int64) (err error) {
+func (this *Mapping) sendXmppCommand(command string, machineId int64) (err error) {
 	trackingId := uuid.NewV4().String()
 	mu.Lock()
 	responses[trackingId] = make(chan xmpp.Message, 1)

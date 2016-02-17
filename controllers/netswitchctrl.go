@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
-	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/netswitch"
 	"github.com/astaxie/beego"
 )
 
@@ -23,7 +23,7 @@ func (this *NetSwitchController) GetAll() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	ms, err := models.GetAllNetSwitchMapping()
+	ms, err := netswitch.GetAllMappings()
 	if err != nil {
 		this.CustomAbort(403, "Failed to get all netswitch mappings")
 	}
@@ -51,7 +51,7 @@ func (this *NetSwitchController) Get() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	mapping, err := models.GetNetSwitchMapping(mid)
+	mapping, err := netswitch.GetMapping(mid)
 	if err != nil {
 		beego.Error("Failed to get NetSwitch maping")
 		this.CustomAbort(500, "Internal Server Error")
@@ -81,7 +81,7 @@ func (this *NetSwitchController) Create() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	mappingId, err := models.CreateNetSwitchMapping(mid)
+	mappingId, err := netswitch.CreateMapping(mid)
 	if err != nil {
 		beego.Error("Failed to create NetSwitch mapping:", err)
 		this.CustomAbort(500, "Internal Server Error")
@@ -111,7 +111,7 @@ func (this *NetSwitchController) Delete() {
 		this.CustomAbort(403, "Internal Server Error")
 	}
 
-	err = models.DeleteNetSwitchMapping(mid)
+	err = netswitch.DeleteMapping(mid)
 	if err != nil {
 		beego.Error("Failed to delete NetSwitch mapping:", err)
 		this.CustomAbort(500, "Internal Server Error")
@@ -136,19 +136,15 @@ func (this *NetSwitchController) Update() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	var err error
-
 	// Attempt to decode passed json
 	dec := json.NewDecoder(this.Ctx.Request.Body)
-	req := models.NetSwitchMapping{}
-	if err = dec.Decode(&req); err != nil {
+	req := netswitch.Mapping{}
+	if err := dec.Decode(&req); err != nil {
 		beego.Error("Failed to decode json:", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	var mid int64
-
-	mid, err = this.GetInt64(":mid")
+	mid, err := this.GetInt64(":mid")
 	if err != nil {
 		beego.Error("Failed to get :mid:", err)
 		this.CustomAbort(500, "Internal Server Error")

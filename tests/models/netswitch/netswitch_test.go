@@ -1,11 +1,11 @@
-package modelTest
+package netswitchTest
 
 import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/netswitch"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -17,16 +17,16 @@ func init() {
 func TestNetswitch(t *testing.T) {
 	Convey("Testing Netswitch model", t, func() {
 		Reset(setup.ResetDB)
-		Convey("Testing CreateNetswitchMapping", func() {
+		Convey("Testing CreateMapping", func() {
 			Convey("Creating a netswitch mapping regulary", func() {
-				nid, err := models.CreateNetSwitchMapping(0)
+				nid, err := netswitch.CreateMapping(0)
 
 				So(err, ShouldBeNil)
 				So(nid, ShouldBeGreaterThan, 0)
 			})
 			Convey("Creating two netswitch mapping on the same machine", func() {
-				nid1, err1 := models.CreateNetSwitchMapping(0)
-				nid2, err2 := models.CreateNetSwitchMapping(0)
+				nid1, err1 := netswitch.CreateMapping(0)
+				nid2, err2 := netswitch.CreateMapping(0)
 
 				So(err1, ShouldBeNil)
 				So(nid1, ShouldBeGreaterThan, 0)
@@ -34,19 +34,19 @@ func TestNetswitch(t *testing.T) {
 				So(nid2, ShouldBeGreaterThan, 0)
 			})
 			Convey("Creating same netswitch mapping for two machines", func() {
-				_, err := models.CreateNetSwitchMapping(1)
+				_, err := netswitch.CreateMapping(1)
 				if err != nil {
 					panic(err.Error())
 				}
-				_, err = models.CreateNetSwitchMapping(2)
+				_, err = netswitch.CreateMapping(2)
 				if err != nil {
 					panic(err.Error())
 				}
-				n1, err := models.GetNetSwitchMapping(1)
+				n1, err := netswitch.GetMapping(1)
 				if err != nil {
 					panic(err.Error())
 				}
-				n2, err := models.GetNetSwitchMapping(2)
+				n2, err := netswitch.GetMapping(2)
 				if err != nil {
 					panic(err.Error())
 				}
@@ -58,44 +58,44 @@ func TestNetswitch(t *testing.T) {
 				So(err, ShouldNotBeNil)
 			})
 		})
-		Convey("Testing GetNetSwitchMapping", func() {
+		Convey("Testing GetMapping", func() {
 			Convey("Getting netswith on non-existing machine", func() {
-				_, err := models.GetNetSwitchMapping(0)
+				_, err := netswitch.GetMapping(0)
 
 				So(err, ShouldNotBeNil)
 			})
 			Convey("Creating netswith and getting it ", func() {
-				nid, _ := models.CreateNetSwitchMapping(0)
-				netswitch, err := models.GetNetSwitchMapping(0)
+				nid, _ := netswitch.CreateMapping(0)
+				netswitch, err := netswitch.GetMapping(0)
 
 				So(err, ShouldBeNil)
 				So(netswitch.Id, ShouldEqual, nid)
 			})
 		})
-		Convey("Testing DeleteNetSwitchMapping", func() {
+		Convey("Testing DeleteMapping", func() {
 			Convey("Creating a netswitch and deleting it", func() {
-				models.CreateNetSwitchMapping(0)
-				err := models.DeleteNetSwitchMapping(0)
+				netswitch.CreateMapping(0)
+				err := netswitch.DeleteMapping(0)
 
 				So(err, ShouldBeNil)
 			})
 			Convey("Deleting a non-existing netswitch mapping", func() {
-				err := models.DeleteNetSwitchMapping(0)
+				err := netswitch.DeleteMapping(0)
 
 				So(err, ShouldNotBeNil)
 			})
 		})
-		Convey("Testing UpdateNetSwitchMapping", func() {
+		Convey("Testing UpdateMapping", func() {
 			urlOffTest := "QQ"
 			SkipConvey("Creating a netswitch and updating it", func() {
-				nid, _ := models.CreateNetSwitchMapping(0)
-				netswitch, _ := models.GetNetSwitchMapping(nid)
-				netswitch.UrlOff = urlOffTest
-				err := netswitch.Update()
-				netswitch, _ = models.GetNetSwitchMapping(nid)
+				nid, _ := netswitch.CreateMapping(0)
+				mapping, _ := netswitch.GetMapping(nid)
+				mapping.UrlOff = urlOffTest
+				err := mapping.Update()
+				mapping, _ = netswitch.GetMapping(nid)
 
 				So(err, ShouldBeNil)
-				So(netswitch.UrlOff, ShouldEqual, urlOffTest)
+				So(mapping.UrlOff, ShouldEqual, urlOffTest)
 			})
 		})
 		Convey("Netswitch url on/off 200 with should give no error", func() {
@@ -104,7 +104,7 @@ func TestNetswitch(t *testing.T) {
 			}))
 			defer ts.Close()
 
-			ns := models.NetSwitchMapping{
+			ns := netswitch.Mapping{
 				UrlOn:  ts.URL + "?method=on",
 				UrlOff: ts.URL + "?method=off",
 				Xmpp:   false,
@@ -118,7 +118,7 @@ func TestNetswitch(t *testing.T) {
 			}))
 			defer ts.Close()
 
-			ns := models.NetSwitchMapping{
+			ns := netswitch.Mapping{
 				UrlOn:  ts.URL + "?method=on",
 				UrlOff: ts.URL + "?method=off",
 				Xmpp:   false,

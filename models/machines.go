@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ChimeraCoder/anaconda"
 	"github.com/FabLabBerlin/localmachines/models/email"
+	"github.com/FabLabBerlin/localmachines/models/netswitch"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"math/rand"
@@ -163,7 +164,7 @@ func parseDimensions(s string) (lMM []Millimeters, err error) {
 }
 
 func (this *Machine) On() (err error) {
-	netSwitchMapping, err := GetNetSwitchMapping(this.Id)
+	netSwitchMapping, err := netswitch.GetMapping(this.Id)
 	if err != nil {
 		beego.Warning("Failed to get NetSwitch mapping:", err)
 	} else if netSwitchMapping != nil {
@@ -221,7 +222,7 @@ func (this *Machine) SetUnderMaintenance(underMaintenance bool) error {
 }
 
 func (this *Machine) Off() (err error) {
-	netSwitch, err := GetNetSwitchMapping(this.Id)
+	netSwitch, err := netswitch.GetMapping(this.Id)
 	if err != nil {
 		beego.Warning("Failed to get NetSwitch mapping:", err)
 	} else if netSwitch != nil {
