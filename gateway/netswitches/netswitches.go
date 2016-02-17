@@ -5,6 +5,7 @@ package netswitches
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/gateway/global"
 	"github.com/FabLabBerlin/localmachines/gateway/netswitch"
@@ -13,6 +14,10 @@ import (
 	"net/http"
 	"os"
 	"sync"
+)
+
+var (
+	ErrDuplicateCombinationHostSensorPort = errors.New("Duplicate combination host + sensor port")
 )
 
 type NetSwitches struct {
@@ -41,7 +46,7 @@ func (nss *NetSwitches) Load(client *http.Client) (err error) {
 // fetch netswitch data from EASY LAB API.
 //
 // Each type NetSwitch runs its own dispatch loop.  Make sure no additional
-// loop is started.  TODO: get rid of removed NetSwitches
+// loop is started.
 func (nss *NetSwitches) fetch(client *http.Client) (err error) {
 	resp, err := client.Get(global.Cfg.API.Url + "/netswitch")
 	if err != nil {
@@ -84,6 +89,16 @@ func (nss *NetSwitches) fetch(client *http.Client) (err error) {
 		ns := nss.nss[unusedID]
 		delete(nss.nss, unusedID)
 		ns.Close()
+	}
+	// Make sure there are no duplicate combinations Host + SensorPort
+	hostsSensorPorts := make(map[string]bool)
+	for _, ns := range nss.nss {
+		key := fmt.Sprintf("%v -> %v", ns.Host, ns.SensorPort)
+		if _, ok := hostsSensorPorts[key]; ok {
+			log.Printf("duplicate combination host sensor port: %v", ns.Host, ns.SensorPort)
+			return ErrDuplicateCombinationHostSensorPort
+		}
+		hostsSensorPorts[key] = true
 	}
 	return
 }

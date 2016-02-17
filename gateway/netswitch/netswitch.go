@@ -45,7 +45,9 @@ func (ns *NetSwitch) loop() {
 
 func (ns *NetSwitch) Close() {
 	log.Printf("NetSwitch#Close")
-	close(ns.syncCh)
+	if ns.syncCh != nil {
+		close(ns.syncCh)
+	}
 }
 
 func (ns *NetSwitch) sync(cmd syncCommand) (err error) {

@@ -9,6 +9,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/tests/gateway/mocks"
 	"net/http"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -65,6 +66,22 @@ func TestNetswitches(t *testing.T) {
 			So(ns.Host, ShouldEqual, netSwitch1.Host())
 			So(ns.SensorPort, ShouldEqual, 1)
 			So(ns.Xmpp, ShouldBeTrue)
+		})
+
+		Convey("It fails when there are duplicate combinations hosts+sensor port that could lead to contradictory state which in turn could lead to switches turning on and off every 30 seconds", func() {
+			lmApi.AddMapping(modelsNetswitch.Mapping{
+				Id:         4,
+				MachineId:  44,
+				Host:       netSwitch1.Host(),
+				SensorPort: 1,
+				Xmpp:       true,
+			})
+			err := netSwitches.Load(client)
+			So(err, ShouldNotBeNil)
+			So(strings.Contains(err.Error(), netswitches.ErrDuplicateCombinationHostSensorPort.Error()), ShouldBeTrue)
+			lmApi.DeleteMapping(44)
+			err = netSwitches.Load(client)
+			So(err, ShouldBeNil)
 		})
 	})
 
