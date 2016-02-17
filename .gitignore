@@ -2,6 +2,7 @@
 *~
 *.swp
 fabsmith
+foo.state.test
 localmachines
 npm-debug.log
 conf/app.conf
