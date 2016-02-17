@@ -101,6 +101,10 @@ func CreateMapping(machineId int64) (int64, error) {
 	} else {
 		beego.Warning("A NetSwitch mapping exists, machine ID:", id)
 	}
+
+	if err = xmppReinit(); err != nil {
+		return 0, fmt.Errorf("xmpp reinit: %v", err)
+	}
 	return id, nil
 }
 
@@ -119,7 +123,13 @@ func DeleteMapping(machineId int64) (err error) {
 	}
 
 	o := orm.NewOrm()
-	_, err = o.Delete(mapping)
+	if _, err = o.Delete(mapping); err != nil {
+		return fmt.Errorf("orm delete: %v", err)
+	}
+
+	if err = xmppReinit(); err != nil {
+		return fmt.Errorf("xmpp reinit: %v", err)
+	}
 	return
 }
 
@@ -145,8 +155,15 @@ func (this *Mapping) Update() (err error) {
 	if _, err = o.Update(this); err != nil {
 		return fmt.Errorf("update: %v", err)
 	}
+	if err = xmppReinit(); err != nil {
+		return fmt.Errorf("xmpp reinit: %v", err)
+	}
+	return
+}
+
+func xmppReinit() (err error) {
 	if xmppServerConfigured {
-		if err = this.sendXmppCommand("reinit", 0); err != nil {
+		if err = sendXmppCommand("reinit", 0); err != nil {
 			return fmt.Errorf("send xmpp cmd: %v", err)
 		}
 	}
@@ -204,10 +221,10 @@ func (this *Mapping) turnHttp(onOrOff ON_OR_OFF) (err error) {
 }
 
 func (this *Mapping) turnXmpp(onOrOff ON_OR_OFF) (err error) {
-	return this.sendXmppCommand(string(onOrOff), this.MachineId)
+	return sendXmppCommand(string(onOrOff), this.MachineId)
 }
 
-func (this *Mapping) sendXmppCommand(command string, machineId int64) (err error) {
+func sendXmppCommand(command string, machineId int64) (err error) {
 	trackingId := uuid.NewV4().String()
 	mu.Lock()
 	responses[trackingId] = make(chan xmpp.Message, 1)

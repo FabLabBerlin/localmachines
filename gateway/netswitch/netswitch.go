@@ -26,7 +26,6 @@ type syncCommand struct {
 
 type NetSwitch struct {
 	netswitch.Mapping
-	Xmpp   bool
 	On     bool
 	syncCh chan syncCommand
 }
@@ -39,12 +38,14 @@ func (ns *NetSwitch) assertLoopRunning() {
 }
 
 func (ns *NetSwitch) loop() {
-	for {
-		select {
-		case cmd := <-ns.syncCh:
-			cmd.Error <- ns.sync(cmd)
-		}
+	for cmd := range ns.syncCh {
+		cmd.Error <- ns.sync(cmd)
 	}
+}
+
+func (ns *NetSwitch) Close() {
+	log.Printf("NetSwitch#Close")
+	close(ns.syncCh)
 }
 
 func (ns *NetSwitch) sync(cmd syncCommand) (err error) {

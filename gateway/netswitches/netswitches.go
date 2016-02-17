@@ -67,6 +67,24 @@ func (nss *NetSwitches) fetch(client *http.Client) (err error) {
 			}
 		}
 	}
+	// Removed unused IDs
+	unusedIDs := make([]int64, 0, 3)
+	for _, ns := range nss.nss {
+		foundInMappings := false
+		for _, mapping := range mappings {
+			if mapping.MachineId == ns.MachineId {
+				foundInMappings = true
+			}
+		}
+		if !foundInMappings {
+			unusedIDs = append(unusedIDs, ns.MachineId)
+		}
+	}
+	for _, unusedID := range unusedIDs {
+		ns := nss.nss[unusedID]
+		delete(nss.nss, unusedID)
+		ns.Close()
+	}
 	return
 }
 
