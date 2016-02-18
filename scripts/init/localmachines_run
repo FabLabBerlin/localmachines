@@ -1,0 +1,4 @@
+#!/bin/bash
+LM_DIR=/opt/localmachines
+cd $LM_DIR
+GOPATH=/usr/local/go exec $LM_DIR/localmachines > /opt/localmachines/server.log 2>&1

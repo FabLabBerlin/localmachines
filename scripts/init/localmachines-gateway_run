@@ -1,0 +1,4 @@
+#!/bin/bash
+LM_DIR=/opt/localmachines-gateway
+cd $LM_DIR
+exec $LM_DIR/localmachines-gateway > /opt/localmachines-gateway/server.log 2>&1

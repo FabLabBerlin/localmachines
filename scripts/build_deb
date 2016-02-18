@@ -1,0 +1,68 @@
+#!/bin/bash
+
+# Script requires dpkg, on OS X: brew install dpkg
+
+# Exit on failures and undeclared variables
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+__dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+__root="$(cd "$(dirname "${__dir}")" && pwd)" # <-- change this
+__file="${__dir}/$(basename "${BASH_SOURCE[0]}")"
+__base="$(basename ${__file} .sh)"
+
+arg1="${1:-}"
+
+PKG_NAME=localmachines_0.10.2.0
+
+PKG_TMP_DIR=$__dir/pkg_tmp_dir
+PKG_ROOT=$PKG_TMP_DIR/$PKG_NAME
+
+function buildPkg {
+	buildArch=$1
+
+	echo Building package for $buildArch...
+
+	mkdir -p $PKG_ROOT
+	mkdir -p $PKG_ROOT/DEBIAN
+	cp $__dir/deb_pkg/conffiles $PKG_ROOT/DEBIAN/
+	cp $__dir/deb_pkg/control $PKG_ROOT/DEBIAN/
+	mkdir -p $PKG_ROOT/etc/service/localmachines
+	mkdir -p $PKG_ROOT/etc/service/localmachines-gateway
+	cp $__dir/init/localmachines_run $PKG_ROOT/etc/service/localmachines/run
+	mkdir -p $PKG_ROOT/opt/localmachines
+	mkdir -p $PKG_ROOT/opt/localmachines-gateway
+
+	mkdir -p $PKG_ROOT/opt/localmachines/conf/
+	cp $__dir/../conf/app.example.conf $PKG_ROOT/opt/localmachines/conf/app.conf
+
+	echo Building localmachines.$buildArch.bin...
+	cd $__dir/..
+	cp $__dir/init/localmachines_run $PKG_ROOT/etc/service/localmachines/run
+	env GOOS=linux GOARCH=$buildArch GOARM=5 go build -o $__dir/../localmachines.$buildArch.bin
+	cd $PKG_ROOT/opt/localmachines
+	cp $__dir/../localmachines.$buildArch.bin .
+	ln -f -s localmachines.$buildArch.bin localmachines
+
+	echo Building localmachines-gateway.$buildArch.bin...
+	cd $__dir/..
+	cp $__dir/init/localmachines-gateway_run $PKG_ROOT/etc/service/localmachines-gateway/run
+	env GOOS=linux GOARCH=$buildArch GOARM=5 go build -o $__dir/../localmachines-gateway.$buildArch.bin
+	cd $PKG_ROOT/opt/localmachines-gateway
+	cp $__dir/../localmachines-gateway.$buildArch.bin .
+	ln -f -s localmachines-gateway.$buildArch.bin localmachines-gateway
+
+	sudo chown -R root $PKG_ROOT
+
+	dpkg-deb --build $PKG_ROOT
+
+	cp $PKG_TMP_DIR/$PKG_NAME.deb $__dir/
+
+	sudo rm -rf $PKG_TMP_DIR
+	echo
+}
+
+#buildPkg amd64
+buildPkg arm

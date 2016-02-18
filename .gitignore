@@ -1,9 +1,14 @@
 .DS_Store
 *~
+*.deb
 *.swp
 fabsmith
 foo.state.test
 localmachines
+localmachines-gateway.amd64.bin
+localmachines-gateway.arm.bin
+localmachines.amd64.bin
+localmachines.arm.bin
 npm-debug.log
 conf/app.conf
 views/prod/*

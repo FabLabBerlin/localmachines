@@ -1,0 +1,9 @@
+Package: localmachines
+Architecture: armhf
+Maintainer: Localmachines Team
+Depends: daemontools, daemontools-run
+Priority: optional
+Version: 0.10.2.0
+Description: Localmachines
+ This script provides an easy way to install Localmachines.
+ Setting up Localmachines is now more fun than ever!
