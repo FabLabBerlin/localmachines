@@ -15,54 +15,137 @@ __base="$(basename ${__file} .sh)"
 
 arg1="${1:-}"
 
-PKG_NAME=localmachines_0.10.2.0
 
-PKG_TMP_DIR=$__dir/pkg_tmp_dir
-PKG_ROOT=$PKG_TMP_DIR/$PKG_NAME
 
-function buildPkg {
-	buildArch=$1
 
-	echo Building package for $buildArch...
+if [[ $# -eq 0 ]]
+then
+    echo 'Please add architecture (amd64 or arm) as parameter'
+    echo
+    echo 'Example:'
+    echo '          scripts/build_deb amd64'
+    exit 0
+fi
 
-	mkdir -p $PKG_ROOT
-	mkdir -p $PKG_ROOT/DEBIAN
-	cp $__dir/deb_pkg/conffiles $PKG_ROOT/DEBIAN/
-	cp $__dir/deb_pkg/control $PKG_ROOT/DEBIAN/
-	mkdir -p $PKG_ROOT/etc/service/localmachines
-	mkdir -p $PKG_ROOT/etc/service/localmachines-gateway
-	cp $__dir/init/localmachines_run $PKG_ROOT/etc/service/localmachines/run
-	mkdir -p $PKG_ROOT/opt/localmachines
-	mkdir -p $PKG_ROOT/opt/localmachines-gateway
+architecture=$1
 
-	mkdir -p $PKG_ROOT/opt/localmachines/conf/
-	cp $__dir/../conf/app.example.conf $PKG_ROOT/opt/localmachines/conf/app.conf
 
-	echo Building localmachines.$buildArch.bin...
+
+function setupDEBIAN {
+	sourceDir=$1         # Dir containing conffiles and control
+	                     #     e.g. $__dir/deb_pkg/localmachines
+	targetDir=$2         # Dir in which to create DEBIAN/
+	                     #     e.g. $PKG_ROOT/
+	architecture=$3      # amd64 or arm
+
+
+	mkdir -p $targetDir/DEBIAN
+	cp $sourceDir/conffiles $targetDir/DEBIAN/
+
+	if [ "$architecture" = "amd64" ]
+	then
+		echo Amd64...
+		sed "s/ARCHITECTURE/amd64/g" $sourceDir/control > $targetDir/DEBIAN/control
+	elif [ "$architecture" = "arm" ]
+	then
+		echo Arm...
+		echo $targetDir/DEBIAN/control
+		sed "s/ARCHITECTURE/armhf/g" $sourceDir/control > $targetDir/DEBIAN/control
+	else
+		echo setupDEBIAN: wrong arg
+		exit 1
+	fi
+}
+
+function compile {
+	sourceDir=$1         # e.g. ../$__dir or ../$__dir/gateway
+	targetDir=$2         # e.g. $PKG_ROOT/opt/localmachines
+	architecture=$3      # amd64 or arm
+	binName=$4           # e.g. localmachines or localmachines-gateway
+
+
+	echo Building $binName.$buildArch.bin...
 	cd $__dir/..
-	cp $__dir/init/localmachines_run $PKG_ROOT/etc/service/localmachines/run
-	env GOOS=linux GOARCH=$buildArch GOARM=5 go build -o $__dir/../localmachines.$buildArch.bin
-	cd $PKG_ROOT/opt/localmachines
-	cp $__dir/../localmachines.$buildArch.bin .
-	ln -f -s localmachines.$buildArch.bin localmachines
+	env GOOS=linux GOARCH=$buildArch GOARM=5 go build -o $__dir/../$binName.$buildArch.bin
+	cd $targetDir
+	cp $__dir/../$binName.$buildArch.bin .
+	ln -f -s $binName.$buildArch.bin $binName
+}
 
-	echo Building localmachines-gateway.$buildArch.bin...
-	cd $__dir/..
-	cp $__dir/init/localmachines-gateway_run $PKG_ROOT/etc/service/localmachines-gateway/run
-	env GOOS=linux GOARCH=$buildArch GOARM=5 go build -o $__dir/../localmachines-gateway.$buildArch.bin
-	cd $PKG_ROOT/opt/localmachines-gateway
-	cp $__dir/../localmachines-gateway.$buildArch.bin .
-	ln -f -s localmachines-gateway.$buildArch.bin localmachines-gateway
+function finalize {
+	pkgTmpDir=$1
+	pkgRoot=$2
+	pkgName=$3           # e.g. localmachines_0.10.2.0
+	architecture=$4      # amd64 or arm
 
-	sudo chown -R root $PKG_ROOT
 
-	dpkg-deb --build $PKG_ROOT
+	sudo chown -R root $pkgRoot
 
-	cp $PKG_TMP_DIR/$PKG_NAME.deb $__dir/
+	dpkg-deb --build $pkgRoot
 
-	sudo rm -rf $PKG_TMP_DIR
+	cp $PKG_TMP_DIR/$pkgName.deb $__dir/../$pkgName.$buildArch.deb
+
+	sudo rm -rf $pkgTmpDir
 	echo
 }
 
-#buildPkg amd64
-buildPkg arm
+function buildLm {
+	buildArch=$1
+
+	echo Building Localmachines package for $buildArch...
+
+	PKG_NAME=localmachines_0.10.2.0
+	PKG_TMP_DIR=$__dir/pkg_tmp_dir
+	PKG_ROOT=$PKG_TMP_DIR/$PKG_NAME
+
+	# .deb Configuration
+	mkdir -p $PKG_ROOT
+	setupDEBIAN $__dir/deb_pkg/localmachines $PKG_ROOT $buildArch
+	mkdir -p $PKG_ROOT/etc/service/localmachines
+	mkdir -p $PKG_ROOT/opt/localmachines
+
+	# Localmachines Configuration
+	mkdir -p $PKG_ROOT/opt/localmachines/conf/
+	cp $__dir/../conf/app.example.conf $PKG_ROOT/opt/localmachines/conf/app.example.conf
+	cp $__dir/../conf/app.example.conf $PKG_ROOT/opt/localmachines/conf/app.conf
+	cp $__dir/init/localmachines_run $PKG_ROOT/etc/service/localmachines/run
+
+	# Frontend
+	mkdir -p $PKG_ROOT/opt/localmachines/clients/admin
+	cp -r $__dir/../clients/admin/prod $PKG_ROOT/opt/localmachines/clients/admin/
+	mkdir -p $PKG_ROOT/opt/localmachines/clients/machines
+	cp -r $__dir/../clients/machines/prod $PKG_ROOT/opt/localmachines/clients/machines/
+
+	compile $__dir/.. $PKG_ROOT/opt/localmachines $buildArch localmachines
+
+	finalize $PKG_TMP_DIR $PKG_ROOT $PKG_NAME $buildArch
+}
+
+function buildGateway {
+	buildArch=$1
+
+	echo Building Gateway package for $buildArch...
+
+	PKG_NAME=localmachines-gateway_0.10.2.0
+	PKG_TMP_DIR=$__dir/pkg_tmp_dir
+	PKG_ROOT=$PKG_TMP_DIR/$PKG_NAME
+
+	# .deb Configuration
+	mkdir -p $PKG_ROOT
+	setupDEBIAN $__dir/deb_pkg/localmachines-gateway $PKG_ROOT $buildArch
+	mkdir -p $PKG_ROOT/etc/service/localmachines-gateway
+	mkdir -p $PKG_ROOT/opt/localmachines-gateway
+
+	# Gateway Configuration
+	mkdir -p $PKG_ROOT/opt/localmachines-gateway/conf
+	cp $__dir/../gateway/conf/gateway.example.conf $PKG_ROOT/opt/localmachines-gateway/conf/gateway.example.conf
+	cp $__dir/../gateway/conf/gateway.example.conf $PKG_ROOT/opt/localmachines-gateway/conf/gateway.conf
+	cp $__dir/init/localmachines-gateway_run $PKG_ROOT/etc/service/localmachines-gateway/run
+
+	compile $__dir/.. $PKG_ROOT/opt/localmachines-gateway $buildArch localmachines-gateway
+
+	finalize $PKG_TMP_DIR $PKG_ROOT $PKG_NAME $buildArch
+}
+
+buildLm $architecture
+buildGateway $architecture
