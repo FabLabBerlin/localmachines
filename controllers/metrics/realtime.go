@@ -23,7 +23,7 @@ func (c *Controller) GetRealtime() {
 		beego.Error("GrafanaApiKey too short")
 		c.CustomAbort(500, "Internal Server Error")
 	}
-	if c.GetString("apikey") != apiKey {
+	if c.GetString("apikey") != apiKey && c.Ctx.Request.Header.Get("X-Api-Key") != apiKey {
 		c.CustomAbort(401, "Not authorized")
 	}
 
