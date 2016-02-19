@@ -8,6 +8,7 @@ import (
 
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
+	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
 	. "github.com/smartystreets/goconvey/convey"
@@ -23,11 +24,11 @@ func init() {
 func CreateTestPurchase(machineId int64, machineName string,
 	minutes time.Duration, pricePerMinute float64) *purchases.Purchase {
 
-	machine := models.Machine{}
-	machine.Id = machineId
-	machine.Name = machineName
-	machine.PriceUnit = "minute"
-	machine.Price = pricePerMinute
+	m := machine.Machine{}
+	m.Id = machineId
+	m.Name = machineName
+	m.PriceUnit = "minute"
+	m.Price = pricePerMinute
 
 	invAct := &purchases.Purchase{
 		Type:         purchases.TYPE_ACTIVATION,
@@ -36,7 +37,7 @@ func CreateTestPurchase(machineId int64, machineName string,
 		PricePerUnit: pricePerMinute,
 		PriceUnit:    "minute",
 		Quantity:     minutes.Minutes(),
-		Machine:      &machine,
+		Machine:      &m,
 		MachineId:    machineId,
 		MachineUsage: minutes,
 		Memberships: []*models.Membership{

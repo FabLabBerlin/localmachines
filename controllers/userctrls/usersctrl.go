@@ -6,6 +6,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/controllers"
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
+	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/user_roles"
@@ -28,8 +29,7 @@ func (this *Controller) GetRouteUid() (uid int64, authorized bool) {
 	}
 
 	// Get requested user ID
-	var ruid int64
-	ruid, err = this.GetInt64(":uid")
+	ruid, err := this.GetInt64(":uid")
 	if err != nil {
 		beego.Error("Failed to get :uid", err)
 		return 0, false
@@ -402,14 +402,14 @@ func (this *UsersController) GetUserMachines() {
 	locationId, _ := this.GetInt64("location")
 
 	// List all machines if the requested user is admin
-	allMachines, err := models.GetAllMachines()
+	allMachines, err := machine.GetAllMachines()
 	if err != nil {
 		beego.Error("Failed to get all machines: ", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
 	// Get the machines!
-	machines := make([]*models.Machine, 0, len(allMachines))
+	machines := make([]*machine.Machine, 0, len(allMachines))
 	if !this.IsAdmin(uid) {
 		permissions, err := models.GetUserPermissions(uid)
 		if err != nil {
@@ -428,7 +428,7 @@ func (this *UsersController) GetUserMachines() {
 		machines = allMachines
 	}
 
-	filteredByLocation := make([]*models.Machine, 0, len(machines))
+	filteredByLocation := make([]*machine.Machine, 0, len(machines))
 	for _, m := range machines {
 		if locationId <= 0 || locationId == m.LocationId {
 			filteredByLocation = append(filteredByLocation, m)

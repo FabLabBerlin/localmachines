@@ -3,7 +3,7 @@ package purchases
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"time"
@@ -83,7 +83,7 @@ func GetAllReservationsAt(locationId int64) (reservations []*Reservation, err er
 func CreateReservation(reservation *Reservation) (int64, error) {
 
 	// Get the reservation_price_hourly of the machine being reserved
-	machine := models.Machine{Id: reservation.purchase.MachineId}
+	machine := machine.Machine{Id: reservation.purchase.MachineId}
 	err, _ := machine.Read()
 	if err != nil {
 		beego.Error("Failed to read machine")

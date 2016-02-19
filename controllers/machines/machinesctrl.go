@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/controllers"
 	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/astaxie/beego"
 	"strings"
 )
@@ -18,7 +19,7 @@ type Controller struct {
 // @Title GetAll
 // @Description Get all machines (limited to location, if specified)
 // @Param	location	query	int64	false	"Location ID"
-// @Success 200 {object} models.Machine
+// @Success 200 {object} machine.Machine
 // @Failure	401 Not authorized
 // @Failure	500	Failed to get all machines
 // @router / [get]
@@ -28,13 +29,13 @@ func (this *Controller) GetAll() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	allMachines, err := models.GetAllMachines()
+	allMachines, err := machine.GetAllMachines()
 	if err != nil {
 		beego.Error("Failed to get all machines", err)
 		this.CustomAbort(500, "Failed to get all machines")
 	}
 
-	machines := make([]*models.Machine, 0, len(allMachines))
+	machines := make([]*machine.Machine, 0, len(allMachines))
 	for _, m := range allMachines {
 		if locId == 0 || locId == m.LocationId {
 			machines = append(machines, m)
@@ -48,7 +49,7 @@ func (this *Controller) GetAll() {
 // @Title Get
 // @Description Get machine by machine ID
 // @Param	mid		path 	int	true		"Machine ID"
-// @Success 200 {object} models.Machine
+// @Success 200 {object} machine.Machine
 // @Failure	403	Failed to get machine
 // @Failure	401	Not authorized
 // @router /:mid [get]
@@ -89,7 +90,7 @@ func (this *Controller) Get() {
 		}
 	}
 
-	machine, err := models.GetMachine(machineId)
+	machine, err := machine.GetMachine(machineId)
 	if err != nil {
 		beego.Error("Failed to get machine", err)
 		this.CustomAbort(403, "Failed to get machine")
@@ -102,7 +103,7 @@ func (this *Controller) Get() {
 // @Title Create
 // @Description Create machine
 // @Param	mname	query	string	true	"Machine Name"
-// @Success 200 {object} models.MachineCreatedResponse
+// @Success 200 {object} machine.MachineCreatedResponse
 // @Failure	403	Failed to create machine
 // @Failure	401	Not authorized
 // @router / [post]
@@ -114,7 +115,7 @@ func (this *Controller) Create() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	machineId, err := models.CreateMachine(machineName)
+	machineId, err := machine.CreateMachine(machineName)
 	if err != nil {
 		beego.Error("Failed to create machine", err)
 		this.CustomAbort(403, "Failed to create machine")
@@ -127,7 +128,7 @@ func (this *Controller) Create() {
 // @Title Update
 // @Description Update machine
 // @Param	mid	path	int	true	"Machine ID"
-// @Param	model	body	models.Machine	true	"Machine model"
+// @Param	model	body	machine.Machine	true	"Machine model"
 // @Success 200 string ok
 // @Failure	400	Bad Request
 // @Failure	401	Not authorized
@@ -141,7 +142,7 @@ func (this *Controller) Update() {
 	}
 
 	dec := json.NewDecoder(this.Ctx.Request.Body)
-	req := models.Machine{}
+	req := machine.Machine{}
 	if err := dec.Decode(&req); err != nil {
 		beego.Error("Failed to decode json:", err)
 		this.CustomAbort(400, "Failed to update machine")
@@ -160,7 +161,7 @@ func (this *Controller) Update() {
 
 	if err = req.Update(); err != nil {
 		beego.Error("Failed updating machine:", err)
-		if err == models.ErrDimensions || err == models.ErrWorkspaceDimensions {
+		if err == machine.ErrDimensions || err == machine.ErrWorkspaceDimensions {
 			this.CustomAbort(400, err.Error())
 		} else {
 			this.CustomAbort(500, "Failed to update machine")
@@ -222,7 +223,7 @@ func (this *Controller) PostImage() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	m, err := models.GetMachine(mid)
+	m, err := machine.GetMachine(mid)
 	if err != nil {
 		beego.Error("Failed to get :mid variable")
 		this.CustomAbort(403, "Failed to get machine")
@@ -255,7 +256,7 @@ func (this *Controller) underMaintenanceOnOrOff(onOrOff int) error {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	machine, err := models.GetMachine(machineId)
+	machine, err := machine.GetMachine(machineId)
 	if err != nil {
 		beego.Error("Failed to get machine", err)
 		this.CustomAbort(403, "Failed to get machine")
@@ -279,7 +280,7 @@ func (this *Controller) ReportBroken() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	machine, err := models.GetMachine(machineId)
+	machine, err := machine.GetMachine(machineId)
 	if err != nil {
 		beego.Error("Failed to get machine", err)
 		this.CustomAbort(403, "Failed to get machine")
@@ -353,7 +354,7 @@ func (this *Controller) switchMachine(onOrOff int) error {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	machine, err := models.GetMachine(machineId)
+	machine, err := machine.GetMachine(machineId)
 	if err != nil {
 		beego.Error("Failed to get machine", err)
 		this.CustomAbort(403, "Failed to get machine")
@@ -415,16 +416,21 @@ func (this *Controller) Search() {
 		this.CustomAbort(400, "Client error")
 	}
 
-	ms, err := models.GetAllMachines()
+	ms, err := machine.GetAllMachines()
 	if err != nil {
 		beego.Error("get all machines", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	results := make([]*models.Machine, 0, len(ms))
+	results := make([]*machine.Machine, 0, len(ms))
 
 	for _, m := range ms {
 		if m.TypeId == machineTypeId {
+			m.NetswitchUrlOn = ""
+			m.NetswitchUrlOff = ""
+			m.NetswitchHost = ""
+			m.NetswitchSensorPort = 0
+			m.NetswitchXmpp = false
 			results = append(results, m)
 		}
 	}

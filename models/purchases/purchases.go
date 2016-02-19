@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"time"
@@ -46,7 +47,7 @@ type Purchase struct {
 	ReservationDisabled bool
 
 	// Activation+Reservation fields:
-	Machine   *models.Machine `orm:"-"`
+	Machine   *machine.Machine `orm:"-"`
 	MachineId int64
 
 	// Activation+Tutoring fields:

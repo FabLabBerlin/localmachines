@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/gateway/netswitch"
-	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/machine"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -54,7 +54,7 @@ func NewNetSwitch(desired DesiredState, relay RelayState) *NetSwitch {
 		panic(err.Error())
 	}
 	mock.NetSwitch = &netswitch.NetSwitch{
-		Machine: models.Machine{
+		Machine: machine.Machine{
 			NetswitchHost:       url.Host,
 			NetswitchSensorPort: 1,
 		},
@@ -77,16 +77,16 @@ func (ns *NetSwitch) Host() string {
 
 type LmApi struct {
 	mu       sync.RWMutex
-	mappings map[int64]models.Machine
+	mappings map[int64]machine.Machine
 	server   *httptest.Server
 }
 
 func NewLmApi() (api *LmApi) {
 	api = &LmApi{
-		mappings: make(map[int64]models.Machine),
+		mappings: make(map[int64]machine.Machine),
 	}
 	api.server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		state := make([]models.Machine, 0, len(api.mappings))
+		state := make([]machine.Machine, 0, len(api.mappings))
 		for _, mapping := range api.mappings {
 			state = append(state, mapping)
 		}
@@ -97,7 +97,7 @@ func NewLmApi() (api *LmApi) {
 	return
 }
 
-func (api *LmApi) AddMapping(mapping models.Machine) {
+func (api *LmApi) AddMapping(mapping machine.Machine) {
 	api.mu.Lock()
 	defer api.mu.Unlock()
 	if _, ok := api.mappings[mapping.Id]; ok {
@@ -112,7 +112,7 @@ func (api *LmApi) DeleteMapping(machineId int64) {
 	delete(api.mappings, machineId)
 }
 
-func (api *LmApi) UpdateMapping(machineId int64, mapping models.Machine) {
+func (api *LmApi) UpdateMapping(machineId int64, mapping machine.Machine) {
 	api.mu.Lock()
 	defer api.mu.Unlock()
 	if _, ok := api.mappings[machineId]; !ok {

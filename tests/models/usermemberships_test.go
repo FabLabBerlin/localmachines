@@ -7,6 +7,7 @@ import (
 
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
+	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -23,8 +24,8 @@ func TestUserMemberships(t *testing.T) {
 		Convey("Testing CreateUserMembership", func() {
 
 			// Create machines for the activations
-			machineIdOne, _ := models.CreateMachine("Machine One")
-			machineIdTwo, _ := models.CreateMachine("Machine Two")
+			machineIdOne, _ := machine.CreateMachine("Machine One")
+			machineIdTwo, _ := machine.CreateMachine("Machine Two")
 
 			baseMembership := &models.Membership{
 				LocationId: 1,

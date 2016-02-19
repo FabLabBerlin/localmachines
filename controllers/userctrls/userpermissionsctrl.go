@@ -3,6 +3,7 @@ package userctrls
 import (
 	"encoding/json"
 	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/astaxie/beego"
 )
 
@@ -178,14 +179,14 @@ func (this *UserPermissionsController) GetUserMachinePermissions() {
 	}
 
 	// We need to get machine permissions first and then the machines
-	machines := make([]*models.Machine, 0, 20)
+	machines := make([]*machine.Machine, 0, 20)
 	permissions, err := models.GetUserPermissions(uid)
 	if err != nil {
 		beego.Error("Failed to get user machine permissions: ", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
 	for _, permission := range *permissions {
-		machine, err := models.GetMachine(permission.MachineId)
+		machine, err := machine.GetMachine(permission.MachineId)
 		if err != nil {
 			beego.Warning("Failed to get machine ID", permission.MachineId)
 			// Just don't add the machine permission if not exists in db

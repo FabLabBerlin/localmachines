@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"time"
@@ -136,7 +137,7 @@ func CreateActivation(machineId, userId int64, startTime time.Time) (
 	activationId int64, err error) {
 
 	o := orm.NewOrm()
-	mch := models.Machine{Id: machineId}
+	mch := machine.Machine{Id: machineId}
 
 	if !mch.Exists() {
 		activationId = 0
@@ -239,8 +240,7 @@ func CloseActivation(activationId int64, endTime time.Time) error {
 	}
 
 	// Make the machine available again.
-	var machine *models.Machine
-	machine, err = models.GetMachine(activation.Purchase.MachineId)
+	machine, err := machine.GetMachine(activation.Purchase.MachineId)
 	if err != nil {
 		beego.Error("Failed to get machine:", err)
 		return fmt.Errorf("Failed to get machine: %v", err)

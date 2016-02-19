@@ -5,7 +5,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/gateway/global"
 	"github.com/FabLabBerlin/localmachines/gateway/netswitch"
 	"github.com/FabLabBerlin/localmachines/gateway/netswitches"
-	models "github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/tests/gateway/mocks"
 	"net/http"
 	"os"
@@ -26,13 +26,13 @@ func TestNetswitches(t *testing.T) {
 
 	lmApi := mocks.NewLmApi()
 	defer lmApi.Close()
-	lmApi.AddMapping(models.Machine{
+	lmApi.AddMapping(machine.Machine{
 		Id:                  11,
 		NetswitchHost:       netSwitch1.Host(),
 		NetswitchSensorPort: 1,
 		NetswitchXmpp:       true,
 	})
-	lmApi.AddMapping(models.Machine{
+	lmApi.AddMapping(machine.Machine{
 		Id:            22,
 		NetswitchHost: netSwitch2.Host(),
 		NetswitchXmpp: false,
@@ -66,7 +66,7 @@ func TestNetswitches(t *testing.T) {
 		})
 
 		Convey("It fails when there are duplicate combinations hosts+sensor port that could lead to contradictory state which in turn could lead to switches turning on and off every 30 seconds", func() {
-			lmApi.AddMapping(models.Machine{
+			lmApi.AddMapping(machine.Machine{
 				Id:                  44,
 				NetswitchHost:       netSwitch1.Host(),
 				NetswitchSensorPort: 1,
@@ -103,7 +103,7 @@ func TestNetswitches(t *testing.T) {
 		})
 
 		Convey("It should poll the two registered Xmpp switches", func() {
-			lmApi.AddMapping(models.Machine{
+			lmApi.AddMapping(machine.Machine{
 				Id:                  33,
 				NetswitchHost:       netSwitch3.Host(),
 				NetswitchSensorPort: 1,

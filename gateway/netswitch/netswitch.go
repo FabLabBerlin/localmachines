@@ -12,7 +12,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/gateway/global"
-	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/machine"
 	"log"
 	"net/http"
 	"net/url"
@@ -25,7 +25,7 @@ type syncCommand struct {
 }
 
 type NetSwitch struct {
-	models.Machine
+	machine.Machine
 	On     bool
 	syncCh chan syncCommand
 }

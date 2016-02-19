@@ -8,6 +8,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/database/connect"
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
+	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/products"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/astaxie/beego"
@@ -17,7 +18,7 @@ import (
 var dbModels = []Model{
 	&invoices.Invoice{},
 	&models.Auth{},
-	&models.Machine{},
+	&machine.Machine{},
 	&models.Membership{},
 	&models.Permission{},
 	&models.User{},

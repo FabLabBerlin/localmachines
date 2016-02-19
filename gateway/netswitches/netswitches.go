@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/gateway/global"
 	"github.com/FabLabBerlin/localmachines/gateway/netswitch"
-	models "github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/machine"
 	"log"
 	"net/http"
 	"os"
@@ -60,7 +60,7 @@ func (nss *NetSwitches) fetch(client *http.Client) (err error) {
 		return fmt.Errorf("unexpected status code: %v", code)
 	}
 	dec := json.NewDecoder(resp.Body)
-	mappings := []models.Machine{}
+	mappings := []machine.Machine{}
 	if err := dec.Decode(&mappings); err != nil {
 		return fmt.Errorf("json decode: %v", err)
 	}

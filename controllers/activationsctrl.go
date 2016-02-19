@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/astaxie/beego"
 	"time"
@@ -170,7 +171,7 @@ func (this *ActivationsController) Create() {
 		}
 	}
 
-	machine, err := models.GetMachine(machineId)
+	machine, err := machine.GetMachine(machineId)
 	if err != nil {
 		beego.Error("Unable to get machine:", err)
 		this.CustomAbort(500, "Unable to get machine")
@@ -218,7 +219,7 @@ func (this *ActivationsController) Close() {
 	// Attempt to switch off the machine first. This is a way to detect
 	// network errors early as the users won't be able to end their activation
 	// unless the error in the network is fixed.
-	machine, err := models.GetMachine(machineId)
+	machine, err := machine.GetMachine(machineId)
 	if err != nil {
 		beego.Error("Unable to get machine:", err)
 		this.CustomAbort(500, "Unable to get machine")

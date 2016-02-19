@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
@@ -249,11 +250,11 @@ func (this *Invoice) getFileName(startTime, endTime time.Time) string {
 }
 
 func (this *Invoice) getPurchases(locationId int64, startTime, endTime time.Time) (ps []*purchases.Purchase, err error) {
-	machines, err := models.GetAllMachines()
+	machines, err := machine.GetAllMachines()
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get machines: %v", err)
 	}
-	machinesById := make(map[int64]*models.Machine)
+	machinesById := make(map[int64]*machine.Machine)
 	for _, machine := range machines {
 		machinesById[machine.Id] = machine
 	}
@@ -359,7 +360,7 @@ func (this *Invoice) getUserSummaries(
 }
 
 func (this *Invoice) enhancePurchase(purchase *purchases.Purchase,
-	machinesById map[int64]*models.Machine, usersById map[int64]models.User,
+	machinesById map[int64]*machine.Machine, usersById map[int64]models.User,
 	userMembershipsByUserId map[int64][]*models.UserMembership,
 	membershipsById map[int64]*models.Membership) error {
 

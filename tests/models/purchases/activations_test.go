@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/tests/assert"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
@@ -16,12 +17,12 @@ func init() {
 	setup.ConfigDB()
 }
 
-func CreateMachine(name string) (m *models.Machine, err error) {
-	mid, err := models.CreateMachine(name)
+func CreateMachine(name string) (m *machine.Machine, err error) {
+	mid, err := machine.CreateMachine(name)
 	if err != nil {
 		return
 	}
-	if m, err = models.GetMachine(mid); err != nil {
+	if m, err = machine.GetMachine(mid); err != nil {
 		return
 	}
 	m.Price = 0.1

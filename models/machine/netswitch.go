@@ -1,4 +1,4 @@
-package models
+package machine
 
 import (
 	"errors"
@@ -11,8 +11,6 @@ import (
 	"sync"
 	"time"
 )
-
-const TABLE_NAME = "netswitch"
 
 var (
 	mu sync.Mutex

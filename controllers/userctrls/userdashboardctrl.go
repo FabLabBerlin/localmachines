@@ -3,6 +3,7 @@ package userctrls
 import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/products"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/astaxie/beego"
@@ -14,7 +15,7 @@ type UserDashboardController struct {
 
 type DashboardData struct {
 	Activations []*purchases.Activation
-	Machines    []*models.Machine
+	Machines    []*machine.Machine
 	Tutorings   *purchases.TutoringList
 }
 
@@ -38,13 +39,13 @@ func (this *DashboardData) loadActivations() (err error) {
 
 func (this *DashboardData) loadMachines(isAdmin bool, uid int64) (err error) {
 	// List all machines if the requested user is admin
-	allMachines, err := models.GetAllMachines()
+	allMachines, err := machine.GetAllMachines()
 	if err != nil {
 		return fmt.Errorf("Failed to get all machines: %v", err)
 	}
 
 	// Get the machines!
-	this.Machines = make([]*models.Machine, 0, len(allMachines))
+	this.Machines = make([]*machine.Machine, 0, len(allMachines))
 	if !isAdmin {
 		permissions, err := models.GetUserPermissions(uid)
 		if err != nil {
