@@ -14,6 +14,8 @@ import (
 	"time"
 )
 
+const TABLE_NAME = "netswitch"
+
 var (
 	mu sync.Mutex
 	// responses are matched here to the RPC requests.  We don't want to have
@@ -78,12 +80,25 @@ func init() {
 }
 
 func (m *Mapping) TableName() string {
-	return "netswitch"
+	return TABLE_NAME
 }
 
-func GetAllMappings() (ms []*Mapping, err error) {
+func GetAllMappingsAt(locationId int64) (mappings []*Mapping, err error) {
 	o := orm.NewOrm()
-	_, err = o.QueryTable(new(Mapping).TableName()).All(&ms)
+
+	qb, err := orm.NewQueryBuilder("mysql")
+	if err != nil {
+		return nil, fmt.Errorf("new query builder: %v", err)
+	}
+
+	qb.Select(TABLE_NAME + ".*").
+		From(TABLE_NAME).
+		InnerJoin("machines").
+		On(TABLE_NAME + ".machine_id = machines.id").
+		Where("machines.location_id = ?")
+
+	_, err = o.Raw(qb.String(), locationId).
+		QueryRows(&mappings)
 	return
 }
 

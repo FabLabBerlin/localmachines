@@ -14,6 +14,7 @@ import (
 	"net/url"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 )
@@ -30,8 +31,10 @@ func (resp *LoginResp) ok() bool {
 }
 
 func Login(client *http.Client, user, key string) (err error) {
-	resp, err := client.PostForm(global.Cfg.API.Url+"/users/login?location=1",
-		url.Values{"username": {user}, "password": {key}, "location": {"1"}})
+	locationId := strconv.FormatInt(global.Cfg.Main.LocationId, 10)
+	uri := global.Cfg.API.Url + "/users/login?location=" + locationId
+	resp, err := client.PostForm(uri,
+		url.Values{"username": {user}, "password": {key}})
 	if err != nil {
 		return fmt.Errorf("POST login: %v", err)
 	}

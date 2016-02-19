@@ -18,7 +18,8 @@ var (
 
 type Config struct {
 	Main struct {
-		StateFile string
+		LocationId int64
+		StateFile  string
 	}
 	API struct {
 		Id  string

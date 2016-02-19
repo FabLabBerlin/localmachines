@@ -63,6 +63,9 @@ func (ns *NetSwitch) sync(cmd syncCommand) (err error) {
 		return fmt.Errorf("http get url status: %v", err)
 	}
 	defer resp.Body.Close()
+	if code := resp.StatusCode; code < 200 || code > 299 {
+		return fmt.Errorf("unexpected status code: %v", code)
+	}
 	mfi := MfiSwitch{}
 	dec := json.NewDecoder(resp.Body)
 	if err := dec.Decode(&mfi); err != nil {

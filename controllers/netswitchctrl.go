@@ -17,16 +17,18 @@ type NetSwitchController struct {
 // @router / [get]
 func (this *NetSwitchController) GetAll() {
 
-	// This is admin and staff only
-	if !this.IsAdmin() && !this.IsStaff() {
+	locId, authorized := this.GetLocIdAdmin()
+	if !authorized {
 		beego.Error("Not authorized")
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	ms, err := netswitch.GetAllMappings()
+	ms, err := netswitch.GetAllMappingsAt(locId)
 	if err != nil {
-		this.CustomAbort(403, "Failed to get all netswitch mappings")
+		beego.Error("get all mappings at location:", err)
+		this.CustomAbort(500, "Failed to get all netswitch mappings")
 	}
+
 	this.Data["json"] = ms
 	this.ServeJSON()
 }

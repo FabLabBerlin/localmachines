@@ -13,6 +13,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"sync"
 )
 
@@ -48,11 +49,16 @@ func (nss *NetSwitches) Load(client *http.Client) (err error) {
 // Each type NetSwitch runs its own dispatch loop.  Make sure no additional
 // loop is started.
 func (nss *NetSwitches) fetch(client *http.Client) (err error) {
-	resp, err := client.Get(global.Cfg.API.Url + "/netswitch")
+	locationId := strconv.FormatInt(global.Cfg.Main.LocationId, 10)
+	url := global.Cfg.API.Url + "/netswitch?location=" + locationId
+	resp, err := client.Get(url)
 	if err != nil {
 		return fmt.Errorf("GET: %v", err)
 	}
 	defer resp.Body.Close()
+	if code := resp.StatusCode; code != http.StatusOK {
+		return fmt.Errorf("unexpected status code: %v", code)
+	}
 	dec := json.NewDecoder(resp.Body)
 	mappings := []modelsNetswitch.Mapping{}
 	if err := dec.Decode(&mappings); err != nil {
