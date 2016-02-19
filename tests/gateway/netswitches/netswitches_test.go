@@ -5,7 +5,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/gateway/global"
 	"github.com/FabLabBerlin/localmachines/gateway/netswitch"
 	"github.com/FabLabBerlin/localmachines/gateway/netswitches"
-	modelsNetswitch "github.com/FabLabBerlin/localmachines/models/netswitch"
+	models "github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/tests/gateway/mocks"
 	"net/http"
 	"os"
@@ -26,18 +26,16 @@ func TestNetswitches(t *testing.T) {
 
 	lmApi := mocks.NewLmApi()
 	defer lmApi.Close()
-	lmApi.AddMapping(modelsNetswitch.Mapping{
-		Id:         1,
-		MachineId:  11,
-		Host:       netSwitch1.Host(),
-		SensorPort: 1,
-		Xmpp:       true,
+	lmApi.AddMapping(models.Machine{
+		Id:                  11,
+		NetswitchHost:       netSwitch1.Host(),
+		NetswitchSensorPort: 1,
+		NetswitchXmpp:       true,
 	})
-	lmApi.AddMapping(modelsNetswitch.Mapping{
-		Id:        2,
-		MachineId: 22,
-		Host:      netSwitch2.Host(),
-		Xmpp:      false,
+	lmApi.AddMapping(models.Machine{
+		Id:            22,
+		NetswitchHost: netSwitch2.Host(),
+		NetswitchXmpp: false,
 	})
 
 	global.Cfg.API.Url = lmApi.URL()
@@ -61,20 +59,18 @@ func TestNetswitches(t *testing.T) {
 			dec.Decode(&nss)
 			So(len(nss), ShouldEqual, 1)
 			ns := nss[0]
-			So(ns.Id, ShouldEqual, 1)
-			So(ns.MachineId, ShouldEqual, 11)
-			So(ns.Host, ShouldEqual, netSwitch1.Host())
-			So(ns.SensorPort, ShouldEqual, 1)
-			So(ns.Xmpp, ShouldBeTrue)
+			So(ns.Id, ShouldEqual, 11)
+			So(ns.NetswitchHost, ShouldEqual, netSwitch1.Host())
+			So(ns.NetswitchSensorPort, ShouldEqual, 1)
+			So(ns.NetswitchXmpp, ShouldBeTrue)
 		})
 
 		Convey("It fails when there are duplicate combinations hosts+sensor port that could lead to contradictory state which in turn could lead to switches turning on and off every 30 seconds", func() {
-			lmApi.AddMapping(modelsNetswitch.Mapping{
-				Id:         4,
-				MachineId:  44,
-				Host:       netSwitch1.Host(),
-				SensorPort: 1,
-				Xmpp:       true,
+			lmApi.AddMapping(models.Machine{
+				Id:                  44,
+				NetswitchHost:       netSwitch1.Host(),
+				NetswitchSensorPort: 1,
+				NetswitchXmpp:       true,
 			})
 			err := netSwitches.Load(client)
 			So(err, ShouldNotBeNil)
@@ -107,12 +103,11 @@ func TestNetswitches(t *testing.T) {
 		})
 
 		Convey("It should poll the two registered Xmpp switches", func() {
-			lmApi.AddMapping(modelsNetswitch.Mapping{
-				Id:         3,
-				MachineId:  33,
-				Host:       netSwitch3.Host(),
-				SensorPort: 1,
-				Xmpp:       true,
+			lmApi.AddMapping(models.Machine{
+				Id:                  33,
+				NetswitchHost:       netSwitch3.Host(),
+				NetswitchSensorPort: 1,
+				NetswitchXmpp:       true,
 			})
 			before1 := netSwitch1.PollRequests
 			client := &http.Client{}

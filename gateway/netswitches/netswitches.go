@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/gateway/global"
 	"github.com/FabLabBerlin/localmachines/gateway/netswitch"
-	modelsNetswitch "github.com/FabLabBerlin/localmachines/models/netswitch"
+	models "github.com/FabLabBerlin/localmachines/models"
 	"log"
 	"net/http"
 	"os"
@@ -50,7 +50,7 @@ func (nss *NetSwitches) Load(client *http.Client) (err error) {
 // loop is started.
 func (nss *NetSwitches) fetch(client *http.Client) (err error) {
 	locationId := strconv.FormatInt(global.Cfg.Main.LocationId, 10)
-	url := global.Cfg.API.Url + "/netswitch?location=" + locationId
+	url := global.Cfg.API.Url + "/machines?location=" + locationId
 	resp, err := client.Get(url)
 	if err != nil {
 		return fmt.Errorf("GET: %v", err)
@@ -60,7 +60,7 @@ func (nss *NetSwitches) fetch(client *http.Client) (err error) {
 		return fmt.Errorf("unexpected status code: %v", code)
 	}
 	dec := json.NewDecoder(resp.Body)
-	mappings := []modelsNetswitch.Mapping{}
+	mappings := []models.Machine{}
 	if err := dec.Decode(&mappings); err != nil {
 		return fmt.Errorf("json decode: %v", err)
 	}
@@ -68,12 +68,12 @@ func (nss *NetSwitches) fetch(client *http.Client) (err error) {
 		nss.nss = make(map[int64]*netswitch.NetSwitch)
 	}
 	for _, mapping := range mappings {
-		if mapping.Xmpp {
-			if existing, exists := nss.nss[mapping.MachineId]; exists {
-				existing.Mapping = mapping
+		if mapping.NetswitchXmpp {
+			if existing, exists := nss.nss[mapping.Id]; exists {
+				existing.Machine = mapping
 			} else {
-				nss.nss[mapping.MachineId] = &netswitch.NetSwitch{
-					Mapping: mapping,
+				nss.nss[mapping.Id] = &netswitch.NetSwitch{
+					Machine: mapping,
 				}
 			}
 		}
@@ -83,12 +83,12 @@ func (nss *NetSwitches) fetch(client *http.Client) (err error) {
 	for _, ns := range nss.nss {
 		foundInMappings := false
 		for _, mapping := range mappings {
-			if mapping.MachineId == ns.MachineId {
+			if mapping.Id == ns.Id {
 				foundInMappings = true
 			}
 		}
 		if !foundInMappings {
-			unusedIDs = append(unusedIDs, ns.MachineId)
+			unusedIDs = append(unusedIDs, ns.Id)
 		}
 	}
 	for _, unusedID := range unusedIDs {
@@ -96,12 +96,13 @@ func (nss *NetSwitches) fetch(client *http.Client) (err error) {
 		delete(nss.nss, unusedID)
 		ns.Close()
 	}
-	// Make sure there are no duplicate combinations Host + SensorPort
+	// Make sure there are no duplicate combinations Netswitch Host + SensorPort
 	hostsSensorPorts := make(map[string]bool)
 	for _, ns := range nss.nss {
-		key := fmt.Sprintf("%v -> %v", ns.Host, ns.SensorPort)
+		key := fmt.Sprintf("%v -> %v", ns.NetswitchHost, ns.NetswitchSensorPort)
 		if _, ok := hostsSensorPorts[key]; ok {
-			log.Printf("duplicate combination host sensor port: %v", ns.Host, ns.SensorPort)
+			log.Printf("duplicate combination host sensor port: %v",
+				ns.NetswitchHost, ns.NetswitchSensorPort)
 			return ErrDuplicateCombinationHostSensorPort
 		}
 		hostsSensorPorts[key] = true
@@ -127,7 +128,7 @@ func (nss *NetSwitches) loadOnOff() (err error) {
 		return fmt.Errorf("json decode: %v", err)
 	}
 	for _, switchState := range switchStates {
-		mid := switchState.MachineId
+		mid := switchState.Machine.Id
 		if netswitch, ok := nss.nss[mid]; ok {
 			netswitch.On = switchState.On
 		} else {
@@ -149,7 +150,7 @@ func (nss *NetSwitches) save(filename string) (err error) {
 	enc := json.NewEncoder(f)
 	switchStates := make([]*netswitch.NetSwitch, 0, len(nss.nss))
 	for _, ns := range nss.nss {
-		if ns.Xmpp {
+		if ns.NetswitchXmpp {
 			switchStates = append(switchStates, ns)
 		}
 	}
@@ -196,7 +197,7 @@ func (nss *NetSwitches) Sync(machineId int64) (err error) {
 func (nss *NetSwitches) SyncAll() error {
 	var errs error
 	for _, ns := range nss.nss {
-		if ns.Xmpp {
+		if ns.NetswitchXmpp {
 			if err := ns.Sync(); err != nil {
 				if errs == nil {
 					errs = err

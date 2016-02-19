@@ -1,6 +1,8 @@
 package modelTest
 
 import (
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/FabLabBerlin/localmachines/models"
@@ -70,6 +72,34 @@ func TestMachine(t *testing.T) {
 				So(err, ShouldBeNil)
 				So(machine.Name, ShouldEqual, newMachineName)
 			})
+		})
+		Convey("Netswitch url on/off 200 with should give no error", func() {
+			ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusOK)
+			}))
+			defer ts.Close()
+
+			ns := models.Machine{
+				NetswitchUrlOn:  ts.URL + "?method=on",
+				NetswitchUrlOff: ts.URL + "?method=off",
+				NetswitchXmpp:   false,
+			}
+			So(ns.On(), ShouldBeNil)
+			So(ns.Off(), ShouldBeNil)
+		})
+		Convey("Netswitch url on/off 500 with should give an error", func() {
+			ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusInternalServerError)
+			}))
+			defer ts.Close()
+
+			ns := models.Machine{
+				NetswitchUrlOn:  ts.URL + "?method=on",
+				NetswitchUrlOff: ts.URL + "?method=off",
+				NetswitchXmpp:   false,
+			}
+			So(ns.On(), ShouldNotBeNil)
+			So(ns.Off(), ShouldNotBeNil)
 		})
 	})
 }

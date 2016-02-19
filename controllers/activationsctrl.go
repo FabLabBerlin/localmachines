@@ -170,9 +170,10 @@ func (this *ActivationsController) Create() {
 		}
 	}
 
-	// Turn on the machine
-	machine := models.Machine{
-		Id: machineId,
+	machine, err := models.GetMachine(machineId)
+	if err != nil {
+		beego.Error("Unable to get machine:", err)
+		this.CustomAbort(500, "Unable to get machine")
 	}
 
 	if err = machine.On(); err != nil {
@@ -217,8 +218,10 @@ func (this *ActivationsController) Close() {
 	// Attempt to switch off the machine first. This is a way to detect
 	// network errors early as the users won't be able to end their activation
 	// unless the error in the network is fixed.
-	machine := models.Machine{
-		Id: machineId,
+	machine, err := models.GetMachine(machineId)
+	if err != nil {
+		beego.Error("Unable to get machine:", err)
+		this.CustomAbort(500, "Unable to get machine")
 	}
 	if err = machine.Off(); err != nil {
 		beego.Error("Failed to switch off machine")

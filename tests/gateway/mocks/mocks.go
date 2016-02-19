@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/gateway/netswitch"
-	modelsNetswitch "github.com/FabLabBerlin/localmachines/models/netswitch"
+	"github.com/FabLabBerlin/localmachines/models"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -54,9 +54,9 @@ func NewNetSwitch(desired DesiredState, relay RelayState) *NetSwitch {
 		panic(err.Error())
 	}
 	mock.NetSwitch = &netswitch.NetSwitch{
-		Mapping: modelsNetswitch.Mapping{
-			Host:       url.Host,
-			SensorPort: 1,
+		Machine: models.Machine{
+			NetswitchHost:       url.Host,
+			NetswitchSensorPort: 1,
 		},
 		On: bool(desired),
 	}
@@ -77,16 +77,16 @@ func (ns *NetSwitch) Host() string {
 
 type LmApi struct {
 	mu       sync.RWMutex
-	mappings map[int64]modelsNetswitch.Mapping
+	mappings map[int64]models.Machine
 	server   *httptest.Server
 }
 
 func NewLmApi() (api *LmApi) {
 	api = &LmApi{
-		mappings: make(map[int64]modelsNetswitch.Mapping),
+		mappings: make(map[int64]models.Machine),
 	}
 	api.server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		state := make([]modelsNetswitch.Mapping, 0, len(api.mappings))
+		state := make([]models.Machine, 0, len(api.mappings))
 		for _, mapping := range api.mappings {
 			state = append(state, mapping)
 		}
@@ -97,13 +97,13 @@ func NewLmApi() (api *LmApi) {
 	return
 }
 
-func (api *LmApi) AddMapping(mapping modelsNetswitch.Mapping) {
+func (api *LmApi) AddMapping(mapping models.Machine) {
 	api.mu.Lock()
 	defer api.mu.Unlock()
-	if _, ok := api.mappings[mapping.MachineId]; ok {
+	if _, ok := api.mappings[mapping.Id]; ok {
 		panic("mapping already existing")
 	}
-	api.mappings[mapping.MachineId] = mapping
+	api.mappings[mapping.Id] = mapping
 }
 
 func (api *LmApi) DeleteMapping(machineId int64) {
@@ -112,7 +112,7 @@ func (api *LmApi) DeleteMapping(machineId int64) {
 	delete(api.mappings, machineId)
 }
 
-func (api *LmApi) UpdateMapping(machineId int64, mapping modelsNetswitch.Mapping) {
+func (api *LmApi) UpdateMapping(machineId int64, mapping models.Machine) {
 	api.mu.Lock()
 	defer api.mu.Unlock()
 	if _, ok := api.mappings[machineId]; !ok {

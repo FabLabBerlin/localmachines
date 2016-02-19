@@ -72,11 +72,6 @@ func Init() {
 				&controllers.InvoicesController{},
 			),
 		),
-		beego.NSNamespace("/netswitch",
-			beego.NSInclude(
-				&controllers.NetSwitchController{},
-			),
-		),
 		beego.NSNamespace("/fastbill",
 			beego.NSInclude(
 				&controllers.FastBillController{},

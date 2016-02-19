@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/ChimeraCoder/anaconda"
 	"github.com/FabLabBerlin/localmachines/models/email"
-	"github.com/FabLabBerlin/localmachines/models/netswitch"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"math/rand"
@@ -56,6 +55,13 @@ type Machine struct {
 	Brand                  string
 	Dimensions             string
 	WorkspaceDimensions    string
+	// Netswitch Config
+	// Host and Sensor Port are only relevant for mfi switches
+	NetswitchUrlOn      string `orm:"size(255)"`
+	NetswitchUrlOff     string `orm:"size(255)"`
+	NetswitchHost       string `orm:"size(255)"`
+	NetswitchSensorPort int
+	NetswitchXmpp       bool
 }
 
 // Define custom table name as for SQL table with a name "machines"
@@ -103,6 +109,16 @@ func GetAllMachines() (machines []*Machine, err error) {
 	return
 }
 
+func GetAllMachinesAt(locationId int64) (ms []*Machine, err error) {
+	o := orm.NewOrm()
+	m := Machine{}
+	_, err = o.QueryTable(m.TableName()).
+		Filter("location_id", locationId).
+		Exclude("archived", 1).
+		All(&ms)
+	return
+}
+
 func CreateMachine(machineName string) (id int64, err error) {
 	o := orm.NewOrm()
 	machine := Machine{Name: machineName, Available: true}
@@ -117,7 +133,29 @@ func (m *Machine) Update() (err error) {
 	if _, err = parseDimensions(m.WorkspaceDimensions); err != nil {
 		return ErrWorkspaceDimensions
 	}
+
+	// Check for duplicate netswitch host entries
+	m.NetswitchHost = strings.TrimSpace(m.NetswitchHost)
+	if m.NetswitchHost != "" {
+		machine := Machine{}
+		query := fmt.Sprintf("SELECT * FROM %v WHERE netswitch_host=? AND netswitch_sensor_port=? AND id<>?",
+			machine.TableName())
+		var ms []Machine
+		num, err := o.Raw(query, m.NetswitchHost, m.NetswitchSensorPort, m.Id).
+			QueryRows(&ms)
+		if err != nil {
+			return fmt.Errorf("failed to query db: %v", err)
+		}
+		if num > 0 {
+			return fmt.Errorf("Found %v machines with same netswitch host", num)
+		}
+	}
+
 	_, err = o.Update(m)
+
+	if err = xmppReinit(); err != nil {
+		return fmt.Errorf("xmpp reinit: %v", err)
+	}
 	return
 }
 
@@ -163,19 +201,6 @@ func parseDimensions(s string) (lMM []Millimeters, err error) {
 	return
 }
 
-func (this *Machine) On() (err error) {
-	netSwitchMapping, err := netswitch.GetMapping(this.Id)
-	if err != nil {
-		beego.Warning("Failed to get NetSwitch mapping:", err)
-	} else if netSwitchMapping != nil {
-		if err = netSwitchMapping.On(); err != nil {
-			return fmt.Errorf("Failed to turn on NetSwitch: %v", err)
-		}
-	}
-
-	return nil
-}
-
 func (this *Machine) ReportBroken(user User) error {
 	email := email.New()
 	to := beego.AppConfig.String("trelloemail")
@@ -218,17 +243,5 @@ func (this *Machine) SetUnderMaintenance(underMaintenance bool) error {
 	// This should not abort the maintenance call.
 	api.PostTweet(post, nil)
 
-	return nil
-}
-
-func (this *Machine) Off() (err error) {
-	netSwitch, err := netswitch.GetMapping(this.Id)
-	if err != nil {
-		beego.Warning("Failed to get NetSwitch mapping:", err)
-	} else if netSwitch != nil {
-		if err = netSwitch.Off(); err != nil {
-			return fmt.Errorf("Failed to turn off NetSwitch: %v", err)
-		}
-	}
 	return nil
 }

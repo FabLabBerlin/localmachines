@@ -12,7 +12,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/gateway/global"
-	"github.com/FabLabBerlin/localmachines/models/netswitch"
+	"github.com/FabLabBerlin/localmachines/models"
 	"log"
 	"net/http"
 	"net/url"
@@ -25,7 +25,7 @@ type syncCommand struct {
 }
 
 type NetSwitch struct {
-	netswitch.Mapping
+	models.Machine
 	On     bool
 	syncCh chan syncCommand
 }
@@ -52,8 +52,8 @@ func (ns *NetSwitch) Close() {
 
 func (ns *NetSwitch) sync(cmd syncCommand) (err error) {
 	log.Printf("urlStatus = %v", ns.Url())
-	if ns.SensorPort < 1 {
-		return fmt.Errorf("NetSwitch switch port for Machine %v invalid", ns.MachineId)
+	if ns.NetswitchSensorPort < 1 {
+		return fmt.Errorf("NetSwitch switch port for Machine %v invalid", ns.Id)
 	}
 	client := http.Client{
 		Timeout: global.STATE_SYNC_TIMEOUT,
@@ -76,7 +76,7 @@ func (ns *NetSwitch) sync(cmd syncCommand) (err error) {
 		onDesired = *cmd.SetOn
 	}
 	if mfi.On() != onDesired {
-		log.Printf("State for Machine %v must get synchronized", ns.MachineId)
+		log.Printf("State for Machine %v must get synchronized", ns.Id)
 		if onDesired {
 			if err = ns.turnOn(); err != nil {
 				return fmt.Errorf("turn on: %v", err)
@@ -136,12 +136,12 @@ func (ns *NetSwitch) turnOff() (err error) {
 }
 
 func (ns *NetSwitch) Url() string {
-	return "http://" + ns.Host + "/sensors/" + strconv.Itoa(ns.SensorPort)
+	return "http://" + ns.NetswitchHost + "/sensors/" + strconv.Itoa(ns.NetswitchSensorPort)
 }
 
 func (ns *NetSwitch) String() string {
-	return fmt.Sprintf("(NetSwitch Id=%v MachineId=%v On=%v)",
-		ns.Id, ns.MachineId, ns.On)
+	return fmt.Sprintf("(NetSwitch MachineId=%v On=%v)",
+		ns.Id, ns.On)
 }
 
 //{"sensors":[{"output":1,"power":0.0,"energy":0.0,"enabled":0,"current":0.0,"voltage":233.546874046,"powerfactor":0.0,"relay":1,"lock":0}],"status":"success"}

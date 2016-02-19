@@ -50,7 +50,6 @@ app.controller('MachineCtrl',
     .success(function(data) {
       $scope.machine = data;
       $scope.machine.Price = $filter('currency')($scope.machine.Price,'',2);
-      $scope.getNetSwitchMapping();
       if ($scope.machine.Image) {
         $scope.machineImageFile = "/files/" + $scope.machine.Image;
       }
@@ -175,104 +174,6 @@ app.controller('MachineCtrl',
     .error(function() {
       toastr.error('Failed to delete machine');
     });
-  };
-
-  // The NetSwitch
-  // TODO: Create another module for this
-
-  $scope.getNetSwitchMapping = function() {
-    $http({
-      method: 'GET',
-      url: '/api/netswitch/' + $scope.machine.Id,
-      params: {
-        ac: new Date().getTime()
-      }
-    })
-    .success(function(mappingModel) {
-      $scope.netSwitchMapping = mappingModel;
-      $scope.netSwitchMappingChanged = false;
-    }); // no error - the mapping will just not be visible
-  };
-
-  $scope.createNetSwitchMapping = function() {
-    $http({
-      method: 'POST',
-      url: '/api/netswitch',
-      params: {
-        mid: $scope.machine.Id,
-        ac: new Date().getTime()
-      }
-    })
-    .success(function(mappingId) {
-      $scope.getNetSwitchMapping();
-    })
-    .error(function() {
-      toastr.error('Failed to create NetSwitch mapping');
-    });
-  };
-
-  $scope.deleteNetSwitchMappingPrompt = function() {
-    var token = randomToken.generate();
-    vex.dialog.prompt({
-      message: 'Enter <span class="delete-prompt-token">' + 
-       token + '</span> to delete',
-      placeholder: 'Token',
-      callback: $scope.deleteNetSwitchMappingPromptCallback.bind(this, token)
-    });
-  };
-
-  $scope.deleteNetSwitchMappingPromptCallback = function(expectedToken, value) {
-    if (value) {    
-      if (value === expectedToken) {
-        $scope.deleteNetSwitchMapping();
-      } else {
-        toastr.error('Wrong token');
-      }
-    } else if (value !== false) {
-      toastr.error('No token');
-    }
-  };
-
-  $scope.deleteNetSwitchMapping = function() {
-    $http({
-      method: 'DELETE',
-      url: '/api/netswitch/' + $scope.machine.Id,
-      params: {
-        ac: new Date().getTime()
-      }
-    })
-    .success(function() {
-      toastr.success('Mapping deleted');
-      delete $scope.netSwitchMapping;
-    })
-    .error(function() {
-      toastr.error('Failed to delete mapping');
-    });
-  };
-
-  // Update the mapping with fresh IP
-  $scope.updateNetSwitchMapping = function () {
-    if ($scope.netSwitchMapping) {
-      $http({
-        method: 'PUT',
-        url: '/api/netswitch/' + $scope.machine.Id,
-        headers: {'Content-Type': 'application/json' },
-        data: $scope.netSwitchMapping,
-        transformRequest: function(data) {
-          return JSON.stringify(data);
-        },
-        params: {
-          ac: new Date().getTime()
-        }
-      })
-      .success(function() {
-        $scope.netSwitchMappingChanged = false;
-        toastr.success('NetSwitch mapping updated');
-      })
-      .error(function() {
-        toastr.error('Failed to update NetSwitch mapping');
-      });
-    }
   };
 
   // cf. http://stackoverflow.com/q/17922557/485185
