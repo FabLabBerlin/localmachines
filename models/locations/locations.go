@@ -22,6 +22,7 @@ type Location struct {
 	Phone        string `orm:"size(100)"`
 	Comments     string `orm:"type(text)"`
 	Approved     bool
+	XmppId       string `orm:"size(255)"`
 }
 
 func init() {
