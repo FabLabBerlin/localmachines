@@ -60,21 +60,25 @@ func (nss *NetSwitches) fetch(client *http.Client) (err error) {
 		return fmt.Errorf("unexpected status code: %v", code)
 	}
 	dec := json.NewDecoder(resp.Body)
-	mappings := []machine.Machine{}
-	if err := dec.Decode(&mappings); err != nil {
+	all := []machine.Machine{}
+	if err := dec.Decode(&all); err != nil {
 		return fmt.Errorf("json decode: %v", err)
+	}
+	mappings := make([]machine.Machine, 0, len(all))
+	for _, mapping := range all {
+		if mapping.NetswitchXmpp {
+			mappings = append(mappings, mapping)
+		}
 	}
 	if nss.nss == nil {
 		nss.nss = make(map[int64]*netswitch.NetSwitch)
 	}
 	for _, mapping := range mappings {
-		if mapping.NetswitchXmpp {
-			if existing, exists := nss.nss[mapping.Id]; exists {
-				existing.Machine = mapping
-			} else {
-				nss.nss[mapping.Id] = &netswitch.NetSwitch{
-					Machine: mapping,
-				}
+		if existing, exists := nss.nss[mapping.Id]; exists {
+			existing.Machine = mapping
+		} else {
+			nss.nss[mapping.Id] = &netswitch.NetSwitch{
+				Machine: mapping,
 			}
 		}
 	}
