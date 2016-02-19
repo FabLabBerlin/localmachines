@@ -18,7 +18,7 @@ func init() {
 }
 
 func CreateMachine(name string) (m *machine.Machine, err error) {
-	mid, err := machine.CreateMachine(name)
+	mid, err := machine.CreateMachine(1, name)
 	if err != nil {
 		return
 	}

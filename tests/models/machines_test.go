@@ -20,7 +20,7 @@ func TestMachine(t *testing.T) {
 		Convey("Testing CreateMachine", func() {
 			machineName := "My lovely machine"
 			Convey("Creating a machine", func() {
-				_, err := machine.CreateMachine(machineName)
+				_, err := machine.CreateMachine(1, machineName)
 
 				So(err, ShouldBeNil)
 			})
@@ -28,7 +28,7 @@ func TestMachine(t *testing.T) {
 		Convey("Testing GetMachine", func() {
 			machineName := "My lovely machine"
 			Convey("Creating a machine and trying to get it", func() {
-				mid, _ := machine.CreateMachine(machineName)
+				mid, _ := machine.CreateMachine(1, machineName)
 				machine, err := machine.GetMachine(mid)
 
 				So(machine.Name, ShouldEqual, machineName)
@@ -50,8 +50,8 @@ func TestMachine(t *testing.T) {
 				So(err, ShouldBeNil)
 			})
 			Convey("Creating two machines and get them all", func() {
-				machine.CreateMachine(machineOneName)
-				machine.CreateMachine(machineTwoName)
+				machine.CreateMachine(1, machineOneName)
+				machine.CreateMachine(1, machineTwoName)
 
 				machines, err := machine.GetAllMachines()
 
@@ -63,8 +63,9 @@ func TestMachine(t *testing.T) {
 			machineName := "My lovely machine"
 			newMachineName := "This new name is soooooooooooo cool :)"
 			Convey("Creating a machine and update it", func() {
-				mid, _ := machine.CreateMachine(machineName)
+				mid, _ := machine.CreateMachine(1, machineName)
 				m, _ := machine.GetMachine(mid)
+				m.LocationId = 1
 				m.Name = newMachineName
 
 				err := m.Update()

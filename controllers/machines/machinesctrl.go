@@ -102,7 +102,8 @@ func (this *Controller) Get() {
 
 // @Title Create
 // @Description Create machine
-// @Param	mname	query	string	true	"Machine Name"
+// @Param	location	query	string	true	"Location Id"
+// @Param	mname		query	string	true	"Machine Name"
 // @Success 200 {object} machine.MachineCreatedResponse
 // @Failure	403	Failed to create machine
 // @Failure	401	Not authorized
@@ -110,12 +111,12 @@ func (this *Controller) Get() {
 func (this *Controller) Create() {
 	machineName := this.GetString("mname")
 
-	if !this.IsAdmin() && !this.IsStaff() {
-		beego.Error("Not authorized to create machine")
+	locId, authorized := this.GetLocIdAdmin()
+	if !authorized {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	machineId, err := machine.CreateMachine(machineName)
+	machineId, err := machine.CreateMachine(locId, machineName)
 	if err != nil {
 		beego.Error("Failed to create machine", err)
 		this.CustomAbort(403, "Failed to create machine")

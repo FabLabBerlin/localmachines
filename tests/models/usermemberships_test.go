@@ -24,8 +24,8 @@ func TestUserMemberships(t *testing.T) {
 		Convey("Testing CreateUserMembership", func() {
 
 			// Create machines for the activations
-			machineIdOne, _ := machine.CreateMachine("Machine One")
-			machineIdTwo, _ := machine.CreateMachine("Machine Two")
+			machineIdOne, _ := machine.CreateMachine(1, "Machine One")
+			machineIdTwo, _ := machine.CreateMachine(1, "Machine Two")
 
 			baseMembership := &models.Membership{
 				LocationId: 1,

@@ -12,8 +12,8 @@ app.config(['$routeProvider', function($routeProvider) {
 }]); // app.config
 
 app.controller('MachinesCtrl',
- ['$scope', '$http', '$location', 'api',
- function($scope, $http, $location, api) {
+ ['$scope', '$http', '$location', '$cookies', 'api',
+ function($scope, $http, $location, $cookies, api) {
 
   $scope.machines = [];
 
@@ -42,6 +42,7 @@ app.controller('MachinesCtrl',
       method: 'POST',
       url: '/api/machines',
       params: {
+        location: $cookies.locationId,
         mname: machineName,
         ac: new Date().getTime()
       }

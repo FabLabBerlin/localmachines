@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib/xmpp"
+	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/astaxie/beego"
 	"github.com/satori/go.uuid"
 	"net/http"
@@ -19,7 +20,6 @@ var (
 	// all reads/writes must happen asynchronously.
 	responses            map[string]chan xmpp.Message
 	xmppClient           *xmpp.Xmpp
-	xmppGateway          string
 	xmppServerConfigured bool
 )
 
@@ -29,7 +29,6 @@ func init() {
 	if xmppServerConfigured {
 		user := beego.AppConfig.String("XmppUser")
 		pass := beego.AppConfig.String("XmppPass")
-		xmppGateway = beego.AppConfig.String("XmppGateway")
 		xmppClient = xmpp.NewXmpp(server, user, pass)
 		xmppClient.Run()
 
@@ -60,9 +59,9 @@ const (
 	OFF ON_OR_OFF = "off"
 )
 
-func xmppReinit() (err error) {
+func xmppReinit(location *locations.Location) (err error) {
 	if xmppServerConfigured {
-		if err = sendXmppCommand("reinit", 0); err != nil {
+		if err = sendXmppCommand(location, "reinit", 0); err != nil {
 			return fmt.Errorf("send xmpp cmd: %v", err)
 		}
 	}
@@ -80,7 +79,6 @@ func (this *Machine) Off() error {
 func (this *Machine) turn(onOrOff ON_OR_OFF) (err error) {
 	beego.Info("Attempt to turn NetSwitch ", onOrOff, ", machine ID", this.Id,
 		", NetswitchXmpp: ", this.NetswitchXmpp, ", NetswitchHost: ", this.NetswitchHost)
-	beego.Info("whole obj: %v", *this)
 	if this.NetswitchXmpp {
 		if xmppClient != nil {
 			return this.turnXmpp(onOrOff)
@@ -122,17 +120,21 @@ func (this *Machine) turnHttp(onOrOff ON_OR_OFF) (err error) {
 }
 
 func (this *Machine) turnXmpp(onOrOff ON_OR_OFF) (err error) {
-	return sendXmppCommand(string(onOrOff), this.Id)
+	location, err := locations.Get(this.LocationId)
+	if err != nil {
+		return fmt.Errorf("get location %v: %v", this.LocationId, err)
+	}
+	return sendXmppCommand(location, string(onOrOff), this.Id)
 }
 
-func sendXmppCommand(command string, machineId int64) (err error) {
+func sendXmppCommand(location *locations.Location, command string, machineId int64) (err error) {
 	trackingId := uuid.NewV4().String()
 	mu.Lock()
 	responses[trackingId] = make(chan xmpp.Message, 1)
 	respCh := responses[trackingId]
 	mu.Unlock()
 	err = xmppClient.Send(xmpp.Message{
-		Remote: xmppGateway,
+		Remote: location.XmppId,
 		Data: xmpp.Data{
 			Command:    command,
 			MachineId:  machineId,

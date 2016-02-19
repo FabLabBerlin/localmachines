@@ -6,6 +6,7 @@ import (
 	"github.com/ChimeraCoder/anaconda"
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/email"
+	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"math/rand"
@@ -120,9 +121,13 @@ func GetAllMachinesAt(locationId int64) (ms []*Machine, err error) {
 	return
 }
 
-func CreateMachine(machineName string) (id int64, err error) {
+func CreateMachine(locationId int64, machineName string) (id int64, err error) {
 	o := orm.NewOrm()
-	machine := Machine{Name: machineName, Available: true}
+	machine := Machine{
+		LocationId: locationId,
+		Name:       machineName,
+		Available:  true,
+	}
 	return o.Insert(&machine)
 }
 
@@ -154,7 +159,12 @@ func (m *Machine) Update() (err error) {
 
 	_, err = o.Update(m)
 
-	if err = xmppReinit(); err != nil {
+	location, err := locations.Get(m.LocationId)
+	if err != nil {
+		return fmt.Errorf("get location %v: %v", m.LocationId, err)
+	}
+
+	if err = xmppReinit(location); err != nil {
 		return fmt.Errorf("xmpp reinit: %v", err)
 	}
 	return

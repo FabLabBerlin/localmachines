@@ -83,6 +83,13 @@ func (l *Location) TableName() string {
 	return TABLE_NAME
 }
 
+func Get(id int64) (l *Location, err error) {
+	o := orm.NewOrm()
+	l = &Location{Id: id}
+	err = o.Read(l)
+	return
+}
+
 func GetAll() (ls []*Location, err error) {
 	o := orm.NewOrm()
 	_, err = o.QueryTable(TABLE_NAME).All(&ls)
