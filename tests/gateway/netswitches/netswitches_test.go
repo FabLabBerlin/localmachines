@@ -137,6 +137,36 @@ func TestNetswitches(t *testing.T) {
 			So(after3-before3, ShouldEqual, 0)
 			So(netSwitch3.SwitchRequests, ShouldEqual, 0)
 		})
+
+		Convey("It discards a switch when it's changed to non-xmpp", func() {
+			ns := mocks.NewNetSwitch(mocks.DESIRED_OFF, mocks.RELAY_OFF)
+			defer ns.Close()
+			lmApi.AddMapping(machine.Machine{
+				Id:                  55,
+				NetswitchHost:       ns.Host(),
+				NetswitchSensorPort: 123,
+				NetswitchXmpp:       true,
+			})
+			client := &http.Client{}
+			err := netSwitches.Load(client)
+			So(err, ShouldBeNil)
+			err = netSwitches.SyncAll()
+			So(err, ShouldBeNil)
+			<-time.After(time.Second)
+			So(ns.PollRequests, ShouldEqual, 1)
+			lmApi.UpdateMapping(55, machine.Machine{
+				Id:                  55,
+				NetswitchHost:       ns.Host(),
+				NetswitchSensorPort: 123,
+				NetswitchXmpp:       false,
+			})
+			err = netSwitches.Load(client)
+			So(err, ShouldBeNil)
+			err = netSwitches.SyncAll()
+			So(err, ShouldBeNil)
+			<-time.After(time.Second)
+			So(ns.PollRequests, ShouldEqual, 1)
+		})
 	})
 
 	// SetOn affects synchronization. So it's best to do this test *after*
