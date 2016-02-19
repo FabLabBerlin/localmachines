@@ -9,6 +9,7 @@ import (
 	"github.com/satori/go.uuid"
 	"net/http"
 	"regexp"
+	"strings"
 	"sync"
 	"time"
 )
@@ -79,15 +80,19 @@ func (this *Machine) Off() error {
 func (this *Machine) turn(onOrOff ON_OR_OFF) (err error) {
 	beego.Info("Attempt to turn NetSwitch ", onOrOff, ", machine ID", this.Id,
 		", NetswitchXmpp: ", this.NetswitchXmpp, ", NetswitchHost: ", this.NetswitchHost)
-	if this.NetswitchXmpp {
-		if xmppClient != nil {
-			return this.turnXmpp(onOrOff)
+	if this.NetswitchXmpp || (len(strings.TrimSpace(this.NetswitchUrlOn)) > 0 &&
+		len(strings.TrimSpace(this.NetswitchUrlOff)) > 0) {
+		if this.NetswitchXmpp {
+			if xmppClient != nil {
+				return this.turnXmpp(onOrOff)
+			} else {
+				return fmt.Errorf("xmpp client is nil!")
+			}
 		} else {
-			return fmt.Errorf("xmpp client is nil!")
+			return this.turnHttp(onOrOff)
 		}
-	} else {
-		return this.turnHttp(onOrOff)
 	}
+	return
 }
 
 func (this *Machine) turnHttp(onOrOff ON_OR_OFF) (err error) {

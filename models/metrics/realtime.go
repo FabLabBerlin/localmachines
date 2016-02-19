@@ -2,19 +2,24 @@ package metrics
 
 import (
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/astaxie/beego/orm"
 	"strconv"
 )
 
 type Realtime struct {
-	Activations int64
-	Users       int64
+	Activations    int64
+	ActiveMachines int
+	Users          int64
 }
 
 func NewRealtime() (rt *Realtime, err error) {
 	rt = &Realtime{}
 	if rt.Activations, err = rt.activations(); err != nil {
 		return nil, fmt.Errorf("activations count: %v", err)
+	}
+	if rt.ActiveMachines, err = rt.activeMachines(); err != nil {
+		return nil, fmt.Errorf("active machines count: %v", err)
 	}
 	if rt.Users, err = rt.users(); err != nil {
 		return nil, fmt.Errorf("users count: %v", err)
@@ -40,6 +45,12 @@ func (rt *Realtime) activations() (n int64, err error) {
 		return
 	}
 	return strconv.ParseInt(maps[0]["N"].(string), 10, 64)
+}
+
+func (rt *Realtime) activeMachines() (n int, err error) {
+	activations, err := purchases.GetActiveActivations()
+	n = len(activations)
+	return
 }
 
 // users number that have no membership or paid membership.
