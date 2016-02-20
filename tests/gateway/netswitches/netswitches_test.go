@@ -39,7 +39,6 @@ func TestNetswitches(t *testing.T) {
 	})
 
 	global.Cfg.API.Url = lmApi.URL()
-	global.Cfg.Main.StateFile = "foo.state.test"
 
 	netSwitches := netswitches.New()
 
@@ -48,7 +47,6 @@ func TestNetswitches(t *testing.T) {
 		err := netSwitches.Load(client)
 		So(err, ShouldBeNil)
 		Convey("It should load the Xmpp switches and discard the others", func() {
-			netSwitches.Save()
 			var nss []netswitch.NetSwitch
 			f, err := os.Open(global.Cfg.Main.StateFile)
 			if err != nil {

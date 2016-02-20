@@ -12,7 +12,6 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"log"
 	"net/http"
-	"os"
 	"strconv"
 	"sync"
 )
@@ -31,14 +30,10 @@ func New() (nss *NetSwitches) {
 	return
 }
 
-// Load netswitches from EASY LAB API and local state json.  client should
-// be logged in.
+// Load netswitches from EASY LAB API.  client should be logged in.
 func (nss *NetSwitches) Load(client *http.Client) (err error) {
 	if err = nss.fetch(client); err != nil {
 		return fmt.Errorf("fetch: %v", err)
-	}
-	if err = nss.loadOnOff(); err != nil {
-		return fmt.Errorf("load on off: %v", err)
 	}
 	log.Printf("netswitches: %v", nss.nss)
 	return
@@ -112,60 +107,6 @@ func (nss *NetSwitches) fetch(client *http.Client) (err error) {
 		hostsSensorPorts[key] = true
 	}
 	return
-}
-
-func (nss *NetSwitches) loadOnOff() (err error) {
-	nss.stateFileLock.Lock()
-	defer nss.stateFileLock.Unlock()
-
-	f, err := os.Open(global.Cfg.Main.StateFile)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return nil
-		}
-		return
-	}
-	defer f.Close()
-	dec := json.NewDecoder(f)
-	var switchStates []*netswitch.NetSwitch
-	if err := dec.Decode(&switchStates); err != nil {
-		return fmt.Errorf("json decode: %v", err)
-	}
-	for _, switchState := range switchStates {
-		mid := switchState.Machine.Id
-		if netswitch, ok := nss.nss[mid]; ok {
-			netswitch.On = switchState.On
-		} else {
-			log.Printf("netswitch for machine id %v doesn't exist anymore", mid)
-		}
-	}
-	return
-}
-
-func (nss *NetSwitches) save(filename string) (err error) {
-	nss.stateFileLock.Lock()
-	defer nss.stateFileLock.Unlock()
-
-	f, err := os.Create(filename)
-	if err != nil {
-		return
-	}
-	defer f.Close()
-	enc := json.NewEncoder(f)
-	switchStates := make([]*netswitch.NetSwitch, 0, len(nss.nss))
-	for _, ns := range nss.nss {
-		if ns.NetswitchXmpp {
-			switchStates = append(switchStates, ns)
-		}
-	}
-	return enc.Encode(switchStates)
-}
-
-func (nss *NetSwitches) Save() {
-	log.Printf("Saving state...")
-	if err := nss.save(global.Cfg.Main.StateFile); err != nil {
-		log.Printf("failed saving state: %v", err)
-	}
 }
 
 func (nss *NetSwitches) SetOn(machineId int64, on bool) (err error) {

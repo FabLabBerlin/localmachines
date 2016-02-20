@@ -95,7 +95,6 @@ func Init(retries int) (err error) {
 }
 
 func Reinit() (err error) {
-	netSwitches.Save()
 	if err = Init(2); err != nil {
 		return fmt.Errorf("Init: %v", err)
 	}
@@ -120,7 +119,6 @@ func main() {
 		for sig := range chTerm {
 			log.Printf("received signal %v", sig)
 			// sig is a ^C, handle it
-			netSwitches.Save()
 			os.Exit(1)
 		}
 	}()
@@ -138,8 +136,4 @@ func main() {
 
 	xmpp := endpoints.NewXmpp(netSwitches, Reinit)
 	xmpp.Run()
-
-	httpServer := endpoints.NewHttpServer(netSwitches)
-	httpServer.Run()
-
 }
