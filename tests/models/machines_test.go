@@ -102,5 +102,31 @@ func TestMachine(t *testing.T) {
 			So(ns.On(), ShouldNotBeNil)
 			So(ns.Off(), ShouldNotBeNil)
 		})
+		Convey("Creating same netswitch mapping for two machines", func() {
+			mid1, err := machine.CreateMachine(1, "foo")
+			if err != nil {
+				panic(err.Error())
+			}
+			mid2, err := machine.CreateMachine(1, "bar")
+			if err != nil {
+				panic(err.Error())
+			}
+			m1, err := machine.GetMachine(mid1)
+			if err != nil {
+				panic(err.Error())
+			}
+			m2, err := machine.GetMachine(mid2)
+			if err != nil {
+				panic(err.Error())
+			}
+			m1.NetswitchHost = "example.com"
+			m1.NetswitchXmpp = true
+			err = m1.Update()
+			So(err, ShouldBeNil)
+			m2.NetswitchHost = "example.com"
+			m2.NetswitchXmpp = true
+			err = m2.Update()
+			So(err, ShouldNotBeNil)
+		})
 	})
 }
