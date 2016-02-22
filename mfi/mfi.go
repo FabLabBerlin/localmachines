@@ -156,12 +156,13 @@ cfgmtd -w
 sleep 3
 echo '#!/bin/sh' > /etc/persistent/rc.poststart
 echo >> /etc/persistent/rc.poststart
-echo 'echo 0 > /proc/power/output1' >> /etc/persistent/rc.poststart
-echo 'echo 0 > /proc/power/output2' >> /etc/persistent/rc.poststart
-echo 'echo 0 > /proc/power/output3' >> /etc/persistent/rc.poststart
-echo 'echo 0 > /proc/power/output4' >> /etc/persistent/rc.poststart
-echo 'echo 0 > /proc/power/output5' >> /etc/persistent/rc.poststart
-echo 'echo 0 > /proc/power/output6' >> /etc/persistent/rc.poststart
+echo '/usr/bin/echo 0 > /proc/power/output1' >> /etc/persistent/rc.poststart
+echo '/usr/bin/echo 0 > /proc/power/output2' >> /etc/persistent/rc.poststart
+echo '/usr/bin/echo 0 > /proc/power/output3' >> /etc/persistent/rc.poststart
+echo '/usr/bin/echo 0 > /proc/power/output4' >> /etc/persistent/rc.poststart
+echo '/usr/bin/echo 0 > /proc/power/output5' >> /etc/persistent/rc.poststart
+echo '/usr/bin/echo 0 > /proc/power/output6' >> /etc/persistent/rc.poststart
+chmod a+x /etc/persistent/rc.poststart
 cfgmtd -w -p /etc
 sync
 reboot
