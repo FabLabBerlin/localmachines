@@ -16,9 +16,10 @@ var MachineActions = {
     var dataToSend = {
       mid: mid
     };
+    var locationId = reactor.evaluateToJS(getters.getLocationId);
     GlobalActions.showGlobalLoader();
     $.ajax({
-      url: '/api/activations',
+      url: '/api/activations?location=' + locationId,
       dataType: 'json',
       type: 'POST',
       data: {
@@ -104,9 +105,9 @@ var MachineActions = {
   /*
    * To continue to refresh the view each seconds
    */
-  pollDashboard() {
+  pollDashboard(locationId) {
     const uid = reactor.evaluateToJS(getters.getUid);
-    ApiActions.getCall('/api/users/' + uid + '/dashboard', function(data) {
+    ApiActions.getCall('/api/users/' + uid + '/dashboard?location=' + locationId, function(data) {
       var userIds = [];
 
       reactor.dispatch(actionTypes.SET_ACTIVATIONS, {

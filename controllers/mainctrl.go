@@ -108,6 +108,13 @@ func (this *Controller) IsAdminAt(locationId int64, userIds ...int64) bool {
 		role == user_roles.SUPER_ADMIN
 }
 
+func (this *Controller) IsStaffAt(locationId int64, userIds ...int64) bool {
+	role := this.localUserRole(locationId, userIds...)
+	return role == user_roles.STAFF ||
+		role == user_roles.ADMIN ||
+		role == user_roles.SUPER_ADMIN
+}
+
 // Return true if user is member at that location, if only the location id is
 // passed, uses session user ID, if single user ID is passed, checks the passed
 // one. Fails otherwise.
@@ -115,6 +122,7 @@ func (this *Controller) IsMemberAt(locationId int64, userIds ...int64) bool {
 	role := this.localUserRole(locationId, userIds...)
 	return role == user_roles.MEMBER ||
 		role == user_roles.ADMIN ||
+		role == user_roles.STAFF ||
 		role == user_roles.SUPER_ADMIN
 }
 
@@ -170,6 +178,21 @@ func (this *Controller) GetLocIdAdmin() (locId int64, authorized bool) {
 	locId, err := this.GetInt64("location")
 	if err == nil {
 		if !this.IsAdminAt(locId) {
+			return
+		}
+	} else {
+		locId = 0
+		if !this.IsSuperAdmin() {
+			return
+		}
+	}
+	return locId, true
+}
+
+func (this *Controller) GetLocIdStaff() (locId int64, authorized bool) {
+	locId, err := this.GetInt64("location")
+	if err == nil {
+		if !this.IsStaffAt(locId) {
 			return
 		}
 	} else {

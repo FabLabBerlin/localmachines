@@ -136,6 +136,12 @@ func (this *ActivationsController) GetActive() {
 // @Failure 401 Not authorized
 // @router / [post]
 func (this *ActivationsController) Create() {
+	_, isStaff := this.GetLocIdMember()
+	if !isStaff {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
 	userId, err := this.GetSessionUserId()
 	if err != nil {
 		beego.Error("Failed to get session user ID:", err)
@@ -150,7 +156,7 @@ func (this *ActivationsController) Create() {
 
 	// Admins can activate any machine (except broken ones).
 	// Regular users have to refer to their permissions.
-	if !this.IsAdmin() {
+	if !isStaff {
 
 		// Check if user has permissions to create activation for the machine.
 		userPermissions, err := models.GetUserPermissions(userId)

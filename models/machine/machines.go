@@ -116,7 +116,6 @@ func GetAllMachinesAt(locationId int64) (ms []*Machine, err error) {
 	m := Machine{}
 	_, err = o.QueryTable(m.TableName()).
 		Filter("location_id", locationId).
-		Exclude("archived", 1).
 		All(&ms)
 	return
 }

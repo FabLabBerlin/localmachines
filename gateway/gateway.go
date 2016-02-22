@@ -136,4 +136,7 @@ func main() {
 
 	xmpp := endpoints.NewXmpp(netSwitches, Reinit)
 	xmpp.Run()
+	for {
+		select {}
+	}
 }

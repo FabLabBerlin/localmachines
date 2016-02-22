@@ -273,6 +273,13 @@ const getLocation = [
   }
 ];
 
+const getLocationId = [
+  ['locationStore'],
+  (locationStore) => {
+    return locationStore.get('locationId');
+  }
+];
+
 const getMachinesById = [
   ['machineStore'],
   (machineStore) => {
@@ -674,7 +681,7 @@ const getTutorings = [
 export default {
   getIsLogged, getUid, getFirstTry, getLoginSuccess, getLastActivity,
   getUser, getIsAdmin,
-  getActivations, getLocation, getLocations, getMachines, getMachinesById, getMachineUsers, getIsLoading, getBill, getBillMonths, getMonthlyBills, getMemberships, getMembershipsByMonth,
+  getActivations, getLocation, getLocationId, getLocations, getMachines, getMachinesById, getMachineUsers, getIsLoading, getBill, getBillMonths, getMonthlyBills, getMemberships, getMembershipsByMonth,
   getFeedbackSubject, getFeedbackSubjectDropdown, getFeedbackSubjectOtherText, getFeedbackMessage,
   getNewReservation, getNewReservationPrice, getNewReservationTimes, getNewReservationFrom, getNewReservationTo, getReservations, getReservationsByDay, getActiveReservationsByMachineId, getSlotAvailabilities48h,
   getScrollUpEnabled, getScrollDownEnabled, getScrollPosition,

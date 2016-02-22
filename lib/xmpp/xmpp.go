@@ -77,6 +77,7 @@ func (x *Xmpp) connect() {
 		log.Printf("Xmpp: connecting to Server...")
 		x.talk, err = x.options.NewClient()
 		if err == nil {
+			log.Printf("Xmpp: connected to Server.")
 			x.lastPong = time.Now()
 			waitTime = RECONNECT_INIT_WAIT_TIME
 			for {

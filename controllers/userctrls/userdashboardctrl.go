@@ -19,11 +19,11 @@ type DashboardData struct {
 	Tutorings   *purchases.TutoringList
 }
 
-func (this *DashboardData) load(isAdmin bool, uid int64) (err error) {
+func (this *DashboardData) load(isStaff bool, uid, locId int64) (err error) {
 	if err = this.loadActivations(); err != nil {
 		return
 	}
-	if err = this.loadMachines(isAdmin, uid); err != nil {
+	if err = this.loadMachines(isStaff, uid, locId); err != nil {
 		return
 	}
 	if err = this.loadTutorings(uid); err != nil {
@@ -37,16 +37,18 @@ func (this *DashboardData) loadActivations() (err error) {
 	return
 }
 
-func (this *DashboardData) loadMachines(isAdmin bool, uid int64) (err error) {
+func (this *DashboardData) loadMachines(isStaff bool, uid, locationId int64) (err error) {
 	// List all machines if the requested user is admin
-	allMachines, err := machine.GetAllMachines()
+	allMachines, err := machine.GetAllMachinesAt(locationId)
 	if err != nil {
 		return fmt.Errorf("Failed to get all machines: %v", err)
 	}
 
+	beego.Info("loadMachines: isStaff=", isStaff, " @ locationId=", locationId, " for uid=", uid)
+
 	// Get the machines!
 	this.Machines = make([]*machine.Machine, 0, len(allMachines))
-	if !isAdmin {
+	if !isStaff {
 		permissions, err := models.GetUserPermissions(uid)
 		if err != nil {
 			return fmt.Errorf("Failed to get user machine permissions: %v", err)
@@ -103,13 +105,14 @@ func (this *DashboardData) loadTutorings(uid int64) (err error) {
 // @router /:uid/dashboard [get]
 func (this *UserDashboardController) GetDashboard() {
 	data := DashboardData{}
+	locId, isStaff := this.GetLocIdStaff()
 
 	uid, authorized := this.GetRouteUid()
 	if !authorized {
 		this.CustomAbort(400, "Wrong uid in url or not authorized")
 	}
 
-	if err := data.load(this.IsAdmin(uid), uid); err != nil {
+	if err := data.load(isStaff, uid, locId); err != nil {
 		beego.Error("Failed to load dashboard data:", err)
 		this.CustomAbort(500, "Failed to load dashboard data")
 	}
