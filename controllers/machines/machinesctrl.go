@@ -252,7 +252,7 @@ func (this *Controller) underMaintenanceOnOrOff(onOrOff int) error {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	if !this.IsAdmin() {
+	if !this.IsStaff() {
 		beego.Error("Not authorized")
 		this.CustomAbort(401, "Not authorized")
 	}
@@ -344,13 +344,19 @@ func (this *Controller) UnderMaintenanceOff() {
 }
 
 func (this *Controller) switchMachine(onOrOff int) error {
+	_, authorized := this.GetLocIdStaff()
+	if !authorized {
+		this.CustomAbort(401, "Not authorized")
+	}
+
 	machineId, err := this.GetInt64(":mid")
 	if err != nil {
 		beego.Error("Failed to get :mid variable")
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	if !this.IsAdmin() {
+	locId, authorized := this.GetLocIdMember()
+	if !authorized {
 		beego.Error("Not authorized")
 		this.CustomAbort(401, "Not authorized")
 	}
@@ -359,6 +365,11 @@ func (this *Controller) switchMachine(onOrOff int) error {
 	if err != nil {
 		beego.Error("Failed to get machine", err)
 		this.CustomAbort(403, "Failed to get machine")
+	}
+
+	if machine.LocationId != locId {
+		beego.Error("machine Location Id != loc id")
+		this.CustomAbort(400, "Bad request")
 	}
 
 	if onOrOff == ON {

@@ -49,7 +49,7 @@ var MachinePage = React.createClass({
    * before the component is mounted
    */
   componentWillMount() {
-    const locationId = reactor.evaluateToJS(getters.getLocation).Id;
+    const locationId = reactor.evaluateToJS(getters.getLocationId);
     const uid = reactor.evaluateToJS(getters.getUid);
     UserActions.fetchUser(uid);
     MachineActions.apiGetUserMachines(locationId, uid);

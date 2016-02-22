@@ -27,8 +27,8 @@ var OccupiedMachine = React.createClass({
   /*
    * Render Busy div
    * If the machine is occupied by someone else it will be displayed
-   * Admin have a button to stop a machine use by an other user
-   * Admin have two more button to force switch
+   * Staff have a button to stop a machine use by an other user
+   * Staff have two more button to force switch
    */
   render() {
     var users = this.state.machineUsers;
@@ -52,7 +52,7 @@ var OccupiedMachine = React.createClass({
   
           </div>
   
-          { this.props.isAdmin ? (
+          { this.props.isStaff ? (
             <div className="col-xs-6">
   
               <table className="machine-activation-table">

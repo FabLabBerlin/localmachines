@@ -32,7 +32,7 @@ var MachineChooser = React.createClass({
 
   getDataBindings() {
     return {
-      isAdmin: getters.getIsAdmin,
+      isStaff: getters.getIsStaff,
       machines: getters.getMachines,
       reservationsByMachineId: getters.getActiveReservationsByMachineId
     };
@@ -97,7 +97,7 @@ var MachineChooser = React.createClass({
    * @nothing => FreeMachine
    */
   render() {
-    let isAdmin = this.state.isAdmin;
+    let isStaff = this.state.isStaff;
     var reservation;
     if (this.state.reservationsByMachineId) {
       reservation = this.state.reservationsByMachineId.toObject()[this.props.machine.Id];
@@ -109,7 +109,7 @@ var MachineChooser = React.createClass({
           activation={this.props.activation}
           busy={this.props.busy}
           machine={this.props.machine}
-          isAdmin={isAdmin}
+          isStaff={isStaff}
           endActivation={this.endActivation}
           startActivation={this.startActivation}
           force={this.forceSwitch}
@@ -123,7 +123,7 @@ var MachineChooser = React.createClass({
           activation={this.props.activation}
           busy={this.props.busy}
           machine={this.props.machine}
-          isAdmin={isAdmin}
+          isStaff={isStaff}
           endActivation={this.endActivation}
           startActivation={this.startActivation}
           force={this.forceSwitch}
@@ -136,7 +136,7 @@ var MachineChooser = React.createClass({
             <BusyMachine
               activation={this.props.activation}
               machine={this.props.machine}
-              isAdmin={isAdmin}
+              isStaff={isStaff}
               func={this.endActivation}
               force={this.forceSwitch}
             />
@@ -146,7 +146,7 @@ var MachineChooser = React.createClass({
             <OccupiedMachine
               activation={this.props.activation}
               machine={this.props.machine}
-              isAdmin={isAdmin}
+              isStaff={isStaff}
               func={this.endActivation}
               force={this.forceSwitch}
             />
@@ -156,7 +156,7 @@ var MachineChooser = React.createClass({
         machineBody = (
           <FreeMachine
             machine={this.props.machine}
-            isAdmin={isAdmin}
+            isStaff={isStaff}
             func={this.startActivation}
             force={this.forceSwitch}
           />

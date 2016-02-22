@@ -34,7 +34,7 @@ var FreeMachine = React.createClass({
           </div>
           <div className="col-xs-6">
   
-            { this.props.isAdmin ? (
+            { this.props.isStaff ? (
   
               <table className="machine-activation-table">
                 <tr>
@@ -46,14 +46,14 @@ var FreeMachine = React.createClass({
                     </button>
                   </td>
                   <td className="force-button-table-cell">
-                    {this.props.isAdmin ? (
+                    {this.props.isStaff ? (
                       <ForceSwitchOn force={this.props.force}/>
                     ) : ''}
                   </td>
                 </tr>
                 <tr>
                   <td className="force-button-table-cell">
-                    {this.props.isAdmin ? (
+                    {this.props.isStaff ? (
                       <ForceSwitchOff force={this.props.force}/>
                     ) : ''}
                   </td>

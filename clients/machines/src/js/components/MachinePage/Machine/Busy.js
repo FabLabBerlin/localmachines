@@ -21,7 +21,7 @@ var BusyMachine = React.createClass({
   /*
    * Render Busy div
    * If the machine is occupied by the user it will be displayed
-   * Admin have two more button to force switch
+   * Staff have two more button to force switch
    */
    render() {
     return (
@@ -43,7 +43,7 @@ var BusyMachine = React.createClass({
   
           <div className="col-xs-6">
   
-          { this.props.isAdmin ? (
+          { this.props.isStaff ? (
             
             <table className="machine-activation-table">
               <tr>

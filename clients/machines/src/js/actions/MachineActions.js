@@ -45,8 +45,9 @@ var MachineActions = {
 
   forceTurnOnMachine(mid) {
     GlobalActions.showGlobalLoader();
+    var locationId = reactor.evaluateToJS(getters.getLocationId);
     $.ajax({
-      url: '/api/machines/' + mid + '/turn_on',
+      url: '/api/machines/' + mid + '/turn_on?location=' + locationId,
       type: 'POST',
       success(data) {
         GlobalActions.hideGlobalLoader();
@@ -63,8 +64,9 @@ var MachineActions = {
 
   forceTurnOffMachine(mid, aid) {
     GlobalActions.showGlobalLoader();
+    var locationId = reactor.evaluateToJS(getters.getLocationId);
     $.ajax({
-      url: '/api/machines/' + mid + '/turn_off',
+      url: '/api/machines/' + mid + '/turn_off?location=' + locationId,
       type: 'POST',
       success(data) {
         GlobalActions.hideGlobalLoader();

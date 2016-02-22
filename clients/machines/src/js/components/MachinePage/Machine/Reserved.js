@@ -91,23 +91,23 @@ var ReservedMachine = React.createClass({
   
           <div className="col-xs-6">
 
-          { (isReservator && !this.props.isAdmin) ? ( {startStopButton} ) : '' }
+          { (isReservator && !this.props.isStaff) ? ( {startStopButton} ) : '' }
 
-          { (this.props.isAdmin) ? (
+          { (this.props.isStaff) ? (
             <table className="machine-activation-table">
               <tr>
                 <td rowSpan="2">
                   {startStopButton}
                 </td>
                 <td className="force-button-table-cell">
-                  {this.props.isAdmin ? (
+                  {this.props.isStaff ? (
                     <ForceSwitchOn force={this.props.force}/>
                   ) : ''}
                 </td>
               </tr>
               <tr>
                 <td className="force-button-table-cell">
-                  {this.props.isAdmin ? (
+                  {this.props.isStaff ? (
                     <ForceSwitchOff force={this.props.force}/>
                   ) : ''}
                 </td>
@@ -115,7 +115,7 @@ var ReservedMachine = React.createClass({
             </table>
           ) : ''}
 
-          {(!this.props.isAdmin && !isReservator) ? (
+          {(!this.props.isStaff && !isReservator) ? (
             <div className="indicator reserved">
               Reserved
             </div>

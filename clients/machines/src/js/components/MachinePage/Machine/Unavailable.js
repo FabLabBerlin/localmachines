@@ -68,21 +68,21 @@ var UnavailableMachine = React.createClass({
   
           <div className="col-xs-6">
 
-          { this.props.isAdmin ? (
+          { this.props.isStaff ? (
             <table className="machine-activation-table">
               <tr>
                 <td rowSpan="2">
                   {startStopButton}
                 </td>
                 <td className="force-button-table-cell">
-                  {this.props.isAdmin ? (
+                  {this.props.isStaff ? (
                     <ForceSwitchOn force={this.props.force}/>
                   ) : ''}
                 </td>
               </tr>
               <tr>
                 <td className="force-button-table-cell">
-                  {this.props.isAdmin ? (
+                  {this.props.isStaff ? (
                     <ForceSwitchOff force={this.props.force}/>
                   ) : ''}
                 </td>
