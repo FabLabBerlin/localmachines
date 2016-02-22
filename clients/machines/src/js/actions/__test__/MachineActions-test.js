@@ -1,22 +1,29 @@
 jest.dontMock('../../actionTypes');
 jest.dontMock('../ApiActions');
 jest.dontMock('../../getters');
+jest.dontMock('../LocationActions');
 jest.dontMock('../MachineActions');
 jest.dontMock('nuclear-js');
 jest.dontMock('../../reactor');
+jest.dontMock('../../stores/LocationStore');
 jest.dontMock('../../stores/LoginStore');
 jest.mock('jquery');
 
 var $ = require('jquery');
 var actionTypes = require('../../actionTypes');
+var LocationActions = require('../LocationActions');
 var MachineActions = require('../MachineActions');
 var reactor = require('../../reactor');
+var LocationStore = require('../../stores/LocationStore');
 var LoginStore = require('../../stores/LoginStore');
 
 
 reactor.registerStores({
+  locationStore: LocationStore,
   loginStore: LoginStore
 });
+
+LocationActions.setLocationId(1);
 
 
 describe('MachineActions', function() {
@@ -37,7 +44,7 @@ describe('MachineActions', function() {
     it('should POST /api/activations', function() {
       MachineActions.startActivation(17);
       expect($.ajax).toBeCalledWith({
-        url: '/api/activations',
+        url: '/api/activations?location=1',
         data: {
           mid: 17
         },
@@ -53,7 +60,7 @@ describe('MachineActions', function() {
     it('should POST /api/machines/:mid/turn_off', function() {
       MachineActions.forceTurnOffMachine(17, 2);
       expect($.ajax).toBeCalledWith({
-        url: '/api/machines/17/turn_off',
+        url: '/api/machines/17/turn_off?location=1',
         type: 'POST',
         success: jasmine.any(Function),
         error: jasmine.any(Function)
@@ -65,7 +72,7 @@ describe('MachineActions', function() {
     it('should POST /api/machines/:mid/turn_on', function() {
       MachineActions.forceTurnOnMachine(17);
       expect($.ajax).toBeCalledWith({
-        url: '/api/machines/17/turn_on',
+        url: '/api/machines/17/turn_on?location=1',
         type: 'POST',
         success: jasmine.any(Function),
         error: jasmine.any(Function)
@@ -79,9 +86,9 @@ describe('MachineActions', function() {
         UserId: 11
       };
       reactor.dispatch(actionTypes.SUCCESS_LOGIN, { data });
-      MachineActions.pollDashboard();
+      MachineActions.pollDashboard(1);
       expect($.ajax).toBeCalledWith({
-        url: '/api/users/11/dashboard',
+        url: '/api/users/11/dashboard?location=1',
         dataType: 'json',
         type: 'GET',
         cache: false,
