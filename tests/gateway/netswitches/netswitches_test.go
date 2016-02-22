@@ -1,14 +1,11 @@
 package gatewayNetswitchesTest
 
 import (
-	"encoding/json"
 	"github.com/FabLabBerlin/localmachines/gateway/global"
-	"github.com/FabLabBerlin/localmachines/gateway/netswitch"
 	"github.com/FabLabBerlin/localmachines/gateway/netswitches"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/tests/gateway/mocks"
 	"net/http"
-	"os"
 	"strings"
 	"testing"
 	"time"
@@ -46,23 +43,6 @@ func TestNetswitches(t *testing.T) {
 		client := &http.Client{}
 		err := netSwitches.Load(client)
 		So(err, ShouldBeNil)
-		Convey("It should load the Xmpp switches and discard the others", func() {
-			var nss []netswitch.NetSwitch
-			f, err := os.Open(global.Cfg.Main.StateFile)
-			if err != nil {
-				panic(err.Error())
-			}
-			defer f.Close()
-			dec := json.NewDecoder(f)
-			dec.Decode(&nss)
-			So(len(nss), ShouldEqual, 1)
-			ns := nss[0]
-			So(ns.Id, ShouldEqual, 11)
-			So(ns.NetswitchHost, ShouldEqual, netSwitch1.Host())
-			So(ns.NetswitchSensorPort, ShouldEqual, 1)
-			So(ns.NetswitchXmpp, ShouldBeTrue)
-		})
-
 		Convey("It fails when there are duplicate combinations hosts+sensor port that could lead to contradictory state which in turn could lead to switches turning on and off every 30 seconds", func() {
 			lmApi.AddMapping(machine.Machine{
 				Id:                  44,
