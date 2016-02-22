@@ -76,7 +76,7 @@ func (c *Config) Run() (err error) {
 	if c.HwAddr, err = c.getHwAddr(); err != nil {
 		return fmt.Errorf("get hw addr: %v", err)
 	}
-	if err = c.reboot(); err != nil {
+	if err = c.finalize(); err != nil {
 		return fmt.Errorf("reboot: %v", err)
 	}
 	os.Remove(c.SystemCfgFilename)
@@ -150,8 +150,23 @@ func (c *Config) getHwAddr() (hwAddr string, err error) {
 	return tmp[len(tmp)-1], nil
 }
 
-func (c *Config) reboot() (err error) {
-	cmd := exec.Command("ssh", "ubnt@"+c.Host(), "cfgmtd -w && reboot")
+func (c *Config) finalize() (err error) {
+	shellCmds := `
+cfgmtd -w
+sleep 3
+echo '#!/bin/sh' > /etc/persistent/rc.poststart
+echo >> /etc/persistent/rc.poststart
+echo 'echo 0 > /proc/power/output1' >> /etc/persistent/rc.poststart
+echo 'echo 0 > /proc/power/output2' >> /etc/persistent/rc.poststart
+echo 'echo 0 > /proc/power/output3' >> /etc/persistent/rc.poststart
+echo 'echo 0 > /proc/power/output4' >> /etc/persistent/rc.poststart
+echo 'echo 0 > /proc/power/output5' >> /etc/persistent/rc.poststart
+echo 'echo 0 > /proc/power/output6' >> /etc/persistent/rc.poststart
+cfgmtd -w -p /etc
+sync
+reboot
+	`
+	cmd := exec.Command("ssh", "ubnt@"+c.Host(), shellCmds)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err = cmd.Run(); err != nil {
