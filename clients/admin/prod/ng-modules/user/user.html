@@ -231,9 +231,10 @@
         </div>
         <div class="col-sm-6">
           <select ng-model="user.UserRole">
-            <option value="superadmin">Super Admin</option>
-            <option value="admin">Admin</option>
             <option value="member">Member</option>
+            <option value="staff">Staff</option>
+            <option value="admin">Admin</option>
+            <option value="superadmin">Super Admin</option>
           </select>
         </div>
         <div class="col-sm-6 hidden-xs">
@@ -252,6 +253,7 @@
                       ng-model="userLocation.UserRole"
                       ng-change="updateUserLocation(userLocation)">
                 <option value="notaffiliated">Not affiliated</option>
+                <option value="staff">Staff</option>
                 <option value="member">Member</option>
                 <option value="admin">Admin</option>
               </select>
