@@ -105,8 +105,8 @@ var MachinePage = React.createClass({
     machines = _.sortBy(machines, (m) => {
       return m.Name;
     });
-    var locationTitle = this.state.location.Title;
-    if (this.state.activations) {
+    if (this.state.activations && this.state.location) {
+      var locationTitle = this.state.location.Title;
       return (
         <div>
           <div className="logged-user-name">
@@ -142,7 +142,7 @@ var MachinePage = React.createClass({
    * Need polling for activation status and maintenance status
    */
   update() {
-    const locationId = reactor.evaluateToJS(getters.getLocation).Id;
+    const locationId = reactor.evaluateToJS(getters.getLocationId);
     MachineActions.pollDashboard(locationId);
   }
 });

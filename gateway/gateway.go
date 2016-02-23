@@ -51,17 +51,6 @@ func Login(client *http.Client, user, key string) (err error) {
 	return
 }
 
-func PingLoop() {
-	for {
-		select {
-		case <-time.After(global.STATE_SYNC_PERIOD):
-			if err := netSwitches.SyncAll(); err != nil {
-				log.Printf("state watch err: %v", err)
-			}
-		}
-	}
-}
-
 func Init(retries int) (err error) {
 	user := global.Cfg.API.Id
 	key := global.Cfg.API.Key
@@ -132,10 +121,10 @@ func main() {
 		}
 	}()
 
-	go PingLoop()
-
 	xmpp := endpoints.NewXmpp(netSwitches, Reinit)
 	xmpp.Run()
+
+	// The gateway shall run forever..
 	for {
 		select {}
 	}

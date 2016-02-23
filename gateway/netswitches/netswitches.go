@@ -91,9 +91,7 @@ func (nss *NetSwitches) fetch(client *http.Client) (err error) {
 		}
 	}
 	for _, unusedID := range unusedIDs {
-		ns := nss.nss[unusedID]
 		delete(nss.nss, unusedID)
-		ns.Close()
 	}
 	// Make sure there are no duplicate combinations Netswitch Host + SensorPort
 	hostsSensorPorts := make(map[string]bool)
@@ -128,29 +126,4 @@ func (nss *NetSwitches) setOn(machineId int64, on bool) (err error) {
 			machineId)
 	}
 	return ns.SetOn(on)
-}
-
-func (nss *NetSwitches) Sync(machineId int64) (err error) {
-	ns, ok := nss.nss[machineId]
-	if !ok {
-		return fmt.Errorf("no netswitch for machine id %v present",
-			machineId)
-	}
-	return ns.Sync()
-}
-
-func (nss *NetSwitches) SyncAll() error {
-	var errs error
-	for _, ns := range nss.nss {
-		if ns.NetswitchXmpp {
-			if err := ns.Sync(); err != nil {
-				if errs == nil {
-					errs = err
-				} else {
-					errs = fmt.Errorf("%v; %v", errs, err)
-				}
-			}
-		}
-	}
-	return errs
 }

@@ -59,106 +59,12 @@ func TestNetswitches(t *testing.T) {
 		})
 	})
 
-	Convey("Testing Sync", t, func() {
-		Convey("It should poll the Xmpp switch", func() {
-			before := netSwitch1.PollRequests
-			err := netSwitches.Sync(11)
-			So(err, ShouldBeNil)
-			<-time.After(time.Second)
-			after := netSwitch1.PollRequests
-			So(after-before, ShouldEqual, 1)
-		})
-	})
-
-	Convey("Testing SyncAll", t, func() {
-		Convey("It should poll the only registered Xmpp switch", func() {
-			before := netSwitch1.PollRequests
-			err := netSwitches.SyncAll()
-			So(err, ShouldBeNil)
-			<-time.After(time.Second)
-			after := netSwitch1.PollRequests
-			So(after-before, ShouldEqual, 1)
-		})
-
-		Convey("It should poll the two registered Xmpp switches", func() {
-			lmApi.AddMapping(machine.Machine{
-				Id:                  33,
-				NetswitchHost:       netSwitch3.Host(),
-				NetswitchSensorPort: 1,
-				NetswitchXmpp:       true,
-			})
-			before1 := netSwitch1.PollRequests
-			client := &http.Client{}
-			err := netSwitches.Load(client)
-			So(err, ShouldBeNil)
-			err = netSwitches.SyncAll()
-			So(err, ShouldBeNil)
-			<-time.After(time.Second)
-			after1 := netSwitch1.PollRequests
-			So(after1-before1, ShouldEqual, 1)
-			So(netSwitch3.PollRequests, ShouldEqual, 1)
-		})
-
-		Convey("It should only poll the one remaining Xmpp switch", func() {
-			lmApi.DeleteMapping(33)
-			before1 := netSwitch1.PollRequests
-			before3 := netSwitch3.PollRequests
-			client := &http.Client{}
-			err := netSwitches.Load(client)
-			So(err, ShouldBeNil)
-			err = netSwitches.SyncAll()
-			So(err, ShouldBeNil)
-			<-time.After(time.Second)
-			after1 := netSwitch1.PollRequests
-			after3 := netSwitch3.PollRequests
-			So(after1-before1, ShouldEqual, 1)
-			So(after3-before3, ShouldEqual, 0)
-			So(netSwitch3.SwitchRequests, ShouldEqual, 0)
-		})
-
-		Convey("It discards a switch when it's changed to non-xmpp", func() {
-			ns := mocks.NewNetSwitch(mocks.DESIRED_OFF, mocks.RELAY_OFF)
-			defer ns.Close()
-			lmApi.AddMapping(machine.Machine{
-				Id:                  55,
-				NetswitchHost:       ns.Host(),
-				NetswitchSensorPort: 123,
-				NetswitchXmpp:       true,
-			})
-			client := &http.Client{}
-			err := netSwitches.Load(client)
-			So(err, ShouldBeNil)
-			err = netSwitches.SyncAll()
-			So(err, ShouldBeNil)
-			<-time.After(time.Second)
-			So(ns.PollRequests, ShouldEqual, 1)
-			lmApi.UpdateMapping(55, machine.Machine{
-				Id:                  55,
-				NetswitchHost:       ns.Host(),
-				NetswitchSensorPort: 123,
-				NetswitchXmpp:       false,
-			})
-			err = netSwitches.Load(client)
-			So(err, ShouldBeNil)
-			err = netSwitches.SyncAll()
-			So(err, ShouldBeNil)
-			<-time.After(time.Second)
-			So(ns.PollRequests, ShouldEqual, 1)
-		})
-	})
-
 	// SetOn affects synchronization. So it's best to do this test *after*
 	// playing around with Sync methods.
 	Convey("Testing SetOn", t, func() {
-		pollBefore := netSwitch1.PollRequests
 		switchBefore := netSwitch1.SwitchRequests
 		netSwitches.SetOn(11, true)
 		<-time.After(time.Second)
-
-		Convey("It should trigger one poll request", func() {
-			after := netSwitch1.PollRequests
-			So(after-pollBefore, ShouldEqual, 1)
-		})
 
 		Convey("It should trigger one switch request", func() {
 			after := netSwitch1.SwitchRequests
@@ -167,12 +73,10 @@ func TestNetswitches(t *testing.T) {
 	})
 
 	Convey("netswitch 2 should not have received any requests because it's not on XMPP", t, func() {
-		So(netSwitch2.PollRequests, ShouldEqual, 0)
 		So(netSwitch2.SwitchRequests, ShouldEqual, 0)
 	})
 
 	Convey("netswitch 3 should have received only one poll request and no switch requests", t, func() {
-		So(netSwitch3.PollRequests, ShouldEqual, 1)
 		So(netSwitch3.SwitchRequests, ShouldEqual, 0)
 	})
 }

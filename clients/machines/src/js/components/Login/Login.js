@@ -49,7 +49,8 @@ var Login = React.createClass({
       password: this.refs.password.getDOMNode().value,
       location: this.refs.location.getDOMNode().value
     };
-    console.log('handleSubmit: data=', data);
+    console.log('handleSubmit: username=', data.username);
+    console.log('handleSubmit: location=', data.location);
     LoginActions.submitLoginForm(data, this.context.router);
   },
 
