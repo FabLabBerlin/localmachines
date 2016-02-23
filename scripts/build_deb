@@ -91,7 +91,7 @@ function buildLm {
 
 	echo Building Localmachines package for $buildArch...
 
-	PKG_NAME=localmachines_0.10.2.0
+	PKG_NAME=localmachines_0.10.4.1
 	PKG_TMP_DIR=$__dir/pkg_tmp_dir
 	PKG_ROOT=$PKG_TMP_DIR/$PKG_NAME
 
@@ -124,7 +124,7 @@ function buildGateway {
 
 	echo Building Gateway package for $buildArch...
 
-	PKG_NAME=localmachines-gateway_0.10.2.0
+	PKG_NAME=localmachines-gateway_0.10.4.1
 	PKG_TMP_DIR=$__dir/pkg_tmp_dir
 	PKG_ROOT=$PKG_TMP_DIR/$PKG_NAME
 
