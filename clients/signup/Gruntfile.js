@@ -55,6 +55,7 @@ module.exports = function (grunt) {
 						'dev/bower_components/vex/js/vex.combined.min.js',
 						'dev/bower_components/angular/angular.js',
 						'dev/bower_components/angular-route/angular-route.js',
+						'dev/bower_components/lodash/lodash.js',
 						'dev/bower_components/toastr/toastr.js'
 					],
 					'tmp/app.js': [
