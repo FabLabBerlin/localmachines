@@ -12,14 +12,16 @@ app.config(['$routeProvider', function($routeProvider) {
   });
 }]); // app.config
 
-app.controller('SettingsCtrl', ['$scope', '$http', '$location', 'randomToken', 
- function($scope, $http, $location, randomToken) {
+app.controller('SettingsCtrl',
+ ['$scope', '$http', '$location', '$cookies', 'randomToken',
+ function($scope, $http, $location, $cookies, randomToken) {
 
   $scope.loadSettings = function() {
     $http({
       method: 'GET',
       url: '/api/settings',
       params: {
+        location: $cookies.locationId,
         ac: new Date().getTime()
       }
     })
@@ -42,7 +44,7 @@ app.controller('SettingsCtrl', ['$scope', '$http', '$location', 'randomToken',
   $scope.save = function() {
     $http({
       method: 'POST',
-      url: '/api/settings',
+      url: '/api/settings?location=' + $cookies.locationId,
       headers: {'Content-Type': 'application/json' },
       data: _.map($scope.settings, function(setting, name) {
         return _.extend({

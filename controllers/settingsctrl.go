@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
-	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/settings"
 	"github.com/astaxie/beego"
 )
 
@@ -17,12 +17,12 @@ type SettingsController struct {
 // @Failure	401	Not authorized
 // @router / [get]
 func (this *SettingsController) GetAll() {
-	if !this.IsAdmin() {
-		beego.Error("Not authorized")
+	locId, authorized := this.GetLocIdAdmin()
+	if !authorized {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	settings, err := models.GetAllSettings()
+	settings, err := settings.GetAllAt(locId)
 	if err != nil {
 		beego.Error("Failed to get all settings:", err)
 		this.CustomAbort(500, "Failed to get all settings")
@@ -39,26 +39,29 @@ func (this *SettingsController) GetAll() {
 // @Failure 500 Internal Server Error
 // @router / [post]
 func (this *SettingsController) Post() {
-	if !this.IsAdmin() {
-		beego.Error("Unauthorized attempt to change setting")
-		this.CustomAbort(401, "Unauthorized")
+	locId, authorized := this.GetLocIdAdmin()
+	if !authorized {
+		this.CustomAbort(401, "Not authorized")
 	}
 
-	var settings []*models.Setting
+	var allSettings []*settings.Setting
 
 	dec := json.NewDecoder(this.Ctx.Request.Body)
 	defer this.Ctx.Request.Body.Close()
-	if err := dec.Decode(&settings); err != nil {
+	if err := dec.Decode(&allSettings); err != nil {
 		beego.Error("Failed to decode json:", err)
 		this.CustomAbort(403, "Failed to update Settings")
 	}
 
-	for _, setting := range settings {
+	for _, setting := range allSettings {
 		var err error
 		var msg string
+
+		setting.LocationId = locId
+
 		if setting.Id == 0 {
 			msg = "new setting"
-			_, err = models.CreateSetting(setting)
+			_, err = settings.Create(setting)
 		} else {
 			msg = "updating existing setting"
 			err = setting.Update()
