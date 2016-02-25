@@ -32,9 +32,6 @@ var BusyMachine = React.createClass({
   
             <div className="machine-action-info">
               <div className="machine-info-content">
-                <div className="machine-time-label">
-                  Usage time
-                </div>
                 <Timer activation={this.props.activation}/>
               </div>
             </div>

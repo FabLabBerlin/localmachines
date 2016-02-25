@@ -2,7 +2,6 @@ var getters = require('../../../getters');
 var MachineActions = require('../../../actions/MachineActions');
 var React = require('react');
 var reactor = require('../../../reactor');
-var Timer = require('./Timer');
 var ForceSwitchOn = require('./ForceSwitchOn');
 var ForceSwitchOff = require('./ForceSwitchOff');
 

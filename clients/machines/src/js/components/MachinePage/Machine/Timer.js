@@ -1,4 +1,6 @@
 var React = require('react');
+var getters = require('../../../getters');
+var reactor = require('../../../reactor');
 
 /*
  * Methode to int to be display in hour format
@@ -71,8 +73,29 @@ var Timer = React.createClass({
    * Render the timer
    */
   render() {
+    const uid = reactor.evaluateToJS(getters.getUid);
+    const sameUser = uid === this.props.activation.UserId;
+    const machinesById = reactor.evaluateToJS(getters.getMachinesById);
+    const machine = machinesById[this.props.activation.MachineId];
+    var inGracePeriod = machine && machine.GracePeriod && 
+                        duration < machine.GracePeriod;
+    var duration = this.state.secondsElapsed;
+    if (inGracePeriod) {
+      duration = machine.GracePeriod - duration;
+    } else {
+      duration = duration - machine.GracePeriod;
+    }
     return (
-      <div className="machine-time-value">{toHHMMSS(this.state.secondsElapsed)}</div>
+      <div className="machine-time-value">
+        {sameUser ? (
+          <div className="machine-time-label">
+            {inGracePeriod ?
+                'Grace Period'
+              : 'Usage time'}
+          </div>
+        ) : null}
+        {toHHMMSS(duration)}
+      </div>
     );
   }
 });

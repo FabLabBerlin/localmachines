@@ -81,6 +81,10 @@ func (this *Machine) Exists() bool {
 	return machineExists
 }
 
+func (this *Machine) GetGracePeriod() time.Duration {
+	return time.Duration(this.GracePeriod) * time.Second
+}
+
 func (this *Machine) IsAvailable() bool {
 	o := orm.NewOrm()
 	machineAvailable := o.QueryTable(this.TableName()).

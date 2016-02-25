@@ -229,9 +229,24 @@ func CloseActivation(activationId int64, endTime time.Time) error {
 		return fmt.Errorf("Failed to get activation: %v", err)
 	}
 
+	machine, err := machine.GetMachine(activation.Purchase.MachineId)
+	if err != nil {
+		beego.Error("Failed to get machine:", err)
+		return fmt.Errorf("Failed to get machine: %v", err)
+	}
+
+	gracePeriod := machine.GetGracePeriod()
+
 	// Calculate activation duration and update activation.
 	activation.Purchase.Running = false
+	activation.Purchase.TimeStart = activation.Purchase.TimeStart.Add(gracePeriod)
 	activation.Purchase.TimeEnd = endTime
+	if activation.Purchase.TimeEnd.Before(activation.Purchase.TimeStart) {
+		activation.Purchase.TimeEnd = activation.Purchase.TimeStart
+		if gracePeriod == 0 {
+			beego.Error("time end before time start?!")
+		}
+	}
 	activation.Purchase.Quantity = activation.Purchase.quantityFromTimes()
 
 	err = activation.Update()
@@ -240,15 +255,8 @@ func CloseActivation(activationId int64, endTime time.Time) error {
 	}
 
 	// Make the machine available again.
-	machine, err := machine.GetMachine(activation.Purchase.MachineId)
-	if err != nil {
-		beego.Error("Failed to get machine:", err)
-		return fmt.Errorf("Failed to get machine: %v", err)
-	}
-
 	machine.Available = true
-	err = machine.Update()
-	if err != nil {
+	if err = machine.Update(); err != nil {
 		beego.Error("Failed to update machine:", err)
 		return fmt.Errorf("Failed to update machine: %v", err)
 	}
