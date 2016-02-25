@@ -28,6 +28,11 @@ func Init() {
 	// handled by beego router.go
 
 	ns := beego.NewNamespace("/api",
+		beego.NSNamespace("/debug",
+			beego.NSInclude(
+				&controllers.DebugController{},
+			),
+		),
 		beego.NSNamespace("/locations",
 			beego.NSInclude(
 				&locations.Controller{},
