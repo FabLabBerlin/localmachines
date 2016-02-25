@@ -20,6 +20,9 @@ mod.service('api',
     })
     .success(function(machines) {
       var machinesById = {};
+      machines = _.sortBy(machines, function(m) {
+        return m.Name;
+      });
       _.each(machines, function(machine) {
         machinesById[machine.Id] = machine;
       });

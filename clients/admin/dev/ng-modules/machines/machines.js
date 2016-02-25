@@ -43,8 +43,7 @@ app.controller('MachinesCtrl',
       url: '/api/machines',
       params: {
         location: $cookies.locationId,
-        mname: machineName,
-        ac: new Date().getTime()
+        mname: machineName
       }
     })
     .success(function(data) {
@@ -55,9 +54,8 @@ app.controller('MachinesCtrl',
     });
   };
 
-  $scope.editMachine = function(machineId) {
-    $location.path('/machine/' + machineId);
-    //$scope.$apply();
+  $scope.editMachine = function(id) {
+    $location.path('/machine/' + id);
   };
 
 }]); // app.controller

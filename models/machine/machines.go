@@ -51,8 +51,9 @@ type Machine struct {
 	Visible                bool
 	ConnectedMachines      string `orm:"size(255)"`
 	UnderMaintenance       bool
-	ReservationPriceStart  *float64 // Why pointers?
+	ReservationPriceStart  *float64 // Pointers because optional
 	ReservationPriceHourly *float64
+	GracePeriod            uint64 // Seoncds
 	TypeId                 int64
 	Brand                  string
 	Dimensions             string

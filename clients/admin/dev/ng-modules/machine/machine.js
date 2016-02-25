@@ -25,20 +25,6 @@ app.controller('MachineCtrl',
   $scope.machineImageNewFileName = undefined;
   $scope.machineImageNewFileSize = undefined;
 
-  $scope.loadLocations = function() {
-    $http({
-      method: 'GET',
-      url: '/api/locations'
-    })
-    .success(function(data) {
-      $scope.locations = data;
-    })
-    .error(function() {
-      toastr.error('Failed to get locations');
-    });
-  };
-
-
   $scope.loadMachine = function(machineId) {
     $http({
       method: 'GET',
@@ -72,7 +58,6 @@ app.controller('MachineCtrl',
     });
   };
 
-  $scope.loadLocations();
   $scope.loadMachineTypes();
   $scope.loadMachine($scope.machine.Id);
 
@@ -97,20 +82,10 @@ app.controller('MachineCtrl',
       machine.ReservationPriceHourly = null;
     }
 
-    if (!machine.LocationId) {
-      machine.LocationId = 0;
-    }
-    machine.LocationId = parseInt(machine.LocationId);
-
     if (!machine.TypeId) {
       machine.TypeId = 0;
     }
     machine.TypeId = parseInt(machine.TypeId);
-
-    if (!machine.LocationId) {
-      toastr.error('Please specify a location.');
-      return;
-    }
 
     $http({
       method: 'PUT',
@@ -136,45 +111,6 @@ app.controller('MachineCtrl',
       }
     });
   }; // updateMachine()
-
-  $scope.deleteMachinePrompt = function() {
-    var token = randomToken.generate();
-    vex.dialog.prompt({
-      message: 'Enter <span class="delete-prompt-token">' + 
-       token + '</span> to delete',
-      placeholder: 'Token',
-      callback: $scope.deleteMachinePromptCallback.bind(this, token)
-    });
-  };
-
-  $scope.deleteMachinePromptCallback = function(expectedToken, value) {
-    if (value) {    
-      if (value === expectedToken) {
-        $scope.deleteMachine();
-      } else {
-        toastr.error('Wrong token');
-      }
-    } else if (value !== false) {
-      toastr.error('No token');
-    }
-  };
-
-  $scope.deleteMachine = function() {
-    $http({
-      method: 'DELETE',
-      url: '/api/machines/' + $scope.machine.Id,
-      params: {
-        ac: new Date().getTime()
-      }
-    })
-    .success(function() {
-      toastr.success('Machine deleted');
-      $location.path('/machines');
-    })
-    .error(function() {
-      toastr.error('Failed to delete machine');
-    });
-  };
 
   // cf. http://stackoverflow.com/q/17922557/485185
   // There is also a plugin for <input type="file"> on change events.
