@@ -1,5 +1,6 @@
 var _ = require('lodash');
 var getters = require('../../getters');
+var LoaderLocal = require('../LoaderLocal');
 var moment = require('moment');
 var React = require('react');
 var reactor = require('../../reactor');
@@ -157,13 +158,7 @@ var BillTables = React.createClass({
         </div>
       );
     } else {
-      return (
-        <div className="loader-local">
-          <div className="spinner">
-            <i className="fa fa-cog fa-spin"></i>
-          </div>
-        </div>
-      );
+      return <LoaderLocal/>;
     }
   }
 });

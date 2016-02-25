@@ -1,6 +1,7 @@
 var _ = require('lodash');
 var $ = require('jquery');
 var getters = require('../../getters');
+var LoaderLocal = require('../LoaderLocal');
 var MachineActions = require('../../actions/MachineActions');
 var moment = require('moment');
 var Navigation = require('react-router').Navigation;
@@ -145,13 +146,7 @@ var ReservationsTable = React.createClass({
         </div>
       );
     } else {
-      return (
-        <div className="loader-local">
-          <div className="spinner">
-            <i className="fa fa-cog fa-spin"></i>
-          </div>
-        </div>
-      );
+      return <LoaderLocal/>;
     }
   }
 });

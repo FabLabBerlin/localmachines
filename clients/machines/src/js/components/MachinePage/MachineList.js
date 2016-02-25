@@ -1,8 +1,9 @@
 var _ = require('lodash');
 var getters = require('../../getters');
+var LoaderLocal = require('../LoaderLocal');
+var Machine = require('./Machine/Machine');
 var React = require('react');
 var reactor = require('../../reactor');
-var Machine = require('./Machine/Machine');
 
 
 var MachineList = React.createClass({
@@ -51,13 +52,7 @@ var MachineList = React.createClass({
         }
       }.bind(this));
     } else {
-      return (
-        <div className="loader-local">
-          <div className="spinner">
-            <i className="fa fa-cog fa-spin"></i>
-          </div>
-        </div>
-      );
+      return <LoaderLocal/>;
     }
     return (
       <div className="machines">
