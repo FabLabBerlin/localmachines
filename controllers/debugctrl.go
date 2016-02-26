@@ -28,5 +28,8 @@ func (this *DebugController) Get() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 	beego.Error("headers:", string(json))
+	beego.Error("host:", this.Ctx.Request.Host)
+	beego.Error("remote addr:", this.Ctx.Request.RemoteAddr)
+	beego.Error("request uri:", this.Ctx.Request.RequestURI)
 	this.ServeJSON()
 }
