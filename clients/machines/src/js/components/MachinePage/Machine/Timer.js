@@ -1,5 +1,6 @@
 var React = require('react');
 var getters = require('../../../getters');
+var moment = require('moment');
 var reactor = require('../../../reactor');
 
 /*
@@ -13,6 +14,7 @@ function toHHMMSS(d) {
   return ((h > 0 ? h + ':' + (m < 10 ? '0' : '') : '') + m + ':' + (s < 10 ? '0' : '') + s);
 }
 
+
 /*
  * Timer who will display the time you use the machine
  */
@@ -23,8 +25,10 @@ var Timer = React.createClass({
    * Take the Quantity from activation json
    */
   getInitialState() {
+    this.initialSeconds = this.props.activation.Quantity * this.multiplier();
+    this.startShow = moment().unix();
     return {
-      secondsElapsed: this.props.activation.Quantity * this.multiplier()
+      timeNow: moment().unix()
     };
   },
 
@@ -49,7 +53,7 @@ var Timer = React.createClass({
    */
   tick() {
     this.setState({
-      secondsElapsed: this.state.secondsElapsed + 1
+      timeNow: moment().unix()
     });
   },
 
@@ -77,9 +81,9 @@ var Timer = React.createClass({
     const sameUser = uid === this.props.activation.UserId;
     const machinesById = reactor.evaluateToJS(getters.getMachinesById);
     const machine = machinesById[this.props.activation.MachineId];
+    var duration = this.initialSeconds + this.state.timeNow - this.startShow;
     var inGracePeriod = machine && machine.GracePeriod && 
                         duration < machine.GracePeriod;
-    var duration = this.state.secondsElapsed;
     if (inGracePeriod) {
       duration = machine.GracePeriod - duration;
     } else {
