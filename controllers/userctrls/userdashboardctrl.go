@@ -44,8 +44,6 @@ func (this *DashboardData) loadMachines(isStaff bool, uid, locationId int64) (er
 		return fmt.Errorf("Failed to get all machines: %v", err)
 	}
 
-	beego.Info("loadMachines: isStaff=", isStaff, " @ locationId=", locationId, " for uid=", uid)
-
 	// Get the machines!
 	this.Machines = make([]*machine.Machine, 0, len(allMachines))
 	if !isStaff {
