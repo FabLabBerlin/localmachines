@@ -64,6 +64,7 @@ type Machine struct {
 	NetswitchUrlOff     string `orm:"size(255)"`
 	NetswitchHost       string `orm:"size(255)"`
 	NetswitchSensorPort int
+	NetswitchType       string `orm:"size(255)"`
 	NetswitchXmpp       bool
 }
 
