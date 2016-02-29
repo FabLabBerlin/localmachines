@@ -167,6 +167,7 @@ app.controller('ActivationsCtrl',
         includeInvoiced: false,
         itemsPerPage: $scope.itemsPerPage,
         page: $scope.currentPage,
+        location: $cookies.locationId,
         ac: new Date().getTime()
       }
     })
