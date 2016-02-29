@@ -155,6 +155,39 @@ app.controller('ActivationsCtrl',
     $scope.loadActivations('', '', 0);
   };
 
+  $scope.createFbDraftsPrompt = function() {
+    var token = randomToken.generate();
+    vex.dialog.prompt({
+      message: 'Enter <span class="delete-prompt-token">' +
+      token + '</span> to create Fastbill drafts',
+      placeholder: 'Token',
+      callback: function(value) {
+        if (value) {
+          if (value === token) {
+            $scope.createFbDrafts();
+          } else {
+            toastr.error('Wrong token');
+          }
+        } else if (value !== false) {
+          toastr.error('No token');
+        }
+      } // callback
+    });
+  };
+
+  $scope.createFbDrafts = function() {
+    $http({
+      method: 'POST',
+      url: '/api/invoices/create_drafts'
+    })
+    .success(function() {
+      toastr.info('Sucessfully created invoice drafts');
+    })
+    .error(function() {
+      toastr.error('Error creating invoice');
+    });
+  };
+
   // Creates invoice on the server side and returns link
   $scope.exportSpreadsheet = function() {
     $http({

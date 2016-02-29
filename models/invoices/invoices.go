@@ -58,6 +58,20 @@ type UserSummary struct {
 	Purchases purchases.Purchases
 }
 
+func (userSummary *UserSummary) byProductNameAndPricePerUnit() map[string]map[float64][]*purchases.Purchase {
+	byProductNameAndPricePerUnit := make(map[string]map[float64][]*purchases.Purchase)
+	for _, p := range userSummary.Purchases.Data {
+		if _, ok := byProductNameAndPricePerUnit[p.ProductName()]; !ok {
+			byProductNameAndPricePerUnit[p.ProductName()] = make(map[float64][]*purchases.Purchase)
+		}
+		if _, ok := byProductNameAndPricePerUnit[p.ProductName()][p.PricePerUnit]; !ok {
+			byProductNameAndPricePerUnit[p.ProductName()][p.PricePerUnit] = make([]*purchases.Purchase, 0, 20)
+		}
+		byProductNameAndPricePerUnit[p.ProductName()][p.PricePerUnit] = append(byProductNameAndPricePerUnit[p.ProductName()][p.PricePerUnit], p)
+	}
+	return byProductNameAndPricePerUnit
+}
+
 // exists returns whether the given file or directory exists or not
 func exists(path string) (bool, error) {
 	_, err := os.Stat(path)

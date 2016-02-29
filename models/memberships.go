@@ -19,7 +19,7 @@ type Membership struct {
 	Title                    string `orm:"size(100)"`
 	ShortName                string `orm:"size(100)"`
 	DurationMonths           int64
-	MonthlyPrice             float32
+	MonthlyPrice             float64
 	MachinePriceDeduction    int
 	AffectedMachines         string `orm:"type(text)"`
 	AutoExtend               bool

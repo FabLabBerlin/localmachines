@@ -41,7 +41,7 @@ type UserMembershipCombo struct {
 	ShortName             string
 	DurationMonths        int
 	Unit                  string
-	MonthlyPrice          float32
+	MonthlyPrice          float64
 	MachinePriceDeduction int
 	AffectedMachines      string
 	AutoExtend            bool
