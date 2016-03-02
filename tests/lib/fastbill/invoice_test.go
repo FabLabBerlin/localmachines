@@ -114,7 +114,7 @@ const FASTBILL_RESPONSE = `
 func TestFastbillInvoice(t *testing.T) {
 	Convey("Testing Fastbill Invoice", t, func() {
 		Convey("Testing whether Fastbill responses can be unmarshaled", func() {
-			var response fastbill.InvoiceResponse
+			var response fastbill.InvoiceCreateResponse
 			err := json.Unmarshal([]byte(FASTBILL_RESPONSE), &response)
 			if err != nil {
 				panic(err.Error())

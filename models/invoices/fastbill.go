@@ -30,8 +30,12 @@ func CreateFastbillDrafts(inv *Invoice) (ids []int64, err error) {
 
 func CreateFastbillDraft(userSummary *UserSummary) (fbDraft *fastbill.Invoice, empty bool, err error) {
 	fbDraft = &fastbill.Invoice{
-		TemplateId: fastbill.TemplateStandardId,
-		Items:      make([]fastbill.Item, 0, 10),
+		CustomerNumber: userSummary.User.ClientId,
+		TemplateId:     fastbill.TemplateStandardId,
+		Items:          make([]fastbill.Item, 0, 10),
+	}
+	if fbDraft.Month, err = getFastbillMonth(userSummary); err != nil {
+		return nil, false, fmt.Errorf("get fastbill month: %v", err)
 	}
 	memberships, err := models.GetUserMemberships(userSummary.User.Id)
 	if err != nil {
@@ -105,5 +109,17 @@ func CreateFastbillDraft(userSummary *UserSummary) (fbDraft *fastbill.Invoice, e
 		return nil, false, fmt.Errorf("submit: %v", err)
 	}
 
+	return
+}
+
+func getFastbillMonth(userSummary *UserSummary) (month string, err error) {
+	for _, p := range userSummary.Purchases.Data {
+		m := p.TimeStart.Month().String()
+		if month == "" {
+			month = m
+		} else if month != m {
+			return "", fmt.Errorf("2 months present: %v and %v", m, month)
+		}
+	}
 	return
 }

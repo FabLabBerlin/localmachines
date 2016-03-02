@@ -2,14 +2,10 @@
 package fastbill
 
 import (
-	"bytes"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/astaxie/beego"
-	"io/ioutil"
-	"net/http"
 	"strconv"
 	"strings"
 )
@@ -19,15 +15,6 @@ const (
 	CUSTOMER_TYPE_BUSINESS = "business"
 	CUSTOMER_TYPE_CONSUMER = "consumer"
 )
-
-// Base FastBill API request model
-type Request struct {
-	LIMIT   int64 `json:",omitempty"`
-	OFFSET  int64 `json:",omitempty"`
-	SERVICE string
-	FILTER  *CustomerGetFilter `json:",omitempty"`
-	DATA    interface{}
-}
 
 // customer.get response model
 // For now define a response per request. The interface{} thing
@@ -254,48 +241,4 @@ func (this *FastBill) DeleteCustomer(customerId int64) error {
 		return errors.New("There was an error while deleting a customer")
 	}
 
-}
-
-// Reusable helper function for the
-func (this *FastBill) execGetRequest(request *Request, response interface{}) error {
-
-	jsonBytes, err := json.Marshal(request)
-	if err != nil {
-		return fmt.Errorf("Failed to marshal JSON: %v", err)
-	}
-
-	beego.Info("jsonBytes:", string(jsonBytes))
-
-	req, err := http.NewRequest("GET", API_URL, bytes.NewBuffer(jsonBytes))
-	if err != nil {
-		return fmt.Errorf("Failed to create request: %v", err)
-	}
-	req.Header.Add("Content-Type", "application/json")
-	req.SetBasicAuth(this.email, this.apiKey)
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		beego.Error("Failed to get response:", err)
-		return fmt.Errorf("Failed to get response")
-	}
-	defer resp.Body.Close()
-
-	if code := resp.StatusCode; code < 200 || code >= 300 {
-		return fmt.Errorf("status code %v (%v)", code, resp.Status)
-	}
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		beego.Error("Failed to read response body:", err)
-		return fmt.Errorf("Failed to read response body")
-	}
-
-	err = json.Unmarshal(body, response)
-	if err != nil {
-		beego.Error("Failed to unmarshal JSON:", err)
-		beego.Error("JSON was: ", string(body))
-		return fmt.Errorf("Failed to unmarshal json")
-	}
-
-	return nil
 }

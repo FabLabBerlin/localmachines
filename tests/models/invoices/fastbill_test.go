@@ -61,7 +61,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 					},
 				}
 			} else {
-				resp = fastbill.InvoiceResponse{}
+				resp = fastbill.InvoiceCreateResponse{}
 			}
 
 			enc := json.NewEncoder(w)
