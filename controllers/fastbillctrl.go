@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"github.com/FabLabBerlin/localmachines/models/fastbill"
+	"github.com/FabLabBerlin/localmachines/lib/fastbill"
 	"github.com/astaxie/beego"
 	"strconv"
 )

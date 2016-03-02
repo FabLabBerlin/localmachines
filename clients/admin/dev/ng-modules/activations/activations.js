@@ -178,7 +178,8 @@ app.controller('ActivationsCtrl',
   $scope.createFbDrafts = function() {
     $http({
       method: 'POST',
-      url: '/api/invoices/create_drafts'
+      url: '/api/invoices/create_drafts',
+      params: getExportParams()
     })
     .success(function() {
       toastr.info('Sucessfully created invoice drafts');
@@ -188,21 +189,25 @@ app.controller('ActivationsCtrl',
     });
   };
 
+  function getExportParams() {
+    return {
+      startDate: $scope.activationsStartDate,
+      endDate: $scope.activationsEndDate,
+      //userId: 1,
+      includeInvoiced: false,
+      itemsPerPage: $scope.itemsPerPage,
+      page: $scope.currentPage,
+      location: $cookies.locationId,
+      ac: new Date().getTime()
+    };
+  }
+
   // Creates invoice on the server side and returns link
   $scope.exportSpreadsheet = function() {
     $http({
       method: 'POST',
       url: '/api/invoices',
-      params: {
-        startDate: $scope.activationsStartDate,
-        endDate: $scope.activationsEndDate,
-        //userId: 1,
-        includeInvoiced: false,
-        itemsPerPage: $scope.itemsPerPage,
-        page: $scope.currentPage,
-        location: $cookies.locationId,
-        ac: new Date().getTime()
-      }
+      params: getExportParams()
     })
     .success(function(invoiceData) {
       // invoiceData should contain link to the generated xls file

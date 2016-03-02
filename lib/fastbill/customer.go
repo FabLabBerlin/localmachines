@@ -15,28 +15,9 @@ import (
 
 // API endpoint - all requests go here
 const (
-	API_URL                 = "https://my.fastbill.com/api/1.0/api.php"
-	SERVICE_CUSTOMER_GET    = "customer.get"
-	SERVICE_CUSTOMER_CREATE = "customer.create"
-	SERVICE_CUSTOMER_UPDATE = "customer.update"
-	SERVICE_CUSTOMER_DELETE = "customer.delete"
-	CUSTOMER_TYPE_BUSINESS  = "business"
-	CUSTOMER_TYPE_CONSUMER  = "consumer"
+	CUSTOMER_TYPE_BUSINESS = "business"
+	CUSTOMER_TYPE_CONSUMER = "consumer"
 )
-
-// Main FastBill object. All the functionality goes through this object.
-type FastBill struct {
-	email  string
-	apiKey string
-}
-
-func New() (fb *FastBill) {
-	fb = &FastBill{
-		email:  beego.AppConfig.String("fastbillemail"),
-		apiKey: beego.AppConfig.String("fastbillapikey"),
-	}
-	return
-}
 
 // Base FastBill API request model
 type Request struct {
@@ -256,6 +237,8 @@ func (this *FastBill) execGetRequest(request *Request, response interface{}) err
 		return fmt.Errorf("Failed to marshal JSON: %v", err)
 	}
 
+	beego.Info("jsonBytes:", string(jsonBytes))
+
 	req, err := http.NewRequest("GET", API_URL, bytes.NewBuffer(jsonBytes))
 	if err != nil {
 		return fmt.Errorf("Failed to create request: %v", err)
@@ -269,6 +252,10 @@ func (this *FastBill) execGetRequest(request *Request, response interface{}) err
 		return fmt.Errorf("Failed to get response")
 	}
 	defer resp.Body.Close()
+
+	if code := resp.StatusCode; code < 200 || code >= 300 {
+		return fmt.Errorf("status code %v (%v)", code, resp.Status)
+	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {

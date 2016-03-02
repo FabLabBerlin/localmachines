@@ -1,31 +1,28 @@
 package fastbill
 
-const (
-	TemplateStandardId = 1
-	TemplateEnglishId  = 3063
+import (
+	"github.com/astaxie/beego"
 )
 
-type Invoice struct {
-	CustomerId           int    `json:"CUSTOMER_ID,string"`
-	CustomerCostcenterId int64  `json:"CUSTOMER_COSTCENTER_ID,string,omitempty"`
-	CurrencyCode         string `json:"CURRENCY_CODE,omitempty"`
-	TemplateId           int64  `json:"TEMPLATE_ID,string,omitempty"`
-	Introtext            string `json:"INTROTEXT,omitempty"`
-	InvoiceTitle         string `json:"INVOICE_TITLE,omitempty"`
-	InvoiceDate          string `json:"INVOICE_DATE,omitempty"`
-	DeliveryDate         string `json:"DELIVERY_DATE,omitempty"`
-	CashDiscountPercent  string `json:"CASH_DISCOUNT_PERCENT,omitempty"`
-	CashDiscountDays     string `json:"CASH_DISCOUNT_DAYS,omitempty"`
-	EuDelivery           string `json:"EU_DELIVERY,omitempty"`
-	Items                []Item `json:"ITEMS,"`
+const (
+	API_URL                 = "https://my.fastbill.com/api/1.0/api.php"
+	SERVICE_CUSTOMER_GET    = "customer.get"
+	SERVICE_CUSTOMER_CREATE = "customer.create"
+	SERVICE_CUSTOMER_UPDATE = "customer.update"
+	SERVICE_CUSTOMER_DELETE = "customer.delete"
+	SERVICE_INVOICE_CREATE  = "invoice.create"
+)
+
+// Main FastBill object. All the functionality goes through this object.
+type FastBill struct {
+	email  string
+	apiKey string
 }
 
-type Item struct {
-	ArticleNumber int64   `json:"ARTICLE_NUMBER,string,omitempty"`
-	Description   string  `json:"DESCRIPTION,"`
-	Quantity      float64 `json:"QUANTITY,string,omitempty"`
-	UnitPrice     float64 `json:"UNIT_PRICE,string"`
-	VatPercent    int64   `json:"VAT_PERCENT,string"`
-	IsGross       string  `json:"IS_GROSS,omitempty"`
-	SortOrder     string  `json:"SORT_ORDER,"`
+func New() (fb *FastBill) {
+	fb = &FastBill{
+		email:  beego.AppConfig.String("fastbillemail"),
+		apiKey: beego.AppConfig.String("fastbillapikey"),
+	}
+	return
 }

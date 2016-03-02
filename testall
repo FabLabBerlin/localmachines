@@ -36,7 +36,7 @@ go test
 cd $__dir/tests/controllers
 go test
 
-for testDir in `find $__dir/tests/gateway $__dir/tests/models -type d | grep -v mocks`
+for testDir in `find $__dir/tests/gateway $__dir/tests/lib $__dir/tests/models -type d | grep -v mocks`
 do
 	echo Testing $testDir...
 	cd $testDir

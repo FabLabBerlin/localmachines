@@ -79,17 +79,74 @@ func (this *InvoicesController) Create() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
+	startTime, endTime, err := this.parseParams()
+	if err != nil {
+		beego.Error("Request parameters:", err)
+		this.CustomAbort(400, "Bad request")
+	}
+
+	invoices, err := invoices.Create(locId, startTime, endTime)
+	if err != nil {
+		beego.Error("Failed to create invoices:", err)
+		this.CustomAbort(403, "Failed to create invoices")
+	}
+
+	this.Data["json"] = invoices
+	this.ServeJSON()
+}
+
+// @Title Create Invoice
+// @Description Create invoice from selection of activations
+// @Param	startDate		query 	string	true		"Period start date"
+// @Param	endDate		query 	string	true		"Period end date"
+// @Success 200 {object} models.invoices.Invoice
+// @Failure	401	Not authorized
+// @Failure	403	Failed to create invoice
+// @router /create_drafts [post]
+func (this *InvoicesController) CreateDrafts() {
+
+	// Only local admin can use this API call
+	locId, authorized := this.GetLocIdAdmin()
+	if !authorized {
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	startTime, endTime, err := this.parseParams()
+	if err != nil {
+		beego.Error("Request parameters:", err)
+		this.CustomAbort(400, "Bad request")
+	}
+
+	invs, err := invoices.Create(locId, startTime, endTime)
+	if err != nil {
+		beego.Error("Failed to create invoices:", err)
+		this.CustomAbort(500, "Failed to create invoice drafts")
+	}
+
+	ids, err := invoices.CreateFastbillDrafts(invs)
+	if err != nil {
+		beego.Error("Failed to create invoice drafts:", err)
+		this.CustomAbort(500, "Failed to create invoice drafts")
+	}
+
+	beego.Info("created invoice drafts with IDs", ids)
+
+	this.Data["json"] = ids
+	this.ServeJSON()
+}
+
+func (this *InvoicesController) parseParams() (startTime, endTime time.Time, err error) {
 	// Get variables
 	startDate := this.GetString("startDate")
 	if startDate == "" {
-		beego.Error("Missing start date")
-		this.CustomAbort(403, "Failed to create invoice")
+		err = fmt.Errorf("Missing start date")
+		return
 	}
 
 	endDate := this.GetString("endDate")
 	if endDate == "" {
-		beego.Error("Missing end date")
-		this.CustomAbort(403, "Failed to create invoice")
+		err = fmt.Errorf("Missing end date")
+		return
 	}
 
 	// Convert / parse string time values as time.Time
@@ -98,27 +155,20 @@ func (this *InvoicesController) Create() {
 	// Enhance start date
 	startDate = fmt.Sprintf("%s 00:00:00", startDate)
 
-	startTime, err := time.Parse(timeForm, startDate)
+	startTime, err = time.Parse(timeForm, startDate)
 	if err != nil {
-		beego.Error("Failed to parse startDate:", err)
-		this.CustomAbort(403, "Failed to create invoice")
+		err = fmt.Errorf("Failed to parse startDate:", err)
+		return
 	}
 
 	// Enhance end date, make all the day inclusive
 	endDate = fmt.Sprintf("%s 23:59:59", endDate)
 
-	endTime, err := time.Parse(timeForm, endDate)
+	endTime, err = time.Parse(timeForm, endDate)
 	if err != nil {
-		beego.Error("Failed to parse endDate:", err)
-		this.CustomAbort(403, "Failed to create invoice")
+		err = fmt.Errorf("Failed to parse endDate:", err)
+		return
 	}
 
-	invoice, err := invoices.Create(locId, startTime, endTime)
-	if err != nil {
-		beego.Error("Failed to create invoice:", err)
-		this.CustomAbort(403, "Failed to create invoice")
-	}
-
-	this.Data["json"] = invoice
-	this.ServeJSON()
+	return
 }

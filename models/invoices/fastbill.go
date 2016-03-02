@@ -5,7 +5,28 @@ import (
 	"github.com/FabLabBerlin/localmachines/lib/fastbill"
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
+	"github.com/astaxie/beego"
 )
+
+func CreateFastbillDrafts(inv *Invoice) (ids []int64, err error) {
+	ids = make([]int64, 0, len(inv.UserSummaries))
+	for _, userSummary := range inv.UserSummaries {
+		if uid := userSummary.User.Id; uid == 19 {
+			fbDraft, empty, err := createFastbillDraft(userSummary)
+			if err != nil {
+				return nil, fmt.Errorf("create draft for user %v: %v", uid, err)
+			}
+			if empty {
+				beego.Debug("draft is empty")
+				continue
+			}
+			id := fbDraft.Id
+			beego.Info("Draft created with ID", id)
+			ids = append(ids, id)
+		}
+	}
+	return
+}
 
 func createFastbillDraft(userSummary *UserSummary) (fbDraft *fastbill.Invoice, empty bool, err error) {
 	fbDraft = &fastbill.Invoice{
@@ -54,7 +75,9 @@ func createFastbillDraft(userSummary *UserSummary) (fbDraft *fastbill.Invoice, e
 				}
 				discount = len(affected) > 0
 			}
-
+			beego.Info("")
+			beego.Info("discount=", discount)
+			beego.Info("unitPrice=", unitPrice)
 			if discount {
 				unitPrice = pricePerUnit
 			} else {
@@ -69,6 +92,10 @@ func createFastbillDraft(userSummary *UserSummary) (fbDraft *fastbill.Invoice, e
 			}
 			fbDraft.Items = append(fbDraft.Items, item)
 		}
+	}
+
+	if _, err := fbDraft.Submit(); err != nil {
+		return nil, false, fmt.Errorf("submit: %v", err)
 	}
 
 	return
