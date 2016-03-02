@@ -168,7 +168,7 @@ func CalculateSummary(locationId int64, startTime, endTime time.Time) (invoice I
 
 	// Create user summaries from invoice activations
 	var userSummaries *[]*UserSummary
-	userSummaries, err = invoice.getUserSummaries(purchases.Purchases{
+	userSummaries, err = invoice.GetUserSummaries(purchases.Purchases{
 		Data: ps,
 	})
 	if err != nil {
@@ -325,7 +325,7 @@ func (this *Invoice) getPurchases(locationId int64, startTime, endTime time.Time
 	return
 }
 
-func (this *Invoice) getUserSummaries(
+func (this *Invoice) GetUserSummaries(
 	ps purchases.Purchases) (*[]*UserSummary, error) {
 
 	// Create a slice for unique user summaries.

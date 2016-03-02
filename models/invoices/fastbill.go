@@ -12,7 +12,7 @@ func CreateFastbillDrafts(inv *Invoice) (ids []int64, err error) {
 	ids = make([]int64, 0, len(inv.UserSummaries))
 	for _, userSummary := range inv.UserSummaries {
 		if uid := userSummary.User.Id; uid == 19 {
-			fbDraft, empty, err := createFastbillDraft(userSummary)
+			fbDraft, empty, err := CreateFastbillDraft(userSummary)
 			if err != nil {
 				return nil, fmt.Errorf("create draft for user %v: %v", uid, err)
 			}
@@ -28,7 +28,7 @@ func CreateFastbillDrafts(inv *Invoice) (ids []int64, err error) {
 	return
 }
 
-func createFastbillDraft(userSummary *UserSummary) (fbDraft *fastbill.Invoice, empty bool, err error) {
+func CreateFastbillDraft(userSummary *UserSummary) (fbDraft *fastbill.Invoice, empty bool, err error) {
 	fbDraft = &fastbill.Invoice{
 		TemplateId: fastbill.TemplateStandardId,
 		Items:      make([]fastbill.Item, 0, 10),
@@ -83,9 +83,9 @@ func createFastbillDraft(userSummary *UserSummary) (fbDraft *fastbill.Invoice, e
 			beego.Info("discount=", discount)
 			beego.Info("unitPrice=", unitPrice)
 			if discount {
-				unitPrice = pricePerUnit
-			} else {
 				unitPrice = discPrice / quantity
+			} else {
+				unitPrice = pricePerUnit
 			}
 
 			item := fastbill.Item{
