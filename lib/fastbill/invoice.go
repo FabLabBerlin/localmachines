@@ -16,6 +16,8 @@ const (
 	INVOICE_TYPE_CREDIT   = "credit"
 )
 
+var ErrInvoiceAlreadyExported = fmt.Errorf("invoice has already been exported")
+
 type Invoice struct {
 	CustomerNumber int64  `json:"-"`
 	Month          string `json:"-"`
@@ -99,7 +101,7 @@ func (inv *Invoice) Submit() (id int64, err error) {
 		return 0, fmt.Errorf("checking if already exported: %v", err)
 	}
 	if alreadyExported {
-		return 0, fmt.Errorf("invoice has already been exported")
+		return 0, ErrInvoiceAlreadyExported
 	}
 
 	if inv.InvoiceTitle, err = inv.GetTitle(); err != nil {

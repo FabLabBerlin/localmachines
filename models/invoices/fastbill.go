@@ -13,7 +13,10 @@ func CreateFastbillDrafts(inv *Invoice) (ids []int64, err error) {
 	for _, userSummary := range inv.UserSummaries {
 		if uid := userSummary.User.Id; uid == 19 {
 			fbDraft, empty, err := CreateFastbillDraft(userSummary)
-			if err != nil {
+			if err == fastbill.ErrInvoiceAlreadyExported {
+				beego.Info("draft for user %v already exported", uid)
+				continue
+			} else if err != nil {
 				return nil, fmt.Errorf("create draft for user %v: %v", uid, err)
 			}
 			if empty {
@@ -105,7 +108,9 @@ func CreateFastbillDraft(userSummary *UserSummary) (fbDraft *fastbill.Invoice, e
 		}
 	}
 
-	if _, err := fbDraft.Submit(); err != nil {
+	if _, err := fbDraft.Submit(); err == fastbill.ErrInvoiceAlreadyExported {
+		return nil, false, fastbill.ErrInvoiceAlreadyExported
+	} else if err != nil {
 		return nil, false, fmt.Errorf("submit: %v", err)
 	}
 
