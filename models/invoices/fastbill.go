@@ -30,13 +30,17 @@ func CreateFastbillDrafts(inv *Invoice) (ids []int64, err error) {
 
 func createFastbillDraft(userSummary *UserSummary) (fbDraft *fastbill.Invoice, empty bool, err error) {
 	fbDraft = &fastbill.Invoice{
-		CustomerId: userSummary.User.ClientId,
 		TemplateId: fastbill.TemplateStandardId,
 		Items:      make([]fastbill.Item, 0, 10),
 	}
 	memberships, err := models.GetUserMemberships(userSummary.User.Id)
 	if err != nil {
 		return nil, false, fmt.Errorf("GetUserMemberships: %v", err)
+	}
+
+	fbDraft.CustomerId, err = fastbill.GetCustomerId(userSummary.User)
+	if err != nil {
+		return nil, false, fmt.Errorf("error getting fastbill customer id: %v", err)
 	}
 
 	if len(userSummary.Purchases.Data) == 0 &&

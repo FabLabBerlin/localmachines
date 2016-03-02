@@ -186,7 +186,7 @@ func createXlsxFile(filePath string, invoice *Invoice) error {
 		cell.Value = "Fastbill User Id"
 		cell = row.AddCell()
 		cell.SetStyle(colorStyle(RED))
-		cell.Value = strconv.Itoa(userSummary.User.ClientId)
+		cell.Value = strconv.FormatInt(userSummary.User.ClientId, 10)
 
 		// User Billing Address
 		row = sheet.AddRow()

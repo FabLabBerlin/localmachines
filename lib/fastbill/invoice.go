@@ -12,7 +12,7 @@ const (
 
 type Invoice struct {
 	Id                   int64  `json:"INVOICE_ID,string,omitempty"`
-	CustomerId           int    `json:"CUSTOMER_ID,string"`
+	CustomerId           int64  `json:"CUSTOMER_ID,string"`
 	CustomerCostcenterId int64  `json:"CUSTOMER_COSTCENTER_ID,string,omitempty"`
 	CurrencyCode         string `json:"CURRENCY_CODE,omitempty"`
 	TemplateId           int64  `json:"TEMPLATE_ID,string,omitempty"`

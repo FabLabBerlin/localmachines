@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/astaxie/beego"
 	"io/ioutil"
 	"net/http"
@@ -149,6 +150,32 @@ func (this *FastBill) GetCustomers(filter *CustomerGetFilter,
 	}
 
 	return &response.RESPONSE, nil
+}
+
+func GetCustomerId(user models.User) (customerId int64, err error) {
+	fb := New()
+
+	customerNumber := user.ClientId
+	if customerNumber <= 0 {
+		return 0, fmt.Errorf("wrong customer number (a.k.a. Fastbill ID a.k.a. Client Id) for user ID %v: %v",
+			user.Id, user.ClientId)
+	}
+	filter := CustomerGetFilter{
+		CUSTOMER_NUMBER: strconv.FormatInt(customerNumber, 10),
+	}
+	list, err := fb.GetCustomers(&filter, 10, 0)
+	if err != nil {
+		return 0, fmt.Errorf("get customers: %v", err)
+	}
+	if len(list.Customers) == 0 {
+		return 0, fmt.Errorf("no customer found for customer number %v",
+			customerNumber)
+	}
+	if n := len(list.Customers); n > 1 {
+		return 0, fmt.Errorf("%v matches found for customer number %v",
+			n, customerNumber)
+	}
+	return strconv.ParseInt(list.Customers[0].CUSTOMER_ID, 10, 64)
 }
 
 // Create FastBill customer, returns Customer ID
