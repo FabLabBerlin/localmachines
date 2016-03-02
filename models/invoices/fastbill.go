@@ -94,7 +94,10 @@ func CreateFastbillDraft(userSummary *UserSummary) (fbDraft *fastbill.Invoice, e
 				UnitPrice:   unitPrice,
 				VatPercent:  19,
 			}
-			fbDraft.Items = append(fbDraft.Items, item)
+
+			if item.UnitPrice > 0 {
+				fbDraft.Items = append(fbDraft.Items, item)
+			}
 		}
 	}
 
