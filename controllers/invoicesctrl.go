@@ -123,15 +123,10 @@ func (this *InvoicesController) CreateDrafts() {
 		this.CustomAbort(500, "Failed to create invoice drafts")
 	}
 
-	ids, err := invoices.CreateFastbillDrafts(invs)
-	if err != nil {
-		beego.Error("Failed to create invoice drafts:", err)
-		this.CustomAbort(500, "Failed to create invoice drafts")
-	}
+	creationReport := invoices.CreateFastbillDrafts(invs)
+	beego.Info("created invoice drafts with IDs", creationReport.Ids)
 
-	beego.Info("created invoice drafts with IDs", ids)
-
-	this.Data["json"] = ids
+	this.Data["json"] = creationReport
 	this.ServeJSON()
 }
 

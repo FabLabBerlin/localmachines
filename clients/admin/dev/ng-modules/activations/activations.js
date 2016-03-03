@@ -16,6 +16,8 @@ app.controller('ActivationsCtrl',
  ['$scope', '$http', '$location', '$cookies', 'randomToken', 'api',
  function($scope, $http, $location, $cookies, randomToken, api) {
 
+  $scope.usersById = {};
+
   // We need full machine names for the activation table
   if (!$scope.machines) {
     api.loadMachines(function(resp) {
@@ -56,8 +58,7 @@ app.controller('ActivationsCtrl',
         }
       });
 
-      var uniqUserIds = _.pluck(_.uniq(response.ActivationsPage, 'UserId'), 'UserId');
-      loadUserNames(uniqUserIds);
+      loadUserNames();
 
       $scope.activations = response.ActivationsPage;
       $scope.numActivations = response.NumActivations;
@@ -69,20 +70,21 @@ app.controller('ActivationsCtrl',
   };
 
   function loadUserNames(userId) {
+    console.log('loadUserNames()');
     $http({
       method: 'GET',
-      url: '/api/users/names?uids=' + userId.join(','),
+      url: '/api/users',
       params: {
         ac: new Date().getTime()
       }
     })
-    .success(function(data) {
+    .success(function(users) {
       var usersById = {};
-      _.each(data.Users, function(user) {
-        usersById[user.UserId] = user;
+      _.each(users, function(user) {
+        $scope.usersById[user.Id] = user;
       });
       _.each($scope.activations, function(activation) {
-        var user = usersById[activation.UserId];
+        var user = $scope.usersById[activation.UserId];
         if (user) {
           activation.UserName = user.FirstName + ' ' + user.LastName;
         }
@@ -181,7 +183,10 @@ app.controller('ActivationsCtrl',
       url: '/api/invoices/create_drafts',
       params: getExportParams()
     })
-    .success(function() {
+    .success(function(draftsReport) {
+      console.log('draftsReport=', draftsReport);
+      console.log('$scope.usersById=', $scope.usersById);
+      $scope.draftsReport = draftsReport;
       toastr.info('Sucessfully created invoice drafts');
     })
     .error(function() {

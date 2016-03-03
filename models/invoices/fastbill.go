@@ -13,24 +13,53 @@ const (
 	IS_GROSS_NETTO  = "0"
 )
 
-func CreateFastbillDrafts(inv *Invoice) (ids []int64, err error) {
-	ids = make([]int64, 0, len(inv.UserSummaries))
+type DraftsCreationReport struct {
+	Ids                 []int64
+	SuccessUids         []int64
+	EmptyUids           []int64
+	AlreadyExportedUids []int64
+	Errors              []DraftsCreationError
+}
+
+type DraftsCreationError struct {
+	UserId  int64
+	Problem string
+}
+
+func CreateFastbillDrafts(inv *Invoice) (report DraftsCreationReport) {
+	report.Ids = make([]int64, 0, len(inv.UserSummaries))
+	report.SuccessUids = make([]int64, 0, len(inv.UserSummaries))
+	report.EmptyUids = make([]int64, 0, len(inv.UserSummaries))
+	report.AlreadyExportedUids = make([]int64, 0, len(inv.UserSummaries))
+	report.Errors = make([]DraftsCreationError, 0, len(inv.UserSummaries))
+
 	for _, userSummary := range inv.UserSummaries {
-		if uid := userSummary.User.Id; uid == 19 {
+		if uid := userSummary.User.Id; uid == 19 || uid == 96 || uid == 7 {
 			fbDraft, empty, err := CreateFastbillDraft(userSummary)
 			if err == fastbill.ErrInvoiceAlreadyExported {
 				beego.Info("draft for user", uid, "already exported")
+				report.AlreadyExportedUids = append(report.AlreadyExportedUids, uid)
+				report.SuccessUids = append(report.SuccessUids, uid)
 				continue
 			} else if err != nil {
-				return nil, fmt.Errorf("create draft for user %v: %v", uid, err)
+				e := DraftsCreationError{
+					UserId:  uid,
+					Problem: err.Error(),
+				}
+				report.Errors = append(report.Errors, e)
+				beego.Error("create draft for user", uid, ":", err)
+				continue
+			} else {
+				report.SuccessUids = append(report.SuccessUids, uid)
 			}
 			if empty {
+				report.EmptyUids = append(report.EmptyUids, uid)
 				beego.Debug("draft is empty")
 				continue
 			}
 			id := fbDraft.Id
 			beego.Info("Draft created with ID", id)
-			ids = append(ids, id)
+			report.Ids = append(report.Ids, id)
 		}
 	}
 	return
