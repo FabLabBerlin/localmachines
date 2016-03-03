@@ -5,6 +5,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/lib/fastbill"
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
+	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"github.com/astaxie/beego"
 )
 
@@ -34,7 +35,15 @@ func CreateFastbillDrafts(inv *Invoice) (report DraftsCreationReport) {
 	report.Errors = make([]DraftsCreationError, 0, len(inv.UserSummaries))
 
 	for _, userSummary := range inv.UserSummaries {
-		if uid := userSummary.User.Id; uid == 19 || uid == 96 || uid == 7 {
+		uid := userSummary.User.Id
+		if r := userSummary.User.GetRole(); r == user_roles.STAFF || r == user_roles.ADMIN || r == user_roles.SUPER_ADMIN {
+			e := DraftsCreationError{
+				UserId:  uid,
+				Problem: "User role is " + r.String(),
+			}
+			report.Errors = append(report.Errors, e)
+			beego.Error("no draft created for user", uid, ":", e.Problem)
+		} else {
 			fbDraft, empty, err := CreateFastbillDraft(userSummary)
 			if err == fastbill.ErrInvoiceAlreadyExported {
 				beego.Info("draft for user", uid, "already exported")
