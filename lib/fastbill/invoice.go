@@ -21,6 +21,7 @@ var ErrInvoiceAlreadyExported = fmt.Errorf("invoice has already been exported")
 type Invoice struct {
 	CustomerNumber int64  `json:"-"`
 	Month          string `json:"-"`
+	Year           int    `json:"-"`
 
 	Id                   int64  `json:"INVOICE_ID,string,omitempty"`
 	CustomerId           int64  `json:"CUSTOMER_ID,string"`
@@ -86,11 +87,14 @@ func (inv *Invoice) GetTitle() (title string, err error) {
 	if inv.Month == "" {
 		return "", fmt.Errorf("empty month")
 	}
+	if inv.Year <= 0 {
+		return "", fmt.Errorf("need year")
+	}
 	if inv.CustomerNumber <= 0 {
 		return "", fmt.Errorf("empty customer number")
 	}
-	title = fmt.Sprintf("%v Invoice for Customer Number %v",
-		inv.Month, inv.CustomerNumber)
+	title = fmt.Sprintf("%v %v Invoice for Customer Number %v",
+		inv.Month, inv.Year, inv.CustomerNumber)
 	return
 }
 
@@ -107,6 +111,7 @@ func (inv *Invoice) Submit() (id int64, err error) {
 	if inv.InvoiceTitle, err = inv.GetTitle(); err != nil {
 		return 0, fmt.Errorf("get title: %v", err)
 	}
+	inv.DeliveryDate = fmt.Sprintf("%v %v", inv.Month, inv.Year)
 
 	request := Request{
 		SERVICE: SERVICE_INVOICE_CREATE,
