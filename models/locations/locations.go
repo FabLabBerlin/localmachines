@@ -23,6 +23,7 @@ type Location struct {
 	Comments     string `orm:"type(text)"`
 	Approved     bool
 	XmppId       string `orm:"size(255)"`
+	LocalIp      string `orm:"size(255)"`
 }
 
 func init() {
