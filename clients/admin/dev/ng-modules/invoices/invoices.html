@@ -18,11 +18,17 @@
         <td>{{invoice.Created | date:'yyyy-MM-dd HH:mm'}}</td>
         <td>
           <span class="pull-right">
+            <button type="button"
+                    class="btn btn-ico fastbill-icon"
+                    ng-click="createFbDraftsPrompt(invoice.Id)">
+              <img src="/admin/assets/img/fastbill-logo.png">
+            </button>&nbsp;&nbsp;
             <a class="btn btn-primary btn-ico"
                href="/{{invoice.FilePath}}">
               <span class="fa fa-download"></span>
             </a>&nbsp;&nbsp;
-            <button type="button" class="btn btn-danger btn-ico"
+            <button type="button"
+                    class="btn btn-danger btn-ico"
                     ng-click="deleteInvoicePrompt(invoice.Id)">
               <span class="fa fa-close"></span>
             </button>
