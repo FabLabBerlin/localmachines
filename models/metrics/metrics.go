@@ -65,9 +65,16 @@ type Data struct {
 
 func FetchData(locationId int64) (data Data, err error) {
 	endTime := time.Now()
+	interval := invoices.Invoice{
+		MonthFrom: int(time.August),
+		YearFrom:  2015,
+		MonthTo:   int(endTime.Month()),
+		YearTo:    endTime.Year(),
+	}
+
 	startTime := time.Date(2015, time.August, 1, 0, 0, 0, 0, time.UTC)
 
-	data.invoice, err = invoices.CalculateSummary(locationId, startTime, endTime)
+	data.invoice, err = invoices.CalculateSummary(locationId, interval)
 	if err != nil {
 		return data, fmt.Errorf("Failed to get invoice summary: %v", err)
 	}
