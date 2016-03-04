@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/astaxie/beego"
@@ -136,10 +137,24 @@ func (this *ActivationsController) GetActive() {
 // @Failure 401 Not authorized
 // @router / [post]
 func (this *ActivationsController) Create() {
-	_, isStaff := this.GetLocIdMember()
+	locId, isStaff := this.GetLocIdMember()
 	if !isStaff {
 		beego.Error("Not authorized")
 		this.CustomAbort(401, "Not authorized")
+	}
+
+	if xff := this.Ctx.Request.Header.Get("X-Forwarded-For"); xff != "" {
+		if loc, err := locations.Get(locId); err == nil {
+			if loc.LocalIp != "" {
+				if xff != loc.LocalIp {
+					beego.Error("remote user detected, no activation allowed")
+					this.CustomAbort(403, "No remote activation")
+				}
+			}
+		} else {
+			beego.Error("Failed to get location:", err)
+			this.CustomAbort(500, "Failed to create activation")
+		}
 	}
 
 	userId, err := this.GetSessionUserId()
