@@ -31,8 +31,12 @@ var MachineActions = {
       },
       error(xhr, status, err) {
         GlobalActions.hideGlobalLoader();
-        toastr.error('Can not activate the machine');
-        console.error(status, err);
+        if (xhr.status === 403 && status === 'No remote activation') {
+          toastr.error('Activations only possible through Lab Wifi for safety reasons');
+        } else {
+          toastr.error('Can not activate the machine');
+          console.error(status, err);
+        }
       }
     });
     LoginActions.keepAlive();
