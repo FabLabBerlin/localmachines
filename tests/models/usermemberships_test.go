@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/machine"
@@ -132,11 +133,13 @@ func TestUserMemberships(t *testing.T) {
 
 				Convey("The activations made during the user membership period should be affected by the base membership discount rules", func() {
 
-					var invoice invoices.Invoice
-					invoiceStartTime := time.Date(2015, 1, 1, 0, 0, 0, 0, time.UTC)
-					invoiceEndTime := time.Date(2015, 12, 30, 0, 0, 0, 0, time.UTC)
-					invoice, err = invoices.CalculateSummary(
-						1, invoiceStartTime, invoiceEndTime)
+					interval := lib.Interval{
+						MonthFrom: 1,
+						YearFrom:  2015,
+						MonthTo:   12,
+						YearTo:    2015,
+					}
+					invoice, err := invoices.CalculateSummary(1, interval)
 					if err != nil {
 						panic(err.Error())
 					}

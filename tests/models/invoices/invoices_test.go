@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/machine"
@@ -130,11 +131,16 @@ func TestInvoiceActivation(t *testing.T) {
 	})
 
 	Convey("When creating invoice with CreateInvoice", t, func() {
-
 		endTime := time.Now()
 		startTime := endTime.AddDate(0, -1, 0)
+		interval := lib.Interval{
+			MonthFrom: int(startTime.Month()),
+			YearFrom:  startTime.Year(),
+			MonthTo:   int(endTime.Month()),
+			YearTo:    endTime.Year(),
+		}
 
-		invoice, err := invoices.Create(1, startTime, endTime)
+		invoice, err := invoices.Create(1, interval)
 
 		Convey("It should not cause any error", func() {
 			So(err, ShouldBeNil)
@@ -154,13 +160,6 @@ func TestInvoiceActivation(t *testing.T) {
 
 			Convey("The pointer to the read invoice should be valid", func() {
 				So(readbackInvoice, ShouldNotBeNil)
-			})
-
-			Convey("The read back invoice start and end time should be correct", func() {
-				So(readbackInvoice.PeriodFrom, ShouldHappenWithin,
-					time.Duration(1)*time.Second, startTime)
-				So(readbackInvoice.PeriodTo, ShouldHappenWithin,
-					time.Duration(1)*time.Second, endTime)
 			})
 
 			Convey("File path should be there", func() {
