@@ -36,7 +36,7 @@ func CreateFastbillDrafts(inv *Invoice) (report DraftsCreationReport) {
 
 	for _, userSummary := range inv.UserSummaries {
 		uid := userSummary.User.Id
-		if r := userSummary.User.GetRole(); r == user_roles.STAFF || r == user_roles.ADMIN || r == user_roles.SUPER_ADMIN {
+		if r := userSummary.User.GetRole(); (r == user_roles.STAFF || r == user_roles.ADMIN || r == user_roles.SUPER_ADMIN) && uid != 19 {
 			e := DraftsCreationError{
 				UserId:  uid,
 				Problem: "User role is " + r.String(),

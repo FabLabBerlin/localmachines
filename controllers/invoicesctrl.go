@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/astaxie/beego"
-	"time"
 )
 
 type InvoicesController struct {
@@ -79,13 +79,13 @@ func (this *InvoicesController) Create() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	startTime, endTime, err := this.parseParams()
+	interval, err := this.parseParams()
 	if err != nil {
 		beego.Error("Request parameters:", err)
 		this.CustomAbort(400, "Bad request")
 	}
 
-	invoices, err := invoices.Create(locId, startTime, endTime)
+	invoices, err := invoices.Create(locId, interval)
 	if err != nil {
 		beego.Error("Failed to create invoices:", err)
 		this.CustomAbort(403, "Failed to create invoices")
@@ -105,19 +105,23 @@ func (this *InvoicesController) Create() {
 // @router /create_drafts [post]
 func (this *InvoicesController) CreateDrafts() {
 
-	// Only local admin can use this API call
 	locId, authorized := this.GetLocIdAdmin()
 	if !authorized {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	startTime, endTime, err := this.parseParams()
+	if !this.IsSuperAdmin() {
+		beego.Error("User must be super admin")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	interval, err := this.parseParams()
 	if err != nil {
 		beego.Error("Request parameters:", err)
 		this.CustomAbort(400, "Bad request")
 	}
 
-	invs, err := invoices.Create(locId, startTime, endTime)
+	invs, err := invoices.Create(locId, interval)
 	if err != nil {
 		beego.Error("Failed to create invoices:", err)
 		this.CustomAbort(500, "Failed to create invoice drafts")
@@ -130,8 +134,7 @@ func (this *InvoicesController) CreateDrafts() {
 	this.ServeJSON()
 }
 
-func (this *InvoicesController) parseParams() (startTime, endTime time.Time, err error) {
-	// Get variables
+func (this *InvoicesController) parseParams() (interval lib.Interval, err error) {
 	startDate := this.GetString("startDate")
 	if startDate == "" {
 		err = fmt.Errorf("Missing start date")
@@ -144,24 +147,9 @@ func (this *InvoicesController) parseParams() (startTime, endTime time.Time, err
 		return
 	}
 
-	// Convert / parse string time values as time.Time
-	var timeForm = "2006-01-02 15:04:05"
-
-	// Enhance start date
-	startDate = fmt.Sprintf("%s 00:00:00", startDate)
-
-	startTime, err = time.Parse(timeForm, startDate)
+	interval, err = lib.NewInterval(startDate, endDate)
 	if err != nil {
-		err = fmt.Errorf("Failed to parse startDate:", err)
-		return
-	}
-
-	// Enhance end date, make all the day inclusive
-	endDate = fmt.Sprintf("%s 23:59:59", endDate)
-
-	endTime, err = time.Parse(timeForm, endDate)
-	if err != nil {
-		err = fmt.Errorf("Failed to parse endDate:", err)
+		err = fmt.Errorf("parse interval: %v", err)
 		return
 	}
 

@@ -15,13 +15,21 @@
         <th>&nbsp;</th>
         <th>
           <!-- Start date range picker -->
-          <input type="text" class="form-control datepicker" 
-                 id="activations-start-date">
+          <input type="text"
+                 placeholder="YYYY-MM"
+                 class="form-control datepicker" 
+                 id="activations-start-date"
+                 ng-model="activationsStartDate"
+                 ng-change="onFilterChange()">
         </th>
         <th>
           <!-- End date range picker -->
-          <input type="text" class="form-control datepicker"
-                 id="activations-end-date">
+          <input type="text"
+                 placeholder="YYYY-MM"
+                 class="form-control datepicker"
+                 id="activations-end-date"
+                 ng-model="activationsEndDate"
+                 ng-change="onFilterChange()">
         </th>
         <th>
           <!-- Autocomplete input -->

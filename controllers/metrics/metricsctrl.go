@@ -6,6 +6,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/controllers"
+	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/metrics"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
@@ -60,9 +61,15 @@ func (c *Controller) GetActivations() {
 	}
 
 	endTime := time.Now()
-	startTime := time.Date(2015, time.August, 1, 0, 0, 0, 0, time.UTC)
 
-	invoice, err := invoices.CalculateSummary(locId, startTime, endTime)
+	interval := lib.Interval{
+		MonthFrom: int(time.August),
+		YearFrom:  2015,
+		MonthTo:   int(endTime.Month()),
+		YearTo:    endTime.Year(),
+	}
+
+	invoice, err := invoices.CalculateSummary(locId, interval)
 	if err != nil {
 		c.CustomAbort(500, err.Error())
 	}

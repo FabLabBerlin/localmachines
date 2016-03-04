@@ -16,14 +16,9 @@ app.controller('ActivationsCtrl',
  ['$scope', '$http', '$location', '$cookies', 'randomToken', 'api',
  function($scope, $http, $location, $cookies, randomToken, api) {
 
+  $scope.activationsStartDate = moment().format('YYYY-MM');
+  $scope.activationsEndDate = moment().format('YYYY-MM');
   $scope.usersById = {};
-
-  // We need full machine names for the activation table
-  if (!$scope.machines) {
-    api.loadMachines(function(resp) {
-      $scope.machines = resp.machines;
-    });
-  }
 
   // Loads and reloads activations according to filter.
   // If user ID is not set - load all users
@@ -97,43 +92,14 @@ app.controller('ActivationsCtrl',
 
   // This is called whenever start or end date changes
   $scope.onFilterChange = function() {
-
-    // Check if both dates are set
-    var startDateStr = $('#activations-start-date').val();
-    var endDateStr = $('#activations-end-date').val();
-
-    if (startDateStr === '') {
-      return;
+    console.log('foo');
+    if ($scope.activationsStartDate && $scope.activationsEndDate) {
+      console.log('bar');
+      $scope.activations = [];
+      $scope.currentPage = 1;
+      $scope.loadActivations();
     }
-
-    if (endDateStr === '') {
-      return;
-    }
-
-    // Check if start date is earlier as end date
-    var startDate = new Date(startDateStr);
-    var endDate = new Date(endDateStr);
-    if (startDate >= endDate) {
-      toastr.warning('End date has to be later than start date');
-      return;
-    }
-
-    // TODO: Check user field
-
-    // Assign start and
-    $scope.activationsStartDate = startDateStr;
-    $scope.activationsEndDate = endDateStr;
-
-    $scope.activations = [];
-    $scope.currentPage = 1;
-    $scope.loadActivations();
   };
-
-  var pickadateOptions = {
-    format: 'yyyy-mm-dd',
-    onClose: $scope.onFilterChange
-  };
-  $('.datepicker').pickadate(pickadateOptions);
 
   $scope.activations = [];
   $scope.currentPage = 1;
@@ -321,6 +287,14 @@ app.controller('ActivationsCtrl',
     displayKey: 'value',
     source: substringMatcher(states)
   });
+
+  // We need full machine names for the activation table
+  if (!$scope.machines) {
+    api.loadMachines(function(resp) {
+      $scope.machines = resp.machines;
+      $scope.loadActivations();
+    });
+  }
 
 }]); // app.controller
 

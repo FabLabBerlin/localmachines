@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/FabLabBerlin/localmachines/models/machine"
@@ -21,7 +22,7 @@ type ActivationsController struct {
 // @Param	itemsPerPage		query 	int	true		"Items per page or max number of items to return"
 // @Param	page		query 	int	true		"Current page to show"
 // @Success 200 {object}
-// @Failure	403	Failed to get activations
+// @Failure	400	Bad request
 // @Failure	401	Not authorized
 // @router / [get]
 func (this *ActivationsController) GetAll() {
@@ -36,61 +37,41 @@ func (this *ActivationsController) GetAll() {
 	startDate := this.GetString("startDate")
 	if startDate == "" {
 		beego.Error("Missing start date")
-		this.CustomAbort(403, "Failed to get activations")
+		this.CustomAbort(400, "Failed to get activations")
 	}
 
 	endDate := this.GetString("endDate")
 	if endDate == "" {
 		beego.Error("Missing end date")
-		this.CustomAbort(403, "Failed to get activations")
-	}
-
-	userId, err := this.GetInt64("userId")
-	if err != nil {
-		beego.Error("Could not get userId request variable:", err)
-		this.CustomAbort(403, "Failed to get activations")
+		this.CustomAbort(400, "Failed to get activations")
 	}
 
 	itemsPerPage, err := this.GetInt64("itemsPerPage")
 	if err != nil {
 		beego.Error("Could not get itemsPerPage request variable:", err)
-		this.CustomAbort(403, "Failed to get activations")
+		this.CustomAbort(400, "Failed to get activations")
 	}
 
 	page, err := this.GetInt64("page")
 	if err != nil {
 		beego.Error("Could not get page request variable:", err)
-		this.CustomAbort(403, "Failed to get activations")
+		this.CustomAbort(400, "Failed to get activations")
 	}
 
-	// Convert / parse string time values as time.Time
-	var timeForm = "2006-01-02"
-
-	startTime, err := time.ParseInLocation(
-		timeForm, startDate, time.Now().Location())
+	interval, err := lib.NewInterval(startDate, endDate)
 	if err != nil {
-		beego.Error("Failed to parse startDate:", err)
-		this.CustomAbort(403, "Failed to get activations")
-	}
-
-	endTime, err := time.ParseInLocation(
-		timeForm, endDate, time.Now().Location())
-	if err != nil {
-		beego.Error("Failed to parse endDate:", err)
-		this.CustomAbort(403, "Failed to get activations")
+		this.CustomAbort(400, "Cannot parse interval")
 	}
 
 	// Get activations
-	activations, err := purchases.GetActivations(
-		startTime, endTime, userId, itemsPerPage, page)
+	activations, err := purchases.GetActivations(interval, itemsPerPage, page)
 	if err != nil {
 		beego.Error("Failed to get activations:", err)
 		this.CustomAbort(403, "Failed to get activations")
 	}
 
 	// Get total activation count
-	numActivations, err := purchases.GetNumActivations(
-		startTime, endTime, userId)
+	numActivations, err := purchases.GetNumActivations(interval)
 	if err != nil {
 		beego.Error("Failed to get number of activations:", err)
 		this.CustomAbort(403, "Failed to get activations")

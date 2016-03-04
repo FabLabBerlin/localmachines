@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
@@ -29,9 +29,7 @@ type GetActivationsResponse struct {
 // Gets filtered activations in a paged manner between start and end time.
 // Items per page and page number can be specified. Already invoiced
 // activations can be excluded.
-func GetActivations(startTime time.Time,
-	endTime time.Time,
-	userId int64,
+func GetActivations(interval lib.Interval,
 	itemsPerPage int64,
 	page int64) (*[]Activation, error) {
 
@@ -42,23 +40,25 @@ func GetActivations(startTime time.Time,
 	// Get activations from database
 	purchases := []*Purchase{}
 	act := Activation{}
-	usr := models.User{}
 	o := orm.NewOrm()
 
-	var pageOffset int64
-	pageOffset = itemsPerPage * (page - 1)
+	pageOffset := itemsPerPage * (page - 1)
 
-	query := fmt.Sprintf("SELECT a.* FROM %s a JOIN %s u ON a.user_id=u.id "+
-		"WHERE a.type=? AND a.time_start>? AND a.time_end<? AND a.running=false "+
-		"ORDER BY u.first_name ASC, a.time_start DESC "+
+	query := fmt.Sprintf("SELECT a.* FROM %s a "+
+		"WHERE a.type=? AND a.time_start>=? AND a.time_start<=? AND a.running=false "+
+		"ORDER BY a.time_start DESC "+
 		"LIMIT ? OFFSET ?",
-		act.Purchase.TableName(),
-		usr.TableName())
+		act.Purchase.TableName())
+
+	from := interval.DayFrom()
+	to := interval.DayTo()
+
+	fmt.Printf("from: %v, to: %v, query: %v\n", from, to, query)
 
 	_, err := o.Raw(query,
 		TYPE_ACTIVATION,
-		startTime.Format("2006-01-02"),
-		endTime.Format("2006-01-02"),
+		interval.DayFrom(),
+		interval.DayTo(),
 		itemsPerPage,
 		pageOffset).QueryRows(&purchases)
 
@@ -80,17 +80,14 @@ func GetActivations(startTime time.Time,
 
 // Gets number of matching activations.
 // Used together with GetActivations.
-func GetNumActivations(startTime time.Time,
-	endTime time.Time,
-	userId int64) (int64, error) {
+func GetNumActivations(interval lib.Interval) (int64, error) {
 
 	// Count activations matching params
 	o := orm.NewOrm()
 	act := Activation{}
 	cnt, err := o.QueryTable(act.Purchase.TableName()).
-		Filter("timeStart__gt", startTime).
-		Filter("timeEnd__lt", endTime).
-		//Filter("userId", userId).
+		Filter("timeStart__gte", interval.DayFrom()).
+		Filter("timeStart__lte", interval.DayTo()).
 		Filter("Running", false).
 		Filter("type", TYPE_ACTIVATION).
 		Count()
@@ -99,8 +96,6 @@ func GetNumActivations(startTime time.Time,
 		msg := fmt.Sprintf("Failed to count activations: %v", err)
 		return 0, errors.New(msg)
 	}
-
-	beego.Trace("Num activations matches:", cnt)
 
 	return cnt, nil
 }

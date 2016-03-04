@@ -3,6 +3,7 @@ package invoices
 import (
 	"errors"
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
@@ -24,7 +25,11 @@ func init() {
 // Activations field contains a JSON array with activation IDs.
 // XlsFile field contains URL to the generated XLSX file.
 type Invoice struct {
-	Id            int64  `orm:"auto";"pk"`
+	Id            int64 `orm:"auto";"pk"`
+	MonthFrom     int
+	YearFrom      int
+	MonthTo       int
+	YearTo        int
 	Activations   string `orm:type(text)`
 	FilePath      string `orm:size(255)`
 	Created       time.Time
@@ -50,7 +55,7 @@ func (this *Invoice) Swap(i, j int) {
 }
 
 func (this *Invoice) TableName() string {
-	return "invoices"
+	return "monthly_earnings"
 }
 
 type UserSummary struct {
@@ -85,17 +90,17 @@ func exists(path string) (bool, error) {
 }
 
 // Creates invoice entry in the database
-func Create(locationId int64, startTime, endTime time.Time) (*Invoice, error) {
+func Create(locationId int64, interval lib.Interval) (*Invoice, error) {
 
 	var err error
 
-	invoice, err := CalculateSummary(locationId, startTime, endTime)
+	invoice, err := CalculateSummary(locationId, interval)
 	if err != nil {
 		return nil, fmt.Errorf("CalculateInvoiceSummary: %v", err)
 	}
 
 	// Create *.xlsx file.
-	fileName := invoice.getFileName(startTime, endTime)
+	fileName := invoice.getFileName(interval)
 
 	// Make sure the files directory exists
 	exists, _ := exists("files")
@@ -119,8 +124,10 @@ func Create(locationId int64, startTime, endTime time.Time) (*Invoice, error) {
 	}
 
 	invoice.Created = time.Now()
-	invoice.PeriodFrom = startTime
-	invoice.PeriodTo = endTime
+	invoice.MonthFrom = interval.MonthFrom
+	invoice.YearFrom = interval.YearFrom
+	invoice.MonthTo = interval.MonthTo
+	invoice.MonthTo = interval.MonthTo
 
 	// Store invoice entry
 	o := orm.NewOrm()
@@ -150,9 +157,9 @@ func Get(invoiceId int64) (invoice *Invoice, err error) {
 }
 
 // Returns Invoice and InvoiceSummary objects, error otherwise
-func CalculateSummary(locationId int64, startTime, endTime time.Time) (invoice Invoice, err error) {
+func CalculateSummary(locationId int64, interval lib.Interval) (invoice Invoice, err error) {
 	// Enhance activations with user and membership data
-	ps, err := invoice.getPurchases(locationId, startTime, endTime)
+	ps, err := invoice.getPurchases(locationId, interval)
 	if err != nil {
 		err = fmt.Errorf("Failed to get enhanced activations: %v", err)
 		return
@@ -188,8 +195,10 @@ func CalculateSummary(locationId int64, startTime, endTime time.Time) (invoice I
 	}
 
 	// Create invoice summary
-	invoice.PeriodFrom = startTime
-	invoice.PeriodTo = endTime
+	invoice.MonthFrom = interval.MonthFrom
+	invoice.YearFrom = interval.YearFrom
+	invoice.MonthTo = interval.MonthTo
+	invoice.YearTo = interval.YearTo
 	invoice.UserSummaries = *userSummaries
 
 	return invoice, err
@@ -226,28 +235,25 @@ func Delete(invoiceId int64) error {
 }
 
 // Gets purchases that have happened between start and end dates
-func getPurchases(locationId int64, startTime,
-	endTime time.Time) (ps []*purchases.Purchase, err error) {
+func getPurchases(locationId int64, interval lib.Interval) (ps []*purchases.Purchase, err error) {
 
 	p := purchases.Purchase{}
 	usr := models.User{}
 	o := orm.NewOrm()
 
 	query := fmt.Sprintf("SELECT p.* FROM %s p JOIN %s u ON p.user_id=u.id "+
-		"WHERE p.time_start > ? AND p.time_end < ? "+
+		"WHERE p.time_start >= ? AND p.time_end <= ? "+
 		"AND (p.running IS NULL OR p.running = 0) AND location_id = ?",
 		p.TableName(),
 		usr.TableName())
 
-	_, err = o.Raw(query,
-		startTime.Format("2006-01-02 15:04:05"),
-		endTime.Format("2006-01-02 15:04:05"),
-		locationId).QueryRows(&ps)
+	_, err = o.Raw(query, interval.DayFrom(), interval.DayTo(), locationId).
+		QueryRows(&ps)
 
 	return
 }
 
-func (this *Invoice) getFileName(startTime, endTime time.Time) string {
+func (this *Invoice) getFileName(interval lib.Interval) string {
 
 	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
@@ -257,13 +263,10 @@ func (this *Invoice) getFileName(startTime, endTime time.Time) string {
 		b[i] = letters[rand.Intn(len(letters))]
 	}
 
-	return fmt.Sprintf("invoice-%s-%s-%s",
-		startTime.Format("20060102"),
-		endTime.Format("20060102"),
-		string(b))
+	return fmt.Sprintf("invoice-%s-%s", interval.String(), string(b))
 }
 
-func (this *Invoice) getPurchases(locationId int64, startTime, endTime time.Time) (ps []*purchases.Purchase, err error) {
+func (this *Invoice) getPurchases(locationId int64, interval lib.Interval) (ps []*purchases.Purchase, err error) {
 	machines, err := machine.GetAllMachines()
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get machines: %v", err)
@@ -308,7 +311,7 @@ func (this *Invoice) getPurchases(locationId int64, startTime, endTime time.Time
 	}
 
 	// Get all uninvoiced purchases in the time range
-	ps, err = getPurchases(locationId, startTime, endTime)
+	ps, err = getPurchases(locationId, interval)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get purchases: %v", err)
 	}

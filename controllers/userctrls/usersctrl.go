@@ -4,6 +4,7 @@ package userctrls
 import (
 	"encoding/json"
 	"github.com/FabLabBerlin/localmachines/controllers"
+	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/machine"
@@ -465,7 +466,13 @@ func (this *UsersController) GetUserBill() {
 	startTime = startTime.Add(-86400 * time.Second)
 
 	endTime := time.Now().Add(86400 * 30 * time.Second)
-	invoice, err := invoices.CalculateSummary(locId, startTime, endTime)
+	interval := lib.Interval{
+		MonthFrom: int(startTime.Month()),
+		YearFrom:  startTime.Year(),
+		MonthTo:   int(endTime.Month()),
+		YearTo:    endTime.Year(),
+	}
+	invoice, err := invoices.CalculateSummary(locId, interval)
 	if err != nil {
 		beego.Error("Calculate invoice summary:", err)
 	}

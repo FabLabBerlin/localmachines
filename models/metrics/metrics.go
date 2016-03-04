@@ -5,6 +5,7 @@ package metrics
 
 import (
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
@@ -65,9 +66,14 @@ type Data struct {
 
 func FetchData(locationId int64) (data Data, err error) {
 	endTime := time.Now()
-	startTime := time.Date(2015, time.August, 1, 0, 0, 0, 0, time.UTC)
+	interval := lib.Interval{
+		MonthFrom: int(time.August),
+		YearFrom:  2015,
+		MonthTo:   int(endTime.Month()),
+		YearTo:    endTime.Year(),
+	}
 
-	data.invoice, err = invoices.CalculateSummary(locationId, startTime, endTime)
+	data.invoice, err = invoices.CalculateSummary(locationId, interval)
 	if err != nil {
 		return data, fmt.Errorf("Failed to get invoice summary: %v", err)
 	}
