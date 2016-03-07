@@ -14,6 +14,12 @@ import (
 	"time"
 )
 
+const (
+	NETSWITCH_TYPE_MFI = "mfi"
+	// Empty value as unspecified type/custom
+	NETSWITCH_TYPE_CUSTOM = ""
+)
+
 var (
 	mu sync.Mutex
 	// responses are matched here to the RPC requests.  We don't want to have
