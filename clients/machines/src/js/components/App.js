@@ -41,7 +41,7 @@ var RouteHandler = require('react-router').RouteHandler;
         <RouteHandler />
         <footer className={isLogged ? '' : 'absolute-bottom'}>
           <div className="container-fluid">
-            <i className="fa fa-copyright"></i> Fab Lab Berlin 2015
+            <i className="fa fa-copyright"></i> Fab Lab Berlin 2016
           </div>
         </footer>
         {

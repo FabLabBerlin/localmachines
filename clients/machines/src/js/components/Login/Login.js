@@ -49,8 +49,6 @@ var Login = React.createClass({
       password: this.refs.password.getDOMNode().value,
       location: this.refs.location.getDOMNode().value
     };
-    console.log('handleSubmit: username=', data.username);
-    console.log('handleSubmit: location=', data.location);
     LoginActions.submitLoginForm(data, this.context.router);
   },
 
@@ -145,6 +143,10 @@ var Login = React.createClass({
               onClick={this.goToSignUp}>
               Sign up
             </a> now!
+          </div>
+
+          <div className="text-center">
+            Forgot your password? <a href="#">Click here!</a>
           </div>
 
         </div>

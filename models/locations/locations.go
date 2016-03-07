@@ -3,7 +3,7 @@ package locations
 
 import (
 	"fmt"
-	"github.com/FabLabBerlin/localmachines/models/email"
+	"github.com/FabLabBerlin/localmachines/lib/email"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"strings"
