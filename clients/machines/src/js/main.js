@@ -1,6 +1,7 @@
 var App = require('./components/App');
 var FeedbackPage = require('./components/Feedback/FeedbackPage');
 var FeedbackStore = require('./stores/FeedbackStore');
+var ForgotPassword = require('./components/ForgotPassword');
 var getters = require('./getters');
 var GlobalStore = require('./stores/GlobalStore');
 var LoginChooser = require('./components/Login/LoginChooser');
@@ -58,6 +59,10 @@ if (debugNfc) {
  */
 let routes = (
   <Route name="app" path="/" handler={App} >
+    <Route name="forgot_password" path="forgot_password">
+      <Route name="email_sent" handler={ForgotPassword.EmailSent} />
+      <Route name="start" handler={ForgotPassword.Start} />
+    </Route>
     <Route name="login" handler={LoginChooser} />
     <Route name="machine" handler={MachinePage} />
     <Route name="profile" handler={UserPage} />

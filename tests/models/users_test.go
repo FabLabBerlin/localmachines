@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -18,58 +19,58 @@ func TestUsers(t *testing.T) {
 		Reset(setup.ResetDB)
 		Convey("Testing CreateUser", func() {
 			Convey("Creating user with invalid email should not work", func() {
-				user := models.User{}
+				user := users.User{}
 				user.Username = "hackenberg"
 				user.Email = "hackingbackintime"
-				_, err := models.CreateUser(&user)
+				_, err := users.CreateUser(&user)
 				So(err, ShouldNotBeNil)
 
 				user.Email = ""
-				_, err = models.CreateUser(&user)
+				_, err = users.CreateUser(&user)
 				So(err, ShouldNotBeNil)
 
 				user.Email = "hacking@backintime"
-				_, err = models.CreateUser(&user)
+				_, err = users.CreateUser(&user)
 				So(err, ShouldNotBeNil)
 
 				user.Email = "hacking@backintime."
-				_, err = models.CreateUser(&user)
+				_, err = users.CreateUser(&user)
 				So(err, ShouldNotBeNil)
 			})
 			Convey("Creating user with invalid email should not work #2", func() {
-				user := models.User{}
+				user := users.User{}
 				user.Username = "hackenberg"
 				user.Email = ".Aackingbackintime@-email.com"
-				_, err := models.CreateUser(&user)
+				_, err := users.CreateUser(&user)
 				So(err, ShouldNotBeNil)
 				user.Email = ""
 
-				_, err = models.CreateUser(&user)
+				_, err = users.CreateUser(&user)
 				So(err, ShouldNotBeNil)
 
 				user.Email = "hacking@backintime"
-				_, err = models.CreateUser(&user)
+				_, err = users.CreateUser(&user)
 				So(err, ShouldNotBeNil)
 
 				user.Email = "hacking@backintime."
-				_, err = models.CreateUser(&user)
+				_, err = users.CreateUser(&user)
 				So(err, ShouldNotBeNil)
 			})
 			Convey("Creating user with valid email should work", func() {
-				user := models.User{}
+				user := users.User{}
 				user.Username = "hackerman"
 				user.Email = "Hacking@bAckin.tIme"
-				uid, err := models.CreateUser(&user)
+				uid, err := users.CreateUser(&user)
 
 				So(err, ShouldBeNil)
 				So(uid, ShouldBeGreaterThan, 0)
 			})
 			Convey("Creating 2 users that are identical into database, should get an error", func() {
-				user := models.User{}
+				user := users.User{}
 				user.Username = "hackerman"
 				user.Email = "hacking@backin.time"
-				uid1, err1 := models.CreateUser(&user)
-				uid2, err2 := models.CreateUser(&user)
+				uid1, err1 := users.CreateUser(&user)
+				uid2, err2 := users.CreateUser(&user)
 
 				So(err1, ShouldBeNil)
 				So(uid1, ShouldBeGreaterThan, 0)
@@ -77,27 +78,27 @@ func TestUsers(t *testing.T) {
 				So(uid2, ShouldEqual, 0)
 			})
 			Convey("Create 2 users with identical username, should return error", func() {
-				user1 := models.User{}
+				user1 := users.User{}
 				user1.Username = "william"
 				user1.Email = "william@example.com"
-				user2 := models.User{}
+				user2 := users.User{}
 				user2.Username = user1.Username
 				user2.Email = "ismael@example.com"
-				uid, err := models.CreateUser(&user1)
-				_, err = models.CreateUser(&user2)
+				uid, err := users.CreateUser(&user1)
+				_, err = users.CreateUser(&user2)
 
 				So(uid, ShouldBeGreaterThan, 0)
 				So(err, ShouldNotBeNil)
 			})
 			Convey("Create 2 users with identical email, should return error", func() {
-				user1 := models.User{}
+				user1 := users.User{}
 				user1.Username = "william"
 				user1.Email = "william@example.com"
-				user2 := models.User{}
+				user2 := users.User{}
 				user2.Username = "baram"
 				user2.Email = user1.Email
-				uid, err := models.CreateUser(&user1)
-				_, err = models.CreateUser(&user2)
+				uid, err := users.CreateUser(&user1)
+				_, err = users.CreateUser(&user2)
 
 				So(uid, ShouldBeGreaterThan, 0)
 				So(err, ShouldNotBeNil)
@@ -105,66 +106,66 @@ func TestUsers(t *testing.T) {
 		})
 		Convey("Testing DeleteUserAuth", func() {
 			Convey("Creating user with password and delete his Auth", func() {
-				user := models.User{}
+				user := users.User{}
 				user.Email = "user@example.com"
-				uid, _ := models.CreateUser(&user)
+				uid, _ := users.CreateUser(&user)
 				So(uid, ShouldBeGreaterThan, 0)
 
-				err := models.AuthSetPassword(uid, "test")
+				err := users.AuthSetPassword(uid, "test")
 				So(err, ShouldBeNil)
 
-				err = models.DeleteUserAuth(uid)
+				err = users.DeleteUserAuth(uid)
 				So(err, ShouldBeNil)
 			})
 			Convey("Delete auth on non-existing user", func() {
-				err := models.DeleteUserAuth(0)
+				err := users.DeleteUserAuth(0)
 				So(err, ShouldNotBeNil)
 			})
 		})
 		Convey("Testing AuthSetPassword", func() {
 			Convey("Creating a user and setting him a password", func() {
-				user := models.User{}
+				user := users.User{}
 				user.Email = "user@example.com"
-				uid, err := models.CreateUser(&user)
+				uid, err := users.CreateUser(&user)
 				So(uid, ShouldBeGreaterThan, 0)
 				So(err, ShouldBeNil)
 
-				err = models.AuthSetPassword(uid, "test")
+				err = users.AuthSetPassword(uid, "test")
 				So(err, ShouldBeNil)
 			})
 			Convey("Try setting password on non-existing user", func() {
-				err := models.AuthSetPassword(0, "test")
+				err := users.AuthSetPassword(0, "test")
 
 				So(err, ShouldNotBeNil)
 			})
 		})
 		Convey("Testing AuthenticateUser", func() {
 			Convey("Creating a user with a password and try to authenticate him", func() {
-				user := models.User{}
+				user := users.User{}
 				user.Username = "test"
 				user.Email = "user@example.com"
-				uid, _ := models.CreateUser(&user)
-				models.AuthSetPassword(uid, "test")
-				authUID, err := models.AuthenticateUser(user.Username, "test")
+				uid, _ := users.CreateUser(&user)
+				users.AuthSetPassword(uid, "test")
+				authUID, err := users.AuthenticateUser(user.Username, "test")
 				So(authUID, ShouldEqual, uid)
 				So(err, ShouldBeNil)
 			})
 			Convey("Creating a user with a password and try to authenticate with wrong username", func() {
-				user := models.User{}
+				user := users.User{}
 				user.Email = "user@example.com"
-				uid, err := models.CreateUser(&user)
-				err = models.AuthSetPassword(uid, "test")
-				authUID, err := models.AuthenticateUser("wrong", "test")
+				uid, err := users.CreateUser(&user)
+				err = users.AuthSetPassword(uid, "test")
+				authUID, err := users.AuthenticateUser("wrong", "test")
 
 				So(authUID, ShouldEqual, 0)
 				So(err, ShouldNotBeNil)
 			})
 			Convey("Creating a user with a password and try to authenticate with wrong password", func() {
-				user := models.User{}
+				user := users.User{}
 				user.Email = "user@example.com"
-				uid, err := models.CreateUser(&user)
-				err = models.AuthSetPassword(uid, "test")
-				authUID, err := models.AuthenticateUser("test", "wrong")
+				uid, err := users.CreateUser(&user)
+				err = users.AuthSetPassword(uid, "test")
+				authUID, err := users.AuthenticateUser("test", "wrong")
 
 				So(authUID, ShouldEqual, 0)
 				So(err, ShouldNotBeNil)
@@ -172,45 +173,45 @@ func TestUsers(t *testing.T) {
 		})
 		Convey("Testing AuthUpdateNfcUid", func() {
 			Convey("Creating a user and setting him a NFC UID", func() {
-				user := models.User{}
+				user := users.User{}
 				user.Username = "test"
 				user.Email = "user@example.com"
-				uid, _ := models.CreateUser(&user)
-				_ = models.AuthSetPassword(uid, "test")
-				err := models.AuthUpdateNfcUid(uid, "123456")
+				uid, _ := users.CreateUser(&user)
+				_ = users.AuthSetPassword(uid, "test")
+				err := users.AuthUpdateNfcUid(uid, "123456")
 				So(err, ShouldBeNil)
 			})
 			Convey("Creating a user and setting him a NFC UID without setting a password", func() {
-				user := models.User{}
+				user := users.User{}
 				user.Username = "test"
 				user.Email = "user@example.com"
-				uid, _ := models.CreateUser(&user)
-				err := models.AuthUpdateNfcUid(uid, "123456")
+				uid, _ := users.CreateUser(&user)
+				err := users.AuthUpdateNfcUid(uid, "123456")
 				So(err, ShouldBeNil)
 			})
 			Convey("Setting NFC UID to non-existing user", func() {
-				err := models.AuthUpdateNfcUid(0, "123456")
+				err := users.AuthUpdateNfcUid(0, "123456")
 				So(err, ShouldNotBeNil)
 			})
 		})
 		Convey("Testing AuthenticateUserUid", func() {
 			Convey("Creating a user with a NFC UID and try to authenticate him", func() {
-				user := models.User{}
+				user := users.User{}
 				user.Email = "user@example.com"
-				uid, err := models.CreateUser(&user)
-				err = models.AuthUpdateNfcUid(uid, "123456")
-				_, authUID, err := models.AuthenticateUserUid("123456")
+				uid, err := users.CreateUser(&user)
+				err = users.AuthUpdateNfcUid(uid, "123456")
+				_, authUID, err := users.AuthenticateUserUid("123456")
 
 				So(authUID, ShouldEqual, uid)
 				So(err, ShouldBeNil)
 			})
 			Convey("Creating a user with a NFC UID and try to authenticate him with wrong UID", func() {
-				user := models.User{}
+				user := users.User{}
 				user.Email = "user@example.com"
-				uid, err := models.CreateUser(&user)
-				err = models.AuthSetPassword(uid, "test")
-				err = models.AuthUpdateNfcUid(uid, "123456")
-				_, authUID, err := models.AuthenticateUserUid("654321")
+				uid, err := users.CreateUser(&user)
+				err = users.AuthSetPassword(uid, "test")
+				err = users.AuthUpdateNfcUid(uid, "123456")
+				_, authUID, err := users.AuthenticateUserUid("654321")
 
 				So(authUID, ShouldEqual, 0)
 				So(err, ShouldNotBeNil)
@@ -218,11 +219,11 @@ func TestUsers(t *testing.T) {
 		})
 		Convey("Testing GetUser", func() {
 			Convey("Creating user and get it", func() {
-				u := models.User{}
+				u := users.User{}
 				u.Username = "test"
 				u.Email = "user@example.com"
-				uid, _ := models.CreateUser(&u)
-				user, err := models.GetUser(uid)
+				uid, _ := users.CreateUser(&u)
+				user, err := users.GetUser(uid)
 
 				So(user.Id, ShouldEqual, uid)
 				So(user.Username, ShouldEqual, "test")
@@ -234,31 +235,31 @@ func TestUsers(t *testing.T) {
 				})
 			})
 			Convey("Try to get non-existing user", func() {
-				user, err := models.GetUser(0)
+				user, err := users.GetUser(0)
 
 				So(user, ShouldBeNil)
 				So(err, ShouldNotBeNil)
 			})
 		})
 		Convey("Testing GetAllUsers", func() {
-			u1 := models.User{
+			u1 := users.User{
 				Email:    "u1@example.com",
 				Username: "u1",
 			}
-			u2 := models.User{
+			u2 := users.User{
 				Email:    "u2@example.com",
 				Username: "u2",
 			}
 			Convey("Getting all users with 0 users in the database", func() {
-				users, err := models.GetAllUsers()
+				users, err := users.GetAllUsers()
 
 				So(len(users), ShouldEqual, 0)
 				So(err, ShouldBeNil)
 			})
 			Convey("Creating 2 users and get them", func() {
-				models.CreateUser(&u1)
-				models.CreateUser(&u2)
-				users, err := models.GetAllUsers()
+				users.CreateUser(&u1)
+				users.CreateUser(&u2)
+				users, err := users.GetAllUsers()
 
 				So(len(users), ShouldEqual, 2)
 				So(err, ShouldBeNil)
@@ -270,22 +271,22 @@ func TestUsers(t *testing.T) {
 				"piet@fun.mobi",
 				"jimbo+foo@gmail.com",
 			}
-			u := models.User{}
+			u := users.User{}
 			for _, addr := range validAddresses {
 				u.Email = addr
 				So(u.CheckEmail(), ShouldBeNil)
 			}
 		})
 		Convey("Testing Update", func() {
-			u := models.User{
+			u := users.User{
 				Username: "test",
 				Email:    "test@example.com",
 			}
 			Convey("Updating user with invalid email should not work", func() {
-				user := models.User{}
+				user := users.User{}
 				user.Username = "hackerman"
 				user.Email = "hacker@inspacefeels.good"
-				user.Id, _ = models.CreateUser(&user)
+				user.Id, _ = users.CreateUser(&user)
 
 				user.Email = ""
 				err := user.Update()
@@ -304,11 +305,11 @@ func TestUsers(t *testing.T) {
 				So(err, ShouldNotBeNil)
 			})
 			Convey("Creating a user and try to modify FirstName", func() {
-				uid, _ := models.CreateUser(&u)
-				user, _ := models.GetUser(uid)
+				uid, _ := users.CreateUser(&u)
+				user, _ := users.GetUser(uid)
 				user.FirstName = "YOLO"
 				err := user.Update()
-				user, _ = models.GetUser(user.Id)
+				user, _ = users.GetUser(user.Id)
 
 				So(err, ShouldBeNil)
 				So(user.FirstName, ShouldEqual, "YOLO")
@@ -319,28 +320,28 @@ func TestUsers(t *testing.T) {
 				So(err, ShouldNotBeNil)
 			})
 			Convey("Update user with duplicate username, should return error", func() {
-				user1 := models.User{}
+				user1 := users.User{}
 				user1.Username = "hesus"
 				user1.Email = "hesus@example.com"
-				user2 := models.User{}
+				user2 := users.User{}
 				user2.Username = "hrist"
 				user2.Email = "hrist@example.com"
-				models.CreateUser(&user1)
-				models.CreateUser(&user2)
+				users.CreateUser(&user1)
+				users.CreateUser(&user2)
 				user2.Username = user1.Username
 				err := user2.Update()
 
 				So(err, ShouldNotBeNil)
 			})
 			Convey("Update user with duplicate email, should return error", func() {
-				user1 := models.User{}
+				user1 := users.User{}
 				user1.Username = "hesus"
 				user1.Email = "hesus@example.com"
-				user2 := models.User{}
+				user2 := users.User{}
 				user2.Username = "hrist"
 				user2.Email = "hrist@example.com"
-				models.CreateUser(&user1)
-				models.CreateUser(&user2)
+				users.CreateUser(&user1)
+				users.CreateUser(&user2)
 				user2.Email = user1.Email
 				err := user2.Update()
 
@@ -348,22 +349,22 @@ func TestUsers(t *testing.T) {
 			})
 		})
 		Convey("Testing CreateUserPermission", func() {
-			u := models.User{
+			u := users.User{
 				Username: "test",
 			}
 			Convey("Creating one UserPermission", func() {
-				uid, _ := models.CreateUser(&u)
+				uid, _ := users.CreateUser(&u)
 				err := models.CreateUserPermission(uid, 0)
 
 				So(err, ShouldBeNil)
 			})
 		})
 		Convey("Testing DeleteUserPermission", func() {
-			u := models.User{
+			u := users.User{
 				Username: "test",
 			}
 			Convey("Creating one UserPermission and delete it", func() {
-				uid, _ := models.CreateUser(&u)
+				uid, _ := users.CreateUser(&u)
 				models.CreateUserPermission(uid, 0)
 				err := models.DeleteUserPermission(uid, 0)
 
@@ -371,11 +372,11 @@ func TestUsers(t *testing.T) {
 			})
 		})
 		Convey("Testing UpdateUserPermission", func() {
-			u := models.User{
+			u := users.User{
 				Username: "test",
 			}
 			Convey("Creating one User and update his permission", func() {
-				uid, _ := models.CreateUser(&u)
+				uid, _ := users.CreateUser(&u)
 				perms := &[]models.Permission{
 					models.Permission{UserId: uid, MachineId: 0},
 					models.Permission{UserId: uid, MachineId: 1},

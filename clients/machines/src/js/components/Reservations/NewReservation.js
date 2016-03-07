@@ -85,12 +85,12 @@ var SelectMachine = React.createClass({
           <hr/>
           <div className="pull-right">
             <button 
-              className="btn btn-lg btn-info" 
+              className="btn btn-lg btn-info wizard-button" 
               type="button" 
               onClick={this.cancel}>Cancel</button>
 
             <button 
-              className="btn btn-lg btn-primary" 
+              className="btn btn-lg btn-primary wizard-button" 
               type="button" 
               onClick={this.next}>Next</button>
           </div>

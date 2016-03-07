@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/user_roles"
+	"github.com/FabLabBerlin/localmachines/models/users"
 	_ "github.com/FabLabBerlin/localmachines/routers"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
 	"github.com/astaxie/beego"
@@ -46,12 +46,12 @@ func TestUsersAPI(t *testing.T) {
 			})
 
 			Convey("Try to login with correct user/user, should return 200", func() {
-				u := models.User{
+				u := users.User{
 					Username: "aze",
 					Email:    "aze@easylab.io",
 				}
-				uid, _ := models.CreateUser(&u)
-				models.AuthSetPassword(uid, "aze")
+				uid, _ := users.CreateUser(&u)
+				users.AuthSetPassword(uid, "aze")
 
 				r, _ := http.NewRequest("POST", "/api/users/login?username=aze&password=aze&location=1", nil)
 				w := httptest.NewRecorder()
@@ -80,13 +80,13 @@ func TestUsersAPI(t *testing.T) {
 			})
 
 			Convey("Try to login with good parameters, should return 200", func() {
-				u := models.User{
+				u := users.User{
 					Username: "aze",
 					Email:    "aze@easylab.io",
 				}
-				uid, _ := models.CreateUser(&u)
-				models.AuthSetPassword(uid, "aze")
-				models.AuthUpdateNfcUid(uid, "123456")
+				uid, _ := users.CreateUser(&u)
+				users.AuthSetPassword(uid, "aze")
+				users.AuthUpdateNfcUid(uid, "123456")
 
 				r, _ := http.NewRequest("POST", "/api/users/loginuid?uid=123456", nil)
 				w := httptest.NewRecorder()
@@ -98,17 +98,17 @@ func TestUsersAPI(t *testing.T) {
 			Convey("Try to login with 14 white spaces, should return 401", func() {
 				names := []string{"bar", "foo", "foobar"}
 				for _, name := range names {
-					u := models.User{
+					u := users.User{
 						Username: name,
 						Email:    name + "@easylab.io",
 					}
-					uid, err := models.CreateUser(&u)
+					uid, err := users.CreateUser(&u)
 					if err != nil {
 						panic(err.Error())
 					}
-					models.AuthSetPassword(uid, name)
+					users.AuthSetPassword(uid, name)
 					if name == "bar" {
-						models.AuthUpdateNfcUid(uid, "123456")
+						users.AuthUpdateNfcUid(uid, "123456")
 					}
 				}
 
@@ -273,11 +273,11 @@ func TestUsersAPI(t *testing.T) {
 			})
 
 			Convey("Try to get existing user, should return 200", func() {
-				u := &models.User{
+				u := &users.User{
 					Username: "A",
 					Email:    "a@easylab.io",
 				}
-				mid, _ := models.CreateUser(u)
+				mid, _ := users.CreateUser(u)
 				r, _ := http.NewRequest("GET", "/api/users/"+strconv.FormatInt(mid, 10), nil)
 				r.AddCookie(LoginAsAdmin())
 				w := httptest.NewRecorder()
@@ -287,11 +287,11 @@ func TestUsersAPI(t *testing.T) {
 			})
 
 			Convey("Try to get existing user as a regular one, should return 401", func() {
-				u := &models.User{
+				u := &users.User{
 					Username: "A",
 					Email:    "a@easylab.io",
 				}
-				mid, _ := models.CreateUser(u)
+				mid, _ := users.CreateUser(u)
 				r, _ := http.NewRequest("GET", "/api/users/"+strconv.FormatInt(mid, 10), nil)
 				r.AddCookie(LoginAsRegular())
 				w := httptest.NewRecorder()
@@ -362,11 +362,11 @@ func TestUsersAPI(t *testing.T) {
 			})
 
 			Convey("Try to modify a user as an admin, should return 200", func() {
-				u := models.User{
+				u := users.User{
 					Username: "lel",
 					Email:    "lel@easylab.io",
 				}
-				uid, _ := models.CreateUser(&u)
+				uid, _ := users.CreateUser(&u)
 				var jsonStr = []byte(`{"User": {"Id": ` + strconv.FormatInt(uid, 10) + `, "Email": "raaaaaaaaaaaaaaaaadom@easylab.io"}}`)
 				r, _ := http.NewRequest("PUT", "/api/users/"+strconv.FormatInt(uid, 10), bytes.NewBuffer(jsonStr))
 				r.AddCookie(LoginAsAdmin())
@@ -389,7 +389,7 @@ func TestUsersAPI(t *testing.T) {
 			w := httptest.NewRecorder()
 			beego.BeeApp.Handlers.ServeHTTP(w, r)
 			jsonDecoder := json.NewDecoder(w.Body)
-			user := models.User{}
+			user := users.User{}
 			err := jsonDecoder.Decode(&user)
 
 			// Create base membership

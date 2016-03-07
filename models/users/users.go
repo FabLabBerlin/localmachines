@@ -114,10 +114,14 @@ func CreateUser(user *User) (userId int64, er error) {
 }
 
 func (user *User) CheckEmail() (err error) {
-	if strings.TrimSpace(user.Email) == "" {
+	return checkEmail(user.Email)
+}
+
+func checkEmail(email string) (err error) {
+	if strings.TrimSpace(email) == "" {
 		return errors.New("Email field should not be blank")
 	}
-	if !_EXP_EMAIL.MatchString(user.Email) {
+	if !_EXP_EMAIL.MatchString(email) {
 		return errors.New("Invalid email")
 	}
 	return

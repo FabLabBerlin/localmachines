@@ -33,6 +33,11 @@ var Login = React.createClass({
     };
   },
 
+  goToForgotPassword(event) {
+    event.preventDefault();
+    window.location = '/signup';
+  },
+
   goToSignUp(event) {
     event.preventDefault();
     window.location = '/signup';
@@ -146,7 +151,9 @@ var Login = React.createClass({
           </div>
 
           <div className="text-center">
-            Forgot your password? <a href="#">Click here!</a>
+            Forgot your password? <a href="/machines/#/forgot_password/start">
+              Oops...
+            </a>
           </div>
 
         </div>

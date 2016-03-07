@@ -11,17 +11,18 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/products"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
+	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 )
 
 var dbModels = []Model{
 	&invoices.Invoice{},
-	&models.Auth{},
+	&users.Auth{},
 	&machine.Machine{},
 	&models.Membership{},
 	&models.Permission{},
-	&models.User{},
+	&users.User{},
 	&products.Product{},
 	&purchases.Purchase{},
 	&models.UserMembership{},

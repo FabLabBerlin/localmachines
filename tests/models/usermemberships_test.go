@@ -9,6 +9,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/machine"
+	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -51,11 +52,11 @@ func TestUserMemberships(t *testing.T) {
 			}
 
 			// Create a user
-			user := models.User{}
+			user := users.User{}
 			user.FirstName = "Amen"
 			user.LastName = "Hesus"
 			user.Email = "amen@example.com"
-			userId, _ := models.CreateUser(&user)
+			userId, _ := users.CreateUser(&user)
 
 			// Create user permissions for the created machines
 			models.CreateUserPermission(userId, machineIdOne)

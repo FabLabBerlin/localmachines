@@ -15,8 +15,9 @@ import (
 
 // cf. http://stackoverflow.com/a/23039768/485185
 const (
-	PW_SALT_BYTES = 32
-	PW_HASH_BYTES = 64
+	PW_SALT_BYTES      = 32
+	PW_HASH_BYTES      = 64
+	PW_RESET_KEY_BYTES = 64
 )
 
 type Auth struct {
@@ -202,4 +203,35 @@ func createSalt() ([]byte, error) {
 	salt := make([]byte, PW_SALT_BYTES)
 	_, err := io.ReadFull(rand.Reader, salt)
 	return salt, err
+}
+
+func createPwResetKey() (string, error) {
+	key := make([]byte, PW_RESET_KEY_BYTES)
+	_, err := io.ReadFull(rand.Reader, key)
+	return fmt.Sprintf("%x", key), err
+}
+
+func AuthForgotPassword(email string) (err error) {
+	email = strings.TrimSpace(email)
+	if err = checkEmail(email); err != nil {
+		return
+	}
+	o := orm.NewOrm()
+	pwResetKey, err := createPwResetKey()
+	if err != nil {
+		return
+	}
+	cmd := "UPDATE auth JOIN user ON user_id = user.id SET pw_reset_key = ?, pw_reset_time = ? WHERE email = ?"
+	res, err := o.Raw(cmd, pwResetKey, time.Now(), email).Exec()
+	if err != nil {
+		return
+	}
+	n, err := res.RowsAffected()
+	if err != nil {
+		return
+	}
+	if n == 0 {
+		return fmt.Errorf("no user with email '%v' found", email)
+	}
+	return
 }

@@ -1,8 +1,8 @@
 package products
 
 import (
-	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/products"
+	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/FabLabBerlin/localmachines/tests/assert"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
 	. "github.com/smartystreets/goconvey/convey"
@@ -41,12 +41,12 @@ func TestTutorProducts(t *testing.T) {
 		})
 
 		Convey("Update", func() {
-			u := models.User{
+			u := users.User{
 				FirstName: "Roland",
 				LastName:  "Kaiser",
 				Email:     "roland.kaiser@signal-iduna.de",
 			}
-			uid, err := models.CreateUser(&u)
+			uid, err := users.CreateUser(&u)
 			t := &products.Tutor{
 				Product: products.Product{
 					UserId: uid,
@@ -54,12 +54,12 @@ func TestTutorProducts(t *testing.T) {
 			}
 			t, err = products.CreateTutor(t)
 
-			u2 := models.User{
+			u2 := users.User{
 				FirstName: "Peter",
 				LastName:  "Lustig",
 				Email:     "peter.lustig@wdr.de",
 			}
-			t.Product.UserId, err = models.CreateUser(&u2)
+			t.Product.UserId, err = users.CreateUser(&u2)
 			err2 := t.Update()
 
 			t, err3 := products.GetTutor(t.Product.Id)

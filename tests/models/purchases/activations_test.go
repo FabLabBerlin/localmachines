@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
+	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/FabLabBerlin/localmachines/tests/assert"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
 	. "github.com/smartystreets/goconvey/convey"
@@ -37,7 +37,7 @@ func TestActivations(t *testing.T) {
 		Reset(setup.ResetDB)
 
 		Convey("Testing CreateActivation", func() {
-			user := models.User{
+			user := users.User{
 				FirstName: "ILoveFabLabs",
 				Email:     "awesome@example.com",
 			}
@@ -55,7 +55,7 @@ func TestActivations(t *testing.T) {
 
 			Convey("Creating activation with existing user and machine", func() {
 				machine, err1 := CreateMachine("lel")
-				uid, err2 := models.CreateUser(&user)
+				uid, err2 := users.CreateUser(&user)
 				activationStartTime := time.Date(2015, 5, 8, 2, 15, 3, 1, time.Local)
 				aid, err3 := purchases.CreateActivation(machine.Id, uid, activationStartTime)
 				activation, err4 := purchases.GetActivation(aid)
