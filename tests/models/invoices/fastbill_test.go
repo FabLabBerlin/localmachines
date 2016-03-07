@@ -75,11 +75,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 		fastbill.API_URL = testServer.URL
 
 		_, empty, err := invoices.CreateFastbillDraft((*userSummaries)[0])
-		if empty {
-			panic("empty")
-		}
-		if err != nil {
-			panic(err.Error())
-		}
+		So(empty, ShouldBeFalse)
+		So(err, ShouldBeNil)
 	})
 }

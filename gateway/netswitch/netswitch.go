@@ -31,10 +31,15 @@ func (ns *NetSwitch) SetOn(on bool) (err error) {
 }
 
 func (ns *NetSwitch) turnOn() (err error) {
-	log.Printf("turn on %v", ns.Url())
-	resp, err := http.PostForm(ns.Url(), url.Values{"output": {"1"}})
+	log.Printf("turn on %v", ns.UrlOn())
+	var resp *http.Response
+	if ns.NetswitchType == machine.NETSWITCH_TYPE_MFI {
+		resp, err = http.PostForm(ns.UrlOn(), url.Values{"output": {"1"}})
+	} else {
+		resp, err = http.Get(ns.UrlOn())
+	}
 	if err != nil {
-		return fmt.Errorf("client get: %v", err)
+		return fmt.Errorf("http: %v", err)
 	}
 	if resp.StatusCode != 200 {
 		return fmt.Errorf("unexpected status code: %v", resp.StatusCode)
@@ -44,10 +49,15 @@ func (ns *NetSwitch) turnOn() (err error) {
 }
 
 func (ns *NetSwitch) turnOff() (err error) {
-	log.Printf("turn off %v", ns.Url())
-	resp, err := http.PostForm(ns.Url(), url.Values{"output": {"0"}})
+	log.Printf("turn off %v", ns.UrlOn())
+	var resp *http.Response
+	if ns.NetswitchType == machine.NETSWITCH_TYPE_MFI {
+		resp, err = http.PostForm(ns.UrlOn(), url.Values{"output": {"0"}})
+	} else {
+		resp, err = http.Get(ns.UrlOff())
+	}
 	if err != nil {
-		return fmt.Errorf("client get: %v", err)
+		return fmt.Errorf("http: %v", err)
 	}
 	if resp.StatusCode != 200 {
 		return fmt.Errorf("unexpected status code: %v", resp.StatusCode)
@@ -56,8 +66,20 @@ func (ns *NetSwitch) turnOff() (err error) {
 	return
 }
 
-func (ns *NetSwitch) Url() string {
-	return "http://" + ns.NetswitchHost + "/sensors/" + strconv.Itoa(ns.NetswitchSensorPort)
+func (ns *NetSwitch) UrlOn() string {
+	if ns.NetswitchType == machine.NETSWITCH_TYPE_MFI {
+		return "http://" + ns.NetswitchHost + "/sensors/" + strconv.Itoa(ns.NetswitchSensorPort)
+	} else {
+		return ns.NetswitchUrlOn
+	}
+}
+
+func (ns *NetSwitch) UrlOff() string {
+	if ns.NetswitchType == machine.NETSWITCH_TYPE_MFI {
+		return "http://" + ns.NetswitchHost + "/sensors/" + strconv.Itoa(ns.NetswitchSensorPort)
+	} else {
+		return ns.NetswitchUrlOff
+	}
 }
 
 func (ns *NetSwitch) String() string {
