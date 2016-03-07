@@ -11,6 +11,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/user_roles"
+	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 	"strconv"
 	"strings"
@@ -79,7 +80,7 @@ func (this *UsersController) Login() {
 	if sessUserId, err := this.GetSessionUserId(); err != nil {
 		username := this.GetString("username")
 		password := this.GetString("password")
-		userId, err := models.AuthenticateUser(username, password)
+		userId, err := users.AuthenticateUser(username, password)
 		if err != nil {
 			this.CustomAbort(401, "Failed to authenticate")
 		} else {
@@ -106,7 +107,7 @@ func (this *UsersController) LoginUid() {
 
 	if sessUserId, err := this.GetSessionUserId(); err != nil {
 		uid := this.GetString("uid")
-		username, userId, err := models.AuthenticateUserUid(uid)
+		username, userId, err := users.AuthenticateUserUid(uid)
 		if err != nil {
 			beego.Error(err)
 			this.CustomAbort(401, "Failed to authenticate")
@@ -151,7 +152,7 @@ func (this *UsersController) GetCurrentUser() {
 		beego.Error("GetUser Not logged in")
 		this.CustomAbort(400, "Not logged in")
 	}
-	u, err := models.GetUser(uid)
+	u, err := users.GetUser(uid)
 	if err != nil {
 		beego.Error("models.GetUser:", err)
 		this.CustomAbort(500, "Internal Server Error")
@@ -172,7 +173,7 @@ func (this *UsersController) GetAll() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	users, err := models.GetAllUsers()
+	users, err := users.GetAllUsers()
 	if err != nil {
 		this.CustomAbort(500, "Failed to get all users")
 	}
@@ -181,7 +182,7 @@ func (this *UsersController) GetAll() {
 }
 
 type UserSignupRequest struct {
-	User     models.User
+	User     users.User
 	Password string
 }
 
@@ -209,13 +210,13 @@ func (this *UsersController) Signup() {
 	data.User.UserRole = user_roles.MEMBER.String()
 
 	// Attempt to create the user
-	if userId, err = models.CreateUser(&data.User); err != nil {
+	if userId, err = users.CreateUser(&data.User); err != nil {
 		beego.Error("Failed to create user:", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
 	// Set the password
-	if err = models.AuthSetPassword(userId, data.Password); err != nil {
+	if err = users.AuthSetPassword(userId, data.Password); err != nil {
 		beego.Error("Failed to set password for user ID", userId)
 		this.CustomAbort(500, "Internal Server Error")
 	}
@@ -253,7 +254,7 @@ func (this *UsersController) Post() {
 
 	locId, _ := this.GetInt64("location")
 
-	user := models.User{
+	user := users.User{
 		Email:    email,
 		UserRole: user_roles.MEMBER.String(),
 	}
@@ -261,7 +262,7 @@ func (this *UsersController) Post() {
 	// Attempt to create the user.
 	// The CreateUser function takes (or should take)
 	// care of validating the email.
-	if userId, err := models.CreateUser(&user); err != nil {
+	if userId, err := users.CreateUser(&user); err != nil {
 		beego.Error("Failed to create user:", err)
 		this.CustomAbort(500, "Internal Server Error")
 	} else {
@@ -299,7 +300,7 @@ func (this *UsersController) Get() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	user, err := models.GetUser(uid)
+	user, err := users.GetUser(uid)
 	if err != nil {
 		beego.Error("Failed to get user data")
 		this.CustomAbort(403, "Failed to get user data")
@@ -310,7 +311,7 @@ func (this *UsersController) Get() {
 }
 
 type UserPutRequest struct {
-	User models.User
+	User users.User
 }
 
 // @Title Put
@@ -350,7 +351,7 @@ func (this *UsersController) Put() {
 	}
 
 	// Do not allow change user role if not admin and self
-	existingUser, err := models.GetUser(req.User.Id)
+	existingUser, err := users.GetUser(req.User.Id)
 	if err != nil {
 		beego.Error("User does not exist, user ID:", req.User.Id)
 		this.CustomAbort(500, "Internal Server Error")
@@ -543,7 +544,7 @@ func (this *UsersController) GetUserNames() {
 	}
 
 	for _, uid := range uids {
-		user, err := models.GetUser(uid)
+		user, err := users.GetUser(uid)
 		if err != nil {
 			beego.Error("Failed not get user name:", err)
 			this.CustomAbort(500, "Failed not get user name")
@@ -573,7 +574,7 @@ func (this *UsersController) PostUserPassword() {
 		this.CustomAbort(400, "Wrong uid in url or not authorized")
 	}
 
-	err := models.AuthSetPassword(uid, this.GetString("password"))
+	err := users.AuthSetPassword(uid, this.GetString("password"))
 	if err != nil {
 		beego.Error("Unable to update password: ", err)
 		this.CustomAbort(403, "Unable to update password")
@@ -604,7 +605,7 @@ func (this *UsersController) UpdateNfcUid() {
 		this.CustomAbort(403, "Failed to update NFC UID")
 	}
 
-	if err := models.AuthUpdateNfcUid(uid, nfcuid); err != nil {
+	if err := users.AuthUpdateNfcUid(uid, nfcuid); err != nil {
 		beego.Error("Unable to update NFC UID: ", err)
 		this.CustomAbort(403, "Failed to update NFC UID")
 	}

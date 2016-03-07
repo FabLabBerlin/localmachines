@@ -4,7 +4,7 @@ package fastbill
 import (
 	"errors"
 	"fmt"
-	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 	"strconv"
 	"strings"
@@ -139,7 +139,7 @@ func (this *FastBill) GetCustomers(filter *CustomerGetFilter,
 	return &response.RESPONSE, nil
 }
 
-func GetCustomerId(user models.User) (customerId int64, err error) {
+func GetCustomerId(user users.User) (customerId int64, err error) {
 	fb := New()
 
 	customerNumber := user.ClientId

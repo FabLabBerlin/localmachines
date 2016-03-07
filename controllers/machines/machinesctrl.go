@@ -8,6 +8,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/controllers"
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/machine"
+	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 	"strings"
 )
@@ -292,7 +293,7 @@ func (this *Controller) ReportBroken() {
 		beego.Info("Not logged in:", err)
 		this.CustomAbort(401, "Not logged in")
 	}
-	user, err := models.GetUser(uid)
+	user, err := users.GetUser(uid)
 	if err != nil {
 		beego.Error("Failed to get machine permissions", err)
 		this.CustomAbort(401, "Not authorized")

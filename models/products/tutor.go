@@ -2,7 +2,7 @@ package products
 
 import (
 	"fmt"
-	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 )
@@ -78,7 +78,7 @@ func (tutor *Tutor) Update() error {
 	if tutor.Product.UserId != 0 {
 		o := orm.NewOrm()
 		// Get user name by user ID
-		user := models.User{}
+		user := users.User{}
 		user.Id = tutor.Product.UserId
 		err := o.Read(&user)
 		if err != nil {

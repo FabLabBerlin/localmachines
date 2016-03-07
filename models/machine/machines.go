@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"github.com/ChimeraCoder/anaconda"
 	"github.com/FabLabBerlin/localmachines/lib/email"
-	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/locations"
+	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"math/rand"
@@ -217,7 +217,7 @@ func parseDimensions(s string) (lMM []Millimeters, err error) {
 	return
 }
 
-func (this *Machine) ReportBroken(user models.User) error {
+func (this *Machine) ReportBroken(user users.User) error {
 	email := email.New()
 	to := beego.AppConfig.String("trelloemail")
 	subject := this.Name + " reported as broken"

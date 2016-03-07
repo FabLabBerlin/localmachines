@@ -7,6 +7,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
+	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"math/rand"
@@ -59,7 +60,7 @@ func (this *Invoice) TableName() string {
 }
 
 type UserSummary struct {
-	User      models.User
+	User      users.User
 	Purchases purchases.Purchases
 }
 
@@ -238,7 +239,7 @@ func Delete(invoiceId int64) error {
 func getPurchases(locationId int64, interval lib.Interval) (ps []*purchases.Purchase, err error) {
 
 	p := purchases.Purchase{}
-	usr := models.User{}
+	usr := users.User{}
 	o := orm.NewOrm()
 
 	query := fmt.Sprintf("SELECT p.* FROM %s p JOIN %s u ON p.user_id=u.id "+
@@ -276,12 +277,12 @@ func (this *Invoice) getPurchases(locationId int64, interval lib.Interval) (ps [
 		machinesById[machine.Id] = machine
 	}
 
-	users, err := models.GetAllUsers()
+	usrs, err := users.GetAllUsers()
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get users: %v", err)
 	}
-	usersById := make(map[int64]models.User)
-	for _, user := range users {
+	usersById := make(map[int64]users.User)
+	for _, user := range usrs {
 		usersById[user.Id] = *user
 	}
 
@@ -332,7 +333,7 @@ func (this *Invoice) GetUserSummaries(
 	ps purchases.Purchases) (*[]*UserSummary, error) {
 
 	// Create a slice for unique user summaries.
-	users, err := models.GetAllUsers()
+	users, err := users.GetAllUsers()
 	if err != nil {
 		return nil, err
 	}
@@ -377,7 +378,7 @@ func (this *Invoice) GetUserSummaries(
 }
 
 func (this *Invoice) enhancePurchase(purchase *purchases.Purchase,
-	machinesById map[int64]*machine.Machine, usersById map[int64]models.User,
+	machinesById map[int64]*machine.Machine, usersById map[int64]users.User,
 	userMembershipsByUserId map[int64][]*models.UserMembership,
 	membershipsById map[int64]*models.Membership) error {
 

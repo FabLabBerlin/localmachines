@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"errors"
-	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/user_roles"
+	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 )
 
@@ -131,7 +131,7 @@ func (this *Controller) globalUserRole(userIds ...int64) user_roles.Role {
 	if !ok {
 		return user_roles.NOT_AFFILIATED
 	}
-	user, err := models.GetUser(userId)
+	user, err := users.GetUser(userId)
 	if err != nil {
 		return user_roles.NOT_AFFILIATED
 	}

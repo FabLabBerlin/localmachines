@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/machine"
+	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"time"
@@ -28,7 +29,7 @@ type Purchase struct {
 	ProductId  int64
 	Created    time.Time `orm:"type(datetime)"`
 
-	User   models.User `orm:"-" json:"-"`
+	User   users.User `orm:"-" json:"-"`
 	UserId int64
 
 	TimeStart      time.Time `orm:"type(datetime)" json:",omitempty"`
