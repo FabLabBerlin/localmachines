@@ -14,8 +14,8 @@ angular.module('fabsmith.signup.thanks', ['ngRoute'])
 .controller('ThanksCtrl', ['$scope', '$location',
  function($scope, $location) {
 
-  $scope.backToForm = function() {
-    $location.path('/form');
+  $scope.done = function() {
+    window.location.href = '/machines/#/login';
   };
 
   var timeout = 10 * 1000;
