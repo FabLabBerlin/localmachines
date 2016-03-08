@@ -8,6 +8,8 @@ import (
 	"text/template"
 )
 
+// Inspired by Troy Hunt's write up about the topic:
+// http://bit.ly/1CNpHDH
 type ForgotPassword struct {
 	Controller
 }
@@ -48,7 +50,7 @@ func init() {
 }
 
 // @Title ForgotPassword
-// @Description Create new user location
+// @Description Send forgot password E-Mail
 // @Param	email		body 	string	true		"Email"
 // @Success 200
 // @Failure	400	Not authorized
@@ -86,5 +88,61 @@ func (c *ForgotPassword) ForgotPassword() {
 	if err := mail.Send(addr, subject, message); err != nil {
 		beego.Error("Error sending wrong forgot password mail:", err)
 	}
+	c.ServeJSON()
+}
+
+// @Title CheckPhone
+// @Description Check phone number
+// @Param	key			body 	string	true		"Reset Password Key"
+// @Param	phone		body 	string	true		"Phone"
+// @Success 200
+// @Failure	401	Not authorized
+// @Failure	500	Internal Server Error
+// @router /forgot_password/phone [post]
+func (c *ForgotPassword) CheckPhone() {
+	key := c.GetString("key")
+	phone := c.GetString("phone")
+
+	_, err := users.AuthCheckPhone(key, phone)
+	if err == users.ErrAuthWrongKey ||
+		err == users.ErrAuthOutdatedKey ||
+		err == users.ErrAuthWrongPhone {
+		c.CustomAbort(401, err.Error())
+	} else if err != nil {
+		beego.Error("auth check phone:", err)
+		c.CustomAbort(500, "Internal Server Error")
+	}
+	c.ServeJSON()
+}
+
+// @Title ResetPassword
+// @Description Reset password
+// @Param	key			body 	string	true		"Reset Password Key"
+// @Param	password	body 	string	true		"New password"
+// @Param	phone		body 	string	true		"Phone"
+// @Success 200
+// @Failure	401	Not authorized
+// @Failure	500	Internal Server Error
+// @router /forgot_password/phone [post]
+func (c *ForgotPassword) ResetPassword() {
+	key := c.GetString("key")
+	phone := c.GetString("phone")
+	pass := c.GetString("password")
+
+	uid, err := users.AuthCheckPhone(key, phone)
+	if err == users.ErrAuthWrongKey ||
+		err == users.ErrAuthOutdatedKey ||
+		err == users.ErrAuthWrongPhone {
+		c.CustomAbort(401, err.Error())
+	} else if err != nil {
+		beego.Error("auth check phone:", err)
+		c.CustomAbort(500, "Internal Server Error")
+	}
+
+	if err := users.AuthSetPassword(uid, pass); err != nil {
+		beego.Error("set pw of ", uid, ":", err)
+		c.CustomAbort(500, "Internal Server Error")
+	}
+
 	c.ServeJSON()
 }

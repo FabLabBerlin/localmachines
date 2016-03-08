@@ -1,4 +1,6 @@
 export default {
   EmailSent: require('./EmailSent'),
-  Start: require('./Start')
+  Start: require('./Start'),
+  Recover: require('./Recover'),
+  Reset: require('./Reset')
 };

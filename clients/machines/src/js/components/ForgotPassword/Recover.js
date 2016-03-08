@@ -1,24 +1,19 @@
 var actions = require('../../modules/ForgotPassword/actions');
 var { Navigation } = require('react-router');
 var React = require('react');
-var reactor = require('../../reactor');
 var toastr = require('../../toastr');
 
 
-var Start = React.createClass({
+var Recover = React.createClass({
   mixins: [ Navigation ],
-
-  cancel() {
-    this.replaceWith('/login');
-  },
 
   handleSubmit(event) {
     event.preventDefault();
-    var email = this.refs.email.getDOMNode().value;
-    if (email) {
-      actions.emailReset(this.context.router, email);
+    var phone = this.refs.phone.getDOMNode().value;
+    if (phone) {
+      actions.submitPhone(this.context.router, phone);
     } else {
-      toastr.error('Please enter an E-Mail address');
+      toastr.error('Please enter your phone number');
     }
     return false;
   },
@@ -27,13 +22,13 @@ var Start = React.createClass({
     return (
       <div className="container">
         <form onSubmit={this.handleSubmit}>
-          <h3>What is your E-Mail address?</h3>
+          <h3>What is your phone number?</h3>
           <input
-            ref="email"
+            ref="phone"
             type="text"
-            name="email"
+            name="phone"
             className="form-control"
-            placeholder="E-Mail address"
+            placeholder="Phone number"
             required={true}
             autofocus
             autoCorrect="off"
@@ -41,10 +36,8 @@ var Start = React.createClass({
           />
           <hr/>
           <div className="pull-right">
-            <button className="btn btn-info btn-lg wizard-button"
-                onClick={this.cancel}>Cancel</button>
             <button className="btn btn-primary btn-lg wizard-button"
-              type="submit">Reset password</button>
+              type="submit">Submit</button>
           </div>
         </form>
       </div>
@@ -52,4 +45,4 @@ var Start = React.createClass({
   }
 });
 
-export default Start;
+export default Recover;

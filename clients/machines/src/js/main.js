@@ -2,6 +2,7 @@ var App = require('./components/App');
 var FeedbackPage = require('./components/Feedback/FeedbackPage');
 var FeedbackStore = require('./stores/FeedbackStore');
 var ForgotPassword = require('./components/ForgotPassword');
+var ForgotPasswordStore = require('./modules/ForgotPassword/stores/store');
 var getters = require('./getters');
 var GlobalStore = require('./stores/GlobalStore');
 var LoginChooser = require('./components/Login/LoginChooser');
@@ -62,6 +63,8 @@ let routes = (
     <Route name="forgot_password" path="forgot_password">
       <Route name="email_sent" handler={ForgotPassword.EmailSent} />
       <Route name="start" handler={ForgotPassword.Start} />
+      <Route name="recover" handler={ForgotPassword.Recover} />
+      <Route name="reset" handler={ForgotPassword.Reset} />
     </Route>
     <Route name="login" handler={LoginChooser} />
     <Route name="machine" handler={MachinePage} />
@@ -79,6 +82,7 @@ let routes = (
 
 reactor.registerStores({
   feedbackStore: FeedbackStore,
+  forgotPasswordStore: ForgotPasswordStore,
   globalStore: GlobalStore,
   loginStore: LoginStore,
   machineStore: MachineStore,

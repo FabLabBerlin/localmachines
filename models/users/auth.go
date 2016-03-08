@@ -234,3 +234,68 @@ func AuthForgotPassword(email string) (pwResetKey string, err error) {
 	}
 	return
 }
+
+var (
+	ErrAuthOutdatedKey = errors.New("Outdated key")
+	ErrAuthWrongKey    = errors.New("Wrong key")
+	ErrAuthWrongPhone  = errors.New("Wrong phone")
+)
+
+func AuthCheckPhone(key string, phone string) (uid int64, err error) {
+	if len(key) < PW_RESET_KEY_BYTES/2 {
+		return 0, ErrAuthWrongKey
+	}
+	o := orm.NewOrm()
+	a := Auth{}
+	var as []Auth
+	_, err = o.QueryTable(a.TableName()).
+		Filter("pw_reset_key", key).
+		All(&as)
+	if len(as) == 0 {
+		return 0, ErrAuthWrongKey
+	} else if len(as) == 1 {
+		a = as[0]
+		uid = a.UserId
+		u, err := GetUser(uid)
+		if err != nil {
+			return 0, fmt.Errorf("get user %v: %v", uid, err)
+		}
+		if authPhoneEquals(u.Phone, phone) {
+			if a.PwResetTime.After(time.Now()) {
+				beego.Info("a.PwResetTime:", a.PwResetTime)
+				beego.Info("time.Now():", time.Now())
+				return 0, fmt.Errorf("pw reset time is in the future")
+			} else if delta := time.Now().Sub(a.PwResetTime); delta > time.Hour {
+				beego.Error("key was generated", delta, "ago")
+				return 0, ErrAuthOutdatedKey
+			} else {
+				return uid, nil
+			}
+		} else {
+			return 0, ErrAuthWrongPhone
+		}
+	} else {
+		return 0, fmt.Errorf("two users with same key found!!")
+	}
+}
+
+func authPhoneEquals(phone1, phone2 string) bool {
+	phone1 = authCanonicalizePhone(phone1)
+	phone2 = authCanonicalizePhone(phone2)
+	return phone1 == phone2
+}
+
+func authCanonicalizePhone(phone string) string {
+	phone = strings.TrimSpace(phone)
+	removable := []string{
+		" ",
+		"\n",
+		"\t",
+		"\r",
+		"-",
+	}
+	for _, ch := range removable {
+		phone = strings.Replace(phone, ch, "", -1)
+	}
+	return phone
+}
