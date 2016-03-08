@@ -37,11 +37,15 @@ function getParameterByName(name, url) {
 }
 
 function handleServerErrors(xhr) {
-  if (xhr.status === 401 && xhr.responseText === 'Outdated key') {
+  const msg = xhr.responseText;
+
+  console.log('msg:', msg);
+
+  if (xhr.status === 401 && msg === 'Outdated key') {
     toastr.error('The key is too old.  Please try again and hurry up :)');
-  } else if (xhr.status === 401 && xhr.responseText === 'Wrong key') {
+  } else if (xhr.status === 401 && msg === 'Wrong key') {
     toastr.error('The url seems wrong.  Please check your spam folder or generate a new key.');
-  } else if (xhr.status === 401 && xhr.responseText === 'Wrong phone') {
+  } else if (xhr.status === 401 && msg === 'Wrong phone') {
     toastr.error('The phone number does not seem correct.');
   } else {
     toastr.error('An error occurred.  Please try again later.');

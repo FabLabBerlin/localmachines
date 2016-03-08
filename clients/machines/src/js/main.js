@@ -65,6 +65,7 @@ let routes = (
       <Route name="start" handler={ForgotPassword.Start} />
       <Route name="recover" handler={ForgotPassword.Recover} />
       <Route name="reset" handler={ForgotPassword.Reset} />
+      <Route name="done" handler={ForgotPassword.Done} />
     </Route>
     <Route name="login" handler={LoginChooser} />
     <Route name="machine" handler={MachinePage} />

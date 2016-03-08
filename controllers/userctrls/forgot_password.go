@@ -123,7 +123,7 @@ func (c *ForgotPassword) CheckPhone() {
 // @Success 200
 // @Failure	401	Not authorized
 // @Failure	500	Internal Server Error
-// @router /forgot_password/phone [post]
+// @router /forgot_password/reset [post]
 func (c *ForgotPassword) ResetPassword() {
 	key := c.GetString("key")
 	phone := c.GetString("phone")

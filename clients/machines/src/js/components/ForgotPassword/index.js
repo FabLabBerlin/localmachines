@@ -2,5 +2,6 @@ export default {
   EmailSent: require('./EmailSent'),
   Start: require('./Start'),
   Recover: require('./Recover'),
-  Reset: require('./Reset')
+  Reset: require('./Reset'),
+  Done: require('./Done')
 };
