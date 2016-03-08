@@ -132,6 +132,7 @@ func AuthSetPassword(userId int64, password string) error {
 		return fmt.Errorf("createHash: %v", err)
 	}
 	auth.Hash = hex.EncodeToString(hash)
+	auth.PwResetKey = ""
 	if authRecordMissing {
 		_, err = o.Insert(&auth)
 	} else {
