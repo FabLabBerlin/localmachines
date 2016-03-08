@@ -158,13 +158,13 @@
       <div class="row">
 
         <div class="col-sm-4">
-          <div class="form-group" ng-hide="machine.NetswitchXmpp">
+          <div class="form-group" ng-hide="machine.NetswitchType">
             <input type="text" id="machine-netswitch-url-on" 
                    class="form-control"
                    placeholder="On URL"
                    ng-model="machine.NetswitchUrlOn">
           </div>
-          <div class="form-group" ng-show="machine.NetswitchXmpp">
+          <div class="form-group" ng-show="machine.NetswitchType">
             <input type="text" id="machine-netswitch-host" 
                    class="form-control"
                    placeholder="Host (mfi only)"
@@ -173,18 +173,29 @@
         </div>
 
         <div class="col-sm-4">
-          <div class="form-group" ng-hide="machine.NetswitchXmpp">
+          <div class="form-group" ng-hide="machine.NetswitchType">
             <input type="text" id="machine-netswitch-url-off" 
                    class="form-control"
                    placeholder="Off URL"
                    ng-model="machine.NetswitchUrlOff">
           </div>
-          <div class="form-group" ng-show="machine.NetswitchXmpp">
+          <div class="form-group" ng-show="machine.NetswitchType">
             <input type="number" id="machine-netswitch-sensor-port" 
                    class="form-control"
                    placeholder="Sensor Port (mfi only)"
                    ng-model="machine.NetswitchSensorPort">
           </div>
+        </div>
+
+        <div class="col-sm-4">
+          <div class="form-group">
+            <select class="form-control" id="netswitch-type" 
+                    ng-model="machine.NetswitchType">
+              <option value="" selected>Custom Powerswitch</option>
+              <option value="mfi">Ubiquity mFi Powerswitch</option>
+            </select>
+          </div>
+        </div>
         </div>
         
       </div>
@@ -208,7 +219,7 @@
         <label>
           <input type="checkbox"
                  ng-model="machine.NetswitchXmpp">
-          Use mfi switch via XMPP (experimental)
+          Use powerswitch via XMPP (mFis only work via XMPP)
         </label>
       </div>
     </div><!-- -->

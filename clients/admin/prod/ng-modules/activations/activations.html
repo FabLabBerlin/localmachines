@@ -15,13 +15,21 @@
         <th>&nbsp;</th>
         <th>
           <!-- Start date range picker -->
-          <input type="text" class="form-control datepicker" 
-                 id="activations-start-date">
+          <input type="text"
+                 placeholder="YYYY-MM"
+                 class="form-control datepicker" 
+                 id="activations-start-date"
+                 ng-model="activationsStartDate"
+                 ng-change="onFilterChange()">
         </th>
         <th>
           <!-- End date range picker -->
-          <input type="text" class="form-control datepicker"
-                 id="activations-end-date">
+          <input type="text"
+                 placeholder="YYYY-MM"
+                 class="form-control datepicker"
+                 id="activations-end-date"
+                 ng-model="activationsEndDate"
+                 ng-change="onFilterChange()">
         </th>
         <th>
           <!-- Autocomplete input -->
@@ -76,9 +84,92 @@
   <div class="pull-right">
     <button class="btn btn-primary btn-lg"
             ng-disabled="!activations.length"
+            ng-click="createFbDraftsPrompt()">
+      Create Fb Drafts (Experimental)
+    </button>
+
+    <button class="btn btn-primary btn-lg"
+            ng-disabled="!activations.length"
             ng-click="exportSpreadsheet()">
       Export Spreadsheet
     </button>
   </div>
 
 </div> <!-- /container -->
+
+<div ng-show="draftsReport" class="container-fluid">
+  <h1>Result of Fastbill Draft Creation</h1>
+  <h2>Successful Invoice Drafts</h2>
+  <h5>This includes already exported Drafts and users with 0 € bill</h5>
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>E-Mail</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="id in draftsReport.SuccessUids">
+        <td>{{usersById[id].FirstName}} {{usersById[id].LastName}}</td>
+        <td>
+          <a href="/admin/#/users/{{id}}">{{usersById[id].Email}}</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h2>Already exported Drafts</h2>
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>E-Mail</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="id in draftsReport.AlreadyExportedUids">
+        <td>{{usersById[id].FirstName}} {{usersById[id].LastName}}</td>
+        <td>
+          <a href="/admin/#/users/{{id}}">{{usersById[id].Email}}</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h2>Users that had 0 € that month</h2>
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>E-Mail</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="id in draftsReport.EmptyUids">
+        <td>{{usersById[id].FirstName}} {{usersById[id].LastName}}</td>
+        <td>
+          <a href="/admin/#/users/{{id}}">{{usersById[id].Email}}</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h2>Users with errors</h2>
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>E-Mail</th>
+        <th>Error Name</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="e in draftsReport.Errors">
+        <td>{{usersById[e.UserId].FirstName}} {{usersById[e.UserId].LastName}}</td>
+        <td>
+          <a href="/admin/#/users/{{e.UserId}}">{{usersById[e.UserId].Email}}</a>
+        </td>
+        <td>
+          {{e.Problem}}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
