@@ -211,14 +211,13 @@ func createPwResetKey() (string, error) {
 	return fmt.Sprintf("%x", key), err
 }
 
-func AuthForgotPassword(email string) (err error) {
+func AuthForgotPassword(email string) (pwResetKey string, err error) {
 	email = strings.TrimSpace(email)
 	if err = checkEmail(email); err != nil {
 		return
 	}
 	o := orm.NewOrm()
-	pwResetKey, err := createPwResetKey()
-	if err != nil {
+	if pwResetKey, err = createPwResetKey(); err != nil {
 		return
 	}
 	cmd := "UPDATE auth JOIN user ON user_id = user.id SET pw_reset_key = ?, pw_reset_time = ? WHERE email = ?"
@@ -231,7 +230,7 @@ func AuthForgotPassword(email string) (err error) {
 		return
 	}
 	if n == 0 {
-		return fmt.Errorf("no user with email '%v' found", email)
+		return "", fmt.Errorf("no user with email '%v' found", email)
 	}
 	return
 }
