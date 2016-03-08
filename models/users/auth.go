@@ -220,12 +220,22 @@ func AuthForgotPassword(email string) (pwResetKey string, err error) {
 	if pwResetKey, err = createPwResetKey(); err != nil {
 		return
 	}
-	cmd := "UPDATE auth JOIN user ON user_id = user.id SET pw_reset_key = ?, pw_reset_time = ? WHERE email = ?"
-	res, err := o.Raw(cmd, pwResetKey, time.Now(), email).Exec()
-	if err != nil {
+	var us []User
+	u := User{}
+	_, err = o.QueryTable(u.TableName()).
+		Filter("email", email).
+		All(&us)
+	if len(us) != 1 {
 		return
 	}
-	n, err := res.RowsAffected()
+	uid := us[0].Id
+	a := Auth{UserId: uid}
+	if err = o.Read(&a); err != nil {
+		return
+	}
+	a.PwResetKey = pwResetKey
+	a.PwResetTime = time.Now()
+	n, err := o.Update(&a)
 	if err != nil {
 		return
 	}
