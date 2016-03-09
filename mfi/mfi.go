@@ -151,27 +151,24 @@ func (c *Config) getHwAddr() (hwAddr string, err error) {
 }
 
 func (c *Config) finalize() (err error) {
-	shellCmds := `
-cfgmtd -w
-sleep 3
-echo '#!/bin/sh' > /etc/persistent/rc.poststart
-echo >> /etc/persistent/rc.poststart
-echo '/usr/bin/echo 0 > /proc/power/output1' >> /etc/persistent/rc.poststart
-echo '/usr/bin/echo 0 > /proc/power/output2' >> /etc/persistent/rc.poststart
-echo '/usr/bin/echo 0 > /proc/power/output3' >> /etc/persistent/rc.poststart
-echo '/usr/bin/echo 0 > /proc/power/output4' >> /etc/persistent/rc.poststart
-echo '/usr/bin/echo 0 > /proc/power/output5' >> /etc/persistent/rc.poststart
-echo '/usr/bin/echo 0 > /proc/power/output6' >> /etc/persistent/rc.poststart
-chmod a+x /etc/persistent/rc.poststart
-cfgmtd -w -p /etc
-sync
-reboot
+	sshCmds := NewSshCommands()
+	sshCmds.Add("cfgmtd -w")
+	sshCmds.Add("sleep 3")
+	rcPoststart := `#!/bin/sh
+
+/usr/bin/echo 0 > /proc/power/output1
+/usr/bin/echo 0 > /proc/power/output2
+/usr/bin/echo 0 > /proc/power/output3
+/usr/bin/echo 0 > /proc/power/output4
+/usr/bin/echo 0 > /proc/power/output5
+/usr/bin/echo 0 > /proc/power/output6
 	`
-	cmd := exec.Command("ssh", "ubnt@"+c.Host(), shellCmds)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if err = cmd.Run(); err != nil {
-		return fmt.Errorf("cfgmtd and reboot: %v", err)
+	sshCmds.AddFile("/etc/persistent/rc.poststart", rcPoststart)
+	sshCmds.Add("cfgmtd -w -p /etc")
+	sshCmds.Add("sync")
+	sshCmds.Add("reboot")
+	if err := sshCmds.Exec(c.Host()); err != nil {
+		return fmt.Errorf("ssh cmds exec: %v", err)
 	}
 	return
 }

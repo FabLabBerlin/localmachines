@@ -26,7 +26,7 @@ func (s *SshCommands) AddFile(filename, text string) {
 		if strings.Contains(line, "'") {
 			panic("line contains '!!!")
 		}
-		cmd := `echo '` + line + ` >`
+		cmd := `echo '` + line + `' >`
 		if i > 0 {
 			cmd += `>`
 		}
