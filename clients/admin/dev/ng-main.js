@@ -6,6 +6,8 @@
 var app = angular.module('fabsmith', [
   'ngRoute',
   'fabsmith.admin.login',
+  'fabsmith.admin.activation',
+  'fabsmith.admin.activations',
   'fabsmith.admin.api',
   'fabsmith.admin.coworking',
   'fabsmith.admin.coworking.purchase',
@@ -13,7 +15,6 @@ var app = angular.module('fabsmith', [
   'fabsmith.admin.dashboard',
   'fabsmith.admin.mainmenu',
   'fabsmith.admin.user',
-  'fabsmith.admin.activations',
   'fabsmith.admin.machines',
   'fabsmith.admin.machine',
   'fabsmith.admin.memberships',

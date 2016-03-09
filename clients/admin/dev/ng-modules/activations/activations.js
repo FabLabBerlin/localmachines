@@ -247,6 +247,10 @@ app.controller('ActivationsCtrl',
     });
   };
 
+  $scope.edit = function(id) {
+    $location.path('/activations/' + id);
+  };
+
   // We need full machine names for the activation table
   if (!$scope.machines) {
     api.loadMachines(function(resp) {

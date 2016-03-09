@@ -163,8 +163,8 @@ var MachineActions = {
 function endActivation(aid, cb) {
   GlobalActions.showGlobalLoader();
   $.ajax({
-    url: '/api/activations/' + aid,
-    method: 'PUT',
+    url: '/api/activations/' + aid + '/close',
+    method: 'POST',
     data: {
       ac: new Date().getTime()
     },

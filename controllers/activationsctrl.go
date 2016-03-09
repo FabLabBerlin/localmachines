@@ -1,12 +1,15 @@
 package controllers
 
 import (
+	"bytes"
+	"encoding/json"
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/astaxie/beego"
+	"io/ioutil"
 	"time"
 )
 
@@ -73,7 +76,59 @@ func (this *ActivationsController) GetAll() {
 // @Failure	401	Not authorized
 // @router /:aid [get]
 func (this *ActivationsController) Get() {
+	id, err := this.GetInt64(":aid")
+	if err != nil {
+		this.CustomAbort(400, "Bad request")
+	}
 
+	a, err := purchases.GetActivation(id)
+	if err != nil {
+		beego.Error("get activation:", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	this.Data["json"] = a
+	this.ServeJSON()
+}
+
+// @Title Put
+// @Description Update activation
+// @Success 201 {object}
+// @Failure	400	Bad Request
+// @Failure	401	Unauthorized
+// @Failure 500 Internal Server Error
+// @router /:rid [put]
+func (this *ActivationsController) Put() {
+	if !this.IsAdmin() {
+		beego.Error("Unauthorized attempt to update activation")
+		this.CustomAbort(401, "Unauthorized")
+	}
+
+	activation := &purchases.Activation{}
+
+	buf, err := ioutil.ReadAll(this.Ctx.Request.Body)
+	if err != nil {
+		beego.Error("Failed to read all:", err)
+		this.CustomAbort(400, "Failed to read all")
+	}
+	beego.Info("buf:", string(buf))
+	defer this.Ctx.Request.Body.Close()
+
+	data := bytes.NewBuffer(buf)
+
+	dec := json.NewDecoder(data)
+	if err := dec.Decode(&activation.Purchase); err != nil {
+		beego.Error("Failed to decode json:", err)
+		this.CustomAbort(400, "Failed to update Activation")
+	}
+
+	if err := activation.Update(); err != nil {
+		beego.Error("Failed to update activation:", err)
+		this.CustomAbort(500, "Failed to update Activation")
+	}
+
+	this.Data["json"] = activation
+	this.ServeJSON()
 }
 
 // @Title Get Active
@@ -185,7 +240,7 @@ func (this *ActivationsController) Create() {
 // @Success 200 {object} models.StatusResponse
 // @Failure	403	Failed to close activation
 // @Failure 401 Not authorized
-// @router /:aid [put]
+// @router /:aid/close [post]
 func (this *ActivationsController) Close() {
 	aid, err := this.GetInt64(":aid")
 	if err != nil {

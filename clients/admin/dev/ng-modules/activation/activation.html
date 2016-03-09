@@ -1,0 +1,68 @@
+<div id="admin-activation" class="container-fluid">
+
+  <h1>Edit Activation</h1>
+
+  <hr>
+
+ <div class="row">
+
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="activation-machine">Machine</label>
+        <select ng-model="activation.MachineId" id="activation-machine" class="form-control">
+          <option ng-repeat="machine in machines"
+                  value="{{machine.Id}}">
+            {{machine.Name}}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <div class="col-sm-3">
+      <div class="form-group">
+        <label for="activation-start">Start</label>
+        <input type="text" id="activation-start" class="form-control"
+               placeholder="YYYY-MM-DD HH:MM" ng-model="activation.TimeStartLocal">
+      </div>
+    </div>
+    
+    <div class="col-sm-3">
+      <div class="form-group">
+        <label for="activation-end">End</label>
+        <input type="text" id="activation-end" class="form-control"
+               placeholder="YYYY-MM-DD HH:MM" ng-model="activation.TimeEndLocal">
+      </div>
+    </div>
+  
+  </div><!-- /.row -->
+
+
+  <div class="form-group">
+    <label for="activation-user">User</label>
+    <select 
+      ng-model="activation.UserId" 
+      id="activation-user" 
+      class="selectpicker"
+      ng-change="refreshUserPicker()"
+      data-live-search="true"
+      data-width="100%">
+      <option 
+        ng-repeat="user in users"
+        value="{{user.Id}}">
+        {{user.FirstName}} {{user.LastName}} ({{user.Email}})
+      </option>
+    </select>
+  </div>
+
+  <hr>
+
+  <div class="pull-right">
+
+    <button class="btn btn-primary btn-lg"
+            ng-click="save()">
+      <i class="fa fa-save"></i>&nbsp;Save
+    </button>
+
+  </div>
+
+</div> <!-- /container -->

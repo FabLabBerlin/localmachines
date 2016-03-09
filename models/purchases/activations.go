@@ -226,7 +226,6 @@ func CloseActivation(activationId int64, endTime time.Time) error {
 			beego.Error("time end before time start?!")
 		}
 	}
-	activation.Purchase.Quantity = activation.Purchase.quantityFromTimes()
 
 	err = activation.Update()
 	if err != nil {
@@ -247,14 +246,15 @@ func CloseActivation(activationId int64, endTime time.Time) error {
 // existing activation store.
 func (activation *Activation) Update() error {
 	o := orm.NewOrm()
-	num, err := o.Update(&activation.Purchase)
+
+	activation.Purchase.Quantity = activation.Purchase.quantityFromTimes()
+
+	_, err := o.Update(&activation.Purchase)
 
 	if err != nil {
 		beego.Error("Failed to update activation:", err)
 		return fmt.Errorf("Failed to update activation: %v", err)
 	}
-
-	beego.Trace("UpdateActivation: Affected num rows:", num)
 
 	return nil
 }
