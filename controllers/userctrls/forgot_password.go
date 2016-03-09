@@ -85,7 +85,7 @@ func (c *ForgotPassword) ForgotPassword() {
 	if err != nil {
 		beego.Error("Error executing forgot password mail template:", err)
 	}
-	if err := mail.Send(addr, subject, message); err != nil {
+	if err := mail.Send(addr, subject, buf.String()); err != nil {
 		beego.Error("Error sending wrong forgot password mail:", err)
 	}
 	c.ServeJSON()
