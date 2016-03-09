@@ -67,9 +67,6 @@ func (c *Config) Run() (err error) {
 	if err = c.generate(); err != nil {
 		return fmt.Errorf("generate: %v", err)
 	}
-	fmt.Printf("\nWhen asked for an SSH password, just enter '%v'\n\nPress [enter] to continue...\n", SSH_INITIAL_PASSWORD)
-	var tmp string
-	fmt.Scanln(&tmp)
 	if err = c.scp(); err != nil {
 		return fmt.Errorf("scp: %v", err)
 	}
@@ -119,13 +116,13 @@ func (c *Config) generateFromTemplate(templateText string) (resultFilename strin
 }
 
 func (c *Config) scp() (err error) {
-	cmd := exec.Command("scp", c.SystemCfgFilename, "ubnt@"+c.Host()+":/tmp/system.cfg")
+	cmd := exec.Command("sshpass", "-p", "ubnt", "scp", "-o", "UserKnownHostsFile=/dev/null", "-o", "StrictHostKeyChecking=no", c.SystemCfgFilename, "ubnt@"+c.Host()+":/tmp/system.cfg")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err = cmd.Run(); err != nil {
 		return fmt.Errorf("scp system.cfg: %v", err)
 	}
-	cmd = exec.Command("scp", c.WlanOverwriteFilename, "ubnt@"+c.Host()+":/tmp/wlan_overwrite")
+	cmd = exec.Command("sshpass", "-p", "ubnt", "scp", "-o", "UserKnownHostsFile=/dev/null", "-o", "StrictHostKeyChecking=no", c.WlanOverwriteFilename, "ubnt@"+c.Host()+":/tmp/wlan_overwrite")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err = cmd.Run(); err != nil {
@@ -135,7 +132,7 @@ func (c *Config) scp() (err error) {
 }
 
 func (c *Config) getHwAddr() (hwAddr string, err error) {
-	cmd := exec.Command("ssh", "ubnt@"+c.Host(), "ifconfig | grep wifi0")
+	cmd := exec.Command("sshpass", "-p", "ubnt", "ssh", "-o", "UserKnownHostsFile=/dev/null", "-o", "StrictHostKeyChecking=no", "ubnt@"+c.Host(), "ifconfig | grep wifi0")
 	buf := bytes.NewBufferString("")
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr

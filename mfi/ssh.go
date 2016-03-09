@@ -40,12 +40,14 @@ func (s *SshCommands) AddFile(filename, text string) {
 // We don't want SSH to complain about that: http://bit.ly/1Os4sx5
 func (s *SshCommands) Exec(host string) (err error) {
 	arg := []string{
+		"-p", "ubnt",
+		"ssh",
 		"-o", "UserKnownHostsFile=/dev/null",
 		"-o", "StrictHostKeyChecking=no",
 		"ubnt@" + host,
 		strings.Join(s.cmds, "\n"),
 	}
-	cmd := exec.Command("ssh", arg...)
+	cmd := exec.Command("sshpass", arg...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
