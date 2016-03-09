@@ -96,13 +96,15 @@ func (nss *NetSwitches) fetch(client *http.Client) (err error) {
 	// Make sure there are no duplicate combinations Netswitch Host + SensorPort
 	hostsSensorPorts := make(map[string]bool)
 	for _, ns := range nss.nss {
-		key := fmt.Sprintf("%v -> %v", ns.NetswitchHost, ns.NetswitchSensorPort)
-		if _, ok := hostsSensorPorts[key]; ok {
-			log.Printf("duplicate combination host sensor port: %v",
-				ns.NetswitchHost, ns.NetswitchSensorPort)
-			return ErrDuplicateCombinationHostSensorPort
+		if ns.NetswitchType != machine.NETSWITCH_TYPE_CUSTOM {
+			key := fmt.Sprintf("%v -> %v", ns.NetswitchHost, ns.NetswitchSensorPort)
+			if _, ok := hostsSensorPorts[key]; ok {
+				log.Printf("duplicate combination host sensor port: %v",
+					ns.NetswitchHost, ns.NetswitchSensorPort)
+				return ErrDuplicateCombinationHostSensorPort
+			}
+			hostsSensorPorts[key] = true
 		}
-		hostsSensorPorts[key] = true
 	}
 	return
 }
