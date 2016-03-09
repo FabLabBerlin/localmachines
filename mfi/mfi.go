@@ -184,6 +184,7 @@ func (c *Config) finalize() (err error) {
 /usr/bin/echo 0 > /proc/power/output6
 	`
 	sshCmds.AddFile("/etc/persistent/rc.poststart", rcPoststart)
+	sshCmds.Add("chmod a+x /etc/persistent/rc.poststart")
 	sshCmds.Add("cfgmtd -w -p /etc")
 	sshCmds.Add("sync")
 	sshCmds.Add("reboot")
