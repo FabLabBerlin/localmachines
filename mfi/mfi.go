@@ -27,8 +27,9 @@ import (
 
 const (
 	SSH_INITIAL_PASSWORD = "ubnt"
-	SSH_PASSWORD_HASH    = "KQiBBQ7dx8sx2" // = hash("ubnt")
-	TEMPFILE_PREFIX      = "mfi_deploy"
+	// http://blog.vucica.net/2014/08/mfi-mpower-basic-use-without-cloud-and-controller.html
+	SSH_PASSWORD_HASH = "KQiBBQ7dx8sx2" // = hash("my_password")
+	TEMPFILE_PREFIX   = "mfi_deploy"
 )
 
 type Config struct {
@@ -64,6 +65,15 @@ func (c *Config) Host() string {
 }
 
 func (c *Config) Run() (err error) {
+	if c.WifiPassword, err = c.getWifiPw(); err == nil {
+		log.Printf("Wifi password automatically obtained")
+	} else {
+		log.Printf("Cannot obtain Wifi password automatically")
+		fmt.Printf("What is the Wifi password?\n")
+		if _, err = fmt.Scanln(&c.WifiPassword); err != nil {
+			return fmt.Errorf("scan ln: %v", err)
+		}
+	}
 	if err = c.generate(); err != nil {
 		return fmt.Errorf("generate: %v", err)
 	}
@@ -81,11 +91,24 @@ func (c *Config) Run() (err error) {
 	return
 }
 
-func (c *Config) generate() (err error) {
-	fmt.Printf("What is the Wifi password?\n")
-	if _, err = fmt.Scanln(&c.WifiPassword); err != nil {
-		return fmt.Errorf("scan ln: %v", err)
+func (c *Config) getWifiPw() (hwAddr string, err error) {
+	cmd := exec.Command("sshpass", "-p", "ubnt", "ssh", "-o", "UserKnownHostsFile=/dev/null", "-o", "StrictHostKeyChecking=no", "ubnt@"+c.Host(), "cat /etc/wpasupplicant_WPA-PSK.conf | grep psk")
+	buf := bytes.NewBufferString("")
+	cmd.Stdout = buf
+	cmd.Stderr = os.Stderr
+	if err = cmd.Run(); err != nil {
+		return "", fmt.Errorf("ifconfig: %v", err)
 	}
+	s := strings.TrimSpace(buf.String())
+	if len(s) < 8 {
+		return "", fmt.Errorf("unexpected ifconfig output: '%v'", s)
+	}
+	s = s[len(`psk="`):]
+	s = s[:len(s)-len(`"`)]
+	return s, nil
+}
+
+func (c *Config) generate() (err error) {
 	c.SystemCfgFilename, err = c.generateFromTemplate(SYSTEM_CFG)
 	if err != nil {
 		return fmt.Errorf("generate from system.cfg: %v", err)
