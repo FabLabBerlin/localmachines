@@ -13,8 +13,8 @@ app.config(['$routeProvider', function($routeProvider) {
 }]); // app.config
 
 app.controller('MachineCtrl', 
- ['$scope', '$routeParams', '$http', '$location', '$filter', 'randomToken', 
- function($scope, $routeParams, $http, $location, $filter, randomToken) {
+ ['$scope', '$routeParams', '$http', '$location', '$filter', '$timeout', 'randomToken',
+ function($scope, $routeParams, $http, $location, $filter, $timeout, randomToken) {
 
   $scope.machine = {
     Id: $routeParams.machineId
@@ -24,6 +24,7 @@ app.controller('MachineCtrl',
   $scope.machineImageNewFile = undefined;
   $scope.machineImageNewFileName = undefined;
   $scope.machineImageNewFileSize = undefined;
+  $scope.netswitchConfigStatus = undefined;
 
   $scope.loadMachine = function(machineId) {
     $http({
@@ -149,6 +150,36 @@ app.controller('MachineCtrl',
     .error(function(){
       toastr.error('Uploading machine image failed');
     });
+  };
+
+  function configCountdown(seconds, cb) {
+    if (seconds >= 0) {
+      $timeout(function() {
+        $scope.netswitchConfigStatus = 'Updating config... (' + seconds + ' s)';
+        configCountdown(seconds - 1, cb);
+      }, 1000);
+    } else {
+      cb();
+    }
+  }
+
+  $scope.applyConfig = function() {
+    if (confirm('Do you really want to continue?')) {
+      $http({
+        method: 'POST',
+        url: '/api/machines/' + $scope.machine.Id + '/apply_config'
+      })
+      .success(function(){
+        toastr.success('Updating config...');
+        configCountdown(180, function() {
+          toastr.success('Configuration pushed.  Switch will be usable in about 5 minutes!');
+          $scope.netswitchConfigStatus = undefined;
+        });
+      })
+      .error(function(){
+        toastr.error('An Error occurred.  Please try again later.');
+      });
+    }
   };
 
 }]); // app.controller

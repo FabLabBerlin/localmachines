@@ -153,11 +153,11 @@
   <!-- NetSwitch -->
   <div class="row">
 
-    <div class="col-sm-9">
+    <div class="col-sm-12">
       <label for="machine-hexabus-ip">NetSwitch Config</label>
       <div class="row">
 
-        <div class="col-sm-4">
+        <div class="col-sm-3">
           <div class="form-group" ng-hide="machine.NetswitchType">
             <input type="text" id="machine-netswitch-url-on" 
                    class="form-control"
@@ -172,7 +172,7 @@
           </div>
         </div>
 
-        <div class="col-sm-4">
+        <div class="col-sm-3">
           <div class="form-group" ng-hide="machine.NetswitchType">
             <input type="text" id="machine-netswitch-url-off" 
                    class="form-control"
@@ -187,13 +187,32 @@
           </div>
         </div>
 
-        <div class="col-sm-4">
+        <div class="col-sm-3">
           <div class="form-group">
             <select class="form-control" id="netswitch-type" 
                     ng-model="machine.NetswitchType">
               <option value="" selected>Custom Powerswitch</option>
               <option value="mfi">Ubiquity mFi Powerswitch</option>
             </select>
+          </div>
+        </div>
+
+        <div class="col-sm-3">
+          <div class="form-group">
+            <button class="btn btn-danger btn-block"
+                    ng-click="applyConfig()"
+                    ng-show="machine.NetswitchType === 'mfi' && !netswitchConfigStatus"
+                    type="button">
+              Apply Config
+            </button>
+            <button class="btn btn-danger btn-block"
+                    ng-click="applyConfig()"
+                    ng-disabled="true"
+                    ng-show="netswitchConfigStatus"
+                    type="button">
+              <i class="fa fa-refresh fa-spin"></i>
+              {{netswitchConfigStatus}}
+            </button>
           </div>
         </div>
         </div>

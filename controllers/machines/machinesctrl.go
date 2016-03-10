@@ -6,11 +6,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/controllers"
+	"github.com/FabLabBerlin/localmachines/lib/mfi"
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 	"strings"
+	"time"
 )
 
 type Controller struct {
@@ -449,5 +451,50 @@ func (this *Controller) Search() {
 	}
 
 	this.Data["json"] = results
+	this.ServeJSON()
+}
+
+// @Title ApplyConfig
+// @Description Apply custom switch config
+// @Param	mid	path	int	true	"Machine ID"
+// @Success 200 string ok
+// @Failure	400	Bad Request
+// @Failure	401	Not authorized
+// @Failure	500 Internal Server Error
+// @router /:mid/apply_config [post]
+func (this *Controller) ApplyConfig() {
+	_, authorized := this.GetLocIdAdmin()
+	if !authorized {
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	mid, err := this.GetInt64(":mid")
+	if err != nil {
+		beego.Error("Failed to get :mid variable")
+		this.CustomAbort(403, "Failed to get machine")
+	}
+
+	m, err := machine.GetMachine(mid)
+	if err != nil {
+		beego.Error("Failed to get :mid variable")
+		this.CustomAbort(403, "Failed to get machine")
+	}
+
+	cfg := mfi.Config{
+		Host: m.NetswitchHost,
+	}
+	ch := make(chan error, 1)
+	go func() {
+		ch <- cfg.Run()
+		beego.Info("Config done!")
+	}()
+	select {
+	case err := <-ch:
+		beego.Error("Error configuring:", err)
+		this.CustomAbort(500, "Internal Server Error")
+		break
+	case <-time.After(2 * time.Second):
+		break
+	}
 	this.ServeJSON()
 }
