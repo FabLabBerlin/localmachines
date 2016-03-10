@@ -40,7 +40,7 @@ type Config struct {
 func (c *Config) Run() (err error) {
 	if c.WifiSSID == "" {
 		if c.WifiSSID, err = c.getWifiSsid(); err == nil {
-			log.Printf("Wifi SSID automatically obtained")
+			log.Printf("Wifi SSID (%v) automatically obtained", c.WifiSSID)
 		} else {
 			return ErrWifiSsidNotPresent
 		}
@@ -70,7 +70,7 @@ func (c *Config) Run() (err error) {
 }
 
 func (c *Config) getWifiSsid() (hwAddr string, err error) {
-	cmd := exec.Command("sshpass", "-p", "ubnt", "ssh", "-o", "UserKnownHostsFile=/dev/null", "-o", "StrictHostKeyChecking=no", "ubnt@"+c.Host, "cat /etc/wpasupplicant_WPA-PSK.conf | grep ssid")
+	cmd := exec.Command("sshpass", "-p", "ubnt", "ssh", "-o", "UserKnownHostsFile=/dev/null", "-o", "StrictHostKeyChecking=no", "ubnt@"+c.Host, "cat /etc/wpasupplicant_WPA-PSK.conf | grep ssid | grep -v scan_ssid")
 	buf := bytes.NewBufferString("")
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
