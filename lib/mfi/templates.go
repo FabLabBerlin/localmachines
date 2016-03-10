@@ -1,4 +1,4 @@
-package main
+package mfi
 
 const SYSTEM_CFG = `
 aaa.status=disabled
