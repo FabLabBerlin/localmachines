@@ -33,13 +33,26 @@ func usage(ethernetConfig bool) {
 func main() {
 	ethernetConfig := flag.Bool("ethConfig", false, "Connect Switch to computer via Ethernet Cable (be on 192.168.1.x)")
 	netmask := flag.String("network", "172.26.0.128/24", "Wifi network's netmask on which we auto discover the switch")
-	ssid := flag.String("ssid", "FabLab-M", "Wifi SSID")
+	ssid := flag.String("ssid", "", "Wifi SSID")
+	ip := flag.String("ip", "", "powerswitch ip")
 	wifiPwManually := flag.Bool("wifiPwManual", false, "Enter Wifi password manually")
 	flag.Parse()
+
+	fullAutoConf := *ssid == "" && !*wifiPwManually
 
 	c := &mfi.Config{
 		EthernetConfig: *ethernetConfig,
 		WifiSSID:       *ssid,
+	}
+
+	if *ip == "" {
+		if c.EthernetConfig {
+			c.Host = "192.168.1.20"
+		} else {
+			c.Host = "192.168.2.20"
+		}
+	} else {
+		c.Host = *ip
 	}
 
 	if *wifiPwManually {
@@ -52,15 +65,22 @@ func main() {
 	if err := c.Run(); err == nil {
 		fmt.Printf("Your switch is properly configured and its hardware")
 		fmt.Printf(" address is: '%v'\n", c.HwAddr)
-		fmt.Printf("Wait until the LED starts blinking blue, connect to the")
-		fmt.Printf(" normal Wifi and then press enter...\n")
-		var tmp string
-		fmt.Scanln(&tmp)
-		if ip, err := c.FindDeviceOn(*netmask); err == nil {
-			fmt.Printf("Successfully discovered device: %v\n", ip.String())
-		} else {
-			fmt.Printf("Unable to find device on %v\n.", *netmask)
+		if !fullAutoConf {
+			fmt.Printf("Wait until the LED starts blinking blue, connect to the")
+			fmt.Printf(" normal Wifi and then press enter...\n")
+			var tmp string
+			fmt.Scanln(&tmp)
+			if ip, err := c.FindDeviceOn(*netmask); err == nil {
+				fmt.Printf("Successfully discovered device: %v\n", ip.String())
+			} else {
+				fmt.Printf("Unable to find device on %v\n.", *netmask)
+			}
 		}
+	} else if err == mfi.ErrWifiSsidNotPresent {
+
+		fmt.Printf("Wifi SSID not present, either configure via cmd line\n")
+		fmt.Printf("or use the automatic Ubiquitiy web configuration.\n")
+		flag.Usage()
 	} else if err == mfi.ErrWifiPasswordNotPresent {
 		fmt.Printf("Wifi password not present, either configure via cmd line\n")
 		fmt.Printf("or use the automatic Ubiquitiy web configuration.\n")

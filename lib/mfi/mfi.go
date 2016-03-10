@@ -23,6 +23,7 @@ const (
 	TEMPFILE_PREFIX   = "mfi_deploy"
 )
 
+var ErrWifiSsidNotPresent = errors.New("Wifi SSID not present")
 var ErrWifiPasswordNotPresent = errors.New("Wifi password not present")
 
 type Config struct {
@@ -33,21 +34,23 @@ type Config struct {
 	WifiPassword          string
 	SshPasswordHash       string
 	HwAddr                string
-}
-
-func (c *Config) Host() string {
-	if c.EthernetConfig {
-		return "192.168.1.20"
-	} else {
-		return "192.168.2.20"
-	}
+	Host                  string
 }
 
 func (c *Config) Run() (err error) {
-	if c.WifiPassword, err = c.getWifiPw(); err == nil {
-		log.Printf("Wifi password automatically obtained")
-	} else {
-		return ErrWifiPasswordNotPresent
+	if c.WifiSSID == "" {
+		if c.WifiSSID, err = c.getWifiSsid(); err == nil {
+			log.Printf("Wifi SSID automatically obtained")
+		} else {
+			return ErrWifiSsidNotPresent
+		}
+	}
+	if c.WifiPassword == "" {
+		if c.WifiPassword, err = c.getWifiPw(); err == nil {
+			log.Printf("Wifi password automatically obtained")
+		} else {
+			return ErrWifiPasswordNotPresent
+		}
 	}
 	if err = c.generate(); err != nil {
 		return fmt.Errorf("generate: %v", err)
@@ -66,8 +69,25 @@ func (c *Config) Run() (err error) {
 	return
 }
 
+func (c *Config) getWifiSsid() (hwAddr string, err error) {
+	cmd := exec.Command("sshpass", "-p", "ubnt", "ssh", "-o", "UserKnownHostsFile=/dev/null", "-o", "StrictHostKeyChecking=no", "ubnt@"+c.Host, "cat /etc/wpasupplicant_WPA-PSK.conf | grep ssid")
+	buf := bytes.NewBufferString("")
+	cmd.Stdout = buf
+	cmd.Stderr = os.Stderr
+	if err = cmd.Run(); err != nil {
+		return "", fmt.Errorf("ifconfig: %v", err)
+	}
+	s := strings.TrimSpace(buf.String())
+	if len(s) < 8 {
+		return "", fmt.Errorf("unexpected ifconfig output: '%v'", s)
+	}
+	s = s[len(`ssid="`):]
+	s = s[:len(s)-len(`"`)]
+	return s, nil
+}
+
 func (c *Config) getWifiPw() (hwAddr string, err error) {
-	cmd := exec.Command("sshpass", "-p", "ubnt", "ssh", "-o", "UserKnownHostsFile=/dev/null", "-o", "StrictHostKeyChecking=no", "ubnt@"+c.Host(), "cat /etc/wpasupplicant_WPA-PSK.conf | grep psk")
+	cmd := exec.Command("sshpass", "-p", "ubnt", "ssh", "-o", "UserKnownHostsFile=/dev/null", "-o", "StrictHostKeyChecking=no", "ubnt@"+c.Host, "cat /etc/wpasupplicant_WPA-PSK.conf | grep psk")
 	buf := bytes.NewBufferString("")
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
@@ -114,13 +134,13 @@ func (c *Config) generateFromTemplate(templateText string) (resultFilename strin
 }
 
 func (c *Config) scp() (err error) {
-	cmd := exec.Command("sshpass", "-p", "ubnt", "scp", "-o", "UserKnownHostsFile=/dev/null", "-o", "StrictHostKeyChecking=no", c.SystemCfgFilename, "ubnt@"+c.Host()+":/tmp/system.cfg")
+	cmd := exec.Command("sshpass", "-p", "ubnt", "scp", "-o", "UserKnownHostsFile=/dev/null", "-o", "StrictHostKeyChecking=no", c.SystemCfgFilename, "ubnt@"+c.Host+":/tmp/system.cfg")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err = cmd.Run(); err != nil {
 		return fmt.Errorf("scp system.cfg: %v", err)
 	}
-	cmd = exec.Command("sshpass", "-p", "ubnt", "scp", "-o", "UserKnownHostsFile=/dev/null", "-o", "StrictHostKeyChecking=no", c.WlanOverwriteFilename, "ubnt@"+c.Host()+":/tmp/wlan_overwrite")
+	cmd = exec.Command("sshpass", "-p", "ubnt", "scp", "-o", "UserKnownHostsFile=/dev/null", "-o", "StrictHostKeyChecking=no", c.WlanOverwriteFilename, "ubnt@"+c.Host+":/tmp/wlan_overwrite")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err = cmd.Run(); err != nil {
@@ -130,7 +150,7 @@ func (c *Config) scp() (err error) {
 }
 
 func (c *Config) getHwAddr() (hwAddr string, err error) {
-	cmd := exec.Command("sshpass", "-p", "ubnt", "ssh", "-o", "UserKnownHostsFile=/dev/null", "-o", "StrictHostKeyChecking=no", "ubnt@"+c.Host(), "ifconfig | grep wifi0")
+	cmd := exec.Command("sshpass", "-p", "ubnt", "ssh", "-o", "UserKnownHostsFile=/dev/null", "-o", "StrictHostKeyChecking=no", "ubnt@"+c.Host, "ifconfig | grep wifi0")
 	buf := bytes.NewBufferString("")
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
@@ -163,7 +183,7 @@ func (c *Config) finalize() (err error) {
 	sshCmds.Add("cfgmtd -w -p /etc")
 	sshCmds.Add("sync")
 	sshCmds.Add("reboot")
-	if err := sshCmds.Exec(c.Host()); err != nil {
+	if err := sshCmds.Exec(c.Host); err != nil {
 		return fmt.Errorf("ssh cmds exec: %v", err)
 	}
 	return
