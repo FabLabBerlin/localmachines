@@ -16,9 +16,12 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"sync"
 )
 
 type NetSwitch struct {
+	muChInit sync.Mutex
+	chSingle chan int
 	machine.Machine
 	On bool
 }
@@ -89,6 +92,23 @@ func (ns *NetSwitch) String() string {
 }
 
 func (ns *NetSwitch) ApplyConfig(updates chan<- string) (err error) {
+	ns.muChInit.Lock()
+	if ns.chSingle == nil {
+		log.Printf("make(chan int, 1)")
+		ns.chSingle = make(chan int, 1)
+		ns.chSingle <- 1
+	} else {
+		log.Printf("ns.chSingle != nil")
+	}
+	ns.muChInit.Unlock()
+	select {
+	case <-ns.chSingle:
+		log.Printf("not running")
+		break
+	default:
+		log.Println("apply config already running")
+		return fmt.Errorf("apply config already running")
+	}
 	go func() {
 		cfg := mfi.Config{
 			Host: ns.NetswitchHost,
@@ -96,6 +116,7 @@ func (ns *NetSwitch) ApplyConfig(updates chan<- string) (err error) {
 		if err := cfg.Run(); err != nil {
 			updates <- err.Error()
 		}
+		ns.chSingle <- 1
 	}()
 	return
 }
