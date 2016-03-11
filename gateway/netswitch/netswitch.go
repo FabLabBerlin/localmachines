@@ -10,6 +10,7 @@ package netswitch
 
 import (
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/lib/mfi"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"log"
 	"net/http"
@@ -85,6 +86,18 @@ func (ns *NetSwitch) UrlOff() string {
 func (ns *NetSwitch) String() string {
 	return fmt.Sprintf("(NetSwitch MachineId=%v On=%v)",
 		ns.Id, ns.On)
+}
+
+func (ns *NetSwitch) ApplyConfig(updates chan<- string) (err error) {
+	go func() {
+		cfg := mfi.Config{
+			Host: ns.NetswitchHost,
+		}
+		if err := cfg.Run(); err != nil {
+			updates <- err.Error()
+		}
+	}()
+	return
 }
 
 //{"sensors":[{"output":1,"power":0.0,"energy":0.0,"enabled":0,"current":0.0,"voltage":233.546874046,"powerfactor":0.0,"relay":1,"lock":0}],"status":"success"}

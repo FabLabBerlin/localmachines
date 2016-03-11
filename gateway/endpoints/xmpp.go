@@ -55,6 +55,12 @@ func (x *Xmpp) dispatch(msg xmpp.Message) (err error) {
 		return x.ns.SetOn(msg.Data.MachineId, cmd == "on")
 	case "reinit":
 		return x.reinitGateway()
+	case "apply_config":
+		log.Printf("apply_config!!!")
+		updates := make(chan string, 10)
+		err := x.ns.ApplyConfig(msg.Data.MachineId, updates)
+		log.Printf("dispatch:returning err=%v", err)
+		return err
 	}
 	return fmt.Errorf("invalid cmd: %v", cmd)
 }

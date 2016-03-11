@@ -6,13 +6,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/controllers"
-	"github.com/FabLabBerlin/localmachines/lib/mfi"
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 	"strings"
-	"time"
 )
 
 type Controller struct {
@@ -485,21 +483,9 @@ func (this *Controller) ApplyConfig() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	cfg := mfi.Config{
-		Host: m.NetswitchHost,
-	}
-	ch := make(chan error, 1)
-	go func() {
-		ch <- cfg.Run()
-		beego.Info("Config done!")
-	}()
-	select {
-	case err := <-ch:
+	if err := m.NetswitchApplyConfig(); err != nil {
 		beego.Error("Error configuring:", err)
 		this.CustomAbort(500, "Internal Server Error")
-		break
-	case <-time.After(2 * time.Second):
-		break
 	}
 	this.ServeJSON()
 }
