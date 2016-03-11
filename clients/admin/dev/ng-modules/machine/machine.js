@@ -25,6 +25,11 @@ app.controller('MachineCtrl',
   $scope.machineImageNewFileName = undefined;
   $scope.machineImageNewFileSize = undefined;
   $scope.netswitchConfigStatus = undefined;
+  $scope.unsavedChanges = false;
+
+  $scope.registerUnsavedChange = function() {
+    $scope.unsavedChanges = true;
+  };
 
   $scope.loadMachine = function(machineId) {
     $http({
@@ -63,6 +68,7 @@ app.controller('MachineCtrl',
   $scope.loadMachine($scope.machine.Id);
 
   $scope.updateMachine = function() {
+    $scope.unsavedChanges = false;
 
     // Make a clone of the machine model
     var machine = _.clone($scope.machine);
@@ -164,6 +170,10 @@ app.controller('MachineCtrl',
   }
 
   $scope.applyConfig = function() {
+    if ($scope.unsavedChanges) {
+      toastr.error('Please save before continuing.');
+      return;
+    }
     if (confirm('Do you really want to continue?')) {
       $http({
         method: 'POST',
