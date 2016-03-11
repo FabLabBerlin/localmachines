@@ -135,8 +135,10 @@ li {
   height: 100%;
   background: rgba(0, 0, 0, 0.25);
 }
+.spinner {
+  font-size: 50px;
+}
 #loader-global .spinner {
-  background: #090909;
   display: table-cell;
   width: 50px;
   height: 50px;
@@ -145,14 +147,11 @@ li {
   top: 50%;
   margin-left: -25px;
   margin-top: -25px;
-  border-radius: 25px;
 }
-#loader-global .spinner img {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  margin-left: -12px;
-  margin-top: -12px;
+.loader-local .spinner {
+  padding: 50px 0;
+  text-align: center;
+  width: 100%;
 }
 /* Bootstrap overrides */
 .btn {

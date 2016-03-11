@@ -26,6 +26,7 @@ app.controller('MachineCtrl',
   $scope.machineImageNewFileSize = undefined;
   $scope.netswitchConfigStatus = undefined;
   $scope.unsavedChanges = false;
+  $scope.loading = false;
 
   $scope.registerUnsavedChange = function() {
     $scope.unsavedChanges = true;
@@ -175,6 +176,7 @@ app.controller('MachineCtrl',
       return;
     }
     if (confirm('Do you really want to continue?')) {
+      $scope.loading = true;
       $http({
         method: 'POST',
         url: '/api/machines/' + $scope.machine.Id + '/apply_config',
@@ -183,6 +185,7 @@ app.controller('MachineCtrl',
         }
       })
       .success(function(){
+        $scope.loading = false;
         toastr.success('Updating config...');
         configCountdown(180, function() {
           toastr.success('Configuration pushed.  Switch will be usable in about 5 minutes!');
@@ -190,6 +193,7 @@ app.controller('MachineCtrl',
         });
       })
       .error(function(){
+        $scope.loading = false;
         toastr.error('An Error occurred.  Please try again later.');
       });
     }
