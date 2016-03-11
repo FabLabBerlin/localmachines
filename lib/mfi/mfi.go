@@ -37,7 +37,7 @@ type Config struct {
 	Host                  string
 }
 
-func (c *Config) Run() (err error) {
+func (c *Config) RunStep1WifiCredentials() (err error) {
 	if c.WifiSSID == "" {
 		if c.WifiSSID, err = c.getWifiSsid(); err == nil {
 			log.Printf("Wifi SSID (%v) automatically obtained", c.WifiSSID)
@@ -52,6 +52,10 @@ func (c *Config) Run() (err error) {
 			return ErrWifiPasswordNotPresent
 		}
 	}
+	return
+}
+
+func (c *Config) RunStep2PushConfig() (err error) {
 	if err = c.generate(); err != nil {
 		return fmt.Errorf("generate: %v", err)
 	}

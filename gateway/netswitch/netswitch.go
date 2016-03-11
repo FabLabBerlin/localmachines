@@ -109,11 +109,15 @@ func (ns *NetSwitch) ApplyConfig(updates chan<- string) (err error) {
 		log.Println("apply config already running")
 		return fmt.Errorf("apply config already running")
 	}
+	cfg := mfi.Config{
+		Host: ns.NetswitchHost,
+	}
+	if err := cfg.RunStep1WifiCredentials(); err != nil {
+		ns.chSingle <- 1
+		return fmt.Errorf("step 1: error obtaining wifi credentials: %v", err)
+	}
 	go func() {
-		cfg := mfi.Config{
-			Host: ns.NetswitchHost,
-		}
-		if err := cfg.Run(); err != nil {
+		if err := cfg.RunStep2PushConfig(); err != nil {
 			updates <- err.Error()
 		}
 		ns.chSingle <- 1

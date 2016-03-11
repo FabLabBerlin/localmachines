@@ -62,7 +62,11 @@ func main() {
 		}
 	}
 
-	if err := c.Run(); err == nil {
+	if err := c.RunStep1WifiCredentials(); err != nil {
+		log.Fatalf("error obtaining wifi credentials: %v", err)
+	}
+
+	if err := c.RunStep2PushConfig(); err == nil {
 		fmt.Printf("Your switch is properly configured and its hardware")
 		fmt.Printf(" address is: '%v'\n", c.HwAddr)
 		if !fullAutoConf {
