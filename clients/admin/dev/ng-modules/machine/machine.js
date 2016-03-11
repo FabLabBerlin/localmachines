@@ -13,8 +13,8 @@ app.config(['$routeProvider', function($routeProvider) {
 }]); // app.config
 
 app.controller('MachineCtrl', 
- ['$scope', '$routeParams', '$http', '$location', '$filter', '$timeout', 'randomToken',
- function($scope, $routeParams, $http, $location, $filter, $timeout, randomToken) {
+ ['$scope', '$cookies', '$routeParams', '$http', '$location', '$filter', '$timeout', 'randomToken',
+ function($scope, $cookies, $routeParams, $http, $location, $filter, $timeout, randomToken) {
 
   $scope.machine = {
     Id: $routeParams.machineId
@@ -167,7 +167,10 @@ app.controller('MachineCtrl',
     if (confirm('Do you really want to continue?')) {
       $http({
         method: 'POST',
-        url: '/api/machines/' + $scope.machine.Id + '/apply_config'
+        url: '/api/machines/' + $scope.machine.Id + '/apply_config',
+        data: {
+          location: $cookies.locationId
+        }
       })
       .success(function(){
         toastr.success('Updating config...');

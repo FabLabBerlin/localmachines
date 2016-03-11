@@ -463,7 +463,7 @@ func (this *Controller) Search() {
 // @Failure	500 Internal Server Error
 // @router /:mid/apply_config [post]
 func (this *Controller) ApplyConfig() {
-	_, authorized := this.GetLocIdAdmin()
+	locId, authorized := this.GetLocIdAdmin()
 	if !authorized {
 		this.CustomAbort(401, "Not authorized")
 	}
@@ -478,6 +478,11 @@ func (this *Controller) ApplyConfig() {
 	if err != nil {
 		beego.Error("Failed to get :mid variable")
 		this.CustomAbort(403, "Failed to get machine")
+	}
+
+	if m.LocationId != locId {
+		beego.Error("Wrong location id")
+		this.CustomAbort(401, "Not authorized")
 	}
 
 	cfg := mfi.Config{
