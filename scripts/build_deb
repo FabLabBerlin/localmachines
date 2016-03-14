@@ -41,6 +41,11 @@ function setupDEBIAN {
 
 	mkdir -p $targetDir/DEBIAN
 	cp $sourceDir/conffiles $targetDir/DEBIAN/
+	if [ -e $sourceDir/postinst ]
+	then
+		echo "Copying postinst file for $sourceDir"
+		cp $sourceDir/postinst $targetDir/DEBIAN/
+	fi
 
 	if [ "$architecture" = "amd64" ]
 	then
