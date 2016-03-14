@@ -3,8 +3,6 @@ var MachineActions = require('../../../actions/MachineActions');
 var React = require('react');
 var reactor = require('../../../reactor');
 var Timer = require('./Timer');
-var ForceSwitchOn = require('./ForceSwitchOn');
-var ForceSwitchOff = require('./ForceSwitchOff');
 
 
 var UnavailableMachine = React.createClass({
@@ -73,18 +71,6 @@ var UnavailableMachine = React.createClass({
               <tr>
                 <td rowSpan="2">
                   {startStopButton}
-                </td>
-                <td className="force-button-table-cell">
-                  {this.props.isStaff ? (
-                    <ForceSwitchOn force={this.props.force}/>
-                  ) : ''}
-                </td>
-              </tr>
-              <tr>
-                <td className="force-button-table-cell">
-                  {this.props.isStaff ? (
-                    <ForceSwitchOff force={this.props.force}/>
-                  ) : ''}
                 </td>
               </tr>
             </table>

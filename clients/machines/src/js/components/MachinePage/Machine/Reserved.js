@@ -2,8 +2,6 @@ var getters = require('../../../getters');
 var MachineActions = require('../../../actions/MachineActions');
 var React = require('react');
 var reactor = require('../../../reactor');
-var ForceSwitchOn = require('./ForceSwitchOn');
-var ForceSwitchOff = require('./ForceSwitchOff');
 
 
 var ReservedMachine = React.createClass({
@@ -97,18 +95,6 @@ var ReservedMachine = React.createClass({
               <tr>
                 <td rowSpan="2">
                   {startStopButton}
-                </td>
-                <td className="force-button-table-cell">
-                  {this.props.isStaff ? (
-                    <ForceSwitchOn force={this.props.force}/>
-                  ) : ''}
-                </td>
-              </tr>
-              <tr>
-                <td className="force-button-table-cell">
-                  {this.props.isStaff ? (
-                    <ForceSwitchOff force={this.props.force}/>
-                  ) : ''}
                 </td>
               </tr>
             </table>

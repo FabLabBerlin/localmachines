@@ -1,6 +1,4 @@
 var React = require('react');
-var ForceSwitchOn = require('./ForceSwitchOn');
-var ForceSwitchOff = require('./ForceSwitchOff');
 var MachineActions = require('../../../actions/MachineActions');
 
 /*
@@ -44,18 +42,6 @@ var FreeMachine = React.createClass({
                       onClick={this.startActivation}>
                       Start
                     </button>
-                  </td>
-                  <td className="force-button-table-cell">
-                    {this.props.isStaff ? (
-                      <ForceSwitchOn force={this.props.force}/>
-                    ) : ''}
-                  </td>
-                </tr>
-                <tr>
-                  <td className="force-button-table-cell">
-                    {this.props.isStaff ? (
-                      <ForceSwitchOff force={this.props.force}/>
-                    ) : ''}
                   </td>
                 </tr>
               </table>
