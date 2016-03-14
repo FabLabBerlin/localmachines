@@ -7,7 +7,6 @@
       <tr>
         <th>From</th>
         <th>To</th>
-        <th>Legacy interval</td>
         <th>Created on</th>
         <th>&nbsp;</th>
       </tr>
@@ -16,7 +15,6 @@
       <tr ng-repeat="invoice in invoices">
         <td>{{invoice.MonthFrom}}/{{invoice.YearFrom}}</td>
         <td>{{invoice.MonthTo}}/{{invoice.YearTo}}</td>
-        <td>{{invoice.PeriodFrom | date:'yyyy-MM-dd'}} - {{invoice.PeriodTo | date:'yyyy-MM-dd'}}</td>
         <td>{{invoice.Created | date:'yyyy-MM-dd HH:mm'}}</td>
         <td>
           <span class="pull-right">

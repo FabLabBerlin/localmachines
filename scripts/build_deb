@@ -113,6 +113,12 @@ function buildLm {
 	cp $__dir/init/localmachines_run $PKG_ROOT/etc/service/localmachines/run
 
 	# Frontend
+	cd $__dir/../clients/admin
+	grunt prod
+	cd $__dir/../clients/machines
+	npm run-script prod
+	cd $__dir/../clients/signup
+	grunt prod
 	mkdir -p $PKG_ROOT/opt/localmachines/clients/admin
 	cp -r $__dir/../clients/admin/prod $PKG_ROOT/opt/localmachines/clients/admin/
 	mkdir -p $PKG_ROOT/opt/localmachines/clients/machines
