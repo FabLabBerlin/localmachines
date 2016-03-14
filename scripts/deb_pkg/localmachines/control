@@ -1,0 +1,9 @@
+Package: localmachines
+Architecture: ARCHITECTURE
+Maintainer: Localmachines Team
+Depends: daemontools, daemontools-run, debconf
+Priority: optional
+Version: 0.10.11
+Description: Localmachines
+ This script provides an easy way to install Localmachines.
+ Setting up Localmachines is now more fun than ever!

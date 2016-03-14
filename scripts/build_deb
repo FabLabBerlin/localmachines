@@ -119,6 +119,10 @@ function buildLm {
 	cp -r $__dir/../clients/machines/prod $PKG_ROOT/opt/localmachines/clients/machines/
 	rm $PKG_ROOT/opt/localmachines/clients/machines/prod/bundle.js.map
 
+	# Migrations
+	mkdir -p $PKG_ROOT/opt/localmachines/database
+	cp -r $__dir/../database/migrations $PKG_ROOT/opt/localmachines/database/
+
 	compile $__dir/.. $PKG_ROOT/opt/localmachines $buildArch localmachines
 
 	finalize $PKG_TMP_DIR $PKG_ROOT $PKG_NAME $buildArch

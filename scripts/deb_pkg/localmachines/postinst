@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# Exit on error
+set -e
+
+# Source debconf library.
+. /usr/share/debconf/confmodule
+
+adduser --system fabsmith || User fabsmith already exists.
+mkdir -p /home/fabsmith
+chown -R fabsmith /opt/localmachines
+
+cd /opt/localmachines
