@@ -12,18 +12,22 @@ import (
 const TABLE_NAME = "locations"
 
 type Location struct {
-	Id           int64
-	Title        string `orm:"size(100)"`
-	FirstName    string `orm:"size(100)"`
-	LastName     string `orm:"size(100)"`
-	Email        string `orm:"size(100)"`
-	City         string `orm:"size(100)"`
-	Organization string `orm:"size(100)"`
-	Phone        string `orm:"size(100)"`
-	Comments     string `orm:"type(text)"`
-	Approved     bool
-	XmppId       string `orm:"size(255)"`
-	LocalIp      string `orm:"size(255)"`
+	Id               int64
+	Title            string `orm:"size(100)"`
+	FirstName        string `orm:"size(100)"`
+	LastName         string `orm:"size(100)"`
+	Email            string `orm:"size(100)"`
+	City             string `orm:"size(100)"`
+	Organization     string `orm:"size(100)"`
+	Phone            string `orm:"size(100)"`
+	Comments         string `orm:"type(text)"`
+	Approved         bool
+	XmppId           string `orm:"size(255)"`
+	LocalIp          string `orm:"size(255)"`
+	FeatureCoworking bool
+	FeatureSetupTime bool
+	FeatureSpaces    bool
+	FeatureTutoring  bool
 }
 
 func init() {
