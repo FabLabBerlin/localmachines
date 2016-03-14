@@ -82,6 +82,11 @@ func (c *Controller) GetAll() {
 	if err != nil {
 		c.CustomAbort(500, "Failed to get all locations")
 	}
+	var l *locations.Location
+	for _, l = range ls {
+		l.LocalIp = ""
+		l.XmppId = ""
+	}
 	c.Data["json"] = ls
 	c.ServeJSON()
 }
