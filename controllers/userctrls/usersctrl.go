@@ -150,14 +150,14 @@ func (this *UsersController) GetCurrentUser() {
 	uid, err := this.GetSessionUserId()
 	if err != nil {
 		beego.Error("GetUser Not logged in")
-		this.CustomAbort(400, "Not logged in")
+	} else {
+		u, err := users.GetUser(uid)
+		if err != nil {
+			beego.Error("models.GetUser:", err)
+			this.CustomAbort(500, "Internal Server Error")
+		}
+		this.Data["json"] = u
 	}
-	u, err := users.GetUser(uid)
-	if err != nil {
-		beego.Error("models.GetUser:", err)
-		this.CustomAbort(500, "Internal Server Error")
-	}
-	this.Data["json"] = u
 	this.ServeJSON()
 }
 

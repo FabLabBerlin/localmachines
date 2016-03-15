@@ -46,12 +46,14 @@ export default {
         ac: new Date().getTime()
       },
       success(user) {
-        var data = {
-          UserId: user.Id,
-          LocationId: 1 // Hardcoded for now
-        };
-        reactor.dispatch(actionTypes.SUCCESS_LOGIN, { data });
-        router.transitionTo('/machine');
+        if (user) {
+          var data = {
+            UserId: user.Id,
+            LocationId: 1 // Hardcoded for now
+          };
+          reactor.dispatch(actionTypes.SUCCESS_LOGIN, { data });
+          router.transitionTo('/machine');
+        }
       },
       error(xhr, status, err) {
         console.error('/users/login', status, err);
