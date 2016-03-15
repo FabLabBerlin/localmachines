@@ -22,16 +22,25 @@ type Location struct {
 	Phone            string `orm:"size(100)"`
 	Comments         string `orm:"type(text)"`
 	Approved         bool
-	XmppId           string `orm:"size(255)"`
-	LocalIp          string `orm:"size(255)"`
-	FeatureCoworking bool
-	FeatureSetupTime bool
-	FeatureSpaces    bool
-	FeatureTutoring  bool
+	XmppId           string `orm:"size(255)" json:",omitempty"`
+	LocalIp          string `orm:"size(255)" json:",omitempty"`
+	FeatureCoworking bool   `json:",omitempty"`
+	FeatureSetupTime bool   `json:",omitempty"`
+	FeatureSpaces    bool   `json:",omitempty"`
+	FeatureTutoring  bool   `json:",omitempty"`
 }
 
 func init() {
 	orm.RegisterModel(new(Location))
+}
+
+func (l *Location) ClearPrivateData() {
+	l.LocalIp = ""
+	l.XmppId = ""
+	l.FeatureCoworking = false
+	l.FeatureSetupTime = false
+	l.FeatureSpaces = false
+	l.FeatureTutoring = false
 }
 
 func (l *Location) Save() (err error) {

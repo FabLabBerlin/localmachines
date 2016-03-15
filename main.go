@@ -23,11 +23,7 @@ func init() {
 }
 
 func main() {
-	rm, err := beego.GetConfig("String", "RunMode", "undefined")
-	if err != nil {
-		panic(err.Error())
-	}
-	runMode = rm.(string)
+	runMode = beego.AppConfig.String("RunMode")
 	beego.Info("beego RunMode:", runMode)
 	configClients()
 	configDatabase()

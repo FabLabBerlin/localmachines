@@ -8,9 +8,10 @@ app.directive('mainMenu', function() {
   return {
     templateUrl: 'ng-modules/mainmenu/mainmenu.html',
     restrict: 'E',
-    controller: ['$rootScope', '$scope', '$element', '$cookieStore', function($rootScope, $scope, $element, $cookieStore) {
+    controller: ['$rootScope', '$scope', '$element', '$cookies', '$http',
+                 function($rootScope, $scope, $element, $cookies, $http) {
       $scope.data = $rootScope.mainMenu;
-
+      $scope.location = $rootScope.location;
       var links = $($element).find('a');
       links.click(function(){
 
@@ -22,9 +23,7 @@ app.directive('mainMenu', function() {
         }
       });
     }],
-    link: function($rootScope, $scope, $element, $attrs) {
-      console.log('main menu attrs: ', $attrs);
-    }
+    link: function($rootScope, $scope, $element, $attrs) {}
   };
 });
 

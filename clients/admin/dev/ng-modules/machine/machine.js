@@ -13,8 +13,10 @@ app.config(['$routeProvider', function($routeProvider) {
 }]); // app.config
 
 app.controller('MachineCtrl', 
- ['$scope', '$cookies', '$routeParams', '$http', '$location', '$filter', '$timeout', 'randomToken',
- function($scope, $cookies, $routeParams, $http, $location, $filter, $timeout, randomToken) {
+ ['$rootScope', '$scope', '$cookies', '$routeParams', '$http', '$location', '$filter', '$timeout', 'randomToken',
+ function($rootScope, $scope, $cookies, $routeParams, $http, $location, $filter, $timeout, randomToken) {
+
+  $scope.mainMenu = $rootScope.mainMenu;
 
   $scope.machine = {
     Id: $routeParams.machineId
