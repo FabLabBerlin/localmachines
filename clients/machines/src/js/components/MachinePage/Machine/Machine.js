@@ -39,20 +39,6 @@ var MachineChooser = React.createClass({
   },
 
   /*
-   * To force a switch
-   * Only admin have to be able to use this function
-   */
-  forceSwitch(onOrOff) {
-    let mid = this.props.machine.Id;
-    let aid = this.props.activation.Id;
-    if (onOrOff === 'off') {
-      MachineActions.forceTurnOffMachine(mid, aid);
-    } else if (onOrOff === 'on') {
-      MachineActions.forceTurnOnMachine(mid);
-    }
-  },
-
-  /*
    * Function pass by props to children
    * End an activation
    */

@@ -56,30 +56,6 @@ describe('MachineActions', function() {
     });
   });
 
-  describe('forceTurnOffMachine', function() {
-    it('should POST /api/machines/:mid/turn_off', function() {
-      MachineActions.forceTurnOffMachine(17, 2);
-      expect($.ajax).toBeCalledWith({
-        url: '/api/machines/17/turn_off?location=1',
-        type: 'POST',
-        success: jasmine.any(Function),
-        error: jasmine.any(Function)
-      });
-    });
-  });
-
-  describe('forceTurnOnMachine', function() {
-    it('should POST /api/machines/:mid/turn_on', function() {
-      MachineActions.forceTurnOnMachine(17);
-      expect($.ajax).toBeCalledWith({
-        url: '/api/machines/17/turn_on?location=1',
-        type: 'POST',
-        success: jasmine.any(Function),
-        error: jasmine.any(Function)
-      });
-    });
-  });
-
   describe('pollActivations', function() {
     it('GETs /api/users/:uid/dashboard', function() {
       var data = {
