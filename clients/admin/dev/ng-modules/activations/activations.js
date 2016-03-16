@@ -20,6 +20,7 @@ app.controller('ActivationsCtrl',
   $scope.activationsEndDate = moment().format('YYYY-MM');
   $scope.searchTeam = '';
   $scope.usersById = {};
+  $scope.loading = false;
 
   $scope.loadPage = function() {
     var offset = $scope.itemsPerPage * ($scope.currentPage - 1);
@@ -149,18 +150,21 @@ app.controller('ActivationsCtrl',
   };
 
   $scope.createFbDrafts = function() {
+    $scope.loading = true;
     $http({
       method: 'POST',
       url: '/api/invoices/create_drafts',
       params: getExportParams()
     })
     .success(function(draftsReport) {
+      $scope.loading = false;
       console.log('draftsReport=', draftsReport);
       console.log('$scope.usersById=', $scope.usersById);
       $scope.draftsReport = draftsReport;
       toastr.info('Sucessfully created invoice drafts');
     })
     .error(function() {
+      $scope.loading = false;
       toastr.error('Error creating invoice');
     });
   };
