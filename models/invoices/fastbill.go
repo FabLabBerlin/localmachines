@@ -100,7 +100,7 @@ func CreateFastbillDraft(inv *Invoice, userSummary *UserSummary) (fbDraft *fastb
 	}
 
 	for _, m := range memberships.Data {
-		if m.MonthlyPrice > 0 {
+		if m.MonthlyPrice > 0 && m.StartDate.Before(inv.PeriodTo()) && m.EndDate.After(inv.PeriodFrom()) {
 			item := fastbill.Item{
 				Description: m.Title + " Membership",
 				Quantity:    1,

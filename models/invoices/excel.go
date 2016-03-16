@@ -145,13 +145,13 @@ func createXlsxFile(filePath string, invoice *Invoice) error {
 	cell = row.AddCell()
 	cell.Value = "Period Start Date"
 	cell = row.AddCell()
-	cell.Value = invoice.PeriodFrom.Format("2006-01-02")
+	cell.Value = fmt.Sprintf("%v/%v", invoice.MonthFrom, invoice.YearFrom)
 
 	row = sheet.AddRow()
 	cell = row.AddCell()
 	cell.Value = "Period End Date"
 	cell = row.AddCell()
-	cell.Value = invoice.PeriodTo.Format("2006-01-02")
+	cell.Value = fmt.Sprintf("%v/%v", invoice.MonthTo, invoice.YearTo)
 
 	row = sheet.AddRow()
 	row = sheet.AddRow()
@@ -262,22 +262,24 @@ func createXlsxFile(filePath string, invoice *Invoice) error {
 			cell = row.AddCell()
 			cell.Value = "Machine Price Deduction"
 			for _, m := range memberships.Data {
-				row = sheet.AddRow()
-				row.AddCell()
-				cell = row.AddCell()
-				cell.SetStyle(colorStyle(BLUE))
-				cell.Value = m.Title
-				cell = row.AddCell()
-				cell.Value = m.StartDate.Format(time.RFC1123)
-				cell = row.AddCell()
-				cell.Value = m.EndDate.Format(time.RFC1123)
-				cell = row.AddCell()
-				cell.SetFloatWithFormat(float64(m.MonthlyPrice), FORMAT_2_DIGIT)
-				cell.SetStyle(colorStyle(GREEN))
-				cell = row.AddCell()
-				cell.Value = m.Unit
-				cell = row.AddCell()
-				cell.Value = strconv.Itoa(m.MachinePriceDeduction) + "%"
+				if m.StartDate.Before(invoice.PeriodTo()) && m.EndDate.After(invoice.PeriodFrom()) {
+					row = sheet.AddRow()
+					row.AddCell()
+					cell = row.AddCell()
+					cell.SetStyle(colorStyle(BLUE))
+					cell.Value = m.Title
+					cell = row.AddCell()
+					cell.Value = m.StartDate.Format(time.RFC1123)
+					cell = row.AddCell()
+					cell.Value = m.EndDate.Format(time.RFC1123)
+					cell = row.AddCell()
+					cell.SetFloatWithFormat(float64(m.MonthlyPrice), FORMAT_2_DIGIT)
+					cell.SetStyle(colorStyle(GREEN))
+					cell = row.AddCell()
+					cell.Value = m.Unit
+					cell = row.AddCell()
+					cell.Value = strconv.Itoa(m.MachinePriceDeduction) + "%"
+				}
 			}
 			sheet.AddRow()
 			sheet.AddRow()

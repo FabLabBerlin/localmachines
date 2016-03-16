@@ -34,8 +34,6 @@ type Invoice struct {
 	Activations   string `orm:type(text)`
 	FilePath      string `orm:size(255)`
 	Created       time.Time
-	PeriodFrom    time.Time
-	PeriodTo      time.Time
 	UserSummaries []*UserSummary `orm:"-"`
 }
 
@@ -49,6 +47,16 @@ func (this *Invoice) Less(i, j int) bool {
 	aName := a.User.FirstName + " " + a.User.LastName
 	bName := b.User.FirstName + " " + b.User.LastName
 	return strings.ToLower(aName) < strings.ToLower(bName)
+}
+
+func (this *Invoice) PeriodFrom() time.Time {
+	return time.Date(this.YearFrom, time.Month(this.MonthFrom), 1, 0, 0, 0, 0, time.UTC)
+}
+
+func (this *Invoice) PeriodTo() time.Time {
+	t := time.Date(this.YearTo, time.Month(this.MonthTo), 1, 23, 59, 59, 0, time.UTC)
+	t = t.AddDate(0, 1, -1)
+	return t
 }
 
 func (this *Invoice) Swap(i, j int) {
