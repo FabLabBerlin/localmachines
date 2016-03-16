@@ -59,7 +59,7 @@ func CreateFastbillDrafts(inv *Invoice) (report DraftsCreationReport) {
 				report.Errors = append(report.Errors, e)
 				beego.Error("create draft for user", uid, ":", err)
 				continue
-			} else {
+			} else if !empty {
 				report.SuccessUids = append(report.SuccessUids, uid)
 			}
 			if empty {
