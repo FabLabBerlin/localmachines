@@ -40,6 +40,10 @@ func parseYYYYMM(s string) (month, year int, err error) {
 	return
 }
 
+func (i Interval) Contains(t time.Time) bool {
+	return i.TimeFrom().Before(t) && i.TimeTo().After(t)
+}
+
 func (i Interval) DayFrom() string {
 	return fmt.Sprintf(ISO8601_FMT, i.YearFrom, i.MonthFrom, 1)
 }
@@ -48,6 +52,16 @@ func (i Interval) DayTo() string {
 	t := time.Date(i.YearTo, time.Month(i.MonthTo), 1, 0, 0, 0, 0, time.UTC)
 	t = t.AddDate(0, 1, -1)
 	return t.Format("2006-01-02")
+}
+
+func (i Interval) TimeFrom() time.Time {
+	return time.Date(i.YearFrom, time.Month(i.MonthFrom), 1, 0, 0, 0, 0, time.UTC)
+}
+
+func (i Interval) TimeTo() time.Time {
+	t := time.Date(i.YearTo, time.Month(i.MonthTo), 1, 23, 59, 59, 0, time.UTC)
+	t = t.AddDate(0, 1, -1)
+	return t
 }
 
 func (i Interval) OneMonth() bool {
