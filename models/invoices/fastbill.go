@@ -7,6 +7,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"github.com/astaxie/beego"
+	"time"
 )
 
 const (
@@ -44,7 +45,7 @@ func CreateFastbillDrafts(inv *Invoice) (report DraftsCreationReport) {
 			report.Errors = append(report.Errors, e)
 			beego.Error("no draft created for user", uid, ":", e.Problem)
 		} else {
-			fbDraft, empty, err := CreateFastbillDraft(userSummary)
+			fbDraft, empty, err := CreateFastbillDraft(inv, userSummary)
 			if err == fastbill.ErrInvoiceAlreadyExported {
 				beego.Info("draft for user", uid, "already exported")
 				report.AlreadyExportedUids = append(report.AlreadyExportedUids, uid)
@@ -74,13 +75,13 @@ func CreateFastbillDrafts(inv *Invoice) (report DraftsCreationReport) {
 	return
 }
 
-func CreateFastbillDraft(userSummary *UserSummary) (fbDraft *fastbill.Invoice, empty bool, err error) {
+func CreateFastbillDraft(inv *Invoice, userSummary *UserSummary) (fbDraft *fastbill.Invoice, empty bool, err error) {
 	fbDraft = &fastbill.Invoice{
 		CustomerNumber: userSummary.User.ClientId,
 		TemplateId:     fastbill.TemplateStandardId,
 		Items:          make([]fastbill.Item, 0, 10),
 	}
-	if fbDraft.Month, fbDraft.Year, err = getFastbillMonthYear(userSummary); err != nil {
+	if fbDraft.Month, fbDraft.Year, err = getFastbillMonthYear(inv); err != nil {
 		return nil, false, fmt.Errorf("get fastbill month: %v", err)
 	}
 	memberships, err := models.GetUserMemberships(userSummary.User.Id)
@@ -166,15 +167,9 @@ func CreateFastbillDraft(userSummary *UserSummary) (fbDraft *fastbill.Invoice, e
 	return
 }
 
-func getFastbillMonthYear(userSummary *UserSummary) (month string, year int, err error) {
-	for _, p := range userSummary.Purchases.Data {
-		m := p.TimeStart.Month().String()
-		if month == "" {
-			month = m
-			year = p.TimeStart.Year()
-		} else if month != m {
-			return "", 0, fmt.Errorf("2 months present: %v and %v", m, month)
-		}
+func getFastbillMonthYear(inv *Invoice) (month string, year int, err error) {
+	if inv.MonthFrom != inv.MonthTo || inv.YearFrom != inv.YearTo {
+		return "", 0, fmt.Errorf("2 months present")
 	}
-	return
+	return time.Month(inv.MonthFrom).String(), inv.YearFrom, nil
 }
