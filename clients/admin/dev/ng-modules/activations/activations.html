@@ -112,7 +112,7 @@
       <tr ng-repeat="id in draftsReport.SuccessUids">
         <td>{{usersById[id].FirstName}} {{usersById[id].LastName}}</td>
         <td>
-          <a href="/admin/#/users/{{id}}">{{usersById[id].Email}}</a>
+          <a href="https://easylab.io/admin/#/users/{{id}}">{{usersById[id].Email}}</a>
         </td>
       </tr>
     </tbody>
@@ -129,7 +129,7 @@
       <tr ng-repeat="id in draftsReport.AlreadyExportedUids">
         <td>{{usersById[id].FirstName}} {{usersById[id].LastName}}</td>
         <td>
-          <a href="/admin/#/users/{{id}}">{{usersById[id].Email}}</a>
+          <a href="https://easylab.io/admin/#/users/{{id}}">{{usersById[id].Email}}</a>
         </td>
       </tr>
     </tbody>
@@ -146,7 +146,7 @@
       <tr ng-repeat="id in draftsReport.EmptyUids">
         <td>{{usersById[id].FirstName}} {{usersById[id].LastName}}</td>
         <td>
-          <a href="/admin/#/users/{{id}}">{{usersById[id].Email}}</a>
+          <a href="https://easylab.io/admin/#/users/{{id}}">{{usersById[id].Email}}</a>
         </td>
       </tr>
     </tbody>
@@ -164,7 +164,7 @@
       <tr ng-repeat="e in draftsReport.Errors">
         <td>{{usersById[e.UserId].FirstName}} {{usersById[e.UserId].LastName}}</td>
         <td>
-          <a href="/admin/#/users/{{e.UserId}}">{{usersById[e.UserId].Email}}</a>
+          <a href="https://easylab.io/admin/#/users/{{e.UserId}}">{{usersById[e.UserId].Email}}</a>
         </td>
         <td>
           {{e.Problem}}
