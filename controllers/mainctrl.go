@@ -6,6 +6,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
+	"strconv"
 )
 
 type MainController struct {
@@ -68,6 +69,7 @@ func (this *Controller) SetLogged(username string, userId int64, locationId int6
 	this.SetSession(SESSION_IP, this.Ctx.Input.IP())
 	//this.SetSession(SESSION_ACCEPT_ENCODING, this.Ctx.Input.Header("Accept-Encoding"))
 	this.SetSession(SESSION_ACCEPT_LANGUAGE, this.Ctx.Input.Header("Accept-Language"))
+	this.Ctx.SetCookie("location", strconv.FormatInt(locationId, 10))
 }
 
 func (this *Controller) IsLogged() bool {

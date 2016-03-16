@@ -8,6 +8,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"strings"
 	"time"
 )
 
@@ -20,54 +21,50 @@ func (this *Activation) MarshalJSON() ([]byte, error) {
 	return json.Marshal(this.Purchase)
 }
 
-// Type to be used as response model for the HTTP GET activations request.
-type GetActivationsResponse struct {
-	NumActivations  int64
-	ActivationsPage *[]Activation
-}
-
 // Gets filtered activations in a paged manner between start and end time.
 // Items per page and page number can be specified. Already invoiced
 // activations can be excluded.
-func GetActivations(interval lib.Interval,
-	itemsPerPage int64,
-	page int64) (*[]Activation, error) {
-
-	if page <= 0 {
-		page = 1
-	}
+func GetActivations(locationId int64, interval lib.Interval, search string) (activations []Activation, err error) {
 
 	// Get activations from database
 	purchases := []*Purchase{}
 	act := Activation{}
 	o := orm.NewOrm()
 
-	pageOffset := itemsPerPage * (page - 1)
+	if pattern, ok := searchTermToPattern(search); ok {
+		query := fmt.Sprintf("SELECT a.* FROM %s a "+
+			"LEFT JOIN user u ON a.user_id = u.id "+
+			"WHERE a.type=? AND a.time_start>=? AND a.time_start<=? AND a.running=false "+
+			"      AND (u.username LIKE ? OR u.first_name LIKE ? OR u.last_name LIKE ?) "+
+			"ORDER BY a.time_start DESC ",
+			act.Purchase.TableName())
 
-	query := fmt.Sprintf("SELECT a.* FROM %s a "+
-		"WHERE a.type=? AND a.time_start>=? AND a.time_start<=? AND a.running=false "+
-		"ORDER BY a.time_start DESC "+
-		"LIMIT ? OFFSET ?",
-		act.Purchase.TableName())
+		_, err = o.Raw(query,
+			TYPE_ACTIVATION,
+			interval.DayFrom(),
+			interval.DayTo(),
+			pattern,
+			pattern,
+			pattern).QueryRows(&purchases)
+	} else {
+		query := fmt.Sprintf("SELECT a.* FROM %s a "+
+			"WHERE a.type=? AND a.time_start>=? AND a.time_start<=? AND a.running=false "+
+			"ORDER BY a.time_start DESC ",
+			act.Purchase.TableName())
 
-	from := interval.DayFrom()
-	to := interval.DayTo()
+		_, err = o.Raw(query,
+			TYPE_ACTIVATION,
+			interval.DayFrom(),
+			interval.DayTo()).QueryRows(&purchases)
 
-	fmt.Printf("from: %v, to: %v, query: %v\n", from, to, query)
-
-	_, err := o.Raw(query,
-		TYPE_ACTIVATION,
-		interval.DayFrom(),
-		interval.DayTo(),
-		itemsPerPage,
-		pageOffset).QueryRows(&purchases)
+	}
 
 	if err != nil {
 		msg := fmt.Sprintf("Failed to get activations: %v", err)
 		return nil, errors.New(msg)
 	}
 
-	activations := make([]Activation, 0, len(purchases))
+	activations = make([]Activation, 0, len(purchases))
 	for _, purchase := range purchases {
 		act := Activation{
 			Purchase: *purchase,
@@ -75,29 +72,16 @@ func GetActivations(interval lib.Interval,
 		activations = append(activations, act)
 	}
 
-	return &activations, nil
+	return
 }
 
-// Gets number of matching activations.
-// Used together with GetActivations.
-func GetNumActivations(interval lib.Interval) (int64, error) {
-
-	// Count activations matching params
-	o := orm.NewOrm()
-	act := Activation{}
-	cnt, err := o.QueryTable(act.Purchase.TableName()).
-		Filter("timeStart__gte", interval.DayFrom()).
-		Filter("timeStart__lte", interval.DayTo()).
-		Filter("Running", false).
-		Filter("type", TYPE_ACTIVATION).
-		Count()
-
-	if err != nil {
-		msg := fmt.Sprintf("Failed to count activations: %v", err)
-		return 0, errors.New(msg)
+func searchTermToPattern(search string) (pattern string, ok bool) {
+	search = strings.TrimSpace(search)
+	if search != "" {
+		return "%" + search + "%", true
+	} else {
+		return "", false
 	}
-
-	return cnt, nil
 }
 
 // Gets only running activations (activation_running meaning that users are using
@@ -242,7 +226,6 @@ func CloseActivation(activationId int64, endTime time.Time) error {
 			beego.Error("time end before time start?!")
 		}
 	}
-	activation.Purchase.Quantity = activation.Purchase.quantityFromTimes()
 
 	err = activation.Update()
 	if err != nil {
@@ -263,14 +246,15 @@ func CloseActivation(activationId int64, endTime time.Time) error {
 // existing activation store.
 func (activation *Activation) Update() error {
 	o := orm.NewOrm()
-	num, err := o.Update(&activation.Purchase)
+
+	activation.Purchase.Quantity = activation.Purchase.quantityFromTimes()
+
+	_, err := o.Update(&activation.Purchase)
 
 	if err != nil {
 		beego.Error("Failed to update activation:", err)
 		return fmt.Errorf("Failed to update activation: %v", err)
 	}
-
-	beego.Trace("UpdateActivation: Affected num rows:", num)
 
 	return nil
 }

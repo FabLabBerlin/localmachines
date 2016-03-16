@@ -10,14 +10,18 @@ package netswitch
 
 import (
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/lib/mfi"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"log"
 	"net/http"
 	"net/url"
 	"strconv"
+	"sync"
 )
 
 type NetSwitch struct {
+	muChInit sync.Mutex
+	chSingle chan int
 	machine.Machine
 	On bool
 }
@@ -85,6 +89,40 @@ func (ns *NetSwitch) UrlOff() string {
 func (ns *NetSwitch) String() string {
 	return fmt.Sprintf("(NetSwitch MachineId=%v On=%v)",
 		ns.Id, ns.On)
+}
+
+func (ns *NetSwitch) ApplyConfig(updates chan<- string) (err error) {
+	ns.muChInit.Lock()
+	if ns.chSingle == nil {
+		log.Printf("make(chan int, 1)")
+		ns.chSingle = make(chan int, 1)
+		ns.chSingle <- 1
+	} else {
+		log.Printf("ns.chSingle != nil")
+	}
+	ns.muChInit.Unlock()
+	select {
+	case <-ns.chSingle:
+		log.Printf("not running")
+		break
+	default:
+		log.Println("apply config already running")
+		return fmt.Errorf("apply config already running")
+	}
+	cfg := mfi.Config{
+		Host: ns.NetswitchHost,
+	}
+	if err := cfg.RunStep1WifiCredentials(); err != nil {
+		ns.chSingle <- 1
+		return fmt.Errorf("step 1: error obtaining wifi credentials: %v", err)
+	}
+	go func() {
+		if err := cfg.RunStep2PushConfig(); err != nil {
+			updates <- err.Error()
+		}
+		ns.chSingle <- 1
+	}()
+	return
 }
 
 //{"sensors":[{"output":1,"power":0.0,"energy":0.0,"enabled":0,"current":0.0,"voltage":233.546874046,"powerfactor":0.0,"relay":1,"lock":0}],"status":"success"}

@@ -1,4 +1,4 @@
-<nav class="navbar navbar-default">
+<nav class="navbar navbar-default" ng-show="data.location">
   <div class="container-fluid">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
@@ -22,11 +22,31 @@
       <li class="dropdown">
         <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Products <span class="caret"></span></a>
         <ul class="dropdown-menu">
-          <li><a href="#/coworking">Co-Working</a></li>
-          <li><a href="#/memberships">Memberships</a></li>
-          <li><a href="#/reservations">Reservations</a></li>
-          <li><a href="#/spaces">Spaces</a></li>
-          <li><a href="#/tutoring">Tutoring</a></li>
+          <li>
+            <a href="#/coworking" ng-show="data.location.FeatureCoworking">
+              Co-Working
+            </a>
+          </li>
+          <li>
+            <a href="#/memberships">
+              Memberships
+            </a>
+          </li>
+          <li>
+            <a href="#/reservations">
+              Reservations
+            </a>
+          </li>
+          <li>
+            <a href="#/spaces" ng-show="data.location.FeatureSpaces">
+              Spaces
+            </a>
+          </li>
+          <li>
+            <a href="#/tutoring" ng-show="data.location.FeatureTutoring">
+              Tutoring
+            </a>
+          </li>
         </ul>
       </li>
     </ul>

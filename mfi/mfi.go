@@ -10,41 +10,16 @@ TODO: use github.com/ziutek/telnet
 package main
 
 import (
-	"bytes"
-	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"github.com/FabLabBerlin/localmachines/lib/mfi"
 	"log"
-	"net"
-	"net/http"
-	"os"
-	"os/exec"
-	"strings"
-	"text/template"
-	"time"
 )
 
-const (
-	SSH_INITIAL_PASSWORD = "ubnt"
-	SSH_PASSWORD_HASH    = "KQiBBQ7dx8sx2" // = hash("ubnt")
-	TEMPFILE_PREFIX      = "mfi_deploy"
-)
-
-type Config struct {
-	EthernetConfig        bool
-	WlanOverwriteFilename string
-	SystemCfgFilename     string
-	WifiSSID              string
-	WifiPassword          string
-	SshPasswordHash       string
-	HwAddr                string
-}
-
-func (c *Config) usage() {
+func usage(ethernetConfig bool) {
 	fmt.Printf("Please hold the power switch's reset button until it\n")
 	fmt.Printf("blinks blue-orange.  ")
-	if c.EthernetConfig {
+	if ethernetConfig {
 		fmt.Printf("Be sure to be connected with\n")
 		fmt.Printf("the device with an Ethernet cable.\n")
 		fmt.Printf("Be on 192.168.1.x (The device is now on 192.168.1.20)\n")
@@ -55,213 +30,68 @@ func (c *Config) usage() {
 	}
 }
 
-func (c *Config) Host() string {
-	if c.EthernetConfig {
-		return "192.168.1.20"
-	} else {
-		return "192.168.2.20"
-	}
-}
-
-func (c *Config) Run() (err error) {
-	if err = c.generate(); err != nil {
-		return fmt.Errorf("generate: %v", err)
-	}
-	fmt.Printf("\nWhen asked for an SSH password, just enter '%v'\n\nPress [enter] to continue...\n", SSH_INITIAL_PASSWORD)
-	var tmp string
-	fmt.Scanln(&tmp)
-	if err = c.scp(); err != nil {
-		return fmt.Errorf("scp: %v", err)
-	}
-	if c.HwAddr, err = c.getHwAddr(); err != nil {
-		return fmt.Errorf("get hw addr: %v", err)
-	}
-	if err = c.finalize(); err != nil {
-		return fmt.Errorf("reboot: %v", err)
-	}
-	os.Remove(c.SystemCfgFilename)
-	os.Remove(c.WlanOverwriteFilename)
-	return
-}
-
-func (c *Config) generate() (err error) {
-	fmt.Printf("What is the Wifi password?\n")
-	if _, err = fmt.Scanln(&c.WifiPassword); err != nil {
-		return fmt.Errorf("scan ln: %v", err)
-	}
-	c.SystemCfgFilename, err = c.generateFromTemplate(SYSTEM_CFG)
-	if err != nil {
-		return fmt.Errorf("generate from system.cfg: %v", err)
-	}
-	c.WlanOverwriteFilename, err = c.generateFromTemplate(WLAN_OVERWRITE)
-	if err != nil {
-		return fmt.Errorf("generate from wlan_overwrite: %v", err)
-	}
-	return
-}
-
-func (c *Config) generateFromTemplate(templateText string) (resultFilename string, err error) {
-	t := template.New("cfg")
-	t, err = t.Parse(templateText)
-	if err != nil {
-		return "", fmt.Errorf("parse template: %v", err)
-	}
-	f, err := ioutil.TempFile(os.TempDir(), TEMPFILE_PREFIX)
-	if err != nil {
-		return "", fmt.Errorf("temp file: %v", err)
-	}
-	resultFilename = f.Name()
-	defer f.Close()
-	if err = t.Execute(f, *c); err != nil {
-		return "", fmt.Errorf("execute template: %v", err)
-	}
-	return
-}
-
-func (c *Config) scp() (err error) {
-	cmd := exec.Command("scp", c.SystemCfgFilename, "ubnt@"+c.Host()+":/tmp/system.cfg")
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if err = cmd.Run(); err != nil {
-		return fmt.Errorf("scp system.cfg: %v", err)
-	}
-	cmd = exec.Command("scp", c.WlanOverwriteFilename, "ubnt@"+c.Host()+":/tmp/wlan_overwrite")
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if err = cmd.Run(); err != nil {
-		return fmt.Errorf("scp system.cfg: %v", err)
-	}
-	return
-}
-
-func (c *Config) getHwAddr() (hwAddr string, err error) {
-	cmd := exec.Command("ssh", "ubnt@"+c.Host(), "ifconfig | grep wifi0")
-	buf := bytes.NewBufferString("")
-	cmd.Stdout = buf
-	cmd.Stderr = os.Stderr
-	if err = cmd.Run(); err != nil {
-		return "", fmt.Errorf("ifconfig: %v", err)
-	}
-	s := strings.TrimSpace(buf.String())
-	tmp := strings.Split(s, " ")
-	if len(tmp) == 0 {
-		return "", fmt.Errorf("unexpected ifconfig output: '%v'", s)
-	}
-	return tmp[len(tmp)-1], nil
-}
-
-func (c *Config) finalize() (err error) {
-	shellCmds := `
-cfgmtd -w
-sleep 3
-echo '#!/bin/sh' > /etc/persistent/rc.poststart
-echo >> /etc/persistent/rc.poststart
-echo '/usr/bin/echo 0 > /proc/power/output1' >> /etc/persistent/rc.poststart
-echo '/usr/bin/echo 0 > /proc/power/output2' >> /etc/persistent/rc.poststart
-echo '/usr/bin/echo 0 > /proc/power/output3' >> /etc/persistent/rc.poststart
-echo '/usr/bin/echo 0 > /proc/power/output4' >> /etc/persistent/rc.poststart
-echo '/usr/bin/echo 0 > /proc/power/output5' >> /etc/persistent/rc.poststart
-echo '/usr/bin/echo 0 > /proc/power/output6' >> /etc/persistent/rc.poststart
-chmod a+x /etc/persistent/rc.poststart
-cfgmtd -w -p /etc
-sync
-reboot
-	`
-	cmd := exec.Command("ssh", "ubnt@"+c.Host(), shellCmds)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if err = cmd.Run(); err != nil {
-		return fmt.Errorf("cfgmtd and reboot: %v", err)
-	}
-	return
-}
-
-func (c *Config) FindDeviceOn(netmask string) (resultIp net.IP, err error) {
-	ip, ipnet, err := net.ParseCIDR(netmask)
-	if err != nil {
-		return net.IP{}, fmt.Errorf("parse cidr: %v", err)
-	}
-	ch := make(chan net.IP, 1)
-	for ip := ip.Mask(ipnet.Mask); ipnet.Contains(ip); incIp(ip) {
-		scanIp := make(net.IP, len(ip))
-		copy(scanIp, ip)
-		go func(ip net.IP) {
-			if c.deviceOn(ip) {
-				log.Printf("found it on %v!!!!!!", ip.String())
-				select {
-				case ch <- ip:
-				default:
-					log.Fatalf("fatal error: %v", ip)
-				}
-			}
-		}(scanIp)
-	}
-	select {
-	case resultIp = <-ch:
-		break
-	case <-time.After(30 * time.Second):
-		err = fmt.Errorf("could not find device")
-	}
-	return
-}
-
-func incIp(ip net.IP) {
-	for j := len(ip) - 1; j >= 0; j-- {
-		ip[j]++
-		if ip[j] > 0 {
-			break
-		}
-	}
-}
-
-type MfiStatus struct {
-	Wlan MfiWlan `json:"wlan"`
-}
-
-type MfiWlan struct {
-	HwAddr string `json:"hwaddr"`
-}
-
-func (c *Config) deviceOn(ip net.IP) bool {
-	resp, err := http.Get("http://" + ip.String() + "/status.cgi")
-	if err != nil {
-		return false
-	}
-	defer resp.Body.Close()
-	dec := json.NewDecoder(resp.Body)
-	status := MfiStatus{}
-	if err := dec.Decode(&status); err != nil {
-		return false
-	}
-	hwAddr := strings.Replace(c.HwAddr, "-", ":", -1)
-	return len(hwAddr) > 10 && strings.HasPrefix(hwAddr, status.Wlan.HwAddr)
-}
-
 func main() {
 	ethernetConfig := flag.Bool("ethConfig", false, "Connect Switch to computer via Ethernet Cable (be on 192.168.1.x)")
 	netmask := flag.String("network", "172.26.0.128/24", "Wifi network's netmask on which we auto discover the switch")
-	ssid := flag.String("ssid", "FabLab-M", "Wifi SSID")
+	ssid := flag.String("ssid", "", "Wifi SSID")
+	ip := flag.String("ip", "", "powerswitch ip")
+	wifiPwManually := flag.Bool("wifiPwManual", false, "Enter Wifi password manually")
 	flag.Parse()
 
-	c := &Config{
+	fullAutoConf := *ssid == "" && !*wifiPwManually
+
+	c := &mfi.Config{
 		EthernetConfig: *ethernetConfig,
 		WifiSSID:       *ssid,
 	}
-	if err := c.Run(); err == nil {
+
+	if *ip == "" {
+		if c.EthernetConfig {
+			c.Host = "192.168.1.20"
+		} else {
+			c.Host = "192.168.2.20"
+		}
+	} else {
+		c.Host = *ip
+	}
+
+	if *wifiPwManually {
+		fmt.Printf("What is the Wifi password?\n")
+		if _, err := fmt.Scanln(&c.WifiPassword); err != nil {
+			log.Fatalf("scan ln: %v", err)
+		}
+	}
+
+	if err := c.RunStep1WifiCredentials(); err != nil {
+		log.Fatalf("error obtaining wifi credentials: %v", err)
+	}
+
+	if err := c.RunStep2PushConfig(); err == nil {
 		fmt.Printf("Your switch is properly configured and its hardware")
 		fmt.Printf(" address is: '%v'\n", c.HwAddr)
-		fmt.Printf("Wait until the LED starts blinking blue, connect to the")
-		fmt.Printf(" normal Wifi and then press enter...\n")
-		var tmp string
-		fmt.Scanln(&tmp)
-		if ip, err := c.FindDeviceOn(*netmask); err == nil {
-			fmt.Printf("Successfully discovered device: %v\n", ip.String())
-		} else {
-			fmt.Printf("Unable to find device on %v\n.", *netmask)
+		if !fullAutoConf {
+			fmt.Printf("Wait until the LED starts blinking blue, connect to the")
+			fmt.Printf(" normal Wifi and then press enter...\n")
+			var tmp string
+			fmt.Scanln(&tmp)
+			if ip, err := c.FindDeviceOn(*netmask); err == nil {
+				fmt.Printf("Successfully discovered device: %v\n", ip.String())
+			} else {
+				fmt.Printf("Unable to find device on %v\n.", *netmask)
+			}
 		}
+	} else if err == mfi.ErrWifiSsidNotPresent {
+
+		fmt.Printf("Wifi SSID not present, either configure via cmd line\n")
+		fmt.Printf("or use the automatic Ubiquitiy web configuration.\n")
+		flag.Usage()
+	} else if err == mfi.ErrWifiPasswordNotPresent {
+		fmt.Printf("Wifi password not present, either configure via cmd line\n")
+		fmt.Printf("or use the automatic Ubiquitiy web configuration.\n")
+		flag.Usage()
 	} else {
 		log.Printf("config: %v", err)
 		fmt.Printf("Make sure the switch is properly connected:\n\n")
-		c.usage()
+		usage(c.EthernetConfig)
 	}
 }

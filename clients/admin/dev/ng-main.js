@@ -6,6 +6,8 @@
 var app = angular.module('fabsmith', [
   'ngRoute',
   'fabsmith.admin.login',
+  'fabsmith.admin.activation',
+  'fabsmith.admin.activations',
   'fabsmith.admin.api',
   'fabsmith.admin.coworking',
   'fabsmith.admin.coworking.purchase',
@@ -13,7 +15,6 @@ var app = angular.module('fabsmith', [
   'fabsmith.admin.dashboard',
   'fabsmith.admin.mainmenu',
   'fabsmith.admin.user',
-  'fabsmith.admin.activations',
   'fabsmith.admin.machines',
   'fabsmith.admin.machine',
   'fabsmith.admin.memberships',
@@ -37,8 +38,8 @@ var app = angular.module('fabsmith', [
 ]);
 
 // This checks whether an user is logged in always before switching to a new view
-app.run(['$rootScope', '$location', '$http', '$cookieStore', 
- function($rootScope, $location, $http, $cookieStore) {
+app.run(['$rootScope', '$location', '$http', '$cookieStore', '$cookies', '$q',
+ function($rootScope, $location, $http, $cookieStore, $cookies, $q) {
   
   $rootScope.$on('$locationChangeStart', 
    function(event, newUrl, oldUrl) {
@@ -48,29 +49,47 @@ app.run(['$rootScope', '$location', '$http', '$cookieStore',
 
     // Get requested angular path
     var newPath = newUrl.split('#')[1];
-    var userId = $cookieStore.get('Id');
     
     // Only check if user logged in if requested page is other
     // than the login page
     if (newPath !== '/login') {
 
-      $http({
+      var getLocationPromise = $http({
+        method: 'GET',
+        url: '/api/locations/' + $cookies.locationId,
+        params: {
+          location: $cookies.locationId,
+          ac: new Date().getTime()
+        }
+      });
+
+      var getUserPromise = $http({
         method: 'GET',
         url: '/api/users/current',
         params: {
           ac: new Date().getTime()
         }
-      })
-      .success(function(user) {
+      });
+
+      $q.all([
+        getLocationPromise,
+        getUserPromise
+      ])
+      .then(function(results) {
+        var location = results[0].data;
+        var user = results[1].data;
+
         $rootScope.mainMenu.visible = true;
         $rootScope.mainMenu.userFullName = user.FirstName + ' ' + user.LastName;
+        $rootScope.mainMenu.location = location;
+
         if (newPath) {
           $location.path(newPath);
         } else {
           $location.path('/machines');
         }
       })
-      .error(function() {
+      .catch(function() {
         $rootScope.mainMenu.visible = false;
         $location.path('/login');
       });

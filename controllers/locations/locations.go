@@ -82,6 +82,31 @@ func (c *Controller) GetAll() {
 	if err != nil {
 		c.CustomAbort(500, "Failed to get all locations")
 	}
+	var l *locations.Location
+	for _, l = range ls {
+		l.ClearPrivateData()
+	}
 	c.Data["json"] = ls
+	c.ServeJSON()
+}
+
+// @Title Get
+// @Description Get location
+// @Success 200 {object}
+// @Failure	401	Not authorized
+// @Failure	500	Internal Server Error
+// @router /:lid [get]
+func (c *Controller) Get() {
+	locId, isLocAdmin := c.GetLocIdAdmin()
+
+	l, err := locations.Get(locId)
+	if err != nil {
+		beego.Error("get location:", err)
+		c.CustomAbort(500, "Internal Server Error")
+	}
+	if !isLocAdmin {
+		l.ClearPrivateData()
+	}
+	c.Data["json"] = l
 	c.ServeJSON()
 }

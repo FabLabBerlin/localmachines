@@ -13,8 +13,10 @@ app.config(['$routeProvider', function($routeProvider) {
 }]); // app.config
 
 app.controller('MachineCtrl', 
- ['$scope', '$routeParams', '$http', '$location', '$filter', 'randomToken', 
- function($scope, $routeParams, $http, $location, $filter, randomToken) {
+ ['$rootScope', '$scope', '$cookies', '$routeParams', '$http', '$location', '$filter', '$timeout', 'randomToken',
+ function($rootScope, $scope, $cookies, $routeParams, $http, $location, $filter, $timeout, randomToken) {
+
+  $scope.mainMenu = $rootScope.mainMenu;
 
   $scope.machine = {
     Id: $routeParams.machineId
@@ -24,6 +26,13 @@ app.controller('MachineCtrl',
   $scope.machineImageNewFile = undefined;
   $scope.machineImageNewFileName = undefined;
   $scope.machineImageNewFileSize = undefined;
+  $scope.netswitchConfigStatus = undefined;
+  $scope.unsavedChanges = false;
+  $scope.loading = false;
+
+  $scope.registerUnsavedChange = function() {
+    $scope.unsavedChanges = true;
+  };
 
   $scope.loadMachine = function(machineId) {
     $http({
@@ -62,6 +71,7 @@ app.controller('MachineCtrl',
   $scope.loadMachine($scope.machine.Id);
 
   $scope.updateMachine = function() {
+    $scope.unsavedChanges = false;
 
     // Make a clone of the machine model
     var machine = _.clone($scope.machine);
@@ -149,6 +159,46 @@ app.controller('MachineCtrl',
     .error(function(){
       toastr.error('Uploading machine image failed');
     });
+  };
+
+  function configCountdown(seconds, cb) {
+    if (seconds >= 0) {
+      $timeout(function() {
+        $scope.netswitchConfigStatus = 'Updating config... (' + seconds + ' s)';
+        configCountdown(seconds - 1, cb);
+      }, 1000);
+    } else {
+      cb();
+    }
+  }
+
+  $scope.applyConfig = function() {
+    if ($scope.unsavedChanges) {
+      toastr.error('Please save before continuing.');
+      return;
+    }
+    if (confirm('Do you really want to continue?')) {
+      $scope.loading = true;
+      $http({
+        method: 'POST',
+        url: '/api/machines/' + $scope.machine.Id + '/apply_config',
+        data: {
+          location: $cookies.locationId
+        }
+      })
+      .success(function(){
+        $scope.loading = false;
+        toastr.success('Updating config...');
+        configCountdown(180, function() {
+          toastr.success('Configuration pushed.  Switch will be usable in about 5 minutes!');
+          $scope.netswitchConfigStatus = undefined;
+        });
+      })
+      .error(function(){
+        $scope.loading = false;
+        toastr.error('An Error occurred.  Please try again later.');
+      });
+    }
   };
 
 }]); // app.controller

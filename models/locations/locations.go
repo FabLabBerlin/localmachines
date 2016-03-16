@@ -12,22 +12,35 @@ import (
 const TABLE_NAME = "locations"
 
 type Location struct {
-	Id           int64
-	Title        string `orm:"size(100)"`
-	FirstName    string `orm:"size(100)"`
-	LastName     string `orm:"size(100)"`
-	Email        string `orm:"size(100)"`
-	City         string `orm:"size(100)"`
-	Organization string `orm:"size(100)"`
-	Phone        string `orm:"size(100)"`
-	Comments     string `orm:"type(text)"`
-	Approved     bool
-	XmppId       string `orm:"size(255)"`
-	LocalIp      string `orm:"size(255)"`
+	Id               int64
+	Title            string `orm:"size(100)"`
+	FirstName        string `orm:"size(100)"`
+	LastName         string `orm:"size(100)"`
+	Email            string `orm:"size(100)"`
+	City             string `orm:"size(100)"`
+	Organization     string `orm:"size(100)"`
+	Phone            string `orm:"size(100)"`
+	Comments         string `orm:"type(text)"`
+	Approved         bool
+	XmppId           string `orm:"size(255)" json:",omitempty"`
+	LocalIp          string `orm:"size(255)" json:",omitempty"`
+	FeatureCoworking bool   `json:",omitempty"`
+	FeatureSetupTime bool   `json:",omitempty"`
+	FeatureSpaces    bool   `json:",omitempty"`
+	FeatureTutoring  bool   `json:",omitempty"`
 }
 
 func init() {
 	orm.RegisterModel(new(Location))
+}
+
+func (l *Location) ClearPrivateData() {
+	l.LocalIp = ""
+	l.XmppId = ""
+	l.FeatureCoworking = false
+	l.FeatureSetupTime = false
+	l.FeatureSpaces = false
+	l.FeatureTutoring = false
 }
 
 func (l *Location) Save() (err error) {

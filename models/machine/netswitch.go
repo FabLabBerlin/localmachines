@@ -138,6 +138,14 @@ func (this *Machine) turnXmpp(onOrOff ON_OR_OFF) (err error) {
 	return sendXmppCommand(location, string(onOrOff), this.Id)
 }
 
+func (this *Machine) NetswitchApplyConfig() (err error) {
+	location, err := locations.Get(this.LocationId)
+	if err != nil {
+		return fmt.Errorf("get location %v: %v", this.LocationId, err)
+	}
+	return sendXmppCommand(location, "apply_config", this.Id)
+}
+
 func sendXmppCommand(location *locations.Location, command string, machineId int64) (err error) {
 	trackingId := uuid.NewV4().String()
 	mu.Lock()

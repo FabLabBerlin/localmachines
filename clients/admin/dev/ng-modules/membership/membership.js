@@ -109,51 +109,6 @@ app.controller('MembershipCtrl',
     });
   }; // updateMembership()
 
-  $scope.deleteMembershipPrompt = function() {
-
-    // You have to add the <random-token></random-token> directive somewhere
-    // in HTML in order to make this work
-    var token = randomToken.generate();
-
-    vex.dialog.prompt({
-      // Unfortunately it is not possible to parse directives inside
-      // vex messages, so we just get the random token
-      message: 'Enter <span class="delete-prompt-token">' + 
-       token + '</span> to delete',
-      placeholder: 'Token',
-      callback: $scope.deleteMembershipPromptCallback.bind(this, token)
-    });
-  };
-
-  $scope.deleteMembershipPromptCallback = function(expectedToken, value) {
-    if (value) {    
-      if (value === expectedToken) {
-        $scope.deleteMembership();
-      } else {
-        toastr.error('Wrong token');
-      }
-    } else if (value !== false) {
-      toastr.error('No token');
-    }
-  };
-
-  $scope.deleteMembership = function() {
-    $http({
-      method: 'DELETE',
-      url: '/api/memberships/' + $scope.membership.Id,
-      params: {
-        ac: new Date().getTime()
-      }
-    })
-    .success(function() {
-      toastr.success('Membership deleted');
-      $location.path('/memberships');
-    })
-    .error(function() {
-      toastr.error('Failed to delete membership');
-    });
-  };
-
 }]); // app.controller
 
 })(); // closure

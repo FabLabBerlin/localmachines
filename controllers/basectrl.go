@@ -47,7 +47,7 @@ func NewErrorResponse() *ErrorResponse {
 // "Not logged in" error if user not logged in
 func (this *Controller) Prepare() {
 	switch this.Ctx.Request.URL.Path {
-	case "/api/users/forgot_password", "/api/users/forgot_password/phone", "/api/users/forgot_password/reset", "/api/machine_types", "/api/machines/search", "/api/locations", "/api/metrics/realtime":
+	case "/api/users/current", "/api/users/forgot_password", "/api/users/forgot_password/phone", "/api/users/forgot_password/reset", "/api/machine_types", "/api/machines/search", "/api/locations", "/api/metrics/realtime":
 	default:
 		sessUser := this.GetSession(SESSION_USER_ID)
 		if sessUser == nil {

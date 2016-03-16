@@ -41,6 +41,11 @@ function setupDEBIAN {
 
 	mkdir -p $targetDir/DEBIAN
 	cp $sourceDir/conffiles $targetDir/DEBIAN/
+	if [ -e $sourceDir/postinst ]
+	then
+		echo "Copying postinst file for $sourceDir"
+		cp $sourceDir/postinst $targetDir/DEBIAN/
+	fi
 
 	if [ "$architecture" = "amd64" ]
 	then
@@ -91,7 +96,7 @@ function buildLm {
 
 	echo Building Localmachines package for $buildArch...
 
-	PKG_NAME=localmachines_0.10.4.1
+	PKG_NAME=localmachines_0.10.11
 	PKG_TMP_DIR=$__dir/pkg_tmp_dir
 	PKG_ROOT=$PKG_TMP_DIR/$PKG_NAME
 
@@ -108,11 +113,21 @@ function buildLm {
 	cp $__dir/init/localmachines_run $PKG_ROOT/etc/service/localmachines/run
 
 	# Frontend
+	cd $__dir/../clients/admin
+	grunt prod
+	cd $__dir/../clients/machines
+	npm run-script prod
+	cd $__dir/../clients/signup
+	grunt prod
 	mkdir -p $PKG_ROOT/opt/localmachines/clients/admin
 	cp -r $__dir/../clients/admin/prod $PKG_ROOT/opt/localmachines/clients/admin/
 	mkdir -p $PKG_ROOT/opt/localmachines/clients/machines
 	cp -r $__dir/../clients/machines/prod $PKG_ROOT/opt/localmachines/clients/machines/
 	rm $PKG_ROOT/opt/localmachines/clients/machines/prod/bundle.js.map
+
+	# Migrations
+	mkdir -p $PKG_ROOT/opt/localmachines/database
+	cp -r $__dir/../database/migrations $PKG_ROOT/opt/localmachines/database/
 
 	compile $__dir/.. $PKG_ROOT/opt/localmachines $buildArch localmachines
 
@@ -124,7 +139,7 @@ function buildGateway {
 
 	echo Building Gateway package for $buildArch...
 
-	PKG_NAME=localmachines-gateway_0.10.4.1
+	PKG_NAME=localmachines-gateway_0.10.11
 	PKG_TMP_DIR=$__dir/pkg_tmp_dir
 	PKG_ROOT=$PKG_TMP_DIR/$PKG_NAME
 

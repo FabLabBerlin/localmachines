@@ -23,12 +23,11 @@ func init() {
 func GetUserPermissions(userId int64) (*[]Permission, error) {
 	var permissions []Permission
 	o := orm.NewOrm()
-	num, err := o.QueryTable("permission").
+	_, err := o.QueryTable("permission").
 		Filter("user_id", userId).All(&permissions)
 	if err != nil {
 		return nil, err
 	}
-	beego.Trace("Got num permissions:", num)
 	return &permissions, nil
 }
 

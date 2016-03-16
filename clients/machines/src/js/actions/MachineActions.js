@@ -47,49 +47,6 @@ var MachineActions = {
     LoginActions.keepAlive();
   },
 
-  forceTurnOnMachine(mid) {
-    GlobalActions.showGlobalLoader();
-    var locationId = reactor.evaluateToJS(getters.getLocationId);
-    $.ajax({
-      url: '/api/machines/' + mid + '/turn_on?location=' + locationId,
-      type: 'POST',
-      success(data) {
-        GlobalActions.hideGlobalLoader();
-        toastr.success('Machine on');
-      },
-      error(xhr, status, err) {
-        GlobalActions.hideGlobalLoader();
-        toastr.error('Failed to turn on');
-        console.error(status, err);
-      }
-    });
-    LoginActions.keepAlive();
-  },
-
-  forceTurnOffMachine(mid, aid) {
-    GlobalActions.showGlobalLoader();
-    var locationId = reactor.evaluateToJS(getters.getLocationId);
-    $.ajax({
-      url: '/api/machines/' + mid + '/turn_off?location=' + locationId,
-      type: 'POST',
-      success(data) {
-        GlobalActions.hideGlobalLoader();
-        if (aid) {
-          toastr.success('Machine off and activation closed');
-          endActivation(aid);
-        } else {
-          toastr.success('Machine off');
-        }
-      },
-      error(xhr, status, err) {
-        GlobalActions.hideGlobalLoader();
-        toastr.error('Failed to turn off');
-        console.error(status, err);
-      }
-    });
-    LoginActions.keepAlive();
-  },
-
   /*
    * Use GET call to get the machines the user can use
    * callback are defined below
@@ -163,8 +120,8 @@ var MachineActions = {
 function endActivation(aid, cb) {
   GlobalActions.showGlobalLoader();
   $.ajax({
-    url: '/api/activations/' + aid,
-    method: 'PUT',
+    url: '/api/activations/' + aid + '/close',
+    method: 'POST',
     data: {
       ac: new Date().getTime()
     },

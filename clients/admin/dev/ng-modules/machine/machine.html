@@ -89,7 +89,7 @@
   </div><!-- /.row -->
 
   <div class="row">
-    <div class="col-sm-3">
+    <div class="col-sm-3" ng-show="data.location.FeatureSpaces">
       <div class="form-group">
         <label for="grace-period">Grace Period (seconds)</label>
         <input type="number"
@@ -153,47 +153,71 @@
   <!-- NetSwitch -->
   <div class="row">
 
-    <div class="col-sm-9">
+    <div class="col-sm-12">
       <label for="machine-hexabus-ip">NetSwitch Config</label>
       <div class="row">
 
-        <div class="col-sm-4">
+        <div class="col-sm-3">
           <div class="form-group" ng-hide="machine.NetswitchType">
             <input type="text" id="machine-netswitch-url-on" 
                    class="form-control"
                    placeholder="On URL"
-                   ng-model="machine.NetswitchUrlOn">
+                   ng-model="machine.NetswitchUrlOn"
+                   ng-change="registerUnsavedChange()">
           </div>
           <div class="form-group" ng-show="machine.NetswitchType">
             <input type="text" id="machine-netswitch-host" 
                    class="form-control"
                    placeholder="Host (mfi only)"
-                   ng-model="machine.NetswitchHost">
+                   ng-model="machine.NetswitchHost"
+                   ng-change="registerUnsavedChange()">
           </div>
         </div>
 
-        <div class="col-sm-4">
+        <div class="col-sm-3">
           <div class="form-group" ng-hide="machine.NetswitchType">
             <input type="text" id="machine-netswitch-url-off" 
                    class="form-control"
                    placeholder="Off URL"
-                   ng-model="machine.NetswitchUrlOff">
+                   ng-model="machine.NetswitchUrlOff"
+                   ng-change="registerUnsavedChange()">
           </div>
           <div class="form-group" ng-show="machine.NetswitchType">
             <input type="number" id="machine-netswitch-sensor-port" 
                    class="form-control"
                    placeholder="Sensor Port (mfi only)"
-                   ng-model="machine.NetswitchSensorPort">
+                   ng-model="machine.NetswitchSensorPort"
+                   ng-change="registerUnsavedChange()">
           </div>
         </div>
 
-        <div class="col-sm-4">
+        <div class="col-sm-3">
           <div class="form-group">
             <select class="form-control" id="netswitch-type" 
-                    ng-model="machine.NetswitchType">
+                    ng-model="machine.NetswitchType"
+                    ng-change="registerUnsavedChange()">
               <option value="" selected>Custom Powerswitch</option>
               <option value="mfi">Ubiquity mFi Powerswitch</option>
             </select>
+          </div>
+        </div>
+
+        <div class="col-sm-3">
+          <div class="form-group">
+            <button class="btn btn-danger btn-block"
+                    ng-click="applyConfig()"
+                    ng-show="machine.NetswitchType === 'mfi' && !netswitchConfigStatus"
+                    type="button">
+              Apply Config
+            </button>
+            <button class="btn btn-danger btn-block"
+                    ng-click="applyConfig()"
+                    ng-disabled="true"
+                    ng-show="netswitchConfigStatus"
+                    type="button">
+              <i class="fa fa-refresh fa-spin"></i>
+              {{netswitchConfigStatus}}
+            </button>
           </div>
         </div>
         </div>
@@ -244,6 +268,12 @@
       <i class="fa fa-save"></i>&nbsp;Save
     </button>
 
+  </div>
+
+  <div id="loader-global" ng-show="loading">
+    <div class="spinner">
+      <i class="fa fa-cog fa-spin"></i>
+    </div>
   </div>
 
 </div> <!-- /container -->

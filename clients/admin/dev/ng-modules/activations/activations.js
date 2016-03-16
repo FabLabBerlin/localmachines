@@ -18,7 +18,14 @@ app.controller('ActivationsCtrl',
 
   $scope.activationsStartDate = moment().format('YYYY-MM');
   $scope.activationsEndDate = moment().format('YYYY-MM');
+  $scope.searchTeam = '';
   $scope.usersById = {};
+  $scope.loading = false;
+
+  $scope.loadPage = function() {
+    var offset = $scope.itemsPerPage * ($scope.currentPage - 1);
+    $scope.pageActivations = $scope.activations.slice(offset, offset + $scope.itemsPerPage);
+  };
 
   // Loads and reloads activations according to filter.
   // If user ID is not set - load all users
@@ -35,6 +42,7 @@ app.controller('ActivationsCtrl',
       params: {
         startDate: $scope.activationsStartDate,
         endDate: $scope.activationsEndDate,
+        search: $scope.searchTerm,
         userId: 1,
         includeInvoiced: false,
         itemsPerPage: $scope.itemsPerPage,
@@ -43,8 +51,8 @@ app.controller('ActivationsCtrl',
         location: $cookies.locationId
       }
     })
-    .success(function(response) {
-      _.each(response.ActivationsPage, function(activation){
+    .success(function(activations) {
+      _.each(activations, function(activation) {
         var machine = _.find($scope.machines, 'Id', activation.MachineId);
         if (machine) {
           activation.MachineName = machine.Name;
@@ -55,9 +63,10 @@ app.controller('ActivationsCtrl',
 
       loadUserNames();
 
-      $scope.activations = response.ActivationsPage;
-      $scope.numActivations = response.NumActivations;
+      $scope.activations = activations;
+      $scope.numActivations = activations.length;
       $scope.numPages = Math.ceil($scope.numActivations / $scope.itemsPerPage);
+      $scope.loadPage();
     })
     .error(function() {
       toastr.error('Failed to load activations');
@@ -65,7 +74,6 @@ app.controller('ActivationsCtrl',
   };
 
   function loadUserNames(userId) {
-    console.log('loadUserNames()');
     $http({
       method: 'GET',
       url: '/api/users',
@@ -92,9 +100,7 @@ app.controller('ActivationsCtrl',
 
   // This is called whenever start or end date changes
   $scope.onFilterChange = function() {
-    console.log('foo');
     if ($scope.activationsStartDate && $scope.activationsEndDate) {
-      console.log('bar');
       $scope.activations = [];
       $scope.currentPage = 1;
       $scope.loadActivations();
@@ -103,7 +109,7 @@ app.controller('ActivationsCtrl',
 
   $scope.activations = [];
   $scope.currentPage = 1;
-  $scope.itemsPerPage = 15;
+  $scope.itemsPerPage = 10;
 
   $scope.loadNextPage = function() {
     if ($scope.activations.length < $scope.itemsPerPage) {
@@ -111,7 +117,7 @@ app.controller('ActivationsCtrl',
     }
 
     $scope.currentPage++;
-    $scope.loadActivations('', '', 0);
+    $scope.loadPage();
   };
 
   $scope.loadPrevPage = function() {
@@ -120,7 +126,7 @@ app.controller('ActivationsCtrl',
     }
 
     $scope.currentPage--;
-    $scope.loadActivations('', '', 0);
+    $scope.loadPage();
   };
 
   $scope.createFbDraftsPrompt = function() {
@@ -144,18 +150,21 @@ app.controller('ActivationsCtrl',
   };
 
   $scope.createFbDrafts = function() {
+    $scope.loading = true;
     $http({
       method: 'POST',
       url: '/api/invoices/create_drafts',
       params: getExportParams()
     })
     .success(function(draftsReport) {
+      $scope.loading = false;
       console.log('draftsReport=', draftsReport);
       console.log('$scope.usersById=', $scope.usersById);
       $scope.draftsReport = draftsReport;
       toastr.info('Sucessfully created invoice drafts');
     })
     .error(function() {
+      $scope.loading = false;
       toastr.error('Error creating invoice');
     });
   };
@@ -242,51 +251,9 @@ app.controller('ActivationsCtrl',
     });
   };
 
-  // Test Typeahead
-  var substringMatcher = function(strs) {
-    return function findMatches(q, cb) {
-      var matches, substrRegex;
- 
-      // an array that will be populated with substring matches
-      matches = [];
- 
-      // regex used to determine if a string contains the substring `q`
-      substrRegex = new RegExp(q, 'i');
- 
-      // iterate through the pool of strings and for any string that
-      // contains the substring `q`, add it to the `matches` array
-      $.each(strs, function(i, str) {
-        if (substrRegex.test(str)) {
-          // the typeahead jQuery plugin expects suggestions to a
-          // JavaScript object, refer to typeahead docs for more info
-          matches.push({ value: str });
-        }
-      });
- 
-      cb(matches);
-    };
+  $scope.edit = function(id) {
+    $location.path('/activations/' + id);
   };
- 
-  var states = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',
-    'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii',
-    'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana',
-    'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota',
-    'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire',
-    'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota',
-    'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island',
-    'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont',
-    'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
-  ];
- 
-  $('.typeahead').typeahead({
-    hint: true,
-    highlight: true,
-    minLength: 1
-  },{
-    name: 'states',
-    displayKey: 'value',
-    source: substringMatcher(states)
-  });
 
   // We need full machine names for the activation table
   if (!$scope.machines) {

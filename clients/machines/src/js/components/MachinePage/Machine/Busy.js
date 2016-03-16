@@ -1,8 +1,6 @@
 var React = require('react');
 var RepairButton = require('../../Feedback/RepairButton');
 var Timer = require('./Timer');
-var ForceSwitchOn = require('./ForceSwitchOn');
-var ForceSwitchOff = require('./ForceSwitchOff');
 
 /*
  * Div displayed when a machine is busy
@@ -21,7 +19,6 @@ var BusyMachine = React.createClass({
   /*
    * Render Busy div
    * If the machine is occupied by the user it will be displayed
-   * Staff have two more button to force switch
    */
    render() {
     return (
@@ -50,14 +47,6 @@ var BusyMachine = React.createClass({
                     onClick={this.endActivation}>
                     Stop
                   </button>
-                </td>
-                <td className="force-button-table-cell">
-                  <ForceSwitchOn force={this.props.force}/>
-                </td>
-              </tr>
-              <tr>
-                <td className="force-button-table-cell">
-                  <ForceSwitchOff force={this.props.force}/>
                 </td>
               </tr>
             </table>

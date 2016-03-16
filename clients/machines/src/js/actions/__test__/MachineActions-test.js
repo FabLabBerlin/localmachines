@@ -28,12 +28,12 @@ LocationActions.setLocationId(1);
 
 describe('MachineActions', function() {
   describe('endActivation', function() {
-    it('should PUT /api/activations/:aid', function() {
+    it('should POST /api/activations/:aid/close', function() {
       MachineActions.endActivation(2);
       expect($.ajax).toBeCalledWith({
-        url: '/api/activations/2',
+        url: '/api/activations/2/close',
         data: jasmine.any(Object),
-        method: 'PUT',
+        method: 'POST',
         success: jasmine.any(Function),
         error: jasmine.any(Function)
       });
@@ -49,30 +49,6 @@ describe('MachineActions', function() {
           mid: 17
         },
         dataType: 'json',
-        type: 'POST',
-        success: jasmine.any(Function),
-        error: jasmine.any(Function)
-      });
-    });
-  });
-
-  describe('forceTurnOffMachine', function() {
-    it('should POST /api/machines/:mid/turn_off', function() {
-      MachineActions.forceTurnOffMachine(17, 2);
-      expect($.ajax).toBeCalledWith({
-        url: '/api/machines/17/turn_off?location=1',
-        type: 'POST',
-        success: jasmine.any(Function),
-        error: jasmine.any(Function)
-      });
-    });
-  });
-
-  describe('forceTurnOnMachine', function() {
-    it('should POST /api/machines/:mid/turn_on', function() {
-      MachineActions.forceTurnOnMachine(17);
-      expect($.ajax).toBeCalledWith({
-        url: '/api/machines/17/turn_on?location=1',
         type: 'POST',
         success: jasmine.any(Function),
         error: jasmine.any(Function)

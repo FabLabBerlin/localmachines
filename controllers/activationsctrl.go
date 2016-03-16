@@ -1,12 +1,15 @@
 package controllers
 
 import (
+	"bytes"
+	"encoding/json"
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/astaxie/beego"
+	"io/ioutil"
 	"time"
 )
 
@@ -16,24 +19,25 @@ type ActivationsController struct {
 
 // @Title Get All
 // @Description Get all activations
-// @Param	startDate		query 	string	true		"Period start date"
-// @Param	endDate		query 	string	true		"Period end date"
-// @Param	userId		query 	int	true		"User ID"
-// @Param	itemsPerPage		query 	int	true		"Items per page or max number of items to return"
-// @Param	page		query 	int	true		"Current page to show"
+// @Param	startDate		query 	string	true	"Period start date"
+// @Param	endDate			query 	string	true	"Period end date"
+// @Param	search			query	string	false	"Search term"
+// @Param	userId			query 	int		true	"User ID"
+// @Param	itemsPerPage	query 	int		true	"Items per page or max number of items to return"
+// @Param	page			query 	int		true	"Current page to show"
 // @Success 200 {object}
 // @Failure	400	Bad request
 // @Failure	401	Not authorized
+// @Failure	500	Internal Server Error
 // @router / [get]
 func (this *ActivationsController) GetAll() {
 
-	// Only admin can use this API call
-	if !this.IsAdmin() {
+	locId, isAdmin := this.GetLocIdAdmin()
+	if !isAdmin {
 		beego.Error("Not authorized")
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	// Get variables
 	startDate := this.GetString("startDate")
 	if startDate == "" {
 		beego.Error("Missing start date")
@@ -46,17 +50,7 @@ func (this *ActivationsController) GetAll() {
 		this.CustomAbort(400, "Failed to get activations")
 	}
 
-	itemsPerPage, err := this.GetInt64("itemsPerPage")
-	if err != nil {
-		beego.Error("Could not get itemsPerPage request variable:", err)
-		this.CustomAbort(400, "Failed to get activations")
-	}
-
-	page, err := this.GetInt64("page")
-	if err != nil {
-		beego.Error("Could not get page request variable:", err)
-		this.CustomAbort(400, "Failed to get activations")
-	}
+	search := this.GetString("search")
 
 	interval, err := lib.NewInterval(startDate, endDate)
 	if err != nil {
@@ -64,23 +58,13 @@ func (this *ActivationsController) GetAll() {
 	}
 
 	// Get activations
-	activations, err := purchases.GetActivations(interval, itemsPerPage, page)
+	activations, err := purchases.GetActivations(locId, interval, search)
 	if err != nil {
 		beego.Error("Failed to get activations:", err)
-		this.CustomAbort(403, "Failed to get activations")
+		this.CustomAbort(500, "Failed to get activations")
 	}
 
-	// Get total activation count
-	numActivations, err := purchases.GetNumActivations(interval)
-	if err != nil {
-		beego.Error("Failed to get number of activations:", err)
-		this.CustomAbort(403, "Failed to get activations")
-	}
-
-	this.Data["json"] = purchases.GetActivationsResponse{
-		NumActivations:  numActivations,
-		ActivationsPage: activations,
-	}
+	this.Data["json"] = activations
 	this.ServeJSON()
 }
 
@@ -92,7 +76,59 @@ func (this *ActivationsController) GetAll() {
 // @Failure	401	Not authorized
 // @router /:aid [get]
 func (this *ActivationsController) Get() {
+	id, err := this.GetInt64(":aid")
+	if err != nil {
+		this.CustomAbort(400, "Bad request")
+	}
 
+	a, err := purchases.GetActivation(id)
+	if err != nil {
+		beego.Error("get activation:", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	this.Data["json"] = a
+	this.ServeJSON()
+}
+
+// @Title Put
+// @Description Update activation
+// @Success 201 {object}
+// @Failure	400	Bad Request
+// @Failure	401	Unauthorized
+// @Failure 500 Internal Server Error
+// @router /:rid [put]
+func (this *ActivationsController) Put() {
+	if !this.IsAdmin() {
+		beego.Error("Unauthorized attempt to update activation")
+		this.CustomAbort(401, "Unauthorized")
+	}
+
+	activation := &purchases.Activation{}
+
+	buf, err := ioutil.ReadAll(this.Ctx.Request.Body)
+	if err != nil {
+		beego.Error("Failed to read all:", err)
+		this.CustomAbort(400, "Failed to read all")
+	}
+	beego.Info("buf:", string(buf))
+	defer this.Ctx.Request.Body.Close()
+
+	data := bytes.NewBuffer(buf)
+
+	dec := json.NewDecoder(data)
+	if err := dec.Decode(&activation.Purchase); err != nil {
+		beego.Error("Failed to decode json:", err)
+		this.CustomAbort(400, "Failed to update Activation")
+	}
+
+	if err := activation.Update(); err != nil {
+		beego.Error("Failed to update activation:", err)
+		this.CustomAbort(500, "Failed to update Activation")
+	}
+
+	this.Data["json"] = activation
+	this.ServeJSON()
 }
 
 // @Title Get Active
@@ -204,7 +240,7 @@ func (this *ActivationsController) Create() {
 // @Success 200 {object} models.StatusResponse
 // @Failure	403	Failed to close activation
 // @Failure 401 Not authorized
-// @router /:aid [put]
+// @router /:aid/close [post]
 func (this *ActivationsController) Close() {
 	aid, err := this.GetInt64(":aid")
 	if err != nil {
