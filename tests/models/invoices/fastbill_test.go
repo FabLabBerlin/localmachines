@@ -30,7 +30,13 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 			},
 		}
 
-		inv := invoices.Invoice{}
+		t := time.Now()
+		inv := invoices.Invoice{
+			MonthFrom: int(t.Month()),
+			YearFrom:  t.Year(),
+			MonthTo:   int(t.Month()),
+			YearTo:    t.Year(),
+		}
 
 		userSummaries, err := inv.GetUserSummaries(ps)
 		if err != nil {
@@ -74,7 +80,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 
 		fastbill.API_URL = testServer.URL
 
-		_, empty, err := invoices.CreateFastbillDraft((*userSummaries)[0])
+		_, empty, err := invoices.CreateFastbillDraft(&inv, (*userSummaries)[0])
 		So(empty, ShouldBeFalse)
 		So(err, ShouldBeNil)
 	})
