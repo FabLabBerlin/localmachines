@@ -36,20 +36,20 @@ func TestActivations(t *testing.T) {
 
 		Reset(setup.ResetDB)
 
-		Convey("Testing CreateActivation", func() {
+		Convey("Testing StartActivation", func() {
 			user := users.User{
 				FirstName: "ILoveFabLabs",
 				Email:     "awesome@example.com",
 			}
 
 			Convey("Creating activation with non-existing machine", func() {
-				_, err := purchases.CreateActivation(0, 0, time.Now())
+				_, err := purchases.StartActivation(0, 0, time.Now())
 				So(err, ShouldNotBeNil)
 			})
 
 			Convey("Creating activation with non-existing user", func() {
 				machine, _ := CreateMachine("lel")
-				_, err := purchases.CreateActivation(machine.Id, 0, time.Now())
+				_, err := purchases.StartActivation(machine.Id, 0, time.Now())
 				So(err, ShouldBeNil)
 			})
 
@@ -57,7 +57,7 @@ func TestActivations(t *testing.T) {
 				machine, err1 := CreateMachine("lel")
 				uid, err2 := users.CreateUser(&user)
 				activationStartTime := time.Date(2015, 5, 8, 2, 15, 3, 1, time.Local)
-				aid, err3 := purchases.CreateActivation(machine.Id, uid, activationStartTime)
+				aid, err3 := purchases.StartActivation(machine.Id, uid, activationStartTime)
 				activation, err4 := purchases.GetActivation(aid)
 				assert.NoErrors(err1, err2, err3, err4)
 
@@ -113,9 +113,9 @@ func TestActivations(t *testing.T) {
 
 				So(err, ShouldNotBeNil)
 			})
-			Convey("Creating an activation and close it", func() {
+			Convey("Starting an activation and closing it", func() {
 				machine, _ := CreateMachine("lel")
-				aid, err1 := purchases.CreateActivation(machine.Id, 0, time.Now())
+				aid, err1 := purchases.StartActivation(machine.Id, 0, time.Now())
 				err2 := purchases.CloseActivation(aid, time.Now())
 
 				So(err1, ShouldBeNil)
@@ -130,16 +130,16 @@ func TestActivations(t *testing.T) {
 			})
 			Convey("Getting activation id on non-activated machine", func() {
 				machine, err := CreateMachine("lel")
-				aid, err2 := purchases.CreateActivation(machine.Id, 0, time.Now())
+				aid, err2 := purchases.StartActivation(machine.Id, 0, time.Now())
 				err3 := purchases.CloseActivation(aid, time.Now())
 				mid, err4 := purchases.GetActivationMachineId(aid)
 
 				assert.NoErrors(err, err2, err3, err4)
 				So(machine.Id, ShouldEqual, mid)
 			})
-			Convey("Creating activation on a machine and get activation's id", func() {
+			Convey("Starting activation on a machine and get activation's id", func() {
 				machine, err := CreateMachine("lel")
-				aid, err2 := purchases.CreateActivation(machine.Id, 0, time.Now())
+				aid, err2 := purchases.StartActivation(machine.Id, 0, time.Now())
 				gmid, err3 := purchases.GetActivationMachineId(aid)
 
 				assert.NoErrors(err, err2, err3)

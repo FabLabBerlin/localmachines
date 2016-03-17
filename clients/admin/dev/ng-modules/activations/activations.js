@@ -133,6 +133,22 @@ app.controller('ActivationsCtrl',
     $scope.loadPage();
   };
 
+  $scope.createActivation = function() {
+    $http({
+      method: 'POST',
+      url: '/api/activations',
+      params: {
+        location: $cookies.locationId
+      }
+    })
+    .success(function(a) {
+      $location.path('/activations/' + a.Id);
+    })
+    .error(function() {
+      toastr.error('Error.  Please try again later.');
+    });
+  };
+
   $scope.createFbDraftsPrompt = function() {
     var token = randomToken.generate();
     vex.dialog.prompt({

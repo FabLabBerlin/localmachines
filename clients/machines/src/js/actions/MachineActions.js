@@ -19,7 +19,7 @@ var MachineActions = {
     var locationId = reactor.evaluateToJS(getters.getLocationId);
     GlobalActions.showGlobalLoader();
     $.ajax({
-      url: '/api/activations?location=' + locationId,
+      url: '/api/activations/start?location=' + locationId,
       dataType: 'json',
       type: 'POST',
       data: {

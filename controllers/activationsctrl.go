@@ -68,6 +68,31 @@ func (this *ActivationsController) GetAll() {
 	this.ServeJSON()
 }
 
+// @Title Create
+// @Description Create activation manually
+// @Param	location_id	query	int	true	"Location ID"
+// @Success 200 {object}
+// @Failure 400 Bad Request
+// @Failure 401 Not authorized
+// @Failure 500 Internal Server Error
+// @router / [post]
+func (this *ActivationsController) Post() {
+	locId, isAdmin := this.GetLocIdAdmin()
+	if !isAdmin {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	a, err := purchases.CreateActivation(locId)
+	if err != nil {
+		beego.Error("Create activation:", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	this.Data["json"] = a.Purchase
+	this.ServeJSON()
+}
+
 // @Title Get
 // @Description Get activation by activation ID
 // @Param	aid		path 	int	true		"Activation ID"
@@ -146,14 +171,14 @@ func (this *ActivationsController) GetActive() {
 	this.ServeJSON()
 }
 
-// @Title Create
-// @Description Create new activation
+// @Title Start
+// @Description Start new activation
 // @Param	mid		query 	int	true		"Machine ID"
 // @Success 201 {object} models.ActivationCreateResponse
-// @Failure	403	Failed to create activation
+// @Failure	403	Failed to start activation
 // @Failure 401 Not authorized
-// @router / [post]
-func (this *ActivationsController) Create() {
+// @router /start [post]
+func (this *ActivationsController) Start() {
 	locId, isStaff := this.GetLocIdMember()
 	if !isStaff {
 		beego.Error("Not authorized")
@@ -222,7 +247,7 @@ func (this *ActivationsController) Create() {
 
 	// Continue with creating activation
 	var startTime time.Time = time.Now()
-	activationId, err := purchases.CreateActivation(machineId, userId, startTime)
+	activationId, err := purchases.StartActivation(machineId, userId, startTime)
 	if err != nil {
 		beego.Error("Failed to create activation:", err)
 		this.CustomAbort(403, "Failed to create activation")

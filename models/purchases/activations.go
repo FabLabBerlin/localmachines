@@ -21,6 +21,17 @@ func (this *Activation) MarshalJSON() ([]byte, error) {
 	return json.Marshal(this.Purchase)
 }
 
+func CreateActivation(locationId int64) (activation Activation, err error) {
+	o := orm.NewOrm()
+	if locationId <= 0 {
+		return activation, fmt.Errorf("invalid location id: %v", locationId)
+	}
+	activation.Purchase.Type = TYPE_ACTIVATION
+	activation.Purchase.LocationId = locationId
+	activation.Purchase.Id, err = o.Insert(&activation.Purchase)
+	return
+}
+
 // Gets filtered activations in a paged manner between start and end time.
 // Items per page and page number can be specified. Already invoiced
 // activations can be excluded.
@@ -111,7 +122,7 @@ func GetActiveActivations() ([]*Activation, error) {
 }
 
 // Creates activation and returns activation ID.
-func CreateActivation(machineId, userId int64, startTime time.Time) (
+func StartActivation(machineId, userId int64, startTime time.Time) (
 	activationId int64, err error) {
 
 	o := orm.NewOrm()

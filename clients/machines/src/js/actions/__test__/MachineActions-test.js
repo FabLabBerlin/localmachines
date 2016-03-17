@@ -41,10 +41,10 @@ describe('MachineActions', function() {
   });
 
   describe('startActivation', function() {
-    it('should POST /api/activations', function() {
+    it('should POST /api/activations/start', function() {
       MachineActions.startActivation(17);
       expect($.ajax).toBeCalledWith({
-        url: '/api/activations?location=1',
+        url: '/api/activations/start?location=1',
         data: {
           mid: 17
         },
