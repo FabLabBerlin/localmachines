@@ -54,8 +54,8 @@ func GetActivations(locationId int64, interval lib.Interval, search string) (act
 
 		_, err = o.Raw(query,
 			TYPE_ACTIVATION,
-			interval.DayFrom(),
-			interval.DayTo()).QueryRows(&purchases)
+			interval.TimeFrom(),
+			interval.TimeTo()).QueryRows(&purchases)
 
 	}
 

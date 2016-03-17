@@ -3,6 +3,7 @@ package purchases
 import (
 	"errors"
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/users"
@@ -90,6 +91,34 @@ func Get(purchaseId int64) (purchase *Purchase, err error) {
 	o := orm.NewOrm()
 	purchase = &Purchase{Id: purchaseId}
 	err = o.Read(purchase)
+	return
+}
+
+func GetAllBetweenAt(locationId int64, interval lib.Interval) (ps []*Purchase, err error) {
+	o := orm.NewOrm()
+
+	var all []*Purchase
+
+	_, err = o.QueryTable(TABLE_NAME).
+		Filter("location_id", locationId).
+		Limit(1000000).
+		All(&all)
+
+	if err != nil {
+		return
+	}
+
+	ps = make([]*Purchase, 0, len(all))
+	for _, p := range all {
+		if interval.Contains(p.TimeStart) && !p.Running {
+			if p.UserId != 0 {
+				ps = append(ps, p)
+			} else {
+				beego.Warn("UserId = 0 for Purchase # ", p.Id)
+			}
+		}
+	}
+
 	return
 }
 

@@ -250,59 +250,6 @@ func Delete(invoiceId int64) error {
 	return nil
 }
 
-// Gets purchases that have happened between start and end dates
-func getPurchases(locationId int64, interval lib.Interval) (ps []*purchases.Purchase, err error) {
-
-	p := purchases.Purchase{}
-	o := orm.NewOrm()
-
-	var all []*purchases.Purchase
-
-	_, err = o.QueryTable(p.TableName()).
-		Filter("location_id", locationId).
-		Limit(1000000).
-		All(&all)
-
-	if err != nil {
-		return
-	}
-
-	beego.Info("len(all)=", len(all))
-
-	ps = make([]*purchases.Purchase, 0, len(all))
-	for _, p := range all {
-		/*beego.Info("====================")
-		beego.Info("interval.TimeFrom=", interval.TimeFrom())
-		beego.Info("p.TimeStart=", p.TimeStart)
-		beego.Info("interval.TimeTo=", interval.TimeTo())
-		beego.Info("====================")*/
-		if interval.Contains(p.TimeStart) && !p.Running {
-			if p.UserId != 0 {
-				ps = append(ps, p)
-			} else {
-				beego.Warn("UserId = 0 for Purchase # ", p.Id)
-			}
-		}
-	}
-
-	/*query := fmt.Sprintf("SELECT p.* FROM %s p JOIN %s u ON p.user_id=u.id "+
-	"WHERE p.time_start >= ? AND p.time_end <= ? "+
-	"AND (p.running IS NULL OR p.running = 0) AND location_id = ?",
-	p.TableName(),
-	usr.TableName())*/
-
-	beego.Info("-----getPurchases----uid=71")
-	for _, p := range ps {
-		if p.UserId == 71 {
-			beego.Info("purchase: p.MachineId=", p.MachineId)
-			beego.Info("purchase: p.TimeStart=", p.TimeStart)
-		}
-	}
-	beego.Info("---------------------")
-
-	return
-}
-
 func (this *Invoice) getFileName(interval lib.Interval) string {
 
 	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -361,7 +308,7 @@ func (this *Invoice) getPurchases(locationId int64, interval lib.Interval) (ps [
 	}
 
 	// Get all uninvoiced purchases in the time range
-	ps, err = getPurchases(locationId, interval)
+	ps, err = purchases.GetAllBetweenAt(locationId, interval)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get purchases: %v", err)
 	}
