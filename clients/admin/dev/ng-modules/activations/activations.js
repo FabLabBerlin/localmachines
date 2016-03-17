@@ -36,6 +36,10 @@ app.controller('ActivationsCtrl',
       return;
     }
 
+    if ($scope.activationsStartDate.length !== 7 || $scope.activationsEndDate.length !== 7) {
+      return;
+    }
+
     $http({
       method: 'GET',
       url: '/api/activations', 

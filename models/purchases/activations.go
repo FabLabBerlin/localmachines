@@ -25,9 +25,8 @@ func (this *Activation) MarshalJSON() ([]byte, error) {
 // Items per page and page number can be specified. Already invoiced
 // activations can be excluded.
 func GetActivations(locationId int64, interval lib.Interval, search string) (activations []Activation, err error) {
-
 	// Get activations from database
-	purchases := []*Purchase{}
+	var purchases []*Purchase
 	act := Activation{}
 	o := orm.NewOrm()
 
@@ -41,8 +40,8 @@ func GetActivations(locationId int64, interval lib.Interval, search string) (act
 
 		_, err = o.Raw(query,
 			TYPE_ACTIVATION,
-			interval.DayFrom(),
-			interval.DayTo(),
+			interval.TimeFrom(),
+			interval.TimeTo(),
 			pattern,
 			pattern,
 			pattern).QueryRows(&purchases)
