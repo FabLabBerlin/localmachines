@@ -102,7 +102,7 @@ func (this *InvoicesController) Create() {
 // @Success 200 {object} models.invoices.Invoice
 // @Failure	401	Not authorized
 // @Failure	403	Failed to create invoice
-// @router /create_drafts [post]
+// @router /:iid/create_drafts [post]
 func (this *InvoicesController) CreateDrafts() {
 
 	locId, authorized := this.GetLocIdAdmin()
@@ -115,19 +115,25 @@ func (this *InvoicesController) CreateDrafts() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	interval, err := this.parseParams()
+	iid, err := this.GetInt64(":iid")
 	if err != nil {
-		beego.Error("Request parameters:", err)
-		this.CustomAbort(400, "Bad request")
+		beego.Error("Failed to get iid:", err)
+		this.CustomAbort(403, "Failed to delete invoice")
 	}
 
-	invs, err := invoices.Create(locId, interval)
+	dbInvs, err := invoices.Get(iid)
 	if err != nil {
-		beego.Error("Failed to create invoices:", err)
-		this.CustomAbort(500, "Failed to create invoice drafts")
+		beego.Error("invoices get:", err)
+		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	creationReport := invoices.CreateFastbillDrafts(invs)
+	invs, err := invoices.CalculateSummary(locId, dbInvs.Interval())
+	if err != nil {
+		beego.Error("Failed to calculate summary:", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	creationReport := invoices.CreateFastbillDrafts(&invs)
 	beego.Info("created invoice drafts with IDs", creationReport.Ids)
 
 	this.Data["json"] = creationReport

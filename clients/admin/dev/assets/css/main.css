@@ -400,3 +400,6 @@ footer {
 #reservations .fa-close {
   cursor: pointer;
 }
+.fastbill-icon img {
+  width: 20px;
+}
