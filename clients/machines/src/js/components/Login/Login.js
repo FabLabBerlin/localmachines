@@ -122,7 +122,7 @@ var Login = React.createClass({
             name="password"
             className="form-control"
             ref="password"
-            placeholder="password"
+            placeholder="Password"
             required
           />
           <select

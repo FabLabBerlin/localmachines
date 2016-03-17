@@ -16,6 +16,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 	"sync"
 )
 
@@ -42,6 +43,9 @@ func (ns *NetSwitch) turnOn() (err error) {
 	} else {
 		resp, err = http.Get(ns.UrlOn())
 	}
+	if ns.isIgnorableAhmaError(err) {
+		err = nil
+	}
 	if err != nil {
 		return fmt.Errorf("http: %v", err)
 	}
@@ -60,6 +64,9 @@ func (ns *NetSwitch) turnOff() (err error) {
 	} else {
 		resp, err = http.Get(ns.UrlOff())
 	}
+	if ns.isIgnorableAhmaError(err) {
+		err = nil
+	}
 	if err != nil {
 		return fmt.Errorf("http: %v", err)
 	}
@@ -68,6 +75,15 @@ func (ns *NetSwitch) turnOff() (err error) {
 	}
 	ns.On = false
 	return
+}
+
+func (ns *NetSwitch) isIgnorableAhmaError(err error) bool {
+	if err == nil {
+		return false
+	}
+	msg := err.Error()
+	return strings.Contains(msg, "malformed HTTP status code") &&
+		strings.Contains(msg, "AhmaSwitch")
 }
 
 func (ns *NetSwitch) UrlOn() string {
