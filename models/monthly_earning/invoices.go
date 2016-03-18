@@ -1,7 +1,6 @@
 package monthly_earning
 
 import (
-	"errors"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models"
@@ -166,7 +165,7 @@ func Create(locationId int64, interval lib.Interval) (me *MonthlyEarning, err er
 	me.MonthFrom = interval.MonthFrom
 	me.YearFrom = interval.YearFrom
 	me.MonthTo = interval.MonthTo
-	me.MonthTo = interval.MonthTo
+	me.YearTo = interval.YearTo
 
 	if err = me.Save(); err != nil {
 		return nil, fmt.Errorf("save: %v", err)
@@ -177,17 +176,12 @@ func Create(locationId int64, interval lib.Interval) (me *MonthlyEarning, err er
 
 // Get monthly earning with id from db
 func Get(id int64) (me *MonthlyEarning, err error) {
-
 	me = &MonthlyEarning{
 		Id: id,
 	}
 
 	o := orm.NewOrm()
 	err = o.Read(me)
-	if err != nil {
-		beego.Error("Failed to read monthly earning:", err)
-		return nil, fmt.Errorf("Failed to read monthly earning: %v", err)
-	}
 
 	return
 }
@@ -202,18 +196,13 @@ func GetAll() (mes []*MonthlyEarning, err error) {
 }
 
 // Deletes a monthly earning by Id
-func Delete(id int64) error {
+func Delete(id int64) (err error) {
 	me := MonthlyEarning{
 		Id: id,
 	}
 	o := orm.NewOrm()
-	num, err := o.Delete(&me)
-	if err != nil {
-		return errors.New(
-			fmt.Sprintf("Failed to delete monthly earning: %v", err))
-	}
-	beego.Trace("Deleted num monthly earnings:", num)
-	return nil
+	_, err = o.Delete(&me)
+	return
 }
 
 func (this *MonthlyEarning) getFileName(interval lib.Interval) string {
