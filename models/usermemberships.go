@@ -1,7 +1,6 @@
 package models
 
 import (
-	"errors"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/astaxie/beego"
@@ -71,50 +70,23 @@ type UserMembershipList struct {
 	Data []UserMembershipCombo
 }
 
-// Creates user membership from user ID,
-// membership ID and start time. Returns created user membership ID,
-// and an error object.
-func CreateUserMembership(
-	userId int64,
-	membershipId int64,
-	startTime time.Time) (userMembershipId int64, err error) {
-
-	userMembershipId = 0
-	err = nil
-
-	beego.Trace("membershipId:", membershipId)
-
-	userMembership := UserMembership{}
-	userMembership.UserId = userId
-	userMembership.MembershipId = membershipId
-	userMembership.StartDate = startTime
-
-	// We need to get base membership data first to calc some stuff
-	var baseMembership *Membership
-	baseMembership, err = GetMembership(membershipId)
+// Creates user membership from user ID, membership ID and start time.
+func CreateUserMembership(userId, membershipId int64, startTime time.Time) (id int64, err error) {
+	baseMembership, err := GetMembership(membershipId)
 	if err != nil {
 		return 0, fmt.Errorf("Failed to get membership")
 	}
 
-	// Set the auto extend flag of user membership to the one of base membership
-	userMembership.AutoExtend = baseMembership.AutoExtend
-
-	// Calculate end date by using base membership
-	userMembership.EndDate = startTime.AddDate(
-		0, int(baseMembership.DurationMonths), 0)
-
-	// Store the user membership to database
-	o := orm.NewOrm()
-	userMembershipId, err = o.Insert(&userMembership)
-	if err != nil {
-		beego.Error("Error creating new user membership: ", err)
-
-		userMembershipId = 0
-		err = fmt.Errorf("Failed to create user membership")
-		return
+	userMembership := UserMembership{
+		UserId:       userId,
+		MembershipId: membershipId,
+		StartDate:    startTime,
+		EndDate:      startTime.AddDate(0, int(baseMembership.DurationMonths), 0),
+		AutoExtend:   baseMembership.AutoExtend,
 	}
 
-	return
+	o := orm.NewOrm()
+	return o.Insert(&userMembership)
 }
 
 func GetAllUserMembershipsAt(locationId int64) (userMemberships []*UserMembership, err error) {
@@ -170,41 +142,15 @@ func GetUserMemberships(userId int64) (*UserMembershipList, error) {
 		um.TableName(), m.TableName())
 
 	var userMemberships []UserMembershipCombo
-	_, err := o.Raw(sql, userId).QueryRows(&userMemberships)
-	if err != nil {
+	if _, err := o.Raw(sql, userId).QueryRows(&userMemberships); err != nil {
 		return nil, fmt.Errorf("Failed to get user memberships")
 	}
 
-	userMembershipList := UserMembershipList{}
-	userMembershipList.Data = userMemberships
+	userMembershipList := UserMembershipList{
+		Data: userMemberships,
+	}
 
 	return &userMembershipList, nil
-}
-
-// Deletes user membership from the database by consuming
-// user membership ID.
-func DeleteUserMembership(userMembershipId int64) error {
-	var num int64
-	var err error
-	o := orm.NewOrm()
-
-	beego.Trace("models.DeleteUserMembership: userMembershipId:", userMembershipId)
-
-	userMembership := &UserMembership{}
-	userMembership.Id = userMembershipId
-
-	num, err = o.QueryTable(userMembership.TableName()).
-		Filter("id", userMembershipId).Delete()
-	if err != nil {
-		beego.Error("Failed to delete user membership:", err)
-		return errors.New("Failed to delete user membership")
-	}
-	if num <= 0 {
-		return fmt.Errorf("Nothing deleted")
-	}
-
-	beego.Trace("Deleted num rows:", num)
-	return nil
 }
 
 // Automatically extend user membership end date if auto_extend for the specific

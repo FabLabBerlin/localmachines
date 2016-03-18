@@ -73,10 +73,8 @@ func TestUserMemberships(t *testing.T) {
 			Convey("Try creating a user membership with non existend membership ID", func() {
 				fakeMembershipId := int64(-23)
 				startDate := time.Now()
-				var userMembershipId int64
-				var err error
 				fakeUserId := int64(1)
-				userMembershipId, err = models.CreateUserMembership(
+				userMembershipId, err := models.CreateUserMembership(
 					fakeUserId, fakeMembershipId, startDate)
 
 				Convey("It should return error", func() {
@@ -87,8 +85,6 @@ func TestUserMemberships(t *testing.T) {
 					So(userMembershipId, ShouldEqual, 0)
 				})
 			})
-
-			//os.Exit(111)
 
 			Convey("When creating user membership normally", func() {
 				startDate := time.Date(2015, 6, 1, 0, 0, 0, 0, time.UTC)
@@ -174,35 +170,6 @@ func TestUserMemberships(t *testing.T) {
 			})
 		})
 
-		Convey("Testing DeleteUserMembership", func() {
-			baseMembership := models.Membership{}
-			baseMembership.Title = "Test Membership"
-			baseMembershipId, _ := models.CreateMembership(1, baseMembership.Title)
-			baseMembership.Id = baseMembershipId
-
-			Convey("When deleting non-existent user membership", func() {
-				err := models.DeleteUserMembership(-5)
-
-				Convey("It should return error", func() {
-					So(err, ShouldNotBeNil)
-				})
-			})
-
-			Convey("When deleting user membership normally", func() {
-				fakeUserId := int64(1)
-				startDate := time.Now().UTC()
-				var err error
-				var userMembershipId int64
-				userMembershipId, err = models.CreateUserMembership(
-					fakeUserId, baseMembershipId, startDate)
-				err = models.DeleteUserMembership(userMembershipId)
-
-				Convey("It should return no error", func() {
-					So(err, ShouldBeNil)
-				})
-			})
-		})
-
 		Convey("When automatically extending user membership", func() {
 
 			// Create empty base membership
@@ -215,20 +182,18 @@ func TestUserMemberships(t *testing.T) {
 			//baseMembership.Duration
 
 			// Create user membership with a start and end date some time in the past
-			var userMembershipId int64
 			fakeUserId := int64(1)
 			loc, _ := time.LoadLocation("Europe/Berlin")
 			startTime := time.Date(2015, time.July, 10, 23, 0, 0, 0, loc)
 
-			userMembershipId, err = models.CreateUserMembership(
+			userMembershipId, err := models.CreateUserMembership(
 				fakeUserId, baseMembershipId, startTime)
 
 			So(userMembershipId, ShouldBeGreaterThan, 0)
 			So(err, ShouldBeNil)
 
 			// Get the created membership for later comparison
-			var userMembership *models.UserMembership
-			userMembership, err = models.GetUserMembership(userMembershipId)
+			userMembership, err := models.GetUserMembership(userMembershipId)
 			So(err, ShouldBeNil)
 			So(userMembership, ShouldNotBeNil)
 
@@ -238,8 +203,6 @@ func TestUserMemberships(t *testing.T) {
 			// Call user membership auto extend function and check the new end date
 			err = models.AutoExtendUserMemberships()
 			So(err, ShouldBeNil)
-
-			//os.Exit(111)
 
 			Convey("Check if it is extended by duration specified in the base membership", func() {
 

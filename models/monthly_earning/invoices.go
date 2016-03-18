@@ -226,7 +226,7 @@ func (this *MonthlyEarning) getFileName(interval lib.Interval) string {
 		b[i] = letters[rand.Intn(len(letters))]
 	}
 
-	return fmt.Sprintf("invoice-%s-%s", interval.String(), string(b))
+	return fmt.Sprintf("monthly-earnings-%s-%s", interval.String(), string(b))
 }
 
 func (this *MonthlyEarning) getPurchases(locationId int64, interval lib.Interval) (ps []*purchases.Purchase, err error) {
