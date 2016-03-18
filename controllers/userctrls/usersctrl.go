@@ -473,9 +473,9 @@ func (this *UsersController) GetUserBill() {
 		MonthTo:   int(endTime.Month()),
 		YearTo:    endTime.Year(),
 	}
-	invoice, err := invoices.CalculateSummary(locId, interval)
+	invoice, err := invoices.New(locId, interval)
 	if err != nil {
-		beego.Error("Calculate invoice summary:", err)
+		beego.Error("invoices new:", err)
 	}
 
 	var userSummary *invoices.UserSummary

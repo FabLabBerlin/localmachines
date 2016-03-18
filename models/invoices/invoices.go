@@ -105,12 +105,60 @@ func exists(path string) (bool, error) {
 	return true, err
 }
 
+// Returns Invoice with populated UserSummaries
+func New(locationId int64, interval lib.Interval) (invoice Invoice, err error) {
+	// Enhance activations with user and membership data
+	ps, err := invoice.getPurchases(locationId, interval)
+	if err != nil {
+		err = fmt.Errorf("Failed to get enhanced activations: %v", err)
+		return
+	}
+
+	activationIds := make([]string, 0, len(ps))
+	for _, p := range ps {
+		if p.Activation != nil {
+			activationIds = append(activationIds, strconv.FormatInt(p.Id, 10))
+		}
+	}
+	invoice.Activations = "[" + strings.Join(activationIds, ",") + "]"
+
+	// Create user summaries from invoice activations
+	var userSummaries *[]*UserSummary
+	userSummaries, err = invoice.GetUserSummaries(purchases.Purchases{
+		Data: ps,
+	})
+	if err != nil {
+		err = fmt.Errorf("Failed to get user summaries: %v", err)
+		return
+	}
+
+	for i := 0; i < len(*userSummaries); i++ {
+		sort.Stable((*userSummaries)[i].Purchases)
+		for _, activation := range (*userSummaries)[i].Purchases.Data {
+			activation.TotalPrice = purchases.PriceTotalExclDisc(activation)
+			activation.DiscountedTotal, err = purchases.PriceTotalDisc(activation)
+			if err != nil {
+				return
+			}
+		}
+	}
+
+	// Create invoice summary
+	invoice.MonthFrom = interval.MonthFrom
+	invoice.YearFrom = interval.YearFrom
+	invoice.MonthTo = interval.MonthTo
+	invoice.YearTo = interval.YearTo
+	invoice.UserSummaries = *userSummaries
+
+	return invoice, err
+}
+
 // Creates invoice entry in the database
 func Create(locationId int64, interval lib.Interval) (*Invoice, error) {
 
 	var err error
 
-	invoice, err := CalculateSummary(locationId, interval)
+	invoice, err := New(locationId, interval)
 	if err != nil {
 		return nil, fmt.Errorf("CalculateInvoiceSummary: %v", err)
 	}
@@ -170,54 +218,6 @@ func Get(invoiceId int64) (invoice *Invoice, err error) {
 	}
 
 	return
-}
-
-// Returns Invoice and InvoiceSummary objects, error otherwise
-func CalculateSummary(locationId int64, interval lib.Interval) (invoice Invoice, err error) {
-	// Enhance activations with user and membership data
-	ps, err := invoice.getPurchases(locationId, interval)
-	if err != nil {
-		err = fmt.Errorf("Failed to get enhanced activations: %v", err)
-		return
-	}
-
-	activationIds := make([]string, 0, len(ps))
-	for _, p := range ps {
-		if p.Activation != nil {
-			activationIds = append(activationIds, strconv.FormatInt(p.Id, 10))
-		}
-	}
-	invoice.Activations = "[" + strings.Join(activationIds, ",") + "]"
-
-	// Create user summaries from invoice activations
-	var userSummaries *[]*UserSummary
-	userSummaries, err = invoice.GetUserSummaries(purchases.Purchases{
-		Data: ps,
-	})
-	if err != nil {
-		err = fmt.Errorf("Failed to get user summaries: %v", err)
-		return
-	}
-
-	for i := 0; i < len(*userSummaries); i++ {
-		sort.Stable((*userSummaries)[i].Purchases)
-		for _, activation := range (*userSummaries)[i].Purchases.Data {
-			activation.TotalPrice = purchases.PriceTotalExclDisc(activation)
-			activation.DiscountedTotal, err = purchases.PriceTotalDisc(activation)
-			if err != nil {
-				return
-			}
-		}
-	}
-
-	// Create invoice summary
-	invoice.MonthFrom = interval.MonthFrom
-	invoice.YearFrom = interval.YearFrom
-	invoice.MonthTo = interval.MonthTo
-	invoice.YearTo = interval.YearTo
-	invoice.UserSummaries = *userSummaries
-
-	return invoice, err
 }
 
 // Gets all invoices from the database

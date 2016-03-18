@@ -73,7 +73,7 @@ func FetchData(locationId int64) (data Data, err error) {
 		YearTo:    endTime.Year(),
 	}
 
-	data.invoice, err = invoices.CalculateSummary(locationId, interval)
+	data.invoice, err = invoices.New(locationId, interval)
 	if err != nil {
 		return data, fmt.Errorf("Failed to get invoice summary: %v", err)
 	}

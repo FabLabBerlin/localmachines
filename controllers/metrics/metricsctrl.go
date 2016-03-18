@@ -69,7 +69,7 @@ func (c *Controller) GetActivations() {
 		YearTo:    endTime.Year(),
 	}
 
-	invoice, err := invoices.CalculateSummary(locId, interval)
+	invoice, err := invoices.New(locId, interval)
 	if err != nil {
 		c.CustomAbort(500, err.Error())
 	}

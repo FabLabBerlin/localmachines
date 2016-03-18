@@ -127,9 +127,9 @@ func (this *InvoicesController) CreateDrafts() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	invs, err := invoices.CalculateSummary(locId, dbInvs.Interval())
+	invs, err := invoices.New(locId, dbInvs.Interval())
 	if err != nil {
-		beego.Error("Failed to calculate summary:", err)
+		beego.Error("Failed to make new invoices:", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
 

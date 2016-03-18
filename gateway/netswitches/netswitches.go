@@ -13,7 +13,6 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"sync"
 )
 
 var (
@@ -21,8 +20,7 @@ var (
 )
 
 type NetSwitches struct {
-	stateFileLock sync.Mutex
-	nss           map[int64]*netswitch.NetSwitch
+	nss map[int64]*netswitch.NetSwitch
 }
 
 func New() (nss *NetSwitches) {

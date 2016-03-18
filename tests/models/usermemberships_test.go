@@ -140,7 +140,7 @@ func TestUserMemberships(t *testing.T) {
 						MonthTo:   12,
 						YearTo:    2015,
 					}
-					invoice, err := invoices.CalculateSummary(1, interval)
+					invoice, err := invoices.New(1, interval)
 					if err != nil {
 						panic(err.Error())
 					}
