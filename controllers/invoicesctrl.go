@@ -127,13 +127,13 @@ func (this *InvoicesController) CreateDrafts() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	mes, err := monthly_earning.New(locId, dbMes.Interval())
+	me, err := monthly_earning.New(locId, dbMes.Interval())
 	if err != nil {
 		beego.Error("Failed to make new invoices:", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	creationReport := monthly_earning.CreateFastbillDrafts(&mes)
+	creationReport := monthly_earning.CreateFastbillDrafts(me)
 	beego.Info("created invoice drafts with IDs", creationReport.Ids)
 
 	this.Data["json"] = creationReport

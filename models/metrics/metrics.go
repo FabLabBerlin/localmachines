@@ -59,7 +59,7 @@ func NewResponse(data Data) (resp Response, err error) {
 type Data struct {
 	startTime       time.Time
 	endTime         time.Time
-	monthlyEarning  monthly_earning.MonthlyEarning
+	monthlyEarning  *monthly_earning.MonthlyEarning
 	userMemberships []*models.UserMembership
 	membershipsById map[int64]*models.Membership
 }

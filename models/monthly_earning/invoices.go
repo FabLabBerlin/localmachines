@@ -106,7 +106,9 @@ func exists(path string) (bool, error) {
 }
 
 // Returns MonthlyEarning with populated Invoices
-func New(locationId int64, interval lib.Interval) (me MonthlyEarning, err error) {
+func New(locationId int64, interval lib.Interval) (me *MonthlyEarning, err error) {
+	me = &MonthlyEarning{}
+
 	// Enhance activations with user and membership data
 	ps, err := me.getPurchases(locationId, interval)
 	if err != nil {
@@ -152,25 +154,18 @@ func New(locationId int64, interval lib.Interval) (me MonthlyEarning, err error)
 }
 
 // Creates monthly earning entry in the database
-func Create(locationId int64, interval lib.Interval) (*MonthlyEarning, error) {
+func Create(locationId int64, interval lib.Interval) (me *MonthlyEarning, err error) {
 
-	var err error
-
-	me, err := New(locationId, interval)
-	if err != nil {
+	if me, err = New(locationId, interval); err != nil {
 		return nil, fmt.Errorf("New: %v", err)
 	}
 
 	// Create *.xlsx file.
 	fileName := me.getFileName(interval)
 
-	// Make sure the files directory exists
-	exists, _ := exists("files")
-	if !exists {
-
-		// Create the files directory with permission to write
-		err = os.Mkdir("files", 0777)
-		if err != nil {
+	// The files directory must exist and be writable.
+	if exists, _ := exists("files"); !exists {
+		if err = os.Mkdir("files", 0777); err != nil {
 			beego.Error("Failed to create files dir:", err)
 			return nil, fmt.Errorf("Failed to create files dir: %v", err)
 		}
@@ -179,10 +174,9 @@ func Create(locationId int64, interval lib.Interval) (*MonthlyEarning, error) {
 	filePath := fmt.Sprintf("files/%s.xlsx", fileName)
 	me.FilePath = filePath
 
-	err = createXlsxFile(filePath, &me)
+	err = createXlsxFile(filePath, me)
 	if err != nil {
-		return nil, errors.New(
-			fmt.Sprintf("Failed to create *.xlsx file: %v", err))
+		return nil, fmt.Errorf("Failed to create *.xlsx file: %v", err)
 	}
 
 	me.Created = time.Now()
@@ -191,15 +185,11 @@ func Create(locationId int64, interval lib.Interval) (*MonthlyEarning, error) {
 	me.MonthTo = interval.MonthTo
 	me.MonthTo = interval.MonthTo
 
-	// Store monthly earning entry
-	o := orm.NewOrm()
-	me.Id, err = o.Insert(&me)
-	if err != nil {
-		beego.Error("Failed to insert monthly earning into db:", err)
-		return nil, fmt.Errorf("Failed to insert monthly earning into db: %v", err)
+	if err = me.Save(); err != nil {
+		return nil, fmt.Errorf("save: %v", err)
 	}
 
-	return &me, nil
+	return
 }
 
 // Get monthly earning with id from db
@@ -410,4 +400,10 @@ func (this *MonthlyEarning) enhancePurchase(purchase *purchases.Purchase,
 	}
 
 	return nil
+}
+
+func (this *MonthlyEarning) Save() (err error) {
+	o := orm.NewOrm()
+	this.Id, err = o.Insert(this)
+	return
 }
