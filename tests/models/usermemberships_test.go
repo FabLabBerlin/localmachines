@@ -7,8 +7,8 @@ import (
 
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models"
-	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/machine"
+	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
 	. "github.com/smartystreets/goconvey/convey"
@@ -140,23 +140,23 @@ func TestUserMemberships(t *testing.T) {
 						MonthTo:   12,
 						YearTo:    2015,
 					}
-					invoice, err := invoices.New(1, interval)
+					me, err := monthly_earning.New(1, interval)
 					if err != nil {
 						panic(err.Error())
 					}
 
 					// there should be 4 activations and 2 of them should be affected
-					numUserSummaries := len(invoice.UserSummaries)
+					numUserSummaries := len(me.UserSummaries)
 					So(numUserSummaries, ShouldEqual, 1)
 
-					numActivations := len(invoice.UserSummaries[0].Purchases.Data)
+					numActivations := len(me.UserSummaries[0].Purchases.Data)
 					So(numActivations, ShouldEqual, 4)
 
 					// 2 of the activations should contain memberships
 					numAffectedActivations := 0
 					for i := 0; i < numActivations; i++ {
 
-						activation := invoice.UserSummaries[0].Purchases.Data[i]
+						activation := me.UserSummaries[0].Purchases.Data[i]
 						memberships := activation.Memberships
 						if len(memberships) > 0 {
 							numAffectedActivations += 1

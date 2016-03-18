@@ -1,4 +1,4 @@
-package invoices
+package monthly_earning
 
 import (
 	"fmt"
@@ -123,9 +123,9 @@ func addSeparationRowXlsx(sheet *xlsx.Sheet) {
 }
 
 // Creates a xlsx file.
-func createXlsxFile(filePath string, invoice *Invoice) error {
-	sort.Sort(invoice)
-	userSummaries := invoice.UserSummaries
+func createXlsxFile(filePath string, monthlyEarning *MonthlyEarning) error {
+	sort.Sort(monthlyEarning)
+	userSummaries := monthlyEarning.UserSummaries
 
 	// Create a xlsx file if there
 	var file *xlsx.File
@@ -145,13 +145,13 @@ func createXlsxFile(filePath string, invoice *Invoice) error {
 	cell = row.AddCell()
 	cell.Value = "Period Start Date"
 	cell = row.AddCell()
-	cell.Value = fmt.Sprintf("%v/%v", invoice.MonthFrom, invoice.YearFrom)
+	cell.Value = fmt.Sprintf("%v/%v", monthlyEarning.MonthFrom, monthlyEarning.YearFrom)
 
 	row = sheet.AddRow()
 	cell = row.AddCell()
 	cell.Value = "Period End Date"
 	cell = row.AddCell()
-	cell.Value = fmt.Sprintf("%v/%v", invoice.MonthTo, invoice.YearTo)
+	cell.Value = fmt.Sprintf("%v/%v", monthlyEarning.MonthTo, monthlyEarning.YearTo)
 
 	row = sheet.AddRow()
 	row = sheet.AddRow()
@@ -262,7 +262,10 @@ func createXlsxFile(filePath string, invoice *Invoice) error {
 			cell = row.AddCell()
 			cell.Value = "Machine Price Deduction"
 			for _, m := range memberships.Data {
-				if m.StartDate.Before(invoice.PeriodTo()) && m.EndDate.After(invoice.PeriodFrom()) {
+
+				if m.StartDate.Before(monthlyEarning.PeriodTo()) &&
+					m.EndDate.After(monthlyEarning.PeriodFrom()) {
+
 					row = sheet.AddRow()
 					row.AddCell()
 					cell = row.AddCell()
@@ -279,7 +282,9 @@ func createXlsxFile(filePath string, invoice *Invoice) error {
 					cell.Value = m.Unit
 					cell = row.AddCell()
 					cell.Value = strconv.Itoa(m.MachinePriceDeduction) + "%"
+
 				}
+
 			}
 			sheet.AddRow()
 			sheet.AddRow()

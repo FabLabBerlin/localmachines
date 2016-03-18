@@ -7,8 +7,8 @@ import (
 
 	"github.com/FabLabBerlin/localmachines/database/connect"
 	"github.com/FabLabBerlin/localmachines/models"
-	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/machine"
+	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/products"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/users"
@@ -17,7 +17,7 @@ import (
 )
 
 var dbModels = []Model{
-	&invoices.Invoice{},
+	&monthly_earning.MonthlyEarning{},
 	&users.Auth{},
 	&machine.Machine{},
 	&models.Membership{},

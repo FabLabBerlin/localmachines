@@ -1,4 +1,4 @@
-package invoices
+package monthly_earning
 
 import (
 	"errors"
@@ -19,13 +19,13 @@ import (
 )
 
 func init() {
-	orm.RegisterModel(new(Invoice))
+	orm.RegisterModel(new(MonthlyEarning))
 }
 
-// Invoice entry that is saved in the database.
+// MonthlyEarning that is saved in the database.
 // Activations field contains a JSON array with activation IDs.
 // XlsFile field contains URL to the generated XLSX file.
-type Invoice struct {
+type MonthlyEarning struct {
 	Id            int64 `orm:"auto";"pk"`
 	MonthFrom     int
 	YearFrom      int
@@ -37,7 +37,7 @@ type Invoice struct {
 	UserSummaries []*UserSummary `orm:"-"`
 }
 
-func (this *Invoice) Interval() lib.Interval {
+func (this *MonthlyEarning) Interval() lib.Interval {
 	return lib.Interval{
 		MonthFrom: this.MonthFrom,
 		YearFrom:  this.YearFrom,
@@ -46,11 +46,11 @@ func (this *Invoice) Interval() lib.Interval {
 	}
 }
 
-func (this *Invoice) Len() int {
+func (this *MonthlyEarning) Len() int {
 	return len(this.UserSummaries)
 }
 
-func (this *Invoice) Less(i, j int) bool {
+func (this *MonthlyEarning) Less(i, j int) bool {
 	a := this.UserSummaries[i]
 	b := this.UserSummaries[j]
 	aName := a.User.FirstName + " " + a.User.LastName
@@ -58,19 +58,19 @@ func (this *Invoice) Less(i, j int) bool {
 	return strings.ToLower(aName) < strings.ToLower(bName)
 }
 
-func (this *Invoice) PeriodFrom() time.Time {
+func (this *MonthlyEarning) PeriodFrom() time.Time {
 	return this.Interval().TimeFrom()
 }
 
-func (this *Invoice) PeriodTo() time.Time {
+func (this *MonthlyEarning) PeriodTo() time.Time {
 	return this.Interval().TimeTo()
 }
 
-func (this *Invoice) Swap(i, j int) {
+func (this *MonthlyEarning) Swap(i, j int) {
 	this.UserSummaries[i], this.UserSummaries[j] = this.UserSummaries[j], this.UserSummaries[i]
 }
 
-func (this *Invoice) TableName() string {
+func (this *MonthlyEarning) TableName() string {
 	return "monthly_earnings"
 }
 
@@ -105,10 +105,10 @@ func exists(path string) (bool, error) {
 	return true, err
 }
 
-// Returns Invoice with populated UserSummaries
-func New(locationId int64, interval lib.Interval) (invoice Invoice, err error) {
+// Returns MonthlyEarning with populated UserSummaries
+func New(locationId int64, interval lib.Interval) (me MonthlyEarning, err error) {
 	// Enhance activations with user and membership data
-	ps, err := invoice.getPurchases(locationId, interval)
+	ps, err := me.getPurchases(locationId, interval)
 	if err != nil {
 		err = fmt.Errorf("Failed to get enhanced activations: %v", err)
 		return
@@ -120,11 +120,11 @@ func New(locationId int64, interval lib.Interval) (invoice Invoice, err error) {
 			activationIds = append(activationIds, strconv.FormatInt(p.Id, 10))
 		}
 	}
-	invoice.Activations = "[" + strings.Join(activationIds, ",") + "]"
+	me.Activations = "[" + strings.Join(activationIds, ",") + "]"
 
 	// Create user summaries from invoice activations
 	var userSummaries *[]*UserSummary
-	userSummaries, err = invoice.GetUserSummaries(purchases.Purchases{
+	userSummaries, err = me.GetUserSummaries(purchases.Purchases{
 		Data: ps,
 	})
 	if err != nil {
@@ -143,28 +143,27 @@ func New(locationId int64, interval lib.Interval) (invoice Invoice, err error) {
 		}
 	}
 
-	// Create invoice summary
-	invoice.MonthFrom = interval.MonthFrom
-	invoice.YearFrom = interval.YearFrom
-	invoice.MonthTo = interval.MonthTo
-	invoice.YearTo = interval.YearTo
-	invoice.UserSummaries = *userSummaries
+	me.MonthFrom = interval.MonthFrom
+	me.YearFrom = interval.YearFrom
+	me.MonthTo = interval.MonthTo
+	me.YearTo = interval.YearTo
+	me.UserSummaries = *userSummaries
 
-	return invoice, err
+	return me, err
 }
 
-// Creates invoice entry in the database
-func Create(locationId int64, interval lib.Interval) (*Invoice, error) {
+// Creates monthly earning entry in the database
+func Create(locationId int64, interval lib.Interval) (*MonthlyEarning, error) {
 
 	var err error
 
-	invoice, err := New(locationId, interval)
+	me, err := New(locationId, interval)
 	if err != nil {
-		return nil, fmt.Errorf("CalculateInvoiceSummary: %v", err)
+		return nil, fmt.Errorf("New: %v", err)
 	}
 
 	// Create *.xlsx file.
-	fileName := invoice.getFileName(interval)
+	fileName := me.getFileName(interval)
 
 	// Make sure the files directory exists
 	exists, _ := exists("files")
@@ -179,78 +178,73 @@ func Create(locationId int64, interval lib.Interval) (*Invoice, error) {
 	}
 
 	filePath := fmt.Sprintf("files/%s.xlsx", fileName)
-	invoice.FilePath = filePath
+	me.FilePath = filePath
 
-	err = createXlsxFile(filePath, &invoice)
+	err = createXlsxFile(filePath, &me)
 	if err != nil {
 		return nil, errors.New(
 			fmt.Sprintf("Failed to create *.xlsx file: %v", err))
 	}
 
-	invoice.Created = time.Now()
-	invoice.MonthFrom = interval.MonthFrom
-	invoice.YearFrom = interval.YearFrom
-	invoice.MonthTo = interval.MonthTo
-	invoice.MonthTo = interval.MonthTo
+	me.Created = time.Now()
+	me.MonthFrom = interval.MonthFrom
+	me.YearFrom = interval.YearFrom
+	me.MonthTo = interval.MonthTo
+	me.MonthTo = interval.MonthTo
 
-	// Store invoice entry
+	// Store monthly earning entry
 	o := orm.NewOrm()
-	invoice.Id, err = o.Insert(&invoice)
+	me.Id, err = o.Insert(&me)
 	if err != nil {
-		beego.Error("Failed to insert invoice into db:", err)
-		return nil, fmt.Errorf("Failed to insert invoice into db: %v", err)
+		beego.Error("Failed to insert monthly earning into db:", err)
+		return nil, fmt.Errorf("Failed to insert monthly earning into db: %v", err)
 	}
 
-	return &invoice, nil
+	return &me, nil
 }
 
-// Gets existing invoice from db by invoice ID
-func Get(invoiceId int64) (invoice *Invoice, err error) {
+// Get monthly earning with id from db
+func Get(id int64) (me *MonthlyEarning, err error) {
 
-	invoice = &Invoice{}
-	invoice.Id = invoiceId
+	me = &MonthlyEarning{
+		Id: id,
+	}
 
 	o := orm.NewOrm()
-	err = o.Read(invoice)
+	err = o.Read(me)
 	if err != nil {
-		beego.Error("Failed to read invoice:", err)
-		return nil, fmt.Errorf("Failed to read invoice: %v", err)
+		beego.Error("Failed to read monthly earning:", err)
+		return nil, fmt.Errorf("Failed to read monthly earning: %v", err)
 	}
 
 	return
 }
 
-// Gets all invoices from the database
-func GetAll() (invoices *[]Invoice, err error) {
-	inv := Invoice{}
-	var readInvoices []Invoice
+// Gets all monthly earnings from the database
+func GetAll() (mes []*MonthlyEarning, err error) {
+	me := MonthlyEarning{}
 	o := orm.NewOrm()
-	var num int64
-	num, err = o.QueryTable(inv.TableName()).OrderBy("-Id").All(&readInvoices)
-	if err != nil {
-		beego.Error("Failed to get all invoices:", err)
-		return nil, fmt.Errorf("Failed to get all invoices: %v", err)
-	}
-	beego.Info("Got num invoices:", num)
+	_, err = o.QueryTable(me.TableName()).OrderBy("-Id").All(&mes)
 
-	return &readInvoices, nil
+	return
 }
 
-// Deletes an invoice by ID
-func Delete(invoiceId int64) error {
-	invoice := Invoice{}
-	invoice.Id = invoiceId
+// Deletes an monthly earning by ID
+func Delete(id int64) error {
+	me := MonthlyEarning{
+		Id: id,
+	}
 	o := orm.NewOrm()
-	num, err := o.Delete(&invoice)
+	num, err := o.Delete(&me)
 	if err != nil {
 		return errors.New(
-			fmt.Sprintf("Failed to delete invoice: %v", err))
+			fmt.Sprintf("Failed to delete monthly earning: %v", err))
 	}
-	beego.Trace("Deleted num invoices:", num)
+	beego.Trace("Deleted num monthly earnings:", num)
 	return nil
 }
 
-func (this *Invoice) getFileName(interval lib.Interval) string {
+func (this *MonthlyEarning) getFileName(interval lib.Interval) string {
 
 	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
@@ -263,7 +257,7 @@ func (this *Invoice) getFileName(interval lib.Interval) string {
 	return fmt.Sprintf("invoice-%s-%s", interval.String(), string(b))
 }
 
-func (this *Invoice) getPurchases(locationId int64, interval lib.Interval) (ps []*purchases.Purchase, err error) {
+func (this *MonthlyEarning) getPurchases(locationId int64, interval lib.Interval) (ps []*purchases.Purchase, err error) {
 	machines, err := machine.GetAllMachines()
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get machines: %v", err)
@@ -325,7 +319,7 @@ func (this *Invoice) getPurchases(locationId int64, interval lib.Interval) (ps [
 	return
 }
 
-func (this *Invoice) GetUserSummaries(
+func (this *MonthlyEarning) GetUserSummaries(
 	ps purchases.Purchases) (*[]*UserSummary, error) {
 
 	// Create a slice for unique user summaries.
@@ -373,7 +367,7 @@ func (this *Invoice) GetUserSummaries(
 	return &userSummaries, nil
 }
 
-func (this *Invoice) enhancePurchase(purchase *purchases.Purchase,
+func (this *MonthlyEarning) enhancePurchase(purchase *purchases.Purchase,
 	machinesById map[int64]*machine.Machine, usersById map[int64]users.User,
 	userMembershipsByUserId map[int64][]*models.UserMembership,
 	membershipsById map[int64]*models.Membership) error {

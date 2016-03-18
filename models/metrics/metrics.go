@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models"
-	"github.com/FabLabBerlin/localmachines/models/invoices"
+	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"time"
@@ -59,7 +59,7 @@ func NewResponse(data Data) (resp Response, err error) {
 type Data struct {
 	startTime       time.Time
 	endTime         time.Time
-	invoice         invoices.Invoice
+	monthlyEarning  monthly_earning.MonthlyEarning
 	userMemberships []*models.UserMembership
 	membershipsById map[int64]*models.Membership
 }
@@ -73,7 +73,7 @@ func FetchData(locationId int64) (data Data, err error) {
 		YearTo:    endTime.Year(),
 	}
 
-	data.invoice, err = invoices.New(locationId, interval)
+	data.monthlyEarning, err = monthly_earning.New(locationId, interval)
 	if err != nil {
 		return data, fmt.Errorf("Failed to get invoice summary: %v", err)
 	}
@@ -98,7 +98,7 @@ func FetchData(locationId int64) (data Data, err error) {
 func (this Data) sumActivationsBy(timeFormat string) (sums map[string]float64, err error) {
 	sums = make(map[string]float64)
 
-	for _, userSummary := range this.invoice.UserSummaries {
+	for _, userSummary := range this.monthlyEarning.UserSummaries {
 		for _, purchase := range userSummary.Purchases.Data {
 			if purchase.Type == purchases.TYPE_ACTIVATION {
 				priceTotalDisc, err := purchases.PriceTotalDisc(purchase)
@@ -154,7 +154,7 @@ func (this Data) sumMembershipCountsBy(timeFormat string) (sums map[string]int, 
 func (this Data) sumMinutesBy(timeFormat string) (sums map[string]float64, err error) {
 	sums = make(map[string]float64)
 
-	for _, userSummary := range this.invoice.UserSummaries {
+	for _, userSummary := range this.monthlyEarning.UserSummaries {
 		if userSummary.User.GetRole() != user_roles.STAFF && userSummary.User.GetRole() != user_roles.ADMIN {
 			for _, purchase := range userSummary.Purchases.Data {
 				if purchase.Type == purchases.TYPE_ACTIVATION {

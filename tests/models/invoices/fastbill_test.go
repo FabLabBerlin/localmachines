@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/FabLabBerlin/localmachines/lib/fastbill"
-	"github.com/FabLabBerlin/localmachines/models/invoices"
+	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
 	. "github.com/smartystreets/goconvey/convey"
@@ -31,14 +31,14 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 		}
 
 		t := time.Now()
-		inv := invoices.Invoice{
+		me := monthly_earning.MonthlyEarning{
 			MonthFrom: int(t.Month()),
 			YearFrom:  t.Year(),
 			MonthTo:   int(t.Month()),
 			YearTo:    t.Year(),
 		}
 
-		userSummaries, err := inv.GetUserSummaries(ps)
+		userSummaries, err := me.GetUserSummaries(ps)
 		if err != nil {
 			panic(err.Error())
 		}
@@ -80,7 +80,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 
 		fastbill.API_URL = testServer.URL
 
-		_, empty, err := invoices.CreateFastbillDraft(&inv, (*userSummaries)[0])
+		_, empty, err := monthly_earning.CreateFastbillDraft(&me, (*userSummaries)[0])
 		So(empty, ShouldBeFalse)
 		So(err, ShouldBeNil)
 	})

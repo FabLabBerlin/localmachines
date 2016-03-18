@@ -8,8 +8,8 @@ import (
 
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models"
-	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/machine"
+	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
 	. "github.com/smartystreets/goconvey/convey"
@@ -101,8 +101,8 @@ func TestInvoiceActivation(t *testing.T) {
 				time.Duration(12)*time.Minute, 0.5)
 			file := xlsx.NewFile()
 			sheet, _ := file.AddSheet("User Summaries")
-			invoices.AddRowActivationsHeaderXlsx(sheet)
-			invoices.AddRowXlsx(sheet, invAct)
+			monthly_earning.AddRowActivationsHeaderXlsx(sheet)
+			monthly_earning.AddRowXlsx(sheet, invAct)
 			numRows := 2
 
 			Convey("Number of rows in xlsx sheed should be correct", func() {
@@ -125,12 +125,7 @@ func TestInvoiceActivation(t *testing.T) {
 		})
 	})
 
-	Convey("Testing InvoiceActivations model", t, func() {
-		Reset(setup.ResetDB)
-		// TODO: Write tests for this
-	})
-
-	Convey("When creating invoice with CreateInvoice", t, func() {
+	Convey("When creating Monthly Earning with monthly_earning.New()", t, func() {
 		endTime := time.Now()
 		startTime := endTime.AddDate(0, -1, 0)
 		interval := lib.Interval{
@@ -140,46 +135,45 @@ func TestInvoiceActivation(t *testing.T) {
 			YearTo:    endTime.Year(),
 		}
 
-		invoice, err := invoices.Create(1, interval)
+		me, err := monthly_earning.Create(1, interval)
 
 		Convey("It should not cause any error", func() {
 			So(err, ShouldBeNil)
 		})
 
-		Convey("The returned pointer to Invoice store should be valid", func() {
-			So(invoice, ShouldNotBeNil)
+		Convey("The returned pointer to object should be valid", func() {
+			So(me, ShouldNotBeNil)
 		})
 
-		Convey("When reading back the created invoice from the db", func() {
-			var readbackInvoice *invoices.Invoice
-			readbackInvoice, err = invoices.Get(invoice.Id)
+		Convey("When reading back the created monthly earning from the db", func() {
+			dbMe, err := monthly_earning.Get(me.Id)
 
 			Convey("There should be no error", func() {
 				So(err, ShouldBeNil)
 			})
 
 			Convey("The pointer to the read invoice should be valid", func() {
-				So(readbackInvoice, ShouldNotBeNil)
+				So(dbMe, ShouldNotBeNil)
 			})
 
 			Convey("File path should be there", func() {
-				So(readbackInvoice.FilePath, ShouldEqual, invoice.FilePath)
+				So(dbMe.FilePath, ShouldEqual, me.FilePath)
 			})
 		})
 
-		Convey("When trying to get all invoices", func() {
-			invoices, err := invoices.GetAll()
+		Convey("When trying to get all monthly earnings", func() {
+			mes, err := monthly_earning.GetAll()
 
 			Convey("There should be no error", func() {
 				So(err, ShouldBeNil)
 			})
 
-			Convey("The number of returned invoices should be more than 0", func() {
-				So(len(*invoices), ShouldBeGreaterThan, 0)
+			Convey("The number of returned monthly earnings should be more than 0", func() {
+				So(len(mes), ShouldBeGreaterThan, 0)
 			})
 		})
 
-		// Remove temp files directory used for the invoice files
+		// Remove temp files directory used for the monthly earning files
 		os.RemoveAll("files")
 	})
 

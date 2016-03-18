@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/controllers"
 	"github.com/FabLabBerlin/localmachines/lib"
-	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/metrics"
+	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/astaxie/beego"
 	"strings"
@@ -69,7 +69,7 @@ func (c *Controller) GetActivations() {
 		YearTo:    endTime.Year(),
 	}
 
-	invoice, err := invoices.New(locId, interval)
+	monthlyEarning, err := monthly_earning.New(locId, interval)
 	if err != nil {
 		c.CustomAbort(500, err.Error())
 	}
@@ -86,7 +86,7 @@ func (c *Controller) GetActivations() {
 		"Membership",
 		"Billed Price (EUR)",
 	})
-	for _, summary := range invoice.UserSummaries {
+	for _, summary := range monthlyEarning.UserSummaries {
 		for _, p := range summary.Purchases.Data {
 			row := make([]string, 0, 20)
 			if p.Type != purchases.TYPE_ACTIVATION {

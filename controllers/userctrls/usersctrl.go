@@ -6,8 +6,8 @@ import (
 	"github.com/FabLabBerlin/localmachines/controllers"
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models"
-	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/machine"
+	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/user_roles"
@@ -473,14 +473,14 @@ func (this *UsersController) GetUserBill() {
 		MonthTo:   int(endTime.Month()),
 		YearTo:    endTime.Year(),
 	}
-	invoice, err := invoices.New(locId, interval)
+	me, err := monthly_earning.New(locId, interval)
 	if err != nil {
-		beego.Error("invoices new:", err)
+		beego.Error("new monthly earning:", err)
 	}
 
-	var userSummary *invoices.UserSummary
+	var userSummary *monthly_earning.UserSummary
 
-	for _, us := range invoice.UserSummaries {
+	for _, us := range me.UserSummaries {
 		if us.User.Id == uid {
 			userSummary = us
 		}

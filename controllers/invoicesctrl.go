@@ -3,7 +3,7 @@ package controllers
 import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
-	"github.com/FabLabBerlin/localmachines/models/invoices"
+	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
 	"github.com/astaxie/beego"
 )
 
@@ -11,10 +11,10 @@ type InvoicesController struct {
 	Controller
 }
 
-// @Title Get All Invoices
-// @Description Get all invoices from the database
+// @Title Get All monthly earnings
+// @Description Get all monthly earnings from the database
 // @Success 200 {object} models.invoices.Invoice
-// @Failure	403	Failed to get all invoices
+// @Failure	403	Failed to get all monthly earnings
 // @Failure	401	Not authorized
 // @router / [get]
 func (this *InvoicesController) GetAll() {
@@ -24,18 +24,18 @@ func (this *InvoicesController) GetAll() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	invoices, err := invoices.GetAll()
+	mes, err := monthly_earning.GetAll()
 	if err != nil {
-		beego.Error("Failed to get all invoices")
-		this.CustomAbort(403, "Failed to get all invoices")
+		beego.Error("Failed to get all monthly earnings")
+		this.CustomAbort(403, "Failed to get all monthly earnings")
 	}
 
-	this.Data["json"] = invoices
+	this.Data["json"] = mes
 	this.ServeJSON()
 }
 
-// @Title Get All Invoices
-// @Description Get all invoices from the database
+// @Title Get All monthly earnings
+// @Description Get all monthly earnings from the database
 // @Param	iid	path	int	true	"Invoice ID"
 // @Success 200 string ok
 // @Failure	403	Failed to delete
@@ -51,24 +51,24 @@ func (this *InvoicesController) Delete() {
 	iid, err := this.GetInt64(":iid")
 	if err != nil {
 		beego.Error("Failed to get iid:", err)
-		this.CustomAbort(403, "Failed to delete invoice")
+		this.CustomAbort(403, "Failed to delete monthly earning")
 	}
 
-	if err = invoices.Delete(iid); err != nil {
-		beego.Error("Failed to delete invoice:", err)
-		this.CustomAbort(403, "Failed to delete invoice")
+	if err = monthly_earning.Delete(iid); err != nil {
+		beego.Error("Failed to delete monthly earning:", err)
+		this.CustomAbort(403, "Failed to delete monthly earning")
 	}
 
 	this.Data["json"] = "ok"
 	this.ServeJSON()
 }
 
-// @Title Create Invoice
-// @Description Create invoice from selection of activations
-// @Param	startDate		query 	string	true		"Period start date"
-// @Param	endDate		query 	string	true		"Period end date"
-// @Success 200 {object} models.invoices.Invoice
-// @Failure	403	Failed to create invoice
+// @Title Create monthly earning
+// @Description Create monthly earning from date range
+// @Param	startDate	query 	string	true	"Period start date"
+// @Param	endDate		query 	string	true	"Period end date"
+// @Success 200 {object}
+// @Failure	403	Failed to create monthly earning
 // @Failure	401	Not authorized
 // @router / [post]
 func (this *InvoicesController) Create() {
@@ -85,23 +85,23 @@ func (this *InvoicesController) Create() {
 		this.CustomAbort(400, "Bad request")
 	}
 
-	invoices, err := invoices.Create(locId, interval)
+	mes, err := monthly_earning.Create(locId, interval)
 	if err != nil {
-		beego.Error("Failed to create invoices:", err)
-		this.CustomAbort(403, "Failed to create invoices")
+		beego.Error("Failed to create monthly earnings:", err)
+		this.CustomAbort(403, "Failed to create monthly earnings")
 	}
 
-	this.Data["json"] = invoices
+	this.Data["json"] = mes
 	this.ServeJSON()
 }
 
-// @Title Create Invoice
-// @Description Create invoice from selection of activations
-// @Param	startDate		query 	string	true		"Period start date"
-// @Param	endDate		query 	string	true		"Period end date"
-// @Success 200 {object} models.invoices.Invoice
+// @Title Create Fastbill drafts
+// @Description Create fastbill drafts from date range
+// @Param	startDate	query 	string	true	"Period start date"
+// @Param	endDate		query 	string	true	"Period end date"
+// @Success 200 {object}
 // @Failure	401	Not authorized
-// @Failure	403	Failed to create invoice
+// @Failure	403	Failed to create Fastbill drafts
 // @router /:iid/create_drafts [post]
 func (this *InvoicesController) CreateDrafts() {
 
@@ -118,22 +118,22 @@ func (this *InvoicesController) CreateDrafts() {
 	iid, err := this.GetInt64(":iid")
 	if err != nil {
 		beego.Error("Failed to get iid:", err)
-		this.CustomAbort(403, "Failed to delete invoice")
+		this.CustomAbort(400, "Bad request")
 	}
 
-	dbInvs, err := invoices.Get(iid)
+	dbMes, err := monthly_earning.Get(iid)
 	if err != nil {
 		beego.Error("invoices get:", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	invs, err := invoices.New(locId, dbInvs.Interval())
+	mes, err := monthly_earning.New(locId, dbMes.Interval())
 	if err != nil {
 		beego.Error("Failed to make new invoices:", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	creationReport := invoices.CreateFastbillDrafts(&invs)
+	creationReport := monthly_earning.CreateFastbillDrafts(&mes)
 	beego.Info("created invoice drafts with IDs", creationReport.Ids)
 
 	this.Data["json"] = creationReport
