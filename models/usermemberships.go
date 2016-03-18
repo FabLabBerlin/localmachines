@@ -3,10 +3,10 @@ package models
 import (
 	"errors"
 	"fmt"
-	"time"
-
+	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"time"
 )
 
 // User membership model that has a mapping in the database.
@@ -19,9 +19,26 @@ type UserMembership struct {
 	AutoExtend   bool
 }
 
+func (this *UserMembership) Interval() lib.Interval {
+	return lib.Interval{
+		MonthFrom: int(this.StartDate.Month()),
+		YearFrom:  this.StartDate.Year(),
+		MonthTo:   int(this.EndDate.Month()),
+		YearTo:    this.EndDate.Year(),
+	}
+}
+
 // Returns the database table name of the UserMembership model.
 func (this *UserMembership) TableName() string {
 	return "user_membership"
+}
+
+// Updates user membership in the database by using a pointer
+// to user membership store.
+func (this *UserMembership) Update() (err error) {
+	o := orm.NewOrm()
+	_, err = o.Update(this)
+	return
 }
 
 func init() {
@@ -188,14 +205,6 @@ func DeleteUserMembership(userMembershipId int64) error {
 
 	beego.Trace("Deleted num rows:", num)
 	return nil
-}
-
-// Updates user membership in the database by using a pointer
-// to user membership store.
-func (this *UserMembership) Update() (err error) {
-	o := orm.NewOrm()
-	_, err = o.Update(this)
-	return
 }
 
 // Automatically extend user membership end date if auto_extend for the specific

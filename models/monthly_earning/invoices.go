@@ -201,7 +201,7 @@ func GetAll() (mes []*MonthlyEarning, err error) {
 	return
 }
 
-// Deletes an monthly earning by ID
+// Deletes a monthly earning by Id
 func Delete(id int64) error {
 	me := MonthlyEarning{
 		Id: id,
@@ -386,11 +386,7 @@ func (this *MonthlyEarning) enhancePurchase(purchase *purchases.Purchase,
 			return fmt.Errorf("end date is zero")
 		}
 
-		// Now that we have membership start and end time, let's check
-		// if this period of time overlaps with the activation
-		if purchase.TimeStart.After(usrMem.StartDate) &&
-			purchase.TimeStart.Before(usrMem.EndDate) {
-
+		if usrMem.Interval().Contains(purchase.TimeStart) {
 			purchase.Memberships = append(purchase.Memberships, mem)
 		}
 	}
