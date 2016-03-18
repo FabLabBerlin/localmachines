@@ -27,6 +27,7 @@ func init() {
 // XlsFile field contains URL to the generated XLSX file.
 type MonthlyEarning struct {
 	Id          int64 `orm:"auto";"pk"`
+	LocationId  int64
 	MonthFrom   int
 	YearFrom    int
 	MonthTo     int
@@ -107,35 +108,23 @@ func exists(path string) (bool, error) {
 
 // Returns MonthlyEarning with populated Invoices
 func New(locationId int64, interval lib.Interval) (me *MonthlyEarning, err error) {
-	me = &MonthlyEarning{}
-
-	// Enhance activations with user and membership data
-	ps, err := me.getPurchases(locationId, interval)
-	if err != nil {
-		err = fmt.Errorf("Failed to get enhanced purchaes: %v", err)
-		return
+	me = &MonthlyEarning{
+		LocationId: locationId,
+		MonthFrom:  interval.MonthFrom,
+		YearFrom:   interval.YearFrom,
+		MonthTo:    interval.MonthTo,
+		YearTo:     interval.YearTo,
 	}
-
-	activationIds := make([]string, 0, len(ps))
-	for _, p := range ps {
-		if p.Activation != nil {
-			activationIds = append(activationIds, strconv.FormatInt(p.Id, 10))
-		}
-	}
-	me.Activations = "[" + strings.Join(activationIds, ",") + "]"
 
 	// Create invoices from purchases
-	invs, err := me.GetInvoices(purchases.Purchases{
-		Data: ps,
-	})
-	if err != nil {
+	if me.Invoices, err = me.NewInvoices(); err != nil {
 		err = fmt.Errorf("Failed to get user summaries: %v", err)
 		return
 	}
 
-	for i := 0; i < len(invs); i++ {
-		sort.Stable(invs[i].Purchases)
-		for _, purchase := range invs[i].Purchases.Data {
+	for i := 0; i < len(me.Invoices); i++ {
+		sort.Stable(me.Invoices[i].Purchases)
+		for _, purchase := range me.Invoices[i].Purchases.Data {
 			purchase.TotalPrice = purchases.PriceTotalExclDisc(purchase)
 			purchase.DiscountedTotal, err = purchases.PriceTotalDisc(purchase)
 			if err != nil {
@@ -143,12 +132,6 @@ func New(locationId int64, interval lib.Interval) (me *MonthlyEarning, err error
 			}
 		}
 	}
-
-	me.MonthFrom = interval.MonthFrom
-	me.YearFrom = interval.YearFrom
-	me.MonthTo = interval.MonthTo
-	me.YearTo = interval.YearTo
-	me.Invoices = invs
 
 	return me, err
 }
@@ -308,7 +291,20 @@ func (this *MonthlyEarning) getPurchases(locationId int64, interval lib.Interval
 	return
 }
 
-func (this *MonthlyEarning) GetInvoices(ps purchases.Purchases) (invs []*Invoice, err error) {
+func (this *MonthlyEarning) NewInvoices() (invs []*Invoice, err error) {
+	// Enhance activations with user and membership data
+	ps, err := this.getPurchases(this.LocationId, this.Interval())
+	if err != nil {
+		return nil, fmt.Errorf("Failed to get enhanced purchaes: %v", err)
+	}
+
+	activationIds := make([]string, 0, len(ps))
+	for _, p := range ps {
+		if p.Type == purchases.TYPE_ACTIVATION {
+			activationIds = append(activationIds, strconv.FormatInt(p.Id, 10))
+		}
+	}
+	this.Activations = "[" + strings.Join(activationIds, ",") + "]"
 
 	// Create a slice for unique user summaries.
 	users, err := users.GetAllUsers()
@@ -324,7 +320,7 @@ func (this *MonthlyEarning) GetInvoices(ps purchases.Purchases) (invs []*Invoice
 	}
 
 	// Sort purchases by user.
-	for _, p := range ps.Data {
+	for _, p := range ps {
 
 		invExists := false
 		var foundInv *Invoice
@@ -368,7 +364,7 @@ func (this *MonthlyEarning) enhancePurchase(purchase *purchases.Purchase,
 	}
 
 	if purchase.User, ok = usersById[purchase.UserId]; !ok {
-		return fmt.Errorf("No user has the ID %v", purchase.MachineId)
+		return fmt.Errorf("No user has the ID %v", purchase.UserId)
 	}
 
 	usrMemberships, ok := userMembershipsByUserId[purchase.UserId]

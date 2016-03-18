@@ -2,15 +2,18 @@ package invoices
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
 
 	"github.com/FabLabBerlin/localmachines/lib/fastbill"
+	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
-	"github.com/FabLabBerlin/localmachines/models/purchases"
+	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
+	"github.com/astaxie/beego/orm"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -21,29 +24,35 @@ func init() {
 func TestFastbillInvoiceActivation(t *testing.T) {
 	Convey("Testing createFastbillDraft", t, func() {
 		Reset(setup.ResetDB)
-		p := CreateTestPurchase(22, "Lasercutter",
-			time.Duration(12)*time.Minute, 0.5)
-
-		ps := purchases.Purchases{
-			Data: []*purchases.Purchase{
-				p,
-			},
+		uid, err := users.CreateUser(&users.User{
+			Email: "foo@bar.com",
+		})
+		if err != nil {
+			panic(err.Error())
+		}
+		mid, _ := machine.CreateMachine(1, "Lasercutter")
+		p := CreateTestPurchase(mid, "Lasercutter", time.Duration(12)*time.Minute, 0.5)
+		p.UserId = uid
+		o := orm.NewOrm()
+		if _, err := o.Insert(p); err != nil {
+			panic(err.Error())
 		}
 
 		t := time.Now()
 		me := monthly_earning.MonthlyEarning{
-			MonthFrom: int(t.Month()),
-			YearFrom:  t.Year(),
-			MonthTo:   int(t.Month()),
-			YearTo:    t.Year(),
+			LocationId: 1,
+			MonthFrom:  int(t.Month()),
+			YearFrom:   t.Year(),
+			MonthTo:    int(t.Month()),
+			YearTo:     t.Year(),
 		}
 
-		invs, err := me.GetInvoices(ps)
+		invs, err := me.NewInvoices()
 		if err != nil {
 			panic(err.Error())
 		}
-		if len(invs) != 1 {
-			panic("expected 1")
+		if n := len(invs); n != 1 {
+			panic(fmt.Sprintf("expected 1 but got %v", n))
 		}
 
 		invs[0].User.ClientId = 1

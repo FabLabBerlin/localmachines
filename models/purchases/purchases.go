@@ -56,8 +56,6 @@ type Purchase struct {
 	Running bool
 
 	// Old fields:
-	Activation   *Activation          `orm:"-"`
-	Reservation  *Reservation         `orm:"-"`
 	MachineUsage time.Duration        `orm:"-"`
 	Memberships  []*models.Membership `orm:"-"`
 

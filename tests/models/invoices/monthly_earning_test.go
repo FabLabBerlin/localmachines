@@ -32,6 +32,7 @@ func CreateTestPurchase(machineId int64, machineName string,
 	m.Price = pricePerMinute
 
 	invAct := &purchases.Purchase{
+		LocationId:   1,
 		Type:         purchases.TYPE_ACTIVATION,
 		TimeStart:    TIME_START,
 		TimeEnd:      TIME_START.Add(minutes),
