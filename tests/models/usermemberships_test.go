@@ -92,15 +92,12 @@ func TestUserMemberships(t *testing.T) {
 
 			Convey("When creating user membership normally", func() {
 				startDate := time.Date(2015, 6, 1, 0, 0, 0, 0, time.UTC)
-				var err error
-				var userMembershipId int64
-				userMembershipId, err = models.CreateUserMembership(
+				userMembershipId, err := models.CreateUserMembership(
 					userId, baseMembershipId, startDate)
 				if err != nil {
 					panic(err.Error())
 				}
-				var gotUserMembership *models.UserMembership
-				gotUserMembership, err = models.GetUserMembership(userMembershipId)
+				gotUserMembership, err := models.GetUserMembership(userMembershipId)
 				if err != nil {
 					panic(err.Error())
 				}
