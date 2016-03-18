@@ -29,18 +29,18 @@ type DraftsCreationError struct {
 }
 
 func CreateFastbillDrafts(me *MonthlyEarning) (report DraftsCreationReport) {
-	report.Ids = make([]int64, 0, len(me.UserSummaries))
-	report.SuccessUids = make([]int64, 0, len(me.UserSummaries))
-	report.EmptyUids = make([]int64, 0, len(me.UserSummaries))
-	report.AlreadyExportedUids = make([]int64, 0, len(me.UserSummaries))
-	report.Errors = make([]DraftsCreationError, 0, len(me.UserSummaries))
+	report.Ids = make([]int64, 0, len(me.Invoices))
+	report.SuccessUids = make([]int64, 0, len(me.Invoices))
+	report.EmptyUids = make([]int64, 0, len(me.Invoices))
+	report.AlreadyExportedUids = make([]int64, 0, len(me.Invoices))
+	report.Errors = make([]DraftsCreationError, 0, len(me.Invoices))
 
-	for _, userSummary := range me.UserSummaries {
-		uid := userSummary.User.Id
+	for _, inv := range me.Invoices {
+		uid := inv.User.Id
 		if uid != 19 {
 			continue
 		}
-		if r := userSummary.User.GetRole(); (r == user_roles.STAFF || r == user_roles.ADMIN || r == user_roles.SUPER_ADMIN) && uid != 19 {
+		if r := inv.User.GetRole(); (r == user_roles.STAFF || r == user_roles.ADMIN || r == user_roles.SUPER_ADMIN) && uid != 19 {
 			e := DraftsCreationError{
 				UserId:  uid,
 				Problem: "User role is " + r.String(),
@@ -48,7 +48,7 @@ func CreateFastbillDrafts(me *MonthlyEarning) (report DraftsCreationReport) {
 			report.Errors = append(report.Errors, e)
 			beego.Error("no draft created for user", uid, ":", e.Problem)
 		} else {
-			fbDraft, empty, err := CreateFastbillDraft(me, userSummary)
+			fbDraft, empty, err := CreateFastbillDraft(me, inv)
 			if err == fastbill.ErrInvoiceAlreadyExported {
 				beego.Info("draft for user", uid, "already exported")
 				report.AlreadyExportedUids = append(report.AlreadyExportedUids, uid)
@@ -78,26 +78,26 @@ func CreateFastbillDrafts(me *MonthlyEarning) (report DraftsCreationReport) {
 	return
 }
 
-func CreateFastbillDraft(me *MonthlyEarning, userSummary *UserSummary) (fbDraft *fastbill.Invoice, empty bool, err error) {
+func CreateFastbillDraft(me *MonthlyEarning, inv *Invoice) (fbDraft *fastbill.Invoice, empty bool, err error) {
 	fbDraft = &fastbill.Invoice{
-		CustomerNumber: userSummary.User.ClientId,
+		CustomerNumber: inv.User.ClientId,
 		TemplateId:     fastbill.TemplateStandardId,
 		Items:          make([]fastbill.Item, 0, 10),
 	}
 	if fbDraft.Month, fbDraft.Year, err = getFastbillMonthYear(me); err != nil {
 		return nil, false, fmt.Errorf("get fastbill month: %v", err)
 	}
-	memberships, err := models.GetUserMemberships(userSummary.User.Id)
+	memberships, err := models.GetUserMemberships(inv.User.Id)
 	if err != nil {
 		return nil, false, fmt.Errorf("GetUserMemberships: %v", err)
 	}
 
-	fbDraft.CustomerId, err = fastbill.GetCustomerId(userSummary.User)
+	fbDraft.CustomerId, err = fastbill.GetCustomerId(inv.User)
 	if err != nil {
 		return nil, false, fmt.Errorf("error getting fastbill customer id: %v", err)
 	}
 
-	if len(userSummary.Purchases.Data) == 0 &&
+	if len(inv.Purchases.Data) == 0 &&
 		(memberships == nil || len(memberships.Data) == 0) {
 		return nil, true, nil
 	}
@@ -115,7 +115,7 @@ func CreateFastbillDraft(me *MonthlyEarning, userSummary *UserSummary) (fbDraft 
 		}
 	}
 
-	byProductNameAndPricePerUnit := userSummary.byProductNameAndPricePerUnit()
+	byProductNameAndPricePerUnit := inv.byProductNameAndPricePerUnit()
 
 	for productName, byPricePerUnit := range byProductNameAndPricePerUnit {
 		for pricePerUnit, ps := range byPricePerUnit {

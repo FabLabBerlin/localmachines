@@ -86,8 +86,8 @@ func (c *Controller) GetActivations() {
 		"Membership",
 		"Billed Price (EUR)",
 	})
-	for _, summary := range monthlyEarning.UserSummaries {
-		for _, p := range summary.Purchases.Data {
+	for _, inv := range monthlyEarning.Invoices {
+		for _, p := range inv.Purchases.Data {
 			row := make([]string, 0, 20)
 			if p.Type != purchases.TYPE_ACTIVATION {
 				continue

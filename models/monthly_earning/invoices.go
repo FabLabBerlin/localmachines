@@ -26,15 +26,15 @@ func init() {
 // Activations field contains a JSON array with activation IDs.
 // XlsFile field contains URL to the generated XLSX file.
 type MonthlyEarning struct {
-	Id            int64 `orm:"auto";"pk"`
-	MonthFrom     int
-	YearFrom      int
-	MonthTo       int
-	YearTo        int
-	Activations   string `orm:type(text)`
-	FilePath      string `orm:size(255)`
-	Created       time.Time
-	UserSummaries []*UserSummary `orm:"-"`
+	Id          int64 `orm:"auto";"pk"`
+	MonthFrom   int
+	YearFrom    int
+	MonthTo     int
+	YearTo      int
+	Activations string `orm:type(text)`
+	FilePath    string `orm:size(255)`
+	Created     time.Time
+	Invoices    []*Invoice `orm:"-"`
 }
 
 func (this *MonthlyEarning) Interval() lib.Interval {
@@ -47,12 +47,12 @@ func (this *MonthlyEarning) Interval() lib.Interval {
 }
 
 func (this *MonthlyEarning) Len() int {
-	return len(this.UserSummaries)
+	return len(this.Invoices)
 }
 
 func (this *MonthlyEarning) Less(i, j int) bool {
-	a := this.UserSummaries[i]
-	b := this.UserSummaries[j]
+	a := this.Invoices[i]
+	b := this.Invoices[j]
 	aName := a.User.FirstName + " " + a.User.LastName
 	bName := b.User.FirstName + " " + b.User.LastName
 	return strings.ToLower(aName) < strings.ToLower(bName)
@@ -67,21 +67,21 @@ func (this *MonthlyEarning) PeriodTo() time.Time {
 }
 
 func (this *MonthlyEarning) Swap(i, j int) {
-	this.UserSummaries[i], this.UserSummaries[j] = this.UserSummaries[j], this.UserSummaries[i]
+	this.Invoices[i], this.Invoices[j] = this.Invoices[j], this.Invoices[i]
 }
 
 func (this *MonthlyEarning) TableName() string {
 	return "monthly_earnings"
 }
 
-type UserSummary struct {
+type Invoice struct {
 	User      users.User
 	Purchases purchases.Purchases
 }
 
-func (userSummary *UserSummary) byProductNameAndPricePerUnit() map[string]map[float64][]*purchases.Purchase {
+func (inv *Invoice) byProductNameAndPricePerUnit() map[string]map[float64][]*purchases.Purchase {
 	byProductNameAndPricePerUnit := make(map[string]map[float64][]*purchases.Purchase)
-	for _, p := range userSummary.Purchases.Data {
+	for _, p := range inv.Purchases.Data {
 		if _, ok := byProductNameAndPricePerUnit[p.ProductName()]; !ok {
 			byProductNameAndPricePerUnit[p.ProductName()] = make(map[float64][]*purchases.Purchase)
 		}
@@ -105,12 +105,12 @@ func exists(path string) (bool, error) {
 	return true, err
 }
 
-// Returns MonthlyEarning with populated UserSummaries
+// Returns MonthlyEarning with populated Invoices
 func New(locationId int64, interval lib.Interval) (me MonthlyEarning, err error) {
 	// Enhance activations with user and membership data
 	ps, err := me.getPurchases(locationId, interval)
 	if err != nil {
-		err = fmt.Errorf("Failed to get enhanced activations: %v", err)
+		err = fmt.Errorf("Failed to get enhanced purchaes: %v", err)
 		return
 	}
 
@@ -122,9 +122,8 @@ func New(locationId int64, interval lib.Interval) (me MonthlyEarning, err error)
 	}
 	me.Activations = "[" + strings.Join(activationIds, ",") + "]"
 
-	// Create user summaries from invoice activations
-	var userSummaries *[]*UserSummary
-	userSummaries, err = me.GetUserSummaries(purchases.Purchases{
+	// Create invoices from purchases
+	invs, err := me.GetInvoices(purchases.Purchases{
 		Data: ps,
 	})
 	if err != nil {
@@ -132,11 +131,11 @@ func New(locationId int64, interval lib.Interval) (me MonthlyEarning, err error)
 		return
 	}
 
-	for i := 0; i < len(*userSummaries); i++ {
-		sort.Stable((*userSummaries)[i].Purchases)
-		for _, activation := range (*userSummaries)[i].Purchases.Data {
-			activation.TotalPrice = purchases.PriceTotalExclDisc(activation)
-			activation.DiscountedTotal, err = purchases.PriceTotalDisc(activation)
+	for i := 0; i < len(invs); i++ {
+		sort.Stable(invs[i].Purchases)
+		for _, purchase := range invs[i].Purchases.Data {
+			purchase.TotalPrice = purchases.PriceTotalExclDisc(purchase)
+			purchase.DiscountedTotal, err = purchases.PriceTotalDisc(purchase)
 			if err != nil {
 				return
 			}
@@ -147,7 +146,7 @@ func New(locationId int64, interval lib.Interval) (me MonthlyEarning, err error)
 	me.YearFrom = interval.YearFrom
 	me.MonthTo = interval.MonthTo
 	me.YearTo = interval.YearTo
-	me.UserSummaries = *userSummaries
+	me.Invoices = invs
 
 	return me, err
 }
@@ -319,52 +318,52 @@ func (this *MonthlyEarning) getPurchases(locationId int64, interval lib.Interval
 	return
 }
 
-func (this *MonthlyEarning) GetUserSummaries(
-	ps purchases.Purchases) (*[]*UserSummary, error) {
+func (this *MonthlyEarning) GetInvoices(ps purchases.Purchases) (invs []*Invoice, err error) {
 
 	// Create a slice for unique user summaries.
 	users, err := users.GetAllUsers()
 	if err != nil {
 		return nil, err
 	}
-	userSummaries := make([]*UserSummary, 0, len(users))
+	invs = make([]*Invoice, 0, len(users))
 	for _, user := range users {
-		newSummary := UserSummary{}
-		newSummary.User = *user
-		userSummaries = append(userSummaries, &newSummary)
+		inv := Invoice{
+			User: *user,
+		}
+		invs = append(invs, &inv)
 	}
 
 	// Sort purchases by user.
 	for _, p := range ps.Data {
 
-		uSummaryExists := false
-		var summary *UserSummary
+		invExists := false
+		var foundInv *Invoice
 
-		for _, userSummary := range userSummaries {
-			if p.User.Id == userSummary.User.Id {
-				uSummaryExists = true
-				summary = userSummary
+		for _, inv := range invs {
+			if p.User.Id == inv.User.Id {
+				invExists = true
+				foundInv = inv
 				break
 			}
 		}
 
-		// Create new user summary if it does not exist for the user.
-		if !uSummaryExists {
-			beego.Warn("Creating user summary for activation that has no matching user")
-			newSummary := UserSummary{}
-			newSummary.User = p.User
-			userSummaries = append(userSummaries, &newSummary)
-			summary = userSummaries[len(userSummaries)-1]
+		// Create new invoice if it does not exist for the user.
+		if !invExists {
+			beego.Warn("Creating invoice for purchase that has no matching user")
+			newInv := Invoice{
+				User: p.User,
+			}
+			invs = append(invs, &newInv)
+			foundInv = invs[len(invs)-1]
 		}
 
-		// Append the invoice activation to the user summary.
-		if summary.User.Id == p.User.Id {
-			summary.Purchases.Data = append(summary.Purchases.Data, p)
+		// Append the purchase to the invoice.
+		if foundInv.User.Id == p.User.Id {
+			foundInv.Purchases.Data = append(foundInv.Purchases.Data, p)
 		}
 	}
 
-	// Return populated user summaries slice.
-	return &userSummaries, nil
+	return
 }
 
 func (this *MonthlyEarning) enhancePurchase(purchase *purchases.Purchase,

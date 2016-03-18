@@ -38,15 +38,15 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 			YearTo:    t.Year(),
 		}
 
-		userSummaries, err := me.GetUserSummaries(ps)
+		invs, err := me.GetInvoices(ps)
 		if err != nil {
 			panic(err.Error())
 		}
-		if len(*userSummaries) != 1 {
+		if len(invs) != 1 {
 			panic("expected 1")
 		}
 
-		(*userSummaries)[0].User.ClientId = 1
+		invs[0].User.ClientId = 1
 
 		testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			var req fastbill.Request
@@ -80,7 +80,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 
 		fastbill.API_URL = testServer.URL
 
-		_, empty, err := monthly_earning.CreateFastbillDraft(&me, (*userSummaries)[0])
+		_, empty, err := monthly_earning.CreateFastbillDraft(&me, invs[0])
 		So(empty, ShouldBeFalse)
 		So(err, ShouldBeNil)
 	})

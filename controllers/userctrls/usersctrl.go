@@ -478,15 +478,15 @@ func (this *UsersController) GetUserBill() {
 		beego.Error("new monthly earning:", err)
 	}
 
-	var userSummary *monthly_earning.UserSummary
+	var userInv *monthly_earning.Invoice
 
-	for _, us := range me.UserSummaries {
-		if us.User.Id == uid {
-			userSummary = us
+	for _, inv := range me.Invoices {
+		if inv.User.Id == uid {
+			userInv = inv
 		}
 	}
 
-	this.Data["json"] = userSummary
+	this.Data["json"] = userInv
 	this.ServeJSON()
 }
 

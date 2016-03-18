@@ -98,8 +98,8 @@ func FetchData(locationId int64) (data Data, err error) {
 func (this Data) sumActivationsBy(timeFormat string) (sums map[string]float64, err error) {
 	sums = make(map[string]float64)
 
-	for _, userSummary := range this.monthlyEarning.UserSummaries {
-		for _, purchase := range userSummary.Purchases.Data {
+	for _, inv := range this.monthlyEarning.Invoices {
+		for _, purchase := range inv.Purchases.Data {
 			if purchase.Type == purchases.TYPE_ACTIVATION {
 				priceTotalDisc, err := purchases.PriceTotalDisc(purchase)
 				if err != nil {
@@ -154,9 +154,9 @@ func (this Data) sumMembershipCountsBy(timeFormat string) (sums map[string]int, 
 func (this Data) sumMinutesBy(timeFormat string) (sums map[string]float64, err error) {
 	sums = make(map[string]float64)
 
-	for _, userSummary := range this.monthlyEarning.UserSummaries {
-		if userSummary.User.GetRole() != user_roles.STAFF && userSummary.User.GetRole() != user_roles.ADMIN {
-			for _, purchase := range userSummary.Purchases.Data {
+	for _, inv := range this.monthlyEarning.Invoices {
+		if inv.User.GetRole() != user_roles.STAFF && inv.User.GetRole() != user_roles.ADMIN {
+			for _, purchase := range inv.Purchases.Data {
 				if purchase.Type == purchases.TYPE_ACTIVATION {
 					key := purchase.TimeStart.Format(timeFormat)
 					sums[key] = sums[key] + float64(purchase.Seconds())/60

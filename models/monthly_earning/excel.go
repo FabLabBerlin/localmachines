@@ -125,7 +125,6 @@ func addSeparationRowXlsx(sheet *xlsx.Sheet) {
 // Creates a xlsx file.
 func createXlsxFile(filePath string, monthlyEarning *MonthlyEarning) error {
 	sort.Sort(monthlyEarning)
-	userSummaries := monthlyEarning.UserSummaries
 
 	// Create a xlsx file if there
 	var file *xlsx.File
@@ -157,14 +156,14 @@ func createXlsxFile(filePath string, monthlyEarning *MonthlyEarning) error {
 	row = sheet.AddRow()
 
 	// Fill the xlsx sheet
-	for _, userSummary := range userSummaries {
+	for _, inv := range monthlyEarning.Invoices {
 
-		memberships, err := models.GetUserMemberships(userSummary.User.Id)
+		memberships, err := models.GetUserMemberships(inv.User.Id)
 		if err != nil {
 			return fmt.Errorf("GetUserMemberships: %v", err)
 		}
 
-		if len(userSummary.Purchases.Data) == 0 &&
+		if len(inv.Purchases.Data) == 0 &&
 			(memberships == nil || len(memberships.Data) == 0) {
 			// nothing to bill
 			continue
@@ -175,61 +174,61 @@ func createXlsxFile(filePath string, monthlyEarning *MonthlyEarning) error {
 		cell = row.AddCell()
 		cell.Value = "User"
 		cell = row.AddCell()
-		cell.Value = userSummary.User.FirstName
+		cell.Value = inv.User.FirstName
 		cell = row.AddCell()
-		cell.Value = userSummary.User.LastName
+		cell.Value = inv.User.LastName
 		cell = row.AddCell()
-		cell.Value = userSummary.User.Email
+		cell.Value = inv.User.Email
 
 		row = sheet.AddRow()
 		cell = row.AddCell()
 		cell.Value = "Fastbill User Id"
 		cell = row.AddCell()
 		cell.SetStyle(colorStyle(RED))
-		cell.Value = strconv.FormatInt(userSummary.User.ClientId, 10)
+		cell.Value = strconv.FormatInt(inv.User.ClientId, 10)
 
 		// User Billing Address
 		row = sheet.AddRow()
 		cell = row.AddCell()
 		cell.Value = "Billing Address"
 		cell = row.AddCell()
-		cell.Value = userSummary.User.InvoiceAddr
+		cell.Value = inv.User.InvoiceAddr
 
 		// User Zip Code
 		row = sheet.AddRow()
 		cell = row.AddCell()
 		cell.Value = "Zip Code"
 		cell = row.AddCell()
-		cell.Value = userSummary.User.ZipCode
+		cell.Value = inv.User.ZipCode
 
 		// User City
 		row = sheet.AddRow()
 		cell = row.AddCell()
 		cell.Value = "City"
 		cell = row.AddCell()
-		cell.Value = userSummary.User.City
+		cell.Value = inv.User.City
 
 		// User Country
 		row = sheet.AddRow()
 		cell = row.AddCell()
 		cell.Value = "Country"
 		cell = row.AddCell()
-		cell.Value = userSummary.User.CountryCode
+		cell.Value = inv.User.CountryCode
 
 		// User Phone
 		row = sheet.AddRow()
 		cell = row.AddCell()
 		cell.Value = "Phone"
 		cell = row.AddCell()
-		cell.Value = userSummary.User.Phone
+		cell.Value = inv.User.Phone
 
 		// Company
-		if userSummary.User.Company != "" {
+		if inv.User.Company != "" {
 			row = sheet.AddRow()
 			cell = row.AddCell()
 			cell.Value = "Company"
 			cell = row.AddCell()
-			cell.Value = userSummary.User.Company
+			cell.Value = inv.User.Company
 		}
 
 		// User Comments
@@ -237,7 +236,7 @@ func createXlsxFile(filePath string, monthlyEarning *MonthlyEarning) error {
 		cell = row.AddCell()
 		cell.Value = "Comments"
 		cell = row.AddCell()
-		cell.Value = userSummary.User.Comments
+		cell.Value = inv.User.Comments
 
 		if memberships != nil {
 			sheet.AddRow()
@@ -292,7 +291,7 @@ func createXlsxFile(filePath string, monthlyEarning *MonthlyEarning) error {
 
 		sumTotal := 0.0
 		sumTotalDisc := 0.0
-		ps := PurchasesXlsx(userSummary.Purchases.Data)
+		ps := PurchasesXlsx(inv.Purchases.Data)
 		sort.Stable(ps)
 		for _, purchase := range ps {
 			sumTotal += purchase.TotalPrice
@@ -305,7 +304,7 @@ func createXlsxFile(filePath string, monthlyEarning *MonthlyEarning) error {
 		cell.Value = "Activations By Machine"
 		AddRowActivationsHeaderXlsx(sheet)
 
-		byProductNameAndPricePerUnit := userSummary.byProductNameAndPricePerUnit()
+		byProductNameAndPricePerUnit := inv.byProductNameAndPricePerUnit()
 
 		for productName, byPricePerUnit := range byProductNameAndPricePerUnit {
 			for pricePerUnit, ps := range byPricePerUnit {
