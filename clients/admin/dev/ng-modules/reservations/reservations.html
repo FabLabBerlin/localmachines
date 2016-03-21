@@ -4,45 +4,7 @@
 
   <hr>
 
-  <h2>List of Reservations</h2>
-
-  <table class="table table-bordered table-striped table-hover">
-    <thead>
-      <tr>
-        <th>Machine</th>
-        <th>Start</th>
-        <th>End</th>
-        <th>User</th>
-        <th>E-Mail</th>
-        <th>Disabled</th>
-        <th>Cancelled</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr ng-repeat="reservation in reservations">
-        <td>{{reservation.Machine.Name}}</td>
-        <td>{{reservation.TimeStartLocal}}</td>
-        <td>{{reservation.TimeEndLocal}}</td>
-        <td>{{reservation.User.FirstName}} {{reservation.User.LastName}}</td>
-        <td>{{reservation.User.Email}}</td>
-        <td>{{reservation.ReservationDisabled ? 'X' : ''}}</td>
-        <td>{{reservation.Cancelled ? 'X' : ''}}
-        <td>
-          <button 
-            type="button" 
-            class="btn btn-primary btn-ico pull-right" 
-            ng-click="editReservation(reservation.Id)">
-            <span class="fa fa-edit"></span>
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-
-  <hr>
-
-  <h2>Machines</h2>
+  <h2>Machine Reservation Pricing</h2>
 
   <table class="table table-bordered table-striped table-hover">
     <thead>
@@ -172,6 +134,42 @@
           <button class="btn btn-primary btn-lg pull-right"
                   ng-click="addReservationRule()">
             <i class="fa fa-plus"></i>&nbsp;Add Reservation Rule
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2 id="title-list-of-reservations">List of Reservations</h2>
+
+  <table class="table table-bordered table-striped table-hover">
+    <thead>
+      <tr>
+        <th>Machine</th>
+        <th>Start</th>
+        <th>End</th>
+        <th>User</th>
+        <th>E-Mail</th>
+        <th>Disabled</th>
+        <th>Cancelled</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="reservation in reservations">
+        <td>{{reservation.Machine.Name}}</td>
+        <td>{{reservation.TimeStartLocal}}</td>
+        <td>{{reservation.TimeEndLocal}}</td>
+        <td>{{reservation.User.FirstName}} {{reservation.User.LastName}}</td>
+        <td>{{reservation.User.Email}}</td>
+        <td>{{reservation.ReservationDisabled ? 'X' : ''}}</td>
+        <td>{{reservation.Cancelled ? 'X' : ''}}
+        <td>
+          <button 
+            type="button" 
+            class="btn btn-primary btn-ico pull-right" 
+            ng-click="editReservation(reservation.Id)">
+            <span class="fa fa-edit"></span>
           </button>
         </td>
       </tr>
