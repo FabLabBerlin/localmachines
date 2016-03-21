@@ -2,7 +2,6 @@ package purchases
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models/machine"
@@ -46,6 +45,7 @@ func GetActivations(locationId int64, interval lib.Interval, search string) (act
 			"LEFT JOIN user u ON a.user_id = u.id "+
 			"WHERE a.type=? AND a.time_start>=? AND a.time_start<=? AND a.running=false "+
 			"      AND (u.username LIKE ? OR u.first_name LIKE ? OR u.last_name LIKE ?) "+
+			"      AND a.location_id=? "+
 			"ORDER BY a.time_start DESC ",
 			act.Purchase.TableName())
 
@@ -55,23 +55,25 @@ func GetActivations(locationId int64, interval lib.Interval, search string) (act
 			interval.TimeTo(),
 			pattern,
 			pattern,
-			pattern).QueryRows(&purchases)
+			pattern,
+			locationId).QueryRows(&purchases)
 	} else {
 		query := fmt.Sprintf("SELECT a.* FROM %s a "+
 			"WHERE a.type=? AND a.time_start>=? AND a.time_start<=? AND a.running=false "+
+			"               AND a.location_id=? "+
 			"ORDER BY a.time_start DESC ",
 			act.Purchase.TableName())
 
 		_, err = o.Raw(query,
 			TYPE_ACTIVATION,
 			interval.TimeFrom(),
-			interval.TimeTo()).QueryRows(&purchases)
+			interval.TimeTo(),
+			locationId).QueryRows(&purchases)
 
 	}
 
 	if err != nil {
-		msg := fmt.Sprintf("Failed to get activations: %v", err)
-		return nil, errors.New(msg)
+		return nil, fmt.Errorf("Failed to get activations: %v", err)
 	}
 
 	activations = make([]Activation, 0, len(purchases))
