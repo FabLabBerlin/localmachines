@@ -187,10 +187,13 @@ func Get(id int64) (me *MonthlyEarning, err error) {
 }
 
 // Gets all monthly earnings from the database
-func GetAll() (mes []*MonthlyEarning, err error) {
+func GetAllAt(locationId int64) (mes []*MonthlyEarning, err error) {
 	me := MonthlyEarning{}
 	o := orm.NewOrm()
-	_, err = o.QueryTable(me.TableName()).OrderBy("-Id").All(&mes)
+	_, err = o.QueryTable(me.TableName()).
+		OrderBy("-Id").
+		Filter("location_id", locationId).
+		All(&mes)
 
 	return
 }

@@ -31,7 +31,8 @@ app.controller('InvoicesCtrl',
       method: 'GET',
       url: '/api/invoices',
       params: {
-        ac: new Date().getTime()
+        ac: new Date().getTime(),
+        location: $cookies.locationId
       }
     })
     .success(function(invoices) {
@@ -112,7 +113,8 @@ app.controller('InvoicesCtrl',
       method: 'DELETE',
       url: '/api/invoices/' + invoiceId,
       params: {
-        ac: new Date().getTime()
+        ac: new Date().getTime(),
+        location: $cookies.locationId
       }
     })
     .success(function(response) {

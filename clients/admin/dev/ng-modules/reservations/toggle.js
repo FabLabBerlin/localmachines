@@ -14,7 +14,6 @@ app.directive('toggle', function() {
       $scope.title = $attrs.title;
       $scope.show = false;
       $scope.toggle = function() {
-        console.log('toogle', $scope.show);
         $scope.show = !$scope.show;
       };
     },

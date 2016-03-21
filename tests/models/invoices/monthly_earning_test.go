@@ -163,7 +163,7 @@ func TestInvoiceActivation(t *testing.T) {
 		})
 
 		Convey("When trying to get all monthly earnings", func() {
-			mes, err := monthly_earning.GetAll()
+			mes, err := monthly_earning.GetAllAt(1)
 
 			Convey("There should be no error", func() {
 				So(err, ShouldBeNil)

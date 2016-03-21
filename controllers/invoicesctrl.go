@@ -19,12 +19,12 @@ type InvoicesController struct {
 // @router / [get]
 func (this *InvoicesController) GetAll() {
 
-	if !this.IsAdmin() {
-		beego.Error("Not authorized")
+	locId, authorized := this.GetLocIdAdmin()
+	if !authorized {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	mes, err := monthly_earning.GetAll()
+	mes, err := monthly_earning.GetAllAt(locId)
 	if err != nil {
 		beego.Error("Failed to get all monthly earnings")
 		this.CustomAbort(403, "Failed to get all monthly earnings")
@@ -38,13 +38,13 @@ func (this *InvoicesController) GetAll() {
 // @Description Get all monthly earnings from the database
 // @Param	iid	path	int	true	"Invoice ID"
 // @Success 200 string ok
-// @Failure	403	Failed to delete
 // @Failure	401	Not authorized
+// @Failure	500	Failed to delete
 // @router /:iid [delete]
 func (this *InvoicesController) Delete() {
 
-	if !this.IsAdmin() {
-		beego.Error("Not authorized")
+	locId, authorized := this.GetLocIdAdmin()
+	if !authorized {
 		this.CustomAbort(401, "Not authorized")
 	}
 
@@ -54,9 +54,20 @@ func (this *InvoicesController) Delete() {
 		this.CustomAbort(403, "Failed to delete monthly earning")
 	}
 
+	me, err := monthly_earning.Get(iid)
+	if err != nil {
+		beego.Error("Failed to get monthly earning:", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	if me.LocationId != locId {
+		beego.Error("Unexpected location id:", me.LocationId)
+		this.CustomAbort(400, "Bad request")
+	}
+
 	if err = monthly_earning.Delete(iid); err != nil {
 		beego.Error("Failed to delete monthly earning:", err)
-		this.CustomAbort(403, "Failed to delete monthly earning")
+		this.CustomAbort(500, "Failed to delete monthly earning")
 	}
 
 	this.Data["json"] = "ok"
