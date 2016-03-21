@@ -23,6 +23,7 @@ var app = angular.module('fabsmith', [
   'fabsmith.admin.productlist',
   'fabsmith.admin.reservation',
   'fabsmith.admin.reservations',
+  'fabsmith.admin.reservations.toggle',
   'fabsmith.admin.invoices',
   'fabsmith.admin.users',
   'fabsmith.admin.randomtoken',

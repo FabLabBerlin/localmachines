@@ -4,176 +4,176 @@
 
   <hr>
 
-  <h2>Machine Reservation Pricing</h2>
+  <toggle title="Machine Reservation Pricing">
+    <table class="table table-bordered table-striped table-hover">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Reservation Price per 30 minute slot</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="machine in machines">
+          <td>{{machine.Name}}</td>
+          <td>
+            <input type="text" ng-model="machine.ReservationPriceHalfHourly" placeholder="Enter price to enable reservations for this machine" size="50">
+          </td>
+          <td>
+            <button type="button" class="btn btn-primary btn-ico pull-right" ng-click="saveMachine(machine.Id)">
+              <span class="fa fa-floppy-o"></span>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </toggle>
 
-  <table class="table table-bordered table-striped table-hover">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Reservation Price per 30 minute slot</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr ng-repeat="machine in machines">
-        <td>{{machine.Name}}</td>
-        <td>
-          <input type="text" ng-model="machine.ReservationPriceHalfHourly" placeholder="Enter price to enable reservations for this machine" size="50">
-        </td>
-        <td>
-          <button type="button" class="btn btn-primary btn-ico pull-right" ng-click="saveMachine(machine.Id)">
-            <span class="fa fa-floppy-o"></span>
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <toggle title="Reservation Rules">
+    <table id="reservations" class="table table-bordered table-striped table-hover">
+      <thead>
+        <tr>
+          <th rowspan="2">Name</th>
+          <th rowspan="2">Machine</th>
+          <th rowspan="2">Available</th>
+          <th rowspan="2">Unavailable (Overwrites availables)</th>
+          <th rowspan="2">Start Date</th>
+          <th rowspan="2">End Date</th>
+          <th rowspan="2">Start Time</th>
+          <th rowspan="2">End Time</th>
+          <th colspan="7">Weekdays</th>
+          <th rowspan="2"></th>
+          <th rowspan="2"></th>
+        </tr>
+        <tr>
+          <th>Mo</th>
+          <th>Tu</th>
+          <th>We</th>
+          <th>Th</th>
+          <th>Fr</th>
+          <th>Sa</th>
+          <th>Su</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="reservationRule in reservationRules">
+          <td>
+            <input type="text" ng-model="reservationRule.Name">
+          </td>
+          <td>{{reservationRule.Machine.Name || 'All machines'}}</td>
+          <td>
+            <input type="radio" ng-model="reservationRule.Available" ng-value="true" ng-change="setAvailable(reservationRule.Id)">
+          </td>
+          <td>
+            <input type="radio" ng-model="reservationRule.Unavailable" ng-value="true" ng-change="setUnavailable(reservationRule.Id)">
+          </td>
+          <td>
+            <input type="text" ng-model="reservationRule.DateStart" ng-change="dateRangeUpdate(reservationRule.Id)" placeholder="YYYY-MM-DD" size="13">
+          </td>
+          <td>
+            <input type="text" ng-model="reservationRule.DateEnd" ng-change="dateRangeUpdate(reservationRule.Id)" placeholder="YYYY-MM-DD" size="13">
+          </td>
+          <td>
+            <input type="text" ng-model="reservationRule.TimeStart" placeholder="HH:MM" size="6">
+          </td>
+          <td>
+            <input type="text" ng-model="reservationRule.TimeEnd" placeholder="HH:MM" size="6">
+          </td>
+          <td>
+            <input type="checkbox" ng-model="reservationRule.Monday" ng-change="weekDayCheck(reservationRule.Id)">
+          </td>
+          <td>
+            <input type="checkbox" ng-model="reservationRule.Tuesday" ng-change="weekDayCheck(reservationRule.Id)">
+          </td>
+          <td>
+            <input type="checkbox" ng-model="reservationRule.Wednesday" ng-change="weekDayCheck(reservationRule.Id)">
+          </td>
+          <td>
+            <input type="checkbox" ng-model="reservationRule.Thursday" ng-change="weekDayCheck(reservationRule.Id)">
+          </td>
+          <td>
+            <input type="checkbox" ng-model="reservationRule.Friday" ng-change="weekDayCheck(reservationRule.Id)">
+          </td>
+          <td>
+            <input type="checkbox" ng-model="reservationRule.Saturday" ng-change="weekDayCheck(reservationRule.Id)">
+          </td>
+          <td>
+            <input type="checkbox" ng-model="reservationRule.Sunday" ng-change="weekDayCheck(reservationRule.Id)">
+          </td>
+          <td>
+            <button type="button" class="btn btn-danger btn-ico pull-right" ng-click="deleteReservationRule(reservationRule.Id)">
+              <span class="fa fa-close"></span>
+            </button>
+          </td>
+          <td>
+            <button type="button" class="btn btn-primary btn-ico pull-right" ng-click="saveReservationRule(reservationRule.Id)">
+              <span class="fa fa-floppy-o"></span>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
-  <hr>
+    <hr>
 
-  <h2>Reservation Rules</h2>
+    <table class="pull-right">
+      <tbody>
+        <tr>
+          <td>
+            <select class="form-control">
+              <option value="">All machines</option>
+              <option ng-repeat="machine in machines" value={{machine.Id}}>
+                {{machine.Name}}
+              </option>
+            </select>
+          </td>
+          <td>
+            <button class="btn btn-primary btn-lg pull-right"
+                    ng-click="addReservationRule()">
+              <i class="fa fa-plus"></i>&nbsp;Add Reservation Rule
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </toggle>
 
-  <table id="reservations" class="table table-bordered table-striped table-hover">
-    <thead>
-      <tr>
-        <th rowspan="2">Name</th>
-        <th rowspan="2">Machine</th>
-        <th rowspan="2">Available</th>
-        <th rowspan="2">Unavailable (Overwrites availables)</th>
-        <th rowspan="2">Start Date</th>
-        <th rowspan="2">End Date</th>
-        <th rowspan="2">Start Time</th>
-        <th rowspan="2">End Time</th>
-        <th colspan="7">Weekdays</th>
-        <th rowspan="2"></th>
-        <th rowspan="2"></th>
-      </tr>
-      <tr>
-        <th>Mo</th>
-        <th>Tu</th>
-        <th>We</th>
-        <th>Th</th>
-        <th>Fr</th>
-        <th>Sa</th>
-        <th>Su</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr ng-repeat="reservationRule in reservationRules">
-        <td>
-          <input type="text" ng-model="reservationRule.Name">
-        </td>
-        <td>{{reservationRule.Machine.Name || 'All machines'}}</td>
-        <td>
-          <input type="radio" ng-model="reservationRule.Available" ng-value="true" ng-change="setAvailable(reservationRule.Id)">
-        </td>
-        <td>
-          <input type="radio" ng-model="reservationRule.Unavailable" ng-value="true" ng-change="setUnavailable(reservationRule.Id)">
-        </td>
-        <td>
-          <input type="text" ng-model="reservationRule.DateStart" ng-change="dateRangeUpdate(reservationRule.Id)" placeholder="YYYY-MM-DD" size="13">
-        </td>
-        <td>
-          <input type="text" ng-model="reservationRule.DateEnd" ng-change="dateRangeUpdate(reservationRule.Id)" placeholder="YYYY-MM-DD" size="13">
-        </td>
-        <td>
-          <input type="text" ng-model="reservationRule.TimeStart" placeholder="HH:MM" size="6">
-        </td>
-        <td>
-          <input type="text" ng-model="reservationRule.TimeEnd" placeholder="HH:MM" size="6">
-        </td>
-        <td>
-          <input type="checkbox" ng-model="reservationRule.Monday" ng-change="weekDayCheck(reservationRule.Id)">
-        </td>
-        <td>
-          <input type="checkbox" ng-model="reservationRule.Tuesday" ng-change="weekDayCheck(reservationRule.Id)">
-        </td>
-        <td>
-          <input type="checkbox" ng-model="reservationRule.Wednesday" ng-change="weekDayCheck(reservationRule.Id)">
-        </td>
-        <td>
-          <input type="checkbox" ng-model="reservationRule.Thursday" ng-change="weekDayCheck(reservationRule.Id)">
-        </td>
-        <td>
-          <input type="checkbox" ng-model="reservationRule.Friday" ng-change="weekDayCheck(reservationRule.Id)">
-        </td>
-        <td>
-          <input type="checkbox" ng-model="reservationRule.Saturday" ng-change="weekDayCheck(reservationRule.Id)">
-        </td>
-        <td>
-          <input type="checkbox" ng-model="reservationRule.Sunday" ng-change="weekDayCheck(reservationRule.Id)">
-        </td>
-        <td>
-          <button type="button" class="btn btn-danger btn-ico pull-right" ng-click="deleteReservationRule(reservationRule.Id)">
-            <span class="fa fa-close"></span>
-          </button>
-        </td>
-        <td>
-          <button type="button" class="btn btn-primary btn-ico pull-right" ng-click="saveReservationRule(reservationRule.Id)">
-            <span class="fa fa-floppy-o"></span>
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
 
-  <hr>
 
-  <table class="pull-right">
-    <tbody>
-      <tr>
-        <td>
-          <select class="form-control">
-            <option value="">All machines</option>
-            <option ng-repeat="machine in machines" value={{machine.Id}}>
-              {{machine.Name}}
-            </option>
-          </select>
-        </td>
-        <td>
-          <button class="btn btn-primary btn-lg pull-right"
-                  ng-click="addReservationRule()">
-            <i class="fa fa-plus"></i>&nbsp;Add Reservation Rule
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-
-  <h2 id="title-list-of-reservations">List of Reservations</h2>
-
-  <table class="table table-bordered table-striped table-hover">
-    <thead>
-      <tr>
-        <th>Machine</th>
-        <th>Start</th>
-        <th>End</th>
-        <th>User</th>
-        <th>E-Mail</th>
-        <th>Disabled</th>
-        <th>Cancelled</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr ng-repeat="reservation in reservations">
-        <td>{{reservation.Machine.Name}}</td>
-        <td>{{reservation.TimeStartLocal}}</td>
-        <td>{{reservation.TimeEndLocal}}</td>
-        <td>{{reservation.User.FirstName}} {{reservation.User.LastName}}</td>
-        <td>{{reservation.User.Email}}</td>
-        <td>{{reservation.ReservationDisabled ? 'X' : ''}}</td>
-        <td>{{reservation.Cancelled ? 'X' : ''}}
-        <td>
-          <button 
-            type="button" 
-            class="btn btn-primary btn-ico pull-right" 
-            ng-click="editReservation(reservation.Id)">
-            <span class="fa fa-edit"></span>
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <toggle title="List of Reservations">
+    <table class="table table-bordered table-striped table-hover">
+      <thead>
+        <tr>
+          <th>Machine</th>
+          <th>Start</th>
+          <th>End</th>
+          <th>User</th>
+          <th>E-Mail</th>
+          <th>Disabled</th>
+          <th>Cancelled</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="reservation in reservations">
+          <td>{{reservation.Machine.Name}}</td>
+          <td>{{reservation.TimeStartLocal}}</td>
+          <td>{{reservation.TimeEndLocal}}</td>
+          <td>{{reservation.User.FirstName}} {{reservation.User.LastName}}</td>
+          <td>{{reservation.User.Email}}</td>
+          <td>{{reservation.ReservationDisabled ? 'X' : ''}}</td>
+          <td>{{reservation.Cancelled ? 'X' : ''}}
+          <td>
+            <button 
+              type="button" 
+              class="btn btn-primary btn-ico pull-right" 
+              ng-click="editReservation(reservation.Id)">
+              <span class="fa fa-edit"></span>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </toggle>
 
 </div> <!-- /container -->

@@ -1,0 +1,9 @@
+<div>
+  <h2 class="admin-toggle" ng-click="toggle()">
+    <i ng-hide="show" class="fa fa-caret-square-o-right"></i>
+    <i ng-show="show" class="fa fa-caret-square-o-down"></i>
+    {{title}}
+  </h2>
+  <div ng-transclude ng-show="show">
+  </div>
+</div>
