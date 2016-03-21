@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/lib/feedback"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -47,18 +47,18 @@ func TestZenDesk(t *testing.T) {
 				}))
 				defer ts.Close()
 
-				zd := models.ZenDesk{
+				zd := feedback.ZenDesk{
 					Email:    ZENDESK_EMAIL,
 					ApiToken: ZENDESK_API_TOKEN,
 					BaseUrl:  ts.URL,
 				}
-				ticket := models.ZenDeskTicket{
-					Requester: models.ZenDeskTicketRequester{
+				ticket := feedback.ZenDeskTicket{
+					Requester: feedback.ZenDeskTicketRequester{
 						Name:  "Joe",
 						Email: "joe@example.com",
 					},
 					Subject: "TestSubject",
-					Comment: models.ZenDeskTicketComment{
+					Comment: feedback.ZenDeskTicketComment{
 						Body: "TestComment",
 					},
 				}
