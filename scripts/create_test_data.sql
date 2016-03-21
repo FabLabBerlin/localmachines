@@ -35,8 +35,8 @@ SELECT 2,
                  purchases.user_id + 10000,
                  purchases.time_start,
                  purchases.time_end,
-                 10 * rand() * purchases.quantity,
-                 10 * rand() * purchases.price_per_unit,
+                 ((month(time_start) - 5 + 12) % 12) * 2 * rand() * purchases.quantity,
+                 ((month(time_start) - 5 + 12) % 12) * 2 * rand() * purchases.price_per_unit,
                  purchases.price_unit,
                  46
 FROM purchases
