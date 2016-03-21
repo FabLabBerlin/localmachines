@@ -258,12 +258,14 @@ app.controller('UserCtrl',
         if (userMembership.StartDate <= today && 
           today <= userMembership.EndDate) {
           
-          if (userMembership.AutoExtend) {
-            userMembership.Active = true;
-          } else {
-            userMembership.Cancelled = true;
-          }
+          userMembership.Active = true;
 
+        } else if (today > userMembership.EndDate) {
+          if (!userMembership.AutoExtend) {
+            userMembership.Cancelled = true;
+          } else {
+            userMembership.Inactive = true;
+          }
         } else {
           userMembership.Inactive = true;
         }
