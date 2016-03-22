@@ -105,6 +105,7 @@ module.exports = function (grunt) {
 						'dev/ng-modules/randomtoken/randomtoken.js',
 						'dev/ng-modules/reservation/reservation.js',
 						'dev/ng-modules/reservations/reservations.js',
+						'dev/ng-modules/reservations/toggle.js',
 						'dev/ng-modules/space/space.js',
 						'dev/ng-modules/spacepurchase/spacepurchase.js',
 						'dev/ng-modules/spaces/spaces.js',
@@ -261,6 +262,11 @@ module.exports = function (grunt) {
 					flatten: true
 				}, {
 					src: 'dev/ng-modules/reservations/reservations.html', 
+					dest: 'prod/ng-modules/reservations/',
+					expand: true,
+					flatten: true
+				}, {
+					src: 'dev/ng-modules/reservations/toggle.html', 
 					dest: 'prod/ng-modules/reservations/',
 					expand: true,
 					flatten: true
