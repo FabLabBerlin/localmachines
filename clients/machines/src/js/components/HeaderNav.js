@@ -1,8 +1,8 @@
 var LoginActions = require('../actions/LoginActions');
 var {Navigation} = require('react-router');
 var React = require('react');
-var Reactor = require('../reactor');
-var Getters = require('../getters');
+var reactor = require('../reactor');
+var getters = require('../getters');
 
 
 var HeaderNavBrand = React.createClass({
@@ -59,7 +59,13 @@ var BurgerMenuToggle = React.createClass({
 
 var MainMenu = React.createClass({
 
-  mixins: [ Navigation ],
+  mixins: [ Navigation, reactor.ReactMixin ],
+
+  getDataBindings() {
+    return {
+      user: getters.getUser
+    };
+  },
 
   signOut() {
     LoginActions.logout(this.context.router);
@@ -74,34 +80,26 @@ var MainMenu = React.createClass({
           href="/machines/#/machine"
           faIconClass="fa-plug"
           label="Machines">
-        </MenuItem>);
-  
-      buttons.push(
+        </MenuItem>,
         <MenuItem key={2}
-          href="/machines/#/profile"
-          faIconClass="fa-user"
-          label="Profile">
-        </MenuItem>);
-      
-      buttons.push(
+          href="/machines/#/reservations"
+          faIconClass="fa-calendar-check-o"
+          label="Reservations">
+        </MenuItem>,      
         <MenuItem key={3}
           href="/machines/#/spendings"
           faIconClass="fa-money"
           label="Spendings">
-        </MenuItem>);
-
-      buttons.push(
+        </MenuItem>,
         <MenuItem key={4}
-          href="/machines/#/reservations"
-          faIconClass="fa-calendar-check-o"
-          label="Reservations">
-        </MenuItem>);
-
-      buttons.push(
-        <MenuItem key={5}
           href="/machines/#/feedback"
           faIconClass="fa-paper-plane"
           label="Feedback">
+        </MenuItem>,
+        <MenuItem key={5}
+          href="/machines/#/profile"
+          faIconClass="fa-user"
+          label={this.state.user.get('FirstName')}>
         </MenuItem>);
     }
 
@@ -122,7 +120,7 @@ var MainMenu = React.createClass({
 
 var HeaderNav = React.createClass({
   render() {
-    const isLogged = Reactor.evaluateToJS(Getters.getIsLogged);
+    const isLogged = reactor.evaluateToJS(getters.getIsLogged);
 
     return (
       <div>

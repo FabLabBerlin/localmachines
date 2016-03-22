@@ -110,9 +110,8 @@ var MachinePage = React.createClass({
       return (
         <div>
           <div className="logged-user-name">
-            <div className="text-center ng-binding">
-              <i className="fa fa-user-secret"></i>&nbsp;
-              {this.state.user.get('FirstName')} {this.state.user.get('LastName')} at the {locationTitle}
+            <div className="text-center">
+              <strong>Welcome to {locationTitle}</strong>
             </div>
           </div>
           <TutoringList />
