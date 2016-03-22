@@ -85,7 +85,8 @@ app.controller('CoworkingCtrl',
       method: 'GET',
       url: '/api/users',
       params: {
-        ac: new Date().getTime()
+        ac: new Date().getTime(),
+        location: $cookies.locationId
       }
     })
     .success(function(users) {

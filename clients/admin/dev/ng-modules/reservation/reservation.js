@@ -11,8 +11,8 @@ app.config(['$routeProvider', function($routeProvider) {
 }]); // app.config
 
 app.controller('ReservationCtrl',
- ['$scope', '$routeParams', '$http', '$location', 'randomToken', 'api',
- function($scope, $routeParams, $http, $location, randomToken, api) {
+ ['$scope', '$routeParams', '$http', '$location', '$cookies', 'randomToken', 'api',
+ function($scope, $routeParams, $http, $location, $cookies, randomToken, api) {
 
   $scope.reservation = {
     Id: $routeParams.reservationId
@@ -61,7 +61,8 @@ app.controller('ReservationCtrl',
       method: 'GET',
       url: '/api/users',
       params: {
-        ac: new Date().getTime()
+        ac: new Date().getTime(),
+        location: $cookies.locationId
       }
     })
     .success(function(data) {

@@ -11,8 +11,8 @@ app.config(['$routeProvider', function($routeProvider) {
   });
 }]); // app.config
 
-app.controller('TutorCtrl', ['$scope', '$routeParams', '$http', '$location', 'api',
-  function($scope, $routeParams, $http, $location, api) {
+app.controller('TutorCtrl', ['$scope', '$routeParams', '$http', '$location', '$cookies', 'api',
+  function($scope, $routeParams, $http, $location, $cookies, api) {
 
   $scope.users = [];
   $scope.machines = [];

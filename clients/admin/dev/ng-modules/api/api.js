@@ -180,7 +180,8 @@ mod.service('api',
       method: 'GET',
       url: '/api/users',
       params: {
-        ac: new Date().getTime()
+        ac: new Date().getTime(),
+        location: $cookies.locationId
       }
     })
     .success(function(data) {
