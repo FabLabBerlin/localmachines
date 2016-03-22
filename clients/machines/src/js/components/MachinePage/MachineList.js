@@ -57,7 +57,7 @@ var MachineList = React.createClass({
     return (
       <div className="machines">
         <div className="container-fluid">
-          <h2>Available machines</h2>
+          <h2>Available Machines</h2>
         </div>
         {MachineNode}
       </div>

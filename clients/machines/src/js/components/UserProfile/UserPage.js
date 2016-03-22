@@ -69,7 +69,7 @@ var UserPage = React.createClass({
   render() {
     return (
       <div className="container">
-        <h3>Your information</h3>
+        <h3>Your Information</h3>
           <UserForm user={this.state.user}
             func={this.handleChangeForm}
             passwordFunc={this.updatePassword}
