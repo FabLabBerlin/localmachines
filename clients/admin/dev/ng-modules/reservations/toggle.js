@@ -10,13 +10,14 @@ app.directive('toggle', function() {
     templateUrl: 'ng-modules/reservations/toggle.html',
     transclude: true,
     scope: true,
-    controller: function($scope, $element, $attrs, $http, $location) {
+    controller: ['$scope', '$element', '$attrs', '$http', '$location',
+     function($scope, $element, $attrs, $http, $location) {
       $scope.title = $attrs.title;
       $scope.show = false;
       $scope.toggle = function() {
         $scope.show = !$scope.show;
       };
-    },
+    }],
     link: function($scope, $element, $attrs) {
     }
   };
