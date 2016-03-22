@@ -11,6 +11,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/lib/fastbill"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
+	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
 	"github.com/astaxie/beego/orm"
@@ -26,6 +27,13 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 		Reset(setup.ResetDB)
 		uid, err := users.CreateUser(&users.User{
 			Email: "foo@bar.com",
+		})
+		if err != nil {
+			panic(err.Error())
+		}
+		_, err = user_locations.Create(&user_locations.UserLocation{
+			UserId:     uid,
+			LocationId: 1,
 		})
 		if err != nil {
 			panic(err.Error())

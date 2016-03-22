@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
 	. "github.com/smartystreets/goconvey/convey"
@@ -251,15 +252,38 @@ func TestUsers(t *testing.T) {
 				Username: "u2",
 			}
 			Convey("Getting all users with 0 users in the database", func() {
-				users, err := users.GetAllUsers()
+				users, err := users.GetAllUsersAt(1)
 
 				So(len(users), ShouldEqual, 0)
 				So(err, ShouldBeNil)
 			})
 			Convey("Creating 2 users and get them", func() {
-				users.CreateUser(&u1)
-				users.CreateUser(&u2)
-				users, err := users.GetAllUsers()
+				id1, err := users.CreateUser(&u1)
+				if err != nil {
+					panic(err.Error())
+				}
+				id2, err := users.CreateUser(&u2)
+				if err != nil {
+					panic(err.Error())
+				}
+				_, err = user_locations.Create(&user_locations.UserLocation{
+					UserId:     id1,
+					LocationId: 1,
+				})
+				if err != nil {
+					panic(err.Error())
+				}
+				_, err = user_locations.Create(&user_locations.UserLocation{
+					UserId:     id2,
+					LocationId: 1,
+				})
+				if err != nil {
+					panic(err.Error())
+				}
+				users, err := users.GetAllUsersAt(1)
+				if err != nil {
+					panic(err.Error())
+				}
 
 				So(len(users), ShouldEqual, 2)
 				So(err, ShouldBeNil)

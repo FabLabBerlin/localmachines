@@ -11,6 +11,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/products"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
+	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
@@ -26,6 +27,7 @@ var dbModels = []Model{
 	&products.Product{},
 	&purchases.Purchase{},
 	&models.UserMembership{},
+	&user_locations.UserLocation{},
 }
 
 // ConfigDB : Configure database for tests

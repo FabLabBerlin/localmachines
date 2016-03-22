@@ -168,12 +168,12 @@ func (this *UsersController) GetCurrentUser() {
 // @router / [get]
 func (this *UsersController) GetAll() {
 
-	if !this.IsAdmin() && !this.IsStaff() {
-		beego.Error("Not authorized to get all users")
+	locId, authorized := this.GetLocIdAdmin()
+	if !authorized {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	users, err := users.GetAllUsers()
+	users, err := users.GetAllUsersAt(locId)
 	if err != nil {
 		this.CustomAbort(500, "Failed to get all users")
 	}

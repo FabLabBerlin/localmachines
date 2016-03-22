@@ -231,7 +231,7 @@ func (this *MonthlyEarning) getPurchases(locationId int64, interval lib.Interval
 		machinesById[machine.Id] = machine
 	}
 
-	usrs, err := users.GetAllUsers()
+	usrs, err := users.GetAllUsersAt(locationId)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get users: %v", err)
 	}
@@ -299,7 +299,7 @@ func (this *MonthlyEarning) NewInvoices() (invs []*Invoice, err error) {
 	this.Activations = "[" + strings.Join(activationIds, ",") + "]"
 
 	// Create a slice for unique user summaries.
-	users, err := users.GetAllUsers()
+	users, err := users.GetAllUsersAt(this.LocationId)
 	if err != nil {
 		return nil, err
 	}

@@ -173,7 +173,7 @@ func TestUsersAPI(t *testing.T) {
 			})
 
 			Convey("Try to get users being logged in as an admin, should return 200", func() {
-				r, _ := http.NewRequest("GET", "/api/users/", nil)
+				r, _ := http.NewRequest("GET", "/api/users/?location=1", nil)
 				r.AddCookie(LoginAsAdmin())
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)

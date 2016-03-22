@@ -3,6 +3,7 @@ package users
 import (
 	"errors"
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
@@ -212,14 +213,28 @@ func GetUser(userId int64) (*User, error) {
 }
 
 // Returns an array with all users in the system
-func GetAllUsers() ([]*User, error) {
+func GetAllUsersAt(locationId int64) (users []*User, err error) {
+	var all []*User
+
 	o := orm.NewOrm()
-	var users []*User
-	num, err := o.QueryTable("user").All(&users)
-	if err != nil {
-		beego.Error("Failed to get all users")
-		return users, errors.New("Failed to get all users")
+	if _, err = o.QueryTable("user").All(&all); err != nil {
+		return users, fmt.Errorf("Failed to get all users: %v", err)
 	}
-	beego.Trace("Got num users:", num)
+
+	uls, err := user_locations.GetAllForLocation(locationId)
+	if err != nil {
+		return nil, fmt.Errorf("get all for location: %v", err)
+	}
+	userIds := make(map[int64]struct{})
+	for _, ul := range uls {
+		userIds[ul.UserId] = struct{}{}
+	}
+
+	users = make([]*User, 0, len(userIds))
+	for _, u := range all {
+		if _, ok := userIds[u.Id]; ok {
+			users = append(users, u)
+		}
+	}
 	return users, nil
 }
