@@ -8,6 +8,7 @@ import (
 	_ "github.com/FabLabBerlin/localmachines/routers"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
+	_ "github.com/astaxie/beego/session/redis"
 	"github.com/astaxie/beego/toolbox"
 	_ "github.com/go-sql-driver/mysql"
 )
