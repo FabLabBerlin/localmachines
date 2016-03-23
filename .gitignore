@@ -12,7 +12,6 @@ localmachines.arm.bin
 npm-debug.log
 conf/app.conf
 views/prod/*
-routers/comments*.go
 files/*
 !files/favicon.*
 !files/apple-touch-icon.png

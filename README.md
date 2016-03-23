@@ -10,6 +10,8 @@ Resource management software for Fab Labs. REST API built with the [BeeGo](http:
   - [Core Development](#core-development)
   - [Clients Development](#clients-development)
 - [API Documentation](#api-documentation)
+- [Deployment](#deployment)
+- [Troubleshooting](#troubleshooting)
 
 ## Quick-Start
 
