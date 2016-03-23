@@ -1,6 +1,7 @@
 package modelTest
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -411,6 +412,38 @@ func TestUsers(t *testing.T) {
 
 				So(err, ShouldBeNil)
 			})
+		})
+		Convey("Testing that default row limit of 1000 doesn't get in the way", func() {
+			uids := make(map[int64]struct{})
+			n := 2000
+			for i := 0; i < n; i++ {
+				u := &users.User{
+					Username: fmt.Sprintf("user_%v", i),
+				}
+				u.Email = u.Username + "@example.com"
+				uid, err := users.CreateUser(u)
+				if err != nil {
+					panic(err.Error())
+				}
+				uids[uid] = struct{}{}
+				ul := &user_locations.UserLocation{
+					LocationId: 1,
+					UserId:     uid,
+				}
+				if _, err := user_locations.Create(ul); err != nil {
+					panic(err.Error())
+				}
+			}
+			So(len(uids), ShouldEqual, n)
+			us, err := users.GetAllUsersAt(1)
+			if err != nil {
+				panic(err.Error())
+			}
+			So(n, ShouldBeLessThanOrEqualTo, len(us))
+			for _, u := range us {
+				delete(uids, u.Id)
+			}
+			So(len(uids), ShouldEqual, 0)
 		})
 	})
 }
