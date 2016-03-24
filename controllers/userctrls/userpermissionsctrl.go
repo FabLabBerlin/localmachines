@@ -167,7 +167,7 @@ func (this *UserPermissionsController) GetUserPermissions() {
 // @Title GetUserMachinePermissions
 // @Description Get current saved machine permissions
 // @Param	uid		path 	int	true		"User ID"
-// @Success 200 {object} models.Machine
+// @Success 200 machine.Machine
 // @Failure	500	Internal Server Error
 // @Failure	401	Unauthorized
 // @router /:uid/machinepermissions [get]

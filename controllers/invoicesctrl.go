@@ -13,7 +13,7 @@ type InvoicesController struct {
 
 // @Title Get All monthly earnings
 // @Description Get all monthly earnings from the database
-// @Success 200 {object} models.invoices.Invoice
+// @Success 200 []*monthly_earning.MonthlyEarning
 // @Failure	403	Failed to get all monthly earnings
 // @Failure	401	Not authorized
 // @router / [get]

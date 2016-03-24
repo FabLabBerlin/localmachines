@@ -34,7 +34,7 @@ func (this *SettingsController) GetAll() {
 
 // @Title Post
 // @Description post settings
-// @Success 201 {object} models.User
+// @Success 201
 // @Failure	401	Unauthorized
 // @Failure 500 Internal Server Error
 // @router / [post]

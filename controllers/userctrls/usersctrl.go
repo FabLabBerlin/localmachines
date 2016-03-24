@@ -142,7 +142,7 @@ func (this *UsersController) Logout() {
 
 // @Title GetCurrentUser
 // @Description Get current user
-// @Success 200 {object} models.User
+// @Success 200 users.User
 // @Failure 400 Failed to authenticate
 // @Failure 500 Internal Server Error
 // @router /current [get]
@@ -163,7 +163,7 @@ func (this *UsersController) GetCurrentUser() {
 
 // @Title GetAll
 // @Description Get all users
-// @Success 200 {object} models.User
+// @Success 200 users.User
 // @Failure	500	Failed to get all users
 // @router / [get]
 func (this *UsersController) GetAll() {
@@ -240,7 +240,7 @@ func (this *UsersController) Signup() {
 // @Description create user and associated tables
 // @Param	email			query 	string	true		"The new user's E-Mail"
 // @Param	location		query 	int64	false		"Make user member of location id"
-// @Success 201 {object} models.User
+// @Success 201 users.User
 // @Failure	401	Unauthorized
 // @Failure 500 Internal Server Error
 // @router / [post]
@@ -285,7 +285,7 @@ func (this *UsersController) Post() {
 // @Title Get
 // @Description get user by uid
 // @Param	uid		path 	int	true		"User ID"
-// @Success 200 {object} models.User
+// @Success 200 users.User
 // @Failure	403	Variable message
 // @Failure	401	Unauthorized
 // @router /:uid [get]
@@ -398,7 +398,7 @@ func (this *UsersController) Put() {
 // @Description Get user machines, all machines for admin user
 // @Param	uid		path 	int	true		"User ID"
 // @Param	location	query	int	false		"Location ID"
-// @Success 200 {object} models.Machine
+// @Success 200 machine.Machine
 // @Failure	500	Internal Server Error
 // @Failure	401	Unauthorized
 // @router /:uid/machines [get]
@@ -451,7 +451,7 @@ func (this *UsersController) GetUserMachines() {
 // @Title GetUserBill
 // @Description Get a user PayAsYouGo data (Machines, usage and price per machine and total price)
 // @Param	uid		path 	int	true		"User ID"
-// @Success 200 {object} models.Machine
+// @Success 200 machine.Machine
 // @Failure	401	Unauthorized
 // @Failure	500	Internal Server Error
 // @router /:uid/bill [get]

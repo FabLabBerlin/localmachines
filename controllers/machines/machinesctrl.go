@@ -20,7 +20,7 @@ type Controller struct {
 // @Title GetAll
 // @Description Get all machines (limited to location, if specified)
 // @Param	location	query	int64	false	"Location ID"
-// @Success 200 {object} machine.Machine
+// @Success 200 machine.Machine
 // @Failure	401 Not authorized
 // @Failure	500	Failed to get all machines
 // @router / [get]
@@ -50,7 +50,7 @@ func (this *Controller) GetAll() {
 // @Title Get
 // @Description Get machine by machine ID
 // @Param	mid		path 	int	true		"Machine ID"
-// @Success 200 {object} machine.Machine
+// @Success 200 machine.Machine
 // @Failure	403	Failed to get machine
 // @Failure	401	Not authorized
 // @router /:mid [get]
@@ -105,7 +105,7 @@ func (this *Controller) Get() {
 // @Description Create machine
 // @Param	location	query	string	true	"Location Id"
 // @Param	mname		query	string	true	"Machine Name"
-// @Success 200 {object} machine.MachineCreatedResponse
+// @Success 200 machine.MachineCreatedResponse
 // @Failure	403	Failed to create machine
 // @Failure	401	Not authorized
 // @router / [post]
