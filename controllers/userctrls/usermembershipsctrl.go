@@ -13,9 +13,9 @@ type UserMembershipsController struct {
 
 // @Title PostUserMemberships
 // @Description Post user membership
-// @Param	uid							path 		int			true		"User ID"
-// @Param	membershipId		query 	int			true		"Membership ID"
-// @Param	startDate				query 	string	true		"Membership ID"
+// @Param	uid				path 	int		true	"User ID"
+// @Param	membershipId	query 	int		true	"Membership ID"
+// @Param	startDate		query 	string	true	"Start Date"
 // @Success 200 {object} models.UserMembership
 // @Failure	400	Bad request
 // @Failure	401	Not authorized
@@ -127,7 +127,13 @@ func (this *UserMembershipsController) PutUserMembership() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	if !this.IsAdmin() {
+	membership, err := models.GetMembership(userMembership.MembershipId)
+	if err != nil {
+		beego.Error("Get membership:", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	if !this.IsAdminAt(membership.LocationId) {
 		beego.Error("Not authorized")
 		this.CustomAbort(401, "Not authorized")
 	}
