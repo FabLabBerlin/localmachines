@@ -23,10 +23,6 @@ type UserMembershipsController struct {
 // @router /:uid/memberships [post]
 func (this *UserMembershipsController) PostUserMemberships() {
 
-	if !this.IsAdmin() {
-		this.CustomAbort(401, "Not authorized")
-	}
-
 	uid, err := this.GetInt64(":uid")
 	if err != nil {
 		beego.Error("Failed to get requested user ID:", err)
@@ -41,6 +37,16 @@ func (this *UserMembershipsController) PostUserMemberships() {
 	if err != nil {
 		beego.Error("Failed to get membership ID")
 		this.CustomAbort(400, "Bad request")
+	}
+	membership, err := models.GetMembership(membershipId)
+	if err != nil {
+		beego.Error("get membership:", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	if !this.IsAdminAt(membership.LocationId) {
+		beego.Error("not authorized for", membership.LocationId)
+		this.CustomAbort(401, "Not authorized")
 	}
 
 	startDate, err := time.ParseInLocation("2006-01-02",
