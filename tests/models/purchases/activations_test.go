@@ -18,11 +18,11 @@ func init() {
 }
 
 func CreateMachine(name string) (m *machine.Machine, err error) {
-	mid, err := machine.CreateMachine(1, name)
+	mid, err := machine.Create(1, name)
 	if err != nil {
 		return
 	}
-	if m, err = machine.GetMachine(mid); err != nil {
+	if m, err = machine.Get(mid); err != nil {
 		return
 	}
 	m.Price = 0.1

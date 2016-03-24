@@ -66,28 +66,12 @@ func GetAllReservationsAt(locationId int64) (reservations []*Reservation, err er
 	return
 }
 
-/*func GetAllReservationsBetween(startTime, endTime time.Time) (reservations []*Reservation, err error) {
-	allReservations, err := GetAllReservations()
-	if err != nil {
-		return
-	}
-	reservations = make([]*Reservation, 0, len(allReservations))
-	for _, reservation := range allReservations {
-		if startTime.Before(reservation.purchase.TimeStart) && reservation.purchase.TimeEnd.Before(endTime) {
-			reservations = append(reservations, reservation)
-		}
-	}
-	return
-}*/
-
 func CreateReservation(reservation *Reservation) (int64, error) {
 
 	// Get the reservation_price_hourly of the machine being reserved
-	machine := machine.Machine{Id: reservation.purchase.MachineId}
-	err, _ := machine.Read()
+	machine, err := machine.Get(reservation.purchase.MachineId)
 	if err != nil {
-		beego.Error("Failed to read machine")
-		return 0, fmt.Errorf("Failed to read machine")
+		return 0, fmt.Errorf("get machine: %v", err)
 	}
 
 	reservation.purchase.Type = TYPE_RESERVATION

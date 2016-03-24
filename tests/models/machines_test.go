@@ -20,7 +20,7 @@ func TestMachine(t *testing.T) {
 		Convey("Testing CreateMachine", func() {
 			machineName := "My lovely machine"
 			Convey("Creating a machine", func() {
-				_, err := machine.CreateMachine(1, machineName)
+				_, err := machine.Create(1, machineName)
 
 				So(err, ShouldBeNil)
 			})
@@ -28,14 +28,14 @@ func TestMachine(t *testing.T) {
 		Convey("Testing GetMachine", func() {
 			machineName := "My lovely machine"
 			Convey("Creating a machine and trying to get it", func() {
-				mid, _ := machine.CreateMachine(1, machineName)
-				machine, err := machine.GetMachine(mid)
+				mid, _ := machine.Create(1, machineName)
+				machine, err := machine.Get(mid)
 
 				So(machine.Name, ShouldEqual, machineName)
 				So(err, ShouldBeNil)
 			})
 			Convey("Trying to get a non-existing machine should fail", func() {
-				_, err := machine.GetMachine(0)
+				_, err := machine.Get(0)
 
 				So(err, ShouldNotBeNil)
 			})
@@ -44,16 +44,16 @@ func TestMachine(t *testing.T) {
 			machineOneName := "My first machine"
 			machineTwoName := "My second lovely machine <3"
 			Convey("GetAllMachines when there are no machines in the database", func() {
-				machines, err := machine.GetAllMachines()
+				machines, err := machine.GetAll()
 
 				So(len(machines), ShouldEqual, 0)
 				So(err, ShouldBeNil)
 			})
 			Convey("Creating two machines and get them all", func() {
-				machine.CreateMachine(1, machineOneName)
-				machine.CreateMachine(1, machineTwoName)
+				machine.Create(1, machineOneName)
+				machine.Create(1, machineTwoName)
 
-				machines, err := machine.GetAllMachines()
+				machines, err := machine.GetAll()
 
 				So(len(machines), ShouldEqual, 2)
 				So(err, ShouldBeNil)
@@ -63,13 +63,13 @@ func TestMachine(t *testing.T) {
 			machineName := "My lovely machine"
 			newMachineName := "This new name is soooooooooooo cool :)"
 			Convey("Creating a machine and update it", func() {
-				mid, _ := machine.CreateMachine(1, machineName)
-				m, _ := machine.GetMachine(mid)
+				mid, _ := machine.Create(1, machineName)
+				m, _ := machine.Get(mid)
 				m.LocationId = 1
 				m.Name = newMachineName
 
 				err := m.Update()
-				m, _ = machine.GetMachine(mid)
+				m, _ = machine.Get(mid)
 				So(err, ShouldBeNil)
 				So(m.Name, ShouldEqual, newMachineName)
 			})
@@ -103,19 +103,19 @@ func TestMachine(t *testing.T) {
 			So(ns.Off(), ShouldNotBeNil)
 		})
 		Convey("Creating same netswitch mapping for two machines", func() {
-			mid1, err := machine.CreateMachine(1, "foo")
+			mid1, err := machine.Create(1, "foo")
 			if err != nil {
 				panic(err.Error())
 			}
-			mid2, err := machine.CreateMachine(1, "bar")
+			mid2, err := machine.Create(1, "bar")
 			if err != nil {
 				panic(err.Error())
 			}
-			m1, err := machine.GetMachine(mid1)
+			m1, err := machine.Get(mid1)
 			if err != nil {
 				panic(err.Error())
 			}
-			m2, err := machine.GetMachine(mid2)
+			m2, err := machine.Get(mid2)
 			if err != nil {
 				panic(err.Error())
 			}

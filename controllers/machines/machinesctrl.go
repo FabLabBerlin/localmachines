@@ -30,7 +30,7 @@ func (this *Controller) GetAll() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	allMachines, err := machine.GetAllMachines()
+	allMachines, err := machine.GetAll()
 	if err != nil {
 		beego.Error("Failed to get all machines", err)
 		this.CustomAbort(500, "Failed to get all machines")
@@ -91,7 +91,7 @@ func (this *Controller) Get() {
 		}
 	}
 
-	machine, err := machine.GetMachine(machineId)
+	machine, err := machine.Get(machineId)
 	if err != nil {
 		beego.Error("Failed to get machine", err)
 		this.CustomAbort(403, "Failed to get machine")
@@ -110,14 +110,14 @@ func (this *Controller) Get() {
 // @Failure	401	Not authorized
 // @router / [post]
 func (this *Controller) Create() {
-	machineName := this.GetString("mname")
+	name := this.GetString("mname")
 
 	locId, authorized := this.GetLocIdAdmin()
 	if !authorized {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	machineId, err := machine.CreateMachine(locId, machineName)
+	machineId, err := machine.Create(locId, name)
 	if err != nil {
 		beego.Error("Failed to create machine", err)
 		this.CustomAbort(403, "Failed to create machine")
@@ -225,7 +225,7 @@ func (this *Controller) PostImage() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	m, err := machine.GetMachine(mid)
+	m, err := machine.Get(mid)
 	if err != nil {
 		beego.Error("Failed to get :mid variable")
 		this.CustomAbort(403, "Failed to get machine")
@@ -258,7 +258,7 @@ func (this *Controller) underMaintenanceOnOrOff(onOrOff int) error {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	machine, err := machine.GetMachine(machineId)
+	machine, err := machine.Get(machineId)
 	if err != nil {
 		beego.Error("Failed to get machine", err)
 		this.CustomAbort(403, "Failed to get machine")
@@ -282,7 +282,7 @@ func (this *Controller) ReportBroken() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	machine, err := machine.GetMachine(machineId)
+	machine, err := machine.Get(machineId)
 	if err != nil {
 		beego.Error("Failed to get machine", err)
 		this.CustomAbort(403, "Failed to get machine")
@@ -359,7 +359,7 @@ func (this *Controller) Search() {
 		this.CustomAbort(400, "Client error")
 	}
 
-	ms, err := machine.GetAllMachines()
+	ms, err := machine.GetAll()
 	if err != nil {
 		beego.Error("get all machines", err)
 		this.CustomAbort(500, "Internal Server Error")
@@ -402,7 +402,7 @@ func (this *Controller) ApplyConfig() {
 		this.CustomAbort(403, "Failed to get machine")
 	}
 
-	m, err := machine.GetMachine(mid)
+	m, err := machine.Get(mid)
 	if err != nil {
 		beego.Error("Failed to get :mid variable")
 		this.CustomAbort(403, "Failed to get machine")

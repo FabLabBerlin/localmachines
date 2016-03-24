@@ -38,7 +38,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 		if err != nil {
 			panic(err.Error())
 		}
-		mid, _ := machine.CreateMachine(1, "Lasercutter")
+		mid, _ := machine.Create(1, "Lasercutter")
 		p := CreateTestPurchase(mid, "Lasercutter", time.Duration(12)*time.Minute, 0.5)
 		p.UserId = uid
 		o := orm.NewOrm()

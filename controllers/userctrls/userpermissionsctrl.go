@@ -186,7 +186,7 @@ func (this *UserPermissionsController) GetUserMachinePermissions() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 	for _, permission := range *permissions {
-		machine, err := machine.GetMachine(permission.MachineId)
+		machine, err := machine.Get(permission.MachineId)
 		if err != nil {
 			beego.Warning("Failed to get machine ID", permission.MachineId)
 			// Just don't add the machine permission if not exists in db

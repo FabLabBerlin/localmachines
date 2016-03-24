@@ -77,8 +77,7 @@ func Create(p *Purchase) (id int64, err error) {
 		return 0, errors.New("LocationId must be > 0")
 	}
 	o := orm.NewOrm()
-	id, err = o.Insert(p)
-	if err != nil {
+	if id, err = o.Insert(p); err != nil {
 		return
 	}
 	p.Id = id

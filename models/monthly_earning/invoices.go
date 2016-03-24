@@ -222,7 +222,7 @@ func (this *MonthlyEarning) getFileName(interval lib.Interval) string {
 }
 
 func (this *MonthlyEarning) getPurchases(locationId int64, interval lib.Interval) (ps []*purchases.Purchase, err error) {
-	machines, err := machine.GetAllMachines()
+	machines, err := machine.GetAll()
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get machines: %v", err)
 	}

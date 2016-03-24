@@ -17,10 +17,10 @@ import (
 
 var (
 	MachineDownMessages = []string{
-		"Got to fix myself, will let you know ones back. #evolution",
+		"Got to fix myself, will let you know once back. #evolution",
 		"Think I just ate something bad, taking time off to recover. #equalityformachines",
 		"Equality for machines! I am leaving for protests (will be back). #evolution !",
-		"Doing sick leave. So happy my employee supports equality #machinesarehumans",
+		"Doing sick leave. So happy my employer supports equality #machinesarehumans",
 	}
 
 	MachineUpMessages = []string{
@@ -74,14 +74,6 @@ func (u *Machine) TableName() string {
 	return "machines"
 }
 
-func (this *Machine) Exists() bool {
-	o := orm.NewOrm()
-	machineExists := o.QueryTable(this.TableName()).
-		Filter("Id", this.Id).
-		Exist()
-	return machineExists
-}
-
 func (this *Machine) GetGracePeriod() time.Duration {
 	return time.Duration(this.GracePeriod) * time.Second
 }
@@ -95,29 +87,21 @@ func (this *Machine) IsAvailable() bool {
 	return machineAvailable
 }
 
-// Read in values from the db
-func (this *Machine) Read() (err error, machine *Machine) {
-	o := orm.NewOrm()
-	err = o.Read(this)
-	machine = this
-	return
-}
-
-func GetMachine(id int64) (machine *Machine, err error) {
+func Get(id int64) (machine *Machine, err error) {
 	machine = &Machine{Id: id}
 	o := orm.NewOrm()
 	err = o.Read(machine)
 	return
 }
 
-func GetAllMachines() (machines []*Machine, err error) {
+func GetAll() (machines []*Machine, err error) {
 	o := orm.NewOrm()
 	m := Machine{}
 	_, err = o.QueryTable(m.TableName()).All(&machines)
 	return
 }
 
-func GetAllMachinesAt(locationId int64) (ms []*Machine, err error) {
+func GetAllAt(locationId int64) (ms []*Machine, err error) {
 	o := orm.NewOrm()
 	m := Machine{}
 	_, err = o.QueryTable(m.TableName()).
@@ -126,7 +110,7 @@ func GetAllMachinesAt(locationId int64) (ms []*Machine, err error) {
 	return
 }
 
-func CreateMachine(locationId int64, machineName string) (id int64, err error) {
+func Create(locationId int64, machineName string) (id int64, err error) {
 	o := orm.NewOrm()
 	machine := Machine{
 		LocationId: locationId,

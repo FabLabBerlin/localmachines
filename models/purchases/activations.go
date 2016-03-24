@@ -109,7 +109,6 @@ func GetActiveActivations() ([]*Activation, error) {
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get active activations: %v", err)
 	}
-	//beego.Trace("Got num activations:", num)
 
 	activations := make([]*Activation, 0, len(purchases))
 	for _, purchase := range purchases {
@@ -128,12 +127,10 @@ func StartActivation(machineId, userId int64, startTime time.Time) (
 	activationId int64, err error) {
 
 	o := orm.NewOrm()
-	mch := machine.Machine{Id: machineId}
 
-	if !mch.Exists() {
-		activationId = 0
-		err = fmt.Errorf("Machine with provided ID does not exist")
-		return
+	mch, err := machine.Get(machineId)
+	if err != nil {
+		return 0, fmt.Errorf("get machine: %v", err)
 	}
 
 	// Check for duplicate activations
@@ -155,13 +152,6 @@ func StartActivation(machineId, userId int64, startTime time.Time) (
 	if !mch.IsAvailable() {
 		activationId = 0
 		err = fmt.Errorf("Machine with provided ID is not available")
-		return
-	}
-
-	err, _ = mch.Read()
-	if err != nil {
-		activationId = 0
-		err = fmt.Errorf("Failed to read existing machine")
 		return
 	}
 
@@ -220,7 +210,7 @@ func CloseActivation(activationId int64, endTime time.Time) error {
 		return fmt.Errorf("Failed to get activation: %v", err)
 	}
 
-	machine, err := machine.GetMachine(activation.Purchase.MachineId)
+	machine, err := machine.Get(activation.Purchase.MachineId)
 	if err != nil {
 		beego.Error("Failed to get machine:", err)
 		return fmt.Errorf("Failed to get machine: %v", err)
