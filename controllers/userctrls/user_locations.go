@@ -41,14 +41,14 @@ func (c *UserLocationsController) GetUserLocations() {
 // @Failure	500	Internal Server Error
 // @router /:uid/locations/:lid [post]
 func (c *UserLocationsController) PostUserLocation() {
-	if !c.IsAdmin() {
-		c.CustomAbort(401, "Not authorized")
-	}
 	uid, _ := c.GetRouteUid()
 	lid, err := c.GetInt64(":lid")
 	if err != nil {
 		beego.Error("get int:", err)
 		c.CustomAbort(400, "Client Error")
+	}
+	if !c.IsAdminAt(lid) {
+		c.CustomAbort(401, "Not authorized")
 	}
 	ul := user_locations.UserLocation{
 		UserId:     uid,
@@ -71,8 +71,14 @@ func (c *UserLocationsController) PostUserLocation() {
 // @Failure	500	Internal Server Error
 // @router /:uid/locations/:lid [put]
 func (c *UserLocationsController) PutUserLocation() {
-	if !c.IsAdmin() {
-		c.CustomAbort(401, "Not authorized")
+	lid, err := c.GetInt64(":lid")
+	if err != nil {
+		beego.Error("get int:", err)
+		c.CustomAbort(400, "Client Error")
+	}
+	if lid <= 0 {
+		beego.Error("lid:", err)
+		c.CustomAbort(400, "Bad request")
 	}
 	dec := json.NewDecoder(c.Ctx.Request.Body)
 	defer c.Ctx.Request.Body.Close()
@@ -80,6 +86,13 @@ func (c *UserLocationsController) PutUserLocation() {
 	if err := dec.Decode(&ul); err != nil {
 		beego.Error("json decode:", err)
 		c.CustomAbort(400, "Wrong data")
+	}
+	if ul.LocationId != lid {
+		beego.Error("Mustn't change the user location")
+		c.CustomAbort(401, "Not authorized")
+	}
+	if !c.IsAdminAt(ul.LocationId) {
+		c.CustomAbort(401, "Not authorized")
 	}
 	if err := ul.Update(); err != nil {
 		beego.Error("update:", err)
