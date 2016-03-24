@@ -3,7 +3,7 @@ Architecture: ARCHITECTURE
 Maintainer: Localmachines Team
 Depends: daemontools, daemontools-run, sshpass
 Priority: optional
-Version: 0.10.11
+Version: VERSION
 Description: Localmachines Gateway
  This script provides an easy way to install Localmachines Gateway.
  Setting up Localmachines Gateway is now more fun than ever!

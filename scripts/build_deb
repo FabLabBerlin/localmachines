@@ -15,7 +15,7 @@ __base="$(basename ${__file} .sh)"
 
 arg1="${1:-}"
 
-
+VERSION=0.11.6
 
 
 if [[ $# -eq 0 ]]
@@ -49,14 +49,15 @@ function setupDEBIAN {
 
 	if [ "$architecture" = "amd64" ]
 	then
-		sed "s/ARCHITECTURE/amd64/g" $sourceDir/control > $targetDir/DEBIAN/control
+		sed "s/ARCHITECTURE/amd64/g" $sourceDir/control > /tmp/lm_tmp_control
 	elif [ "$architecture" = "arm" ]
 	then
-		sed "s/ARCHITECTURE/armhf/g" $sourceDir/control > $targetDir/DEBIAN/control
+		sed "s/ARCHITECTURE/armhf/g" $sourceDir/control > /tmp/lm_tmp_control
 	else
 		echo setupDEBIAN: wrong arg
 		exit 1
 	fi
+	sed "s/VERSION/$VERSION/g" /tmp/lm_tmp_control > $targetDir/DEBIAN/control
 }
 
 function compile {
@@ -96,7 +97,7 @@ function buildLm {
 
 	echo Building Localmachines package for $buildArch...
 
-	PKG_NAME=localmachines_0.10.11
+	PKG_NAME=localmachines_$VERSION
 	PKG_TMP_DIR=$__dir/pkg_tmp_dir
 	PKG_ROOT=$PKG_TMP_DIR/$PKG_NAME
 
@@ -139,7 +140,7 @@ function buildGateway {
 
 	echo Building Gateway package for $buildArch...
 
-	PKG_NAME=localmachines-gateway_0.10.11
+	PKG_NAME=localmachines-gateway_$VERSION
 	PKG_TMP_DIR=$__dir/pkg_tmp_dir
 	PKG_ROOT=$PKG_TMP_DIR/$PKG_NAME
 
