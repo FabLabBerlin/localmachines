@@ -17,7 +17,6 @@ var runMode string
 
 func init() {
 	beego.AppConfig.Set("DirectoryIndex", "true")
-	beego.SetStaticPath("/swagger", "swagger")
 
 	// Config default files directory
 	beego.SetStaticPath("/files", "files")
@@ -34,7 +33,9 @@ func main() {
 
 	// Config automatic API docs
 	beego.AppConfig.Set("DirectoryIndex", "true")
-	beego.SetStaticPath("/swagger", "swagger")
+	if runMode == "dev" {
+		beego.SetStaticPath("/swagger", "swagger")
+	}
 
 	// Config default files directory
 	beego.SetStaticPath("/files", "files")
