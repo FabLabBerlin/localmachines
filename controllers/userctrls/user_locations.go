@@ -28,6 +28,9 @@ func (c *UserLocationsController) GetUserLocations() {
 		beego.Error("get user locations:", err)
 		c.CustomAbort(500, "Cannot get user locations")
 	}
+	for _, ul := range uls {
+		ul.Location.ClearPrivateData()
+	}
 	c.Data["json"] = uls
 	c.ServeJSON()
 }
