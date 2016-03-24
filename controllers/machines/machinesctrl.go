@@ -182,11 +182,7 @@ func decodeDataUri(dataUri string) ([]byte, error) {
 		return nil, fmt.Errorf("cannot remove prefix from data uri")
 	}
 	dataUri = dataUri[i+len(sep):]
-	data, err := base64.StdEncoding.DecodeString(dataUri)
-	if err != nil {
-		return nil, err
-	}
-	return data, nil
+	return base64.StdEncoding.DecodeString(dataUri)
 }
 
 // @Title PostImage
@@ -198,11 +194,6 @@ func decodeDataUri(dataUri string) ([]byte, error) {
 // @Failure	500 Internal Server Error
 // @router /:mid/image [post]
 func (this *Controller) PostImage() {
-	if !this.IsAdmin() && !this.IsStaff() {
-		beego.Error("Not authorized to create machine")
-		this.CustomAbort(401, "Not authorized")
-	}
-
 	mid, err := this.GetInt64(":mid")
 	if err != nil {
 		beego.Error("Failed to get mid:", err)
@@ -230,6 +221,12 @@ func (this *Controller) PostImage() {
 		beego.Error("Failed to get :mid variable")
 		this.CustomAbort(403, "Failed to get machine")
 	}
+
+	if !this.IsAdminAt(m.LocationId) {
+		beego.Error("Not authorized to set machine image")
+		this.CustomAbort(401, "Not authorized")
+	}
+
 	m.Image = fn
 	if err = m.Update(); err != nil {
 		beego.Error("Failed updating machine:", err)
@@ -247,24 +244,24 @@ const (
 )
 
 func (this *Controller) underMaintenanceOnOrOff(onOrOff int) error {
-	machineId, err := this.GetInt64(":mid")
+	mid, err := this.GetInt64(":mid")
 	if err != nil {
 		beego.Error("Failed to get :mid variable")
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	if !this.IsStaff() {
-		beego.Error("Not authorized")
-		this.CustomAbort(401, "Not authorized")
-	}
-
-	machine, err := machine.Get(machineId)
+	m, err := machine.Get(mid)
 	if err != nil {
 		beego.Error("Failed to get machine", err)
 		this.CustomAbort(403, "Failed to get machine")
 	}
 
-	return machine.SetUnderMaintenance(onOrOff == ON)
+	if !this.IsStaffAt(m.LocationId) {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	return m.SetUnderMaintenance(onOrOff == ON)
 }
 
 // @Title ReportBroken
@@ -282,7 +279,7 @@ func (this *Controller) ReportBroken() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	machine, err := machine.Get(machineId)
+	m, err := machine.Get(machineId)
 	if err != nil {
 		beego.Error("Failed to get machine", err)
 		this.CustomAbort(403, "Failed to get machine")
@@ -299,7 +296,7 @@ func (this *Controller) ReportBroken() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	err = machine.ReportBroken(*user)
+	err = m.ReportBroken(*user)
 	if err != nil {
 		beego.Error("Failed to report machine", err)
 		this.CustomAbort(500, "Failed to report machine")
@@ -345,7 +342,7 @@ func (this *Controller) UnderMaintenanceOff() {
 }
 
 // @Title Search
-// @Description Search machine
+// @Description Search machine globally
 // @Param	machine_type_id	query	int64	true	"Machine Type Id"
 // @Success 200
 // @Failure	400	Client Error

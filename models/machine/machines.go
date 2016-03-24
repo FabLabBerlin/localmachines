@@ -49,7 +49,6 @@ type Machine struct {
 	PriceUnit              string `orm:"size(100)"`
 	Comments               string `orm:"type(text)"`
 	Visible                bool
-	ConnectedMachines      string `orm:"size(255)"`
 	UnderMaintenance       bool
 	ReservationPriceStart  *float64 // Pointers because optional
 	ReservationPriceHourly *float64
@@ -218,6 +217,10 @@ func (this *Machine) SetUnderMaintenance(underMaintenance bool) error {
 
 	if err := this.Update(); err != nil {
 		return err
+	}
+
+	if this.LocationId != 1 {
+		return nil
 	}
 
 	consumerKey := beego.AppConfig.String("maintenancetwitterconsumerkey")
