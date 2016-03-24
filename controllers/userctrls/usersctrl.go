@@ -367,6 +367,12 @@ func (this *UsersController) Put() {
 		}
 	}
 
+	if existingUser.UserRole != user_roles.SUPER_ADMIN.String() &&
+		req.User.UserRole == user_roles.SUPER_ADMIN.String() {
+		beego.Error("Cannot set super admin through UI")
+		this.CustomAbort(401, "Not authorized")
+	}
+
 	err = req.User.Update()
 	if err != nil {
 		if strings.Contains(err.Error(), "Error 1062") {

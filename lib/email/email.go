@@ -15,10 +15,11 @@ type Email struct {
 
 // Creates a new Email store out of the Email model.
 func New() (email *Email) {
-	email = &Email{}
-	email.host = beego.AppConfig.String("smtphost")
-	email.from = beego.AppConfig.String("emailsenderaddr")
-	email.pw = beego.AppConfig.String("emailsenderpw")
+	email = &Email{
+		host: beego.AppConfig.String("smtphost"),
+		from: beego.AppConfig.String("emailsenderaddr"),
+		pw:   beego.AppConfig.String("emailsenderpw"),
+	}
 	email.auth = smtp.PlainAuth("", email.from, email.pw, email.host)
 	return
 }
