@@ -15,7 +15,7 @@ __base="$(basename ${__file} .sh)"
 
 arg1="${1:-}"
 
-VERSION=0.11.6
+VERSION=`git describe --abbrev=0 --tags | cut -c 2-`
 
 
 if [[ $# -eq 0 ]]
