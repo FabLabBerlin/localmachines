@@ -5,6 +5,8 @@ import (
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
 	"github.com/astaxie/beego"
+	"io"
+	"os"
 )
 
 type InvoicesController struct {
@@ -171,4 +173,47 @@ func (this *InvoicesController) parseParams() (interval lib.Interval, err error)
 	}
 
 	return
+}
+
+// @Title DownloadExcelExport
+// @Description Download existing excel export
+// @Success 200 {object}
+// @Failure	401	Not authorized
+// @Failure	500	Internal Server Error
+// @router /:id/download_excel [get]
+func (this *InvoicesController) DownloadExcelExport() {
+
+	id, err := this.GetInt64(":id")
+	if err != nil {
+		beego.Error("Failed to get id:", err)
+		this.CustomAbort(400, "Bad request")
+	}
+
+	me, err := monthly_earning.Get(id)
+	if err != nil {
+		beego.Error("invoices get:", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	if !this.IsAdminAt(me.LocationId) {
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	f, err := os.Open(me.FilePath)
+	if err != nil {
+		beego.Error("open ", me.FilePath, ":", err)
+		if os.IsNotExist(err) {
+			this.CustomAbort(404, "Cannot find Excel Export file")
+		} else {
+			this.CustomAbort(500, "Internal Server Error")
+		}
+	}
+
+	defer f.Close()
+	this.Ctx.Output.ContentType("xlsx")
+	if _, err := io.Copy(this.Ctx.ResponseWriter, f); err != nil {
+		beego.Error("copy ", me.FilePath, ":", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+	this.Finish()
 }

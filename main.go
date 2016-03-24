@@ -15,13 +15,6 @@ import (
 
 var runMode string
 
-func init() {
-	beego.AppConfig.Set("DirectoryIndex", "true")
-
-	// Config default files directory
-	beego.SetStaticPath("/files", "files")
-}
-
 func main() {
 	runMode = beego.AppConfig.String("RunMode")
 	beego.Info("beego RunMode:", runMode)

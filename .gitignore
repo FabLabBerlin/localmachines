@@ -12,6 +12,8 @@ localmachines.arm.bin
 npm-debug.log
 conf/app.conf
 views/prod/*
+excel_exports/*
+tests/excel_exports/*
 files/*
 !files/favicon.*
 !files/apple-touch-icon.png

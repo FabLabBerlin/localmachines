@@ -145,18 +145,19 @@ func Create(locationId int64, interval lib.Interval) (me *MonthlyEarning, err er
 	// Create *.xlsx file.
 	fileName := me.getFileName(interval)
 
+	dirName := fmt.Sprintf("excel_exports/%v", locationId)
+
 	// The files directory must exist and be writable.
-	if exists, _ := exists("files"); !exists {
-		if err = os.Mkdir("files", 0777); err != nil {
-			beego.Error("Failed to create files dir:", err)
-			return nil, fmt.Errorf("Failed to create files dir: %v", err)
+	if exists, _ := exists(dirName); !exists {
+		if err = os.MkdirAll(dirName, 0777); err != nil {
+			beego.Error("Failed to create excel_exports dir:", err)
+			return nil, fmt.Errorf("Failed to create excel_exports dir: %v", err)
 		}
 	}
 
-	filePath := fmt.Sprintf("files/%s.xlsx", fileName)
-	me.FilePath = filePath
+	me.FilePath = dirName + "/" + fileName + ".xlsx"
 
-	err = createXlsxFile(filePath, me)
+	err = createXlsxFile(me.FilePath, me)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to create *.xlsx file: %v", err)
 	}
