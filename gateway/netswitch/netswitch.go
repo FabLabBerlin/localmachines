@@ -61,11 +61,12 @@ func (ns *NetSwitch) turnOn() (err error) {
 }
 
 func (ns *NetSwitch) turnOff() (err error) {
-	log.Printf("turn off %v", ns.UrlOn())
 	var resp *http.Response
 	if ns.NetswitchType == machine.NETSWITCH_TYPE_MFI {
+		log.Printf("turn off %v", ns.UrlOn())
 		resp, err = http.PostForm(ns.UrlOn(), url.Values{"output": {"0"}})
 	} else {
+		log.Printf("turn off %v", ns.UrlOff())
 		resp, err = http.Get(ns.UrlOff())
 	}
 	if ns.isIgnorableAhmaError(err) {
