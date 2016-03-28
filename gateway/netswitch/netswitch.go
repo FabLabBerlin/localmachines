@@ -49,8 +49,12 @@ func (ns *NetSwitch) turnOn() (err error) {
 	if err != nil {
 		return fmt.Errorf("http: %v", err)
 	}
-	if resp.StatusCode != 200 {
-		return fmt.Errorf("unexpected status code: %v", resp.StatusCode)
+	if resp == nil {
+		log.Printf("turnOn: resp is nil!")
+	} else {
+		if resp.StatusCode != 200 {
+			return fmt.Errorf("unexpected status code: %v", resp.StatusCode)
+		}
 	}
 	ns.On = true
 	return
@@ -70,8 +74,12 @@ func (ns *NetSwitch) turnOff() (err error) {
 	if err != nil {
 		return fmt.Errorf("http: %v", err)
 	}
-	if resp.StatusCode != 200 {
-		return fmt.Errorf("unexpected status code: %v", resp.StatusCode)
+	if resp == nil {
+		log.Printf("turnOff: resp is nil!")
+	} else {
+		if resp.StatusCode != 200 {
+			return fmt.Errorf("unexpected status code: %v", resp.StatusCode)
+		}
 	}
 	ns.On = false
 	return
