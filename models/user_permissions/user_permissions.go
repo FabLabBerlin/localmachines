@@ -24,11 +24,12 @@ func init() {
 
 // Returns which machines user is enabled to use
 func Get(userId int64) (ps *[]Permission, err error) {
+	var permissions []Permission
 	o := orm.NewOrm()
 	_, err = o.QueryTable(TABLE_NAME).
 		Filter("user_id", userId).
-		All(ps)
-	return
+		All(&permissions)
+	return &permissions, err
 }
 
 func Create(userId, machineId int64) (err error) {
