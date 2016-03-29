@@ -1,6 +1,7 @@
 Package: localmachines-gateway
 Architecture: ARCHITECTURE
 Maintainer: Localmachines Team
+Section: misc
 Depends: daemontools, daemontools-run, sshpass
 Priority: optional
 Version: VERSION

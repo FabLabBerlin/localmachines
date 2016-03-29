@@ -1,6 +1,7 @@
 Package: localmachines
 Architecture: ARCHITECTURE
 Maintainer: Localmachines Team
+Section: misc
 Depends: daemontools, daemontools-run, debconf
 Priority: optional
 Version: VERSION
