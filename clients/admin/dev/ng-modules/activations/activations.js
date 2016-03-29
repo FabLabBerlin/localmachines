@@ -193,45 +193,6 @@ app.controller('ActivationsCtrl',
     });
   };
 
-  $scope.deleteActivationPrompt = function(activationId) {
-    var token = randomToken.generate();
-    vex.dialog.prompt({
-      message: 'Enter <span class="delete-prompt-token">' + 
-       token + '</span> to delete',
-      placeholder: 'Token',
-      callback: $scope.deleteActivationPromptCallback.bind(this, token, activationId)
-    });
-  };
-
-  $scope.deleteActivationPromptCallback = 
-   function(expectedToken, activationId, value) {
-    if (value) {    
-      if (value === expectedToken) {
-        $scope.deleteActivation(activationId);
-      } else {
-        toastr.error('Wrong token');
-      }
-    } else if (value !== false) {
-      toastr.error('No token');
-    }
-  };
-
-  $scope.deleteActivation = function(activationId) {
-    $http({
-      method: 'DELETE',
-      url: '/api/activations/' + activationId,
-      params: {
-        ac: new Date().getTime()
-      }
-    })
-    .success(function(data) {
-      $scope.loadActivations();
-    }) 
-    .error(function() {
-      toastr.error('Failed to delete activation');
-    });
-  };
-
   $scope.edit = function(id) {
     $location.path('/activations/' + id);
   };
