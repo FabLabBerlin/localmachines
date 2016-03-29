@@ -74,20 +74,6 @@ func TestMachine(t *testing.T) {
 				So(m.Name, ShouldEqual, newMachineName)
 			})
 		})
-		Convey("Netswitch url on/off 200 with should give no error", func() {
-			ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.WriteHeader(http.StatusOK)
-			}))
-			defer ts.Close()
-
-			ns := machine.Machine{
-				NetswitchUrlOn:  ts.URL + "?method=on",
-				NetswitchUrlOff: ts.URL + "?method=off",
-				NetswitchXmpp:   false,
-			}
-			So(ns.On(), ShouldBeNil)
-			So(ns.Off(), ShouldBeNil)
-		})
 		Convey("Netswitch url on/off 500 with should give an error", func() {
 			ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusInternalServerError)
@@ -97,7 +83,6 @@ func TestMachine(t *testing.T) {
 			ns := machine.Machine{
 				NetswitchUrlOn:  ts.URL + "?method=on",
 				NetswitchUrlOff: ts.URL + "?method=off",
-				NetswitchXmpp:   false,
 			}
 			So(ns.On(), ShouldNotBeNil)
 			So(ns.Off(), ShouldNotBeNil)
@@ -120,11 +105,9 @@ func TestMachine(t *testing.T) {
 				panic(err.Error())
 			}
 			m1.NetswitchHost = "example.com"
-			m1.NetswitchXmpp = true
 			err = m1.Update()
 			So(err, ShouldBeNil)
 			m2.NetswitchHost = "example.com"
-			m2.NetswitchXmpp = true
 			err = m2.Update()
 			So(err, ShouldNotBeNil)
 		})

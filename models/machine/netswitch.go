@@ -1,14 +1,11 @@
 package machine
 
 import (
-	"errors"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib/xmpp"
 	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/astaxie/beego"
 	"github.com/satori/go.uuid"
-	"net/http"
-	"regexp"
 	"strings"
 	"sync"
 	"time"
@@ -85,49 +82,22 @@ func (this *Machine) Off() error {
 
 func (this *Machine) turn(onOrOff ON_OR_OFF) (err error) {
 	beego.Info("Attempt to turn NetSwitch ", onOrOff, ", machine ID", this.Id,
-		", NetswitchXmpp: ", this.NetswitchXmpp, ", NetswitchHost: ", this.NetswitchHost)
-	if this.NetswitchXmpp || (len(strings.TrimSpace(this.NetswitchUrlOn)) > 0 &&
-		len(strings.TrimSpace(this.NetswitchUrlOff)) > 0) {
-		if this.NetswitchXmpp {
-			if xmppClient != nil {
-				return this.turnXmpp(onOrOff)
-			} else {
-				return fmt.Errorf("xmpp client is nil!")
-			}
+		", NetswitchHost: ", this.NetswitchHost)
+
+	mfiConfigured := this.NetswitchType == NETSWITCH_TYPE_MFI &&
+		len(this.NetswitchHost) > 0
+
+	customConfigured := this.NetswitchType == NETSWITCH_TYPE_CUSTOM &&
+		len(strings.TrimSpace(this.NetswitchUrlOn)) > 0 &&
+		len(strings.TrimSpace(this.NetswitchUrlOff)) > 0
+	if mfiConfigured || customConfigured {
+		if xmppClient != nil {
+			return this.turnXmpp(onOrOff)
 		} else {
-			return this.turnHttp(onOrOff)
+			return fmt.Errorf("xmpp client is nil!")
 		}
 	}
 	return
-}
-
-func (this *Machine) turnHttp(onOrOff ON_OR_OFF) (err error) {
-	var resp *http.Response
-
-	if onOrOff == ON {
-		resp, err = http.Get(this.NetswitchUrlOn)
-	} else {
-		resp, err = http.Get(this.NetswitchUrlOff)
-	}
-
-	if err != nil {
-		// Work around custom HTTP status code the switch returns: "AhmaSwitch"
-		matched, _ := regexp.MatchString("malformed HTTP status code", err.Error())
-		if !matched {
-			return fmt.Errorf("Failed to send NetSwitch %v request: %v", onOrOff, err)
-		}
-	}
-
-	beego.Trace(resp)
-	if resp != nil {
-		defer resp.Body.Close()
-		if resp.StatusCode != 200 {
-			beego.Error("Bad Status Code:", resp.StatusCode)
-			return errors.New("Bad Status Code")
-		}
-	}
-
-	return nil
 }
 
 func (this *Machine) turnXmpp(onOrOff ON_OR_OFF) (err error) {

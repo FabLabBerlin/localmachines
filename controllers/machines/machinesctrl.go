@@ -370,7 +370,6 @@ func (this *Controller) Search() {
 			m.NetswitchUrlOff = ""
 			m.NetswitchHost = ""
 			m.NetswitchSensorPort = 0
-			m.NetswitchXmpp = false
 			results = append(results, m)
 		}
 	}

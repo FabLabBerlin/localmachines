@@ -28,13 +28,11 @@ func TestNetswitches(t *testing.T) {
 		NetswitchHost:       netSwitch1.Host(),
 		NetswitchSensorPort: 1,
 		NetswitchType:       machine.NETSWITCH_TYPE_MFI,
-		NetswitchXmpp:       true,
 	})
 	lmApi.AddMapping(machine.Machine{
 		Id:            22,
 		NetswitchHost: netSwitch2.Host(),
 		NetswitchType: machine.NETSWITCH_TYPE_CUSTOM,
-		NetswitchXmpp: false,
 	})
 
 	global.Cfg.API.Url = lmApi.URL()
@@ -51,7 +49,6 @@ func TestNetswitches(t *testing.T) {
 				NetswitchHost:       netSwitch1.Host(),
 				NetswitchSensorPort: 1,
 				NetswitchType:       machine.NETSWITCH_TYPE_MFI,
-				NetswitchXmpp:       true,
 			})
 			err := netSwitches.Load(client)
 			So(err, ShouldNotBeNil)

@@ -59,9 +59,7 @@ func (nss *NetSwitches) fetch(client *http.Client) (err error) {
 	}
 	mappings := make([]machine.Machine, 0, len(all))
 	for _, mapping := range all {
-		if mapping.NetswitchXmpp {
-			mappings = append(mappings, mapping)
-		}
+		mappings = append(mappings, mapping)
 	}
 	if nss.nss == nil {
 		nss.nss = make(map[int64]*netswitch.NetSwitch)
