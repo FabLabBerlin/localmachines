@@ -237,8 +237,7 @@ footer {
   border-top: 2px solid #e6e6e6;
 }
 footer div {
-  padding-top: 20px;
-  padding-bottom: 20px;
+  padding: 7px 0;
 }
 .brand-image {
   width: auto;
