@@ -125,8 +125,8 @@ function buildLm {
 	mkdir -p $PKG_ROOT/opt/localmachines/clients/machines
 	cp -r $__dir/../clients/machines/prod $PKG_ROOT/opt/localmachines/clients/machines/
 	mkdir -p $PKG_ROOT/opt/localmachines/clients/signup
-	cp -r $__dir/../clients/machines/prod $PKG_ROOT/opt/localmachines/clients/signup/
-	rm $PKG_ROOT/opt/localmachines/clients/machines/prod/bundle.js.map
+	cp -r $__dir/../clients/signup/prod $PKG_ROOT/opt/localmachines/clients/signup/
+	rm $PKG_ROOT/opt/localmachines/clients/signup/prod/bundle.js.map
 
 	# Migrations
 	mkdir -p $PKG_ROOT/opt/localmachines/database
