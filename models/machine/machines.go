@@ -118,7 +118,7 @@ func Create(locationId int64, machineName string) (id int64, err error) {
 	return o.Insert(&machine)
 }
 
-func (m *Machine) Update() (err error) {
+func (m *Machine) Update(updateGateway bool) (err error) {
 	o := orm.NewOrm()
 	if _, err = parseDimensions(m.Dimensions); err != nil {
 		return ErrDimensions
@@ -144,16 +144,21 @@ func (m *Machine) Update() (err error) {
 		}
 	}
 
-	_, err = o.Update(m)
-
-	location, err := locations.Get(m.LocationId)
-	if err != nil {
-		return fmt.Errorf("get location %v: %v", m.LocationId, err)
+	if _, err = o.Update(m); err != nil {
+		return fmt.Errorf("orm update: %v", err)
 	}
 
-	if err = xmppReinit(location); err != nil {
-		return fmt.Errorf("xmpp reinit: %v", err)
+	if updateGateway {
+		location, err := locations.Get(m.LocationId)
+		if err != nil {
+			return fmt.Errorf("get location %v: %v", m.LocationId, err)
+		}
+
+		if err = xmppReinit(location); err != nil {
+			return fmt.Errorf("xmpp reinit: %v", err)
+		}
 	}
+
 	return
 }
 
@@ -214,7 +219,7 @@ func (this *Machine) ReportBroken(user users.User) error {
 func (this *Machine) SetUnderMaintenance(underMaintenance bool) error {
 	this.UnderMaintenance = underMaintenance
 
-	if err := this.Update(); err != nil {
+	if err := this.Update(false); err != nil {
 		return err
 	}
 

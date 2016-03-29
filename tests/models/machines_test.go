@@ -68,7 +68,7 @@ func TestMachine(t *testing.T) {
 				m.LocationId = 1
 				m.Name = newMachineName
 
-				err := m.Update()
+				err := m.Update(false)
 				m, _ = machine.Get(mid)
 				So(err, ShouldBeNil)
 				So(m.Name, ShouldEqual, newMachineName)
@@ -105,10 +105,10 @@ func TestMachine(t *testing.T) {
 				panic(err.Error())
 			}
 			m1.NetswitchHost = "example.com"
-			err = m1.Update()
+			err = m1.Update(false)
 			So(err, ShouldBeNil)
 			m2.NetswitchHost = "example.com"
-			err = m2.Update()
+			err = m2.Update(false)
 			So(err, ShouldNotBeNil)
 		})
 	})

@@ -236,7 +236,7 @@ func CloseActivation(activationId int64, endTime time.Time) error {
 
 	// Make the machine available again.
 	machine.Available = true
-	if err = machine.Update(); err != nil {
+	if err = machine.Update(false); err != nil {
 		beego.Error("Failed to update machine:", err)
 		return fmt.Errorf("Failed to update machine: %v", err)
 	}

@@ -27,7 +27,7 @@ func CreateMachine(name string) (m *machine.Machine, err error) {
 	}
 	m.Price = 0.1
 	m.PriceUnit = "minute"
-	err = m.Update()
+	err = m.Update(false)
 	return
 }
 

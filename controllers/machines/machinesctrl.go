@@ -161,7 +161,7 @@ func (this *Controller) Update() {
 		this.CustomAbort(400, "Failed to update machine")
 	}
 
-	if err = req.Update(); err != nil {
+	if err = req.Update(true); err != nil {
 		beego.Error("Failed updating machine:", err)
 		if err == machine.ErrDimensions || err == machine.ErrWorkspaceDimensions {
 			this.CustomAbort(400, err.Error())
@@ -228,7 +228,7 @@ func (this *Controller) PostImage() {
 	}
 
 	m.Image = fn
-	if err = m.Update(); err != nil {
+	if err = m.Update(false); err != nil {
 		beego.Error("Failed updating machine:", err)
 		this.CustomAbort(403, "Failed to update machine")
 	}
