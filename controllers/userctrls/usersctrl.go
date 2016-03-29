@@ -86,11 +86,19 @@ func (this *UsersController) Login() {
 			this.CustomAbort(401, "Failed to authenticate")
 		} else {
 			this.SetLogged(username, userId, locationId)
-			this.Data["json"] = models.LoginResponse{"ok", userId, locationId}
+			this.Data["json"] = models.LoginResponse{
+				Status:     "ok",
+				UserId:     userId,
+				LocationId: locationId,
+			}
 		}
 	} else {
 		locationId = this.GetSessionLocationId()
-		this.Data["json"] = models.LoginResponse{"logged", sessUserId, locationId}
+		this.Data["json"] = models.LoginResponse{
+			Status:     "logged",
+			UserId:     sessUserId,
+			LocationId: locationId,
+		}
 	}
 
 	this.ServeJSON()
@@ -114,11 +122,19 @@ func (this *UsersController) LoginUid() {
 			this.CustomAbort(401, "Failed to authenticate")
 		} else {
 			this.SetLogged(username, userId, locationId)
-			this.Data["json"] = models.LoginResponse{"ok", userId, locationId}
+			this.Data["json"] = models.LoginResponse{
+				Status:     "ok",
+				UserId:     userId,
+				LocationId: locationId,
+			}
 		}
 	} else {
 		locationId = this.GetSessionLocationId()
-		this.Data["json"] = models.LoginResponse{"logged", sessUserId, locationId}
+		this.Data["json"] = models.LoginResponse{
+			Status:     "logged",
+			UserId:     sessUserId,
+			LocationId: locationId,
+		}
 	}
 
 	this.ServeJSON()
@@ -137,7 +153,9 @@ func (this *UsersController) Logout() {
 	} else {
 		beego.Info("Logged out user", sessUsername)
 	}
-	this.Data["json"] = models.StatusResponse{"ok"}
+	this.Data["json"] = models.StatusResponse{
+		Status: "ok",
+	}
 	this.ServeJSON()
 }
 
@@ -229,7 +247,7 @@ func (this *UsersController) Signup() {
 			UserRole:   user_roles.MEMBER.String(),
 		}
 		if _, err := user_locations.Create(ul); err != nil {
-			beego.Error("Failed to create user location for new user: %v", err)
+			beego.Error("Failed to create user location for new user:", err)
 		}
 	}
 
@@ -275,7 +293,7 @@ func (this *UsersController) Post() {
 				UserRole:   user_roles.MEMBER.String(),
 			}
 			if _, err := user_locations.Create(ul); err != nil {
-				beego.Error("Failed to create user location for new user: %v", err)
+				beego.Error("Failed to create user location for new user:", err)
 			}
 		}
 		this.Data["json"] = user
@@ -587,7 +605,9 @@ func (this *UsersController) PostUserPassword() {
 		this.CustomAbort(403, "Unable to update password")
 	}
 
-	this.Data["json"] = models.StatusResponse{"Password changed successfully!"}
+	this.Data["json"] = models.StatusResponse{
+		Status: "Password changed successfully!",
+	}
 	this.ServeJSON()
 }
 

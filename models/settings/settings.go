@@ -42,7 +42,7 @@ func (this *Settings) getSetting(locationId int64, name string) *Setting {
 }
 
 type Setting struct {
-	Id          int64 `orm:"auto";"pk"`
+	Id          int64
 	LocationId  int64
 	Name        string `orm:"size(100)"`
 	ValueInt    *int64

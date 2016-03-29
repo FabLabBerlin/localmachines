@@ -17,7 +17,7 @@ func init() {
  *
  */
 type ReservationRule struct {
-	Id          int64 `orm:"auto";"pk"`
+	Id          int64
 	LocationId  int64
 	Name        string
 	MachineId   int64

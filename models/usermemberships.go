@@ -10,7 +10,7 @@ import (
 
 // User membership model that has a mapping in the database.
 type UserMembership struct {
-	Id           int64 `orm:"auto";"pk"`
+	Id           int64
 	UserId       int64
 	MembershipId int64
 	StartDate    time.Time `orm:"type(datetime)"`

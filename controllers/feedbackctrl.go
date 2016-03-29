@@ -28,7 +28,7 @@ func (this *FeedbackController) PostFeedback() {
 	}
 	location, err := locations.Get(locationId)
 	if err != nil {
-		beego.Error("locations get: %v", err)
+		beego.Error("locations get:", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
 	fb := feedback.Feedback{

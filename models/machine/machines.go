@@ -36,15 +36,13 @@ func init() {
 }
 
 type Machine struct {
-	Id                     int64 `orm:"auto";"pk"`
+	Id                     int64
 	LocationId             int64
 	Name                   string `orm:"size(255)"`
 	Shortname              string `orm:"size(100)"`
 	Description            string `orm:"type(text)"`
 	Image                  string `orm:"size(255)"` // TODO: media and media type tables
 	Available              bool
-	UnavailMsg             string    `orm:"type(text)"`
-	UnavailTill            time.Time `orm:"null;type(date)" form:"Date,2006-01-02T15:04:05Z07:00`
 	Price                  float64
 	PriceUnit              string `orm:"size(100)"`
 	Comments               string `orm:"type(text)"`

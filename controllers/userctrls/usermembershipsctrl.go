@@ -53,7 +53,7 @@ func (this *UserMembershipsController) PostUserMemberships() {
 		this.GetString("startDate"),
 		time.UTC)
 	if err != nil {
-		beego.Error("Failed to parse startDate=%v", startDate)
+		beego.Error("Failed to parse startDate=", startDate)
 		this.CustomAbort(500, "Internal Server Error")
 	}
 

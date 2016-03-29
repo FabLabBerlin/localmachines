@@ -50,3 +50,7 @@ done
 cd $__dir/clients/machines
 npm test
 
+
+# Go vet
+
+go tool vet $__dir/controllers/ $__dir/mfi/ $__dir/models/

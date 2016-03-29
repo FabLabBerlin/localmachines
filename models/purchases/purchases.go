@@ -24,7 +24,7 @@ const (
 
 // This is a purchase row that appears in the XLSX file
 type Purchase struct {
-	Id         int64 `orm:"auto";"pk"`
+	Id         int64
 	LocationId int64
 	Type       string
 	ProductId  int64

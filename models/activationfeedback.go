@@ -9,7 +9,7 @@ func init() {
 }
 
 type ActivationFeedback struct {
-	Id           int64 `orm:"auto";"pk"`
+	Id           int64
 	ActivationId int64
 	Satisfaction string `orm:"size(100)"`
 }

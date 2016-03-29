@@ -25,14 +25,14 @@ func init() {
 // Activations field contains a JSON array with activation IDs.
 // XlsFile field contains URL to the generated XLSX file.
 type MonthlyEarning struct {
-	Id          int64 `orm:"auto";"pk"`
+	Id          int64
 	LocationId  int64
 	MonthFrom   int
 	YearFrom    int
 	MonthTo     int
 	YearTo      int
-	Activations string `orm:type(text)`
-	FilePath    string `orm:size(255)`
+	Activations string `orm:"type(text)"`
+	FilePath    string `orm:"size(255)"`
 	Created     time.Time
 	Invoices    []*Invoice `orm:"-"`
 }

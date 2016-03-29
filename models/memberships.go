@@ -14,7 +14,7 @@ import (
 // about a mase membership and is mapper to a table in
 // the database.
 type Membership struct {
-	Id                       int64 `orm:"auto";"pk"`
+	Id                       int64
 	LocationId               int64
 	Title                    string `orm:"size(100)"`
 	ShortName                string `orm:"size(100)"`

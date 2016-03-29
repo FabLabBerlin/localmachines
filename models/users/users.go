@@ -16,7 +16,7 @@ import (
 var _EXP_EMAIL = regexp.MustCompile(`(?i)[-a-z0-9~!$%^*_=+}{\'?]+(\.[-a-z0-9~!$%^*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?`)
 
 type User struct {
-	Id          int64  `orm:"auto";"pk"`
+	Id          int64
 	FirstName   string `orm:"size(100)"`
 	LastName    string `orm:"size(100)"`
 	Username    string `orm:"size(100)"`
@@ -185,9 +185,9 @@ func (user *User) Update() error {
 	if err != nil {
 		return fmt.Errorf("Failed to query db: %v", err)
 	}
-	beego.Trace("Found num users with the same email:", num)
+	beego.Trace("Found num users with the same email: %v", num)
 	if num > 0 {
-		return fmt.Errorf("User with the same email exists", err)
+		return fmt.Errorf("User with the same email exists: %v", err)
 	}
 
 	// TODO: Check email regex
@@ -206,7 +206,7 @@ func GetUser(userId int64) (*User, error) {
 	o := orm.NewOrm()
 	err := o.Read(&user)
 	if err != nil {
-		return nil, fmt.Errorf("Could not get user data, ID:", userId)
+		return nil, fmt.Errorf("Could not get user data, ID: %v", userId)
 	} else {
 		return &user, nil
 	}
