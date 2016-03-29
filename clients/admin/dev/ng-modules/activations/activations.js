@@ -182,7 +182,7 @@ app.controller('ActivationsCtrl',
         '<div class="col-xs-6"><b>Invoice created!</b><br>'+
         '<b>File name:</b> ' + fileName + '</div>'+
         '<div class="col-xs-6"><a '+
-        'href="/' + invoiceData.FilePath + '" '+ 
+        'href="/api/invoices/' + invoiceData.Id + '/download_excel" '+
         'class="btn btn-primary btn-block">'+
         'Download</a></div>'+
         '</div>';
