@@ -40,7 +40,7 @@ var RouteHandler = require('react-router').RouteHandler;
         <HeaderNav />
         <RouteHandler />
         <footer className={isLogged ? '' : 'absolute-bottom'}>
-          <div className="container-fluid row">
+          <div className="container-fluid">
             <div className="col-md-4 text-center">
               <i className="fa fa-copyright"></i> Makea Industries GmbH 2016
             </div>
