@@ -40,8 +40,14 @@ var RouteHandler = require('react-router').RouteHandler;
         <HeaderNav />
         <RouteHandler />
         <footer className={isLogged ? '' : 'absolute-bottom'}>
-          <div className="container-fluid">
-            <i className="fa fa-copyright"></i> Fab Lab Berlin 2016
+          <div className="container-fluid row">
+            <div className="col-md-4 text-center">
+              <i className="fa fa-copyright"></i> Makea Industries GmbH 2016
+            </div>
+            <div className="col-md-4 text-center"></div>
+            <div className="col-md-4 text-center">
+              <a href="https://fablab.berlin/en/content/2-Imprint">Imprint</a>
+            </div>
           </div>
         </footer>
         {
