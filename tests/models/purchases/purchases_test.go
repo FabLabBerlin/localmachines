@@ -35,22 +35,22 @@ func TestPurchases(t *testing.T) {
 
 		Convey("Archiving a purchase", func() {
 
-			purchase := purchases.Purchase{}
-
 			// I am adding all of the following fields because we should not lose
 			// lose the values during archiving.
-			purchase.LocationId = 1
-			purchase.Type = purchases.TYPE_TUTOR
-			purchase.ProductId = 2
-			purchase.Created = time.Now()
-			purchase.UserId = 1
-			purchase.TimeStart = time.Now()
-			purchase.TimeEnd = time.Now()
-			purchase.Quantity = 2
-			purchase.PricePerUnit = 23
-			purchase.PriceUnit = "dolla"
-			purchase.Vat = 3
-			purchase.Cancelled = false
+			purchase := purchases.Purchase{
+				LocationId:   1,
+				Type:         purchases.TYPE_TUTOR,
+				ProductId:    2,
+				Created:      time.Now(),
+				UserId:       1,
+				TimeStart:    time.Now(),
+				TimeEnd:      time.Now(),
+				Quantity:     2,
+				PricePerUnit: 23,
+				PriceUnit:    "dolla",
+				Vat:          3,
+				Cancelled:    false,
+			}
 
 			id, _ := purchases.Create(&purchase) //
 			err := purchases.Archive(&purchase)  // Archive purchase
@@ -62,16 +62,7 @@ func TestPurchases(t *testing.T) {
 				So(aperr, ShouldBeNil)
 			})
 			Convey("the archived purchase should not be included in GetAllOfType", func() {
-				/*
-				  TYPE_ACTIVATION  = "activation"
-				  TYPE_CO_WORKING  = "co-working"
-				  TYPE_RESERVATION = "reservation"
-				  TYPE_SPACE       = "space"
-				  TYPE_TUTOR       = "tutor"
-				*/
-				var p []*purchases.Purchase
-				var err error
-				p, err = purchases.GetAllOfType(purchases.TYPE_ACTIVATION)
+				p, err := purchases.GetAllOfType(purchases.TYPE_ACTIVATION)
 				So(len(p), ShouldBeZeroValue)
 				So(err, ShouldBeNil)
 				p, err = purchases.GetAllOfType(purchases.TYPE_CO_WORKING)
