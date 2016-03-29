@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
+	"github.com/FabLabBerlin/localmachines/models/user_permissions"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
 	. "github.com/smartystreets/goconvey/convey"
@@ -379,7 +379,7 @@ func TestUsers(t *testing.T) {
 			}
 			Convey("Creating one UserPermission", func() {
 				uid, _ := users.CreateUser(&u)
-				err := models.CreateUserPermission(uid, 0)
+				err := user_permissions.Create(uid, 0)
 
 				So(err, ShouldBeNil)
 			})
@@ -390,8 +390,8 @@ func TestUsers(t *testing.T) {
 			}
 			Convey("Creating one UserPermission and delete it", func() {
 				uid, _ := users.CreateUser(&u)
-				models.CreateUserPermission(uid, 0)
-				err := models.DeleteUserPermission(uid, 0)
+				user_permissions.Create(uid, 0)
+				err := user_permissions.Delete(uid, 0)
 
 				So(err, ShouldBeNil)
 			})
@@ -402,13 +402,13 @@ func TestUsers(t *testing.T) {
 			}
 			Convey("Creating one User and update his permission", func() {
 				uid, _ := users.CreateUser(&u)
-				perms := &[]models.Permission{
-					models.Permission{UserId: uid, MachineId: 0},
-					models.Permission{UserId: uid, MachineId: 1},
-					models.Permission{UserId: uid, MachineId: 2},
-					models.Permission{UserId: uid, MachineId: 3},
+				perms := &[]user_permissions.Permission{
+					user_permissions.Permission{UserId: uid, MachineId: 0},
+					user_permissions.Permission{UserId: uid, MachineId: 1},
+					user_permissions.Permission{UserId: uid, MachineId: 2},
+					user_permissions.Permission{UserId: uid, MachineId: 3},
 				}
-				err := models.UpdateUserPermissions(uid, perms)
+				err := user_permissions.Update(uid, perms)
 
 				So(err, ShouldBeNil)
 			})

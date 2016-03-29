@@ -8,6 +8,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/controllers"
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/machine"
+	"github.com/FabLabBerlin/localmachines/models/user_permissions"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 	"strings"
@@ -71,7 +72,7 @@ func (this *Controller) Get() {
 			this.CustomAbort(403, "Failed to get machine")
 		}
 
-		permissions, err := models.GetUserPermissions(sessUserId)
+		permissions, err := user_permissions.Get(sessUserId)
 		if err != nil {
 			beego.Error("Failed to get machine permissions", err)
 			this.CustomAbort(401, "Not authorized")

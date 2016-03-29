@@ -10,6 +10,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
+	"github.com/FabLabBerlin/localmachines/models/user_permissions"
 	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
@@ -419,7 +420,7 @@ func (this *UsersController) GetUserMachines() {
 	// Get the machines!
 	machines := make([]*machine.Machine, 0, len(allMachines))
 	if !this.IsAdmin(uid) {
-		permissions, err := models.GetUserPermissions(uid)
+		permissions, err := user_permissions.Get(uid)
 		if err != nil {
 			beego.Error("Failed to get user machine permissions: ", err)
 			this.CustomAbort(500, "Internal Server Error")

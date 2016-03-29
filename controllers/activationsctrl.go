@@ -8,6 +8,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
+	"github.com/FabLabBerlin/localmachines/models/user_permissions"
 	"github.com/astaxie/beego"
 	"io/ioutil"
 	"time"
@@ -216,7 +217,7 @@ func (this *ActivationsController) Start() {
 	if !isStaff {
 
 		// Check if user has permissions to create activation for the machine.
-		userPermissions, err := models.GetUserPermissions(userId)
+		userPermissions, err := user_permissions.Get(userId)
 		if err != nil {
 			beego.Error("Could not get user permissions")
 			this.CustomAbort(403, "Failed to create activation")

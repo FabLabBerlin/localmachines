@@ -10,6 +10,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
+	"github.com/FabLabBerlin/localmachines/models/user_permissions"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
 	. "github.com/smartystreets/goconvey/convey"
@@ -68,8 +69,8 @@ func TestUserMemberships(t *testing.T) {
 			}
 
 			// Create user permissions for the created machines
-			models.CreateUserPermission(userId, machineIdOne)
-			models.CreateUserPermission(userId, machineIdTwo)
+			user_permissions.Create(userId, machineIdOne)
+			user_permissions.Create(userId, machineIdTwo)
 
 			// Create some activations
 			timeNow := time.Date(2015, 6, 4, 0, 0, 0, 0, time.UTC)  // In membership

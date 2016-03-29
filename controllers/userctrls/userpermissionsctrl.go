@@ -2,8 +2,8 @@ package userctrls
 
 import (
 	"encoding/json"
-	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/machine"
+	"github.com/FabLabBerlin/localmachines/models/user_permissions"
 	"github.com/astaxie/beego"
 )
 
@@ -44,7 +44,7 @@ func (this *UserPermissionsController) CreateUserPermission() {
 	}
 
 	// Create a new user permission record in the database
-	err = models.CreateUserPermission(userId, machineId)
+	err = user_permissions.Create(userId, machineId)
 	if err != nil {
 		beego.Error("Failed to create machine user permission", err)
 		this.CustomAbort(403, "Failed to create user machine permission")
@@ -83,7 +83,7 @@ func (this *UserPermissionsController) DeleteUserPermission() {
 		this.CustomAbort(403, "Failed to create permission")
 	}
 
-	err = models.DeleteUserPermission(userId, machineId)
+	err = user_permissions.Delete(userId, machineId)
 	if err != nil {
 		beego.Error("Failed to delete permission:", err)
 		this.CustomAbort(403, "Failed to delete permission")
@@ -117,7 +117,7 @@ func (this *UserPermissionsController) UpdateUserPermissions() {
 	// Get body as array of models.Permission
 	// Attempt to decode passed json
 	jsonDecoder := json.NewDecoder(this.Ctx.Request.Body)
-	permissions := []models.Permission{}
+	permissions := []user_permissions.Permission{}
 	if err = jsonDecoder.Decode(&permissions); err != nil {
 		beego.Error("Failed to decode json:", err)
 		this.CustomAbort(403, "Failed to update permissions")
@@ -130,7 +130,7 @@ func (this *UserPermissionsController) UpdateUserPermissions() {
 	}
 
 	// Update permissions
-	err = models.UpdateUserPermissions(userId, &permissions)
+	err = user_permissions.Update(userId, &permissions)
 	if err != nil {
 		beego.Error("Failed to update permissions:", err)
 		this.CustomAbort(403, "Failed to update permissions")
@@ -154,7 +154,7 @@ func (this *UserPermissionsController) GetUserPermissions() {
 		this.CustomAbort(400, "Wrong uid in url or not authorized")
 	}
 
-	permissions, err := models.GetUserPermissions(uid)
+	permissions, err := user_permissions.Get(uid)
 	if err != nil {
 		beego.Error("Failed to get user permissions")
 		this.CustomAbort(403, "Failed to get permissions")
@@ -180,7 +180,7 @@ func (this *UserPermissionsController) GetUserMachinePermissions() {
 
 	// We need to get machine permissions first and then the machines
 	machines := make([]*machine.Machine, 0, 20)
-	permissions, err := models.GetUserPermissions(uid)
+	permissions, err := user_permissions.Get(uid)
 	if err != nil {
 		beego.Error("Failed to get user machine permissions: ", err)
 		this.CustomAbort(500, "Internal Server Error")

@@ -2,10 +2,10 @@ package userctrls
 
 import (
 	"fmt"
-	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/products"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
+	"github.com/FabLabBerlin/localmachines/models/user_permissions"
 	"github.com/astaxie/beego"
 )
 
@@ -47,7 +47,7 @@ func (this *DashboardData) loadMachines(isStaff bool, uid, locationId int64) (er
 	// Get the machines!
 	this.Machines = make([]*machine.Machine, 0, len(allMachines))
 	if !isStaff {
-		permissions, err := models.GetUserPermissions(uid)
+		permissions, err := user_permissions.Get(uid)
 		if err != nil {
 			return fmt.Errorf("Failed to get user machine permissions: %v", err)
 		}
