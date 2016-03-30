@@ -6,7 +6,7 @@ var toImmutable = Nuclear.toImmutable;
 
 const initialState = toImmutable({
   locations: [],
-  locationId: parseInt(Cookies.get('location'))
+  locationId: parseInt(Cookies.get('location') || 1)
 });
 
 var LocationStore = new Nuclear.Store({

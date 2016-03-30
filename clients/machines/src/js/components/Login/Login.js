@@ -6,6 +6,7 @@ var LoginStore = require('../../stores/LoginStore');
 var LocationStore = require('../../stores/LocationStore');
 
 var LoginActions = require('../../actions/LoginActions');
+var LocationActions = require('../../actions/LocationActions');
 
 var {Navigation} = require('react-router');
 
@@ -29,18 +30,9 @@ var Login = React.createClass({
 
   getDataBindings() {
     return {
+      location: getters.getLocation,
       locations: getters.getLocations
     };
-  },
-
-  goToForgotPassword(event) {
-    event.preventDefault();
-    window.location = '/signup';
-  },
-
-  goToSignUp(event) {
-    event.preventDefault();
-    window.location = '/signup';
   },
 
   /*
@@ -52,7 +44,7 @@ var Login = React.createClass({
     var data = {
       username: this.refs.name.getDOMNode().value,
       password: this.refs.password.getDOMNode().value,
-      location: this.refs.location.getDOMNode().value
+      location: this.state.location.Id
     };
     LoginActions.submitLoginForm(data, this.context.router);
   },
@@ -89,6 +81,7 @@ var Login = React.createClass({
    * Render the form and the button inside of the App component
    */
   render() {
+    console.log('location=', this.state.location);
     var locations;
     if (this.state) {
       try {
@@ -100,7 +93,7 @@ var Login = React.createClass({
       locations = [];
     }
 
-    if (locations) {
+    if (locations && this.state.location) {
     return (
       <form className="login-form" method="post" onSubmit={this.handleSubmit}>
         <div className="regular-login">
@@ -129,6 +122,8 @@ var Login = React.createClass({
             className="form-control location-picker"
             ref="location"
             name="location"
+            value={this.state.location.Id}
+            onChange={this.updateLocation}
             required>
             {_.map(locations, (location, i) => {
               if (location.Approved) {
@@ -143,12 +138,14 @@ var Login = React.createClass({
           <button className="btn btn-primary btn-block btn-login"
             type="submit">Log In</button>
 
-          <div className="signup-link">
-            Do not have an account yet? <a href="#"
-              onClick={this.goToSignUp}>
-              Sign up
-            </a> now!
-          </div>
+          {this.state.location ? (
+            <div className="signup-link">
+              Do not have an account yet? <a href={'/signup/#/form?location=' + this.state.location.Id}
+                onClick={this.goToSignUp}>
+                Sign up for {this.state.location.Title}
+              </a> now!
+            </div>
+          ) : null}
 
           <div className="text-center">
             Forgot your password? <a href="/machines/#/forgot_password/start">
@@ -162,6 +159,12 @@ var Login = React.createClass({
     } else {
       return (<div></div>);
     }
+  },
+
+  updateLocation() {
+    var locationId = parseInt(this.refs.location.getDOMNode().value);
+    console.log('location <-', locationId);
+    LocationActions.setLocationId(locationId);
   }
 });
 

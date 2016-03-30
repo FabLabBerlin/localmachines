@@ -78,7 +78,10 @@ func (this *UsersController) Login() {
 		this.CustomAbort(400, "Bad Request")
 	}
 
+	beego.Info("Login(): locationId=", locationId)
+
 	if sessUserId, err := this.GetSessionUserId(); err != nil {
+		beego.Info("succeeded to get session user id")
 		username := this.GetString("username")
 		password := this.GetString("password")
 
@@ -94,6 +97,7 @@ func (this *UsersController) Login() {
 			}
 		}
 	} else {
+		beego.Info("failed to get session user id")
 		locationId = this.GetSessionLocationId()
 		this.Data["json"] = models.LoginResponse{
 			Status:     "logged",
