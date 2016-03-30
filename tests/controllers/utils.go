@@ -1,6 +1,7 @@
 package controllerTest
 
 import (
+	"bytes"
 	"net/http"
 	"net/http/httptest"
 
@@ -12,6 +13,8 @@ import (
 
 var AdminUID int64
 var RegularUID int64
+
+var empty = bytes.NewBufferString("")
 
 // LoginAsAdmin : Create an admin user and login
 func LoginAsAdmin() *http.Cookie {
@@ -35,11 +38,17 @@ func LoginAsAdmin() *http.Cookie {
 		panic(err.Error())
 	}
 
-	r, _ := http.NewRequest("POST", "/api/users/login?username=admin&password=admin&location=1", nil)
+	r, err := http.NewRequest("POST", "/api/users/login?username=admin&password=admin&location=1", empty)
+	if err != nil {
+		panic(err.Error())
+	}
 	w := httptest.NewRecorder()
 	beego.BeeApp.Handlers.ServeHTTP(w, r)
 
-	cookie, _ := r.Cookie("localmachines")
+	cookie, err := r.Cookie("localmachines")
+	if err != nil {
+		panic(err.Error())
+	}
 
 	return cookie
 }
@@ -49,16 +58,26 @@ func LoginAsRegular() *http.Cookie {
 	u := users.User{
 		Username: "user",
 		Email:    "user@easylab.io",
+		UserRole: user_roles.MEMBER.String(),
 	}
-	uid, _ := users.CreateUser(&u)
+	uid, err := users.CreateUser(&u)
+	if err != nil {
+		panic(err.Error())
+	}
 	RegularUID = uid
 	users.AuthSetPassword(uid, "user")
 
-	r, _ := http.NewRequest("POST", "/api/users/login?username=user&password=user&location=1", nil)
+	r, err := http.NewRequest("POST", "/api/users/login?username=user&password=user&location=1", empty)
+	if err != nil {
+		panic(err.Error())
+	}
 	w := httptest.NewRecorder()
 	beego.BeeApp.Handlers.ServeHTTP(w, r)
 
-	cookie, _ := r.Cookie("localmachines")
+	cookie, err := r.Cookie("localmachines")
+	if err != nil {
+		panic(err.Error())
+	}
 
 	return cookie
 }

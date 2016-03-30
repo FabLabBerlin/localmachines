@@ -27,10 +27,12 @@ func TestUsersAPI(t *testing.T) {
 
 		Reset(setup.ResetDB)
 
+		empty := bytes.NewBufferString("")
+
 		Convey("Testing POST /users/login/", func() {
 
 			Convey("Try to log in without parameters, should return 400", func() {
-				r, _ := http.NewRequest("POST", "/api/users/login", nil)
+				r, _ := http.NewRequest("POST", "/api/users/login", empty)
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
 
@@ -38,7 +40,7 @@ func TestUsersAPI(t *testing.T) {
 			})
 
 			Convey("Try to log in with wrong user/pass, should return 401", func() {
-				r, _ := http.NewRequest("POST", "/api/users/login?username=a&password=a&location=1", nil)
+				r, _ := http.NewRequest("POST", "/api/users/login?username=a&password=a&location=1", empty)
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
 
@@ -53,7 +55,7 @@ func TestUsersAPI(t *testing.T) {
 				uid, _ := users.CreateUser(&u)
 				users.AuthSetPassword(uid, "aze")
 
-				r, _ := http.NewRequest("POST", "/api/users/login?username=aze&password=aze&location=1", nil)
+				r, _ := http.NewRequest("POST", "/api/users/login?location=1&username=aze&password=aze", empty)
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
 
@@ -63,16 +65,16 @@ func TestUsersAPI(t *testing.T) {
 
 		Convey("Testing POST /users/loginuid/", func() {
 
-			Convey("Try to log in without uid parameter, should return 403", func() {
-				r, _ := http.NewRequest("POST", "/api/users/loginuid", nil)
+			Convey("Try to log in without uid parameter, should return 401", func() {
+				r, _ := http.NewRequest("POST", "/api/users/loginuid", empty)
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
 
 				So(w.Code, ShouldEqual, 401)
 			})
 
-			Convey("Try to log in with wrong parameters, should return 403", func() {
-				r, _ := http.NewRequest("POST", "/api/users/loginuid?uid=a", nil)
+			Convey("Try to log in with wrong parameters, should return 401", func() {
+				r, _ := http.NewRequest("POST", "/api/users/loginuid?uid=a", empty)
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
 
@@ -116,7 +118,7 @@ func TestUsersAPI(t *testing.T) {
 				for i := 0; i < 5; i++ {
 					spaces14 += " "
 				}
-				r, _ := http.NewRequest("POST", "/api/users/loginuid?uid="+spaces14, nil)
+				r, _ := http.NewRequest("POST", "/api/users/loginuid?uid="+spaces14, empty)
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
 
@@ -127,7 +129,7 @@ func TestUsersAPI(t *testing.T) {
 		Convey("Testing GET /users/logout", func() {
 
 			Convey("Try to logout without being logged in, should return 200", func() {
-				r, _ := http.NewRequest("GET", "/api/users/logout", nil)
+				r, _ := http.NewRequest("GET", "/api/users/logout", empty)
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
 
@@ -135,7 +137,7 @@ func TestUsersAPI(t *testing.T) {
 			})
 
 			Convey("Try to logout after being logged in as a regular user, should return 200", func() {
-				r, _ := http.NewRequest("GET", "/api/users/logout", nil)
+				r, _ := http.NewRequest("GET", "/api/users/logout", empty)
 				r.AddCookie(LoginAsRegular())
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
@@ -218,7 +220,7 @@ func TestUsersAPI(t *testing.T) {
 		Convey("Testing POST /users/", func() {
 
 			Convey("Try creating user without being logged in, should return 401", func() {
-				r, _ := http.NewRequest("POST", "/api/users/", nil)
+				r, _ := http.NewRequest("POST", "/api/users/", empty)
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
 
@@ -226,7 +228,7 @@ func TestUsersAPI(t *testing.T) {
 			})
 
 			Convey("Try creating user without parameters, should return 500", func() {
-				r, _ := http.NewRequest("POST", "/api/users/", nil)
+				r, _ := http.NewRequest("POST", "/api/users/", empty)
 				r.AddCookie(LoginAsAdmin())
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
@@ -235,7 +237,7 @@ func TestUsersAPI(t *testing.T) {
 			})
 
 			Convey("Try creating user with email, should return 200", func() {
-				r, _ := http.NewRequest("POST", "/api/users/?email=a@easylab.io", nil)
+				r, _ := http.NewRequest("POST", "/api/users/?email=a@easylab.io", empty)
 				r.AddCookie(LoginAsAdmin())
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
@@ -244,7 +246,7 @@ func TestUsersAPI(t *testing.T) {
 			})
 
 			Convey("Try creating user as a regular user, should return 401", func() {
-				r, _ := http.NewRequest("POST", "/api/users/?email=a@easylab.io", nil)
+				r, _ := http.NewRequest("POST", "/api/users/?email=a@easylab.io", empty)
 				r.AddCookie(LoginAsRegular())
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
@@ -340,7 +342,7 @@ func TestUsersAPI(t *testing.T) {
 			Convey("Try to modify self user as a regular user, should return 200", func() {
 				cookie := LoginAsRegular()
 				uid := strconv.FormatInt(RegularUID, 10)
-				var jsonStr = []byte(`{"User": {"Id": ` + uid + `, "Email": "raaaaaaaaaaaaaaaaadom@easylab.io"}}`)
+				var jsonStr = []byte(`{"User": {"Id": ` + uid + `, "Email": "raaaaaaaaaaaaaaaaadom@easylab.io", "UserRole": "member"}}`)
 				r, _ := http.NewRequest("PUT", "/api/users/"+uid, bytes.NewBuffer(jsonStr))
 				r.AddCookie(cookie)
 				r.Header.Set("Content-Type", "application/json")
@@ -417,7 +419,7 @@ func TestUsersAPI(t *testing.T) {
 			})
 
 			Convey("Try to create a user membership without being logged in", func() {
-				r, _ := http.NewRequest("POST", "/api/users/1/memberships", nil)
+				r, _ := http.NewRequest("POST", "/api/users/1/memberships", empty)
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
 
@@ -429,7 +431,7 @@ func TestUsersAPI(t *testing.T) {
 					strconv.FormatInt(user.Id, 10)+
 					"/memberships?membershipId="+
 					strconv.FormatInt(membershipId, 10)+
-					"&startDate=2015-09-11", nil)
+					"&startDate=2015-09-11", empty)
 				r.AddCookie(userCookie)
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)

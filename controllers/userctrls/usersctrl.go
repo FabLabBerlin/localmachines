@@ -81,6 +81,7 @@ func (this *UsersController) Login() {
 	if sessUserId, err := this.GetSessionUserId(); err != nil {
 		username := this.GetString("username")
 		password := this.GetString("password")
+
 		userId, err := users.AuthenticateUser(username, password)
 		if err != nil {
 			this.CustomAbort(401, "Failed to authenticate")
@@ -378,7 +379,7 @@ func (this *UsersController) Put() {
 
 	if existingUser.UserRole != req.User.UserRole {
 		if sessUserId == req.User.Id {
-			beego.Error("User can't change his own user role")
+			beego.Error("User can't change his own user role (attempted to change from", existingUser.UserRole, "to", req.User.UserRole)
 			this.CustomAbort(500, "Internal Server Error")
 		} else if !this.IsAdmin() {
 			beego.Error("User is not authorized to change UserRole")
