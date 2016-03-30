@@ -64,6 +64,10 @@ func LoginAsRegular() *http.Cookie {
 	if err != nil {
 		panic(err.Error())
 	}
+	user_locations.Create(&user_locations.UserLocation{
+		UserId:     uid,
+		LocationId: 1,
+	})
 	RegularUID = uid
 	users.AuthSetPassword(uid, "user")
 

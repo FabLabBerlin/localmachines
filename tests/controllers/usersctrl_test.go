@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	_ "github.com/FabLabBerlin/localmachines/routers"
@@ -54,6 +55,11 @@ func TestUsersAPI(t *testing.T) {
 				}
 				uid, _ := users.CreateUser(&u)
 				users.AuthSetPassword(uid, "aze")
+
+				user_locations.Create(&user_locations.UserLocation{
+					UserId:     uid,
+					LocationId: 1,
+				})
 
 				r, _ := http.NewRequest("POST", "/api/users/login?location=1&username=aze&password=aze", empty)
 				w := httptest.NewRecorder()

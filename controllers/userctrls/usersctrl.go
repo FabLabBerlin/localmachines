@@ -89,6 +89,22 @@ func (this *UsersController) Login() {
 		if err != nil {
 			this.CustomAbort(401, "Failed to authenticate")
 		} else {
+			userLocations, err := user_locations.GetAllForUser(userId)
+			if err != nil {
+				beego.Error("Failed to get user locations:", err)
+				this.CustomAbort(500, "Internal Server Error")
+			}
+			var userLocation *user_locations.UserLocation
+			for _, ul := range userLocations {
+				if ul.LocationId == locationId {
+					userLocation = ul
+					break
+				}
+			}
+			if userLocation == nil {
+				beego.Error("User not registered at specified location")
+				this.CustomAbort(401, "Not registered at location")
+			}
 			this.SetLogged(username, userId, locationId)
 			this.Data["json"] = models.LoginResponse{
 				Status:     "ok",
