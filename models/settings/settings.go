@@ -7,6 +7,18 @@ import (
 
 const TABLE_NAME = "settings"
 
+const (
+	CURRENCY  = "Currency"
+	TERMS_URL = "TermsUrl"
+	VAT       = "VAT"
+)
+
+var validNames = []string{
+	CURRENCY,
+	TERMS_URL,
+	VAT,
+}
+
 type Settings struct {
 	Data []*Setting
 }
@@ -41,6 +53,15 @@ func (this *Settings) getSetting(locationId int64, name string) *Setting {
 	return nil
 }
 
+func isValidName(name string) bool {
+	for _, validName := range validNames {
+		if name == validName {
+			return true
+		}
+	}
+	return false
+}
+
 type Setting struct {
 	Id          int64
 	LocationId  int64
@@ -56,6 +77,9 @@ func (this *Setting) TableName() string {
 
 func Create(setting *Setting) (int64, error) {
 	o := orm.NewOrm()
+	if !isValidName(setting.Name) {
+		return 0, fmt.Errorf("'%v' is not a valid name", setting.Name)
+	}
 	if setting.LocationId <= 0 {
 		return 0, fmt.Errorf("location id must be defined")
 	}
@@ -72,6 +96,9 @@ func GetAllAt(locationId int64) (settings Settings, err error) {
 
 func (this *Setting) Update() (err error) {
 	o := orm.NewOrm()
+	if !isValidName(this.Name) {
+		return fmt.Errorf("'%v' is not a valid name", this.Name)
+	}
 	if this.LocationId <= 0 {
 		return fmt.Errorf("location id must be defined")
 	}

@@ -28,6 +28,7 @@ app.controller('SettingsCtrl',
     .success(function(settings) {
       $scope.settings = {
         Currency: {},
+        TermsUrl: {},
         VAT: {}
       };
       _.each(settings, function(setting) {

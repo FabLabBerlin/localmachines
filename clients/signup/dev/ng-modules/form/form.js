@@ -12,8 +12,8 @@ angular.module('fabsmith.signup.form', ['ngRoute'])
 }])
 
 .controller('FormCtrl',
- ['$scope', '$location', '$http', '$routeParams',
- function($scope, $location, $http, $routeParams) {
+ ['$scope', '$location', '$http', '$q', '$routeParams',
+ function($scope, $location, $http, $q, $routeParams) {
 
   // Regular expression for email spec : RFC 5322
   $scope.emailRegExp = /^[-a-z0-9~!$%^*_=+}{\'?]+(\.[-a-z0-9~!$%^*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?/i;
@@ -25,28 +25,42 @@ angular.module('fabsmith.signup.form', ['ngRoute'])
   $scope.locationId = parseInt($routeParams.location || 1);
   $scope.location = {};
 
-  $scope.getLocations = function() {
-    $http({
-      method: 'GET',
-      url: '/api/locations',
-      params: {
-        ac: new Date().getTime()
-      }
-    })
-    .success(function(locations) {
+  $scope.getData = function() {
+    $q.all([
+      $http({
+        method: 'GET',
+        url: '/api/locations',
+        params: {
+          ac: new Date().getTime()
+        }
+      }),
+      $http({
+        method: 'GET',
+        url: 'http://localhost:8080/api/settings/terms_url',
+        params: {
+          location: $scope.locationId,
+          ac: new Date().getTime()
+        }
+      })
+    ])
+    .then(function(resp) {
+      var locations = resp[0].data;
+      var termsUrl = resp[1].data;
+
       $scope.locations = locations;
       _.each($scope.locations, function(location) {
         if (location.Id === $scope.locationId) {
           $scope.location = location;
         }
       });
+      $scope.termsUrl = termsUrl;
     })
-    .error(function() {
-      toastr.error('Failed to load locations');
+    .catch(function() {
+      toastr.error('Failed to load data');
     });
   };
 
-  $scope.getLocations();
+  $scope.getData();
 
   $scope.submitForm = function() {
 

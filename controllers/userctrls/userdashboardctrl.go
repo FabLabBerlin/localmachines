@@ -107,7 +107,7 @@ func (this *UserDashboardController) GetDashboard() {
 
 	uid, authorized := this.GetRouteUid()
 	if !authorized {
-		this.CustomAbort(400, "Wrong uid in url or not authorized")
+		this.CustomAbort(401, "Not authorized")
 	}
 
 	if err := data.load(isStaff, uid, locId); err != nil {
