@@ -118,7 +118,11 @@ func TestInvoiceActivation(t *testing.T) {
 					So(len(cells), ShouldEqual, numCells)
 
 					for j := 0; j < numCells; j++ {
-						So(cells[j].String(), ShouldEqual, testTable[i][j])
+						val, err := cells[j].String()
+						if err != nil {
+							panic(err.Error())
+						}
+						So(val, ShouldEqual, testTable[i][j])
 					}
 				}
 			})
