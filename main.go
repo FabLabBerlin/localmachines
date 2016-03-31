@@ -5,7 +5,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/database/connect"
 	_ "github.com/FabLabBerlin/localmachines/docs"
 	"github.com/FabLabBerlin/localmachines/models"
-	_ "github.com/FabLabBerlin/localmachines/routers"
+	"github.com/FabLabBerlin/localmachines/routers"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
 	_ "github.com/astaxie/beego/session/redis"
@@ -20,6 +20,7 @@ func main() {
 	beego.Info("beego RunMode:", runMode)
 	configClients()
 	configDatabase()
+	routers.Init()
 	setupTasks()
 	toolbox.StartTask()
 	defer toolbox.StopTask()

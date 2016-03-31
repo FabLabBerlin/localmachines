@@ -6,16 +6,14 @@ package routers
 
 import (
 	"github.com/FabLabBerlin/localmachines/controllers"
+	"github.com/FabLabBerlin/localmachines/controllers/custom_url"
 	"github.com/FabLabBerlin/localmachines/controllers/locations"
 	"github.com/FabLabBerlin/localmachines/controllers/machines"
 	"github.com/FabLabBerlin/localmachines/controllers/metrics"
 	"github.com/FabLabBerlin/localmachines/controllers/userctrls"
+	locationModels "github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/astaxie/beego"
 )
-
-func init() {
-	Init()
-}
 
 // Init must be exportable for controller tests
 func Init() {
@@ -120,4 +118,18 @@ func Init() {
 		),
 	)
 	beego.AddNamespace(ns)
+	beego.Info("Router: loading locations...")
+	locs, err := locationModels.GetAll()
+	if err != nil {
+		panic(err.Error())
+	}
+	for _, l := range locs {
+		ns := beego.NewNamespace(l.Title,
+			beego.NSInclude(
+				&custom_url.Controller{},
+			),
+		)
+		beego.AddNamespace(ns)
+	}
+	beego.Info("Router: custom urls added...")
 }

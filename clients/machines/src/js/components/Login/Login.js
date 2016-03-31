@@ -81,7 +81,6 @@ var Login = React.createClass({
    * Render the form and the button inside of the App component
    */
   render() {
-    console.log('location=', this.state.location);
     var locations;
     if (this.state) {
       try {

@@ -3,6 +3,7 @@ package controllers
 
 import (
 	"github.com/astaxie/beego"
+	"strings"
 )
 
 // Field names for session variables
@@ -46,7 +47,11 @@ func NewErrorResponse() *ErrorResponse {
 // Checks if user is logged in before sending out any data, responds with
 // "Not logged in" error if user not logged in
 func (this *Controller) Prepare() {
-	switch this.Ctx.Request.URL.Path {
+	path := this.Ctx.Request.URL.Path
+	if !strings.HasPrefix(path, "/api") {
+		return
+	}
+	switch path {
 	case "/api/users/current", "/api/users/forgot_password", "/api/users/forgot_password/phone", "/api/users/forgot_password/reset", "/api/machine_types", "/api/machines/search", "/api/locations", "/api/metrics/realtime", "/api/settings/terms_url":
 	default:
 		sessUser := this.GetSession(SESSION_USER_ID)
