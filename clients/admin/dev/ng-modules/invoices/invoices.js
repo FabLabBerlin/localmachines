@@ -86,46 +86,6 @@ app.controller('InvoicesCtrl',
     });
   };
 
-  $scope.deleteInvoicePrompt = function(invoiceId) {
-    var token = randomToken.generate();
-    vex.dialog.prompt({
-      message: 'Enter <span class="delete-prompt-token">' + 
-       token + '</span> to delete',
-      placeholder: 'Token',
-      callback: $scope.deleteInvoicePromptCallback.bind(this, token, invoiceId)
-    });
-  };
-
-  $scope.deleteInvoicePromptCallback = function(expectedToken, invoiceId, value) {
-    if (value) {    
-      if (value === expectedToken) {
-        $scope.deleteInvoice(invoiceId);
-      } else {
-        toastr.error('Wrong token');
-      }
-    } else if (value !== false) {
-      toastr.error('No token');
-    }
-  };
-
-  $scope.deleteInvoice = function(invoiceId) {
-    $http({
-      method: 'DELETE',
-      url: '/api/invoices/' + invoiceId,
-      params: {
-        ac: new Date().getTime(),
-        location: $cookies.locationId
-      }
-    })
-    .success(function(response) {
-      toastr.success("Invoice deleted");
-      $scope.loadInvoices();
-    })
-    .error(function() {
-      toastr.error("Failed to delete invoice");
-    });
-  };
-
   api.loadUsers(function(userData) {
     $scope.users = userData.users;
     $scope.usersById = userData.usersById;

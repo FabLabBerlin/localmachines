@@ -36,46 +36,6 @@ func (this *InvoicesController) GetAll() {
 	this.ServeJSON()
 }
 
-// @Title Get All monthly earnings
-// @Description Get all monthly earnings from the database
-// @Param	iid	path	int	true	"Invoice ID"
-// @Success 200 string ok
-// @Failure	401	Not authorized
-// @Failure	500	Failed to delete
-// @router /:iid [delete]
-func (this *InvoicesController) Delete() {
-
-	locId, authorized := this.GetLocIdAdmin()
-	if !authorized {
-		this.CustomAbort(401, "Not authorized")
-	}
-
-	iid, err := this.GetInt64(":iid")
-	if err != nil {
-		beego.Error("Failed to get iid:", err)
-		this.CustomAbort(403, "Failed to delete monthly earning")
-	}
-
-	me, err := monthly_earning.Get(iid)
-	if err != nil {
-		beego.Error("Failed to get monthly earning:", err)
-		this.CustomAbort(500, "Internal Server Error")
-	}
-
-	if me.LocationId != locId {
-		beego.Error("Unexpected location id:", me.LocationId)
-		this.CustomAbort(400, "Bad request")
-	}
-
-	if err = monthly_earning.Delete(iid); err != nil {
-		beego.Error("Failed to delete monthly earning:", err)
-		this.CustomAbort(500, "Failed to delete monthly earning")
-	}
-
-	this.Data["json"] = "ok"
-	this.ServeJSON()
-}
-
 // @Title Create monthly earning
 // @Description Create monthly earning from date range
 // @Param	startDate	query 	string	true	"Period start date"
