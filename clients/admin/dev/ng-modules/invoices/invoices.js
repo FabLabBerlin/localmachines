@@ -11,13 +11,6 @@ app.config(['$routeProvider', function($routeProvider) {
   });
 }]); // app.config
 
-app.filter('myDate', function(){
-  return function(val){
-  var date = new Date(val);
-  return date;
-  };    
-});
-
 app.controller('InvoicesCtrl',
  ['$scope', '$http', '$location', '$cookies', 'api', 'randomToken', 
  function($scope, $http, $location, $cookies, api, randomToken) {

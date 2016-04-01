@@ -20,9 +20,19 @@ export default {
       type: 'POST',
       data: content,
       success(data) {
-        reactor.dispatch(actionTypes.SUCCESS_LOGIN, { data });
         LocationActions.setLocationId(data.LocationId);
-        router.transitionTo('/machine');
+        reactor.dispatch(actionTypes.SUCCESS_LOGIN, { data });
+        switch (data.Status) {
+        case 'ok':
+          router.transitionTo('/machine');
+          break;
+        case 'unregistered':
+          router.transitionTo('/register_existing');
+          break;
+        default:
+          console.log('unknowon status');
+          toastr.error('Error.  Please try again later.');
+        }
       },
       error(xhr, status, err) {
         if (content.username !== '' && content.password !== '') {

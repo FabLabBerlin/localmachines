@@ -61,6 +61,10 @@ func (this *Controller) GetSessionLocationId() int64 {
 	return this.GetSession(SESSION_LOCATION_ID).(int64)
 }
 
+func (this *Controller) SetSessionLocationId(locId int64) {
+	this.Ctx.SetCookie("location", strconv.FormatInt(locId, 10))
+}
+
 func (this *Controller) SetLogged(username string, userId int64, locationId int64) {
 	this.SetSession(SESSION_USERNAME, username)
 	this.SetSession(SESSION_USER_ID, userId)
@@ -69,7 +73,7 @@ func (this *Controller) SetLogged(username string, userId int64, locationId int6
 	this.SetSession(SESSION_IP, this.Ctx.Input.IP())
 	//this.SetSession(SESSION_ACCEPT_ENCODING, this.Ctx.Input.Header("Accept-Encoding"))
 	this.SetSession(SESSION_ACCEPT_LANGUAGE, this.Ctx.Input.Header("Accept-Language"))
-	this.Ctx.SetCookie("location", strconv.FormatInt(locationId, 10))
+	this.SetSessionLocationId(locationId)
 }
 
 func (this *Controller) IsLogged() bool {

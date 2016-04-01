@@ -18,6 +18,21 @@ var LocationActions = {
     });
   },
 
+  addLocation({locationId, userId, router}) {
+    $.ajax({
+      url: '/api/users/' + userId + '/locations/' + locationId,
+      dataType: 'json',
+      type: 'POST',
+      success(data) {
+        router.transitionTo('/machine');
+      },
+      error(xhr, status, err) {
+        toastr.error('Error.  Please try again later.');
+        console.error('/users/login', status, err);
+      }
+    });
+  },
+
   setLocationId(id) {
     console.log('LocationActions: setLocationId: ', id);
     Cookies.set('location', String(id));

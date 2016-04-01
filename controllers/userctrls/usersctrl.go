@@ -101,15 +101,20 @@ func (this *UsersController) Login() {
 					break
 				}
 			}
-			if userLocation == nil {
-				beego.Error("User not registered at specified location")
-				this.CustomAbort(401, "Not registered at location")
-			}
 			this.SetLogged(username, userId, locationId)
-			this.Data["json"] = models.LoginResponse{
-				Status:     "ok",
-				UserId:     userId,
-				LocationId: locationId,
+			if userLocation == nil {
+				this.Data["json"] = models.LoginResponse{
+					Status:     "unregistered",
+					UserId:     userId,
+					LocationId: locationId,
+				}
+			} else {
+				this.SetLogged(username, userId, locationId)
+				this.Data["json"] = models.LoginResponse{
+					Status:     "ok",
+					UserId:     userId,
+					LocationId: locationId,
+				}
 			}
 		}
 	} else {

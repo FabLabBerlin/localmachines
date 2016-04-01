@@ -5,7 +5,6 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/locations"
 	"log"
 	"os"
-	"strconv"
 )
 
 var locs []*locations.Location
@@ -36,8 +35,8 @@ func (c *Controller) GetAll() {
 	for _, l := range locs {
 		url := "/" + l.Title
 		if url == c.Ctx.Request.URL.Path {
-			id := strconv.FormatInt(l.Id, 10)
-			c.Redirect("/machines/?location="+id+"#/login", 302)
+			c.SetSessionLocationId(l.Id)
+			c.Redirect("/machines/#/login", 302)
 			return
 		}
 	}

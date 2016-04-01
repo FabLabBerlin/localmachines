@@ -44,25 +44,31 @@ func (c *UserLocationsController) GetUserLocations() {
 // @Failure	500	Internal Server Error
 // @router /:uid/locations/:lid [post]
 func (c *UserLocationsController) PostUserLocation() {
-	uid, _ := c.GetRouteUid()
+	routeUid, _ := c.GetRouteUid()
 	lid, err := c.GetInt64(":lid")
 	if err != nil {
 		beego.Error("get int:", err)
 		c.CustomAbort(400, "Client Error")
 	}
-	if !c.IsAdminAt(lid) {
-		c.CustomAbort(401, "Not authorized")
-	}
-	ul := user_locations.UserLocation{
-		UserId:     uid,
-		LocationId: lid,
-		UserRole:   user_roles.NOT_AFFILIATED.String(),
-	}
-	if _, err := user_locations.Create(&ul); err != nil {
-		beego.Error("create:", err)
+	sessionUid, err := c.GetSessionUserId()
+	if err != nil {
+		beego.Error("get session user id:", err)
 		c.CustomAbort(500, "Internal Server Error")
 	}
-	c.ServeJSON()
+	if c.IsAdminAt(lid) || (c.IsLogged() && routeUid == sessionUid) {
+		ul := user_locations.UserLocation{
+			UserId:     routeUid,
+			LocationId: lid,
+			UserRole:   user_roles.MEMBER.String(),
+		}
+		if _, err := user_locations.Create(&ul); err != nil {
+			beego.Error("create:", err)
+			c.CustomAbort(500, "Internal Server Error")
+		}
+		c.ServeJSON()
+	} else {
+		c.CustomAbort(401, "Not authorized")
+	}
 }
 
 // @Title PutUserLocation
