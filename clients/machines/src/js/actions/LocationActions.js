@@ -18,6 +18,18 @@ var LocationActions = {
     });
   },
 
+  loadTermsUrl(locationId) {
+    $.ajax({
+      url: '/api/settings/terms_url?location=' + locationId,
+      success(termsUrl) {
+        reactor.dispatch(actionTypes.SET_LOCATION_TERMS_URL, termsUrl);
+      },
+      error(xhr, status, err) {
+        toastr.error('Error loading terms');
+      }
+    });
+  },
+
   addLocation({locationId, userId, router}) {
     $.ajax({
       url: '/api/users/' + userId + '/locations/' + locationId,

@@ -36,7 +36,7 @@ angular.module('fabsmith.signup.form', ['ngRoute'])
       }),
       $http({
         method: 'GET',
-        url: 'http://localhost:8080/api/settings/terms_url',
+        url: '/api/settings/terms_url',
         params: {
           location: $scope.locationId,
           ac: new Date().getTime()

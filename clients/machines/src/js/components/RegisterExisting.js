@@ -19,12 +19,15 @@ var RegisterExisting = React.createClass({
   getDataBindings() {
     return {
       location: getters.getLocation,
+      locationTermsUrl: getters.getLocationTermsUrl,
       userId: getters.getUid
     };
   },
 
   componentWillMount() {
     LocationActions.loadLocations();
+    var locationId = reactor.evaluateToJS(getters.getLocationId);
+    LocationActions.loadTermsUrl(locationId);
   },
 
   render() {
@@ -45,8 +48,8 @@ var RegisterExisting = React.createClass({
               &nbsp;
               Ja, Makea Industries GmbH darf meine Nutzerdaten
               an {this.state.location.Title} weitergeben und ich habe die
-              AGB {this.state.location.Title} gelesen und stimme ihnen
-              uneingeschränkt zu.
+              die <a href={this.state.locationTermsUrl}>AGB {this.state.location.Title}</a> gelesen
+              und stimme ihnen uneingeschränkt zu.
             </label>
           </p>
           <hr/>
