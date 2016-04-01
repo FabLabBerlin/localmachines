@@ -119,7 +119,7 @@ func (this *UsersController) Login() {
 		}
 	} else {
 		beego.Info("failed to get session user id")
-		locationId = this.GetSessionLocationId()
+		locationId, _ = this.GetSessionLocationId()
 		this.Data["json"] = models.LoginResponse{
 			Status:     "logged",
 			UserId:     sessUserId,
@@ -155,7 +155,7 @@ func (this *UsersController) LoginUid() {
 			}
 		}
 	} else {
-		locationId = this.GetSessionLocationId()
+		locationId, _ = this.GetSessionLocationId()
 		this.Data["json"] = models.LoginResponse{
 			Status:     "logged",
 			UserId:     sessUserId,

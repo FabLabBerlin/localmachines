@@ -3,6 +3,7 @@ package clients
 import (
 	"github.com/FabLabBerlin/localmachines/controllers"
 	"github.com/FabLabBerlin/localmachines/lib/cache"
+	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/astaxie/beego"
 	"io"
 	"io/ioutil"
@@ -26,6 +27,23 @@ func (c *Machines) Get() {
 		fn = "clients/machines/dev/index.html"
 	} else {
 		fn = "clients/machines/prod/index.html"
+	}
+	locId, ok := c.GetSessionLocationId()
+	if !ok {
+		// Try to get locId based on IP
+		if xff := c.Ctx.Request.Header.Get("X-Forwarded-For"); xff != "" {
+			if locs, err := locations.GetAll(); err == nil {
+				for _, loc := range locs {
+					if loc.LocalIp == xff {
+						locId = loc.Id
+						c.SetSessionLocationId(locId)
+						break
+					}
+				}
+			} else {
+				beego.Error("Failed to get locations:", err)
+			}
+		}
 	}
 	c.Ctx.Output.ContentType("html")
 	if runMode == "dev" {

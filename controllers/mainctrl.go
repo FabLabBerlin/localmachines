@@ -57,8 +57,9 @@ func (this *Controller) GetSessionUserId() (int64, error) {
 	}
 }
 
-func (this *Controller) GetSessionLocationId() int64 {
-	return this.GetSession(SESSION_LOCATION_ID).(int64)
+func (this *Controller) GetSessionLocationId() (locId int64, ok bool) {
+	locId, ok = this.GetSession(SESSION_LOCATION_ID).(int64)
+	return
 }
 
 func (this *Controller) SetSessionLocationId(locId int64) {

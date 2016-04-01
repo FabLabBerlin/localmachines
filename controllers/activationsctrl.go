@@ -180,7 +180,7 @@ func (this *ActivationsController) GetActive() {
 // @Failure 401 Not authorized
 // @router /start [post]
 func (this *ActivationsController) Start() {
-	locId, isStaff := this.GetLocIdMember()
+	locId, isStaff := this.GetLocIdStaff()
 	if !isStaff {
 		beego.Error("Not authorized")
 		this.CustomAbort(401, "Not authorized")
