@@ -12,11 +12,11 @@ type FastBillController struct {
 
 // @Title GetCustomers
 // @Description Get FastBill customers
-// @Param limit     					query   int     false    "Limit of the number of records returned"
-// @Param offset    					query   int     false    "Offset of the records returned"
-// @Param term      					query   string  false    "Filter term in one of the given fields: ORGANIZATION, FIRST_NAME, LAST_NAME, ADDRESS, ADDRESS_2, ZIPCODE, EMAIL, TAGS."
-// @Param customerid      		query   int  		false    "Customer ID"
-// @Param customernumber      query   int  		false    "Customer Number"
+// @Param limit     		query   int     false    "Limit of the number of records returned"
+// @Param offset    		query   int     false    "Offset of the records returned"
+// @Param term      		query   string  false    "Filter term in one of the given fields: ORGANIZATION, FIRST_NAME, LAST_NAME, ADDRESS, ADDRESS_2, ZIPCODE, EMAIL, TAGS."
+// @Param customerid      	query   int  	false    "Customer ID"
+// @Param customernumber	query   int  	false    "Customer Number"
 // @Success 200 {object}
 // @Failure 500 Internal Server Error
 // @Failure 401 Not authorized

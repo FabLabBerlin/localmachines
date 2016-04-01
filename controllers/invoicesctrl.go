@@ -123,6 +123,10 @@ func (this *InvoicesController) CreateDrafts() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
+	if locId != 1 {
+		this.CustomAbort(400, "Fastbill not activated for this location")
+	}
+
 	if !this.IsSuperAdmin() {
 		beego.Error("User must be super admin")
 		this.CustomAbort(401, "Not authorized")
