@@ -6,6 +6,7 @@ package routers
 
 import (
 	"github.com/FabLabBerlin/localmachines/controllers"
+	"github.com/FabLabBerlin/localmachines/controllers/clients"
 	"github.com/FabLabBerlin/localmachines/controllers/custom_url"
 	"github.com/FabLabBerlin/localmachines/controllers/locations"
 	"github.com/FabLabBerlin/localmachines/controllers/machines"
@@ -22,6 +23,7 @@ func Init() {
 	beego.Router("/crossdomain.xml", &controllers.CrossdomainController{})
 	beego.Router("/apple-touch-icon.png", &controllers.AppleTouchIconController{})
 	beego.Router("/favicon.png", &controllers.FaviconController{})
+	beego.Router("/machines", &clients.Machines{})
 	// No need to create a router for favicon.ico and robots.txt as they are
 	// handled by beego router.go
 

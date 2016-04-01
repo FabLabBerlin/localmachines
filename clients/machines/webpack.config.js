@@ -14,7 +14,8 @@ module.exports = {
   entry: './src/js/main.js',
   output: {
     path: __dirname + getOutputDevOrProd(),
-    filename: 'bundle.js'
+    filename: 'bundle.js',
+    publicPath: '/machines/assets/'
   },
   module: {
     loaders: [
