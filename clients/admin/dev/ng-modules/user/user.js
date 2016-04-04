@@ -14,6 +14,9 @@ app.controller('UserCtrl',
  ['$scope', '$routeParams', '$http', '$location', '$cookies', 'randomToken', 'api',
  function($scope, $routeParams, $http, $location, $cookies, randomToken, api) {
 
+  $scope.locationId = parseInt($cookies.location);
+  $scope.globalConfigVisible = $scope.locationId === 1;
+
   // Check for NFC browser
   if (window.libnfc) {
     $scope.nfcSupport = true;
