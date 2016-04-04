@@ -22,6 +22,10 @@ type Machines struct {
 // @Failure	500	Internal Server Error
 // @router / [get]
 func (c *Machines) Get() {
+	if c.Ctx.Request.URL.Path == "/machines" {
+		c.Redirect("/machines/", 302)
+	}
+
 	var fn string
 	if runMode == "dev" {
 		fn = "clients/machines/dev/index.html"

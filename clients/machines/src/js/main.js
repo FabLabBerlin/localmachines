@@ -25,9 +25,6 @@ var LocationStore = require('./stores/LocationStore');
 
 var {DefaultRoute, Route, Routes, NotFoundRoute} = require('react-router');
 
-if (window.location.pathname === '/machines') {
-  window.location.href = '/machines/#/machine';
-}
 
 /*
  * Style dependencies for webpack
