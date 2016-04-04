@@ -59,14 +59,19 @@ func configClients() {
 
 	// Serve self-contained Angular JS applications depending on runmode
 	if runMode == "dev" {
+		beego.SetStaticPath("/admin/assets", "clients/admin/dev/assets")
+		beego.SetStaticPath("/admin/bower_components", "clients/admin/dev/bower_components")
+		beego.SetStaticPath("/admin/ng-components", "clients/admin/dev/ng-components")
+		beego.SetStaticPath("/admin/ng-main.js", "clients/admin/dev/ng-main.js")
+		beego.SetStaticPath("/admin/ng-modules", "clients/admin/dev/ng-modules")
 		beego.SetStaticPath("/machines/assets", "clients/machines/dev")
-		beego.SetStaticPath("/admin", "clients/admin/dev")
 		beego.SetStaticPath("/signup", "clients/signup/dev")
 		beego.SetStaticPath("/user", "clients/user/dev")
 		beego.SetStaticPath("/landing", "../localmachines-web")
 	} else { // prod and any other runmode
+		beego.SetStaticPath("/admin/assets", "clients/admin/prod/assets")
+		beego.SetStaticPath("/admin/ng-modules", "clients/admin/prod/ng-modules")
 		beego.SetStaticPath("/machines/assets", "clients/machines/prod")
-		beego.SetStaticPath("/admin", "clients/admin/prod")
 		beego.SetStaticPath("/signup", "clients/signup/prod")
 		beego.SetStaticPath("/user", "clients/user/prod")
 		beego.SetStaticPath("/landing", "../localmachines-web")

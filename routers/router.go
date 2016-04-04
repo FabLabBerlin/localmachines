@@ -23,6 +23,7 @@ func Init() {
 	beego.Router("/crossdomain.xml", &controllers.CrossdomainController{})
 	beego.Router("/apple-touch-icon.png", &controllers.AppleTouchIconController{})
 	beego.Router("/favicon.png", &controllers.FaviconController{})
+	beego.Router("/admin", &clients.Admin{})
 	beego.Router("/machines", &clients.Machines{})
 	// No need to create a router for favicon.ico and robots.txt as they are
 	// handled by beego router.go

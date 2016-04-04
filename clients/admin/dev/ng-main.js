@@ -44,9 +44,6 @@ app.run(['$rootScope', '$location', '$http', '$cookieStore', '$cookies', '$q',
   
   $rootScope.$on('$locationChangeStart', 
    function(event, newUrl, oldUrl) {
-    if (window.location.pathname === '/admin') {
-      window.location.href = '/admin/#/login';
-    }
 
     // Get requested angular path
     var newPath = newUrl.split('#')[1];
