@@ -227,9 +227,9 @@
       <div class="row">
         <div class="col-sm-12">
           <h2>Role</h2>
-          <h3>Global</h3>
+          <h3 ng-show="globalConfigVisible">Global</h3>
         </div>
-        <div class="col-sm-6">
+        <div class="col-sm-6" ng-show="globalConfigVisible">
           <select ng-model="user.UserRole">
             <option value="member">Member</option>
             <option value="staff">Staff</option>
@@ -245,26 +245,28 @@
         </div>
         <div class="col-sm-12 form-group">
           <div class="col-sm-12" ng-repeat="userLocation in userLocations">
-            <div class="col-sm-6">
-              {{userLocation.Location.Title}}
-            </div>
-            <div class="col-sm-5">
-              <select class="form-control"
-                      ng-model="userLocation.UserRole"
-                      ng-change="updateUserLocation(userLocation)">
-                <option value="notaffiliated">Not affiliated</option>
-                <option value="staff">Staff</option>
-                <option value="member">Member</option>
-                <option value="admin">Admin</option>
-              </select>
-            </div>
-            <div class="col-sm-1">
-              <button 
-                type="button" 
-                class="btn btn-danger btn-ico" 
-                ng-click="deleteUserLocationPrompt(userLocation.LocationId)">
-                <i class="fa fa-close"></i>
-              </button>
+            <div ng-show="globalConfigVisible || userLocation.LocationId == locationId">
+              <div class="col-sm-6">
+                {{userLocation.Location.Title}}
+              </div>
+              <div class="col-sm-5">
+                <select class="form-control"
+                        ng-model="userLocation.UserRole"
+                        ng-change="updateUserLocation(userLocation)">
+                  <option value="notaffiliated">Not affiliated</option>
+                  <option value="staff">Staff</option>
+                  <option value="member">Member</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+              <div class="col-sm-1">
+                <button 
+                  type="button" 
+                  class="btn btn-danger btn-ico" 
+                  ng-click="deleteUserLocationPrompt(userLocation.LocationId)">
+                  <i class="fa fa-close"></i>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -273,6 +275,7 @@
             <select class="form-control">
               <option value="">Select new location</option>
               <option ng-repeat="location in locations"
+                      ng-show="globalConfigVisible || location.Id == locationId"
                       value="{{location.Id}}">
                 {{location.Title}}
               </option>
