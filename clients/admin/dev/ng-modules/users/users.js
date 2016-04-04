@@ -23,7 +23,7 @@ app.controller('UsersCtrl',
       url: '/api/users',
       params: {
         ac: new Date().getTime(),
-        location: $cookies.locationId
+        location: $cookies.location
       }
     })
     .success(function(users) {
@@ -57,7 +57,7 @@ app.controller('UsersCtrl',
       url: '/api/users',
       data: {
         email: email,
-        location: $cookies.locationId
+        location: $cookies.location
       },
       params: {
         ac: new Date().getTime()

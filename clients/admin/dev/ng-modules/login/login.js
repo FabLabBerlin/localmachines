@@ -12,12 +12,16 @@ app.config(['$routeProvider', function($routeProvider) {
 }]); // app.config
 
 app.controller('LoginCtrl',
- ['$rootScope', '$scope', '$http', '$location', '$cookies',
- function($rootScope, $scope, $http, $location, $cookies) {
+ ['$rootScope', '$scope', '$http', '$location', '$cookies', '$cookieStore',
+ function($rootScope, $scope, $http, $location, $cookies, $cookieStore) {
+
+  $scope.locationId = $cookies.location ? parseInt($cookies.location) : undefined;
+
   // Local login function - if we do it by entering username and password in the browser
   if (window.libnfc) {
     $scope.nfcSupport = true;
     $scope.locations = [];
+    $scope.location = 1;
 
     $scope.onNfcError = function(error) {
       window.libnfc.cardRead.disconnect($scope.loginWithUid);
@@ -34,12 +38,12 @@ app.controller('LoginCtrl',
         url: '/api/users/loginuid',
         data: {
           uid: uid,
+          location: 1, // Hardcoded for now
           ac: new Date().getTime()
         }
       })
       .success(function(data) {
         if (data.UserId) {
-          $cookies.locationId = 1;
           $scope.getUserData(data.UserId);
         }
       })
@@ -113,7 +117,6 @@ app.controller('LoginCtrl',
     })
     .success(function(data) {
       if (data.UserId) {
-        $cookies.locationId = locationId;
         $scope.getUserData(data.UserId);
       }
     })
@@ -132,6 +135,11 @@ app.controller('LoginCtrl',
     })
     .success(function(locations) {
       $scope.locations = locations;
+      _.each($scope.locations, function(l) {
+        if (l.Id === $scope.locationId) {
+          l.selected = true;
+        }
+      });
     })
     .error(function() {
       toastr.error('Failed to load locations');

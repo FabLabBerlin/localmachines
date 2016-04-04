@@ -42,7 +42,7 @@ app.controller('MachinesCtrl',
       method: 'POST',
       url: '/api/machines',
       params: {
-        location: $cookies.locationId,
+        location: $cookies.location,
         mname: machineName
       }
     })

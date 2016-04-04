@@ -52,7 +52,7 @@ app.controller('ActivationsCtrl',
         itemsPerPage: $scope.itemsPerPage,
         page: $scope.currentPage,
         ac: new Date().getTime(),
-        location: $cookies.locationId
+        location: $cookies.location
       }
     })
     .success(function(activations) {
@@ -83,7 +83,7 @@ app.controller('ActivationsCtrl',
       url: '/api/users',
       params: {
         ac: new Date().getTime(),
-        location: $cookies.locationId
+        location: $cookies.location
       }
     })
     .success(function(users) {
@@ -139,7 +139,7 @@ app.controller('ActivationsCtrl',
       method: 'POST',
       url: '/api/activations',
       params: {
-        location: $cookies.locationId
+        location: $cookies.location
       }
     })
     .success(function(a) {
@@ -158,7 +158,7 @@ app.controller('ActivationsCtrl',
       includeInvoiced: false,
       itemsPerPage: $scope.itemsPerPage,
       page: $scope.currentPage,
-      location: $cookies.locationId,
+      location: $cookies.location,
       ac: new Date().getTime()
     };
   }
