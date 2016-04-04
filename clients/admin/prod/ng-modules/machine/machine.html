@@ -114,7 +114,7 @@
         <label for="machine-type">Machine Type</label>
         <select class="form-control" id="machine-type" 
                 ng-model="machine.TypeId">
-          <option value="" selected disabled>Select type</option>
+          <option value="0" selected disabled>Select type</option>
           <option ng-repeat="machineType in machineTypes"
                   value="{{machineType.Id}}">
             {{machineType.Name}}
@@ -197,7 +197,7 @@
                     ng-model="machine.NetswitchType"
                     ng-change="registerUnsavedChange()">
               <option value="" selected>Custom Powerswitch</option>
-              <option value="mfi">Ubiquity mFi Powerswitch</option>
+              <option value="mfi">Ubiquiti mFi Powerswitch</option>
             </select>
           </div>
         </div>
@@ -234,18 +234,6 @@
 
     <div class="col-sm-3">
 
-    </div><!-- -->
-  </div>
-
-  <div class="row">
-    <div class="col-sm-3">
-      <div class="form-group">
-        <label>
-          <input type="checkbox"
-                 ng-model="machine.NetswitchXmpp">
-          Use powerswitch via XMPP (mFis only work via XMPP)
-        </label>
-      </div>
     </div><!-- -->
   </div>
 
