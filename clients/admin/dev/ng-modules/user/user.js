@@ -394,6 +394,10 @@ app.controller('UserCtrl',
       data: {
         User: $scope.user
       },
+      params: {
+        location: $cookies.locationId,
+        ac: new Date().getTime()
+      },
       transformRequest: function(data) {
         var transformed = {
           User: _.extend({}, data.User)
@@ -405,9 +409,6 @@ app.controller('UserCtrl',
           }
         });
         return JSON.stringify(transformed);
-      },
-      params: {
-        ac: new Date().getTime()
       }
     })
     .success(function() {
@@ -541,6 +542,7 @@ app.controller('UserCtrl',
         return JSON.stringify(data);
       },
       params: {
+        location: $cookies.locationId,
         ac: new Date().getTime()
       }
     })
