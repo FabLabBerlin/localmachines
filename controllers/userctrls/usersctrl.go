@@ -67,6 +67,7 @@ func (this *UsersController) Prepare() {
 // @Param	username		body 	string	true		"The username for login"
 // @Param	password		body 	string	true		"The password for login"
 // @Param	location		body	int		true		"Location ID"
+// @Param	admin			body	bool	false		"Define whether login for Admin Panel"
 // @Success 200 {object} models.LoginResponse
 // @Failure 400 Bad Request
 // @Failure 401 Failed to authenticate
@@ -99,6 +100,12 @@ func (this *UsersController) Login() {
 				if ul.LocationId == locationId {
 					userLocation = ul
 					break
+				}
+			}
+			if this.GetString("admin") != "" {
+				if userLocation == nil || userLocation.GetRole() != user_roles.ADMIN {
+					beego.Error("User is not admin at that location")
+					this.CustomAbort(401, "Not authorized")
 				}
 			}
 			this.SetLogged(username, userId, locationId)

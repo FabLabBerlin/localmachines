@@ -105,7 +105,8 @@ app.controller('LoginCtrl',
       data: {
         username: $scope.username,
         password: $scope.password,
-        location: locationId
+        location: locationId,
+        admin: true
       },
       params: {
         ac: new Date().getTime()
