@@ -68,7 +68,7 @@ app.controller('LoginCtrl',
       }
     })
     .success(function(data){
-      $scope.$emit('user-login', data);
+      //$scope.$emit('user-login', data);
       $rootScope.mainMenu.userFullName = data.FirstName + ' ' + data.LastName;
       $location.path('/machines');
     })

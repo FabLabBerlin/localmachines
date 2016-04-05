@@ -39,8 +39,8 @@ var app = angular.module('fabsmith', [
 ]);
 
 // This checks whether an user is logged in always before switching to a new view
-app.run(['$rootScope', '$location', '$http', '$cookieStore', '$cookies', '$q',
- function($rootScope, $location, $http, $cookieStore, $cookies, $q) {
+app.run(['$rootScope', '$location', '$http', '$cookies', '$q',
+ function($rootScope, $location, $http, $cookies, $q) {
   
   $rootScope.$on('$locationChangeStart', 
    function(event, newUrl, oldUrl) {
@@ -54,9 +54,9 @@ app.run(['$rootScope', '$location', '$http', '$cookieStore', '$cookies', '$q',
 
       var getLocationPromise = $http({
         method: 'GET',
-        url: '/api/locations/' + $cookies.location,
+        url: '/api/locations/' + $cookies.locationId,
         params: {
-          location: $cookies.location,
+          location: $cookies.locationId,
           ac: new Date().getTime()
         }
       });
@@ -87,7 +87,8 @@ app.run(['$rootScope', '$location', '$http', '$cookieStore', '$cookies', '$q',
           $location.path('/machines');
         }
       })
-      .catch(function() {
+      .catch(function(err) {
+        console.log('err:', err);
         $rootScope.mainMenu.visible = false;
         $location.path('/login');
       });
@@ -110,8 +111,8 @@ app.config(['$httpProvider', function($httpProvider) {
 
 // Main controller, checks if user logged in
 app.controller('MainCtrl', 
- ['$scope', '$http', '$location', '$cookieStore', '$cookies', '$rootScope', 
- function($scope, $http, $location, $cookieStore, $cookies, $rootScope){
+ ['$scope', '$http', '$location', '$cookies', '$rootScope', 
+ function($scope, $http, $location, $cookies, $rootScope){
 
   $rootScope.mainMenu = {visible: false};
 
@@ -121,31 +122,8 @@ app.controller('MainCtrl',
   // Configure vex theme
   vex.defaultOptions.className = 'vex-theme-plain';
 
-  // Store user data on user login
-  $scope.putUserData = function(data) {
-    for (var key in data) {
-      if (data.hasOwnProperty(key)) {
-        $cookieStore.put(key, data[key]);
-      }
-    }
-  };
-  $scope.$on('user-login', function (event, data){
-    $scope.putUserData(data);
-    $scope.mainMenu.visible = true;
-  });
-
-  // Clear user data on user logout
-  $scope.removeUserData = function() {
-    for (var key in $cookies) {
-      if ($cookies.hasOwnProperty(key)) {
-        $cookieStore.remove(key);
-      }
-    }
-  };
-
   // Log out on logout event
   $scope.logout = function() {
-    $scope.removeUserData();
     $scope.mainMenu.visible = false;
 
     $http({
