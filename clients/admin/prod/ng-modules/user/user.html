@@ -227,21 +227,6 @@
       <div class="row">
         <div class="col-sm-12">
           <h2>Role</h2>
-          <h3 ng-show="globalConfigVisible">Global</h3>
-        </div>
-        <div class="col-sm-6" ng-show="globalConfigVisible">
-          <select ng-model="user.UserRole">
-            <option value="member">Member</option>
-            <option value="staff">Staff</option>
-            <option value="admin">Admin</option>
-            <option value="superadmin">Super Admin</option>
-          </select>
-        </div>
-        <div class="col-sm-6 hidden-xs">
-          <div class="tip">Admins can access the admin panel - others can not.</div>
-        </div>
-        <div class="col-sm-12">
-          <h3>Local</h3>
         </div>
         <div class="col-sm-12 form-group">
           <div class="col-sm-12" ng-repeat="userLocation in userLocations">
