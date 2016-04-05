@@ -68,22 +68,21 @@ func (this *MembershipsController) Create() {
 // @Failure	401	Not authorized
 // @router /:mid [get]
 func (this *MembershipsController) Get() {
-
-	if !this.IsAdmin() {
-		beego.Error("Not authorized")
-		this.CustomAbort(401, "Not authorized")
-	}
-
 	mid, err := this.GetInt64(":mid")
 	if err != nil {
 		beego.Error("Could not get mid")
-		this.CustomAbort(403, "Failed to get membership")
+		this.CustomAbort(500, "Failed to get membership")
 	}
 
 	membership, err := models.GetMembership(mid)
 	if err != nil {
 		beego.Error("Could not get membership")
-		this.CustomAbort(403, "Failed to get membership")
+		this.CustomAbort(500, "Failed to get membership")
+	}
+
+	if !this.IsAdminAt(membership.LocationId) {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
 	}
 
 	this.Data["json"] = membership
@@ -95,12 +94,25 @@ func (this *MembershipsController) Get() {
 // @Param	mid	path	int	true	"Membership ID"
 // @Param	model	body	models.Membership	true	"Membership model"
 // @Success 200 string ok
-// @Failure	403	Failed to update membership
 // @Failure	401	Not authorized
+// @Failure	403	Forbidden
+// @Failure	500	Internal Server Error
 // @router /:mid [put]
 func (this *MembershipsController) Update() {
 
-	if !this.IsAdmin() {
+	// Get mid and check if it matches with the membership model ID
+	mid, err := this.GetInt64(":mid")
+	if err != nil {
+		beego.Error("Could not get :mid:", err)
+		this.CustomAbort(500, "Failed to update membership")
+	}
+
+	existing, err := models.GetMembership(mid)
+	if err != nil {
+		beego.Error("Get membership:", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+	if !this.IsAdminAt(existing.LocationId) {
 		beego.Error("Not authorized")
 		this.CustomAbort(401, "Not authorized")
 	}
@@ -110,53 +122,21 @@ func (this *MembershipsController) Update() {
 	req := models.Membership{}
 	if err := dec.Decode(&req); err != nil {
 		beego.Error("Failed to decode json:", err)
-		this.CustomAbort(403, "Failed to update membership")
+		this.CustomAbort(400, "Failed to update membership")
 	}
 
-	// Get mid and check if it matches with the membership model ID
-	mid, err := this.GetInt64(":mid")
-	if err != nil {
-		beego.Error("Could not get :mid:", err)
-		this.CustomAbort(403, "Failed to update membership")
-	}
 	if mid != req.Id {
 		beego.Error("mid and model ID do not match:", err)
-		this.CustomAbort(403, "Failed to update membership")
+		this.CustomAbort(403, "Forbidden")
+	}
+	if req.LocationId != existing.LocationId {
+		beego.Error("old and new location id do not match")
+		this.CustomAbort(403, "Forbidden")
 	}
 
 	if err = req.Update(); err != nil {
 		beego.Error("Failed updating membership:", err)
-		this.CustomAbort(403, "Failed to update membership")
-	}
-
-	this.Data["json"] = "ok"
-	this.ServeJSON()
-}
-
-// @Title Delete
-// @Description Delete membership
-// @Param	mid	path	int	true	"Membership ID"
-// @Success 200 string ok
-// @Failure	403	Failed to delete membership
-// @Failure	401	Not authorized
-// @router /:mid [delete]
-func (this *MembershipsController) Delete() {
-
-	if !this.IsAdmin() {
-		beego.Error("Not authorized")
-		this.CustomAbort(401, "Not authorized")
-	}
-
-	mid, err := this.GetInt64(":mid")
-	if err != nil {
-		beego.Error("Failed to get mid:", err)
-		this.CustomAbort(403, "Failed to delete membership")
-	}
-
-	err = models.DeleteMembership(mid)
-	if err != nil {
-		beego.Error("Failed to delete membership:", err)
-		this.CustomAbort(403, "Failed to delete membership")
+		this.CustomAbort(500, "Failed to update membership")
 	}
 
 	this.Data["json"] = "ok"

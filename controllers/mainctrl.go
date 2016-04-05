@@ -89,23 +89,6 @@ func (this *Controller) IsSuperAdmin(userIds ...int64) bool {
 	return role == user_roles.SUPER_ADMIN
 }
 
-// Return true if user is admin, if no args are passed, uses session user ID,
-// if single user ID is passed, checks the passed one. Fails otherwise.
-func (this *Controller) IsAdmin(userIds ...int64) bool {
-	role := this.globalUserRole(userIds...)
-	return role == user_roles.ADMIN ||
-		role == user_roles.SUPER_ADMIN
-}
-
-// Return true if user is staff, if no args are passed, uses session user ID,
-// if single user ID is passed, checks the passed one. Fails otherwise.
-func (this *Controller) IsStaff(userIds ...int64) bool {
-	role := this.globalUserRole(userIds...)
-	return role == user_roles.STAFF ||
-		role == user_roles.ADMIN ||
-		role == user_roles.SUPER_ADMIN
-}
-
 // Return true if user is admin at that location, if only the location id is
 // passed, uses session user ID, if single user ID is passed, checks the passed
 // one. Fails otherwise.

@@ -120,20 +120,21 @@ func (c *UserLocationsController) PutUserLocation() {
 // @Failure	500 Internal Server Error
 // @router /:uid/locations/:lid [delete]
 func (c *UserLocationsController) DeleteUserLocation() {
-	if !c.IsAdmin() {
-		c.CustomAbort(401, "Not authorized")
-	}
 	uid, _ := c.GetRouteUid()
 	lid, err := c.GetInt64(":lid")
 	if err != nil {
 		beego.Error("get int:", err)
-		c.CustomAbort(400, "Client Error")
+		c.Abort("400")
+	}
+
+	if !c.IsAdminAt(lid) {
+		c.Abort("401")
 	}
 
 	err = user_locations.Delete(uid, lid)
 	if err != nil {
 		beego.Error("Failed to delete user location")
-		c.CustomAbort(500, "Internal Server Error")
+		c.Abort("500")
 	}
 
 	c.Data["json"] = "ok"

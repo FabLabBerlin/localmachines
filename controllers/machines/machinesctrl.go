@@ -63,7 +63,13 @@ func (this *Controller) Get() {
 		this.CustomAbort(403, "Failed to get machine")
 	}
 
-	if !this.IsAdmin() && !this.IsStaff() {
+	machine, err := machine.Get(machineId)
+	if err != nil {
+		beego.Error("Failed to get machine", err)
+		this.CustomAbort(403, "Failed to get machine")
+	}
+
+	if !this.IsStaffAt(machine.LocationId) {
 
 		// Get user permissions to see whether user is allowed to access machine
 		sessUserId, err := this.GetSessionUserId()
@@ -90,12 +96,6 @@ func (this *Controller) Get() {
 			beego.Error("User not authorized to view this machine")
 			this.CustomAbort(401, "Not authorized")
 		}
-	}
-
-	machine, err := machine.Get(machineId)
-	if err != nil {
-		beego.Error("Failed to get machine", err)
-		this.CustomAbort(403, "Failed to get machine")
 	}
 
 	this.Data["json"] = machine
@@ -138,28 +138,34 @@ func (this *Controller) Create() {
 // @Failure	500	Failed to update machine
 // @router /:mid [put]
 func (this *Controller) Update() {
+	// Get mid and check if it matches with the machine model ID
+	mid, err := this.GetInt64(":mid")
+	if err != nil {
+		beego.Error("Could not get :mid:", err)
+		this.Abort("400")
+	}
 
-	if !this.IsAdmin() {
+	existing, err := machine.Get(mid)
+	if err != nil {
+		beego.Error("get machine:", err)
+		this.Abort("500")
+	}
+
+	if !this.IsAdminAt(existing.LocationId) {
 		beego.Error("Not authorized")
-		this.CustomAbort(401, "Not authorized")
+		this.Abort("401")
 	}
 
 	dec := json.NewDecoder(this.Ctx.Request.Body)
 	req := machine.Machine{}
 	if err := dec.Decode(&req); err != nil {
 		beego.Error("Failed to decode json:", err)
-		this.CustomAbort(400, "Failed to update machine")
+		this.Abort("400")
 	}
 
-	// Get mid and check if it matches with the machine model ID
-	mid, err := this.GetInt64(":mid")
-	if err != nil {
-		beego.Error("Could not get :mid:", err)
-		this.CustomAbort(400, "Failed to update machine")
-	}
-	if mid != req.Id {
-		beego.Error("mid and model ID does not match:", err)
-		this.CustomAbort(400, "Failed to update machine")
+	if mid != req.Id || existing.LocationId != req.LocationId {
+		beego.Error("mid and model (location) ID does not match:", err)
+		this.Abort("403")
 	}
 
 	if err = req.Update(true); err != nil {

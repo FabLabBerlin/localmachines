@@ -82,13 +82,13 @@ func (this *PurchasesController) GetAll() {
 	locId, authorized := this.GetLocIdAdmin()
 	if !authorized {
 		beego.Error("Not authorized")
-		this.CustomAbort(401, "Not authorized")
+		this.Abort("401")
 	}
 
 	// This is admin and staff only
-	if !this.IsAdmin() && !this.IsStaff() {
+	if !this.IsStaffAt(locId) {
 		beego.Error("Not authorized")
-		this.CustomAbort(401, "Not authorized")
+		this.Abort("401")
 	}
 
 	purchaseType := this.GetString("type")
@@ -129,11 +129,6 @@ func (this *PurchasesController) GetAll() {
 // @Failure	500	Internal Server Error
 // @router /:id [get]
 func (this *PurchasesController) Get() {
-	if !this.IsAdmin() {
-		beego.Error("Not authorized")
-		this.CustomAbort(401, "Not authorized")
-	}
-
 	id, err := this.GetInt64(":id")
 	if err != nil {
 		beego.Error("Failed to get :id variable")
@@ -142,17 +137,27 @@ func (this *PurchasesController) Get() {
 
 	purchaseType := this.GetString("type")
 
+	var locationId int64
 	var purchase interface{}
 
 	switch purchaseType {
 	case purchases.TYPE_CO_WORKING:
-		purchase, err = purchases.GetCoWorking(id)
+		var cw *purchases.CoWorking
+		cw, err = purchases.GetCoWorking(id)
+		locationId = cw.LocationId
+		purchase = cw
 		break
 	case purchases.TYPE_SPACE:
-		purchase, err = purchases.GetSpace(id)
+		var s *purchases.Space
+		s, err = purchases.GetSpace(id)
+		locationId = s.LocationId
+		purchase = s
 		break
 	case purchases.TYPE_TUTOR:
-		purchase, err = purchases.GetTutoring(id)
+		var t *purchases.Tutoring
+		t, err = purchases.GetTutoring(id)
+		locationId = t.LocationId
+		purchase = t
 		break
 	default:
 		err = fmt.Errorf("unknown purchase type")
@@ -160,7 +165,12 @@ func (this *PurchasesController) Get() {
 
 	if err != nil {
 		beego.Error("Failed to get purchase", err, " (purchaseType=", purchaseType, ")")
-		this.CustomAbort(500, "Failed to get purchase")
+		this.Abort("500")
+	}
+
+	if !this.IsAdminAt(locationId) {
+		beego.Error("Not authorized")
+		this.Abort("401")
 	}
 
 	this.Data["json"] = purchase
@@ -176,15 +186,35 @@ func (this *PurchasesController) Get() {
 // @Failure 500 Internal Server Error
 // @router /:rid [put]
 func (this *PurchasesController) Put() {
-	if !this.IsAdmin() {
-		beego.Error("Unauthorized attempt to update space purchase")
-		this.CustomAbort(401, "Unauthorized")
+	id, err := this.GetInt64(":id")
+	if err != nil {
+		this.Abort("400")
+	}
+	existing, err := purchases.Get(id)
+	if err != nil {
+		beego.Error("Cannot get purchase:", err)
+		this.Abort("500")
+	}
+
+	if !this.IsAdminAt(existing.LocationId) {
+		beego.Error("Unauthorized attempt to update purchase")
+		this.Abort("401")
+	}
+
+	assertSameIds := func(newId, newLocationId int64) {
+		if existing.Id != newId {
+			beego.Error("Id changed")
+			this.Abort("403")
+		}
+		if existing.LocationId != newLocationId {
+			beego.Error("Location Id changed")
+			this.Abort("403")
+		}
 	}
 
 	purchaseType := this.GetString("type")
 
 	var response interface{}
-	var err error
 
 	switch purchaseType {
 	case purchases.TYPE_CO_WORKING:
@@ -196,6 +226,8 @@ func (this *PurchasesController) Put() {
 			this.CustomAbort(400, "Failed to update Co-Working purchase")
 		}
 
+		assertSameIds(cp.Id, cp.LocationId)
+
 		if err = cp.Update(); err == nil {
 			response = cp
 		}
@@ -206,8 +238,10 @@ func (this *PurchasesController) Put() {
 		defer this.Ctx.Request.Body.Close()
 		if err := dec.Decode(sp); err != nil {
 			beego.Error("Failed to decode json:", err)
-			this.CustomAbort(400, "Failed to update Space purchase")
+			this.Abort("400")
 		}
+
+		assertSameIds(sp.Id, sp.LocationId)
 
 		if err = sp.Update(); err == nil {
 			response = sp
@@ -219,9 +253,11 @@ func (this *PurchasesController) Put() {
 		defer this.Ctx.Request.Body.Close()
 		if err := dec.Decode(tp); err != nil {
 			beego.Error("Failed to decode json:", err)
-			this.CustomAbort(400, "Failed to update Tutoring purchase")
+			this.Abort("400")
 		}
-		beego.Info("tp: time end planned:", tp.TimeEndPlanned)
+
+		assertSameIds(tp.Id, tp.LocationId)
+
 		if err = tp.Update(); err == nil {
 			response = tp
 		}
@@ -232,7 +268,7 @@ func (this *PurchasesController) Put() {
 
 	if err != nil {
 		beego.Error("Failed to update purchase", err, " (purchaseType=", purchaseType, ")")
-		this.CustomAbort(500, "Failed to update purchase")
+		this.Abort("500")
 	}
 
 	this.Data["json"] = response
@@ -248,21 +284,21 @@ func (this *PurchasesController) Put() {
 // @Failure 500 Internal Server Error
 // @router /:purchaseId/archive [put]
 func (this *PurchasesController) ArchivePurchase() {
-	if !this.IsAdmin() {
-		beego.Error("Unauthorized attempt to archive purchase")
-		this.CustomAbort(401, "Unauthorized")
-	}
-
 	purchaseId, err := this.GetInt64(":purchaseId")
 	if err != nil {
 		beego.Error("Failed to get :purchaseId variable")
-		this.CustomAbort(400, "Incorrect purchaseId")
+		this.Abort("400")
 	}
 
 	purchase, err := purchases.Get(purchaseId)
 	if err != nil {
 		beego.Error("Failed to get purchase")
-		this.CustomAbort(500, "Failed to get purchase")
+		this.Abort("500")
+	}
+
+	if !this.IsAdminAt(purchase.LocationId) {
+		beego.Error("Unauthorized attempt to archive purchase")
+		this.Abort("401")
 	}
 
 	err = purchases.Archive(purchase)

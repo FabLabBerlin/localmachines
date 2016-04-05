@@ -23,7 +23,7 @@ type FastBillController struct {
 // @router  /customer [get]
 func (this *FastBillController) GetCustomers() {
 
-	if !this.IsAdmin() {
+	if !this.IsAdminAt(1) {
 		beego.Error("Not authorized")
 		this.CustomAbort(401, "Not authorized")
 	}
@@ -87,7 +87,7 @@ func (this *FastBillController) GetCustomers() {
 // @router  /customer [post]
 func (this *FastBillController) CreateCustomer() {
 
-	if !this.IsAdmin() {
+	if !this.IsAdminAt(1) {
 		beego.Error("Not authorized")
 		this.CustomAbort(401, "Not authorized")
 	}
@@ -142,7 +142,7 @@ func (this *FastBillController) CreateCustomer() {
 // @router  /customer/:customerid [put]
 func (this *FastBillController) UpdateCustomer() {
 
-	if !this.IsAdmin() {
+	if !this.IsAdminAt(1) {
 		beego.Error("Not authorized")
 		this.CustomAbort(401, "Not authorized")
 	}
@@ -239,7 +239,7 @@ func (this *FastBillController) UpdateCustomer() {
 // @router  /customer/:customerid [delete]
 func (this *FastBillController) DeleteCustomer() {
 
-	if !this.IsAdmin() {
+	if !this.IsAdminAt(1) {
 		beego.Error("Not authorized")
 		this.CustomAbort(401, "Not authorized")
 	}

@@ -121,21 +121,27 @@ func (this *ReservationRulesController) Update() {
 // @Failure	401	Not authorized
 // @router /:rid [delete]
 func (this *ReservationRulesController) Delete() {
-	if !this.IsAdmin() {
-		beego.Error("Not authorized")
-		this.CustomAbort(401, "Not authorized")
-	}
-
 	rid, err := this.GetInt64(":rid")
 	if err != nil {
 		beego.Error("Failed to get rid:", err)
-		this.CustomAbort(403, "Failed to delete ReservationRule")
+		this.Abort("400")
+	}
+
+	rule, err := models.GetReservationRule(rid)
+	if err != nil {
+		beego.Error("Failed to get rule:", err)
+		this.Abort("500")
+	}
+
+	if !this.IsAdminAt(rule.LocationId) {
+		beego.Error("Not authorized")
+		this.Abort("401")
 	}
 
 	err = models.DeleteReservationRule(rid)
 	if err != nil {
 		beego.Error("Failed to delete ReservationRule:", err)
-		this.CustomAbort(403, "Failed to delete ReservationRule")
+		this.Abort("500")
 	}
 
 	this.Data["json"] = "ok"

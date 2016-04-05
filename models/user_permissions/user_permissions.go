@@ -2,6 +2,7 @@ package user_permissions
 
 import (
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 )
@@ -60,20 +61,39 @@ func Delete(userId, machineId int64) (err error) {
 	return
 }
 
-func Update(userId int64, permissions *[]Permission) error {
+func Update(userId, locationId int64, permissions *[]Permission) error {
 
 	// Delete all existing permissions of the user
 	o := orm.NewOrm()
 	beego.Info("Attempting to delete user permissions row...")
-	_, err := o.QueryTable(TABLE_NAME).
-		Filter("UserId", userId).Delete()
-	if err != nil {
+	query := `
+	DELETE permission
+	FROM permission
+	JOIN machines ON machines.id = permission.machine_id
+	WHERE user_id = ? AND location_id = ?`
+	if _, err := o.Raw(query, userId, locationId).Exec(); err != nil {
 		return fmt.Errorf("Error deleting: %v", err)
 	}
 
 	// If there are no permissions, do nothing
 	if len(*permissions) <= 0 {
 		return nil
+	}
+
+	ids := make([]int64, 0, len(*permissions))
+	for _, p := range *permissions {
+		ids = append(ids, p.Id)
+	}
+
+	ms, err := machine.GetMulti(ids)
+	if err != nil {
+		return fmt.Errorf("Get machines multi: %v", err)
+	}
+
+	for _, m := range ms {
+		if m.LocationId != locationId {
+			return fmt.Errorf("Wrong location id: %v", err)
+		}
 	}
 
 	// Create new permissions

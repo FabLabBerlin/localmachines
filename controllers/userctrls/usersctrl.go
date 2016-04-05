@@ -39,7 +39,7 @@ func (this *Controller) GetRouteUid() (uid int64, authorized bool) {
 	}
 
 	if suid != ruid {
-		if !this.IsAdmin() {
+		if !this.IsAdminForUser(ruid) {
 			beego.Error("Not authorized")
 			return 0, false
 		}
@@ -50,6 +50,21 @@ func (this *Controller) GetRouteUid() (uid int64, authorized bool) {
 		return 0, false
 	}
 	return ruid, true
+}
+
+
+func (this *Controller) IsAdminForUser(uid int64) (authorized bool) {
+	uls, err := user_locations.GetAllForUser(uid)
+	if err != nil {
+		beego.Error("IsAdminForUser: user_locations.GetAllForUser:", err)
+		this.Abort("500")
+	}
+	for _, ul := range uls {
+		if this.IsAdminAt(ul.LocationId) {
+			return true
+		}
+	}
+	return false
 }
 
 type UsersController struct {
@@ -290,8 +305,8 @@ func (this *UsersController) Signup() {
 
 // @Title Post
 // @Description create user and associated tables
-// @Param	email			query 	string	true		"The new user's E-Mail"
-// @Param	location		query 	int64	false		"Make user member of location id"
+// @Param	email		query 	string	true	"The new user's E-Mail"
+// @Param	location	query 	int64	false	"Make user member of location id"
 // @Success 201 users.User
 // @Failure	401	Unauthorized
 // @Failure 500 Internal Server Error
@@ -299,12 +314,16 @@ func (this *UsersController) Signup() {
 func (this *UsersController) Post() {
 	email := this.GetString("email")
 
-	if !this.IsAdmin() {
-		beego.Error("Unauthorized attempt to delete user")
-		this.CustomAbort(401, "Unauthorized")
+	locId, err := this.GetInt64("location")
+	if err != nil {
+		beego.Error("No location specified")
+		this.Abort("400")
 	}
 
-	locId, _ := this.GetInt64("location")
+	if !this.IsAdminAt(locId) {
+		beego.Error("Unauthorized attempt to delete user")
+		this.Abort("401")
+	}
 
 	user := users.User{
 		Email:    email,
@@ -319,15 +338,13 @@ func (this *UsersController) Post() {
 		this.CustomAbort(500, "Internal Server Error")
 	} else {
 		user.Id = userId
-		if locId > 0 {
-			ul := &user_locations.UserLocation{
-				UserId:     userId,
-				LocationId: locId,
-				UserRole:   user_roles.MEMBER.String(),
-			}
-			if _, err := user_locations.Create(ul); err != nil {
-				beego.Error("Failed to create user location for new user:", err)
-			}
+		ul := &user_locations.UserLocation{
+			UserId:     userId,
+			LocationId: locId,
+			UserRole:   user_roles.MEMBER.String(),
+		}
+		if _, err := user_locations.Create(ul); err != nil {
+			beego.Error("Failed to create user location for new user:", err)
 		}
 		this.Data["json"] = user
 		this.ServeJSON()
@@ -368,7 +385,7 @@ type UserPutRequest struct {
 
 // @Title Put
 // @Description Update user with uid
-// @Param	uid		path 	int	true		"User ID"
+// @Param	uid		path 	int			true	"User ID"
 // @Param	body	body	models.User	true	"User model"
 // @Success	200	ok
 // @Failure	400	Variable message
@@ -396,7 +413,7 @@ func (this *UsersController) Put() {
 	}
 
 	if req.User.Id != sessUserId {
-		if !this.IsAdmin() {
+		if !this.IsAdminForUser(req.User.Id) {
 			beego.Error("Unauthorized attempt update user")
 			this.CustomAbort(401, "Not authorized")
 		}
@@ -413,7 +430,7 @@ func (this *UsersController) Put() {
 		if sessUserId == req.User.Id {
 			beego.Error("User can't change his own user role (attempted to change from", existingUser.UserRole, "to", req.User.UserRole)
 			this.CustomAbort(500, "Internal Server Error")
-		} else if !this.IsAdmin() {
+		} else if !this.IsAdminForUser(req.User.Id) {
 			beego.Error("User is not authorized to change UserRole")
 			this.CustomAbort(500, "Internal Server Error")
 		}
@@ -459,7 +476,11 @@ func (this *UsersController) GetUserMachines() {
 	if !authorized {
 		this.CustomAbort(401, "Wrong uid in url or not authorized")
 	}
-	locationId, _ := this.GetInt64("location")
+	locationId, err := this.GetInt64("location")
+	if err != nil {
+		beego.Error("location id not specified")
+		this.Abort("400")
+	}
 
 	// List all machines if the requested user is admin
 	allMachines, err := machine.GetAll()
@@ -470,7 +491,7 @@ func (this *UsersController) GetUserMachines() {
 
 	// Get the machines!
 	machines := make([]*machine.Machine, 0, len(allMachines))
-	if !this.IsAdmin(uid) {
+	if !this.IsStaffAt(locationId) {
 		permissions, err := user_permissions.Get(uid)
 		if err != nil {
 			beego.Error("Failed to get user machine permissions: ", err)

@@ -125,11 +125,6 @@ func (this *ActivationsController) Get() {
 // @Failure 500 Internal Server Error
 // @router /:rid [put]
 func (this *ActivationsController) Put() {
-	if !this.IsAdmin() {
-		beego.Error("Unauthorized attempt to update activation")
-		this.CustomAbort(401, "Unauthorized")
-	}
-
 	activation := &purchases.Activation{}
 
 	buf, err := ioutil.ReadAll(this.Ctx.Request.Body)
@@ -146,6 +141,16 @@ func (this *ActivationsController) Put() {
 	if err := dec.Decode(&activation.Purchase); err != nil {
 		beego.Error("Failed to decode json:", err)
 		this.CustomAbort(400, "Failed to update Activation")
+	}
+
+	m, err := machine.Get(activation.Purchase.MachineId)
+	if err != nil {
+		beego.Error("Failed to get machine:", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+	if !this.IsAdminAt(m.LocationId) {
+		beego.Error("Unauthorized attempt to update activation")
+		this.CustomAbort(401, "Unauthorized")
 	}
 
 	if err := activation.Update(); err != nil {
@@ -290,7 +295,7 @@ func (this *ActivationsController) Close() {
 	}
 	if err = machine.Off(); err != nil {
 		beego.Error("Failed to switch off machine")
-		if !this.IsAdmin() {
+		if !this.IsAdminAt(machine.LocationId) {
 			this.CustomAbort(500, "Internal Server Error")
 		}
 	}

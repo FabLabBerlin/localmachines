@@ -99,11 +99,22 @@ func (this *ReservationsController) Create() {
 // @Failure	400	Bad Request
 // @Failure	401	Unauthorized
 // @Failure 500 Internal Server Error
-// @router /:rid [put]
+// @router /:id [put]
 func (this *ReservationsController) Put() {
-	if !this.IsAdmin() {
+	id, err := this.GetInt64(":id")
+	if err != nil {
+		this.Abort("400")
+	}
+
+	existing, err := purchases.GetReservation(id)
+	if err != nil {
+		beego.Error("get reservation:", err)
+		this.Abort("500")
+	}
+
+	if !this.IsAdminAt(existing.LocationId()) {
 		beego.Error("Unauthorized attempt to update user")
-		this.CustomAbort(401, "Unauthorized")
+		this.Abort("401")
 	}
 
 	reservation := &purchases.Reservation{}
@@ -111,7 +122,7 @@ func (this *ReservationsController) Put() {
 	buf, err := ioutil.ReadAll(this.Ctx.Request.Body)
 	if err != nil {
 		beego.Error("Failed to read all:", err)
-		this.CustomAbort(400, "Failed to read all")
+		this.Abort("400")
 	}
 	beego.Info("buf:", string(buf))
 	defer this.Ctx.Request.Body.Close()
@@ -121,63 +132,19 @@ func (this *ReservationsController) Put() {
 	dec := json.NewDecoder(data)
 	if err := dec.Decode(reservation); err != nil {
 		beego.Error("Failed to decode json:", err)
-		this.CustomAbort(400, "Failed to update Reservation")
+		this.Abort("400")
+	}
+
+	if reservation.Id() != id || reservation.LocationId() != existing.LocationId() {
+		beego.Error("reservation id or location id changed")
+		this.Abort("403")
 	}
 
 	if err := reservation.Update(); err != nil {
 		beego.Error("Failed to update reservation:", err)
-		this.CustomAbort(500, "Failed to update Reservation")
+		this.Abort("500")
 	}
 
 	this.Data["json"] = reservation
-	this.ServeJSON()
-}
-
-// @Title Delete
-// @Description Delete reservation
-// @Param	rid	path	int	true	"Reservation ID"
-// @Success 200 string ok
-// @Failure	400	Bad Request
-// @Failure	401	Unauthorized
-// @Failure	500	Internal Server Error
-// @router /:rid [delete]
-func (this *ReservationsController) Delete() {
-
-	reservationId, err := this.GetInt64(":rid")
-	if err != nil {
-		beego.Error("Failed to get reservation ID:", err)
-		this.CustomAbort(400, "Failed to delete reservation")
-	}
-
-	// One is allowed to delete a reservation if he/she is the owner
-	// of the reservation or an admin.
-
-	if !this.IsAdmin() {
-
-		// Not an admin, check if owner
-		sessUserId, err := this.GetSessionUserId()
-		if err != nil {
-			beego.Error("Failed to get session user ID")
-			this.CustomAbort(500, "Internal Server Error")
-		}
-		var reservation *purchases.Reservation
-		reservation, err = purchases.GetReservation(reservationId)
-		if err != nil {
-			beego.Error("Failed to get reservation")
-			this.CustomAbort(500, "Internal Server Error")
-		}
-		if reservation.UserId() != sessUserId {
-			beego.Error("Not authorized")
-			this.CustomAbort(401, "Not authorized")
-		}
-	}
-
-	err = purchases.DeleteReservation(reservationId, this.IsAdmin())
-	if err != nil {
-		beego.Error("Failed to delete reservation:", err)
-		this.CustomAbort(500, "Failed to delete reservation")
-	}
-
-	this.Data["json"] = "ok"
 	this.ServeJSON()
 }

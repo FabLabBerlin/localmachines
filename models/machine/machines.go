@@ -90,6 +90,15 @@ func Get(id int64) (machine *Machine, err error) {
 	return
 }
 
+func GetMulti(ids []int64) (machines []*Machine, err error) {
+	o := orm.NewOrm()
+	m := Machine{}
+	_, err = o.QueryTable(m.TableName()).
+		Filter("id__in", ids).
+		All(&machines)
+	return
+}
+
 func GetAll() (machines []*Machine, err error) {
 	o := orm.NewOrm()
 	m := Machine{}

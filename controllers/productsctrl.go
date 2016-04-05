@@ -153,17 +153,37 @@ func (this *ProductsController) GetAll() {
 // @Failure	400	Bad Request
 // @Failure	401	Unauthorized
 // @Failure 500 Internal Server Error
-// @router /:rid [put]
+// @router /:id [put]
 func (this *ProductsController) Put() {
-	if !this.IsAdmin() {
+	id, err := this.GetInt64(":id")
+	if err != nil {
+		this.Abort("400")
+	}
+	existing, err := products.Get(id)
+	if err != nil {
+		beego.Error("Cannot get product:", err)
+		this.Abort("500")
+	}
+
+	if !this.IsAdminAt(existing.LocationId) {
 		beego.Error("Unauthorized attempt to update product")
 		this.CustomAbort(401, "Unauthorized")
+	}
+
+	assertSameIds := func(newId, newLocationId int64) {
+		if existing.Id != newId {
+			beego.Error("Id changed")
+			this.Abort("403")
+		}
+		if existing.LocationId != newLocationId {
+			beego.Error("Location Id changed")
+			this.Abort("403")
+		}
 	}
 
 	productType := this.GetString("type")
 
 	var response interface{}
-	var err error
 
 	switch productType {
 	case products.TYPE_CO_WORKING:
@@ -174,6 +194,8 @@ func (this *ProductsController) Put() {
 			beego.Error("Failed to decode json:", err)
 			this.CustomAbort(400, "Failed to update table")
 		}
+
+		assertSameIds(table.Product.Id, table.Product.LocationId)
 
 		if err = table.Update(); err == nil {
 			response = table
@@ -188,6 +210,8 @@ func (this *ProductsController) Put() {
 			this.CustomAbort(400, "Failed to update space")
 		}
 
+		assertSameIds(space.Product.Id, space.Product.LocationId)
+
 		if err = space.Update(); err == nil {
 			response = space
 		}
@@ -200,6 +224,8 @@ func (this *ProductsController) Put() {
 			beego.Error("Failed to decode json:", err)
 			this.CustomAbort(400, "Failed to update tutor")
 		}
+
+		assertSameIds(tutor.Product.Id, tutor.Product.LocationId)
 
 		if err = tutor.Update(); err == nil {
 			response = tutor
@@ -227,28 +253,26 @@ func (this *ProductsController) Put() {
 // @Failure 500 Internal Server Error
 // @router /:productId/archive [put]
 func (this *ProductsController) ArchiveProduct() {
-	if !this.IsAdmin() {
-		beego.Error("Unauthorized attempt to archvie product")
-		this.CustomAbort(401, "Unauthorized")
-	}
-
 	productId, err := this.GetInt64(":productId")
 	if err != nil {
 		beego.Error("Failed to get :productId variable")
-		this.CustomAbort(400, "Incorrect productId")
+		this.Abort("400")
 	}
 
-	var product *products.Product
-	product, err = products.Get(productId)
+	product, err := products.Get(productId)
 	if err != nil {
 		beego.Error("Failed to get product")
-		this.CustomAbort(500, "Failed to get product")
+		this.Abort("500")
 	}
 
-	err = product.Archive()
-	if err != nil {
+	if !this.IsAdminAt(product.LocationId) {
+		beego.Error("Unauthorized attempt to archvie product")
+		this.Abort("401")
+	}
+
+	if err = product.Archive(); err != nil {
 		beego.Error("Failed to archive product")
-		this.CustomAbort(500, "Failed to archive product")
+		this.Abort("500")
 	}
 
 	this.ServeJSON()

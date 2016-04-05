@@ -23,6 +23,10 @@ func (this *Reservation) UnmarshalJSON(data []byte) error {
 	return json.Unmarshal(data, &this.purchase)
 }
 
+func (this *Reservation) Id() int64 {
+	return this.purchase.Id
+}
+
 func (this *Reservation) LocationId() int64 {
 	return this.purchase.LocationId
 }

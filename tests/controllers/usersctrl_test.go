@@ -226,24 +226,24 @@ func TestUsersAPI(t *testing.T) {
 		Convey("Testing POST /users/", func() {
 
 			Convey("Try creating user without being logged in, should return 401", func() {
-				r, _ := http.NewRequest("POST", "/api/users/", empty)
+				r, _ := http.NewRequest("POST", "/api/users/?email=a@easylab.io&location=1", empty)
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
 
 				So(w.Code, ShouldEqual, 401)
 			})
 
-			Convey("Try creating user without parameters, should return 500", func() {
+			Convey("Try creating user without parameters, should return 400", func() {
 				r, _ := http.NewRequest("POST", "/api/users/", empty)
 				r.AddCookie(LoginAsAdmin())
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
 
-				So(w.Code, ShouldEqual, 500)
+				So(w.Code, ShouldEqual, 400)
 			})
 
 			Convey("Try creating user with email, should return 200", func() {
-				r, _ := http.NewRequest("POST", "/api/users/?email=a@easylab.io", empty)
+				r, _ := http.NewRequest("POST", "/api/users/?email=a@easylab.io&location=1", empty)
 				r.AddCookie(LoginAsAdmin())
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
@@ -252,7 +252,7 @@ func TestUsersAPI(t *testing.T) {
 			})
 
 			Convey("Try creating user as a regular user, should return 401", func() {
-				r, _ := http.NewRequest("POST", "/api/users/?email=a@easylab.io", empty)
+				r, _ := http.NewRequest("POST", "/api/users/?email=a@easylab.io&location=1", empty)
 				r.AddCookie(LoginAsRegular())
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
@@ -285,8 +285,12 @@ func TestUsersAPI(t *testing.T) {
 					Username: "A",
 					Email:    "a@easylab.io",
 				}
-				mid, _ := users.CreateUser(u)
-				r, _ := http.NewRequest("GET", "/api/users/"+strconv.FormatInt(mid, 10), nil)
+				uid, _ := users.CreateUser(u)
+				user_locations.Create(&user_locations.UserLocation{
+					UserId: uid,
+					LocationId: 1,
+				})
+				r, _ := http.NewRequest("GET", "/api/users/"+strconv.FormatInt(uid, 10), nil)
 				r.AddCookie(LoginAsAdmin())
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)
@@ -358,23 +362,16 @@ func TestUsersAPI(t *testing.T) {
 				So(w.Code, ShouldEqual, 200)
 			})
 
-			Convey("Try to modify a user that doesn't exists as an admin, should return 500", func() {
-				var jsonStr = []byte(`{"User": {"Id": 0, "Email": "raaaaaaaaaaaaaaaaadom@easylab.io"}}`)
-				r, _ := http.NewRequest("PUT", "/api/users/0", bytes.NewBuffer(jsonStr))
-				r.AddCookie(LoginAsAdmin())
-				r.Header.Set("Content-Type", "application/json")
-				w := httptest.NewRecorder()
-				beego.BeeApp.Handlers.ServeHTTP(w, r)
-
-				So(w.Code, ShouldEqual, 500)
-			})
-
 			Convey("Try to modify a user as an admin, should return 200", func() {
 				u := users.User{
 					Username: "lel",
 					Email:    "lel@easylab.io",
 				}
 				uid, _ := users.CreateUser(&u)
+				user_locations.Create(&user_locations.UserLocation{
+					UserId:     uid,
+					LocationId: 1,
+				})
 				var jsonStr = []byte(`{"User": {"Id": ` + strconv.FormatInt(uid, 10) + `, "Email": "raaaaaaaaaaaaaaaaadom@easylab.io"}}`)
 				r, _ := http.NewRequest("PUT", "/api/users/"+strconv.FormatInt(uid, 10), bytes.NewBuffer(jsonStr))
 				r.AddCookie(LoginAsAdmin())
@@ -392,7 +389,7 @@ func TestUsersAPI(t *testing.T) {
 			userCookie := LoginAsRegular()
 
 			// Create user
-			r, _ := http.NewRequest("POST", "/api/users/?email=a@easylab.io", nil)
+			r, _ := http.NewRequest("POST", "/api/users/?email=a@easylab.io&location=1", nil)
 			r.AddCookie(adminCookie)
 			w := httptest.NewRecorder()
 			beego.BeeApp.Handlers.ServeHTTP(w, r)
