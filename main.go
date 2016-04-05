@@ -7,6 +7,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/routers"
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/context"
 	_ "github.com/astaxie/beego/session/redis"
 	"github.com/astaxie/beego/toolbox"
 	_ "github.com/go-sql-driver/mysql"
@@ -33,8 +34,20 @@ func main() {
 	// Config default files directory
 	beego.SetStaticPath("/files", "files")
 
+	// Routing https
+	beego.InsertFilter("/", beego.BeforeRouter, RedirectHttp) // for http://mysite
 	beego.Run()
 
+}
+
+var RedirectHttp = func(ctx *context.Context) {
+	HttpsEnabled, err := beego.AppConfig.Bool("EnableHttpTLS")
+	if HttpsEnabled && err == nil {
+		if !ctx.Input.IsSecure() {
+			url := "https://" + ctx.Input.Domain() + ":" + beego.AppConfig.String("HttpsPort") + ctx.Input.URI()
+			ctx.Redirect(302, url)
+		}
+	}
 }
 
 func configClients() {
@@ -53,12 +66,14 @@ func configClients() {
 		beego.SetStaticPath("/admin/ng-modules", "clients/admin/dev/ng-modules")
 		beego.SetStaticPath("/machines/assets", "clients/machines/dev")
 		beego.SetStaticPath("/signup", "clients/signup/dev")
+		beego.SetStaticPath("/user", "clients/user/dev")
 		beego.SetStaticPath("/landing", "../localmachines-web")
 	} else { // prod and any other runmode
 		beego.SetStaticPath("/admin/assets", "clients/admin/prod/assets")
 		beego.SetStaticPath("/admin/ng-modules", "clients/admin/prod/ng-modules")
 		beego.SetStaticPath("/machines/assets", "clients/machines/prod")
 		beego.SetStaticPath("/signup", "clients/signup/prod")
+		beego.SetStaticPath("/user", "clients/user/prod")
 		beego.SetStaticPath("/landing", "../localmachines-web")
 	}
 }

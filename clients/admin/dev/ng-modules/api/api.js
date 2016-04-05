@@ -15,7 +15,7 @@ mod.service('api',
       url: '/api/machines',
       params: {
         ac: new Date().getTime(),
-        location: $cookies.location
+        location: $cookies.locationId
       }
     })
     .success(function(machines) {
@@ -43,7 +43,7 @@ mod.service('api',
       method: 'GET',
       url: '/api/products',
       params: {
-        location: $cookies.location,
+        location: $cookies.locationId,
         ac: new Date().getTime(),
         type: 'space'
       }
@@ -113,7 +113,7 @@ mod.service('api',
       method: 'GET',
       url: '/api/products',
       params: {
-        location: $cookies.location,
+        location: $cookies.locationId,
         ac: new Date().getTime(),
         type: 'tutor'
       }
@@ -181,7 +181,7 @@ mod.service('api',
       url: '/api/users',
       params: {
         ac: new Date().getTime(),
-        location: $cookies.location
+        location: $cookies.locationId
       }
     })
     .success(function(data) {
@@ -209,7 +209,7 @@ mod.service('api',
       method: 'GET',
       url: '/api/purchases',
       params: {
-        location: $cookies.location,
+        location: $cookies.locationId,
         ac: new Date().getTime(),
         type: 'tutor'
       }

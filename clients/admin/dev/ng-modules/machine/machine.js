@@ -183,7 +183,7 @@ app.controller('MachineCtrl',
         method: 'POST',
         url: '/api/machines/' + $scope.machine.Id + '/apply_config',
         data: {
-          location: $cookies.location
+          location: $cookies.locationId
         }
       })
       .success(function(){
