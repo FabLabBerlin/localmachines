@@ -142,7 +142,7 @@ var MachinePage = React.createClass({
    */
   update() {
     const locationId = reactor.evaluateToJS(getters.getLocationId);
-    MachineActions.pollDashboard(locationId);
+    MachineActions.pollDashboard(this.context.router, locationId);
   }
 });
 

@@ -68,28 +68,42 @@ var MachineActions = {
   /*
    * To continue to refresh the view each seconds
    */
-  pollDashboard(locationId) {
+  pollDashboard(router, locationId) {
     const uid = reactor.evaluateToJS(getters.getUid);
-    ApiActions.getCall('/api/users/' + uid + '/dashboard?location=' + locationId, function(data) {
-      var userIds = [];
 
-      reactor.dispatch(actionTypes.SET_ACTIVATIONS, {
-        activations: data.Activations
-      });
-      if (data.Activations) {
-        userIds = _.pluck(data.Activations, 'UserId');
-      }
-      reactor.dispatch(actionTypes.SET_MACHINES, {
-        machines: data.Machines
-      });
-      if (data.Tutorings) {
-        reactor.dispatch(actionTypes.SET_TUTORINGS, data.Tutorings.Data);
-        userIds = _.union(userIds, _.pluck(data.Tutorings.Data, 'UserId'));
-        userIds = _.filter(userIds, (userId) => {
-          return userId;
+    $.ajax({
+      url: '/api/users/' + uid + '/dashboard?location=' + locationId,
+      dataType: 'json',
+      type: 'GET',
+      cache: false,
+      success: function(data) {
+        var userIds = [];
+
+        reactor.dispatch(actionTypes.SET_ACTIVATIONS, {
+          activations: data.Activations
         });
+        if (data.Activations) {
+          userIds = _.pluck(data.Activations, 'UserId');
+        }
+        reactor.dispatch(actionTypes.SET_MACHINES, {
+          machines: data.Machines
+        });
+        if (data.Tutorings) {
+          reactor.dispatch(actionTypes.SET_TUTORINGS, data.Tutorings.Data);
+          userIds = _.union(userIds, _.pluck(data.Tutorings.Data, 'UserId'));
+          userIds = _.filter(userIds, (userId) => {
+            return userId;
+          });
+        }
+        fetchUserNames(userIds);
+      },
+      error: function(xhr, status) {
+        console.log('xhr:', xhr);
+        if (xhr.status === 401 && xhr.responseText === 'Not logged in') {
+          toastr.error('Session not active anymore. Logging out.');
+          LoginActions.logout(router);
+        }
       }
-      fetchUserNames(userIds);
     });
   },
 

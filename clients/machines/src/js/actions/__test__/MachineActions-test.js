@@ -62,7 +62,7 @@ describe('MachineActions', function() {
         UserId: 11
       };
       reactor.dispatch(actionTypes.SUCCESS_LOGIN, { data });
-      MachineActions.pollDashboard(1);
+      MachineActions.pollDashboard(null, 1);
       expect($.ajax).toBeCalledWith({
         url: '/api/users/11/dashboard?location=1',
         dataType: 'json',
