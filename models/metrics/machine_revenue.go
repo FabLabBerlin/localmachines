@@ -50,8 +50,8 @@ func NewTrotecStats() (t *Trotec, err error) {
 	}
 	endTime := time.Now()
 	interval := lib.Interval{
-		MonthFrom: int(time.January),
-		YearFrom:  2016,
+		MonthFrom: int(time.November),
+		YearFrom:  2015,
 		MonthTo:   int(endTime.Month()),
 		YearTo:    endTime.Year(),
 	}
@@ -87,15 +87,15 @@ func NewTrotecStats() (t *Trotec, err error) {
 				month := purchase.TimeStart.Month().String()
 				if purchase.MachineId == TROTEC_ID {
 				 	t.TrotecMinutesByMonth[month] = t.TrotecMinutesByMonth[month] + purchase.Quantity
-					if priceTotalDisc > 0.1 {
-						t.TrotecPaygMinutesByMonth[month] = t.TrotecPaygMinutesByMonth[month] + purchase.Quantity
-						t.TrotecPaygEurByMonth[month] = t.TrotecPaygEurByMonth[month] + priceTotalDisc
-					} else {
+					if hasTrotecRebate(purchase.Memberships) {
 						t.TrotecPlusMembershipMinutesByMonth[month] = t.TrotecPlusMembershipMinutesByMonth[month] + purchase.Quantity
 						t.TrotecPlusMembershipUndiscountedEurByMonth[month] = t.TrotecPlusMembershipUndiscountedEurByMonth[month] + priceUndiscounted
+					} else {
+						t.TrotecPaygMinutesByMonth[month] = t.TrotecPaygMinutesByMonth[month] + purchase.Quantity
+						t.TrotecPaygEurByMonth[month] = t.TrotecPaygEurByMonth[month] + priceTotalDisc
 					}
 				}
-				if priceTotalDisc < 0.1 && hasTrotecRebate(purchase.Memberships) {
+				if hasTrotecRebate(purchase.Memberships) {
 					t.AllPlusMembershipMinutesByMonth[month] = t.AllPlusMembershipMinutesByMonth[month] + purchase.Quantity
 					t.AllPlusMembershipUndiscountedEurByMonth[month] = t.AllPlusMembershipUndiscountedEurByMonth[month] + priceUndiscounted
 				}
@@ -117,9 +117,9 @@ func NewTrotecStats() (t *Trotec, err error) {
 		return nil, fmt.Errorf("Failed to get user memberships: %v", err)
 	}
 
-	for i := 1; i < int(time.Now().Month()); i++ {
-		month := time.Month(i)
-		midMonth := time.Date(2016, month, 15, 5, 5, 5, 5, time.UTC)
+	midMonth := time.Date(2015, time.November, 15, 5, 5, 5, 5, time.UTC)
+	for ; midMonth.Month() != time.April; midMonth = midMonth.AddDate(0, 1, 0) {
+		month := midMonth.Month()
 		for _, um := range userMemberships {
 			if um.Interval().Contains(midMonth) && membershipIdHasTrotecRebate(um.MembershipId) {
 				m := membershipsById[um.MembershipId]
