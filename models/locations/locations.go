@@ -121,6 +121,6 @@ func SetLocalIp(locId int64, ip string) (err error) {
 	WHERE id = ?
 	`
 	o := orm.NewOrm()
-	_, err = o.Raw(query, ip).Exec()
+	_, err = o.Raw(query, ip, locId).Exec()
 	return
 }
