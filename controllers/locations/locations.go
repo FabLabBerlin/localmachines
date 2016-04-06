@@ -129,9 +129,9 @@ func (c *Controller) PostLocalIp() {
 		c.Abort("500")
 	}
 	beego.Info("the new local ip would be ", ip, "location=", locId)
-	/*if err := locations.SetLocalIp(locId, ip); err != nil {
+	if err := locations.SetLocalIp(locId, ip); err != nil {
 		beego.Error("set local ip:", err)
 		c.Abort("500")
-	}*/
+	}
 	c.ServeJSON()
 }
