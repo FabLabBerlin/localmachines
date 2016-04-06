@@ -282,7 +282,7 @@ func init() {
 	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:ReservationsController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:ReservationsController"],
 		beego.ControllerComments{
 			"Get",
-			`/:rid`,
+			`/:rid([0-9]+)`,
 			[]string{"get"},
 			nil})
 
@@ -298,6 +298,13 @@ func init() {
 			"Put",
 			`/:id`,
 			[]string{"put"},
+			nil})
+
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:ReservationsController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:ReservationsController"],
+		beego.ControllerComments{
+			"ICalendar",
+			`/icalendar`,
+			[]string{"get"},
 			nil})
 
 	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:SettingsController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:SettingsController"],

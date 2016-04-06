@@ -4,6 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
+	"github.com/FabLabBerlin/localmachines/models/machine"
+	"github.com/FabLabBerlin/localmachines/models/user_locations"
+	"github.com/FabLabBerlin/localmachines/models/user_roles"
+	"github.com/FabLabBerlin/localmachines/lib/icalendar"
 	"github.com/astaxie/beego"
 	"io/ioutil"
 )
@@ -39,7 +43,7 @@ func (this *ReservationsController) GetAll() {
 // @Success 200 {object}
 // @Failure	403	Failed to get reservation
 // @Failure	401	Not authorized
-// @router /:rid [get]
+// @router /:rid([0-9]+) [get]
 func (this *ReservationsController) Get() {
 	rid, err := this.GetInt64(":rid")
 	if err != nil {
@@ -147,4 +151,58 @@ func (this *ReservationsController) Put() {
 
 	this.Data["json"] = reservation
 	this.ServeJSON()
+}
+
+// @Title ICalendar
+// @Description Get iCalendar export
+// @Param	rid		path 	int	true		"Reservation ID"
+// @Success 200		{object}
+// @Failure	403		Failed to get reservation
+// @Failure	401		Not authorized
+// @router /icalendar [get]
+func (this *ReservationsController) ICalendar() {
+	locationId, err := this.GetInt64("location")
+	if err != nil {
+		this.Abort("400")
+	}
+
+	rs, err := purchases.GetAllReservationsAt(locationId)
+	if err != nil {
+		beego.Error("get all reservations:", err)
+		this.Abort("500")
+	}
+
+	ms, err := machine.GetAllAt(locationId)
+	if err != nil {
+		beego.Error("get all users:", err)
+		this.Abort("500")
+	}
+	msById := make(map[int64]*machine.Machine)
+	for _, m := range ms {
+		msById[m.Id] = m
+	}
+
+	uls, err := user_locations.GetAllForLocation(locationId)
+	if err != nil {
+		beego.Error("get all user locations:", err)
+		this.Abort("500")
+	}
+	rolesByUserId := make(map[int64]user_roles.Role)
+	for _, ul := range uls {
+		rolesByUserId[ul.UserId] = ul.GetRole()
+	}
+
+	events := make([]icalendar.Event, 0, len(rs))
+	for _, r := range rs {
+		e := icalendar.Event{
+			Reservation: r,
+			Machine: msById[r.Purchase.MachineId],
+			UserRole: rolesByUserId[r.Purchase.UserId],
+		}
+		events = append(events, e)
+	}
+
+	this.Ctx.Output.ContentType("ics")
+	this.Ctx.WriteString(icalendar.ToIcal(events))
+	this.Finish()
 }
