@@ -62,6 +62,9 @@ func NewTrotecStats() (t *Trotec, err error) {
 	for _, inv := range monthlyEarning.Invoices {
 		for _, purchase := range inv.Purchases.Data {
 			if purchase.Type == purchases.TYPE_ACTIVATION {
+				if hasFreeMembership(purchase.Memberships) {
+					continue
+				}
 				isStaff := false
 			 	switch purchase.User.GetRole().String() {
 			 	case user_roles.STAFF.String(), user_roles.ADMIN.String(), user_roles.SUPER_ADMIN.String():
@@ -140,12 +143,19 @@ func hasTrotecRebate(ms []*models.Membership) bool {
 	return false
 }
 
-
-
 func membershipIdHasTrotecRebate(id int64) bool {
 	switch id {
 	case PLUS_M, PLUS_M_B2B, PLUS_M_STUDENT, PLUS_M_PAO:
 		return true
+	}
+	return false
+}
+
+func hasFreeMembership(ms []*models.Membership) bool {
+	for _, m := range ms {
+		if m.MonthlyPrice < 1 {
+			return true
+		}
 	}
 	return false
 }
