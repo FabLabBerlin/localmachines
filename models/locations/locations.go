@@ -6,6 +6,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/lib/email"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"net"
 	"strings"
 )
 
@@ -107,5 +108,19 @@ func Get(id int64) (l *Location, err error) {
 func GetAll() (ls []*Location, err error) {
 	o := orm.NewOrm()
 	_, err = o.QueryTable(TABLE_NAME).All(&ls)
+	return
+}
+
+func SetLocalIp(locId int64, ip string) (err error) {
+	if parsed := net.ParseIP(ip); parsed == nil {
+		return fmt.Errorf("malformed ip: '%v'", ip)
+	}
+	query := `
+	UPDATE locations
+	SET local_ip = ?
+	WHERE id = ?
+	`
+	o := orm.NewOrm()
+	_, err = o.Raw(query, ip).Exec()
 	return
 }

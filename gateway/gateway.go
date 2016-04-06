@@ -8,6 +8,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/gateway/global"
 	"github.com/FabLabBerlin/localmachines/gateway/netswitches"
 	"gopkg.in/gcfg.v1"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/http/cookiejar"
@@ -39,6 +40,9 @@ func Login(client *http.Client, user, key string) (err error) {
 		return fmt.Errorf("POST login: %v", err)
 	}
 	defer resp.Body.Close()
+	if code := resp.StatusCode; code > 299 {
+		return fmt.Errorf("unexpected status code: %v", code)
+	}
 	loginResp := LoginResp{}
 	dec := json.NewDecoder(resp.Body)
 	if err := dec.Decode(&loginResp); err != nil {
@@ -75,11 +79,32 @@ func Init(retries int) (err error) {
 			err = fmt.Errorf("netswitches load: %v", err)
 			continue
 		}
+		if err = RegisterIP(client); err != nil {
+			err = fmt.Errorf("register ip: %v", err)
+			continue
+		}
 		if err == nil {
 			break
 		}
 	}
 
+	return
+}
+
+func RegisterIP(client *http.Client) (err error) {
+	locId := strconv.FormatInt(global.Cfg.Main.LocationId, 10)
+	addr := global.Cfg.API.Url + "/locations/" + locId + "/local_ip?location=" + locId
+	resp, err := client.PostForm(addr, url.Values{})
+	if err != nil {
+		return fmt.Errorf("post: %v", err)
+	}
+	if resp.StatusCode >= 300 {
+		return fmt.Errorf("unexpected status code %v", resp.StatusCode)
+	}
+	defer resp.Body.Close()
+	if _, err := ioutil.ReadAll(resp.Body); err != nil {
+		return fmt.Errorf("read body: %v", err)
+	}
 	return
 }
 
@@ -126,6 +151,19 @@ func main() {
 
 	// The gateway shall run forever..
 	for {
-		select {}
+		select {
+		case <-time.After(time.Minute):
+			user := global.Cfg.API.Id
+			key := global.Cfg.API.Key
+
+			client := &http.Client{}
+			if err := Login(client, user, key); err != nil {
+				log.Printf("register ip loop: %v", err)
+				continue
+			}
+			if err := RegisterIP(client); err != nil {
+				log.Printf("register ip: %v", err)
+			}
+		}
 	}
 }

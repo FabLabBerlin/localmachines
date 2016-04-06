@@ -110,3 +110,28 @@ func (c *Controller) Get() {
 	c.Data["json"] = l
 	c.ServeJSON()
 }
+
+// @Title PostLocalIp
+// @Description Post local ip address
+// @Param	lid	path 	int	true	"Location"
+// @Success 200 {object}
+// @Failure	401	Not authorized
+// @Failure	500	Internal Server Error
+// @router /:lid/local_ip [post]
+func (c *Controller) PostLocalIp() {
+	locId, isLocAdmin := c.GetLocIdAdmin()
+	if !isLocAdmin {
+		c.Abort("401")
+	}
+	ip := c.Ctx.Request.Header.Get("X-Forwarded-For")
+	if ip == "" {
+		beego.Error("X-Forwarded-For empty")
+		c.Abort("500")
+	}
+	beego.Info("the new local ip would be ", ip, "location=", locId)
+	/*if err := locations.SetLocalIp(locId, ip); err != nil {
+		beego.Error("set local ip:", err)
+		c.Abort("500")
+	}*/
+	c.ServeJSON()
+}
