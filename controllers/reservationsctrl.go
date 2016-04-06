@@ -155,7 +155,8 @@ func (this *ReservationsController) Put() {
 
 // @Title ICalendar
 // @Description Get iCalendar export
-// @Param	rid		path 	int	true		"Reservation ID"
+// @Param	location	query	int	true	"Location ID"
+// @Param	machine		query	int	false	"Machine ID"
 // @Success 200		{object}
 // @Failure	403		Failed to get reservation
 // @Failure	401		Not authorized
@@ -164,6 +165,11 @@ func (this *ReservationsController) ICalendar() {
 	locationId, err := this.GetInt64("location")
 	if err != nil {
 		this.Abort("400")
+	}
+
+	machineId, err := this.GetInt64("machine")
+	if err != nil {
+		machineId = 0
 	}
 
 	rs, err := purchases.GetAllReservationsAt(locationId)
@@ -199,7 +205,9 @@ func (this *ReservationsController) ICalendar() {
 			Machine: msById[r.Purchase.MachineId],
 			UserRole: rolesByUserId[r.Purchase.UserId],
 		}
-		events = append(events, e)
+		if machineId == 0 || r.Purchase.MachineId == machineId {
+			events = append(events, e)
+		}
 	}
 
 	this.Ctx.Output.ContentType("ics")
