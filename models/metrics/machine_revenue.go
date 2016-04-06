@@ -28,6 +28,8 @@ type Trotec struct {
 	TrotecPlusMembershipMinutesByMonth map[string]float64
 	AllPlusMembershipMinutesByMonth map[string]float64
 
+	TrotecReservationsEurByMonth map[string]float64
+
 	TrotecPaygEurByMonth map[string]float64
 	TrotecPlusMembershipUndiscountedEurByMonth map[string]float64
 	AllPlusMembershipUndiscountedEurByMonth map[string]float64
@@ -41,6 +43,8 @@ func NewTrotecStats() (t *Trotec, err error) {
 		TrotecPaygMinutesByMonth: make(map[string]float64),
 		TrotecPlusMembershipMinutesByMonth: make(map[string]float64),
 		AllPlusMembershipMinutesByMonth: make(map[string]float64),
+
+		TrotecReservationsEurByMonth: make(map[string]float64),
 
 		TrotecPaygEurByMonth: make(map[string]float64),
 		TrotecPlusMembershipUndiscountedEurByMonth: make(map[string]float64),
@@ -61,33 +65,33 @@ func NewTrotecStats() (t *Trotec, err error) {
 	}
 	for _, inv := range monthlyEarning.Invoices {
 		for _, purchase := range inv.Purchases.Data {
+			if hasFreeMembership(purchase.Memberships) {
+				continue
+			}
+			isStaff := false
+		 	switch purchase.User.GetRole().String() {
+		 	case user_roles.STAFF.String(), user_roles.ADMIN.String(), user_roles.SUPER_ADMIN.String():
+		 		isStaff = true
+		 	}
+		 	uls, err := user_locations.GetAllForUser(purchase.UserId)
+		 	for _, ul := range uls {
+		 		if ul.LocationId == TROTEC_LOCATION_ID {
+			 		switch ul.GetRole().String() {
+			 		case user_roles.STAFF.String(), user_roles.ADMIN.String(), user_roles.SUPER_ADMIN.String():
+			 			isStaff = true
+			 		}
+			 	}
+		 	}
+		 	if isStaff {
+		 		continue
+		 	}
+		 	priceTotalDisc, err := purchases.PriceTotalDisc(purchase)
+			if err != nil {
+				return nil, fmt.Errorf("PriceTotalDisc: %v", err)
+			}
+			priceUndiscounted := purchases.PriceTotalExclDisc(purchase)
+			month := purchase.TimeStart.Month().String()
 			if purchase.Type == purchases.TYPE_ACTIVATION {
-				if hasFreeMembership(purchase.Memberships) {
-					continue
-				}
-				isStaff := false
-			 	switch purchase.User.GetRole().String() {
-			 	case user_roles.STAFF.String(), user_roles.ADMIN.String(), user_roles.SUPER_ADMIN.String():
-			 		isStaff = true
-			 	}
-			 	uls, err := user_locations.GetAllForUser(purchase.UserId)
-			 	for _, ul := range uls {
-			 		if ul.LocationId == TROTEC_LOCATION_ID {
-				 		switch ul.GetRole().String() {
-				 		case user_roles.STAFF.String(), user_roles.ADMIN.String(), user_roles.SUPER_ADMIN.String():
-				 			isStaff = true
-				 		}
-				 	}
-			 	}
-			 	if isStaff {
-			 		continue
-			 	}
-			 	priceTotalDisc, err := purchases.PriceTotalDisc(purchase)
-				if err != nil {
-					return nil, fmt.Errorf("PriceTotalDisc: %v", err)
-				}
-				priceUndiscounted := purchases.PriceTotalExclDisc(purchase)
-				month := purchase.TimeStart.Month().String()
 				if purchase.MachineId == TROTEC_ID {
 				 	t.TrotecMinutesByMonth[month] = t.TrotecMinutesByMonth[month] + purchase.Quantity
 					if hasTrotecRebate(purchase.Memberships) {
@@ -102,6 +106,10 @@ func NewTrotecStats() (t *Trotec, err error) {
 					t.AllPlusMembershipMinutesByMonth[month] = t.AllPlusMembershipMinutesByMonth[month] + purchase.Quantity
 					t.AllPlusMembershipUndiscountedEurByMonth[month] = t.AllPlusMembershipUndiscountedEurByMonth[month] + priceUndiscounted
 				}
+			 } else if purchase.Type == purchases.TYPE_RESERVATION {
+			 	if purchase.MachineId == TROTEC_ID {
+			 		t.TrotecReservationsEurByMonth[month] = t.TrotecReservationsEurByMonth[month] + priceUndiscounted
+			 	}
 			 }
 		}
 	}
