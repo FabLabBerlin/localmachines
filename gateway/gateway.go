@@ -108,6 +108,25 @@ func RegisterIP(client *http.Client) (err error) {
 	return
 }
 
+func RegisterIPLoop() {
+	for {
+		select {
+		case <-time.After(time.Minute):
+			user := global.Cfg.API.Id
+			key := global.Cfg.API.Key
+
+			client := &http.Client{}
+			if err := Login(client, user, key); err != nil {
+				log.Printf("register ip loop: %v", err)
+				continue
+			}
+			if err := RegisterIP(client); err != nil {
+				log.Printf("register ip: %v", err)
+			}
+		}
+	}
+}
+
 func Reinit() (err error) {
 	if err = Init(2); err != nil {
 		return fmt.Errorf("Init: %v", err)
@@ -146,24 +165,13 @@ func main() {
 		}
 	}()
 
+	go RegisterIPLoop()
+
 	xmpp := endpoints.NewXmpp(netSwitches, Reinit)
 	xmpp.Run()
 
 	// The gateway shall run forever..
 	for {
-		select {
-		case <-time.After(time.Minute):
-			user := global.Cfg.API.Id
-			key := global.Cfg.API.Key
-
-			client := &http.Client{}
-			if err := Login(client, user, key); err != nil {
-				log.Printf("register ip loop: %v", err)
-				continue
-			}
-			if err := RegisterIP(client); err != nil {
-				log.Printf("register ip: %v", err)
-			}
-		}
+		select{}
 	}
 }
