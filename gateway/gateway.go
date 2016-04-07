@@ -79,9 +79,7 @@ func Init(retries int) (err error) {
 			err = fmt.Errorf("netswitches load: %v", err)
 			continue
 		}
-		if errRegIp := RegisterIP(client); errRegIp != nil {
-			log.Printf("Init: register ip: %v", errRegIp)
-		}
+
 		if err == nil {
 			break
 		}
@@ -90,38 +88,57 @@ func Init(retries int) (err error) {
 	return
 }
 
-func RegisterIP(client *http.Client) (err error) {
+func RegisterIP(client *http.Client) (statusCode int, err error) {
 	locId := strconv.FormatInt(global.Cfg.Main.LocationId, 10)
 	addr := global.Cfg.API.Url + "/locations/" + locId + "/local_ip?location=" + locId
 	resp, err := client.PostForm(addr, url.Values{})
 	if err != nil {
-		return fmt.Errorf("post: %v", err)
+		return 0, fmt.Errorf("post: %v", err)
 	}
 	if resp.StatusCode >= 300 {
-		return fmt.Errorf("unexpected status code %v", resp.StatusCode)
+		return resp.StatusCode, fmt.Errorf("unexpected status code %v", resp.StatusCode)
 	}
 	defer resp.Body.Close()
 	if _, err := ioutil.ReadAll(resp.Body); err != nil {
-		return fmt.Errorf("read body: %v", err)
+		return 0, fmt.Errorf("read body: %v", err)
 	}
-	return
+	return resp.StatusCode, err
 }
 
 func RegisterIPLoop() {
+	var client *http.Client
+
+	login := func() {
+		var err error
+
+		user := global.Cfg.API.Id
+		key := global.Cfg.API.Key
+
+		client = &http.Client{}
+		if client.Jar, err = cookiejar.New(nil); err != nil {
+			err = fmt.Errorf("cookie jar: %v", err)
+			return
+		}
+		if err := Login(client, user, key); err != nil {
+			log.Printf("register ip loop: %v", err)
+			return
+		}
+	}
+
+	login()
+
 	for {
+		if statusCode, err := RegisterIP(client); err != nil {
+			log.Printf("register ip: %v", err)
+			<-time.After(time.Minute)
+			if statusCode == 401 {
+				login()
+			}
+		} else {
+			log.Printf("Successfully posted IP!")
+		}
 		select {
 		case <-time.After(time.Minute):
-			user := global.Cfg.API.Id
-			key := global.Cfg.API.Key
-
-			client := &http.Client{}
-			if err := Login(client, user, key); err != nil {
-				log.Printf("register ip loop: %v", err)
-				continue
-			}
-			if err := RegisterIP(client); err != nil {
-				log.Printf("register ip: %v", err)
-			}
 		}
 	}
 }
