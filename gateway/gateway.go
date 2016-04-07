@@ -79,9 +79,8 @@ func Init(retries int) (err error) {
 			err = fmt.Errorf("netswitches load: %v", err)
 			continue
 		}
-		if err = RegisterIP(client); err != nil {
-			err = fmt.Errorf("register ip: %v", err)
-			continue
+		if errRegIp := RegisterIP(client); errRegIp != nil {
+			log.Printf("Init: register ip: %v", errRegIp)
 		}
 		if err == nil {
 			break
