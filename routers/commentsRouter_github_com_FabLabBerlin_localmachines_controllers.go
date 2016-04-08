@@ -226,7 +226,7 @@ func init() {
 	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:PurchasesController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:PurchasesController"],
 		beego.ControllerComments{
 			"Put",
-			`/:rid`,
+			`/:id`,
 			[]string{"put"},
 			nil})
 

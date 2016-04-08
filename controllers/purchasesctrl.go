@@ -184,7 +184,7 @@ func (this *PurchasesController) Get() {
 // @Failure	400	Bad Request
 // @Failure	401	Unauthorized
 // @Failure 500 Internal Server Error
-// @router /:rid [put]
+// @router /:id [put]
 func (this *PurchasesController) Put() {
 	id, err := this.GetInt64(":id")
 	if err != nil {
