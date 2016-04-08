@@ -3,6 +3,7 @@ package machine
 import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib/xmpp"
+	"github.com/FabLabBerlin/localmachines/lib/xmpp/commands"
 	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/astaxie/beego"
 	"github.com/satori/go.uuid"
@@ -65,7 +66,7 @@ const (
 
 func xmppReinit(location *locations.Location) (err error) {
 	if xmppServerConfigured {
-		if err = sendXmppCommand(location, "reinit", 0); err != nil {
+		if _, err = sendXmppCommand(location, "reinit", 0); err != nil {
 			return fmt.Errorf("send xmpp cmd: %v", err)
 		}
 	}
@@ -105,7 +106,8 @@ func (this *Machine) turnXmpp(onOrOff ON_OR_OFF) (err error) {
 	if err != nil {
 		return fmt.Errorf("get location %v: %v", this.LocationId, err)
 	}
-	return sendXmppCommand(location, string(onOrOff), this.Id)
+	_, err = sendXmppCommand(location, string(onOrOff), this.Id)
+	return
 }
 
 func (this *Machine) NetswitchApplyConfig() (err error) {
@@ -113,10 +115,11 @@ func (this *Machine) NetswitchApplyConfig() (err error) {
 	if err != nil {
 		return fmt.Errorf("get location %v: %v", this.LocationId, err)
 	}
-	return sendXmppCommand(location, "apply_config", this.Id)
+	_, err = sendXmppCommand(location, commands.APPLY_CONFIG, this.Id)
+	return
 }
 
-func sendXmppCommand(location *locations.Location, command string, machineId int64) (err error) {
+func sendXmppCommand(location *locations.Location, command string, machineId int64) (ipAddress string, err error) {
 	trackingId := uuid.NewV4().String()
 	mu.Lock()
 	responses[trackingId] = make(chan xmpp.Message, 1)
@@ -128,16 +131,18 @@ func sendXmppCommand(location *locations.Location, command string, machineId int
 			Command:    command,
 			MachineId:  machineId,
 			TrackingId: trackingId,
+			LocationId: location.Id,
 		},
 	})
 	if err != nil {
-		return fmt.Errorf("send: %v", err)
+		return "", fmt.Errorf("send: %v", err)
 	}
 	select {
 	case resp := <-respCh:
 		if resp.Data.Error {
 			err = fmt.Errorf("some error occurred")
 		} else {
+			ipAddress = resp.Data.IpAddress
 			err = nil
 		}
 		break
@@ -150,4 +155,34 @@ func sendXmppCommand(location *locations.Location, command string, machineId int
 	mu.Unlock()
 
 	return
+}
+
+func FetchLocalIpsTask() error {
+	beego.Info("Running FetchLocalIpsTask")
+
+	locs, err := locations.GetAll()
+	if err != nil {
+		return fmt.Errorf("get locations: %v", err)
+	}
+
+	for _, l := range locs {
+		if l.XmppId == "" {
+			continue
+		}
+		ipAddress, err := sendXmppCommand(l, commands.FETCH_LOCAL_IP, 0)
+		if err != nil {
+			beego.Error("FetchLocalIpsTask: location=", l.Id, ":", err)
+		}
+		if ipAddress != "" {
+			l.LocalIp = ipAddress
+			if err := locations.SetLocalIp(l.Id, ipAddress); err != nil {
+				beego.Error("FetchLocalIpsTask: location=", l.Id, ": could not save local ip: ", err)
+			}
+		} else {
+			beego.Error("FetchLocalIpsTask: location=", l.Id, ": empty ip")
+		}
+	}
+
+	// We return always nil.  If things fail, we log them.
+	return nil
 }

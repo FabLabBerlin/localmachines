@@ -34,11 +34,4 @@ func init() {
 			[]string{"get"},
 			nil})
 
-	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/locations:Controller"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/locations:Controller"],
-		beego.ControllerComments{
-			"PostLocalIp",
-			`/:lid/local_ip`,
-			[]string{"post"},
-			nil})
-
 }

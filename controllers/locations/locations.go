@@ -7,7 +7,10 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"github.com/astaxie/beego"
+	"strings"
 )
+
+var runMode = beego.AppConfig.String("RunMode")
 
 type Controller struct {
 	controllers.Controller
@@ -121,34 +124,15 @@ func (c *Controller) Get() {
 func (c *Controller) MyIp() {
 	ip := c.Ctx.Request.Header.Get("X-Forwarded-For")
 	if ip == "" {
-		beego.Error("X-Forwarded-For empty")
-		c.Abort("500")
+		if runMode == "dev" {
+			ip = c.Ctx.Request.RemoteAddr
+			i := strings.LastIndex(ip, ":")
+			ip = ip[:i]
+		} else {
+			beego.Error("X-Forwarded-For empty")
+			c.Abort("500")
+		}
 	}
 	c.Ctx.WriteString(ip)
 	c.Finish()
-}
-
-// @Title PostLocalIp
-// @Description Post local ip address
-// @Param	lid	path 	int	true	"Location"
-// @Success 200 {object}
-// @Failure	401	Not authorized
-// @Failure	500	Internal Server Error
-// @router /:lid/local_ip [post]
-func (c *Controller) PostLocalIp() {
-	locId, isLocAdmin := c.GetLocIdAdmin()
-	if !isLocAdmin {
-		c.Abort("401")
-	}
-	ip := c.Ctx.Request.Header.Get("X-Forwarded-For")
-	if ip == "" {
-		beego.Error("X-Forwarded-For empty")
-		c.Abort("500")
-	}
-	beego.Info("the new local ip would be ", ip, "location=", locId)
-	if err := locations.SetLocalIp(locId, ip); err != nil {
-		beego.Error("set local ip:", err)
-		c.Abort("500")
-	}
-	c.ServeJSON()
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/database/connect"
 	_ "github.com/FabLabBerlin/localmachines/docs"
 	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/routers"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
@@ -113,7 +114,12 @@ func configDatabase() {
 func setupTasks() {
 	fmt.Println("Starting tasks")
 	extUsrMemberships := toolbox.NewTask("Extend User Memberships",
-		"0/10 * * * * *",
+		"0 0/10 * * * *",
 		models.AutoExtendUserMemberships)
+	fetchLocalIpsTask := toolbox.NewTask("Fetch Local IPs",
+		"0 0/2 * * * *",
+		machine.FetchLocalIpsTask)
+
 	toolbox.AddTask("Extend User Memberships", extUsrMemberships)
+	toolbox.AddTask("Fetch Local IPs", fetchLocalIpsTask)
 }
