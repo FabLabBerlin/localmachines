@@ -23,7 +23,14 @@ func init() {
 	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/locations:Controller"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/locations:Controller"],
 		beego.ControllerComments{
 			"Get",
-			`/:lid`,
+			`/:lid([0-9]+)`,
+			[]string{"get"},
+			nil})
+
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/locations:Controller"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/locations:Controller"],
+		beego.ControllerComments{
+			"MyIp",
+			`/my_ip`,
 			[]string{"get"},
 			nil})
 

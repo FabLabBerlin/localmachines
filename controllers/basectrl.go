@@ -52,7 +52,7 @@ func (this *Controller) Prepare() {
 		return
 	}
 	switch path {
-	case "/api/users/current", "/api/users/forgot_password", "/api/users/forgot_password/phone", "/api/users/forgot_password/reset", "/api/machine_types", "/api/machines/search", "/api/locations", "/api/metrics/realtime", "/api/reservations/icalendar", "/api/settings/terms_url":
+	case "/api/users/current", "/api/users/forgot_password", "/api/users/forgot_password/phone", "/api/users/forgot_password/reset", "/api/machine_types", "/api/machines/search", "/api/locations", "/api/locations/my_ip", "/api/metrics/realtime", "/api/reservations/icalendar", "/api/settings/terms_url":
 	default:
 		sessUser := this.GetSession(SESSION_USER_ID)
 		if sessUser == nil {

@@ -95,7 +95,7 @@ func (c *Controller) GetAll() {
 // @Success 200 {object}
 // @Failure	401	Not authorized
 // @Failure	500	Internal Server Error
-// @router /:lid [get]
+// @router /:lid([0-9]+) [get]
 func (c *Controller) Get() {
 	locId, isLocAdmin := c.GetLocIdAdmin()
 
@@ -109,6 +109,23 @@ func (c *Controller) Get() {
 	}
 	c.Data["json"] = l
 	c.ServeJSON()
+}
+
+// @Title MyIp
+// @Description Returns client's IP address as string
+// @Param	lid	path 	int	true	"Location"
+// @Success 200 {object}
+// @Failure	401	Not authorized
+// @Failure	500	Internal Server Error
+// @router /my_ip [get]
+func (c *Controller) MyIp() {
+	ip := c.Ctx.Request.Header.Get("X-Forwarded-For")
+	if ip == "" {
+		beego.Error("X-Forwarded-For empty")
+		c.Abort("500")
+	}
+	c.Ctx.WriteString(ip)
+	c.Finish()
 }
 
 // @Title PostLocalIp
