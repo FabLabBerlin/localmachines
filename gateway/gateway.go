@@ -78,6 +78,7 @@ func Init(retries int) (err error) {
 			err = fmt.Errorf("netswitches load: %v", err)
 			continue
 		}
+
 		if err == nil {
 			break
 		}
