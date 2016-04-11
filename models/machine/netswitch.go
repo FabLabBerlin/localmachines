@@ -81,17 +81,26 @@ func (this *Machine) Off() error {
 	return this.turn(OFF)
 }
 
+func (this *Machine) NetswitchConfigured() bool {
+	return this.NetswitchCustomConfigured() || this.NetswitchMfiConfigured()
+}
+
+func (this *Machine) NetswitchCustomConfigured() bool {
+	return this.NetswitchType == NETSWITCH_TYPE_CUSTOM &&
+		len(strings.TrimSpace(this.NetswitchUrlOn)) > 0 &&
+		len(strings.TrimSpace(this.NetswitchUrlOff)) > 0
+}
+
+func (this *Machine) NetswitchMfiConfigured() bool {
+	return this.NetswitchType == NETSWITCH_TYPE_MFI &&
+		len(this.NetswitchHost) > 0
+}
+
 func (this *Machine) turn(onOrOff ON_OR_OFF) (err error) {
 	beego.Info("Attempt to turn NetSwitch ", onOrOff, ", machine ID", this.Id,
 		", NetswitchHost: ", this.NetswitchHost)
 
-	mfiConfigured := this.NetswitchType == NETSWITCH_TYPE_MFI &&
-		len(this.NetswitchHost) > 0
-
-	customConfigured := this.NetswitchType == NETSWITCH_TYPE_CUSTOM &&
-		len(strings.TrimSpace(this.NetswitchUrlOn)) > 0 &&
-		len(strings.TrimSpace(this.NetswitchUrlOff)) > 0
-	if mfiConfigured || customConfigured {
+	if this.NetswitchConfigured() {
 		if xmppClient != nil {
 			return this.turnXmpp(onOrOff)
 		} else {

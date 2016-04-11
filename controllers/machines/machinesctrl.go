@@ -157,18 +157,21 @@ func (this *Controller) Update() {
 	}
 
 	dec := json.NewDecoder(this.Ctx.Request.Body)
-	req := machine.Machine{}
-	if err := dec.Decode(&req); err != nil {
+	updated := machine.Machine{}
+	if err := dec.Decode(&updated); err != nil {
 		beego.Error("Failed to decode json:", err)
 		this.Abort("400")
 	}
 
-	if mid != req.Id || existing.LocationId != req.LocationId {
+	if mid != updated.Id || existing.LocationId != updated.LocationId {
 		beego.Error("mid and model (location) ID does not match:", err)
 		this.Abort("403")
 	}
 
-	if err = req.Update(true); err != nil {
+	updateGateway := existing.NetswitchConfigured() ||
+		updated.NetswitchConfigured()
+
+	if err = updated.Update(updateGateway); err != nil {
 		beego.Error("Failed updating machine:", err)
 		if err == machine.ErrDimensions || err == machine.ErrWorkspaceDimensions {
 			this.CustomAbort(400, err.Error())
