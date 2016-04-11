@@ -77,14 +77,17 @@ app.run(['$rootScope', '$location', '$http', '$cookies', '$q',
         var location = results[0].data;
         var user = results[1].data;
 
-        $rootScope.mainMenu.visible = true;
-        $rootScope.mainMenu.userFullName = user.FirstName + ' ' + user.LastName;
-        $rootScope.mainMenu.location = location;
-
-        if (newPath) {
-          $location.path(newPath);
+        if (!user || user == 'null') {
+          $location.path('/login');
         } else {
-          $location.path('/machines');
+          $rootScope.mainMenu.visible = true;
+          $rootScope.mainMenu.userFullName = user.FirstName + ' ' + user.LastName;
+          $rootScope.mainMenu.location = location;
+          if (newPath) {
+            $location.path(newPath);
+          } else {
+            $location.path('/machines');
+          }
         }
       })
       .catch(function(err) {
