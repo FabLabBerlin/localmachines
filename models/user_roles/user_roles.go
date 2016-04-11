@@ -13,6 +13,7 @@ const (
 	ADMIN          = Role("admin")
 	STAFF          = Role("staff")
 	MEMBER         = Role("member")
+	API            = Role("api")
 	NOT_AFFILIATED = Role("notaffiliated")
 )
 

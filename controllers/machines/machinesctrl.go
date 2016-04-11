@@ -26,7 +26,7 @@ type Controller struct {
 // @Failure	500	Failed to get all machines
 // @router / [get]
 func (this *Controller) GetAll() {
-	locId, authorized := this.GetLocIdAdmin()
+	locId, authorized := this.GetLocIdApi()
 	if !authorized {
 		this.CustomAbort(401, "Not authorized")
 	}
