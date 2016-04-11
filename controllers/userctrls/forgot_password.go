@@ -67,7 +67,7 @@ func (c *ForgotPassword) ForgotPassword() {
 		message = FORGOT_PASSWORD_STANDARD_TEXT
 		message += "\n\n"
 		message += "Please follow this link to proceed:\n\n"
-		message += "https://lab.fablab.berlin/machines/#/forgot_password/recover?key=" + key
+		message += "https://easylab.io/machines/#/forgot_password/recover?key=" + key
 		message += "\n"
 	} else {
 		beego.Error("forgot password:", err)
