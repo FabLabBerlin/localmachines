@@ -1,8 +1,10 @@
 var _ = require('lodash');
 var $ = require('jquery');
 var getters = require('../../getters');
-var MachineList = require('./MachineList');
+var LocationGetters = require('../../modules/Location/getters');
+var LocationActions = require('../../actions/LocationActions');
 var LoginStore = require('../../stores/LoginStore');
+var MachineList = require('./MachineList');
 var MachineStore = require('../../stores/MachineStore');
 var MachineActions = require('../../actions/MachineActions');
 var NfcLogoutMixin = require('../Login/NfcLogoutMixin');
@@ -39,8 +41,8 @@ var MachinePage = React.createClass({
       user: getters.getUser,
       machines: getters.getMachines,
       activations: getters.getActivations,
-      locations: getters.getLocations,
-      location: getters.getLocation
+      locations: LocationGetters.getLocations,
+      location: LocationGetters.getLocation
     };
   },
 
@@ -49,12 +51,13 @@ var MachinePage = React.createClass({
    * before the component is mounted
    */
   componentWillMount() {
-    const locationId = reactor.evaluateToJS(getters.getLocationId);
+    const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
     const uid = reactor.evaluateToJS(getters.getUid);
     UserActions.fetchUser(uid);
     MachineActions.apiGetUserMachines(locationId, uid);
     ReservationsActions.load();
     ReservationRulesActions.load(locationId);
+    LocationActions.loadUserLocations(uid);
   },
 
   /*
@@ -141,7 +144,7 @@ var MachinePage = React.createClass({
    * Need polling for activation status and maintenance status
    */
   update() {
-    const locationId = reactor.evaluateToJS(getters.getLocationId);
+    const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
     MachineActions.pollDashboard(this.context.router, locationId);
   }
 });

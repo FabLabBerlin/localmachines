@@ -2,6 +2,7 @@ jest.dontMock('../../actionTypes');
 jest.dontMock('../ApiActions');
 jest.dontMock('../../getters');
 jest.dontMock('../LocationActions');
+jest.dontMock('../../modules/Location/getters');
 jest.dontMock('../MachineActions');
 jest.dontMock('nuclear-js');
 jest.dontMock('../../reactor');

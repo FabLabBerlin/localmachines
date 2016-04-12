@@ -1,6 +1,7 @@
 var _ = require('lodash');
 var DatePicker = require('./DatePicker');
 var getters = require('../../getters');
+var LocationGetters = require('../../modules/Location/getters');
 var MachineActions = require('../../actions/MachineActions');
 var moment = require('moment');
 var React = require('react');
@@ -192,7 +193,7 @@ var NewReservation = React.createClass({
   },
 
   componentWillMount() {
-    const locationId = reactor.evaluateToJS(getters.getLocation).Id;
+    const locationId = reactor.evaluateToJS(LocationGetters.getLocation).Id;
     const uid = reactor.evaluateToJS(getters.getUid);
     UserActions.fetchUser(uid);
     MachineActions.apiGetUserMachines(locationId, uid);

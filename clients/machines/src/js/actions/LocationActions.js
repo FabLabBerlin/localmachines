@@ -18,6 +18,21 @@ var LocationActions = {
     });
   },
 
+  loadUserLocations(userId) {
+    var url = '/api/users/' + userId + '/locations';
+    $.ajax({
+      url: url,
+      dataType: 'json',
+      success(userLocations) {
+        reactor.dispatch(actionTypes.SET_USER_LOCATIONS, userLocations);
+      },
+      error(xhr, status, err) {
+        toastr.error('Error.  Please try again later.');
+        console.error(url, status, err);
+      }
+    });
+  },
+
   loadTermsUrl(locationId) {
     $.ajax({
       url: '/api/settings/terms_url?location=' + locationId,
@@ -31,8 +46,9 @@ var LocationActions = {
   },
 
   addLocation({locationId, userId, router}) {
+    var url = '/api/users/' + userId + '/locations/' + locationId;
     $.ajax({
-      url: '/api/users/' + userId + '/locations/' + locationId,
+      url: url,
       dataType: 'json',
       type: 'POST',
       success(data) {
@@ -40,7 +56,7 @@ var LocationActions = {
       },
       error(xhr, status, err) {
         toastr.error('Error.  Please try again later.');
-        console.error('/users/login', status, err);
+        console.error(url, status, err);
       }
     });
   },

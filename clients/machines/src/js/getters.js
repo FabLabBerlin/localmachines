@@ -260,41 +260,6 @@ const getActivations = [
   }
 ];
 
-const getLocations = [
-  ['locationStore'],
-  (locationStore) => {
-    return locationStore.get('locations');
-  }
-];
-
-const getLocation = [
-  getLocations,
-  ['locationStore'],
-  (locations, locationStore) => {
-    var location;
-    _.each(locations, (l) => {
-      if (l.Id === locationStore.get('locationId')) {
-        location = l;
-      }
-    });
-    return location;
-  }
-];
-
-const getLocationId = [
-  ['locationStore'],
-  (locationStore) => {
-    return locationStore.get('locationId');
-  }
-];
-
-const getLocationTermsUrl = [
-  ['locationStore'],
-  (locationStore) => {
-    return locationStore.get('termsUrl');
-  }
-];
-
 const getMachinesById = [
   ['machineStore'],
   (machineStore) => {
@@ -696,7 +661,7 @@ const getTutorings = [
 export default {
   getIsLogged, getUid, getFirstTry, getLoginSuccess, getLastActivity,
   getUser, getIsStaff, getIsAdmin,
-  getActivations, getLocation, getLocationId, getLocations, getLocationTermsUrl, getMachines, getMachinesById, getMachineUsers, getIsLoading, getBill, getBillMonths, getMonthlyBills, getMemberships, getMembershipsByMonth,
+  getActivations, getMachines, getMachinesById, getMachineUsers, getIsLoading, getBill, getBillMonths, getMonthlyBills, getMemberships, getMembershipsByMonth,
   getFeedbackSubject, getFeedbackSubjectDropdown, getFeedbackSubjectOtherText, getFeedbackMessage,
   getNewReservation, getNewReservationPrice, getNewReservationTimes, getNewReservationFrom, getNewReservationTo, getReservations, getReservationsByDay, getActiveReservationsByMachineId, getSlotAvailabilities48h,
   getScrollUpEnabled, getScrollDownEnabled, getScrollPosition,

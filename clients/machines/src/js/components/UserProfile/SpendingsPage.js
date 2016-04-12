@@ -1,5 +1,6 @@
 var BillTable = require('./BillTable');
 var getters = require('../../getters');
+var LocationGetters = require('../../modules/Location/getters');
 var LoginActions = require('../../actions/LoginActions');
 var MachineActions = require('../../actions/MachineActions');
 var Membership = require('./Membership');
@@ -44,7 +45,7 @@ var SpendingsPage = React.createClass({
 
   componentDidMount() {
     this.nfcOnDidMount();
-    const locationId = reactor.evaluateToJS(getters.getLocation).Id;
+    const locationId = reactor.evaluateToJS(LocationGetters.getLocation).Id;
     const uid = reactor.evaluateToJS(getters.getUid);
     MachineActions.apiGetUserMachines(locationId, uid);
     UserActions.fetchUser(uid);

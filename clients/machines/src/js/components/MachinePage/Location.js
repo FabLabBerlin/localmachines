@@ -1,7 +1,8 @@
 var _ = require('lodash');
 var getters = require('../../getters');
-var MachineActions = require('../../actions/MachineActions');
 var LocationActions = require('../../actions/LocationActions');
+var LocationGetters = require('../../modules/Location/getters');
+var MachineActions = require('../../actions/MachineActions');
 var React = require('react');
 var reactor = require('../../reactor');
 
@@ -12,7 +13,7 @@ var Location = React.createClass({
 
   getDataBindings() {
     return {
-      locations: getters.getLocations
+      locations: LocationGetters.getLocations
     };
   },
 

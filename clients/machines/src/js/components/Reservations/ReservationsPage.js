@@ -2,6 +2,7 @@ var _ = require('lodash');
 var $ = require('jquery');
 var getters = require('../../getters');
 var LoaderLocal = require('../LoaderLocal');
+var LocationGetters = require('../../modules/Location/getters');
 var MachineActions = require('../../actions/MachineActions');
 var moment = require('moment');
 var Navigation = require('react-router').Navigation;
@@ -95,7 +96,7 @@ var ReservationsTable = React.createClass({
   mixins: [ reactor.ReactMixin ],
 
   componentWillMount() {
-    const locationId = reactor.evaluateToJS(getters.getLocation).Id;
+    const locationId = reactor.evaluateToJS(LocationGetters.getLocation).Id;
     const uid = reactor.evaluateToJS(getters.getUid);
     MachineActions.apiGetUserMachines(locationId, uid);
     ReservationsActions.load();

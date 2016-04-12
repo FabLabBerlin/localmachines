@@ -17,6 +17,7 @@ var LocationStore = new Nuclear.Store({
     this.on(actionTypes.SET_LOCATIONS, setLocations);
     this.on(actionTypes.SET_LOCATION_ID, setLocationId);
     this.on(actionTypes.SET_LOCATION_TERMS_URL, setLocationTermsUrl);
+    this.on(actionTypes.SET_USER_LOCATIONS, setUserLocations);
   }
 });
 
@@ -30,6 +31,10 @@ function setLocationId(state, { id }) {
 
 function setLocationTermsUrl(state, termsUrl) {
   return state.set('termsUrl', termsUrl);
+}
+
+function setUserLocations(state, userLocations) {
+  return state.set('userLocations', toImmutable(userLocations));
 }
 
 export default LocationStore;

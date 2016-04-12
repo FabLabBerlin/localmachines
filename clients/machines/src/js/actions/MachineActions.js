@@ -4,6 +4,7 @@ var actionTypes = require('../actionTypes');
 var ApiActions = require('./ApiActions');
 var getters = require('../getters');
 var GlobalActions = require('./GlobalActions');
+var LocationGetters = require('../modules/Location/getters');
 var LoginActions = require('../actions/LoginActions');
 var MachineStore = require('../stores/MachineStore');
 var reactor = require('../reactor');
@@ -16,7 +17,7 @@ var MachineActions = {
     var dataToSend = {
       mid: mid
     };
-    var locationId = reactor.evaluateToJS(getters.getLocationId);
+    var locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
     GlobalActions.showGlobalLoader();
     $.ajax({
       url: '/api/activations/start?location=' + locationId,

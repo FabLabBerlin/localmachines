@@ -1,6 +1,7 @@
 var _ = require('lodash');
 var getters = require('../../getters');
 var LoaderLocal = require('../LoaderLocal');
+var LocationGetters = require('../../modules/Location/getters');
 var Machine = require('./Machine/Machine');
 var React = require('react');
 var reactor = require('../../reactor');
@@ -12,7 +13,7 @@ var MachineList = React.createClass({
 
   getDataBindings() {
     return {
-      location: getters.getLocation,
+      location: LocationGetters.getLocation,
       machines: getters.getMachines
     };
   },

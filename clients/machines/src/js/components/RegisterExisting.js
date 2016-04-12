@@ -2,6 +2,7 @@ var $ = require('jquery');
 var getters = require('../getters');
 var LoaderLocal = require('./LoaderLocal');
 var LocationActions = require('../actions/LocationActions');
+var LocationGetters = require('../modules/Location/getters');
 var LoginActions = require('../actions/LoginActions');
 var {Navigation} = require('react-router');
 var React = require('react');
@@ -18,15 +19,15 @@ var RegisterExisting = React.createClass({
 
   getDataBindings() {
     return {
-      location: getters.getLocation,
-      locationTermsUrl: getters.getLocationTermsUrl,
+      location: LocationGetters.getLocation,
+      locationTermsUrl: LocationGetters.getLocationTermsUrl,
       userId: getters.getUid
     };
   },
 
   componentWillMount() {
     LocationActions.loadLocations();
-    var locationId = reactor.evaluateToJS(getters.getLocationId);
+    var locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
     LocationActions.loadTermsUrl(locationId);
   },
 

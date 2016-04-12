@@ -10,9 +10,12 @@ export default keyMirror({
 
   MACHINE_STORE_CLEAR_STATE: null,
   SET_ACTIVATIONS: null,
+  
   SET_LOCATION_ID: null,
   SET_LOCATIONS: null,
   SET_LOCATION_TERMS_URL: null,
+  SET_USER_LOCATIONS: null,
+
   SET_USER: null,
   SET_USER_PROPERTY: null,
   SET_MACHINES: null,

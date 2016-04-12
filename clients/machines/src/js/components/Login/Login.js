@@ -1,7 +1,7 @@
 var $ = require('jquery');
 
 var getters = require('../../getters');
-
+var LocationGetters = require('../../modules/Location/getters');
 var LoginStore = require('../../stores/LoginStore');
 var LocationStore = require('../../stores/LocationStore');
 
@@ -30,8 +30,8 @@ var Login = React.createClass({
 
   getDataBindings() {
     return {
-      location: getters.getLocation,
-      locations: getters.getLocations
+      location: LocationGetters.getLocation,
+      locations: LocationGetters.getLocations
     };
   },
 
