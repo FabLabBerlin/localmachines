@@ -36,6 +36,48 @@ const getLocationTermsUrl = [
   }
 ];
 
+const getUserLocations = [
+  ['locationStore'],
+  (locationStore) => {
+    return locationStore.get('userLocations');
+  }
+];
+
+const getUserLocation = [
+  getLocationId,
+  getUserLocations,
+  ['locationStore'],
+  (locationId, userLocations, locationStore) => {
+    if (userLocations) {
+      var userLocation = userLocations.find((ul) => {
+        return ul.get('LocationId') === locationId;
+      });
+      return userLocation;
+    }
+  }
+];
+
+const getIsStaff = [
+  getUserLocation,
+  (userLocation) => {
+    if (userLocation) {
+      var role = userLocation.get('UserRole');
+      return role === 'staff' || role === 'admin' || role === 'superadmin';
+    }
+  }
+];
+
+const getIsAdmin = [
+  getUserLocation,
+  (userLocation) => {
+    if (userLocation) {
+      var role = userLocation.get('user').get('UserRole');
+      return role === 'admin' || role === 'superadmin';
+    }
+  }
+];
+
 export default {
-  getLocation, getLocationId, getLocations, getLocationTermsUrl
+  getLocation, getLocationId, getLocations, getLocationTermsUrl,
+  getIsStaff, getIsAdmin
 };

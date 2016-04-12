@@ -1,5 +1,6 @@
 var _ = require('lodash');
 var getters = require('../../getters');
+var LocationGetters = require('../../modules/Location/getters');
 var moment = require('moment');
 var { Month } = require('./helpers');
 var React = require('react');
@@ -63,7 +64,7 @@ var MonthView = React.createClass({
 
   getDataBindings() {
     return {
-      isAdmin: getters.getIsAdmin,
+      isAdmin: LocationGetters.getIsAdmin,
       user: getters.getUser
     };
   },

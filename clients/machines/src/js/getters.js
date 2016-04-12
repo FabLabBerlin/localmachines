@@ -66,22 +66,6 @@ const getUser = [
   }
 ];
 
-const getIsStaff = [
-  ['userStore'],
-  (userStore) => {
-    var role = userStore.get('user').get('UserRole');
-    return role === 'staff' || role === 'admin' || role === 'superadmin';
-  }
-];
-
-const getIsAdmin = [
-  ['userStore'],
-  (userStore) => {
-    var role = userStore.get('user').get('UserRole');
-    return role === 'admin' || role === 'superadmin';
-  }
-];
-
 /*
  * Spendings (Page) related getters
  */
@@ -660,7 +644,7 @@ const getTutorings = [
 
 export default {
   getIsLogged, getUid, getFirstTry, getLoginSuccess, getLastActivity,
-  getUser, getIsStaff, getIsAdmin,
+  getUser,
   getActivations, getMachines, getMachinesById, getMachineUsers, getIsLoading, getBill, getBillMonths, getMonthlyBills, getMemberships, getMembershipsByMonth,
   getFeedbackSubject, getFeedbackSubjectDropdown, getFeedbackSubjectOtherText, getFeedbackMessage,
   getNewReservation, getNewReservationPrice, getNewReservationTimes, getNewReservationFrom, getNewReservationTo, getReservations, getReservationsByDay, getActiveReservationsByMachineId, getSlotAvailabilities48h,

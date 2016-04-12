@@ -4,6 +4,7 @@ var AvailabilityDisplay = require('../../Reservations/AvailabilityDisplay');
 var FeedbackDialogs = require('../../Feedback/FeedbackDialogs');
 var getters = require('../../../getters');
 var React = require('react');
+var LocationGetters = require('../../../modules/Location/getters');
 var LoginActions = require('../../../actions/LoginActions');
 var MachineActions = require('../../../actions/MachineActions');
 var OccupiedMachine = require('./Occupied');
@@ -32,7 +33,7 @@ var MachineChooser = React.createClass({
 
   getDataBindings() {
     return {
-      isStaff: getters.getIsStaff,
+      isStaff: LocationGetters.getIsStaff,
       machines: getters.getMachines,
       reservationsByMachineId: getters.getActiveReservationsByMachineId
     };

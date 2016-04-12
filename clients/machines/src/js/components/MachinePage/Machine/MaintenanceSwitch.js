@@ -1,5 +1,6 @@
 var $ = require('jquery');
 var getters = require('../../../getters');
+var LocationGetters = require('../../../modules/Location/getters');
 var MachineActions = require('../../../actions/MachineActions');
 var React = require('react');
 var reactor = require('../../../reactor');
@@ -20,7 +21,7 @@ var MaintenanceSwitch = React.createClass({
     return {
       machinesById: getters.getMachinesById,
       user: getters.getUser,
-      isStaff: getters.getIsStaff
+      isStaff: LocationGetters.getIsStaff
     };
   },
 
