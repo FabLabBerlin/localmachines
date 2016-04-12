@@ -7,6 +7,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/users"
+	"github.com/FabLabBerlin/localmachines/models/settings"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"math/rand"
@@ -74,25 +75,6 @@ func (this *MonthlyEarning) TableName() string {
 	return "monthly_earnings"
 }
 
-type Invoice struct {
-	User      users.User
-	Purchases purchases.Purchases
-}
-
-func (inv *Invoice) byProductNameAndPricePerUnit() map[string]map[float64][]*purchases.Purchase {
-	byProductNameAndPricePerUnit := make(map[string]map[float64][]*purchases.Purchase)
-	for _, p := range inv.Purchases.Data {
-		if _, ok := byProductNameAndPricePerUnit[p.ProductName()]; !ok {
-			byProductNameAndPricePerUnit[p.ProductName()] = make(map[float64][]*purchases.Purchase)
-		}
-		if _, ok := byProductNameAndPricePerUnit[p.ProductName()][p.PricePerUnit]; !ok {
-			byProductNameAndPricePerUnit[p.ProductName()][p.PricePerUnit] = make([]*purchases.Purchase, 0, 20)
-		}
-		byProductNameAndPricePerUnit[p.ProductName()][p.PricePerUnit] = append(byProductNameAndPricePerUnit[p.ProductName()][p.PricePerUnit], p)
-	}
-	return byProductNameAndPricePerUnit
-}
-
 // exists returns whether the given file or directory exists or not
 func exists(path string) (bool, error) {
 	_, err := os.Stat(path)
@@ -115,8 +97,20 @@ func New(locationId int64, interval lib.Interval) (me *MonthlyEarning, err error
 		YearTo:     interval.YearTo,
 	}
 
+	locSettings, err := settings.GetAllAt(locationId)
+	if err != nil {
+		return nil, fmt.Errorf("get settings: %v", err)
+	}
+	var vatPercent float64
+	if vat := locSettings.GetFloat(locationId, settings.VAT); vat != nil {
+		vatPercent = *vat
+	} else {
+		vatPercent = 19.0
+	}
+	beego.Info("vatPercent=", vatPercent)
+
 	// Create invoices from purchases
-	if me.Invoices, err = me.NewInvoices(); err != nil {
+	if me.Invoices, err = me.NewInvoices(vatPercent); err != nil {
 		err = fmt.Errorf("Failed to get user summaries: %v", err)
 		return
 	}
@@ -284,7 +278,7 @@ func (this *MonthlyEarning) getPurchases(locationId int64, interval lib.Interval
 	return
 }
 
-func (this *MonthlyEarning) NewInvoices() (invs []*Invoice, err error) {
+func (this *MonthlyEarning) NewInvoices(vatPercent float64) (invs []*Invoice, err error) {
 	// Enhance activations with user and membership data
 	ps, err := this.getPurchases(this.LocationId, this.Interval())
 	if err != nil {
@@ -308,6 +302,7 @@ func (this *MonthlyEarning) NewInvoices() (invs []*Invoice, err error) {
 	for _, user := range users {
 		inv := Invoice{
 			User: *user,
+			VatPercent: vatPercent,
 		}
 		invs = append(invs, &inv)
 	}

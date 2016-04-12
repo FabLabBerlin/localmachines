@@ -106,7 +106,7 @@ func CreateFastbillDraft(me *MonthlyEarning, inv *Invoice) (fbDraft *fastbill.In
 				Quantity:    1,
 				UnitPrice:   m.MonthlyPrice,
 				IsGross:     IS_GROSS_BRUTTO,
-				VatPercent:  19,
+				VatPercent:  inv.VatPercent,
 			}
 			fbDraft.Items = append(fbDraft.Items, item)
 		}
@@ -149,7 +149,7 @@ func CreateFastbillDraft(me *MonthlyEarning, inv *Invoice) (fbDraft *fastbill.In
 				Quantity:    quantity,
 				UnitPrice:   unitPrice,
 				IsGross:     IS_GROSS_BRUTTO,
-				VatPercent:  19,
+				VatPercent:  inv.VatPercent,
 			}
 
 			if item.UnitPrice > 0 {

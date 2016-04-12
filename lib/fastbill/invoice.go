@@ -136,7 +136,7 @@ type Item struct {
 	Description   string  `json:"DESCRIPTION,"`
 	Quantity      float64 `json:"QUANTITY,string,omitempty"`
 	UnitPrice     float64 `json:"UNIT_PRICE,string"`
-	VatPercent    int64   `json:"VAT_PERCENT,string"`
+	VatPercent    float64 `json:"VAT_PERCENT,string"`
 	IsGross       string  `json:"IS_GROSS,omitempty"`
 	SortOrder     string  `json:"SORT_ORDER,"`
 }

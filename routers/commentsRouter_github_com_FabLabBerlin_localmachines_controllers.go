@@ -328,6 +328,13 @@ func init() {
 			[]string{"get"},
 			nil})
 
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:SettingsController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:SettingsController"],
+		beego.ControllerComments{
+			"GetVatPercent",
+			`/vat_percent`,
+			[]string{"get"},
+			nil})
+
 	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:TutoringsController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:TutoringsController"],
 		beego.ControllerComments{
 			"Start",

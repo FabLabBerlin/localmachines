@@ -4,6 +4,7 @@ var LoaderLocal = require('../LoaderLocal');
 var moment = require('moment');
 var React = require('react');
 var reactor = require('../../reactor');
+var SettingsGetters = require('../../modules/Settings/getters');
 var {formatDate, subtractVAT, toEuro, toCents} = require('./helpers');
 
 
@@ -33,7 +34,8 @@ var BillTables = React.createClass({
   getDataBindings() {
     return {
       bill: getters.getBill,
-      monthlyBills: getters.getMonthlyBills
+      monthlyBills: getters.getMonthlyBills,
+      vatPercent: SettingsGetters.getVatPercent
     };
   },
 
@@ -43,7 +45,7 @@ var BillTables = React.createClass({
       var i = 0;
       var tables = [];
 
-      _.each(this.state.monthlyBills, function(bill) {
+      _.each(this.state.monthlyBills, (bill) => {
         
         var caption = [];
         var thead = [];
@@ -66,7 +68,7 @@ var BillTables = React.createClass({
             <th>Date</th>
             <th>Time</th>
             <th>Price excl. VAT</th>
-            <th>VAT (19%)</th>
+            <th>VAT ({this.state.vatPercent}%)</th>
             <th>Total</th>
           </tr>
         );

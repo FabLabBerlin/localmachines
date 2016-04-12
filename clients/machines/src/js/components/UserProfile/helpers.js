@@ -1,14 +1,19 @@
+var reactor = require('../../reactor');
+var SettingsGetters = require('../../modules/Settings/getters');
+
+
 /*
  * VAT utility functions
  */
-const VAT = 0.19;
 
 function addVAT(priceExclVAT) {
-  return priceExclVAT * (1 + VAT);
+  var vat = reactor.evaluateToJS(SettingsGetters.getVatPercent) / 100;
+  return priceExclVAT * (1 + vat);
 }
 
 function subtractVAT(priceInclVAT) {
-  return priceInclVAT / (1 + VAT);
+  var vat = reactor.evaluateToJS(SettingsGetters.getVatPercent) / 100;
+  return priceInclVAT / (1 + vat);
 }
 
 /*

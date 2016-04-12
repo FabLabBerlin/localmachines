@@ -139,7 +139,7 @@ func (ns *NetSwitch) ApplyConfig(updates chan<- string) (err error) {
 	}
 	if err := cfg.RunStep1WifiCredentials(); err != nil {
 		ns.chSingle <- 1
-		return fmt.Errorf("step 1: error obtaining wifi credentials: %v", err)
+		return fmt.Errorf("step 1: error getting wifi: %v", err)
 	}
 	go func() {
 		if err := cfg.RunStep2PushConfig(); err != nil {

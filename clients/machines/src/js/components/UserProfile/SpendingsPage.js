@@ -9,6 +9,7 @@ var {Navigation} = require('react-router');
 var React = require('react');
 var reactor = require('../../reactor');
 var ScrollNav = require('../ScrollNav');
+var SettingsActions = require('../../modules/Settings/actions');
 var UserActions = require('../../actions/UserActions');
 
 
@@ -51,6 +52,7 @@ var SpendingsPage = React.createClass({
     UserActions.fetchUser(uid);
     UserActions.fetchBill(locationId, uid);
     UserActions.fetchMemberships(locationId, uid);
+    SettingsActions.loadSettings({locationId});
   },
 
   componentWillUnmount() {

@@ -97,3 +97,26 @@ func (this *SettingsController) GetTermsUrl() {
 	this.Data["json"] = s.GetString(locId, settings.TERMS_URL)
 	this.ServeJSON()
 }
+
+// @Title GetVatPercent
+// @Description Get VAT Percent
+// @Success 200
+// @Failure	400	Bad request
+// @Failure	500	Internal Server Error
+// @router /vat_percent [get]
+func (this *SettingsController) GetVatPercent() {
+	locId, err := this.GetInt64("location")
+	if err != nil {
+		beego.Error("parse int location:", err)
+		this.CustomAbort(400, "Bad request")
+	}
+
+	s, err := settings.GetAllAt(locId)
+	if err != nil {
+		beego.Error("Failed to get all settings:", err)
+		this.CustomAbort(500, "Failed to get all settings")
+	}
+
+	this.Data["json"] = s.GetFloat(locId, settings.VAT)
+	this.ServeJSON()
+}

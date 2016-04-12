@@ -1,12 +1,21 @@
 var {formatDate, subtractVAT, toCents, toEuro} = require('./helpers');
 var moment = require('moment');
-import React from 'react';
+var React = require('react');
+var reactor = require('../../reactor');
+var SettingsGetters = require('../../modules/Settings/getters');
 
 /*
  * Membership component:
  * Display the membership the user is subscribing
  */
 var Membership = React.createClass({
+  mixins: [ reactor.ReactMixin ],
+
+  getDataBindings() {
+    return {
+      vatPercent: SettingsGetters.getVatPercent
+    };
+  },
 
   /*
    * Create the table for each data
@@ -44,7 +53,7 @@ var Membership = React.createClass({
               <th>Start Date</th>
               <th>End Date</th>
               <th>Price/month excl. VAT</th>
-              <th>VAT/month (19%)</th>
+              <th>VAT/month ({this.state.vatPercent})</th>
               <th>Total/month</th>
             </tr>
           </thead>

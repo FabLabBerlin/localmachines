@@ -55,7 +55,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 			YearTo:     t.Year(),
 		}
 
-		invs, err := me.NewInvoices()
+		invs, err := me.NewInvoices(19)
 		if err != nil {
 			panic(err.Error())
 		}
