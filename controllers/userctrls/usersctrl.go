@@ -543,14 +543,12 @@ func (this *UsersController) GetUserBill() {
 		beego.Error("GetUserStartTime:", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
-	startTime = startTime.Add(-86400 * time.Second)
 
-	endTime := time.Now().Add(86400 * 30 * time.Second)
 	interval := lib.Interval{
 		MonthFrom: int(startTime.Month()),
 		YearFrom:  startTime.Year(),
-		MonthTo:   int(endTime.Month()),
-		YearTo:    endTime.Year(),
+		MonthTo:   int(time.Now().Month()),
+		YearTo:    time.Now().Year(),
 	}
 	me, err := monthly_earning.New(locId, interval)
 	if err != nil {
