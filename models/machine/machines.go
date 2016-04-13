@@ -31,6 +31,12 @@ var (
 	}
 )
 
+var (
+	ErrDimensions             = errors.New("Dimensions must be like 200 mm x 200 mm x 200 mm or 2000 mm x 1500 mm")
+	ErrWorkspaceDimensions    = errors.New("Workspace Dimensions must be like 200 mm x 200 mm x 200 mm or 2000 mm x 1500 mm")
+	ErrDuplicateNetswitchHost = errors.New("Found machine with same netswitch host")
+)
+
 func init() {
 	orm.RegisterModel(new(Machine))
 }
@@ -147,7 +153,7 @@ func (m *Machine) Update(updateGateway bool) (err error) {
 			return fmt.Errorf("failed to query db: %v", err)
 		}
 		if num > 0 {
-			return fmt.Errorf("Found %v machines with same netswitch host", num)
+			return ErrDuplicateNetswitchHost
 		}
 	}
 
@@ -168,11 +174,6 @@ func (m *Machine) Update(updateGateway bool) (err error) {
 
 	return
 }
-
-var (
-	ErrDimensions          = errors.New("Dimensions must be like 200 mm x 200 mm x 200 mm or 2000 mm x 1500 mm")
-	ErrWorkspaceDimensions = errors.New("Workspace Dimensions must be like 200 mm x 200 mm x 200 mm or 2000 mm x 1500 mm")
-)
 
 type Millimeters float64
 

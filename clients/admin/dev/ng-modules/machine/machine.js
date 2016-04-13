@@ -116,6 +116,8 @@ app.controller('MachineCtrl',
     .error(function(message, statusCode) {
       if (statusCode === 400 && message.indexOf('Dimensions') >= 0) {
         toastr.error(message);
+      } else if (statusCode === 400 && message.indexOf('Found machine with same netswitch host') >= 0) {
+        toastr.error(message);
       } else {
         toastr.error('Failed to update');
       }
