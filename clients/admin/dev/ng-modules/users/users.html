@@ -41,6 +41,7 @@
         <th>Last Name</th>
         <th>Username</th>
         <th>Email</th>
+        <th>No Auto Invoicing</th>
         <th>Company</th>
         <th>&nbsp;</th>
       </tr>
@@ -53,6 +54,12 @@
         <td>{{user.LastName}}</td>
         <td>{{user.Username}}</td>
         <td>{{user.Email}}</td>
+        <td>
+          <i class="fa fa-check"
+             aria-hidden="true"
+             ng-show="user.NoAutoInvoicing">
+          </i>
+        </td>
         <td>{{user.Company}}</td>
         <td>
           <button 
