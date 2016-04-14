@@ -18,6 +18,7 @@ app.controller('UsersCtrl',
   $scope.users = [];
 
   $scope.getAllUsers = function() {
+    console.log('getAllUsers: $cookies=', $cookies);
     $http({
       method: 'GET',
       url: '/api/users',

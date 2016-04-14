@@ -387,6 +387,13 @@ app.controller('UserCtrl',
   };
 
   $scope.updateUser = function(callback) {
+    if (!$scope.user.Email) {
+      toastr.info('Please enter an E-Mail');
+    }
+    if (!$scope.user.Username) {
+      toastr.info('Please enter a username');
+    }
+
     $http({
       method: 'PUT',
       url: '/api/users/' + $scope.user.Id,
