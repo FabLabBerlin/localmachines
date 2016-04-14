@@ -3,6 +3,7 @@ var actionTypes = require('../actionTypes');
 var FeedbackStore = require('../stores/FeedbackStore');
 var getters = require('../getters');
 var GlobalActions = require('./GlobalActions');
+var LocationGetters = require('../modules/Location/getters');
 var LoginActions = require('../actions/LoginActions');
 var reactor = require('../reactor');
 var toastr = require('../toastr');
@@ -67,10 +68,11 @@ var FeedbackActions = {
     var user = reactor.evaluateToJS(getters.getUser);
     var subject = reactor.evaluateToJS(getters.getFeedbackSubject);
     var message = reactor.evaluateToJS(getters.getFeedbackMessage);
+    var locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
     if (subject && message) {
       GlobalActions.showGlobalLoader();
       $.ajax({
-        url: '/api/feedback',
+        url: '/api/feedback?location=' + locationId,
         dataType: 'json',
         type: 'POST',
         data: {
