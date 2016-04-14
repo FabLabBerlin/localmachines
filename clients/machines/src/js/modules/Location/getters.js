@@ -71,7 +71,7 @@ const getIsAdmin = [
   getUserLocation,
   (userLocation) => {
     if (userLocation) {
-      var role = userLocation.get('user').get('UserRole');
+      var role = userLocation.get('UserRole');
       return role === 'admin' || role === 'superadmin';
     }
   }

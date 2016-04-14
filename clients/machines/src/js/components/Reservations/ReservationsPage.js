@@ -2,6 +2,7 @@ var _ = require('lodash');
 var $ = require('jquery');
 var getters = require('../../getters');
 var LoaderLocal = require('../LoaderLocal');
+var LocationActions = require('../../actions/LocationActions');
 var LocationGetters = require('../../modules/Location/getters');
 var MachineActions = require('../../actions/MachineActions');
 var moment = require('moment');
@@ -101,6 +102,7 @@ var ReservationsTable = React.createClass({
     MachineActions.apiGetUserMachines(locationId, uid);
     ReservationsActions.load();
     ReservationRulesActions.load(locationId);
+    LocationActions.loadUserLocations(uid);
   },
 
   getDataBindings() {
