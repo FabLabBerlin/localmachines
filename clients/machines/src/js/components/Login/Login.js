@@ -103,7 +103,7 @@ var Login = React.createClass({
             type="text"
             name="username"
             className="form-control"
-            placeholder="Username"
+            placeholder="E-Mail"
             required
             autofocus
             autoCorrect="off"
