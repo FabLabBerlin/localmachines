@@ -35,16 +35,17 @@ type Xmpp struct {
 }
 
 type Message struct {
-	Remote string
-	Data   Data
+	Remote    string
+	Data      Data
 }
 
 type Data struct {
+	IsRequest  bool
 	Command    string
 	MachineId  int64
 	TrackingId string
 	LocationId int64
-	IpAddress string
+	IpAddress  string
 	Error      bool
 }
 

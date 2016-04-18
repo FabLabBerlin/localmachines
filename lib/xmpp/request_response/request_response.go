@@ -2,10 +2,10 @@ package request_response
 
 import (
 	"fmt"
-	"github.com/astaxie/beego"
 	"github.com/FabLabBerlin/localmachines/lib/xmpp"
 	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/satori/go.uuid"
+	"log"
 	"sync"
 	"time"
 )
@@ -19,7 +19,10 @@ type Dispatcher struct {
 	xmppClient           *xmpp.Xmpp
 }
 
-func NewDispatcher(server, user, pass string) (d *Dispatcher) {
+type DispatchFunc func(msg xmpp.Message) (ipAddress string, err error)
+
+func NewDispatcher(server, user, pass string, dispatch DispatchFunc) (d *Dispatcher) {
+	log.Printf("NewDispatcher(%v, %v, ...)", server, user)
 	d = &Dispatcher{
 		xmppClient: xmpp.NewXmpp(server, user, pass),
 		responses:  make(map[string]chan xmpp.Message),
@@ -28,15 +31,38 @@ func NewDispatcher(server, user, pass string) (d *Dispatcher) {
 	go func() {
 		for {
 			select {
-			case resp := <-d.xmppClient.Recv():
-				d.mu.Lock()
-				tid := resp.Data.TrackingId
-				select {
-				case d.responses[tid] <- resp:
-				default:
-					beego.Error("package already received: tid:", tid)
+			case msg := <-d.xmppClient.Recv():
+				if msg.Data.IsRequest {
+					if dispatch != nil {
+						ipAddress, err := dispatch(msg)
+						if err != nil {
+							log.Printf("xmpp dispatcher: dispatch: %v", err)
+						}
+						response := xmpp.Message{
+							Remote:    msg.Remote,
+							Data:      msg.Data,
+						}
+						response.Data.IsRequest = false
+						response.Data.IpAddress = ipAddress
+						response.Data.Error = err != nil
+						if err := d.xmppClient.Send(response); err != nil {
+							log.Printf("xmpp: failed to send response")
+						}
+					} else {
+						log.Printf("dispatcher: got request but no dispatch function")
+					}
+				} else {
+					resp := msg
+					d.mu.Lock()
+					tid := resp.Data.TrackingId
+					log.Printf("....len(d.responses[tid]) = %v", len(d.responses[tid]))
+					select {
+					case d.responses[tid] <- resp:
+					default:
+						log.Printf("package already received: tid: %v", tid)
+					}
+					d.mu.Unlock()
 				}
-				d.mu.Unlock()
 				break
 			}
 		}
@@ -53,6 +79,7 @@ func (d *Dispatcher) SendXmppCommand(location *locations.Location, command strin
 	err = d.xmppClient.Send(xmpp.Message{
 		Remote: location.XmppId,
 		Data: xmpp.Data{
+			IsRequest:  true,
 			Command:    command,
 			MachineId:  machineId,
 			TrackingId: trackingId,

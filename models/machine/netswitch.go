@@ -26,7 +26,7 @@ func init() {
 	if xmppServerConfigured {
 		user := beego.AppConfig.String("XmppUser")
 		pass := beego.AppConfig.String("XmppPass")
-		dispatcher = request_response.NewDispatcher(server, user, pass)
+		dispatcher = request_response.NewDispatcher(server, user, pass, nil)
 	}
 }
 
