@@ -201,7 +201,7 @@ func (this *Purchase) quantityFromTimes() (quantity float64) {
 	case "hour":
 		return float64(seconds) / 3600
 	default:
-		beego.Error("unknown price unit ", this.PriceUnit)
+		beego.Error("unknown price unit ", this.PriceUnit, " for #", this.Id)
 	}
 
 	return
