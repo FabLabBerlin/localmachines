@@ -13,7 +13,7 @@ var Navigation = require('react-router').Navigation;
 var React = require('react');
 var reactor = require('../../reactor');
 var ReservationRulesActions = require('../../actions/ReservationRulesActions');
-var ReservationsActions = require('../../actions/ReservationsActions');
+var ReservationActions = require('../../actions/ReservationActions');
 var ScrollNav = require('../ScrollNav');
 var Location = require('./Location');
 var toastr = require('../../toastr');
@@ -55,7 +55,7 @@ var MachinePage = React.createClass({
     const uid = reactor.evaluateToJS(getters.getUid);
     UserActions.fetchUser(uid);
     MachineActions.apiGetUserMachines(locationId, uid);
-    ReservationsActions.load();
+    ReservationActions.load();
     ReservationRulesActions.load(locationId);
     LocationActions.loadUserLocations(uid);
   },

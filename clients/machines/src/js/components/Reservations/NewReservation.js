@@ -6,7 +6,7 @@ var MachineActions = require('../../actions/MachineActions');
 var moment = require('moment');
 var React = require('react');
 var reactor = require('../../reactor');
-var ReservationsActions = require('../../actions/ReservationsActions');
+var ReservationActions = require('../../actions/ReservationActions');
 var TimePicker = require('./TimePicker');
 var UserActions = require('../../actions/UserActions');
 var toastr = require('../../toastr');
@@ -105,13 +105,13 @@ var SelectMachine = React.createClass({
   },
 
   cancel() {
-    ReservationsActions.newReservation.done();
+    ReservationActions.newReservation.done();
   },
 
   next() {
     this.setMachine();
     if (this.state.newReservation.get('machineId')) {
-      ReservationsActions.newReservation.nextStep();
+      ReservationActions.newReservation.nextStep();
     }
   },
 
@@ -120,7 +120,7 @@ var SelectMachine = React.createClass({
     if (mid) {
       mid = parseInt(mid);
       if (mid) {
-        ReservationsActions.newReservation.setMachine({ mid });
+        ReservationActions.newReservation.setMachine({ mid });
       } else {
         toastr.error('No machine selected');
       }
@@ -143,7 +143,7 @@ var SuccessMsg = React.createClass({
   },
 
   handleClick() {
-    ReservationsActions.newReservation.done();
+    ReservationActions.newReservation.done();
   },
 
   render() {
@@ -212,16 +212,16 @@ var NewReservation = React.createClass({
         });
       }
       switch (newReservation.get('step')) {
-      case ReservationsActions.STEP_SET_MACHINE:
+      case ReservationActions.STEP_SET_MACHINE:
         dialog = <SelectMachine className="reservations-new-dialog"/>;
         break;
-      case ReservationsActions.STEP_SET_DATE:
+      case ReservationActions.STEP_SET_DATE:
         dialog = <DatePicker className="reservations-new-dialog"/>;
         break;
-      case ReservationsActions.STEP_SET_TIME:
+      case ReservationActions.STEP_SET_TIME:
         dialog = <TimePicker className="reservations-new-dialog"/>;
         break;
-      case ReservationsActions.STEP_SUCCESS:
+      case ReservationActions.STEP_SUCCESS:
         dialog = <SuccessMsg className="reservations-new-dialog"/>;
         break;
       }

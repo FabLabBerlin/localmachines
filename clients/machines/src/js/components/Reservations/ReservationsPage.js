@@ -12,7 +12,7 @@ var Nuclear = require('nuclear-js');
 var React = require('react');
 var reactor = require('../../reactor');
 var ReservationRulesActions = require('../../actions/ReservationRulesActions');
-var ReservationsActions = require('../../actions/ReservationsActions');
+var ReservationActions = require('../../actions/ReservationActions');
 var toImmutable = Nuclear.toImmutable;
 
 // https://github.com/HubSpot/vex/issues/72
@@ -41,7 +41,7 @@ var TableRow = React.createClass({
       message: 'Do you really want to cancel this reservation?',
       callback(confirmed) {
         if (confirmed) {
-          ReservationsActions.cancelReservation(reservationId);
+          ReservationActions.cancelReservation(reservationId);
         }
         $('.vex').remove();
         $('body').removeClass('vex-open');
@@ -100,7 +100,7 @@ var ReservationsTable = React.createClass({
     const locationId = reactor.evaluateToJS(LocationGetters.getLocation).Id;
     const uid = reactor.evaluateToJS(getters.getUid);
     MachineActions.apiGetUserMachines(locationId, uid);
-    ReservationsActions.load();
+    ReservationActions.load();
     ReservationRulesActions.load(locationId);
     LocationActions.loadUserLocations(uid);
   },
@@ -168,11 +168,11 @@ var ReservationsPage = React.createClass({
   },
 
   componentWillUnmount() {
-    ReservationsActions.newReservation.done();
+    ReservationActions.newReservation.done();
   },
 
   clickCreate() {
-    ReservationsActions.newReservation.create();
+    ReservationActions.newReservation.create();
   },
 
   getDataBindings() {
