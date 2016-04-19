@@ -248,7 +248,7 @@
                 <select class="form-control"
                         ng-model="userLocation.UserRole"
                         ng-change="updateUserLocation(userLocation)">
-                  <option value="notaffiliated">Not affiliated</option>
+                  <option value="archived">Archived</option>
                   <option value="member">Member</option>
                   <option value="staff">Staff</option>
                   <option value="api">Api</option>
@@ -401,6 +401,17 @@
   <hr>
 
   <div class="pull-right">
+    <button class="btn btn-danger btn-lg"
+            ng-click="setArchived(true)"
+            ng-hide="userLocation.UserRole == 'archived'">
+      <i class="fa fa-archive"></i>&nbsp;Archive
+    </button>
+    <button class="btn btn-danger btn-lg"
+            ng-click="setArchived(false)"
+            ng-show="userLocation.UserRole == 'archived'">
+      <i class="fa fa-archive"></i>&nbsp;Unarchive
+    </button>
+
     <button 
       class="btn btn-primary btn-lg" 
       ng-click="saveUser()">
