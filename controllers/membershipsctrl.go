@@ -142,3 +142,44 @@ func (this *MembershipsController) Update() {
 	this.Data["json"] = "ok"
 	this.ServeJSON()
 }
+
+// @Title SetArchived
+// @Description (Un)archive membership
+// @Param	mid		path	int		true	"Membership ID"
+// @Param	archive	query	bool	true	"Archive"
+// @Success 200 string ok
+// @Failure	400	Bad Request
+// @Failure	401	Not authorized
+// @Failure	500	Failed to archive membership
+// @router /:mid/set_archived [post]
+func (this *MembershipsController) SetArchived() {
+	id, err := this.GetInt64(":mid")
+	if err != nil {
+		beego.Error("Failed to get :mid variable")
+		this.Abort("400")
+	}
+
+	m, err := models.GetMembership(id)
+	if err != nil {
+		beego.Error("get", err)
+		this.Abort("500")
+	}
+
+	if !this.IsAdminAt(m.LocationId) {
+		beego.Error("Not authorized")
+		this.Abort("401")
+	}
+
+	m.Archived, err = this.GetBool("archived")
+	if err != nil {
+		beego.Error("parsing archived parameter")
+		this.Abort("400")
+	}
+
+	if err = m.Update(); err != nil {
+		beego.Error("update:", err)
+		this.Abort("500")
+	}
+
+	this.Finish()
+}

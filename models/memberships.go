@@ -24,6 +24,7 @@ type Membership struct {
 	AffectedMachines         string `orm:"type(text)"`
 	AutoExtend               bool
 	AutoExtendDurationMonths int64
+	Archived                 bool
 }
 
 // Get an array of ID's of affected machines by the membership.

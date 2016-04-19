@@ -109,6 +109,25 @@ app.controller('MembershipCtrl',
     });
   }; // updateMembership()
 
+  $scope.setArchived = function(archived) {
+    var action = archived ? 'archived' : 'unarchived';
+
+    $http({
+      method: 'POST',
+      url: '/api/memberships/' + $scope.membership.Id + '/set_archived',
+      params: {
+        archived: archived
+      }
+    })
+    .success(function(data) {
+      toastr.info('Successfully ' + action + ' membership');
+      $scope.loadMembership();
+    })
+    .error(function() {
+      toastr.error('Failed to ' + action + ' membership');
+    });
+  }; // archive()
+
 }]); // app.controller
 
 })(); // closure

@@ -167,6 +167,13 @@ func init() {
 			[]string{"put"},
 			nil})
 
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:MembershipsController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:MembershipsController"],
+		beego.ControllerComments{
+			"SetArchived",
+			`/:mid/set_archived`,
+			[]string{"post"},
+			nil})
+
 	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:ProductsController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:ProductsController"],
 		beego.ControllerComments{
 			"Create",
