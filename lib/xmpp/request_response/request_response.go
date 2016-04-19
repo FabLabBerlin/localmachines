@@ -3,7 +3,6 @@ package request_response
 import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib/xmpp"
-	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/satori/go.uuid"
 	"log"
 	"sync"
@@ -33,11 +32,13 @@ func NewDispatcher(server, user, pass string, dispatch DispatchFunc) (d *Dispatc
 			select {
 			case msg := <-d.xmppClient.Recv():
 				if msg.Data.IsRequest {
+					log.Printf("incoming request of type %v", msg.Data.Command)
 					if dispatch != nil {
 						ipAddress, err := dispatch(msg)
 						if err != nil {
 							log.Printf("xmpp dispatcher: dispatch: %v", err)
 						}
+						log.Printf("dispatch(msg) called")
 						response := xmpp.Message{
 							Remote:    msg.Remote,
 							Data:      msg.Data,
@@ -55,7 +56,6 @@ func NewDispatcher(server, user, pass string, dispatch DispatchFunc) (d *Dispatc
 					resp := msg
 					d.mu.Lock()
 					tid := resp.Data.TrackingId
-					log.Printf("....len(d.responses[tid]) = %v", len(d.responses[tid]))
 					select {
 					case d.responses[tid] <- resp:
 					default:
@@ -70,20 +70,22 @@ func NewDispatcher(server, user, pass string, dispatch DispatchFunc) (d *Dispatc
 	return
 }
 
-func (d *Dispatcher) SendXmppCommand(location *locations.Location, command string, machineId int64) (ipAddress string, err error) {
+func (d *Dispatcher) SendXmppCommand(locationId int64, xmppId, command string, machineId int64, payload string) (ipAddress string, err error) {
 	trackingId := uuid.NewV4().String()
 	d.mu.Lock()
 	d.responses[trackingId] = make(chan xmpp.Message, 1)
 	respCh := d.responses[trackingId]
 	d.mu.Unlock()
+	log.Printf("calling xmpp client send")
 	err = d.xmppClient.Send(xmpp.Message{
-		Remote: location.XmppId,
+		Remote: xmppId,
 		Data: xmpp.Data{
 			IsRequest:  true,
 			Command:    command,
 			MachineId:  machineId,
 			TrackingId: trackingId,
-			LocationId: location.Id,
+			LocationId: locationId,
+			Payload:    payload,
 		},
 	})
 	if err != nil {

@@ -26,6 +26,7 @@ type Config struct {
 		Url string
 	}
 	XMPP struct {
+		MainId string
 		Server string
 		User   string
 		Pass   string

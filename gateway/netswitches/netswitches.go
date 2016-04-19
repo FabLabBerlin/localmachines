@@ -11,8 +11,6 @@ import (
 	"github.com/FabLabBerlin/localmachines/gateway/netswitch"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"log"
-	"net/http"
-	"strconv"
 )
 
 var (
@@ -29,8 +27,8 @@ func New() (nss *NetSwitches) {
 }
 
 // Load netswitches from EASY LAB API.  client should be logged in.
-func (nss *NetSwitches) Load(client *http.Client) (err error) {
-	if err = nss.fetch(client); err != nil {
+func (nss *NetSwitches) Load(jsonData []byte) (err error) {
+	if err = nss.fetch(jsonData); err != nil {
 		return fmt.Errorf("fetch: %v", err)
 	}
 	log.Printf("netswitches: %v", nss.nss)
@@ -41,21 +39,10 @@ func (nss *NetSwitches) Load(client *http.Client) (err error) {
 //
 // Each type NetSwitch runs its own dispatch loop.  Make sure no additional
 // loop is started.
-func (nss *NetSwitches) fetch(client *http.Client) (err error) {
-	locationId := strconv.FormatInt(global.Cfg.Main.LocationId, 10)
-	url := global.Cfg.API.Url + "/machines?location=" + locationId
-	resp, err := client.Get(url)
-	if err != nil {
-		return fmt.Errorf("GET: %v", err)
-	}
-	defer resp.Body.Close()
-	if code := resp.StatusCode; code != http.StatusOK {
-		return fmt.Errorf("unexpected status code: %v", code)
-	}
-	dec := json.NewDecoder(resp.Body)
+func (nss *NetSwitches) fetch(jsonData []byte) (err error) {
 	all := []machine.Machine{}
-	if err := dec.Decode(&all); err != nil {
-		return fmt.Errorf("json decode: %v", err)
+	if err := json.Unmarshal(jsonData, &all); err != nil {
+		return fmt.Errorf("json unmarshal: %v", err)
 	}
 	mappings := make([]machine.Machine, 0, len(all))
 	for _, mapping := range all {

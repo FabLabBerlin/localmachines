@@ -42,6 +42,7 @@ type Message struct {
 type Data struct {
 	IsRequest  bool
 	Command    string
+	Payload    string
 	MachineId  int64
 	TrackingId string
 	LocationId int64
@@ -152,7 +153,6 @@ func (x *Xmpp) Run() {
 				if err != nil {
 					log.Printf("xmpp: %v", err)
 					log.Printf("remote was: '%v'", v.Remote)
-					log.Printf("text was: '%v'", v.Text)
 				} else {
 					x.ch <- Message{
 						Remote: v.Remote,

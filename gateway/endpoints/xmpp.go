@@ -15,10 +15,10 @@ import (
 type Xmpp struct {
 	ns            *netswitches.NetSwitches
 	dispatcher    *request_response.Dispatcher
-	reinitGateway func() error
+	reinitGateway func(payloadJson string) error
 }
 
-func NewXmpp(ns *netswitches.NetSwitches, reinitGateway func() error) *Xmpp {
+func NewXmpp(ns *netswitches.NetSwitches, reinitGateway func(payloadJson string) error) *Xmpp {
 	x := &Xmpp{
 		ns:            ns,
 		reinitGateway: reinitGateway,
@@ -34,7 +34,7 @@ func (x *Xmpp) dispatch(msg xmpp.Message) (ipAddress string, err error) {
 	case "on", "off":
 		return "", x.ns.SetOn(msg.Data.MachineId, cmd == "on")
 	case commands.REINIT:
-		return "", x.reinitGateway()
+		return "", x.reinitGateway(msg.Data.Payload)
 	case commands.APPLY_CONFIG:
 		log.Printf("apply_config!!!")
 		updates := make(chan string, 10)
@@ -59,4 +59,11 @@ func (x *Xmpp) dispatch(msg xmpp.Message) (ipAddress string, err error) {
 		return
 	}
 	return "", fmt.Errorf("invalid cmd: %v", cmd)
+}
+
+func (x *Xmpp) RequestReinit() (err error) {
+	log.Printf("xmpp endpoint: RequestReinit()")
+	locId := global.Cfg.Main.LocationId
+	_, err = x.dispatcher.SendXmppCommand(locId, global.Cfg.XMPP.MainId, commands.REQUEST_REINIT, 0, "")
+	return
 }
