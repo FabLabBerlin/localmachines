@@ -43,7 +43,7 @@ func (nss *NetSwitches) Load(client *http.Client) (err error) {
 // loop is started.
 func (nss *NetSwitches) fetch(client *http.Client) (err error) {
 	locationId := strconv.FormatInt(global.Cfg.Main.LocationId, 10)
-	url := global.Cfg.API.Url + "/machines?location=" + locationId
+	url := global.Cfg.API.Url + "/machines?location=" + locationId + "&archived=false"
 	resp, err := client.Get(url)
 	if err != nil {
 		return fmt.Errorf("GET: %v", err)

@@ -7,6 +7,7 @@ Resource management software for Fab Labs. REST API built with the [BeeGo](http:
 - [Versioning](#versioning)
 - [Runmode](#runmode)
 - [Development](#development)
+  - [Code Conventions](#code-conventions)
   - [Core Development](#core-development)
   - [Clients Development](#clients-development)
 - [API Documentation](#api-documentation)
@@ -486,7 +487,15 @@ When ready to move the system to `prod` runmode, run `grunt prod` to compile the
 
 More info about the development workflow will be added to Wiki.
 
-## Testing
+### Code-Conventions
+
+Go files should have a maximum of 80 characters per lines, JS files 100
+characters per line maximum.
+
+Local variables should be as short as possible. Public variables and functions
+must have terse but quickly comprehendable names.
+
+### Testing
 
 Use `./testall` to run all tests in the project. Make sure that the file
 `./tests/conf/app.conf` exists.

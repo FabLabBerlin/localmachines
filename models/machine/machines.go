@@ -61,6 +61,7 @@ type Machine struct {
 	Brand                  string
 	Dimensions             string
 	WorkspaceDimensions    string
+	Archived               bool
 	// Netswitch Config
 	// Host and Sensor Port are only relevant for mfi switches
 	NetswitchUrlOn      string `orm:"size(255)"`

@@ -5,9 +5,29 @@
 var mod = angular.module("fabsmith.admin.api", []);
 
 mod.service('api',
- ['$http', '$cookies',
- function($http, $cookies) {
+ ['$cookies', '$http', 'randomToken',
+ function($cookies, $http, randomToken) {
   // Public Methods
+
+  this.prompt = function(msg, cb) {
+    var expectedToken = randomToken.generate();
+    vex.dialog.prompt({
+      message: msg + ' Enter <span class="delete-prompt-token">' + 
+       expectedToken + '</span> to continue.',
+      placeholder: 'Token',
+      callback: function(value) {
+        if (value) {
+          if (value === expectedToken) {
+            cb();
+          } else {
+            toastr.error('Wrong token');
+          }
+        } else if (value !== false) {
+          toastr.error('No token');
+        }
+      }
+    });
+  };
 
   this.loadMachines = function(cb) {
     $http({
