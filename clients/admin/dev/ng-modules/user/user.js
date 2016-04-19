@@ -484,43 +484,6 @@ app.controller('UserCtrl',
     });
   };
 
-  $scope.deleteUserLocationPrompt = function(userLocationId) {
-    var token = randomToken.generate();
-    vex.dialog.prompt({
-      message: 'Enter <span class="delete-prompt-token">' +
-      token + '</span> to delete',
-      placeholder: 'Token',
-      callback: function(value) {
-        if (value) {
-          if (value === token) {
-            $scope.deleteUserLocation(userLocationId);
-          } else {
-            toastr.error('Wrong token');
-          }
-        } else if (value !== false) {
-          toastr.error('No token');
-        }
-      } // callback
-    });
-  };
-
-  $scope.deleteUserLocation = function(userLocationId) {
-    $http({
-      method: 'DELETE',
-      url: '/api/users/' + $scope.user.Id + '/locations/' + userLocationId,
-      params: {
-        ac: new Date().getTime()
-      }
-    })
-    .success(function() {
-      toastr.success('User location deleted.');
-      $scope.loadUserLocations();
-    })
-    .error(function() {
-      toastr.error('Error while trying to delete user location');
-    });
-  };
-
   $scope.updateUserMachinePermissions = function(callback) {
     
     // Do not update machine permissions for an admin user
