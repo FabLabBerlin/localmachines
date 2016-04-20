@@ -25,6 +25,7 @@ func init() {
 
 type MockServer struct {
 	testServer *httptest.Server
+	fbInv      fastbill.Invoice
 }
 
 func (s *MockServer) URL() string {
@@ -51,8 +52,19 @@ func NewMockServer() (s *MockServer) {
 					},
 				},
 			}
-		} else {
+		} else if req.SERVICE == fastbill.SERVICE_INVOICE_GET {
 			resp = fastbill.InvoiceCreateResponse{}
+		} else if req.SERVICE == fastbill.SERVICE_INVOICE_CREATE {
+			buf, err := json.Marshal(req.DATA)
+			if err != nil {
+				panic(err.Error())
+			}
+			if err := json.Unmarshal(buf, &s.fbInv); err != nil {
+				panic(err.Error())
+			}
+			resp = fastbill.InvoiceCreateResponse{}
+		} else {
+			panic("unknown service")
 		}
 
 		enc := json.NewEncoder(w)
@@ -121,10 +133,11 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 			_, empty, err := monthly_earning.CreateFastbillDraft(&me, invs[0])
 			So(empty, ShouldBeFalse)
 			So(err, ShouldBeNil)
+			So(testServer.fbInv.Items, ShouldHaveLength, 1)
 		})
 
 		Convey("Flatrate Memberships in draft leave no 0 price items", func() {
-			ms, err := models.CreateMembership(1, "Free 3D printing")
+			ms, err := models.CreateMembership(1, "Full Flatrate")
 			if err != nil {
 				panic(err.Error())
 			}
@@ -133,12 +146,39 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 			if err = ms.Update(); err != nil {
 				panic(err.Error())
 			}
+			ms.AffectedMachines = fmt.Sprintf("[%v]", lasercutter.Id)
 			startTime := time.Now().AddDate(0, -1, 0)
 			_, err = models.CreateUserMembership(uid, ms.Id, startTime)
 			if err != nil {
 				panic(err.Error())
 			}
+			t := time.Now()
+			me := monthly_earning.MonthlyEarning{
+				LocationId: 1,
+				MonthFrom:  int(t.Month()),
+				YearFrom:   t.Year(),
+				MonthTo:    int(t.Month()),
+				YearTo:     t.Year(),
+			}
 
+			invs, err := me.NewInvoices(19)
+			if err != nil {
+				panic(err.Error())
+			}
+			if n := len(invs); n != 1 {
+				panic(fmt.Sprintf("expected 1 but got %v", n))
+			}
+
+			invs[0].User.ClientId = 1
+
+			testServer := NewMockServer()
+
+			fastbill.API_URL = testServer.URL()
+
+			_, empty, err := monthly_earning.CreateFastbillDraft(&me, invs[0])
+			So(empty, ShouldBeFalse)
+			So(err, ShouldBeNil)
+			So(testServer.fbInv.Items, ShouldHaveLength, 0)
 		})
 	})
 }

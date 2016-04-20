@@ -117,7 +117,6 @@ func (inv *Invoice) Submit() (id int64, err error) {
 		SERVICE: SERVICE_INVOICE_CREATE,
 		DATA:    *inv,
 	}
-
 	var response InvoiceCreateResponse
 
 	if err := fb.execGetRequest(&request, &response); err != nil {
