@@ -141,7 +141,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 			So(err, ShouldBeNil)
 			So(testServer.FbInv.Items, ShouldHaveLength, 1)
 			item := testServer.FbInv.Items[0]
-			So(item.Description, ShouldEqual, "Full Flatrate Membership")
+			So(item.Description, ShouldEqual, "Full Flatrate Membership (unit: month)")
 		})
 	})
 }
