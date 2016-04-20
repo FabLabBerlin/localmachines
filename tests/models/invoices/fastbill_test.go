@@ -94,6 +94,10 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 		if err != nil {
 			panic(err.Error())
 		}
+		i3, err := machine.Create(1, "i3")
+		if err != nil {
+			panic(err.Error())
+		}
 		lasercutter, err := machine.Create(1, "Lasercutter")
 		if err != nil {
 			panic(err.Error())
@@ -142,6 +146,12 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 			if _, err := o.Insert(p); err != nil {
 				panic(err.Error())
 			}
+			p = CreateTestPurchase(i3.Id, "i3", time.Duration(100)*time.Nanosecond, 0.1)
+			p.UserId = uid
+			if _, err := o.Insert(p); err != nil {
+				panic(err.Error())
+			}
+
 			ms, err := models.CreateMembership(1, "Full Flatrate")
 			if err != nil {
 				panic(err.Error())
