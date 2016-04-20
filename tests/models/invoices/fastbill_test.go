@@ -98,14 +98,14 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 		if err != nil {
 			panic(err.Error())
 		}
+		p := CreateTestPurchase(lasercutter.Id, "Lasercutter", time.Duration(12)*time.Minute, 0.5)
+		p.UserId = uid
+		o := orm.NewOrm()
+		if _, err := o.Insert(p); err != nil {
+			panic(err.Error())
+		}
 
 		Convey("Testing createFastbillDraft", func() {
-			p := CreateTestPurchase(lasercutter.Id, "Lasercutter", time.Duration(12)*time.Minute, 0.5)
-			p.UserId = uid
-			o := orm.NewOrm()
-			if _, err := o.Insert(p); err != nil {
-				panic(err.Error())
-			}
 
 			t := time.Now()
 			me := monthly_earning.MonthlyEarning{
@@ -147,6 +147,9 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 				panic(err.Error())
 			}
 			ms.AffectedMachines = fmt.Sprintf("[%v]", lasercutter.Id)
+			if err = ms.Update(); err != nil {
+				panic(err.Error())
+			}
 			startTime := time.Now().AddDate(0, -1, 0)
 			_, err = models.CreateUserMembership(uid, ms.Id, startTime)
 			if err != nil {
