@@ -137,10 +137,16 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 		})
 
 		Convey("Flatrate Memberships in draft leave no 0 price items", func() {
+			p := CreateTestPurchase(lasercutter.Id, "Lasercutter", time.Duration(34)*time.Hour, 0.5)
+			p.UserId = uid
+			if _, err := o.Insert(p); err != nil {
+				panic(err.Error())
+			}
 			ms, err := models.CreateMembership(1, "Full Flatrate")
 			if err != nil {
 				panic(err.Error())
 			}
+			ms.MonthlyPrice = 150
 			ms.DurationMonths = 12
 			ms.MachinePriceDeduction = 100
 			if err = ms.Update(); err != nil {
@@ -150,7 +156,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 			if err = ms.Update(); err != nil {
 				panic(err.Error())
 			}
-			startTime := time.Now().AddDate(0, -1, 0)
+			startTime := time.Now().AddDate(0, -2, 0)
 			_, err = models.CreateUserMembership(uid, ms.Id, startTime)
 			if err != nil {
 				panic(err.Error())
@@ -181,7 +187,9 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 			_, empty, err := monthly_earning.CreateFastbillDraft(&me, invs[0])
 			So(empty, ShouldBeFalse)
 			So(err, ShouldBeNil)
-			So(testServer.fbInv.Items, ShouldHaveLength, 0)
+			So(testServer.fbInv.Items, ShouldHaveLength, 1)
+			item := testServer.fbInv.Items[0]
+			So(item.Description, ShouldEqual, "Full Flatrate Membership")
 		})
 	})
 }
