@@ -22,6 +22,48 @@ func init() {
 	setup.ConfigDB()
 }
 
+type MockServer struct {
+	testServer *httptest.Server
+}
+
+func (s *MockServer) URL() string {
+	return s.testServer.URL
+}
+
+func NewMockServer() (s *MockServer) {
+	s = &MockServer{}
+	s.testServer = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var req fastbill.Request
+		dec := json.NewDecoder(r.Body)
+		defer r.Body.Close()
+		if err := dec.Decode(&req); err != nil {
+			panic(err.Error())
+		}
+		var resp interface{}
+		if req.SERVICE == fastbill.SERVICE_CUSTOMER_GET {
+			resp = fastbill.CustomerGetResponse{
+				RESPONSE: fastbill.CustomerList{
+					Customers: []fastbill.Customer{
+						fastbill.Customer{
+							CUSTOMER_ID: "123",
+						},
+					},
+				},
+			}
+		} else {
+			resp = fastbill.InvoiceCreateResponse{}
+		}
+
+		enc := json.NewEncoder(w)
+		if err := enc.Encode(resp); err != nil {
+			panic(err.Error())
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}))
+	return
+}
+
 func TestFastbillInvoiceActivation(t *testing.T) {
 	Convey("Testing createFastbillDraft", t, func() {
 		Reset(setup.ResetDB)
@@ -65,37 +107,9 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 
 		invs[0].User.ClientId = 1
 
-		testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			var req fastbill.Request
-			dec := json.NewDecoder(r.Body)
-			defer r.Body.Close()
-			if err := dec.Decode(&req); err != nil {
-				panic(err.Error())
-			}
-			var resp interface{}
-			if req.SERVICE == fastbill.SERVICE_CUSTOMER_GET {
-				resp = fastbill.CustomerGetResponse{
-					RESPONSE: fastbill.CustomerList{
-						Customers: []fastbill.Customer{
-							fastbill.Customer{
-								CUSTOMER_ID: "123",
-							},
-						},
-					},
-				}
-			} else {
-				resp = fastbill.InvoiceCreateResponse{}
-			}
+		testServer := NewMockServer()
 
-			enc := json.NewEncoder(w)
-			if err := enc.Encode(resp); err != nil {
-				panic(err.Error())
-			}
-
-			w.WriteHeader(http.StatusOK)
-		}))
-
-		fastbill.API_URL = testServer.URL
+		fastbill.API_URL = testServer.URL()
 
 		_, empty, err := monthly_earning.CreateFastbillDraft(&me, invs[0])
 		So(empty, ShouldBeFalse)
