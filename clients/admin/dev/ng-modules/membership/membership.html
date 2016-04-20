@@ -51,7 +51,7 @@
         <label>Machines Affected by Membership</label>
         <div class="row">
 
-          <div class="col-sm-6" ng-repeat="machine in machines">
+          <div class="col-sm-6" ng-repeat="machine in machines | machinesFilter:this">
             <div class="checkbox-inline">
               <label title="{{machine.Description}}">
                 <input type="checkbox"

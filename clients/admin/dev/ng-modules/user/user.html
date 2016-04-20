@@ -290,7 +290,7 @@
         </div>
 
         <!-- Machine iterator -->
-        <div class="col-sm-6" ng-repeat="machine in availableMachines">
+        <div class="col-sm-6" ng-repeat="machine in availableMachines | machinesFilter:this">
           <div class="checkbox-inline">
             <label title="{{machine.Description}}">
               <input 

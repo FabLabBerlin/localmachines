@@ -23,7 +23,7 @@ var MachineList = React.createClass({
     var MachineNode;
     if(this.state.location && this.props.machines && _.size(this.props.machines) > 0) {
       var machines = _.filter(this.props.machines, function(machine) {
-        return machine.Visible;
+        return machine.Visible && !machine.Archived;
       });
       MachineNode = _.map(machines, function(machine) {
         if (machine.LocationId === this.state.location.Id) {
