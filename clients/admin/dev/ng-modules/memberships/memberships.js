@@ -69,6 +69,18 @@ app.controller('MembershipsCtrl',
     $location.path('/membership/' + membershipId);
   };
 
+  $scope.setShowArchived = function(show) {
+    $scope.showArchived = show;
+  };
+
 }]); // app.controller
+
+app.filter('membershipsFilter', function() {
+  return function(memberships, scope) {
+    return _.filter(memberships, function(membership) {
+      return scope.showArchived || !membership.Archived;
+    });
+  }
+});
 
 })(); // closure
