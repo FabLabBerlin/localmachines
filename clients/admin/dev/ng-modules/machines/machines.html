@@ -15,7 +15,7 @@
     </thead>
     <tbody>
 
-      <tr ng-repeat="machine in machines">
+      <tr ng-repeat="machine in machines | machinesFilter:this">
         <td>{{machine.Name}}</td>
         <td>{{machine.Price | currency:''}}</td>
         <td>{{machine.PriceUnit}}</td>
@@ -32,9 +32,22 @@
 
   <hr>
 
-  <button class="btn btn-primary btn-lg pull-right"
-          ng-click="addMachinePrompt()">
-    <i class="fa fa-plus"></i>&nbsp;Add Machine
-  </button>
+  <div class="pull-right">
+    <button class="btn btn-primary btn-lg"
+            ng-click="setShowArchived(true)"
+            ng-hide="showArchived">
+      <i class="fa fa-archive"></i>&nbsp;Show archived
+    </button>
+    <button class="btn btn-primary btn-lg"
+            ng-click="setShowArchived(false)"
+            ng-show="showArchived">
+      <i class="fa fa-archive"></i>&nbsp;Hide archived
+    </button>
+
+    <button class="btn btn-primary btn-lg"
+            ng-click="addMachinePrompt()">
+      <i class="fa fa-plus"></i>&nbsp;Add Machine
+    </button>
+  </div>
 
 </div> <!-- /container -->

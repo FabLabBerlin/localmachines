@@ -58,6 +58,18 @@ app.controller('MachinesCtrl',
     $location.path('/machine/' + id);
   };
 
+  $scope.setShowArchived = function(show) {
+    $scope.showArchived = show;
+  };
+
 }]); // app.controller
+
+app.filter('machinesFilter', function() {
+  return function(machines, scope) {
+    return _.filter(machines, function(machine) {
+      return scope.showArchived || !machine.Archived;
+    });
+  }
+});
 
 })(); // closure
