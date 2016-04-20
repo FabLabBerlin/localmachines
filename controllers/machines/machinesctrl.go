@@ -119,7 +119,7 @@ func (this *Controller) Get() {
 // @Param	location	query	string	true	"Location Id"
 // @Param	mname		query	string	true	"Machine Name"
 // @Success 200 machine.MachineCreatedResponse
-// @Failure	403	Failed to create machine
+// @Failure	500	Failed to create machine
 // @Failure	401	Not authorized
 // @router / [post]
 func (this *Controller) Create() {
@@ -130,13 +130,13 @@ func (this *Controller) Create() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	machineId, err := machine.Create(locId, name)
+	m, err := machine.Create(locId, name)
 	if err != nil {
 		beego.Error("Failed to create machine", err)
-		this.CustomAbort(403, "Failed to create machine")
+		this.Abort("500")
 	}
 
-	this.Data["json"] = &models.MachineCreatedResponse{MachineId: machineId}
+	this.Data["json"] = &models.MachineCreatedResponse{MachineId: m.Id}
 	this.ServeJSON()
 }
 

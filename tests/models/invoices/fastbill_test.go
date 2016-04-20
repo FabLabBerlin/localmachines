@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/FabLabBerlin/localmachines/lib/fastbill"
+	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
@@ -65,8 +66,9 @@ func NewMockServer() (s *MockServer) {
 }
 
 func TestFastbillInvoiceActivation(t *testing.T) {
-	Convey("Testing createFastbillDraft", t, func() {
+	Convey("Test Fastbill Invoice Activation", t, func() {
 		Reset(setup.ResetDB)
+
 		uid, err := users.CreateUser(&users.User{
 			Email: "foo@bar.com",
 		})
@@ -80,39 +82,63 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 		if err != nil {
 			panic(err.Error())
 		}
-		mid, _ := machine.Create(1, "Lasercutter")
-		p := CreateTestPurchase(mid, "Lasercutter", time.Duration(12)*time.Minute, 0.5)
-		p.UserId = uid
-		o := orm.NewOrm()
-		if _, err := o.Insert(p); err != nil {
-			panic(err.Error())
-		}
-
-		t := time.Now()
-		me := monthly_earning.MonthlyEarning{
-			LocationId: 1,
-			MonthFrom:  int(t.Month()),
-			YearFrom:   t.Year(),
-			MonthTo:    int(t.Month()),
-			YearTo:     t.Year(),
-		}
-
-		invs, err := me.NewInvoices(19)
+		lasercutter, err := machine.Create(1, "Lasercutter")
 		if err != nil {
 			panic(err.Error())
 		}
-		if n := len(invs); n != 1 {
-			panic(fmt.Sprintf("expected 1 but got %v", n))
-		}
 
-		invs[0].User.ClientId = 1
+		Convey("Testing createFastbillDraft", func() {
+			p := CreateTestPurchase(lasercutter.Id, "Lasercutter", time.Duration(12)*time.Minute, 0.5)
+			p.UserId = uid
+			o := orm.NewOrm()
+			if _, err := o.Insert(p); err != nil {
+				panic(err.Error())
+			}
 
-		testServer := NewMockServer()
+			t := time.Now()
+			me := monthly_earning.MonthlyEarning{
+				LocationId: 1,
+				MonthFrom:  int(t.Month()),
+				YearFrom:   t.Year(),
+				MonthTo:    int(t.Month()),
+				YearTo:     t.Year(),
+			}
 
-		fastbill.API_URL = testServer.URL()
+			invs, err := me.NewInvoices(19)
+			if err != nil {
+				panic(err.Error())
+			}
+			if n := len(invs); n != 1 {
+				panic(fmt.Sprintf("expected 1 but got %v", n))
+			}
 
-		_, empty, err := monthly_earning.CreateFastbillDraft(&me, invs[0])
-		So(empty, ShouldBeFalse)
-		So(err, ShouldBeNil)
+			invs[0].User.ClientId = 1
+
+			testServer := NewMockServer()
+
+			fastbill.API_URL = testServer.URL()
+
+			_, empty, err := monthly_earning.CreateFastbillDraft(&me, invs[0])
+			So(empty, ShouldBeFalse)
+			So(err, ShouldBeNil)
+		})
+
+		Convey("Flatrate Memberships in draft leave no 0 price items", func() {
+			ms, err := models.CreateMembership(1, "Free 3D printing")
+			if err != nil {
+				panic(err.Error())
+			}
+			ms.DurationMonths = 12
+			ms.MachinePriceDeduction = 100
+			if err = ms.Update(); err != nil {
+				panic(err.Error())
+			}
+			startTime := time.Now().AddDate(0, -1, 0)
+			_, err = models.CreateUserMembership(uid, ms.Id, startTime)
+			if err != nil {
+				panic(err.Error())
+			}
+
+		})
 	})
 }

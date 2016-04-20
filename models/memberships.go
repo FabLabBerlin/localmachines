@@ -81,17 +81,18 @@ func GetAllMembershipsAt(locationId int64) (memberships []*Membership, err error
 }
 
 // Creates a new membership in the database with the given name.
-func CreateMembership(locationId int64, membershipName string) (int64, error) {
-	o := orm.NewOrm()
-	membership := Membership{
+func CreateMembership(locationId int64, name string) (m *Membership, err error) {
+	m = &Membership{
 		LocationId:               locationId,
-		Title:                    membershipName,
+		Title:                    name,
 		AutoExtend:               true,
 		DurationMonths:           1,
 		AutoExtendDurationMonths: 1,
 	}
 
-	return o.Insert(&membership)
+	_, err = orm.NewOrm().Insert(m)
+
+	return 
 }
 
 // Gets single membership from database using membership unique ID

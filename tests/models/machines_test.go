@@ -28,8 +28,8 @@ func TestMachine(t *testing.T) {
 		Convey("Testing GetMachine", func() {
 			machineName := "My lovely machine"
 			Convey("Creating a machine and trying to get it", func() {
-				mid, _ := machine.Create(1, machineName)
-				machine, err := machine.Get(mid)
+				m, _ := machine.Create(1, machineName)
+				machine, err := machine.Get(m.Id)
 
 				So(machine.Name, ShouldEqual, machineName)
 				So(err, ShouldBeNil)
@@ -63,13 +63,12 @@ func TestMachine(t *testing.T) {
 			machineName := "My lovely machine"
 			newMachineName := "This new name is soooooooooooo cool :)"
 			Convey("Creating a machine and update it", func() {
-				mid, _ := machine.Create(1, machineName)
-				m, _ := machine.Get(mid)
+				m, _ := machine.Create(1, machineName)
 				m.LocationId = 1
 				m.Name = newMachineName
 
 				err := m.Update(false)
-				m, _ = machine.Get(mid)
+				m, _ = machine.Get(m.Id)
 				So(err, ShouldBeNil)
 				So(m.Name, ShouldEqual, newMachineName)
 			})
@@ -88,19 +87,11 @@ func TestMachine(t *testing.T) {
 			So(ns.Off(), ShouldNotBeNil)
 		})
 		Convey("Creating same netswitch mapping for two machines", func() {
-			mid1, err := machine.Create(1, "foo")
+			m1, err := machine.Create(1, "foo")
 			if err != nil {
 				panic(err.Error())
 			}
-			mid2, err := machine.Create(1, "bar")
-			if err != nil {
-				panic(err.Error())
-			}
-			m1, err := machine.Get(mid1)
-			if err != nil {
-				panic(err.Error())
-			}
-			m2, err := machine.Get(mid2)
+			m2, err := machine.Create(1, "bar")
 			if err != nil {
 				panic(err.Error())
 			}

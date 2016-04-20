@@ -122,14 +122,14 @@ func GetAllAt(locationId int64) (ms []*Machine, err error) {
 	return
 }
 
-func Create(locationId int64, machineName string) (id int64, err error) {
-	o := orm.NewOrm()
-	machine := Machine{
+func Create(locationId int64, machineName string) (m *Machine, err error) {
+	m = &Machine{
 		LocationId: locationId,
 		Name:       machineName,
 		Available:  true,
 	}
-	return o.Insert(&machine)
+	_, err = orm.NewOrm().Insert(m)
+	return
 }
 
 func (m *Machine) Update(updateGateway bool) (err error) {

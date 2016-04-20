@@ -39,8 +39,8 @@ func (this *MembershipsController) GetAll() {
 // @Description Create new membership
 // @Param	mname	query	string	true	"Membership Name"
 // @Success	200	int	Membership ID
-// @Failure	403	Failed to create membership
 // @Failure	401	Not authorized
+// @Failure	500	Failed to create membership
 // @router / [post]
 func (this *MembershipsController) Create() {
 	locId, authorized := this.GetLocIdAdmin()
@@ -50,13 +50,13 @@ func (this *MembershipsController) Create() {
 
 	membershipName := this.GetString("mname")
 
-	id, err := models.CreateMembership(locId, membershipName)
+	m, err := models.CreateMembership(locId, membershipName)
 	if err != nil {
 		beego.Error("Failed to create membership", err)
-		this.CustomAbort(403, "Failed to create membership")
+		this.Abort("500")
 	}
 
-	this.Data["json"] = id
+	this.Data["json"] = m.Id
 	this.ServeJSON()
 }
 
