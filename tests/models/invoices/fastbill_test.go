@@ -1,10 +1,7 @@
 package invoices
 
 import (
-	"encoding/json"
 	"fmt"
-	"net/http"
-	"net/http/httptest"
 	"testing"
 	"time"
 
@@ -14,6 +11,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/users"
+	"github.com/FabLabBerlin/localmachines/tests/lib/fastbill/mock"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
 	"github.com/astaxie/beego/orm"
 	. "github.com/smartystreets/goconvey/convey"
@@ -21,60 +19,6 @@ import (
 
 func init() {
 	setup.ConfigDB()
-}
-
-type MockServer struct {
-	testServer *httptest.Server
-	fbInv      fastbill.Invoice
-}
-
-func (s *MockServer) URL() string {
-	return s.testServer.URL
-}
-
-func NewMockServer() (s *MockServer) {
-	s = &MockServer{}
-	s.testServer = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var req fastbill.Request
-		dec := json.NewDecoder(r.Body)
-		defer r.Body.Close()
-		if err := dec.Decode(&req); err != nil {
-			panic(err.Error())
-		}
-		var resp interface{}
-		if req.SERVICE == fastbill.SERVICE_CUSTOMER_GET {
-			resp = fastbill.CustomerGetResponse{
-				RESPONSE: fastbill.CustomerList{
-					Customers: []fastbill.Customer{
-						fastbill.Customer{
-							CUSTOMER_ID: "123",
-						},
-					},
-				},
-			}
-		} else if req.SERVICE == fastbill.SERVICE_INVOICE_GET {
-			resp = fastbill.InvoiceCreateResponse{}
-		} else if req.SERVICE == fastbill.SERVICE_INVOICE_CREATE {
-			buf, err := json.Marshal(req.DATA)
-			if err != nil {
-				panic(err.Error())
-			}
-			if err := json.Unmarshal(buf, &s.fbInv); err != nil {
-				panic(err.Error())
-			}
-			resp = fastbill.InvoiceCreateResponse{}
-		} else {
-			panic("unknown service")
-		}
-
-		enc := json.NewEncoder(w)
-		if err := enc.Encode(resp); err != nil {
-			panic(err.Error())
-		}
-
-		w.WriteHeader(http.StatusOK)
-	}))
-	return
 }
 
 func TestFastbillInvoiceActivation(t *testing.T) {
@@ -130,14 +74,12 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 
 			invs[0].User.ClientId = 1
 
-			testServer := NewMockServer()
-
-			fastbill.API_URL = testServer.URL()
+			testServer := mock.NewServer()
 
 			_, empty, err := monthly_earning.CreateFastbillDraft(&me, invs[0])
 			So(empty, ShouldBeFalse)
 			So(err, ShouldBeNil)
-			So(testServer.fbInv.Items, ShouldHaveLength, 1)
+			So(testServer.FbInv.Items, ShouldHaveLength, 1)
 		})
 
 		Convey("Flatrate Memberships in draft leave no 0 price items", func() {
@@ -190,15 +132,15 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 
 			invs[0].User.ClientId = 1
 
-			testServer := NewMockServer()
+			testServer := mock.NewServer()
 
 			fastbill.API_URL = testServer.URL()
 
 			_, empty, err := monthly_earning.CreateFastbillDraft(&me, invs[0])
 			So(empty, ShouldBeFalse)
 			So(err, ShouldBeNil)
-			So(testServer.fbInv.Items, ShouldHaveLength, 1)
-			item := testServer.fbInv.Items[0]
+			So(testServer.FbInv.Items, ShouldHaveLength, 1)
+			item := testServer.FbInv.Items[0]
 			So(item.Description, ShouldEqual, "Full Flatrate Membership")
 		})
 	})

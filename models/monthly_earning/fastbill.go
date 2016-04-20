@@ -40,6 +40,9 @@ func CreateFastbillDrafts(me *MonthlyEarning) (report DraftsCreationReport) {
 		if inv.User.NoAutoInvoicing {
 			continue
 		}
+		if inv.User.ClientId != 15 {
+			continue
+		}
 		if r := inv.User.GetRole(); (r == user_roles.STAFF || r == user_roles.ADMIN || r == user_roles.SUPER_ADMIN) && uid != 19 {
 			e := DraftsCreationError{
 				UserId:  uid,

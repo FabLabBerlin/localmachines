@@ -5,6 +5,8 @@ import (
 	"testing"
 
 	"github.com/FabLabBerlin/localmachines/lib/fastbill"
+  "github.com/FabLabBerlin/localmachines/models/users"
+  "github.com/FabLabBerlin/localmachines/tests/lib/fastbill/mock"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -111,12 +113,40 @@ const FASTBILL_RESPONSE = `
 }
 `
 
+func TestFastbillCustomer(t *testing.T) {
+  Convey("Testing querying through Fastbill Customer number", t, func() {
+    Convey("Identical number", func() {
+      testServer := mock.NewServer()
+      testServer.SetPairClientIdCustomerId("15", 15000)
+      user := users.User{
+        Id: 123,
+        ClientId: 15,
+      }
+      id, err := fastbill.GetCustomerId(user)
+      So(err, ShouldBeNil)
+      So(id, ShouldEqual, 15000)
+    })
+
+    Convey("Trailing 0s, like 0015 in FB and 15 in the query", func() {
+      testServer := mock.NewServer()
+      testServer.SetPairClientIdCustomerId("0015", 15000)
+      user := users.User{
+        Id: 123,
+        ClientId: 15,
+      }
+      id, err := fastbill.GetCustomerId(user)
+      So(err, ShouldBeNil)
+      So(id, ShouldEqual, 15000)
+    })
+  })
+}
+
 func TestFastbillInvoice(t *testing.T) {
-	Convey("Testing Fastbill Invoice", t, func() {
-		Convey("Fastbill responses can be unmarshaled", func() {
-			var response fastbill.InvoiceCreateResponse
-			err := json.Unmarshal([]byte(FASTBILL_RESPONSE), &response)
-			So(err, ShouldBeNil)
-		})
-	})
+  Convey("Testing Fastbill Invoice", t, func() {
+    Convey("Fastbill responses can be unmarshaled", func() {
+      var response fastbill.InvoiceCreateResponse
+      err := json.Unmarshal([]byte(FASTBILL_RESPONSE), &response)
+      So(err, ShouldBeNil)
+    })
+  })
 }
