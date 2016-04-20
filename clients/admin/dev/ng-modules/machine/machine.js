@@ -13,8 +13,8 @@ app.config(['$routeProvider', function($routeProvider) {
 }]); // app.config
 
 app.controller('MachineCtrl', 
- ['$rootScope', '$scope', '$cookies', '$routeParams', '$http', '$location', '$filter', '$timeout', 'randomToken',
- function($rootScope, $scope, $cookies, $routeParams, $http, $location, $filter, $timeout, randomToken) {
+ ['$rootScope', '$scope', '$cookies', '$routeParams', '$http', '$location', '$filter', '$timeout', 'randomToken', 'api',
+ function($rootScope, $scope, $cookies, $routeParams, $http, $location, $filter, $timeout, randomToken, api) {
 
   $scope.mainMenu = $rootScope.mainMenu;
 
@@ -34,7 +34,8 @@ app.controller('MachineCtrl',
     $scope.unsavedChanges = true;
   };
 
-  $scope.loadMachine = function(machineId) {
+  $scope.loadMachine = function() {
+    var machineId = $scope.machine.Id;
     $http({
       method: 'GET',
       url: '/api/machines/' + machineId,
@@ -68,7 +69,26 @@ app.controller('MachineCtrl',
   };
 
   $scope.loadMachineTypes();
-  $scope.loadMachine($scope.machine.Id);
+  $scope.loadMachine();
+
+  $scope.setArchived = function(archived) {
+    var action = archived ? 'archived' : 'unarchived';
+
+    $http({
+      method: 'POST',
+      url: '/api/machines/' + $scope.machine.Id + '/set_archived',
+      params: {
+        archived: archived
+      }
+    })
+    .success(function(data) {
+      toastr.info('Successfully ' + action + ' machine');
+      $scope.loadMachine();
+    })
+    .error(function() {
+      toastr.error('Failed to ' + action + ' machine');
+    });
+  }; // archive()
 
   $scope.updateMachine = function() {
     $scope.unsavedChanges = false;

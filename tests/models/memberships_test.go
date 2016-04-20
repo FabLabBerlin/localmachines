@@ -48,20 +48,20 @@ func TestMemberships(t *testing.T) {
 			membershipName := "Membership X"
 
 			Convey("When creating a single membership", func() {
-				membershipId, err := models.CreateMembership(1, membershipName)
+				membership, err := models.CreateMembership(1, membershipName)
 				if err != nil {
 					panic(err.Error())
 				}
 
 				Convey("There should be no errors and the ID should be valid", func() {
 					So(err, ShouldBeNil)
-					So(membershipId, ShouldBeGreaterThan, 0)
+					So(membership.Id, ShouldBeGreaterThan, 0)
 				})
 
 				Convey("When reading it back by using the ID", func() {
-					membership, err := models.GetMembership(membershipId)
+					membership, err := models.GetMembership(membership.Id)
 					if err != nil {
-						panic(fmt.Sprintf("%v ... membershipId: %v", err.Error(), membershipId))
+						panic(fmt.Sprintf("%v ... membershipId: %v", err.Error(), membership.Id))
 					}
 					Convey("It should return no error", func() {
 						So(err, ShouldBeNil)
@@ -139,15 +139,15 @@ func TestMemberships(t *testing.T) {
 			})
 
 			Convey("Creating a membership and getting it", func() {
-				mid, _ := models.CreateMembership(1, membershipName)
-				membership, err := models.GetMembership(mid)
+				m, _ := models.CreateMembership(1, membershipName)
+				membership, err := models.GetMembership(m.Id)
 
 				Convey("There should be no error", func() {
 					So(err, ShouldBeNil)
 				})
 
 				Convey("Got membership ID should match the ID of the previously created", func() {
-					So(membership.Id, ShouldEqual, mid)
+					So(membership.Id, ShouldEqual, m.Id)
 				})
 			})
 		})
@@ -168,11 +168,10 @@ func TestMemberships(t *testing.T) {
 			})
 
 			Convey("Create membership and update it", func() {
-				mid, _ := models.CreateMembership(1, membershipName)
-				m, _ := models.GetMembership(mid)
+				m, _ := models.CreateMembership(1, membershipName)
 				m.Title = newMembershipName
 				err := m.Update()
-				nm, _ := models.GetMembership(mid)
+				nm, _ := models.GetMembership(m.Id)
 
 				Convey("There should be no error", func() {
 					So(err, ShouldBeNil)
@@ -196,8 +195,8 @@ func TestMemberships(t *testing.T) {
 			})
 
 			Convey("Creating a membership and delete it", func() {
-				mid, _ := models.CreateMembership(1, membershipName)
-				err := models.DeleteMembership(mid)
+				m, _ := models.CreateMembership(1, membershipName)
+				err := models.DeleteMembership(m.Id)
 
 				Convey("There should be no error", func() {
 					So(err, ShouldBeNil)

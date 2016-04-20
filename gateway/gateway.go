@@ -125,8 +125,7 @@ func main() {
 		}
 	}()
 
-	xmpp := endpoints.NewXmpp(netSwitches, Reinit)
-	xmpp.Run()
+	endpoints.NewXmpp(netSwitches, Reinit)
 
 	// The gateway shall run forever..
 	for {

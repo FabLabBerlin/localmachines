@@ -105,7 +105,7 @@ func CreateFastbillDraft(me *MonthlyEarning, inv *Invoice) (fbDraft *fastbill.In
 	for _, m := range memberships.Data {
 		if m.MonthlyPrice > 0 && m.StartDate.Before(me.PeriodTo()) && m.EndDate.After(me.PeriodFrom()) {
 			item := fastbill.Item{
-				Description: m.Title + " Membership",
+				Description: m.Title + " Membership (unit: month)",
 				Quantity:    1,
 				UnitPrice:   m.MonthlyPrice,
 				IsGross:     IS_GROSS_BRUTTO,
@@ -138,9 +138,6 @@ func CreateFastbillDraft(me *MonthlyEarning, inv *Invoice) (fbDraft *fastbill.In
 				}
 				discount = len(affected) > 0
 			}
-			beego.Info("")
-			beego.Info("discount=", discount)
-			beego.Info("unitPrice=", unitPrice)
 			if discount {
 				unitPrice = discPrice / quantity
 			} else {
@@ -155,7 +152,7 @@ func CreateFastbillDraft(me *MonthlyEarning, inv *Invoice) (fbDraft *fastbill.In
 				VatPercent:  inv.VatPercent,
 			}
 
-			if item.UnitPrice > 0 {
+			if item.UnitPrice * item.Quantity > 0.01 {
 				fbDraft.Items = append(fbDraft.Items, item)
 			}
 		}

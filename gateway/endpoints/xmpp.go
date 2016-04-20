@@ -6,6 +6,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/gateway/netswitches"
 	"github.com/FabLabBerlin/localmachines/lib/xmpp"
 	"github.com/FabLabBerlin/localmachines/lib/xmpp/commands"
+	"github.com/FabLabBerlin/localmachines/lib/xmpp/request_response"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -13,7 +14,7 @@ import (
 
 type Xmpp struct {
 	ns            *netswitches.NetSwitches
-	x             *xmpp.Xmpp
+	dispatcher    *request_response.Dispatcher
 	reinitGateway func() error
 }
 
@@ -22,33 +23,8 @@ func NewXmpp(ns *netswitches.NetSwitches, reinitGateway func() error) *Xmpp {
 		ns:            ns,
 		reinitGateway: reinitGateway,
 	}
-	x.x = xmpp.NewXmpp(global.Cfg.XMPP.Server, global.Cfg.XMPP.User, global.Cfg.XMPP.Pass)
+	x.dispatcher = request_response.NewDispatcher(global.Cfg.XMPP.Server, global.Cfg.XMPP.User, global.Cfg.XMPP.Pass, x.dispatch)
 	return x
-}
-
-func (x *Xmpp) Run() {
-	log.Printf("endpoints: xmpp: Run()")
-	go func() {
-		for {
-			select {
-			case msg := <-x.x.Recv():
-				ipAddress, err := x.dispatch(msg)
-				if err != nil {
-					log.Printf("xmpp dispatch: %v", err)
-				}
-				response := xmpp.Message{
-					Remote: msg.Remote,
-					Data:   msg.Data,
-				}
-				response.Data.IpAddress = ipAddress
-				response.Data.Error = err != nil
-				if err := x.x.Send(response); err != nil {
-					log.Printf("xmpp: failed to send response")
-				}
-			}
-		}
-	}()
-	x.x.Run()
 }
 
 func (x *Xmpp) dispatch(msg xmpp.Message) (ipAddress string, err error) {

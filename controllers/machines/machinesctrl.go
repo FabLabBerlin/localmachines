@@ -21,6 +21,7 @@ type Controller struct {
 // @Title GetAll
 // @Description Get all machines (limited to location, if specified)
 // @Param	location	query	int64	false	"Location ID"
+// @Param	archived	query	bool	false	"Include archived items"
 // @Success 200 machine.Machine
 // @Failure	401 Not authorized
 // @Failure	500	Failed to get all machines
@@ -31,6 +32,14 @@ func (this *Controller) GetAll() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
+	includeArchived := true
+
+	if a, err := this.GetBool("archived"); err != nil {
+		if !a && err == nil {
+			includeArchived = false
+		}
+	}
+
 	allMachines, err := machine.GetAll()
 	if err != nil {
 		beego.Error("Failed to get all machines", err)
@@ -39,6 +48,9 @@ func (this *Controller) GetAll() {
 
 	machines := make([]*machine.Machine, 0, len(allMachines))
 	for _, m := range allMachines {
+		if !includeArchived {
+			continue
+		}
 		if locId == 0 || locId == m.LocationId {
 			machines = append(machines, m)
 		}
@@ -107,7 +119,7 @@ func (this *Controller) Get() {
 // @Param	location	query	string	true	"Location Id"
 // @Param	mname		query	string	true	"Machine Name"
 // @Success 200 machine.MachineCreatedResponse
-// @Failure	403	Failed to create machine
+// @Failure	500	Failed to create machine
 // @Failure	401	Not authorized
 // @router / [post]
 func (this *Controller) Create() {
@@ -118,13 +130,13 @@ func (this *Controller) Create() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	machineId, err := machine.Create(locId, name)
+	m, err := machine.Create(locId, name)
 	if err != nil {
 		beego.Error("Failed to create machine", err)
-		this.CustomAbort(403, "Failed to create machine")
+		this.Abort("500")
 	}
 
-	this.Data["json"] = &models.MachineCreatedResponse{MachineId: machineId}
+	this.Data["json"] = &models.MachineCreatedResponse{MachineId: m.Id}
 	this.ServeJSON()
 }
 
@@ -185,6 +197,47 @@ func (this *Controller) Update() {
 
 	this.Data["json"] = "ok"
 	this.ServeJSON()
+}
+
+// @Title SetArchived
+// @Description (Un)archive machine
+// @Param	mid		path	int		true	"Machine ID"
+// @Param	archive	query	bool	true	"Archive"
+// @Success 200 string ok
+// @Failure	400	Bad Request
+// @Failure	401	Not authorized
+// @Failure	500	Failed to archive machine
+// @router /:mid/set_archived [post]
+func (this *Controller) SetArchived() {
+	machineId, err := this.GetInt64(":mid")
+	if err != nil {
+		beego.Error("Failed to get :mid variable")
+		this.Abort("400")
+	}
+
+	machine, err := machine.Get(machineId)
+	if err != nil {
+		beego.Error("Failed to get machine", err)
+		this.Abort("500")
+	}
+
+	if !this.IsAdminAt(machine.LocationId) {
+		beego.Error("Not authorized")
+		this.Abort("401")
+	}
+
+	machine.Archived, err = this.GetBool("archived")
+	if err != nil {
+		beego.Error("parsing archived parameter")
+		this.Abort("400")
+	}
+
+	if err = machine.Update(true); err != nil {
+		beego.Error("update:", err)
+		this.Abort("500")
+	}
+
+	this.Finish()
 }
 
 func decodeDataUri(dataUri string) ([]byte, error) {

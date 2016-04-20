@@ -2,14 +2,11 @@ package machine
 
 import (
 	"fmt"
-	"github.com/FabLabBerlin/localmachines/lib/xmpp"
 	"github.com/FabLabBerlin/localmachines/lib/xmpp/commands"
+	"github.com/FabLabBerlin/localmachines/lib/xmpp/request_response"
 	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/astaxie/beego"
-	"github.com/satori/go.uuid"
 	"strings"
-	"sync"
-	"time"
 )
 
 const (
@@ -19,13 +16,8 @@ const (
 )
 
 var (
-	mu sync.Mutex
-	// responses are matched here to the RPC requests.  We don't want to have
-	// much blocking here, therefore the channels are buffered (capacity 1) and
-	// all reads/writes must happen asynchronously.
-	responses            map[string]chan xmpp.Message
-	xmppClient           *xmpp.Xmpp
 	xmppServerConfigured bool
+	dispatcher *request_response.Dispatcher
 )
 
 func init() {
@@ -34,26 +26,7 @@ func init() {
 	if xmppServerConfigured {
 		user := beego.AppConfig.String("XmppUser")
 		pass := beego.AppConfig.String("XmppPass")
-		xmppClient = xmpp.NewXmpp(server, user, pass)
-		xmppClient.Run()
-
-		responses = make(map[string]chan xmpp.Message)
-		go func() {
-			for {
-				select {
-				case resp := <-xmppClient.Recv():
-					mu.Lock()
-					tid := resp.Data.TrackingId
-					select {
-					case responses[tid] <- resp:
-					default:
-						beego.Error("package already received: tid:", tid)
-					}
-					mu.Unlock()
-					break
-				}
-			}
-		}()
+		dispatcher = request_response.NewDispatcher(server, user, pass, nil)
 	}
 }
 
@@ -66,7 +39,7 @@ const (
 
 func xmppReinit(location *locations.Location) (err error) {
 	if xmppServerConfigured {
-		if _, err = sendXmppCommand(location, "reinit", 0); err != nil {
+		if _, err = dispatcher.SendXmppCommand(location, "reinit", 0); err != nil {
 			return fmt.Errorf("send xmpp cmd: %v", err)
 		}
 	}
@@ -101,7 +74,7 @@ func (this *Machine) turn(onOrOff ON_OR_OFF) (err error) {
 		", NetswitchHost: ", this.NetswitchHost)
 
 	if this.NetswitchConfigured() {
-		if xmppClient != nil {
+		if dispatcher != nil {
 			return this.turnXmpp(onOrOff)
 		} else {
 			return fmt.Errorf("xmpp client is nil!")
@@ -115,7 +88,7 @@ func (this *Machine) turnXmpp(onOrOff ON_OR_OFF) (err error) {
 	if err != nil {
 		return fmt.Errorf("get location %v: %v", this.LocationId, err)
 	}
-	_, err = sendXmppCommand(location, string(onOrOff), this.Id)
+	_, err = dispatcher.SendXmppCommand(location, string(onOrOff), this.Id)
 	return
 }
 
@@ -124,45 +97,7 @@ func (this *Machine) NetswitchApplyConfig() (err error) {
 	if err != nil {
 		return fmt.Errorf("get location %v: %v", this.LocationId, err)
 	}
-	_, err = sendXmppCommand(location, commands.APPLY_CONFIG, this.Id)
-	return
-}
-
-func sendXmppCommand(location *locations.Location, command string, machineId int64) (ipAddress string, err error) {
-	trackingId := uuid.NewV4().String()
-	mu.Lock()
-	responses[trackingId] = make(chan xmpp.Message, 1)
-	respCh := responses[trackingId]
-	mu.Unlock()
-	err = xmppClient.Send(xmpp.Message{
-		Remote: location.XmppId,
-		Data: xmpp.Data{
-			Command:    command,
-			MachineId:  machineId,
-			TrackingId: trackingId,
-			LocationId: location.Id,
-		},
-	})
-	if err != nil {
-		return "", fmt.Errorf("send: %v", err)
-	}
-	select {
-	case resp := <-respCh:
-		if resp.Data.Error {
-			err = fmt.Errorf("some error occurred")
-		} else {
-			ipAddress = resp.Data.IpAddress
-			err = nil
-		}
-		break
-	case <-time.After(20 * time.Second):
-		err = fmt.Errorf("timeout")
-	}
-
-	mu.Lock()
-	delete(responses, trackingId)
-	mu.Unlock()
-
+	_, err = dispatcher.SendXmppCommand(location, commands.APPLY_CONFIG, this.Id)
 	return
 }
 
@@ -178,7 +113,7 @@ func FetchLocalIpsTask() error {
 		if l.XmppId == "" {
 			continue
 		}
-		ipAddress, err := sendXmppCommand(l, commands.FETCH_LOCAL_IP, 0)
+		ipAddress, err := dispatcher.SendXmppCommand(l, commands.FETCH_LOCAL_IP, 0)
 		if err != nil {
 			beego.Error("FetchLocalIpsTask: location=", l.Id, ":", err)
 		}

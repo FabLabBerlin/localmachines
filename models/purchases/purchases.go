@@ -201,7 +201,7 @@ func (this *Purchase) quantityFromTimes() (quantity float64) {
 	case "hour":
 		return float64(seconds) / 3600
 	default:
-		beego.Error("unknown price unit ", this.PriceUnit)
+		beego.Error("unknown price unit ", this.PriceUnit, " for #", this.Id)
 	}
 
 	return
@@ -261,7 +261,7 @@ func AffectedMemberships(p *Purchase) (affected []*models.Membership, err error)
 		isAffected, err := membership.IsMachineAffected(p.MachineId)
 		if err != nil {
 			return nil, fmt.Errorf(
-				"Failed to check whether machine is affected by membership")
+				"check if machine affected by membership: %v", err)
 		}
 
 		if isAffected {

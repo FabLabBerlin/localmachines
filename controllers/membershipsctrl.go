@@ -39,8 +39,8 @@ func (this *MembershipsController) GetAll() {
 // @Description Create new membership
 // @Param	mname	query	string	true	"Membership Name"
 // @Success	200	int	Membership ID
-// @Failure	403	Failed to create membership
 // @Failure	401	Not authorized
+// @Failure	500	Failed to create membership
 // @router / [post]
 func (this *MembershipsController) Create() {
 	locId, authorized := this.GetLocIdAdmin()
@@ -50,13 +50,13 @@ func (this *MembershipsController) Create() {
 
 	membershipName := this.GetString("mname")
 
-	id, err := models.CreateMembership(locId, membershipName)
+	m, err := models.CreateMembership(locId, membershipName)
 	if err != nil {
 		beego.Error("Failed to create membership", err)
-		this.CustomAbort(403, "Failed to create membership")
+		this.Abort("500")
 	}
 
-	this.Data["json"] = id
+	this.Data["json"] = m.Id
 	this.ServeJSON()
 }
 
@@ -141,4 +141,45 @@ func (this *MembershipsController) Update() {
 
 	this.Data["json"] = "ok"
 	this.ServeJSON()
+}
+
+// @Title SetArchived
+// @Description (Un)archive membership
+// @Param	mid		path	int		true	"Membership ID"
+// @Param	archive	query	bool	true	"Archive"
+// @Success 200 string ok
+// @Failure	400	Bad Request
+// @Failure	401	Not authorized
+// @Failure	500	Failed to archive membership
+// @router /:mid/set_archived [post]
+func (this *MembershipsController) SetArchived() {
+	id, err := this.GetInt64(":mid")
+	if err != nil {
+		beego.Error("Failed to get :mid variable")
+		this.Abort("400")
+	}
+
+	m, err := models.GetMembership(id)
+	if err != nil {
+		beego.Error("get", err)
+		this.Abort("500")
+	}
+
+	if !this.IsAdminAt(m.LocationId) {
+		beego.Error("Not authorized")
+		this.Abort("401")
+	}
+
+	m.Archived, err = this.GetBool("archived")
+	if err != nil {
+		beego.Error("parsing archived parameter")
+		this.Abort("400")
+	}
+
+	if err = m.Update(); err != nil {
+		beego.Error("update:", err)
+		this.Abort("500")
+	}
+
+	this.Finish()
 }

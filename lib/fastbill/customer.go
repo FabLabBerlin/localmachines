@@ -140,29 +140,43 @@ func (this *FastBill) GetCustomers(filter *CustomerGetFilter,
 }
 
 func GetCustomerId(user users.User) (customerId int64, err error) {
+	cn := strconv.FormatInt(user.ClientId, 10)
+	customerId, noNumberFound, err := getCustomerId(cn)
+	if noNumberFound {
+		cn = fmt.Sprintf("%04d", user.ClientId)
+		customerId, noNumberFound, err = getCustomerId(cn)
+	}
+	return
+}
+
+func getCustomerId(customerNumber string) (customerId int64, noNumberFound bool, err error) {
 	fb := New()
 
-	customerNumber := user.ClientId
-	if customerNumber <= 0 {
-		return 0, fmt.Errorf("wrong customer number (a.k.a. Fastbill ID a.k.a. Client Id) for user ID %v: %v",
-			user.Id, user.ClientId)
+	customerNumberInt64, err := strconv.ParseInt(customerNumber, 10, 64)
+	if err != nil {
+		return 0, false, err
+	}
+	if customerNumberInt64 <= 0 {
+		return 0, false, fmt.Errorf("wrong customer number (a.k.a. Fastbill ID a.k.a. Client Id): %v",
+			customerNumber)
 	}
 	filter := CustomerGetFilter{
-		CUSTOMER_NUMBER: strconv.FormatInt(customerNumber, 10),
+		CUSTOMER_NUMBER: customerNumber,
 	}
 	list, err := fb.GetCustomers(&filter, 10, 0)
 	if err != nil {
-		return 0, fmt.Errorf("get customers: %v", err)
+		return 0, false, fmt.Errorf("get customers: %v", err)
 	}
 	if len(list.Customers) == 0 {
-		return 0, fmt.Errorf("no customer found for customer number %v",
+		return 0, true, fmt.Errorf("no customer found for customer number %v",
 			customerNumber)
 	}
 	if n := len(list.Customers); n > 1 {
-		return 0, fmt.Errorf("%v matches found for customer number %v",
+		return 0, false, fmt.Errorf("%v matches found for customer number %v",
 			n, customerNumber)
 	}
-	return strconv.ParseInt(list.Customers[0].CUSTOMER_ID, 10, 64)
+	customerId, err = strconv.ParseInt(list.Customers[0].CUSTOMER_ID, 10, 64)
+	return
 }
 
 // Create FastBill customer, returns Customer ID
