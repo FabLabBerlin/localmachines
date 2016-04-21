@@ -44,6 +44,11 @@ func Init() {
 				&machines.Controller{},
 			),
 		),
+		beego.NSNamespace("/user_locations",
+			beego.NSInclude(
+				&controllers.UserLocationsController{},
+			),
+		),
 		beego.NSNamespace("/users",
 			beego.NSInclude(
 				&userctrls.ForgotPassword{},

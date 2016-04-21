@@ -356,4 +356,11 @@ func init() {
 			[]string{"post"},
 			nil})
 
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:UserLocationsController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:UserLocationsController"],
+		beego.ControllerComments{
+			"GetAll",
+			`/`,
+			[]string{"get"},
+			nil})
+
 }

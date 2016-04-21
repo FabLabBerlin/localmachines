@@ -21,13 +21,24 @@
       
     </div>
     <div class="col-xs-5">
+      <div class="pull-right">
+        <button class="btn btn-primary btn-lg"
+                ng-click="setShowArchived(true)"
+                ng-hide="showArchived">
+          <i class="fa fa-archive"></i>&nbsp;Show archived
+        </button>
+        <button class="btn btn-primary btn-lg"
+                ng-click="setShowArchived(false)"
+                ng-show="showArchived">
+          <i class="fa fa-archive"></i>&nbsp;Hide archived
+        </button>
 
-      <button 
-        class="btn btn-primary btn-lg pull-right" 
-        ng-click="addUserPrompt()">
-        <span class="fa fa-plus"></span>
-        &nbsp;Add user
-      </button>
+        <button class="btn btn-primary btn-lg" 
+                ng-click="addUserPrompt()">
+          <span class="fa fa-plus"></span>
+          &nbsp;Add user
+        </button>
+      </div>
 
     </div>
   </div>
@@ -49,7 +60,7 @@
     <tbody class="ng-scope">
       <!-- For some reason directives with tr elements inside
          do not work well in this (table) context.-->
-      <tr ng-repeat="user in users | filter:query">
+      <tr ng-repeat="user in users | filter:query | usersFilter:this">
         <td>{{user.FirstName}}</td>
         <td>{{user.LastName}}</td>
         <td>{{user.Username}}</td>

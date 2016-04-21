@@ -12,25 +12,48 @@ app.config(['$routeProvider', function($routeProvider) {
 }]); // app.config
 
 app.controller('UsersCtrl',
- ['$scope', '$http', '$location', '$cookies',
- function($scope, $http, $location, $cookies) {
+ ['$scope', '$http', '$location', '$cookies', '$q',
+ function($scope, $http, $location, $cookies, $q) {
 
   $scope.users = [];
 
   $scope.getAllUsers = function() {
     console.log('getAllUsers: $cookies=', $cookies);
-    $http({
-      method: 'GET',
-      url: '/api/users',
-      params: {
-        ac: new Date().getTime(),
-        location: $cookies.locationId
-      }
-    })
-    .success(function(users) {
+    $q.all([
+      $http({
+        method: 'GET',
+        url: '/api/users',
+        params: {
+          ac: new Date().getTime(),
+          location: $cookies.locationId
+        }
+      }),
+      $http({
+        method: 'GET',
+        url: '/api/user_locations',
+        params: {
+          ac: new Date().getTime(),
+          location: $cookies.locationId
+        }
+      })
+    ])
+    .then(function(result) {
+      var users = result[0].data;
+      var userLocations = result[1].data;
+
       $scope.users = users;
+      $scope.usersById = {};
+      _.each(users, function(user) {
+        $scope.usersById[user.Id] = user;
+      });
+      _.each(userLocations, function(userLocation) {
+        var u = $scope.usersById[userLocation.UserId];
+        if (u) {
+          u.UserLocation = userLocation;
+        }
+      });
     })
-    .error(function(data, status) {
+    .catch(function(data, status) {
       toastr.error('Failed to get all users');
     });
   };
@@ -76,7 +99,22 @@ app.controller('UsersCtrl',
   $scope.editUser = function(userId) {
     $location.path('/users/' + userId);
   };
+
+  $scope.setShowArchived = function(show) {
+    $scope.showArchived = show;
+  };
+
 }]); // app.controller
+
+app.filter('usersFilter', function() {
+  return function(users, scope) {
+    return _.filter(users, function(user) {
+      var userArchived = user.UserLocation &&
+        user.UserLocation.UserRole === 'archived';
+      return scope.showArchived || !userArchived;
+    });
+  };
+});
 
 app.directive('userListItem', ['$location', function($location) {
   return {
