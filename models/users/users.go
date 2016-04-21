@@ -47,6 +47,9 @@ func init() {
 	orm.RegisterModel(new(User))
 }
 
+var ErrEmailExists = errors.New("User with the same email exists")
+var ErrUsernameExists = errors.New("User with the same username exists")
+
 // Attempt to create user, do not complain if it already exists
 func CreateUser(user *User) (userId int64, er error) {
 
@@ -73,7 +76,7 @@ func CreateUser(user *User) (userId int64, er error) {
 			return 0, fmt.Errorf("Failed to exec query: %v", err)
 		}
 		if num > 0 {
-			return 0, errors.New("User with the same username exists")
+			return 0, ErrUsernameExists
 		}
 	}
 
@@ -86,7 +89,7 @@ func CreateUser(user *User) (userId int64, er error) {
 			return 0, fmt.Errorf("Failed to exec query: %v", err)
 		}
 		if num > 0 {
-			return 0, errors.New("User with the same email exists")
+			return 0, ErrEmailExists
 		}
 	}
 

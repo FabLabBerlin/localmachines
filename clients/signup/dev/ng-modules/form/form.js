@@ -183,8 +183,15 @@ angular.module('fabsmith.signup.form', ['ngRoute'])
       toastr.success("Registration successful !");
       $location.path('/thanks');
     })
-    .error(function() {
-      toastr.error('Error while trying to register');
+    .error(function(data, status, header, config) {
+      if (data === 'User with the same username exists') {
+        toastr.error(data);
+      } else if (data === 'User with the same email exists') {
+        toastr.error(data);
+      } else {
+        console.log(data, status, header, config);
+        toastr.error('Error while trying to register');
+      }
     });
   };
 

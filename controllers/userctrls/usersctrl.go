@@ -277,7 +277,11 @@ func (this *UsersController) Signup() {
 	data.User.UserRole = user_roles.MEMBER.String()
 
 	// Attempt to create the user
-	if userId, err = users.CreateUser(&data.User); err != nil {
+	if userId, err = users.CreateUser(&data.User); err == users.ErrUsernameExists {
+		this.CustomAbort(400, err.Error())
+	} else if err == users.ErrEmailExists {
+		this.CustomAbort(400, err.Error())
+	} else if err != nil {
 		beego.Error("Failed to create user:", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
