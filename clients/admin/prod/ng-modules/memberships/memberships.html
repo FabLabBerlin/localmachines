@@ -15,7 +15,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr ng-repeat="membership in memberships">
+      <tr ng-repeat="membership in memberships | membershipsFilter:this">
         <td>{{membership.Title}}</td>
         <td>{{membership.ShortName}}</td>
         <td>{{membership.DurationMonths}} Months</td>
@@ -33,9 +33,22 @@
 
   <hr>
 
-  <button class="btn btn-lg btn-primary pull-right"
-          ng-click="addMembershipPrompt()">
-    <span class="fa fa-plus"></span>&nbsp;Add Membership
-  </button>
+  <div class="pull-right">
+    <button class="btn btn-primary btn-lg"
+            ng-click="setShowArchived(true)"
+            ng-hide="showArchived">
+      <i class="fa fa-archive"></i>&nbsp;Show archived
+    </button>
+    <button class="btn btn-primary btn-lg"
+            ng-click="setShowArchived(false)"
+            ng-show="showArchived">
+      <i class="fa fa-archive"></i>&nbsp;Hide archived
+    </button>
+
+    <button class="btn btn-lg btn-primary"
+            ng-click="addMembershipPrompt()">
+      <span class="fa fa-plus"></span>&nbsp;Add Membership
+    </button>
+  </div>
 
 </div> <!-- /container -->

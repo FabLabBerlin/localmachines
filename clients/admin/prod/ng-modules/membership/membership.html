@@ -51,7 +51,7 @@
         <label>Machines Affected by Membership</label>
         <div class="row">
 
-          <div class="col-sm-6" ng-repeat="machine in machines">
+          <div class="col-sm-6" ng-repeat="machine in machines | machinesFilter:this">
             <div class="checkbox-inline">
               <label title="{{machine.Description}}">
                 <input type="checkbox"
@@ -117,6 +117,17 @@
   <hr>
 
   <div class="pull-right">
+
+    <button class="btn btn-danger btn-lg"
+            ng-click="setArchived(true)"
+            ng-hide="membership.Archived">
+      <i class="fa fa-archive"></i>&nbsp;Archive
+    </button>
+    <button class="btn btn-danger btn-lg"
+            ng-click="setArchived(false)"
+            ng-show="membership.Archived">
+      <i class="fa fa-archive"></i>&nbsp;Unarchive
+    </button>
 
     <button class="btn btn-primary btn-lg"
             ng-click="updateMembership()">

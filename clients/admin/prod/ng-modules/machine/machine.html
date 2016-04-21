@@ -251,6 +251,17 @@
 
   <div class="pull-right">
 
+    <button class="btn btn-danger btn-lg"
+            ng-click="setArchived(true)"
+            ng-hide="machine.Archived">
+      <i class="fa fa-archive"></i>&nbsp;Archive
+    </button>
+    <button class="btn btn-danger btn-lg"
+            ng-click="setArchived(false)"
+            ng-show="machine.Archived">
+      <i class="fa fa-archive"></i>&nbsp;Unarchive
+    </button>
+
     <button class="btn btn-primary btn-lg"
             ng-click="updateMachine()">
       <i class="fa fa-save"></i>&nbsp;Save

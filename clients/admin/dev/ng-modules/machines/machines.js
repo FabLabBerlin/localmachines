@@ -69,7 +69,7 @@ app.filter('machinesFilter', function() {
     return _.filter(machines, function(machine) {
       return scope.showArchived || !machine.Archived;
     });
-  }
+  };
 });
 
 })(); // closure

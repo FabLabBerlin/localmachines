@@ -80,7 +80,7 @@ app.filter('membershipsFilter', function() {
     return _.filter(memberships, function(membership) {
       return scope.showArchived || !membership.Archived;
     });
-  }
+  };
 });
 
 })(); // closure
