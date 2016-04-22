@@ -29,6 +29,7 @@ type Location struct {
 	FeatureSetupTime bool   `json:",omitempty"`
 	FeatureSpaces    bool   `json:",omitempty"`
 	FeatureTutoring  bool   `json:",omitempty"`
+	FeatureCoupons   bool   `json:",omitempty"`
 }
 
 func init() {
@@ -42,6 +43,7 @@ func (l *Location) ClearPrivateData() {
 	l.FeatureSetupTime = false
 	l.FeatureSpaces = false
 	l.FeatureTutoring = false
+	l.FeatureCoupons = false
 }
 
 func (l *Location) Save() (err error) {

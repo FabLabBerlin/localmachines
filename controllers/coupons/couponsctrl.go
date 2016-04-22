@@ -4,10 +4,7 @@ package coupons
 import (
 	"github.com/FabLabBerlin/localmachines/controllers"
 	"github.com/FabLabBerlin/localmachines/models/coupons"
-	"github.com/FabLabBerlin/localmachines/models/user_locations"
-	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"github.com/astaxie/beego"
-	"strings"
 )
 
 type Controller struct {
@@ -23,15 +20,15 @@ type Controller struct {
 func (this *Controller) GetAll() {
 	locId, isLocAdmin := this.GetLocIdAdmin()
 	if !isLocAdmin {
-		c.Abort("401")
+		this.Abort("401")
 	}
 	if locId <= 0 {
-		c.Abort("400")
+		this.Abort("400")
 	}
 	cs, err := coupons.GetAllCouponsAt(locId)
 	if err != nil {
 		beego.Error("get all:", err)
-		c.Abort("500")
+		this.Abort("500")
 	}
 	this.Data["json"] = cs
 	this.ServeJSON()
@@ -40,6 +37,7 @@ func (this *Controller) GetAll() {
 // @Title Generate
 // @Description Generate coupons
 // @Param	location	query	int64	true	"Location ID"
+// @Param	static_code	body	string	false	"Static code (optional)"
 // @Param	n			body	int64	true	"Number of coupons"
 // @Param	value		body	float64	true	"Value of coupon in ¤"
 // @Success 200 {object}
@@ -64,7 +62,8 @@ func (this *Controller) Generate() {
 		beego.Error("value:", err)
 		this.Abort("400")
 	}
-	cs, err := coupons.Generate(locId, n, value)
+	staticCode := this.GetString("static_code")
+	cs, err := coupons.Generate(locId, staticCode, int(n), value)
 	if err != nil {
 		beego.Error("generate:", err)
 		this.Abort("500")

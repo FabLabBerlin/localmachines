@@ -7,6 +7,7 @@ package routers
 import (
 	"github.com/FabLabBerlin/localmachines/controllers"
 	"github.com/FabLabBerlin/localmachines/controllers/clients"
+	"github.com/FabLabBerlin/localmachines/controllers/coupons"
 	"github.com/FabLabBerlin/localmachines/controllers/custom_url"
 	"github.com/FabLabBerlin/localmachines/controllers/locations"
 	"github.com/FabLabBerlin/localmachines/controllers/machines"
@@ -29,6 +30,11 @@ func Init() {
 	// handled by beego router.go
 
 	ns := beego.NewNamespace("/api",
+		beego.NSNamespace("/coupons",
+			beego.NSInclude(
+				&coupons.Controller{},
+			),
+		),
 		beego.NSNamespace("/debug",
 			beego.NSInclude(
 				&controllers.DebugController{},

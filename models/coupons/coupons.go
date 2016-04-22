@@ -1,8 +1,11 @@
 package coupons
 
 import (
-	"crypto/rand"
+	"errors"
+	"fmt"
 	"github.com/astaxie/beego/orm"
+	"math/rand"
+	"time"
 )
 
 const CODE_LENGTH = 10
@@ -15,12 +18,20 @@ type Coupon struct {
 	Value      float64
 }
 
+func (c *Coupon) TableName() string {
+	return "coupons"
+}
+
 type CouponUsage struct {
 	Id       int64
 	CouponId int64
 	Value    float64
 	month    int
 	year     int
+}
+
+func (cu *CouponUsage) TableName() string {
+	return "coupon_usages"
 }
 
 func init() {
@@ -34,22 +45,34 @@ func GetCoupon(id int64) (c *Coupon, err error) {
 	return
 }
 
+func GetCouponByCode(locId int64, code string) (*Coupon, error) {
+	o := orm.NewOrm()
+	var coupon Coupon
+	err := o.QueryTable("coupons").
+		Filter("location_id", locId).
+		Filter("code", code).
+		One(&coupon)
+	return &coupon, err
+}
+
 func GetAllCouponsAt(locId int64) (cs []*Coupon, err error) {
 	o := orm.NewOrm()
 	c := Coupon{}
 	_, err = o.QueryTable(c.TableName()).
-		Filter("location_id", locationId).
+		Filter("location_id", locId).
 		All(&cs)
 	return
 }
 
-func Generate(locId int64, n int, value float64) (cs []*Coupon, err error) {
+func Generate(locId int64, staticCode string, n int, value float64) (cs []*Coupon, err error) {
 	cs = make([]*Coupon, 0, n)
 	for tries := 0; len(cs) == 0 && tries < 10; tries++ {
 		for i := 0; i < n; i++ {
-			code, err := generateCode()
-			if err != nil {
-				return nil, fmt.Errorf("generate code: %v", err)
+			code := staticCode
+			if staticCode == "" {
+				if code, err = generateCode(); err != nil {
+					return nil, fmt.Errorf("generate code: %v", err)
+				}
 			}
 			c := &Coupon{
 				LocationId: locId,
@@ -58,8 +81,10 @@ func Generate(locId int64, n int, value float64) (cs []*Coupon, err error) {
 			}
 			cs = append(cs, c)
 		}
-		if err = checkUnique(locId, cs); err != nil {
-			cs = make([]*Coupon, 0, n)
+		if staticCode == "" {
+			if err = checkUnique(locId, cs); err != nil {
+				cs = make([]*Coupon, 0, n)
+			}
 		}
 	}
 	o := orm.NewOrm()
@@ -83,7 +108,7 @@ func checkUnique(locId int64, cs []*Coupon) (err error) {
 		if _, ok := codes[c.Code]; ok {
 			return ErrDuplicateCode
 		}
-		if _, err := GetByCode(c.Code); err == nil {
+		if _, err := GetCouponByCode(locId, c.Code); err == nil {
 			return ErrDuplicateCode
 		}
 	}
@@ -99,5 +124,5 @@ func generateCode() (code string, err error) {
 		b[i] = letters[rand.Intn(len(letters))]
 	}
 
-	return string(b)
+	return string(b), nil
 }

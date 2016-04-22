@@ -9,6 +9,7 @@ var app = angular.module('fabsmith', [
   'fabsmith.admin.activation',
   'fabsmith.admin.activations',
   'fabsmith.admin.api',
+  'fabsmith.admin.coupons',
   'fabsmith.admin.coworking',
   'fabsmith.admin.coworking.purchase',
   'fabsmith.admin.coworking.product',
