@@ -71,3 +71,91 @@ func (this *Controller) Generate() {
 	this.Data["json"] = cs
 	this.ServeJSON()
 }
+
+// @Title Assign
+// @Description Assign coupon
+// @Param	location	query	int64	true	"Location ID"
+// @Param	user_id		body	int64	true	"User ID"
+// @Success 200 {object}
+// @Failure	401	Not authorized
+// @Failure	500	Internal Server Error
+// @router /coupons/:id/assign [post]
+func (this *Controller) Assign() {
+	locId, isLocMember := this.GetLocIdMember()
+	if !isLocMember {
+		this.Abort("401")
+	}
+	if locId <= 0 {
+		this.Abort("400")
+	}
+	id, err := this.GetInt64(":id")
+	if err != nil {
+		this.Abort("400")
+	}
+	uid, err := this.GetInt64("user_id")
+	if err != nil {
+		this.Abort("400")
+	}
+	c, err := coupons.GetCoupon(id)
+	if err != nil {
+		beego.Error("get coupon:", err)
+		this.Abort("500")
+	}
+	if err = c.Assign(uid); err != nil {
+		beego.Error("generate:", err)
+		this.Abort("500")
+	}
+	this.Data["json"] = "ok"
+	this.ServeJSON()
+}
+
+// @Title Use
+// @Description Use coupon
+// @Param	location	query	int64	true	"Location ID"
+// @Param	coupon_id	body	int64	true	"Coupon ID"
+// @Param	value		body	float64	true	"Value"
+// @Success	200 {object}
+// @Failure	400	Client Error
+// @Failure	401	Not authorized
+// @Failure	403	Forbidden
+// @Failure	500	Internal Server Error
+// @router /coupons/:id/use [post]
+func (this *Controller) Use() {
+	locId, isLocMember := this.GetLocIdMember()
+	if !isLocMember {
+		this.Abort("401")
+	}
+	id, err := this.GetInt64(":id")
+	if err != nil {
+		this.Abort("400")
+	}
+	uid, err := this.GetSessionUserId()
+	if err != nil {
+		beego.Error("cannot get session uid")
+		this.Abort("400")
+	}
+	value, err := this.GetFloat("value")
+	if err != nil {
+		beego.Error("cannot get value")
+		this.Abort("400")
+	}
+	c, err := coupons.GetCoupon(id)
+	if err != nil {
+		beego.Error("get coupon:", err)
+		this.Abort("500")
+	}
+	if c.LocationId != locId {
+		beego.Error("invalid location for coupon")
+		this.Abort("400")
+	}
+	if c.UserId != uid {
+		beego.Error("coupon has user id", c.UserId)
+		this.Abort("403")
+	}
+	if err = c.Use(value); err != nil {
+		beego.Error("generate:", err)
+		this.Abort("500")
+	}
+	this.Data["json"] = "ok"
+	this.ServeJSON()
+}

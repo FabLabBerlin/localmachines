@@ -18,26 +18,6 @@ type Coupon struct {
 	Value      float64
 }
 
-func (c *Coupon) TableName() string {
-	return "coupons"
-}
-
-type CouponUsage struct {
-	Id       int64
-	CouponId int64
-	Value    float64
-	month    int
-	year     int
-}
-
-func (cu *CouponUsage) TableName() string {
-	return "coupon_usages"
-}
-
-func init() {
-	orm.RegisterModel(new(Coupon), new(CouponUsage))
-}
-
 func GetCoupon(id int64) (c *Coupon, err error) {
 	o := orm.NewOrm()
 	c = &Coupon{Id: id}
@@ -125,4 +105,70 @@ func generateCode() (code string, err error) {
 	}
 
 	return string(b), nil
+}
+
+func (c *Coupon) Assign(userId int64) (err error) {
+	if c.UserId == userId {
+		return nil
+	}
+	if c.UserId != 0 && c.UserId != userId {
+		return errors.New("already assigned to other user")
+	}
+	return c.Update()
+}
+
+func (c *Coupon) TableName() string {
+	return "coupons"
+}
+
+func (c *Coupon) Update() (err error) {
+	_, err = orm.NewOrm().Update(c)
+	return
+}
+
+func (c *Coupon) Usages() (cus []*CouponUsage, err error) {
+	_, err = orm.NewOrm().
+		QueryTable("coupon_usages").
+		Filter("coupon_id", c.Id).
+		All(&cus)
+	return
+}
+
+func (c *Coupon) Use(value float64) (err error) {
+	plannedUse := value
+	usages, err := c.Usages()
+	if err != nil {
+		return fmt.Errorf("usages: %v", err)
+	}
+	for _, usage := range usages {
+		plannedUse += usage.Value
+	}
+	if plannedUse > c.Value + 0.01 {
+		return errors.New("requested value exceeds coupon value")
+	}
+	t := time.Now()
+	cu := CouponUsage{
+		CouponId: c.Id,
+		Value: value,
+		Month: int(t.Month()),
+		Year: t.Year(),
+	}
+	_, err = orm.NewOrm().Insert(&cu)
+	return
+}
+
+type CouponUsage struct {
+	Id       int64
+	CouponId int64
+	Value    float64
+	Month    int
+	Year     int
+}
+
+func (cu *CouponUsage) TableName() string {
+	return "coupon_usages"
+}
+
+func init() {
+	orm.RegisterModel(new(Coupon), new(CouponUsage))
 }
