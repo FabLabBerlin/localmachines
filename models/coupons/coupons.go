@@ -44,6 +44,15 @@ func GetAllCouponsAt(locId int64) (cs []*Coupon, err error) {
 	return
 }
 
+func GetAllCouponsOf(locId, userId int64)  (cs []*Coupon, err error) {
+	o := orm.NewOrm()
+	_, err = o.QueryTable("coupons").
+		Filter("location_id", locId).
+		Filter("user_id", userId).
+		All(&cs)
+	return
+}
+
 func Generate(locId int64, staticCode string, n int, value float64) (cs []*Coupon, err error) {
 	cs = make([]*Coupon, 0, n)
 	for tries := 0; len(cs) == 0 && tries < 10; tries++ {
@@ -69,13 +78,17 @@ func Generate(locId int64, staticCode string, n int, value float64) (cs []*Coupo
 	}
 	o := orm.NewOrm()
 	if err = o.Begin(); err != nil {
-		return
+		return nil, fmt.Errorf("begin: %v", err)
 	}
-	if _, err = o.InsertMulti(n, cs); err != nil {
-		o.Rollback()
-		return
+	for _, c := range cs {
+		if _, err = o.Insert(c); err != nil {
+			o.Rollback()
+			return nil, fmt.Errorf("insert: %v", err)			
+		}
 	}
-	err = o.Commit()
+	if err = o.Commit(); err != nil {
+		return nil, fmt.Errorf("commit: %v", err)
+	}
 	return
 }
 
@@ -114,7 +127,25 @@ func (c *Coupon) Assign(userId int64) (err error) {
 	if c.UserId != 0 && c.UserId != userId {
 		return errors.New("already assigned to other user")
 	}
+	c.UserId = userId
 	return c.Update()
+}
+
+func (c *Coupon) RestValue() (restValue float64, err error) {
+	restValue = c.Value
+	usages, err := c.Usages()
+	if err != nil {
+		return 0, fmt.Errorf("usages: %v", err)
+	}
+	for _, u := range usages {
+		restValue -= u.Value
+	}
+	if restValue < -1 {
+		return 0, fmt.Errorf("rest value %v", restValue)
+	} else if restValue < 0 {
+		restValue = 0
+	}
+	return
 }
 
 func (c *Coupon) TableName() string {
@@ -122,38 +153,59 @@ func (c *Coupon) TableName() string {
 }
 
 func (c *Coupon) Update() (err error) {
+	fmt.Printf("coupon#update: c=%v\n", c)
 	_, err = orm.NewOrm().Update(c)
 	return
 }
 
-func (c *Coupon) Usages() (cus []*CouponUsage, err error) {
+func (c *Coupon) Usages() (us []*CouponUsage, err error) {
 	_, err = orm.NewOrm().
 		QueryTable("coupon_usages").
 		Filter("coupon_id", c.Id).
-		All(&cus)
+		All(&us)
 	return
 }
 
-func (c *Coupon) Use(value float64) (err error) {
-	plannedUse := value
+// UseForInvoice so the user gets a rebate to it.
+func (c *Coupon) UseForInvoice(invoiceValue float64, month time.Month, year int) (u *CouponUsage, err error) {
+	if invoiceValue < 0.01 {
+		return
+	}
+	if c.UserId == 0 {
+		return nil, fmt.Errorf("no user assigned: %v", err)
+	}
+	monthLastDay := time.Date(year, month, 1, 0, 0, 0, 0, time.UTC).AddDate(0, 1, -1)
+	if monthLastDay.After(time.Now()) {
+		return nil, fmt.Errorf("coupon cannot be used for %v %v invoice yet",
+			month, year)
+	}
 	usages, err := c.Usages()
 	if err != nil {
-		return fmt.Errorf("usages: %v", err)
+		return nil, fmt.Errorf("usages: %v", err)
 	}
 	for _, usage := range usages {
-		plannedUse += usage.Value
+		if usage.Month == int(month) {
+			return nil, fmt.Errorf("coupon already used")
+		}
 	}
-	if plannedUse > c.Value + 0.01 {
-		return errors.New("requested value exceeds coupon value")
+	restValue, err := c.RestValue()
+	if err != nil {
+		return nil, fmt.Errorf("rest value: %v", err)
 	}
-	t := time.Now()
-	cu := CouponUsage{
-		CouponId: c.Id,
-		Value: value,
-		Month: int(t.Month()),
-		Year: t.Year(),
+	if restValue > 0 {
+		value := restValue
+		if value > invoiceValue {
+			value = invoiceValue
+		}
+		t := time.Now()
+		u = &CouponUsage{
+			CouponId: c.Id,
+			Value: value,
+			Month: int(t.Month()),
+			Year: t.Year(),
+		}
+		_, err = orm.NewOrm().Insert(u)
 	}
-	_, err = orm.NewOrm().Insert(&cu)
 	return
 }
 
@@ -165,7 +217,7 @@ type CouponUsage struct {
 	Year     int
 }
 
-func (cu *CouponUsage) TableName() string {
+func (u *CouponUsage) TableName() string {
 	return "coupon_usages"
 }
 

@@ -27,11 +27,4 @@ func init() {
 			[]string{"post"},
 			nil})
 
-	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/coupons:Controller"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/coupons:Controller"],
-		beego.ControllerComments{
-			"Use",
-			`/coupons/:id/use`,
-			[]string{"post"},
-			nil})
-
 }

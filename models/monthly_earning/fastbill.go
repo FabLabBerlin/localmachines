@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib/fastbill"
 	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/coupons"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"github.com/astaxie/beego"
@@ -102,6 +103,9 @@ func CreateFastbillDraft(me *MonthlyEarning, inv *Invoice) (fbDraft *fastbill.In
 		return nil, true, nil
 	}
 
+	invoiceValue := 0.0
+
+	// Add Memberships
 	for _, m := range memberships.Data {
 		if m.MonthlyPrice > 0 && m.StartDate.Before(me.PeriodTo()) && m.EndDate.After(me.PeriodFrom()) {
 			item := fastbill.Item{
@@ -111,10 +115,12 @@ func CreateFastbillDraft(me *MonthlyEarning, inv *Invoice) (fbDraft *fastbill.In
 				IsGross:     IS_GROSS_BRUTTO,
 				VatPercent:  inv.VatPercent,
 			}
+			invoiceValue += item.UnitPrice
 			fbDraft.Items = append(fbDraft.Items, item)
 		}
 	}
 
+	// Add Product Purchases
 	byProductNameAndPricePerUnit := inv.byProductNameAndPricePerUnit()
 
 	for productName, byPricePerUnit := range byProductNameAndPricePerUnit {
@@ -152,11 +158,27 @@ func CreateFastbillDraft(me *MonthlyEarning, inv *Invoice) (fbDraft *fastbill.In
 				VatPercent:  inv.VatPercent,
 			}
 
-			if item.UnitPrice * item.Quantity > 0.01 {
+			if v := item.UnitPrice * item.Quantity; v > 0.01 {
+				invoiceValue += v
 				fbDraft.Items = append(fbDraft.Items, item)
 			}
 		}
 	}
+
+	// Add Coupons
+	cs, err := coupons.GetAllCouponsOf(me.LocationId, inv.User.Id)
+	if err != nil {
+		return nil, false, fmt.Errorf("get all coupons: %v", err)
+	}
+	rebateValue := 0.0
+	for _, c := range cs {
+		usage, err := c.UseForInvoice(invoiceValue - rebateValue, time.Month(me.MonthFrom), me.YearFrom)
+		if err != nil {
+			return nil, false, fmt.Errorf("use for invoice: %v", err)
+		}
+		rebateValue += usage.Value
+	}
+	fbDraft.CashDiscountPercent = fmt.Sprintf("%v", rebateValue / invoiceValue * 100)
 
 	if _, err := fbDraft.Submit(); err == fastbill.ErrInvoiceAlreadyExported {
 		return nil, false, fastbill.ErrInvoiceAlreadyExported
