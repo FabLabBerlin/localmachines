@@ -89,6 +89,7 @@ module.exports = function (grunt) {
 						'dev/ng-modules/activations/activations.js',
 						'dev/ng-modules/api/api.js',
 						'dev/ng-modules/bookings/bookings.js',
+						'dev/ng-modules/coupons/coupons.js',
 						'dev/ng-modules/coworking/coworking.js',
 						'dev/ng-modules/coworking/coworking-product.js',
 						'dev/ng-modules/coworking/coworking-purchase.js',
@@ -158,6 +159,11 @@ module.exports = function (grunt) {
 				}, {
 					src: 'dev/bower_components/font-awesome/fonts/*',
 					dest: 'prod/assets/fonts/',
+					expand: true,
+					flatten: true
+				}, {
+					src: 'dev/ng-modules/coupons/coupons.html', 
+					dest: 'prod/ng-modules/coupons/',
 					expand: true,
 					flatten: true
 				}, {

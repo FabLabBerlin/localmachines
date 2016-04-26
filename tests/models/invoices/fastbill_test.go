@@ -55,13 +55,14 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 
 		Convey("Testing createFastbillDraft", func() {
 
-			t := time.Now()
+			m := TIME_START.Month()
+			y := TIME_START.Year()
 			me := monthly_earning.MonthlyEarning{
 				LocationId: 1,
-				MonthFrom:  int(t.Month()),
-				YearFrom:   t.Year(),
-				MonthTo:    int(t.Month()),
-				YearTo:     t.Year(),
+				MonthFrom:  int(m),
+				YearFrom:   y,
+				MonthTo:    int(m),
+				YearTo:     y,
 			}
 
 			invs, err := me.NewInvoices(19)

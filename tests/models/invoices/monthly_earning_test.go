@@ -16,7 +16,7 @@ import (
 	"github.com/tealeg/xlsx"
 )
 
-var TIME_START = time.Now()
+var TIME_START = time.Now().AddDate(0, -1, 0)
 
 func init() {
 	setup.ConfigDB()
