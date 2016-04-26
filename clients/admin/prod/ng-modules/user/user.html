@@ -365,9 +365,8 @@
           placeholder="Membership">
           <!-- These have to be loaded via API -->
           <option value="" selected disabled>Select Membership</option>
-          <option 
-            ng-repeat="membership in memberships" 
-            value={{membership.Id}}>
+          <option ng-repeat="membership in memberships | membershipsFilter:this" 
+                  value={{membership.Id}}>
             {{membership.Title}}
           </option>
         </select>
