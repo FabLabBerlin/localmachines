@@ -20,9 +20,16 @@
             <input type="text" ng-model="machine.ReservationPriceHalfHourly" placeholder="Enter price to enable reservations for this machine" size="50">
           </td>
           <td>
-            <button type="button" class="btn btn-primary btn-ico pull-right" ng-click="saveMachine(machine.Id)">
-              <span class="fa fa-floppy-o"></span>
-            </button>
+            <div class="pull-right">
+              <a href="/api/reservations/icalendar?location={{locationId}}&machine={{machine.Id}}">
+                <button type="button" class="btn btn-primary btn-ico">
+                  <span class="fa fa-calendar"></span>
+                </button>
+              </a>
+              <button type="button" class="btn btn-primary btn-ico" ng-click="saveMachine(machine.Id)">
+                <span class="fa fa-floppy-o"></span>
+              </button>
+            </div>
           </td>
         </tr>
       </tbody>

@@ -21,6 +21,7 @@ app.controller('ReservationsCtrl',
   $scope.reservationRulesById = {};
   $scope.users = [];
   $scope.usersById = {};
+  $scope.locationId = $cookies.locationId;
 
   /*
    *
