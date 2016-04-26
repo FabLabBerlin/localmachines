@@ -180,6 +180,8 @@ func (this *Controller) Update() {
 		this.Abort("403")
 	}
 
+	updated.NetswitchSensorPort = 1
+
 	updateGateway := existing.NetswitchConfigured() ||
 		updated.NetswitchConfigured()
 

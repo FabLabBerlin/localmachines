@@ -199,7 +199,7 @@ app.controller('MachineCtrl',
       toastr.error('Please save before continuing.');
       return;
     }
-    if (confirm('Do you really want to continue?')) {
+    api.prompt('The power switch upgrade takes around 10 minutes. It enables EASY LAB integration. ', function() {
       $scope.loading = true;
       $http({
         method: 'POST',
@@ -220,7 +220,7 @@ app.controller('MachineCtrl',
         $scope.loading = false;
         toastr.error('An Error occurred.  Please try again later.');
       });
-    }
+    });
   };
 
 }]); // app.controller
