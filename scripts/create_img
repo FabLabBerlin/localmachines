@@ -13,12 +13,22 @@ __base="$(basename ${__file} .sh)"
 
 arg1="${1:-}"
 
+if [[ $# -eq 0 ]]
+then
+	echo 'Please add version as parameter'
+	exit 0
+fi
+
+VERSION=$1
+
 
 # Prequisites:
 #
 # ARM system with Linux (tested w/ Raspbian)
 # sudo apt-get install exfat-fuse exfat-utils
 # sudo blkid
+
+sudo umount /mnt/build || true
 
 cd ~
 rm -rf build_test
@@ -30,12 +40,20 @@ mv *.img raspbian.img
 
 # mounting image files is difficult because
 # they are partioned
+echo
+echo 'Putting Raspbian Lite Latest on SD Card...'
+echo
 time sudo dd bs=4M if=raspbian.img of=/dev/sda
 sudo mkdir -p /mnt/build
 
 # The partition table has changed
 sudo sfdisk -R /dev/sda
 sudo mount -t ext4 /dev/sda2 /mnt/build
-cp ~/localmachines-gateway_0.10.4.1.arm.deb /mnt/build/home/pi/
+cp ~/localmachines-gateway_$VERSION.arm.deb /mnt/build/home/pi/
 sudo chroot /mnt/build/ /bin/bash -c "apt-get install daemontools daemontools-run sshpass"
-sudo chroot /mnt/build/ /bin/bash -c "dpkg -i /home/pi/localmachines-gateway_0.10.4.1.arm.deb"
+sudo chroot /mnt/build/ /bin/bash -c "dpkg -i /home/pi/localmachines-gateway_$VERSION.arm.deb"
+
+echo
+echo 'Storing SD Card in compressed .img file...'
+echo
+sudo dd bs=4M if=/dev/sda | gzip > localmachines-gateway_$VERSION.img.gz

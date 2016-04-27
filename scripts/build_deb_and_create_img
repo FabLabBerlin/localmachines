@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# Exit on failures and undeclared variables
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+VERSION=`git describe --abbrev=0 --tags | cut -c 2-`
+
+
+if [[ $# -eq 0 ]]
+then
+    echo 'Please add build host as parameter'
+    echo 'It should be a Raspberry Pi and an extra SD Card reader'
+    echo 'Also it should be configured in .ssh/config'
+    echo
+    echo 'Example:'
+    echo '          scripts/build_deb_and_create_img 192.168.12.34'
+    exit 0
+fi
+
+buildHost=$1
+
+echo 'Building debian packages...'
+echo
+time scripts/build_deb arm
+echo
+echo 'Successfully built debian packages.'
+echo
+
+scp localmachines-gateway_$VERSION.arm.deb ${buildHost}:
+scp scripts/create_img ${buildHost}:
+ssh ${buildHost} "bash ./create_img $VERSION"
+
+scp ${buildHost}/build_test/localmachines-gateway_$VERSION.img.gz .
