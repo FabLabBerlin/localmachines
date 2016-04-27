@@ -25,9 +25,7 @@ VERSION=$1
 # Prequisites:
 #
 # ARM system with Linux (tested w/ Raspbian)
-# sudo apt-get install exfat-fuse exfat-utils
-# sudo blkid
-# sudo apt-get install kpartx
+# sudo apt-get install exfat-fuse exfat-utils kpartx
 
 sudo umount /mnt/build || true
 

@@ -97,8 +97,10 @@ func Reinit() (err error) {
 func main() {
 	err := gcfg.ReadFileInto(&global.Cfg, "conf/gateway.conf")
 	if err != nil {
-		log.Fatalf("gcfg read file into: %v", err)
+		log.Printf("gcfg read file into: %v", err)
 	}
+
+	go endpoints.NewHttp()
 
 	netSwitches = netswitches.New()
 
