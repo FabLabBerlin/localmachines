@@ -33,4 +33,4 @@ scp localmachines-gateway_$VERSION.arm.deb ${buildHost}:
 scp scripts/create_img ${buildHost}:
 ssh ${buildHost} "bash ./create_img $VERSION"
 
-scp ${buildHost}/build_test/localmachines-gateway_$VERSION.img.gz .
+scp ${buildHost}:~/build_test/localmachines-gateway_$VERSION.img .

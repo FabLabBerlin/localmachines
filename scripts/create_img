@@ -27,6 +27,7 @@ VERSION=$1
 # ARM system with Linux (tested w/ Raspbian)
 # sudo apt-get install exfat-fuse exfat-utils
 # sudo blkid
+# sudo apt-get install kpartx
 
 sudo umount /mnt/build || true
 
@@ -38,22 +39,16 @@ wget --no-clobber https://downloads.raspberrypi.org/raspbian_lite_latest
 unzip raspbian_lite_latest
 mv *.img raspbian.img
 
-# mounting image files is difficult because
-# they are partioned
-echo
-echo 'Putting Raspbian Lite Latest on SD Card...'
-echo
-time sudo dd bs=4M if=raspbian.img of=/dev/sda
+# Mounting image
+sudo kpartx -av raspbian.img
 sudo mkdir -p /mnt/build
+sudo mount -t ext4 /dev/mapper/loop0p2 /mnt/build
 
-# The partition table has changed
-sudo sfdisk -R /dev/sda
-sudo mount -t ext4 /dev/sda2 /mnt/build
 cp ~/localmachines-gateway_$VERSION.arm.deb /mnt/build/home/pi/
 sudo chroot /mnt/build/ /bin/bash -c "apt-get install daemontools daemontools-run sshpass"
 sudo chroot /mnt/build/ /bin/bash -c "dpkg -i /home/pi/localmachines-gateway_$VERSION.arm.deb"
 
-echo
-echo 'Storing SD Card in compressed .img file...'
-echo
-sudo dd bs=4M if=/dev/sda | gzip > localmachines-gateway_$VERSION.img.gz
+sudo umount /mnt/build
+sudo kpartx -dv raspbian.img
+
+mv raspbian.img localmachines-gateway_$VERSION.img
