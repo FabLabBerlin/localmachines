@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# Exit on failures and undeclared variables
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+__dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+__root="$(cd "$(dirname "${__dir}")" && pwd)" # <-- change this
+__file="${__dir}/$(basename "${BASH_SOURCE[0]}")"
+__base="$(basename ${__file} .sh)"
+
+arg1="${1:-}"
+
+
+# Prequisites:
+#
+# ARM system with Linux (tested w/ Raspbian)
+# sudo apt-get install exfat-fuse exfat-utils
+# sudo blkid
+
+cd ~
+rm -rf build_test
+mkdir build_test
+cd build_test
+wget --no-clobber https://downloads.raspberrypi.org/raspbian_lite_latest
+unzip raspbian_lite_latest
+mv *.img raspbian.img
+
+# mounting image files is difficult because
+# they are partioned
+time sudo dd bs=4M if=raspbian.img of=/dev/sda
+sudo mkdir -p /mnt/build
+
+# The partition table has changed
+sudo sfdisk -R /dev/sda
+sudo mount -t ext4 /dev/sda2 /mnt/build
+cp ~/localmachines-gateway_0.10.4.1.arm.deb /mnt/build/home/pi/
+sudo chroot /mnt/build/ /bin/bash -c "apt-get install daemontools daemontools-run sshpass"
+sudo chroot /mnt/build/ /bin/bash -c "dpkg -i /home/pi/localmachines-gateway_0.10.4.1.arm.deb"
