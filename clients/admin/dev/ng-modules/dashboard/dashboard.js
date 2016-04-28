@@ -22,7 +22,7 @@ app.controller('DashboardCtrl',
       method: 'GET',
       url: '/api/metrics',
       params: {
-        location: $cookies.get('locationId'),
+        location: $cookies.get('location'),
         ac: new Date().getTime()
       }
     })

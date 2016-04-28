@@ -39,7 +39,7 @@ app.controller('SpacesCtrl',
       method: 'POST',
       url: '/api/products',
       params: {
-        location: $cookies.get('locationId'),
+        location: $cookies.get('location'),
         name: name,
         ac: new Date().getTime(),
         type: 'space'
@@ -68,7 +68,7 @@ app.controller('SpacesCtrl',
       method: 'GET',
       url: '/api/purchases',
       params: {
-        location: $cookies.get('locationId'),
+        location: $cookies.get('location'),
         ac: new Date().getTime(),
         type: 'space'
       }
@@ -99,7 +99,7 @@ app.controller('SpacesCtrl',
       method: 'POST',
       url: '/api/purchases',
       params: {
-        location: $cookies.get('locationId'),
+        location: $cookies.get('location'),
         ac: new Date().getTime(),
         type: 'space'
       }

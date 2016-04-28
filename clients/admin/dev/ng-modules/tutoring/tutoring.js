@@ -131,7 +131,7 @@ app.controller('TutoringCtrl',
       method: 'POST',
       url: '/api/products',
       params: {
-        location: $cookies.get('locationId'),
+        location: $cookies.get('location'),
         name: name,
         ac: new Date().getTime(),
         type: 'tutor'
@@ -192,7 +192,7 @@ app.controller('TutoringCtrl',
       method: 'POST',
       url: '/api/purchases',
       params: {
-        location: $cookies.get('locationId'),
+        location: $cookies.get('location'),
         ac: new Date().getTime(),
         type: 'tutor'
       }

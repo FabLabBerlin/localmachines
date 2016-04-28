@@ -21,7 +21,7 @@ app.controller('SettingsCtrl',
       method: 'GET',
       url: '/api/settings',
       params: {
-        location: $cookies.get('locationId'),
+        location: $cookies.get('location'),
         ac: new Date().getTime()
       }
     })
@@ -45,7 +45,7 @@ app.controller('SettingsCtrl',
   $scope.save = function() {
     $http({
       method: 'POST',
-      url: '/api/settings?location=' + $cookies.get('locationId'),
+      url: '/api/settings?location=' + $cookies.get('location'),
       headers: {'Content-Type': 'application/json' },
       data: _.map($scope.settings, function(setting, name) {
         return _.extend({

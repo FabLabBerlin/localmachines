@@ -39,7 +39,7 @@ app.controller('LoginCtrl',
       })
       .success(function(data) {
         if (data.UserId) {
-          $cookies.put('locationId', 1);
+          $cookies.put('location', 1);
           $scope.getUserData(data.UserId);
         }
       })
@@ -114,7 +114,7 @@ app.controller('LoginCtrl',
     })
     .success(function(data) {
       if (data.UserId) {
-        $cookies.put('locationId', locationId);
+        //$cookies.put('locationId', locationId);
         $scope.getUserData(data.UserId);
       }
     })

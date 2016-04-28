@@ -55,9 +55,9 @@ app.run(['$rootScope', '$location', '$http', '$cookies', '$q',
 
       var getLocationPromise = $http({
         method: 'GET',
-        url: '/api/locations/' + $cookies.get('locationId'),
+        url: '/api/locations/' + $cookies.get('location'),
         params: {
-          location: $cookies.get('locationId'),
+          location: $cookies.get('location'),
           ac: new Date().getTime()
         }
       });

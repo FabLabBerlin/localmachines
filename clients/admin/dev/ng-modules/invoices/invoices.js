@@ -25,7 +25,7 @@ app.controller('InvoicesCtrl',
       url: '/api/invoices',
       params: {
         ac: new Date().getTime(),
-        location: $cookies.get('locationId')
+        location: $cookies.get('location')
       }
     })
     .success(function(invoices) {
@@ -63,7 +63,7 @@ app.controller('InvoicesCtrl',
       method: 'POST',
       url: '/api/invoices/' + id + '/create_drafts',
       params: {
-        location: $cookies.get('locationId')
+        location: $cookies.get('location')
       }
     })
     .success(function(draftsReport) {

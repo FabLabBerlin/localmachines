@@ -20,7 +20,7 @@ app.controller('MembershipsCtrl',
     method: 'GET',
     url: '/api/memberships',
     params: {
-      location: $cookies.get('locationId'),
+      location: $cookies.get('location'),
       ac: new Date().getTime()
     }
   })
@@ -52,7 +52,7 @@ app.controller('MembershipsCtrl',
       method: 'POST',
       url: '/api/memberships',
       params: {
-        location: $cookies.get('locationId'),
+        location: $cookies.get('location'),
         mname: membershipName,
         ac: new Date().getTime()
       }

@@ -21,7 +21,7 @@ app.controller('ReservationsCtrl',
   $scope.reservationRulesById = {};
   $scope.users = [];
   $scope.usersById = {};
-  $scope.locationId = $cookies.get('locationId');
+  $scope.locationId = $cookies.get('location');
 
   /*
    *
@@ -35,7 +35,7 @@ app.controller('ReservationsCtrl',
       url: '/api/users',
       params: {
         ac: new Date().getTime(),
-        location: $cookies.get('locationId')
+        location: $cookies.get('location')
       }
     })
     .success(function(data) {
@@ -57,7 +57,7 @@ app.controller('ReservationsCtrl',
       method: 'GET',
       url: '/api/reservation_rules',
       params: {
-        location: $cookies.get('locationId'),
+        location: $cookies.get('location'),
         ac: new Date().getTime()
       }
     })
@@ -78,7 +78,7 @@ app.controller('ReservationsCtrl',
       method: 'GET',
       url: '/api/reservations',
       params: {
-        location: $cookies.get('locationId'),
+        location: $cookies.get('location'),
         ac: new Date().getTime()
       }
     })
@@ -160,7 +160,7 @@ app.controller('ReservationsCtrl',
   $scope.addReservationRule = function() {
     $http({
       method: 'POST',
-      url: '/api/reservation_rules?location=' + $cookies.get('locationId'),
+      url: '/api/reservation_rules?location=' + $cookies.get('location'),
       headers: {'Content-Type': 'application/json' },
       data: {
         MachineId: parseInt($('select').val()),

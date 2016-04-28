@@ -24,7 +24,7 @@ app.controller('UsersCtrl',
         url: '/api/users',
         params: {
           ac: new Date().getTime(),
-          location: $cookies.get('locationId')
+          location: $cookies.get('location')
         }
       }),
       $http({
@@ -32,7 +32,7 @@ app.controller('UsersCtrl',
         url: '/api/user_locations',
         params: {
           ac: new Date().getTime(),
-          location: $cookies.get('locationId')
+          location: $cookies.get('location')
         }
       })
     ])
@@ -80,7 +80,7 @@ app.controller('UsersCtrl',
       url: '/api/users',
       data: {
         email: email,
-        location: $cookies.get('locationId')
+        location: $cookies.get('location')
       },
       params: {
         ac: new Date().getTime()

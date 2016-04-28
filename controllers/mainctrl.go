@@ -59,7 +59,6 @@ func (this *Controller) GetSessionLocationId() (locId int64, ok bool) {
 
 func (this *Controller) SetSessionLocationId(locId int64) {
 	this.Ctx.SetCookie("location", strconv.FormatInt(locId, 10))
-	this.Ctx.SetCookie("locationId", strconv.FormatInt(locId, 10))
 }
 
 func (this *Controller) SetLogged(username string, userId int64, locationId int64) {

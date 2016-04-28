@@ -19,7 +19,7 @@ app.controller('CouponsCtrl',
     $http({
       url: '/api/coupons',
       params: {
-        location: $cookies.get('locationId')
+        location: $cookies.get('location')
       }
     })
     .success(function(coupons) {
@@ -36,7 +36,7 @@ app.controller('CouponsCtrl',
         method: 'POST',
         url: '/api/coupons',
         params: {
-          location: $cookies.get('locationId')
+          location: $cookies.get('location')
         },
         data: {
           static_code: $scope.staticCode,
