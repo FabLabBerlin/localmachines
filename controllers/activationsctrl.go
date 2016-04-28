@@ -300,7 +300,12 @@ func (this *ActivationsController) Close() {
 		}
 	}
 
-	err = purchases.CloseActivation(aid, time.Now())
+	a, err := purchases.GetActivation(aid)
+	if err != nil {
+		beego.Error("Unable to get activation:", err)
+		this.CustomAbort(500, "Unable to get activation")
+	}
+	err = a.Close(time.Now())
 	if err != nil {
 		beego.Error("Failed to close activation")
 		this.CustomAbort(403, "Failed to close activation")

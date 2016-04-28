@@ -76,7 +76,11 @@ func TestActivations(t *testing.T) {
 
 				Convey("It should be possible to close the activation", func() {
 					activationEndTime := time.Now()
-					err := purchases.CloseActivation(aid, activationEndTime)
+					a, err := purchases.GetActivation(aid)
+					if err != nil {
+						panic(err.Error())
+					}
+					err = a.Close(activationEndTime)
 					assert.NoErrors(err)
 
 					activation, err = purchases.GetActivation(aid)
@@ -105,14 +109,18 @@ func TestActivations(t *testing.T) {
 
 		Convey("Testing CloseActivation", func() {
 			Convey("Trying to close a non-existing activation", func() {
-				err := purchases.CloseActivation(0, time.Now())
+				_, err := purchases.GetActivation(0)
 
 				So(err, ShouldNotBeNil)
 			})
 			Convey("Starting an activation and closing it", func() {
 				machine, _ := CreateMachine("lel")
 				aid, err1 := purchases.StartActivation(machine.Id, 0, time.Now())
-				err2 := purchases.CloseActivation(aid, time.Now())
+				a, err := purchases.GetActivation(aid)
+				if err != nil {
+					panic(err.Error())
+				}
+				err2 := a.Close(time.Now())
 
 				So(err1, ShouldBeNil)
 				So(err2, ShouldBeNil)
@@ -127,7 +135,11 @@ func TestActivations(t *testing.T) {
 			Convey("Getting activation id on non-activated machine", func() {
 				machine, err := CreateMachine("lel")
 				aid, err2 := purchases.StartActivation(machine.Id, 0, time.Now())
-				err3 := purchases.CloseActivation(aid, time.Now())
+				a, err := purchases.GetActivation(aid)
+				if err != nil {
+					panic(err.Error())
+				}
+				err3 := a.Close(time.Now())
 				mid, err4 := purchases.GetActivationMachineId(aid)
 
 				assert.NoErrors(err, err2, err3, err4)

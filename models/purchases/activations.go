@@ -204,12 +204,7 @@ func GetActivation(activationId int64) (activation *Activation, err error) {
 }
 
 // Close running/active activation.
-func CloseActivation(activationId int64, endTime time.Time) error {
-	activation, err := GetActivation(activationId)
-	if err != nil {
-		return fmt.Errorf("Failed to get activation: %v", err)
-	}
-
+func (activation *Activation) Close(endTime time.Time) error {
 	machine, err := machine.Get(activation.Purchase.MachineId)
 	if err != nil {
 		beego.Error("Failed to get machine:", err)
