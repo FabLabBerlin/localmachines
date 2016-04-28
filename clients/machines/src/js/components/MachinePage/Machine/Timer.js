@@ -94,7 +94,7 @@ var Timer = React.createClass({
         {sameUser ? (
           <div className="machine-time-label">
             {inGracePeriod ?
-                'Grace Period'
+                'Start time'
               : 'Usage time'}
           </div>
         ) : null}

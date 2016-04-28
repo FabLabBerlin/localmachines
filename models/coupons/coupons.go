@@ -16,6 +16,7 @@ type Coupon struct {
 	Code       string
 	UserId     int64
 	Value      float64
+	//TimeEnd    time.Time
 }
 
 func GetCoupon(id int64) (c *Coupon, err error) {
