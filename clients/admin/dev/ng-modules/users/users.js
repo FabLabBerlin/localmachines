@@ -18,14 +18,13 @@ app.controller('UsersCtrl',
   $scope.users = [];
 
   $scope.getAllUsers = function() {
-    console.log('getAllUsers: $cookies=', $cookies);
     $q.all([
       $http({
         method: 'GET',
         url: '/api/users',
         params: {
           ac: new Date().getTime(),
-          location: $cookies.locationId
+          location: $cookies.get('locationId')
         }
       }),
       $http({
@@ -33,7 +32,7 @@ app.controller('UsersCtrl',
         url: '/api/user_locations',
         params: {
           ac: new Date().getTime(),
-          location: $cookies.locationId
+          location: $cookies.get('locationId')
         }
       })
     ])
@@ -81,7 +80,7 @@ app.controller('UsersCtrl',
       url: '/api/users',
       data: {
         email: email,
-        location: $cookies.locationId
+        location: $cookies.get('locationId')
       },
       params: {
         ac: new Date().getTime()

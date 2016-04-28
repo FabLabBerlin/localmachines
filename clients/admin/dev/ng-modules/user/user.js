@@ -14,7 +14,7 @@ app.controller('UserCtrl',
  ['$scope', '$routeParams', '$http', '$location', '$cookies', 'randomToken', 'api',
  function($scope, $routeParams, $http, $location, $cookies, randomToken, api) {
 
-  $scope.locationId = parseInt($cookies.locationId);
+  $scope.locationId = parseInt($cookies.get('locationId'));
   $scope.globalConfigVisible = $scope.locationId === 1;
 
   // Check for NFC browser
@@ -214,7 +214,7 @@ app.controller('UserCtrl',
       method: 'GET',
       url: '/api/memberships',
       params: {
-        location: $cookies.locationId,
+        location: $cookies.get('locationId'),
         ac: new Date().getTime()
       }
     })
@@ -390,7 +390,7 @@ app.controller('UserCtrl',
         User: $scope.user
       },
       params: {
-        location: $cookies.locationId,
+        location: $cookies.get('locationId'),
         ac: new Date().getTime()
       },
       transformRequest: function(data) {
@@ -514,7 +514,7 @@ app.controller('UserCtrl',
         return JSON.stringify(data);
       },
       params: {
-        location: $cookies.locationId,
+        location: $cookies.get('locationId'),
         ac: new Date().getTime()
       }
     })

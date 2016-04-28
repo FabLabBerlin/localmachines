@@ -62,7 +62,7 @@ app.controller('ReservationCtrl',
       url: '/api/users',
       params: {
         ac: new Date().getTime(),
-        location: $cookies.locationId
+        location: $cookies.get('locationId')
       }
     })
     .success(function(data) {

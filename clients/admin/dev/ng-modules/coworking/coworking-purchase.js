@@ -28,7 +28,7 @@ app.controller('CoworkingPurchaseCtrl',
       method: 'GET',
       url: '/api/products',
       params: {
-        location: $cookies.locationId,
+        location: $cookies.get('locationId'),
         ac: new Date().getTime(),
         type: 'co-working'
       }
