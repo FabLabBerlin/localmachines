@@ -255,17 +255,3 @@ func (activation *Activation) Update() error {
 
 	return nil
 }
-
-// Gets the machine ID of a specific activation defined by activation ID.
-func GetActivationMachineId(activationId int64) (int64, error) {
-	activationModel := Activation{}
-	o := orm.NewOrm()
-	err := o.QueryTable(activationModel.Purchase.TableName()).
-		Filter("id", activationId).
-		Filter("type", TYPE_ACTIVATION).
-		One(&activationModel.Purchase, "MachineId")
-	if err != nil {
-		return 0, err
-	}
-	return activationModel.Purchase.MachineId, nil
-}

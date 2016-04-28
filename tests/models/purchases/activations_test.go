@@ -126,33 +126,5 @@ func TestActivations(t *testing.T) {
 				So(err2, ShouldBeNil)
 			})
 		})
-		Convey("Testing GetActivationMachineId", func() {
-			Convey("Getting activation id on non-existing machine", func() {
-				_, err := purchases.GetActivationMachineId(0)
-
-				So(err, ShouldNotBeNil)
-			})
-			Convey("Getting activation id on non-activated machine", func() {
-				machine, err := CreateMachine("lel")
-				aid, err2 := purchases.StartActivation(machine.Id, 0, time.Now())
-				a, err := purchases.GetActivation(aid)
-				if err != nil {
-					panic(err.Error())
-				}
-				err3 := a.Close(time.Now())
-				mid, err4 := purchases.GetActivationMachineId(aid)
-
-				assert.NoErrors(err, err2, err3, err4)
-				So(machine.Id, ShouldEqual, mid)
-			})
-			Convey("Starting activation on a machine and get activation's id", func() {
-				machine, err := CreateMachine("lel")
-				aid, err2 := purchases.StartActivation(machine.Id, 0, time.Now())
-				gmid, err3 := purchases.GetActivationMachineId(aid)
-
-				assert.NoErrors(err, err2, err3)
-				So(machine.Id, ShouldEqual, gmid)
-			})
-		})
 	})
 }

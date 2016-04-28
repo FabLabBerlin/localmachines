@@ -279,16 +279,16 @@ func (this *ActivationsController) Close() {
 		this.CustomAbort(403, "Failed to close activation")
 	}
 
-	machineId, err := purchases.GetActivationMachineId(aid)
+	a, err := purchases.GetActivation(aid)
 	if err != nil {
-		beego.Error("Failed to get machine ID")
-		this.CustomAbort(403, "Failed to close activation")
+		beego.Error("Unable to get activation:", err)
+		this.CustomAbort(500, "Unable to get activation")
 	}
 
 	// Attempt to switch off the machine first. This is a way to detect
 	// network errors early as the users won't be able to end their activation
 	// unless the error in the network is fixed.
-	machine, err := machine.Get(machineId)
+	machine, err := machine.Get(a.Purchase.MachineId)
 	if err != nil {
 		beego.Error("Unable to get machine:", err)
 		this.CustomAbort(500, "Unable to get machine")
@@ -300,11 +300,6 @@ func (this *ActivationsController) Close() {
 		}
 	}
 
-	a, err := purchases.GetActivation(aid)
-	if err != nil {
-		beego.Error("Unable to get activation:", err)
-		this.CustomAbort(500, "Unable to get activation")
-	}
 	err = a.Close(time.Now())
 	if err != nil {
 		beego.Error("Failed to close activation")
