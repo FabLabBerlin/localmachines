@@ -299,11 +299,6 @@ app.controller('UserCtrl',
       return;
     }
 
-    if ($scope.overlapsUserMembership(startDate)) {
-      toastr.error('Overlapping existing membership');
-      return;
-    }
-
     var selectedMembershipId = $('#user-select-membership').val();
     if (!selectedMembershipId) {
       toastr.error('Please select a Membership');
@@ -327,18 +322,6 @@ app.controller('UserCtrl',
     .error(function() {
       toastr.error('Error while trying to create new User Membership');
     });
-  };
-
-  $scope.overlapsUserMembership = function(startDateStr) {
-    var startDate = new Date(startDateStr);
-    var overlap = false;
-    _.each($scope.userMemberships, function(mbs) {
-      var endDate = new Date(mbs.EndDate);
-      if (startDate <= endDate){
-        overlap = true;
-      }
-    });
-    return overlap;
   };
 
   $scope.cancel = function() {
