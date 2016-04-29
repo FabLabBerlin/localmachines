@@ -111,6 +111,7 @@ func getUci(key string) (value string) {
 }
 
 func main() {
+	httpTestEndpoint := flag.Bool("httpTestEndpoint", false, "activate http test endpoint")
 	uci := flag.Bool("uci", false, "use UCI")
 	flag.Parse()
 
@@ -137,7 +138,9 @@ func main() {
 		}
 	}
 
-	go endpoints.NewHttp()
+	if *httpTestEndpoint {
+		go endpoints.NewHttp()
+	}
 
 	netSwitches = netswitches.New()
 
