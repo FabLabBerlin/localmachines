@@ -2,7 +2,7 @@
 
 'use strict';
 
-angular.module('fabsmith.signup.form', ['ngRoute'])
+angular.module('fabsmith.signup.form', ['ngRoute', 'ngCookies'])
 
 .config(['$routeProvider', function($routeProvider) {
   $routeProvider.when('/form', {
@@ -12,8 +12,8 @@ angular.module('fabsmith.signup.form', ['ngRoute'])
 }])
 
 .controller('FormCtrl',
- ['$scope', '$location', '$http', '$q', '$routeParams',
- function($scope, $location, $http, $q, $routeParams) {
+ ['$scope', '$location', '$http', '$q', '$routeParams', '$cookies',
+ function($scope, $location, $http, $q, $routeParams, $cookies) {
 
   // Regular expression for email spec : RFC 5322
   $scope.emailRegExp = /^[-a-z0-9~!$%^*_=+}{\'?]+(\.[-a-z0-9~!$%^*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?/i;
@@ -41,19 +41,28 @@ angular.module('fabsmith.signup.form', ['ngRoute'])
           location: $scope.locationId,
           ac: new Date().getTime()
         }
+      }),
+      $http({
+        method: 'GET',
+        url: '/api/users/current'
       })
     ])
     .then(function(resp) {
       var locations = resp[0].data;
       var termsUrl = resp[1].data;
+      var user = resp[2].data;
 
-      $scope.locations = locations;
-      _.each($scope.locations, function(location) {
-        if (location.Id === $scope.locationId) {
-          $scope.location = location;
-        }
-      });
-      $scope.termsUrl = termsUrl;
+      if (user) {
+        window.location.href = '/machines/';
+      } else {
+        $scope.locations = locations;
+        _.each($scope.locations, function(location) {
+          if (location.Id === $scope.locationId) {
+            $scope.location = location;
+          }
+        });
+        $scope.termsUrl = termsUrl;
+      }
     })
     .catch(function() {
       toastr.error('Failed to load data');
