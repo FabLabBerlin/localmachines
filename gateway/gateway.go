@@ -3,6 +3,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/gateway/endpoints"
 	"github.com/FabLabBerlin/localmachines/gateway/global"
@@ -13,8 +14,10 @@ import (
 	"net/http/cookiejar"
 	"net/url"
 	"os"
+	"os/exec"
 	"os/signal"
 	"strconv"
+	"strings"
 	"syscall"
 	"time"
 )
@@ -94,10 +97,41 @@ func Reinit() (err error) {
 	return
 }
 
+func getUci(prefix, key string) (value string) {
+	cmd := exec.Command("uci", "get", prefix + "." + key)
+	buf, err := cmd.CombinedOutput()
+	value = string(buf)
+	value = strings.TrimSpace(value)
+	panic("get key '" + key + "': " + err.Error())
+	return
+}
+
 func main() {
-	err := gcfg.ReadFileInto(&global.Cfg, "conf/gateway.conf")
-	if err != nil {
-		log.Printf("gcfg read file into: %v", err)
+	uci := flag.Bool("uci", false, "use UCI")
+	uciPrefix := flag.String("uciPrefix", "localmachines.cfg.00b33f", "prefix for locationid, apiid, apikey, xmppserver, jabberid and jabberpw")
+	flag.Parse()
+
+	if *uci {
+		var err error
+		global.Cfg.Main.LocationId, err = strconv.ParseInt(getUci(*uciPrefix, "locationid"), 10, 64)
+		if err != nil {
+			panic("parse locationid: " + err.Error())
+		}
+		global.Cfg.API.Id = getUci(*uciPrefix, "apiid")
+		global.Cfg.API.Key = getUci(*uciPrefix, "apikey")
+		global.Cfg.API.Url = "https://easylab.io/api"
+		global.Cfg.XMPP.User = getUci(*uciPrefix, "jabberid")
+		global.Cfg.XMPP.Pass = getUci(*uciPrefix, "jabberpw")
+		tmp := strings.Split(global.Cfg.XMPP.User, "@")
+		if len(tmp) != 2 {
+			panic("expected jabberid to contain exactly one '@'")
+		}
+		global.Cfg.XMPP.Server = tmp[1]
+	} else {
+		err := gcfg.ReadFileInto(&global.Cfg, "conf/gateway.conf")
+		if err != nil {
+			log.Printf("gcfg read file into: %v", err)
+		}
 	}
 
 	go endpoints.NewHttp()
