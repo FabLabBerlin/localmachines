@@ -11,12 +11,8 @@
       data-live-search="true"
       data-width="100%"
       ng-model="tutor.Product.UserId"
+      ng-options="u.Id as (u.FirstName + ' ' + u.LastName + ' (' + u.Email + ')') for u in users"
       ng-change="refreshUserPicker()">
-      <option
-        ng-repeat="user in users"
-        value="{{user.Id}}">
-        {{user.FirstName}} {{user.LastName}}
-      </option>
     </select>
   </div>
 

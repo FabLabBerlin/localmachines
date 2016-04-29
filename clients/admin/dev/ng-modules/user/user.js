@@ -621,9 +621,9 @@ app.controller('UserCtrl',
   };
 
   // FastBill variables
-  var FASTBILL_ACTION_GET_CUSTOMER_NUMBER = 1;
-  var FASTBILL_ACTION_LOAD_FROM = 2;
-  var FASTBILL_ACTION_UPDATE = 3;
+  var FASTBILL_ACTION_GET_CUSTOMER_NUMBER = '1';
+  var FASTBILL_ACTION_LOAD_FROM = '2';
+  var FASTBILL_ACTION_UPDATE = '3';
   $scope.fastBillAction = FASTBILL_ACTION_GET_CUSTOMER_NUMBER;
 
   $scope.readFastBillCustomerNumber = function(data) {
