@@ -100,11 +100,13 @@ func Reinit() (err error) {
 }
 
 func getUci(key string) (value string) {
-	cmd := exec.Command("uci", "get", UCI_PREFIX + "." + key)
+	cmd := exec.Command("/sbin/uci", "get", UCI_PREFIX + "." + key)
 	buf, err := cmd.CombinedOutput()
 	value = string(buf)
 	value = strings.TrimSpace(value)
-	panic("get key '" + key + "': " + err.Error())
+	if err != nil {
+		panic("get key '" + key + "': " + err.Error())
+	}
 	return
 }
 
