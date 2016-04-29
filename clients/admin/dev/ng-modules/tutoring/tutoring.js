@@ -24,7 +24,8 @@ app.controller('TutoringCtrl',
       method: 'GET',
       url: '/api/settings',
       params: {
-        ac: new Date().getTime()
+        ac: new Date().getTime(),
+        location: $cookies.get('location')
       }
     })
     .success(function(settings) {

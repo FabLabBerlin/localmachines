@@ -90,9 +90,6 @@ module.exports = function (grunt) {
 						'dev/ng-modules/api/api.js',
 						'dev/ng-modules/bookings/bookings.js',
 						'dev/ng-modules/coupons/coupons.js',
-						'dev/ng-modules/coworking/coworking.js',
-						'dev/ng-modules/coworking/coworking-product.js',
-						'dev/ng-modules/coworking/coworking-purchase.js',
 						'dev/ng-modules/dashboard/dashboard.js',
 						'dev/ng-modules/invoices/invoices.js',
 						'dev/ng-modules/login/login.js',
@@ -107,9 +104,6 @@ module.exports = function (grunt) {
 						'dev/ng-modules/reservation/reservation.js',
 						'dev/ng-modules/reservations/reservations.js',
 						'dev/ng-modules/reservations/toggle.js',
-						'dev/ng-modules/space/space.js',
-						'dev/ng-modules/spacepurchase/spacepurchase.js',
-						'dev/ng-modules/spaces/spaces.js',
 						'dev/ng-modules/tutoring/purchase.js',
 						'dev/ng-modules/settings/settings.js',
 						'dev/ng-modules/tutoring/tutor.js',
@@ -164,21 +158,6 @@ module.exports = function (grunt) {
 				}, {
 					src: 'dev/ng-modules/coupons/coupons.html', 
 					dest: 'prod/ng-modules/coupons/',
-					expand: true,
-					flatten: true
-				}, {
-					src: 'dev/ng-modules/coworking/coworking.html', 
-					dest: 'prod/ng-modules/coworking/',
-					expand: true,
-					flatten: true
-				}, {
-					src: 'dev/ng-modules/coworking/coworking-product.html', 
-					dest: 'prod/ng-modules/coworking/',
-					expand: true,
-					flatten: true
-				}, {
-					src: 'dev/ng-modules/coworking/coworking-purchase.html', 
-					dest: 'prod/ng-modules/coworking/',
 					expand: true,
 					flatten: true
 				}, {
@@ -279,21 +258,6 @@ module.exports = function (grunt) {
 				}, {
 					src: 'dev/ng-modules/settings/settings.html', 
 					dest: 'prod/ng-modules/settings/',
-					expand: true,
-					flatten: true
-				}, {
-					src: 'dev/ng-modules/space/space.html', 
-					dest: 'prod/ng-modules/space/',
-					expand: true,
-					flatten: true
-				}, {
-					src: 'dev/ng-modules/spacepurchase/spacepurchase.html', 
-					dest: 'prod/ng-modules/spacepurchase/',
-					expand: true,
-					flatten: true
-				}, {
-					src: 'dev/ng-modules/spaces/spaces.html', 
-					dest: 'prod/ng-modules/spaces/',
 					expand: true,
 					flatten: true
 				}, {

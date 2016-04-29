@@ -26,19 +26,12 @@ func (this *ProductsController) Create() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	name := this.GetString("name")
 	productType := this.GetString("type")
 
 	var product interface{}
 	var err error
 
 	switch productType {
-	case products.TYPE_CO_WORKING:
-		product, err = products.CreateCoWorking(locId, name)
-		break
-	case products.TYPE_SPACE:
-		product, err = products.CreateSpace(locId, name)
-		break
 	case products.TYPE_TUTOR:
 		product, err = products.CreateTutor(&products.Tutor{
 			Product: products.Product{
@@ -79,12 +72,6 @@ func (this *ProductsController) Get() {
 	var product interface{}
 
 	switch productType {
-	case products.TYPE_CO_WORKING:
-		product, err = products.GetCoWorking(id)
-		break
-	case products.TYPE_SPACE:
-		product, err = products.GetSpace(id)
-		break
 	case products.TYPE_TUTOR:
 		product, err = products.GetTutor(id)
 		break
@@ -121,12 +108,6 @@ func (this *ProductsController) GetAll() {
 	var err error
 
 	switch productType {
-	case products.TYPE_CO_WORKING:
-		ps, err = products.GetAllCoWorkingAt(locId)
-		break
-	case products.TYPE_SPACE:
-		ps, err = products.GetAllSpacesAt(locId)
-		break
 	case products.TYPE_TUTOR:
 		ps, err = products.GetAllTutorsAt(locId)
 		break
@@ -186,36 +167,6 @@ func (this *ProductsController) Put() {
 	var response interface{}
 
 	switch productType {
-	case products.TYPE_CO_WORKING:
-		table := &products.CoWorking{}
-		dec := json.NewDecoder(this.Ctx.Request.Body)
-		defer this.Ctx.Request.Body.Close()
-		if err := dec.Decode(table); err != nil {
-			beego.Error("Failed to decode json:", err)
-			this.CustomAbort(400, "Failed to update table")
-		}
-
-		assertSameIds(table.Product.Id, table.Product.LocationId)
-
-		if err = table.Update(); err == nil {
-			response = table
-		}
-		break
-	case products.TYPE_SPACE:
-		space := &products.Space{}
-		dec := json.NewDecoder(this.Ctx.Request.Body)
-		defer this.Ctx.Request.Body.Close()
-		if err := dec.Decode(space); err != nil {
-			beego.Error("Failed to decode json:", err)
-			this.CustomAbort(400, "Failed to update space")
-		}
-
-		assertSameIds(space.Product.Id, space.Product.LocationId)
-
-		if err = space.Update(); err == nil {
-			response = space
-		}
-		break
 	case products.TYPE_TUTOR:
 		tutor := &products.Tutor{}
 		dec := json.NewDecoder(this.Ctx.Request.Body)

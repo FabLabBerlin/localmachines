@@ -30,23 +30,6 @@ func (this *PurchasesController) Create() {
 	var err error
 
 	switch purchaseType {
-	case purchases.TYPE_CO_WORKING:
-		cp := &purchases.CoWorking{
-			Purchase: purchases.Purchase{
-				LocationId: locId,
-			},
-		}
-		_, err = purchases.CreateCoWorking(cp)
-		if err == nil {
-			purchase = cp
-		}
-		break
-	case purchases.TYPE_SPACE:
-		sp := purchases.NewSpace(locId)
-		if err = sp.Save(); err == nil {
-			purchase = sp
-		}
-		break
 	case purchases.TYPE_TUTOR:
 		tp := &purchases.Tutoring{
 			Purchase: purchases.Purchase{
@@ -97,12 +80,6 @@ func (this *PurchasesController) GetAll() {
 	var err error
 
 	switch purchaseType {
-	case purchases.TYPE_CO_WORKING:
-		ps, err = purchases.GetAllCoWorkingAt(locId)
-		break
-	case purchases.TYPE_SPACE:
-		ps, err = purchases.GetAllSpaceAt(locId)
-		break
 	case purchases.TYPE_TUTOR:
 		ps, err = purchases.GetAllTutoringsAt(locId)
 		break
@@ -141,18 +118,6 @@ func (this *PurchasesController) Get() {
 	var purchase interface{}
 
 	switch purchaseType {
-	case purchases.TYPE_CO_WORKING:
-		var cw *purchases.CoWorking
-		cw, err = purchases.GetCoWorking(id)
-		locationId = cw.LocationId
-		purchase = cw
-		break
-	case purchases.TYPE_SPACE:
-		var s *purchases.Space
-		s, err = purchases.GetSpace(id)
-		locationId = s.LocationId
-		purchase = s
-		break
 	case purchases.TYPE_TUTOR:
 		var t *purchases.Tutoring
 		t, err = purchases.GetTutoring(id)
@@ -217,36 +182,6 @@ func (this *PurchasesController) Put() {
 	var response interface{}
 
 	switch purchaseType {
-	case purchases.TYPE_CO_WORKING:
-		cp := &purchases.CoWorking{}
-		dec := json.NewDecoder(this.Ctx.Request.Body)
-		defer this.Ctx.Request.Body.Close()
-		if err := dec.Decode(cp); err != nil {
-			beego.Error("Failed to decode json:", err)
-			this.CustomAbort(400, "Failed to update Co-Working purchase")
-		}
-
-		assertSameIds(cp.Id, cp.LocationId)
-
-		if err = cp.Update(); err == nil {
-			response = cp
-		}
-		break
-	case purchases.TYPE_SPACE:
-		sp := &purchases.Space{}
-		dec := json.NewDecoder(this.Ctx.Request.Body)
-		defer this.Ctx.Request.Body.Close()
-		if err := dec.Decode(sp); err != nil {
-			beego.Error("Failed to decode json:", err)
-			this.Abort("400")
-		}
-
-		assertSameIds(sp.Id, sp.LocationId)
-
-		if err = sp.Update(); err == nil {
-			response = sp
-		}
-		break
 	case purchases.TYPE_TUTOR:
 		tp := &purchases.Tutoring{}
 		dec := json.NewDecoder(this.Ctx.Request.Body)

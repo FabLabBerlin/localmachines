@@ -176,7 +176,9 @@ func CreateFastbillDraft(me *MonthlyEarning, inv *Invoice) (fbDraft *fastbill.In
 		if err != nil {
 			return nil, false, fmt.Errorf("use for invoice: %v", err)
 		}
-		rebateValue += usage.Value
+		if usage != nil {
+			rebateValue += usage.Value
+		}
 	}
 	fbDraft.CashDiscountPercent = fmt.Sprintf("%v", rebateValue / invoiceValue * 100)
 

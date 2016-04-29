@@ -47,6 +47,8 @@ app.controller('ActivationCtrl',
       $scope.activation = r;
       r.TimeStartLocal = moment(r.TimeStart).tz('Europe/Berlin').format('YYYY-MM-DD HH:mm');
       r.TimeEndLocal = moment(r.TimeEnd).tz('Europe/Berlin').format('YYYY-MM-DD HH:mm');
+      console.log('$scope.activation.MachineId= ', $scope.activation.MachineId);
+      console.log('$scope.machines = ', $scope.machines);
       setTimeout(function() {
         $('.selectpicker').selectpicker('refresh');
       }, 100);

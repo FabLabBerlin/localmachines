@@ -16,9 +16,7 @@ const TABLE_NAME = "purchases"
 
 const (
 	TYPE_ACTIVATION  = "activation"
-	TYPE_CO_WORKING  = "co-working"
 	TYPE_RESERVATION = "reservation"
-	TYPE_SPACE       = "space"
 	TYPE_TUTOR       = "tutor"
 )
 
@@ -300,10 +298,6 @@ func (this Purchase) ProductName() string {
 		return this.Machine.Name
 	case TYPE_RESERVATION:
 		return this.Machine.Name + " Reservation"
-	case TYPE_CO_WORKING:
-		return "Co-Working Space Booking"
-	case TYPE_SPACE:
-		return "Lab Space Booking"
 	case TYPE_TUTOR:
 		return "Tutoring"
 	}

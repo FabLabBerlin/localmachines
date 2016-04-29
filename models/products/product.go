@@ -8,8 +8,6 @@ import (
 const TABLE_NAME = "products"
 
 const (
-	TYPE_CO_WORKING = "co-working"
-	TYPE_SPACE      = "space"
 	TYPE_TUTOR      = "tutor"
 )
 
