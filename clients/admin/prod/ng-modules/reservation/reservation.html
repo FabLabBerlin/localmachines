@@ -9,11 +9,10 @@
     <div class="col-sm-6">
       <div class="form-group">
         <label for="reservation-machine">Machine</label>
-        <select ng-model="reservation.MachineId" id="reservation-machine" class="form-control">
-          <option ng-repeat="machine in machines"
-                  value="{{machine.Id}}">
-            {{machine.Name}}
-          </option>
+        <select ng-model="reservation.MachineId"
+                ng-options="m.Id as m.Name for m in machines"
+                id="reservation-machine"
+                class="form-control">
         </select>
       </div>
     </div>
@@ -40,17 +39,13 @@
   <div class="form-group">
     <label for="reservation-user">User</label>
     <select 
-      ng-model="reservation.UserId" 
-      id="reservation-user" 
+      ng-model="reservation.UserId"
+      ng-options="u.Id as (u.FirstName + ' ' + u.LastName + ' (' + u.Email + ')') for u in users"
+      id="reservation-user"
       class="selectpicker"
       ng-change="refreshUserPicker()"
       data-live-search="true"
       data-width="100%">
-      <option 
-        ng-repeat="user in users"
-        value="{{user.Id}}">
-        {{user.FirstName}} {{user.LastName}} ({{user.Email}})
-      </option>
     </select>
   </div>
 
