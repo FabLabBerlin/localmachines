@@ -432,6 +432,9 @@ function slotAvailabilities({date, machinesById, reservationsStore, reservationR
         var tEnd = moment(t.get('end')).unix();
         var tStartInInterval = tStart >= rStart && tStart < rEnd;
         var tEndInInterval = tEnd > rStart && tEnd <= rEnd;
+        if (reservation.get('Cancelled')) {
+          return;
+        }
         if (tStartInInterval || tEndInInterval) {
           availableIds = _.difference(availableIds, [reservation.get('MachineId')]);
         }
