@@ -11,6 +11,29 @@ var reactor = require('../reactor');
 var toastr = require('../toastr');
 
 
+function dashboardDispatch(data) {
+  var userIds = [];
+
+  reactor.dispatch(actionTypes.SET_ACTIVATIONS, {
+    activations: data.Activations
+  });
+  if (data.Activations) {
+    userIds = _.pluck(data.Activations, 'UserId');
+  }
+  reactor.dispatch(actionTypes.SET_MACHINES, {
+    machines: data.Machines
+  });
+  if (data.Tutorings) {
+    reactor.dispatch(actionTypes.SET_TUTORINGS, data.Tutorings.Data);
+    userIds = _.union(userIds, _.pluck(data.Tutorings.Data, 'UserId'));
+    userIds = _.filter(userIds, (userId) => {
+      return userId;
+    });
+  }
+  fetchUserNames(userIds);
+}
+
+
 var MachineActions = {
 
   startActivation(mid) {
@@ -66,6 +89,14 @@ var MachineActions = {
     reactor.dispatch(actionTypes.MACHINE_STORE_CLEAR_STATE);
   },
 
+  wsDashboard(locationId) {
+    const uid = reactor.evaluateToJS(getters.getUid);
+    var socket = new WebSocket('ws://' + window.location.host + '/api/users/' + uid + '/dashboard/ws?location=' + locationId);
+    socket.onmessage = function(e) {
+      dashboardDispatch(JSON.parse(e.data));
+    };
+  },
+
   /*
    * To continue to refresh the view each seconds
    */
@@ -78,25 +109,7 @@ var MachineActions = {
       type: 'GET',
       cache: false,
       success: function(data) {
-        var userIds = [];
-
-        reactor.dispatch(actionTypes.SET_ACTIVATIONS, {
-          activations: data.Activations
-        });
-        if (data.Activations) {
-          userIds = _.pluck(data.Activations, 'UserId');
-        }
-        reactor.dispatch(actionTypes.SET_MACHINES, {
-          machines: data.Machines
-        });
-        if (data.Tutorings) {
-          reactor.dispatch(actionTypes.SET_TUTORINGS, data.Tutorings.Data);
-          userIds = _.union(userIds, _.pluck(data.Tutorings.Data, 'UserId'));
-          userIds = _.filter(userIds, (userId) => {
-            return userId;
-          });
-        }
-        fetchUserNames(userIds);
+        dashboardDispatch(data);
       },
       error: function(xhr, status) {
         console.log('xhr:', xhr);

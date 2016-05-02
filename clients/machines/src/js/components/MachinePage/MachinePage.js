@@ -95,14 +95,11 @@ var MachinePage = React.createClass({
     MachineStore.onChangeActivation = this.onChangeActivation;
     LoginStore.onChangeLogout = this.onChangeLogout;
     MachineStore.onChangeLogin = this.onChangeLogin;
-    this.interval = setInterval(this.update, 1500);
+    //this.interval = setInterval(this.update, 1500);
+    const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
+    MachineActions.wsDashboard(locationId);
   },
 
-  /*
-   * Render the user name
-   * MachinList
-   * exit button
-   */
   render() {
     var machines = reactor.evaluateToJS(getters.getMachines);
     machines = _.sortBy(machines, (m) => {
