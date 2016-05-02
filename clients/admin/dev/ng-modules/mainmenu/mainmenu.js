@@ -14,7 +14,9 @@ app.directive('mainMenu', function() {
       $scope.location = $rootScope.location;
       var links = $($element).find('a');
       links.click(function(){
-
+        if ($(this).attr('data-toggle') === 'dropdown') {
+          return;
+        }
         // The float CSS parameter is changed to 'none' whenever the
         // window width is below Bootstrap grid breakpoint (768px)
         var navfloat = $('.navbar-header').css('float');
