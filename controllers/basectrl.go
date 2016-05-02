@@ -94,6 +94,22 @@ func (this *Controller) SetSession(key string, value interface{}) {
 	}
 }
 
+func (this *Controller) DestroySession() {
+	if runmodeTest {
+		this.Controller.DestroySession()
+	} else {
+		session, err := store.Get(this.Ctx.Request, SESSION_NAME)
+		if err != nil {
+			beego.Error("GetSession:", err)
+		}
+		delete(session.Values, SESSION_USER_ID)
+		err = session.Save(this.Ctx.Request, this.Ctx.ResponseWriter)
+		if err != nil {
+			beego.Error("Error saving session:", err)
+		}
+	}
+}
+
 // Checks if user is logged in before sending out any data, responds with
 // "Not logged in" error if user not logged in
 func (this *Controller) Prepare() {

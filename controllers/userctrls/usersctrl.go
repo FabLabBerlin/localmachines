@@ -52,7 +52,6 @@ func (this *Controller) GetRouteUid() (uid int64, authorized bool) {
 	return ruid, true
 }
 
-
 func (this *Controller) IsAdminForUser(uid int64) (authorized bool) {
 	uls, err := user_locations.GetAllForUser(uid)
 	if err != nil {

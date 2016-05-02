@@ -6,7 +6,9 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
+	"net/http"
 	"strconv"
+	"time"
 )
 
 type MainController struct {
@@ -58,7 +60,14 @@ func (this *Controller) GetSessionLocationId() (locId int64, ok bool) {
 }
 
 func (this *Controller) SetSessionLocationId(locId int64) {
-	this.Ctx.SetCookie("location", strconv.FormatInt(locId, 10))
+	c := &http.Cookie{
+		Name:    "location",
+		Value:   strconv.FormatInt(locId, 10),
+		Path:    "/",
+		Expires: time.Now().AddDate(0, 0, 30),
+		Secure:  true,
+	}
+	http.SetCookie(this.Ctx.ResponseWriter, c)
 }
 
 func (this *Controller) SetLogged(username string, userId int64, locationId int64) {

@@ -58,8 +58,7 @@ export default {
       success(user) {
         if (user) {
           var data = {
-            UserId: user.Id,
-            LocationId: 1 // Hardcoded for now
+            UserId: user.Id
           };
           reactor.dispatch(actionTypes.SUCCESS_LOGIN, { data });
           router.transitionTo('/machine');
