@@ -40,14 +40,14 @@ type Config struct {
 func (c *Config) RunStep1WifiCredentials() (err error) {
 	if c.WifiSSID == "" {
 		if c.WifiSSID, err = c.getWifiSsid(); err == nil {
-			log.Printf("Wifi SSID (%v) automatically obtained", c.WifiSSID)
+			log.Printf("Wifi (%v) found", c.WifiSSID)
 		} else {
 			return ErrWifiSsidNotPresent
 		}
 	}
 	if c.WifiPassword == "" {
 		if c.WifiPassword, err = c.getWifiPw(); err == nil {
-			log.Printf("Wifi password automatically obtained")
+			log.Printf("Wifi completely configured")
 		} else {
 			return ErrWifiPasswordNotPresent
 		}
