@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"testing"
 
+	_ "github.com/FabLabBerlin/localmachines/controllers"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"github.com/FabLabBerlin/localmachines/models/users"
@@ -287,7 +288,7 @@ func TestUsersAPI(t *testing.T) {
 				}
 				uid, _ := users.CreateUser(u)
 				user_locations.Create(&user_locations.UserLocation{
-					UserId: uid,
+					UserId:     uid,
 					LocationId: 1,
 				})
 				r, _ := http.NewRequest("GET", "/api/users/"+strconv.FormatInt(uid, 10), nil)
