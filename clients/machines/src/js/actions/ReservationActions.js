@@ -155,10 +155,9 @@ var ReservationActions = {
 
     $.ajax({
       headers: {'Content-Type': 'application/json'},
-      url: '/api/reservations/' + reservationId,
+      url: '/api/reservations/' + reservationId + '/cancel',
       dataType: 'json',
-      type: 'PUT',
-      data: JSON.stringify(reservation),
+      type: 'POST',
       success() {
         reactor.dispatch(actionTypes.CANCEL_RESERVATION_SUCCESS);
         toastr.success('Successfuly cancelled reservation');

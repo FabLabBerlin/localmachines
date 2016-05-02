@@ -3,11 +3,11 @@ package controllers
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/FabLabBerlin/localmachines/models/purchases"
+	"github.com/FabLabBerlin/localmachines/lib/icalendar"
 	"github.com/FabLabBerlin/localmachines/models/machine"
+	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/user_roles"
-	"github.com/FabLabBerlin/localmachines/lib/icalendar"
 	"github.com/astaxie/beego"
 	"io/ioutil"
 )
@@ -117,7 +117,7 @@ func (this *ReservationsController) Put() {
 	}
 
 	if !this.IsAdminAt(existing.LocationId()) {
-		beego.Error("Unauthorized attempt to update user")
+		beego.Error("Unauthorized attempt to update reservation")
 		this.Abort("401")
 	}
 
@@ -150,6 +150,46 @@ func (this *ReservationsController) Put() {
 	}
 
 	this.Data["json"] = reservation
+	this.ServeJSON()
+}
+
+// @Title Cancel
+// @Description Cancel reservation
+// @Success 201 {object}
+// @Failure	400	Bad Request
+// @Failure	401	Unauthorized
+// @Failure 500 Internal Server Error
+// @router /:id/cancel [post]
+func (this *ReservationsController) Cancel() {
+	id, err := this.GetInt64(":id")
+	if err != nil {
+		this.Abort("400")
+	}
+
+	r, err := purchases.GetReservation(id)
+	if err != nil {
+		beego.Error("get reservation:", err)
+		this.Abort("500")
+	}
+
+	uid, err := this.GetSessionUserId()
+	if err != nil {
+		beego.Error("cannot get session user id")
+		this.Abort("500")
+	}
+	if r.UserId() != uid && !this.IsAdminAt(r.LocationId()) {
+		beego.Error("Unauthorized attempt to update user")
+		this.Abort("401")
+	}
+
+	r.Purchase.Cancelled = true
+
+	if err := r.Update(); err != nil {
+		beego.Error("update:", err)
+		this.Abort("500")
+	}
+
+	this.Data["json"] = r
 	this.ServeJSON()
 }
 
@@ -202,8 +242,8 @@ func (this *ReservationsController) ICalendar() {
 	for _, r := range rs {
 		e := icalendar.Event{
 			Reservation: r,
-			Machine: msById[r.Purchase.MachineId],
-			UserRole: rolesByUserId[r.Purchase.UserId],
+			Machine:     msById[r.Purchase.MachineId],
+			UserRole:    rolesByUserId[r.Purchase.UserId],
 		}
 		if machineId == 0 || r.Purchase.MachineId == machineId {
 			events = append(events, e)
