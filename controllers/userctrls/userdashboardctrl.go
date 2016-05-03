@@ -125,6 +125,7 @@ func (this *UserDashboardController) GetDashboard() {
 
 // @router /:uid/dashboard/ws [get]
 func (this *UserDashboardController) WS() {
+	// cf. https://github.com/beego/samples/tree/master/WebIM
 	beego.Info("WS()")
 	locId, isStaff := this.GetLocIdStaff()
 
