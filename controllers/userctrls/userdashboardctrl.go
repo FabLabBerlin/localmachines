@@ -1,12 +1,16 @@
 package userctrls
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/products"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_permissions"
 	"github.com/astaxie/beego"
+	"github.com/gorilla/websocket"
+	"net/http"
+	"time"
 )
 
 type UserDashboardController struct {
@@ -117,4 +121,47 @@ func (this *UserDashboardController) GetDashboard() {
 
 	this.Data["json"] = data
 	this.ServeJSON()
+}
+
+// @router /:uid/dashboard/ws [get]
+func (this *UserDashboardController) WS() {
+	// cf. https://github.com/beego/samples/tree/master/WebIM
+	beego.Info("WS()")
+	locId, isStaff := this.GetLocIdStaff()
+
+	uid, authorized := this.GetRouteUid()
+	if !authorized {
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	// Upgrade from http request to WebSocket.
+	beego.Info("WS upgrade for", uid, "...")
+	ws, err := websocket.Upgrade(this.Ctx.ResponseWriter, this.Ctx.Request, nil, 1024, 1024)
+	if _, ok := err.(websocket.HandshakeError); ok {
+		http.Error(this.Ctx.ResponseWriter, "Not a websocket handshake", 400)
+		return
+	} else if err != nil {
+		beego.Error("Cannot setup WebSocket connection:", err)
+		return
+	}
+
+	beego.Info("WS upgrade done for", uid, ".")
+
+	for {
+		var data DashboardData
+		<-time.After(2 * time.Second)
+		beego.Info("one second for", uid, "...")
+		if err := data.load(isStaff, uid, locId); err != nil {
+			beego.Error("Failed to load dashboard data:", err)
+		}
+		buf, err := json.Marshal(data)
+		if err != nil {
+			beego.Error("ws marshal for", uid, ":", err)
+		}
+		err = ws.WriteMessage(websocket.TextMessage, buf)
+		if err != nil {
+			beego.Error("Write message:", err)
+			return
+		}
+	}
 }

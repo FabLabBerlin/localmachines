@@ -62,6 +62,7 @@
       "clearInterval": true,
       "setInterval": true,
       "setTimeout": true,
+      "WebSocket": true,
       "window": true,
       "//": "Global for Unit tests:",
       "describe": true,
