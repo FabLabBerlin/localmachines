@@ -58,6 +58,7 @@ func init() {
 		if err != nil {
 			panic(err.Error())
 		}
+		store.SetMaxAge(86400)
 	} else {
 		runmodeTest = true
 	}

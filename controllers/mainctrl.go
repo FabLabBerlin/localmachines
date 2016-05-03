@@ -54,7 +54,7 @@ func (this *Controller) SetSessionLocationId(locId int64) {
 		Name:    "location",
 		Value:   strconv.FormatInt(locId, 10),
 		Path:    "/",
-		Expires: time.Now().AddDate(0, 0, 30),
+		Expires: time.Now().AddDate(0, 0, 1),
 		Secure:  beego.AppConfig.String("runmode") == "prod",
 	}
 	http.SetCookie(this.Ctx.ResponseWriter, c)
