@@ -62,8 +62,6 @@ var LocationActions = {
   },
 
   setLocationId(id) {
-    console.log('LocationActions: setLocationId: ', id);
-    Cookies.set('location', String(id));
     reactor.dispatch(actionTypes.SET_LOCATION_ID, { id });
   }
 

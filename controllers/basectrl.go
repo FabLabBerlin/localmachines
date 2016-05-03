@@ -3,6 +3,8 @@ package controllers
 
 import (
 	"github.com/astaxie/beego"
+	_ "github.com/astaxie/beego/session/memcache"
+	"github.com/boj/redistore"
 	"strings"
 )
 
@@ -39,9 +41,75 @@ type ErrorResponse struct {
 	Message string
 }
 
+const SESSION_NAME = "easylab"
+
+var (
+	runmodeTest bool
+	store       *redistore.RediStore
+)
+
+func init() {
+	runmode := beego.AppConfig.String("runmode")
+	if runmode == "dev" || runmode == "prod" {
+		var err error
+		dsn := beego.AppConfig.String("SessionProviderConfig")
+		secret := []byte(beego.AppConfig.String("sessionhashkey"))
+		store, err = redistore.NewRediStore(10, "tcp", dsn, "", secret)
+		if err != nil {
+			panic(err.Error())
+		}
+	} else {
+		runmodeTest = true
+	}
+}
+
 // Creates new ErrorResponse instance with Status:"error" already set
 func NewErrorResponse() *ErrorResponse {
 	return &ErrorResponse{Status: "error"}
+}
+
+func (this *Controller) GetSession(key string) interface{} {
+	if runmodeTest {
+		return this.Controller.GetSession(key)
+	} else {
+		session, err := store.Get(this.Ctx.Request, SESSION_NAME)
+		if err != nil {
+			beego.Error("GetSession:", err)
+		}
+		return session.Values[key]
+	}
+}
+
+func (this *Controller) SetSession(key string, value interface{}) {
+	if runmodeTest {
+		this.Controller.SetSession(key, value)
+	} else {
+		session, err := store.Get(this.Ctx.Request, SESSION_NAME)
+		if err != nil {
+			beego.Error("GetSession:", err)
+		}
+		session.Values[key] = value
+		err = session.Save(this.Ctx.Request, this.Ctx.ResponseWriter)
+		if err != nil {
+			beego.Error("Error saving session:", err)
+		}
+	}
+}
+
+func (this *Controller) DestroySession() {
+	if runmodeTest {
+		this.Controller.DestroySession()
+	} else {
+		session, err := store.Get(this.Ctx.Request, SESSION_NAME)
+		if err != nil {
+			beego.Error("GetSession:", err)
+		}
+		delete(session.Values, SESSION_USER_ID)
+		err = session.Save(this.Ctx.Request, this.Ctx.ResponseWriter)
+		if err != nil {
+			beego.Error("Error saving session:", err)
+		}
+	}
 }
 
 // Checks if user is logged in before sending out any data, responds with

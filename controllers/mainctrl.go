@@ -6,7 +6,9 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
+	"net/http"
 	"strconv"
+	"time"
 )
 
 type MainController struct {
@@ -15,17 +17,7 @@ type MainController struct {
 
 // Redirect to default html interface
 func (this *MainController) Get() {
-
-	// Check for app config value
-	redirectUrl := beego.AppConfig.String("redirecturl")
-	if redirectUrl != "" {
-		beego.Trace("Redirect URL:", redirectUrl)
-	} else {
-		redirectUrl = "machines/"
-	}
-
-	beego.Info("Redirecting...")
-	this.Redirect(redirectUrl, 302)
+	this.Redirect("machines/", 302)
 }
 
 func (this *Controller) GetSessionUserId() (int64, error) {
@@ -58,7 +50,14 @@ func (this *Controller) GetSessionLocationId() (locId int64, ok bool) {
 }
 
 func (this *Controller) SetSessionLocationId(locId int64) {
-	this.Ctx.SetCookie("location", strconv.FormatInt(locId, 10))
+	c := &http.Cookie{
+		Name:    "location",
+		Value:   strconv.FormatInt(locId, 10),
+		Path:    "/",
+		Expires: time.Now().AddDate(0, 0, 30),
+		Secure:  beego.AppConfig.String("runmode") == "prod",
+	}
+	http.SetCookie(this.Ctx.ResponseWriter, c)
 }
 
 func (this *Controller) SetLogged(username string, userId int64, locationId int64) {
@@ -79,29 +78,29 @@ func (this *Controller) IsLogged() bool {
 
 // Return true if user is super admin, if no args are passed, uses session user ID,
 // if single user ID is passed, checks the passed one. Fails otherwise.
-func (this *Controller) IsSuperAdmin(userIds ...int64) bool {
-	role := this.globalUserRole(userIds...)
+func (this *Controller) IsSuperAdmin() bool {
+	role := this.globalUserRole()
 	return role == user_roles.SUPER_ADMIN
 }
 
 // Return true if user is admin at that location, if only the location id is
 // passed, uses session user ID, if single user ID is passed, checks the passed
 // one. Fails otherwise.
-func (this *Controller) IsAdminAt(locationId int64, userIds ...int64) bool {
-	role := this.localUserRole(locationId, userIds...)
+func (this *Controller) IsAdminAt(locationId int64) bool {
+	role := this.localUserRole(locationId)
 	return role == user_roles.ADMIN ||
 		role == user_roles.SUPER_ADMIN
 }
 
-func (this *Controller) IsStaffAt(locationId int64, userIds ...int64) bool {
-	role := this.localUserRole(locationId, userIds...)
+func (this *Controller) IsStaffAt(locationId int64) bool {
+	role := this.localUserRole(locationId)
 	return role == user_roles.STAFF ||
 		role == user_roles.ADMIN ||
 		role == user_roles.SUPER_ADMIN
 }
 
-func (this *Controller) IsApiAt(locationId int64, userIds ...int64) bool {
-	role := this.localUserRole(locationId, userIds...)
+func (this *Controller) IsApiAt(locationId int64) bool {
+	role := this.localUserRole(locationId)
 	return role == user_roles.API ||
 		role == user_roles.ADMIN ||
 		role == user_roles.STAFF ||
@@ -111,16 +110,16 @@ func (this *Controller) IsApiAt(locationId int64, userIds ...int64) bool {
 // Return true if user is member at that location, if only the location id is
 // passed, uses session user ID, if single user ID is passed, checks the passed
 // one. Fails otherwise.
-func (this *Controller) IsMemberAt(locationId int64, userIds ...int64) bool {
-	role := this.localUserRole(locationId, userIds...)
+func (this *Controller) IsMemberAt(locationId int64) bool {
+	role := this.localUserRole(locationId)
 	return role == user_roles.MEMBER ||
 		role == user_roles.ADMIN ||
 		role == user_roles.STAFF ||
 		role == user_roles.SUPER_ADMIN
 }
 
-func (this *Controller) globalUserRole(userIds ...int64) user_roles.Role {
-	userId, ok := this.getUserId(userIds...)
+func (this *Controller) globalUserRole() user_roles.Role {
+	userId, ok := this.getUserId()
 	if !ok {
 		return user_roles.NOT_AFFILIATED
 	}
@@ -131,8 +130,8 @@ func (this *Controller) globalUserRole(userIds ...int64) user_roles.Role {
 	return user.GetRole()
 }
 
-func (this *Controller) localUserRole(locationId int64, userIds ...int64) user_roles.Role {
-	userId, ok := this.getUserId(userIds...)
+func (this *Controller) localUserRole(locationId int64) user_roles.Role {
+	userId, ok := this.getUserId()
 	if !ok {
 		return user_roles.NOT_AFFILIATED
 	}
@@ -148,17 +147,9 @@ func (this *Controller) localUserRole(locationId int64, userIds ...int64) user_r
 	return user_roles.NOT_AFFILIATED
 }
 
-func (this *Controller) getUserId(userIds ...int64) (userId int64, ok bool) {
-	if len(userIds) == 0 {
-		var err error
-		userId, err = this.GetSessionUserId()
-		if err != nil {
-			return 0, false
-		}
-	} else if len(userIds) == 1 {
-		userId = userIds[0]
-	} else {
-		beego.Error("Expecting single or no value as input")
+func (this *Controller) getUserId() (userId int64, ok bool) {
+	userId, err := this.GetSessionUserId()
+	if err != nil {
 		return 0, false
 	}
 	return userId, true
@@ -217,7 +208,6 @@ func (this *Controller) GetLocIdApi() (locId int64, authorized bool) {
 // the user is allowed to perform member tasks at that location.
 func (this *Controller) GetLocIdMember() (locId int64, authorized bool) {
 	locId, err := this.GetInt64("location")
-	beego.Info("GetLocIdMember: locId=", locId)
 	if err == nil {
 		if !this.IsMemberAt(locId) {
 			return
