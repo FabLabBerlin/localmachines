@@ -4,8 +4,7 @@ package controllers
 import (
 	"github.com/astaxie/beego"
 	_ "github.com/astaxie/beego/session/memcache"
-	"github.com/bradfitz/gomemcache/memcache"
-	gsm "github.com/bradleypeabody/gorilla-sessions-memcache"
+	"github.com/boj/redistore"
 	"strings"
 )
 
@@ -46,16 +45,19 @@ const SESSION_NAME = "easylab"
 
 var (
 	runmodeTest bool
-	store       *gsm.MemcacheStore
+	store       *redistore.RediStore
 )
 
 func init() {
 	runmode := beego.AppConfig.String("runmode")
 	if runmode == "dev" || runmode == "prod" {
+		var err error
 		dsn := beego.AppConfig.String("SessionProviderConfig")
-		memcacheClient := memcache.New(dsn)
 		secret := []byte(beego.AppConfig.String("sessionhashkey"))
-		store = gsm.NewMemcacheStore(memcacheClient, "fabsmith_", secret)
+		store, err = redistore.NewRediStore(10, "tcp", dsn, "", secret)
+		if err != nil {
+			panic(err.Error())
+		}
 	} else {
 		runmodeTest = true
 	}
