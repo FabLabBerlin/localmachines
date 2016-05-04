@@ -3,6 +3,7 @@ package userctrls
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/lib/redis"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/products"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
@@ -10,7 +11,6 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/gorilla/websocket"
 	"net/http"
-	"time"
 )
 
 type UserDashboardController struct {
@@ -126,7 +126,6 @@ func (this *UserDashboardController) GetDashboard() {
 // @router /:uid/dashboard/ws [get]
 func (this *UserDashboardController) WS() {
 	// cf. https://github.com/beego/samples/tree/master/WebIM
-	beego.Info("WS()")
 	locId, isStaff := this.GetLocIdStaff()
 
 	uid, authorized := this.GetRouteUid()
@@ -146,11 +145,15 @@ func (this *UserDashboardController) WS() {
 	}
 
 	beego.Info("WS upgrade done for", uid, ".")
+	conn := redis.GetPubSubConn()
+	defer conn.Close()
+	if err := conn.Subscribe(redis.MachinesUpdateCh(locId)); err != nil {
+		beego.Error("subscribe:", err)
+		this.Abort("500")
+	}
 
 	for {
 		var data DashboardData
-		<-time.After(2 * time.Second)
-		beego.Info("one second for", uid, "...")
 		if err := data.load(isStaff, uid, locId); err != nil {
 			beego.Error("Failed to load dashboard data:", err)
 		}
@@ -163,5 +166,7 @@ func (this *UserDashboardController) WS() {
 			beego.Error("Write message:", err)
 			return
 		}
+		conn.Receive()
+		beego.Info("user", uid, "receives")
 	}
 }

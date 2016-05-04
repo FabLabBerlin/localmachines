@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ChimeraCoder/anaconda"
 	"github.com/FabLabBerlin/localmachines/lib/email"
+	"github.com/FabLabBerlin/localmachines/lib/redis"
 	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
@@ -171,6 +172,10 @@ func (m *Machine) Update(updateGateway bool) (err error) {
 		if err = xmppReinit(location); err != nil {
 			return fmt.Errorf("xmpp reinit: %v", err)
 		}
+	}
+
+	if err := redis.PublishMachinesUpdate(m.LocationId); err != nil {
+		beego.Error("publish machines update:", err)
 	}
 
 	return

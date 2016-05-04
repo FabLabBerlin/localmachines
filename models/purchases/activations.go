@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
+	"github.com/FabLabBerlin/localmachines/lib/redis"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
@@ -185,6 +186,10 @@ func StartActivation(machineId, userId int64, startTime time.Time) (
 		beego.Error("Failed to update activated machine")
 	}
 
+	if err := redis.PublishMachinesUpdate(mch.LocationId); err != nil {
+		beego.Error("publish machines update:", err)
+	}
+
 	return activationId, nil
 }
 
@@ -234,6 +239,10 @@ func (activation *Activation) Close(endTime time.Time) error {
 	if err = machine.Update(false); err != nil {
 		beego.Error("Failed to update machine:", err)
 		return fmt.Errorf("Failed to update machine: %v", err)
+	}
+
+	if err := redis.PublishMachinesUpdate(machine.LocationId); err != nil {
+		beego.Error("publish machines update:", err)
 	}
 
 	return nil
