@@ -9,8 +9,10 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_permissions"
 	"github.com/astaxie/beego"
+	redigo "github.com/garyburd/redigo/redis"
 	"github.com/gorilla/websocket"
 	"net/http"
+	"time"
 )
 
 type UserDashboardController struct {
@@ -113,6 +115,51 @@ func (this *UserDashboardController) GetDashboard() {
 	if !authorized {
 		this.CustomAbort(401, "Not authorized")
 	}
+
+	if err := data.load(isStaff, uid, locId); err != nil {
+		beego.Error("Failed to load dashboard data:", err)
+		this.CustomAbort(500, "Failed to load dashboard data")
+	}
+
+	this.Data["json"] = data
+	this.ServeJSON()
+}
+
+// @router /:uid/dashboard/lp [get]
+func (this *UserDashboardController) LP() {
+	locId, isStaff := this.GetLocIdStaff()
+	uid, authorized := this.GetRouteUid()
+	if !authorized {
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	ch := make(chan int)
+
+	conn := redis.GetPubSubConn()
+	defer conn.Close()
+
+	go func() {
+		if err := conn.Subscribe(redis.MachinesUpdateCh(locId)); err != nil {
+			beego.Error("subscribe:", err)
+			this.Abort("500")
+		}
+		for {
+			switch conn.Receive().(type) {
+			case redigo.Message:
+				beego.Info("received smth on the lp")
+				ch <- 1
+				return
+			}
+		}
+
+	}()
+
+	select {
+	case <-time.After(20 * time.Second):
+	case <-ch:
+	}
+
+	data := DashboardData{}
 
 	if err := data.load(isStaff, uid, locId); err != nil {
 		beego.Error("Failed to load dashboard data:", err)

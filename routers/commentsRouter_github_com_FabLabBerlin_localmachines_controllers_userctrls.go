@@ -36,6 +36,13 @@ func init() {
 
 	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UserDashboardController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UserDashboardController"],
 		beego.ControllerComments{
+			"LP",
+			`/:uid/dashboard/lp`,
+			[]string{"get"},
+			nil})
+
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UserDashboardController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UserDashboardController"],
+		beego.ControllerComments{
 			"WS",
 			`/:uid/dashboard/ws`,
 			[]string{"get"},

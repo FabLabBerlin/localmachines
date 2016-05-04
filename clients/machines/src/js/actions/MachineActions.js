@@ -91,6 +91,39 @@ var MachineActions = {
     reactor.dispatch(actionTypes.MACHINE_STORE_CLEAR_STATE);
   },
 
+  lpDashboard(router, locationId, chained) {
+    const uid = reactor.evaluateToJS(getters.getUid);
+    var url;
+    if (chained) {
+      url = '/api/users/' + uid + '/dashboard/lp?location=' + locationId;
+    } else {
+      url = '/api/users/' + uid + '/dashboard?location=' + locationId;
+    }
+
+    $.ajax({
+      url: url,
+      dataType: 'json',
+      type: 'GET',
+      cache: false,
+      success: function(data) {
+        dashboardDispatch(data);
+        MachineActions.lpDashboard(router, locationId, true);
+      },
+      error: function(xhr, status) {
+        console.log('xhr:', xhr);
+        if (xhr.status === 401 && xhr.responseText === 'Not logged in') {
+          toastr.error('Session not active anymore. Logging out.');
+          LoginActions.logout(router);
+        } else {
+          console.log('reconnecting in 5 s...');
+          window.setTimeout(function() {
+            MachineActions.lpDashboard(router, locationId);
+          }, 5000);
+        }
+      }
+    });
+  },
+
   wsDashboard(locationId) {
     if (socket) {
       return;

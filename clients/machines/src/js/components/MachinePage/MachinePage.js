@@ -95,9 +95,12 @@ var MachinePage = React.createClass({
     MachineStore.onChangeActivation = this.onChangeActivation;
     LoginStore.onChangeLogout = this.onChangeLogout;
     MachineStore.onChangeLogin = this.onChangeLogin;
-    //this.interval = setInterval(this.update, 1500);
     const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
-    MachineActions.wsDashboard(locationId);
+    if (window.WebSocket) {
+      MachineActions.wsDashboard(locationId);
+    } else {
+      MachineActions.lpDashboard(this.context.router, locationId);
+    }
   },
 
   render() {
@@ -133,16 +136,6 @@ var MachinePage = React.createClass({
     } else {
       return <div/>;
     }
-  },
-
-  /*
-   * update
-   *
-   * Need polling for activation status and maintenance status
-   */
-  update() {
-    const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
-    MachineActions.pollDashboard(this.context.router, locationId);
   }
 });
 
