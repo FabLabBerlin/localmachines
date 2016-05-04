@@ -1,9 +1,11 @@
 .DS_Store
 *~
 *.arm
+*.bak
 *.deb
 *.gz
 *.img
+*.rdb
 *.swp
 fabsmith
 foo.state.test
