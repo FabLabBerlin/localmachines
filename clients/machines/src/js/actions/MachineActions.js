@@ -95,6 +95,16 @@ var MachineActions = {
     socket.onmessage = function(e) {
       dashboardDispatch(JSON.parse(e.data));
     };
+    socket.onclose = function(e) {
+      console.log('websocket closed:', e);
+      console.log('reconnecting in 5 s...');
+      window.setTimeout(function() {
+        MachineActions.wsDashboard(locationId);
+      }, 5000);
+    };
+    socket.onerror = function(e) {
+      console.log('websocket error:', e);
+    };
   },
 
   /*
