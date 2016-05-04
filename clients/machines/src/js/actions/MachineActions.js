@@ -11,6 +11,8 @@ var reactor = require('../reactor');
 var toastr = require('../toastr');
 
 
+var socket;
+
 function dashboardDispatch(data) {
   var userIds = [];
 
@@ -90,12 +92,17 @@ var MachineActions = {
   },
 
   wsDashboard(locationId) {
+    if (socket) {
+      return;
+    }
+
     const uid = reactor.evaluateToJS(getters.getUid);
-    var socket = new WebSocket('ws://' + window.location.host + '/api/users/' + uid + '/dashboard/ws?location=' + locationId);
+    socket = new WebSocket('ws://' + window.location.host + '/api/users/' + uid + '/dashboard/ws?location=' + locationId);
     socket.onmessage = function(e) {
       dashboardDispatch(JSON.parse(e.data));
     };
     socket.onclose = function(e) {
+      socket = null;
       console.log('websocket closed:', e);
       console.log('reconnecting in 5 s...');
       window.setTimeout(function() {
