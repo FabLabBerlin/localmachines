@@ -134,19 +134,23 @@ func (this *UserDashboardController) LP() {
 	}
 
 	ch := make(chan int)
+	done := false
 
 	conn := redis.GetPubSubConn()
 	defer conn.Close()
 
 	go func() {
-		if err := conn.Subscribe(redis.MachinesUpdateCh(locId)); err != nil {
+		chName := redis.MachinesUpdateCh(locId)
+		if err := conn.Subscribe(chName); err != nil {
 			beego.Error("subscribe:", err)
 			this.Abort("500")
 		}
-		for {
-			switch conn.Receive().(type) {
-			case redigo.Message:
-				beego.Info("received smth on the lp")
+		beego.Info("uid", uid, "subscribed")
+		defer conn.Unsubscribe(chName)
+		for !done {
+			obj := conn.Receive()
+			if _, ok := obj.(redigo.Message); ok {
+				beego.Info("received smth on the lp, uid", uid)
 				ch <- 1
 				return
 			}
@@ -158,6 +162,8 @@ func (this *UserDashboardController) LP() {
 	case <-time.After(20 * time.Second):
 	case <-ch:
 	}
+
+	done = true
 
 	data := DashboardData{}
 
