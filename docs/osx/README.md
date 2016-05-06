@@ -103,7 +103,7 @@ runmode=dev
 
 unless you are going to prepare a production deployment.
 
-## 7. Install Node.js
+## 7. Install Node.js LTS
 
 You can download a .pkg file from the
 [Node.js Download Page](https://nodejs.org/en/download/).

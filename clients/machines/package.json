@@ -22,7 +22,7 @@
     "file-loader": "^0.8.4",
     "font-awesome": "^4.5.0",
     "font-awesome-webpack": "0.0.4",
-    "jest-cli": "git://github.com/facebook/jest.git#v0.5.0",
+    "jest-cli": "^12.0.2",
     "jquery": "^2.1.4",
     "js-cookie": "^2.1.0",
     "less": "^2.5.1",

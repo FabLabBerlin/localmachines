@@ -48,7 +48,7 @@ Quickly install Localmachines to get it running on Linux or OS X. For more
    ```
    cp conf/app.example.conf conf/app.conf
    ```
-7. Install [Node.js](https://nodejs.org/)
+7. Install [Node.js LTS](https://nodejs.org/)
 8. Install [bower](http://bower.io/) and [grunt](http://gruntjs.com/):
 
    ```

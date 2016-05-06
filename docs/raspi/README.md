@@ -114,7 +114,7 @@ These instructions have been adapted from [Dave Cheney's](http://dave.cheney.net
 You will need to install BeeGo MVC framework to make use of the code found in this repository. Refer to the official [BeeGo installation instuctions](http://beego.me/quickstart) to do that.
 
 ###Node.js
-We use Node.js to fully benefit from the AngularJS Seed project. Use the [Node Version Manager](https://github.com/creationix/nvm) to install latest Node.js version. On the Raspberry Pi it will compile it from source and it takes approximately 2 hours.
+We use Node.js to install Bower and run the frontend tests.  Node.js LTS is used for reference.
 
 ###MySQL
 Install on Linux:  
