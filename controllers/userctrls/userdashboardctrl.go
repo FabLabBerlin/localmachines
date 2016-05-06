@@ -200,7 +200,8 @@ func (this *UserDashboardController) WS() {
 	beego.Info("WS upgrade done for", uid, ".")
 	conn := redis.GetPubSubConn()
 	defer conn.Close()
-	if err := conn.Subscribe(redis.MachinesUpdateCh(locId)); err != nil {
+	chName := redis.MachinesUpdateCh(locId)
+	if err := conn.Subscribe(chName); err != nil {
 		beego.Error("subscribe:", err)
 		this.Abort("500")
 	}
