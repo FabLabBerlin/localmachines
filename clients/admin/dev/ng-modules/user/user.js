@@ -649,6 +649,11 @@ app.controller('UserCtrl',
   // Sync user data with FastBill account
   $scope.syncWithFastBill = function() {
 
+    if (_.size($scope.user.CountryCode) === 0) {
+      toastr.error('Please select a Country Code');
+      return;
+    }
+
     console.log($scope.fastBillAction);
     console.log(FASTBILL_ACTION_LOAD_FROM);
 
