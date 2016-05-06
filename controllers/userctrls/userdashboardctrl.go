@@ -204,6 +204,7 @@ func (this *UserDashboardController) WS() {
 		beego.Error("subscribe:", err)
 		this.Abort("500")
 	}
+	defer conn.Unsubscribe(chName)
 
 	for {
 		var data DashboardData
