@@ -56,22 +56,4 @@ describe('MachineActions', function() {
       });
     });
   });
-
-  describe('pollActivations', function() {
-    it('GETs /api/users/:uid/dashboard', function() {
-      var data = {
-        UserId: 11
-      };
-      reactor.dispatch(actionTypes.SUCCESS_LOGIN, { data });
-      MachineActions.pollDashboard(null, 1);
-      expect($.ajax).toBeCalledWith({
-        url: '/api/users/11/dashboard?location=1',
-        dataType: 'json',
-        type: 'GET',
-        cache: false,
-        success: jasmine.any(Function),
-        error: jasmine.any(Function)
-      });
-    });
-  });
 });

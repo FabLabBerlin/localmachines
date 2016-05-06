@@ -11,6 +11,7 @@ var reactor = require('../reactor');
 var toastr = require('../toastr');
 
 
+var lpStarted;
 var socket;
 
 function dashboardDispatch(data) {
@@ -92,6 +93,11 @@ var MachineActions = {
   },
 
   lpDashboard(router, locationId, chained) {
+    if (lpStarted && !chained) {
+      return;
+    }
+
+    lpStarted = true;
     const uid = reactor.evaluateToJS(getters.getUid);
     var url;
     if (chained) {
@@ -105,6 +111,7 @@ var MachineActions = {
       dataType: 'json',
       type: 'GET',
       cache: false,
+      timeout: 30000,
       success: function(data) {
         dashboardDispatch(data);
         MachineActions.lpDashboard(router, locationId, true);
@@ -115,6 +122,8 @@ var MachineActions = {
           toastr.error('Session not active anymore. Logging out.');
           LoginActions.logout(router);
         } else {
+          lpStarted = false;
+          toastr.error('Connection error.  Reconnecting...');
           console.log('reconnecting in 5 s...');
           window.setTimeout(function() {
             MachineActions.lpDashboard(router, locationId);
@@ -138,6 +147,7 @@ var MachineActions = {
     socket.onclose = function(e) {
       var duration = new Date() - t0;
       if (duration < 30000) {
+        toastr.warning('Falling back to longpoll...');
         MachineActions.lpDashboard(router, locationId);
       } else {
         socket = null;
@@ -152,29 +162,7 @@ var MachineActions = {
     };
   },
 
-  /*
-   * To continue to refresh the view each seconds
-   */
-  pollDashboard(router, locationId) {
-    const uid = reactor.evaluateToJS(getters.getUid);
-
-    $.ajax({
-      url: '/api/users/' + uid + '/dashboard?location=' + locationId,
-      dataType: 'json',
-      type: 'GET',
-      cache: false,
-      success: function(data) {
-        dashboardDispatch(data);
-      },
-      error: function(xhr, status) {
-        console.log('xhr:', xhr);
-        if (xhr.status === 401 && xhr.responseText === 'Not logged in') {
-          toastr.error('Session not active anymore. Logging out.');
-          LoginActions.logout(router);
-        }
-      }
-    });
-  },
+  pollDashboard() {},
 
   setUnderMaintenance({ mid, onOrOff }) {
     ApiActions.postCall('/api/machines/' + mid + '/under_maintenance/' + onOrOff,
