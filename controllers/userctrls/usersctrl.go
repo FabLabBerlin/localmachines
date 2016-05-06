@@ -458,7 +458,7 @@ func (this *UsersController) Put() {
 			this.CustomAbort(500, "Internal Server Error")
 		} else {
 			beego.Error("Failed to update user:", err)
-			this.CustomAbort(403, "lastAdmin")
+			this.Abort("500")
 		}
 	}
 

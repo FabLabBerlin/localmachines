@@ -415,12 +415,6 @@ app.controller('UserCtrl',
     .error(function(data) {
       if (data === 'duplicateEntry') {
         toastr.error('Duplicate entry error. Make sure that fields like user name and email are unique.');
-      } else if (data === 'lastAdmin') {
-        $scope.updateAdminStatus();
-        toastr.error('You are the last remaining admin. Remember - power comes with great responsibility!');
-      } else if (data === 'selfAdmin') {
-        $scope.updateAdminStatus();
-        toastr.error('You can not unadmin yourself. Someone else has to do it.');
       } else {
         toastr.error('Error while trying to save changes');
       }
