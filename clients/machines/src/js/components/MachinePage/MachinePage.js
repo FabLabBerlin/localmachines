@@ -97,7 +97,7 @@ var MachinePage = React.createClass({
     MachineStore.onChangeLogin = this.onChangeLogin;
     const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
     if (window.WebSocket) {
-      MachineActions.wsDashboard(locationId);
+      MachineActions.wsDashboard(this.context.router, locationId);
     } else {
       MachineActions.lpDashboard(this.context.router, locationId);
     }

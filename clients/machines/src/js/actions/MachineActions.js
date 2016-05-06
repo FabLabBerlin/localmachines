@@ -124,7 +124,8 @@ var MachineActions = {
     });
   },
 
-  wsDashboard(locationId) {
+  wsDashboard(router, locationId) {
+    const t0 = new Date();
     if (socket) {
       return;
     }
@@ -135,12 +136,16 @@ var MachineActions = {
       dashboardDispatch(JSON.parse(e.data));
     };
     socket.onclose = function(e) {
-      socket = null;
-      console.log('websocket closed:', e);
-      console.log('reconnecting in 5 s...');
-      window.setTimeout(function() {
-        MachineActions.wsDashboard(locationId);
-      }, 5000);
+      var duration = new Date() - t0;
+      if (duration < 30000) {
+        MachineActions.lpDashboard(router, locationId);
+      } else {
+        socket = null;
+        console.log('reconnecting in 5 s...');
+        window.setTimeout(function() {
+          MachineActions.wsDashboard(router, locationId);
+        }, 5000);
+      }
     };
     socket.onerror = function(e) {
       console.log('websocket error:', e);
