@@ -140,6 +140,7 @@ func StartActivation(machineId, userId int64, startTime time.Time) (
 	numDuplicates, err := o.QueryTable(TABLE_NAME).
 		Filter("machine_id", machineId).
 		Filter("user_id", userId).
+		Filter("running", 1).
 		Filter("type", TYPE_ACTIVATION).
 		All(&dupActivations)
 	if err != nil {
