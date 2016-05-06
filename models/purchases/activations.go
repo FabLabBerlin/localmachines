@@ -136,16 +136,18 @@ func StartActivation(machineId, userId int64, startTime time.Time) (
 
 	// Check for duplicate activations
 	// TODO: Replace this with a more readable helper function
-	var dupActivations []Activation
-	act := Activation{} // Used to get table name of the model
-	query := fmt.Sprintf("SELECT id FROM %s WHERE machine_id = ? "+
-		"AND user_id = ? AND running = 1 AND type = ?", act.Purchase.TableName())
-	numDuplicates, err := o.Raw(query, machineId, userId, TYPE_ACTIVATION).
-		QueryRows(&dupActivations)
+	var dupActivations []*Purchase
+	numDuplicates, err := o.QueryTable(TABLE_NAME).
+		Filter("machine_id", machineId).
+		Filter("user_id", userId).
+		Filter("type", TYPE_ACTIVATION).
+		All(&dupActivations)
 	if err != nil {
 		return 0, fmt.Errorf("Could not get duplicate activations: %v", err)
 	}
-	if numDuplicates > 0 {
+	if numDuplicates == 1 {
+		return dupActivations[0].Id, nil
+	} else if numDuplicates > 1 {
 		beego.Error("Duplicate activations found:", numDuplicates)
 		return 0, fmt.Errorf("Duplicate activations found")
 	}

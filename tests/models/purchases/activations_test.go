@@ -103,6 +103,32 @@ func TestActivations(t *testing.T) {
 					Convey("the active flag should be false after closing", func() {
 						So(activation.Purchase.Running, ShouldBeFalse)
 					})
+
+					Convey("Starting is idempotent", func() {
+						machine, err := CreateMachine("lel")
+						if err != nil {
+							panic(err.Error())
+						}
+						uid, err := users.CreateUser(&users.User{
+							FirstName: "Ron Sommer",
+							Email:     "ron@dtag.de",
+						})
+						if err != nil {
+							panic(err.Error())
+						}
+						activationStartTime := time.Date(2015, 5, 8, 2, 15, 3, 1, time.Local)
+						aid, err := purchases.StartActivation(machine.Id, uid, activationStartTime)
+						if err != nil {
+							panic(err.Error())
+						}
+						_ = aid
+						aid2, err := purchases.StartActivation(machine.Id, uid, activationStartTime)
+						if err != nil {
+							panic(err.Error())
+						}
+						_ = aid2
+						So(aid, ShouldEqual, aid2)
+					})
 				})
 			})
 		})
@@ -124,6 +150,27 @@ func TestActivations(t *testing.T) {
 
 				So(err1, ShouldBeNil)
 				So(err2, ShouldBeNil)
+			})
+
+			Convey("Closing is idempotent", func() {
+				machine, err := CreateMachine("lel")
+				if err != nil {
+					panic(err.Error())
+				}
+				aid, err := purchases.StartActivation(machine.Id, 0, time.Now())
+				if err != nil {
+					panic(err.Error())
+				}
+				a, err := purchases.GetActivation(aid)
+				if err != nil {
+					panic(err.Error())
+				}
+				err = a.Close(time.Now())
+				if err != nil {
+					panic(err.Error())
+				}
+				err = a.Close(time.Now())
+				So(err, ShouldBeNil)
 			})
 		})
 	})
