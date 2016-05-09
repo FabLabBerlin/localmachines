@@ -121,6 +121,167 @@ var SecondRow = React.createClass({
 });
 
 
+var MachineProperties = React.createClass({
+  render() {
+    const machineType = {};
+
+    return (
+      <div>
+        <div className="row">
+          <div className="col-sm-3" ng-show="data.location.FeatureSpaces">
+            <div className="form-group">
+              <label>Start time (seconds)</label>
+              <input type="number"
+                     id="grace-period"
+                     className="form-control"
+                     ng-model="machine.GracePeriod" />
+            </div>
+          </div>
+
+          <div className="col-sm-3">
+            <div className="form-group">
+              <label>
+                <input type="checkbox" ng-model="machine.Visible" /> Visible
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div className="row">
+          <div className="col-sm-3">
+            <div className="form-group">
+              <label>Machine Type</label>
+              <select className="form-control" id="machine-type" 
+                      ng-model="machine.TypeId">
+                <option value="0" selected disabled>Select type</option>
+                <option ng-repeat="machineType in machineTypes"
+                        value="{machineType.Id}">
+                  {machineType.Name}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div className="col-sm-3">
+            <div className="form-group">
+              <label>Machine Brand</label>
+              <input type="text" id="machine-brand" className="form-control"
+                     placeholder="Enter machine brand" ng-model="machine.Brand" />
+            </div>
+          </div>
+        </div>
+
+        <div className="row">
+          <div className="col-sm-6">
+            <div className="form-group">
+              <label>Dimensions</label>
+              <input type="text" id="machine-dimensions" className="form-control"
+                     placeholder="Enter dimensions" ng-model="machine.Dimensions" />
+            </div>
+          </div>
+
+          <div className="col-sm-6">
+            <div className="form-group">
+              <label>Workspace Dimensions</label>
+              <input type="text" id="machine-workspace-dimensions" className="form-control"
+                     placeholder="E.g. 200 mm x 200 mm x 200 mm or 1.5 m x 3 m" ng-model="machine.WorkspaceDimensions" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+});
+
+
+var NetswitchConfig = React.createClass({
+  render() {
+    const machine = this.props.machine;
+
+    var netswitchConfigStatus;
+
+    return (
+      <div className="row">
+
+        <div className="col-sm-12">
+          <label>NetSwitch Config</label>
+          <div className="row">
+
+            <div className="col-sm-3">
+              <div className="form-group" ng-hide="machine.NetswitchType">
+                <input type="text"
+                       className="form-control"
+                       placeholder="On URL"
+                       ng-model="machine.NetswitchUrlOn"
+                       ng-change="registerUnsavedChange()"/>
+              </div>
+              <div className="form-group" ng-show="machine.NetswitchType">
+                <input type="text"
+                       className="form-control"
+                       placeholder="Host (mfi only)"
+                       ng-model="machine.NetswitchHost"
+                       ng-change="registerUnsavedChange()"/>
+              </div>
+            </div>
+
+            <div className="col-sm-3">
+              <div className="form-group" ng-hide="machine.NetswitchType">
+                <input type="text"
+                       className="form-control"
+                       placeholder="Off URL"
+                       ng-model="machine.NetswitchUrlOff"
+                       ng-change="registerUnsavedChange()"/>
+              </div>
+            </div>
+
+          </div>
+          <div className="row">
+
+            <div className="col-sm-3">
+              <div className="form-group">
+                <select className="form-control"
+                        ng-model="machine.NetswitchType"
+                        ng-change="registerUnsavedChange()">
+                  <option value="" selected>Custom Powerswitch</option>
+                  <option value="mfi">Ubiquiti mFi Powerswitch</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="col-sm-3">
+              <div className="form-group">
+                {netswitchConfigStatus ?
+                  (
+                    <button className="btn btn-danger btn-block"
+                            ng-click="applyConfig()"
+                            ng-disabled="true"
+                            ng-show="netswitchConfigStatus"
+                            type="button">
+                      <i className="fa fa-refresh fa-spin"></i>
+                      {netswitchConfigStatus}
+                    </button>
+                  ) :
+                  (
+                    <button className="btn btn-danger btn-block"
+                            ng-click="applyConfig()"
+                            ng-show="machine.NetswitchType === 'mfi' && !netswitchConfigStatus"
+                            type="button">
+                      Upgrade Powerswitch
+                    </button>
+                  )
+                }
+              </div>
+            </div>
+            
+          </div>
+        </div>
+
+      </div>
+    );
+  }
+});
+
+
 var Machine = React.createClass({
 
   mixins: [ Navigation, reactor.ReactMixin ],
@@ -166,6 +327,8 @@ var Machine = React.createClass({
 
           <FirstRow machine={machine} />
           <SecondRow machine={machine} />
+          <MachineProperties machine={machine} />
+          <NetswitchConfig machine={machine} />
         </div>
       );
     } else {
