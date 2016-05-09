@@ -41,7 +41,7 @@ function registerMachineUsers(state, users) {
 }
 
 function setActivations(state, { activations }) {
-  return state.set('activations', activations);
+  return state.set('activations', toImmutable(activations));
 }
 
 function setMachines(state, { machines }) {

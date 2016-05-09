@@ -31,11 +31,11 @@ var MachineList = React.createClass({
           let isMachineBusy = false;
           let isSameUser = false;
           if (activation) {
-            _.each(activation, function(a, i) {
-              if( machine.Id === activation[i].MachineId ) {
+            activation.forEach(function(a, i) {
+              if( machine.Id === a.get('MachineId') ) {
                 isMachineBusy = true;
-                isSameUser = this.props.user.get('Id') === activation[i].UserId;
-                activationProps = activation[i];
+                isSameUser = this.props.user.get('Id') === a.get('UserId');
+                activationProps = a.toJS();
                 return false;
               }
             }.bind(this));
