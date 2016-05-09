@@ -1,0 +1,73 @@
+var _ = require('lodash');
+var getters = require('../../../getters');
+var LocationGetters = require('../../../modules/Location/getters');
+var MachineActions = require('../../../actions/MachineActions');
+var Navigation = require('react-router').Navigation;
+var React = require('react');
+var reactor = require('../../../reactor');
+
+
+var Machines = React.createClass({
+
+  mixins: [ Navigation, reactor.ReactMixin ],
+
+  /*
+   * If not logged then redirect to the login page
+   */
+  statics: {
+    willTransitionTo(transition) {
+      const isLogged = reactor.evaluateToJS(getters.getIsLogged);
+      if(!isLogged) {
+        transition.redirect('login');
+      }
+    }
+  },
+
+  getDataBindings() {
+    return {
+      location: LocationGetters.getLocation,
+      machines: getters.getMachines
+    };
+  },
+
+  componentWillMount() {
+    const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
+    const uid = reactor.evaluateToJS(getters.getUid);
+    MachineActions.apiGetUserMachines(locationId, uid);
+  },
+
+  render() {
+    var machines = this.state.machines.toJS();
+    return (
+      <div className="container-fluid">
+        <div className="row">
+          <div className="col-xs-1">
+          </div>
+          <div className="col-xs-11">
+            {_.map(machines, (m) => {
+              return (
+                <div key={m.Id}>
+                  <div className="col-xs-6">
+                    <div className="row">
+                      {m.Name}
+                    </div>
+                  </div>
+                  <div className="col-xs-5 text-center">
+                    <a type="button"
+                       className="btn btn-primary btn-ico pull-right"
+                       href={'/machines/#/admin/machines/' + m.Id}>
+                      <i className="fa fa-edit"></i>
+                    </a>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+});
+
+export default Machines;
