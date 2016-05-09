@@ -57,9 +57,12 @@ var Login = React.createClass({
   },
 
   focus() {
-    var n = $(this.refs.name.getDOMNode());
-    if (n) {
-      n.focus();
+    var ref = this.refs.name;
+    if (ref) {
+      var n = $(ref.getDOMNode());
+      if (n) {
+        n.focus();
+      }
     }
   },
 
@@ -70,7 +73,9 @@ var Login = React.createClass({
   componentDidMount() {
     LoginActions.tryPassLoginForm(this.context.router);
 
-    this.focus();
+    setTimeout(() => {
+      this.focus();
+    }, 1000);
 
     if (reactor.evaluateToJS(getters.getIsLogged)) {
       this.replaceWith('/machine');
