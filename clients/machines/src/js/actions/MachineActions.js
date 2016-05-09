@@ -136,7 +136,9 @@ var MachineActions = {
   wsDashboard(router, locationId) {
     const t0 = new Date();
     if (socket) {
-      return;
+      socket.onclose = function () {}; // disable onclose handler first
+      socket.close();
+      socket = undefined;
     }
 
     const uid = reactor.evaluateToJS(getters.getUid);
