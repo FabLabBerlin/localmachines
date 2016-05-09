@@ -12,9 +12,12 @@ const getLocation = [
   getLocations,
   ['locationStore'],
   (locations, locationStore) => {
-    return locations.find((l) => {
-      return l.Id === locationStore.get('locationId');
-    });
+    console.log('locations:', locations);
+    if (locations) {
+      return locations.find((l) => {
+        return l.Id === locationStore.get('locationId');
+      });
+    }
   }
 ];
 
