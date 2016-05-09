@@ -140,19 +140,19 @@ func (this *Controller) Prepare() {
 func (this *Controller) GetSessionUserId() (int64, error) {
 	tmp := this.GetSession(SESSION_USER_ID)
 	if sid, ok := tmp.(int64); ok {
-		browser := this.GetSession(SESSION_BROWSER)
-		if browser != this.Ctx.Input.UserAgent() {
-			beego.Error("GetSessionUserId: wrong browser")
-			return 0, errors.New("user not correctly logged in")
-		}
 		ip := this.GetSession(SESSION_IP)
 		if ip != this.ClientIp() {
 			beego.Error("GetSessionUserId: wrong IP")
 			return 0, errors.New("user not correctly logged in")
 		}
+		browser := this.GetSession(SESSION_BROWSER)
+		if browser != this.Ctx.Input.UserAgent() {
+			beego.Error("GetSessionUserId: wrong browser, ip=", ip)
+			return 0, errors.New("user not correctly logged in")
+		}
 		accLang := this.GetSession(SESSION_ACCEPT_LANGUAGE)
 		if accLang != this.Ctx.Input.Header("Accept-Language") {
-			beego.Error("GetSessionUserId: wrong Accept-Language")
+			beego.Error("GetSessionUserId: wrong Accept-Language, ip=", ip)
 			return 0, errors.New("user not correctly logged in")
 		}
 		return sid, nil
