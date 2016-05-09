@@ -17,7 +17,7 @@ const (
 
 var (
 	xmppServerConfigured bool
-	dispatcher *request_response.Dispatcher
+	dispatcher           *request_response.Dispatcher
 )
 
 func init() {
@@ -117,6 +117,7 @@ func FetchLocalIpsTask() error {
 		if err != nil {
 			beego.Error("FetchLocalIpsTask: location=", l.Id, ":", err)
 		}
+		beego.Info("received ip", ipAddress, "for location", l.Id)
 		if ipAddress != "" {
 			l.LocalIp = ipAddress
 			if err := locations.SetLocalIp(l.Id, ipAddress); err != nil {

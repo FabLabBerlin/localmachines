@@ -146,7 +146,7 @@ func (this *Controller) GetSessionUserId() (int64, error) {
 			return 0, errors.New("user not correctly logged in")
 		}
 		ip := this.GetSession(SESSION_IP)
-		if ip != this.Ctx.Input.IP() {
+		if ip != this.ClientIp() {
 			beego.Error("GetSessionUserId: wrong IP")
 			return 0, errors.New("user not correctly logged in")
 		}
@@ -182,7 +182,7 @@ func (this *Controller) SetLogged(username string, userId int64, locationId int6
 	this.SetSession(SESSION_USER_ID, userId)
 	this.SetSession(SESSION_LOCATION_ID, locationId)
 	this.SetSession(SESSION_BROWSER, this.Ctx.Input.UserAgent())
-	this.SetSession(SESSION_IP, this.Ctx.Input.IP())
+	this.SetSession(SESSION_IP, this.ClientIp())
 	//this.SetSession(SESSION_ACCEPT_ENCODING, this.Ctx.Input.Header("Accept-Encoding"))
 	this.SetSession(SESSION_ACCEPT_LANGUAGE, this.Ctx.Input.Header("Accept-Language"))
 	this.SetSessionLocationId(locationId)
@@ -336,4 +336,12 @@ func (this *Controller) GetLocIdMember() (locId int64, authorized bool) {
 		}
 	}
 	return locId, true
+}
+
+func (this *Controller) ClientIp() (ip string) {
+	ip = this.Ctx.Request.Header.Get("X-Forwarded-For")
+	if ip == "" {
+		ip = this.Ctx.Input.IP()
+	}
+	return
 }

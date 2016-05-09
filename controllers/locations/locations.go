@@ -7,7 +7,6 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"github.com/astaxie/beego"
-	"strings"
 )
 
 var runMode = beego.AppConfig.String("RunMode")
@@ -122,17 +121,6 @@ func (c *Controller) Get() {
 // @Failure	500	Internal Server Error
 // @router /my_ip [get]
 func (c *Controller) MyIp() {
-	ip := c.Ctx.Request.Header.Get("X-Forwarded-For")
-	if ip == "" {
-		if runMode == "dev" {
-			ip = c.Ctx.Request.RemoteAddr
-			i := strings.LastIndex(ip, ":")
-			ip = ip[:i]
-		} else {
-			beego.Error("X-Forwarded-For empty")
-			c.Abort("500")
-		}
-	}
-	c.Ctx.WriteString(ip)
+	c.Ctx.WriteString(c.ClientIp())
 	c.Finish()
 }
