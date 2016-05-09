@@ -282,6 +282,39 @@ var NetswitchConfig = React.createClass({
 });
 
 
+var Buttons = React.createClass({
+  render() {
+    const machine = this.props.machine;
+
+    return (
+      <div className="pull-right">
+
+        {machine.get('Archived') ? (
+          <button className="btn btn-danger"
+                  onClick={this.toggleArchived}>
+            <i className="fa fa-archive"></i>&nbsp;Unarchive
+          </button>
+        ) : (
+          <button className="btn btn-danger"
+                  onClick={this.toggleArchived}>
+            <i className="fa fa-archive"></i>&nbsp;Archive
+          </button>
+        )}
+
+        <button className="btn btn-primary"
+                ng-click="updateMachine()">
+          <i className="fa fa-save"></i>&nbsp;Save
+        </button>
+
+      </div>
+    );
+  },
+
+  toggleArchived() {
+  }
+});
+
+
 var Machine = React.createClass({
 
   mixins: [ Navigation, reactor.ReactMixin ],
@@ -329,6 +362,8 @@ var Machine = React.createClass({
           <SecondRow machine={machine} />
           <MachineProperties machine={machine} />
           <NetswitchConfig machine={machine} />
+
+          <Buttons machine={machine} />
         </div>
       );
     } else {
