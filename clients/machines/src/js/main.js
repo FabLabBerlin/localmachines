@@ -1,3 +1,4 @@
+var AdminMachine = require('./components/Admin/Machines/Machine');
 var AdminMachines = require('./components/Admin/Machines/Machines');
 var App = require('./components/App');
 var FeedbackPage = require('./components/Feedback/FeedbackPage');
@@ -61,7 +62,8 @@ if (debugNfc) {
 let routes = (
   <Route name="app" path="/" handler={App} >
     <Route name="admin" path="admin">
-      <Route name="machines" handler={AdminMachines} />
+      <Route path="machines" handler={AdminMachines} />
+      <Route path="machines/:machineId" handler={AdminMachine} />
     </Route>
     <Route name="forgot_password" path="forgot_password">
       <Route name="email_sent" handler={ForgotPassword.EmailSent} />
