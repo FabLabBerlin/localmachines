@@ -11,7 +11,7 @@ var reactor = require('../reactor');
 var toastr = require('../toastr');
 
 
-var lpStarted;
+var lpRequest;
 var socket;
 
 function dashboardDispatch(data) {
@@ -93,11 +93,11 @@ var MachineActions = {
   },
 
   lpDashboard(router, locationId, chained) {
-    if (lpStarted && !chained) {
-      return;
+    if (lpRequest && !chained) {
+      lpRequest.abort();
+      lpRequest = undefined;
     }
 
-    lpStarted = true;
     const uid = reactor.evaluateToJS(getters.getUid);
     var url;
     if (chained) {
@@ -106,35 +106,44 @@ var MachineActions = {
       url = '/api/users/' + uid + '/dashboard?location=' + locationId;
     }
 
-    $.ajax({
+    lpRequest = $.ajax({
       url: url,
       dataType: 'json',
       type: 'GET',
       cache: false,
-      timeout: 30000,
-      success: function(data) {
-        dashboardDispatch(data);
-        MachineActions.lpDashboard(router, locationId, true);
-      },
-      error: function(xhr, status) {
-        console.log('xhr:', xhr);
-        if (xhr.status === 401 && xhr.responseText === 'Not logged in') {
-          toastr.error('Session not active anymore. Logging out.');
-          LoginActions.logout(router);
-        } else {
-          lpStarted = false;
-          toastr.error('Connection error.  Reconnecting...');
-          console.log('reconnecting in 5 s...');
-          window.setTimeout(function() {
-            MachineActions.lpDashboard(router, locationId);
-          }, 5000);
-        }
+      timeout: 30000
+    });
+
+    lpRequest.then(function(data) {
+      dashboardDispatch(data);
+      MachineActions.lpDashboard(router, locationId, true);
+    });
+    lpRequest.fail(function(xhr, status) {
+      if (status === 'abort') {
+        console.log('abort lp');
+        return;
+      }
+
+      console.log('xhr:', xhr);
+      if (xhr.status === 401 && xhr.responseText === 'Not logged in') {
+        toastr.error('Session not active anymore. Logging out.');
+        LoginActions.logout(router);
+      } else {
+        toastr.error('Connection error.  Reconnecting...');
+        console.log('reconnecting in 5 s...');
+        window.setTimeout(function() {
+          MachineActions.lpDashboard(router, locationId);
+        }, 5000);
       }
     });
   },
 
   wsDashboard(router, locationId) {
     const t0 = new Date();
+    if (lpRequest) {
+      lpRequest.abort();
+      lpRequest = undefined;
+    }
     if (socket) {
       socket.onclose = function () {}; // disable onclose handler first
       socket.close();
