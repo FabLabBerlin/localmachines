@@ -15,6 +15,8 @@ import (
 	"time"
 )
 
+const WS_PING_INTERVAL_SECONDS = 29
+
 type UserDashboardController struct {
 	Controller
 }
@@ -207,6 +209,18 @@ func (this *UserDashboardController) WS() {
 	}
 	defer conn.Unsubscribe(chName)
 
+	go func() {
+		for {
+			beego.Info("Pinnggg ws...")
+			<-time.After(WS_PING_INTERVAL_SECONDS * time.Second)
+			err = ws.WriteMessage(websocket.PingMessage, []byte{})
+			if err != nil {
+				beego.Error("Write ping message:", err)
+				return
+			}
+		}
+	}()
+
 	for {
 		var data DashboardData
 		if err := data.load(isStaff, uid, locId); err != nil {
@@ -218,7 +232,7 @@ func (this *UserDashboardController) WS() {
 		}
 		err = ws.WriteMessage(websocket.TextMessage, buf)
 		if err != nil {
-			beego.Error("Write message:", err)
+			beego.Error("Write text message:", err)
 			return
 		}
 		conn.Receive()
