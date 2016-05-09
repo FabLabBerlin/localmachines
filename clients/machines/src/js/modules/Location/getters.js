@@ -12,13 +12,9 @@ const getLocation = [
   getLocations,
   ['locationStore'],
   (locations, locationStore) => {
-    var location;
-    _.each(locations, (l) => {
-      if (l.Id === locationStore.get('locationId')) {
-        location = l;
-      }
+    return locations.find((l) => {
+      return l.Id === locationStore.get('locationId');
     });
-    return location;
   }
 ];
 

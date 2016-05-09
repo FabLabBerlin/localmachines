@@ -129,7 +129,7 @@ var Login = React.createClass({
             value={this.state.location.Id}
             onChange={this.updateLocation}
             required>
-            {_.map(locations, (location, i) => {
+            {locations.map((location, i) => {
               if (location.Approved) {
                 return (
                   <option key={i} value={location.Id}>
