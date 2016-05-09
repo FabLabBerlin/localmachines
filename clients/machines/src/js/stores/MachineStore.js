@@ -20,7 +20,7 @@ var MachineStore = new Nuclear.Store({
 
   initialize() {
     this.on(actionTypes.MACHINE_STORE_CLEAR_STATE, clearState);
-    this.on(actionTypes.REGISTER_MACHINE_USER, registerMachineUser);
+    this.on(actionTypes.REGISTER_MACHINE_USERS, registerMachineUsers);
     this.on(actionTypes.SET_ACTIVATIONS, setActivations);
     this.on(actionTypes.SET_MACHINES, setMachines);
     this.on(actionTypes.SET_UNDER_MAINTENANCE, setUnderMaintenance);
@@ -32,8 +32,12 @@ function clearState(state) {
   return initialState;
 }
 
-function registerMachineUser(state, { userData }) {
-  return state.set('machineUsers', state.get('machineUsers').set(parseInt(userData.UserId, 10), userData));
+function registerMachineUsers(state, users) {
+  _.each(users, function(user) {
+    state = state.set('machineUsers', state.get('machineUsers').
+      set(parseInt(user.UserId, 10), user));
+  });
+  return state;
 }
 
 function setActivations(state, { activations }) {

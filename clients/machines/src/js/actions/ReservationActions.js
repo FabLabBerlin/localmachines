@@ -44,9 +44,7 @@ var ReservationActions = {
         dataType: 'json',
         type: 'GET',
         success(data) {
-          _.each(data.Users, function(userData) {
-            reactor.dispatch(actionTypes.REGISTER_MACHINE_USER, { userData });
-          });
+          reactor.dispatch(actionTypes.REGISTER_MACHINE_USERS, data.Users);
         },
         error() {
             console.log('Error loading names');

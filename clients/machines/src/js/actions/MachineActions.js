@@ -235,9 +235,7 @@ function fetchUserNames(userIds) {
       dataType: 'json',
       type: 'GET',
       success(response) {
-        _.each(response.Users, function(userData) {
-          reactor.dispatch(actionTypes.REGISTER_MACHINE_USER, { userData });
-        });
+        reactor.dispatch(actionTypes.REGISTER_MACHINE_USERS, response.Users);
       },
       error() {
         console.log('Error loading names');
