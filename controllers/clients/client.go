@@ -30,7 +30,7 @@ func get(c *controllers.Controller, clientName string) {
 		// Try to get locId based on IP
 		if locs, err := locations.GetAll(); err == nil {
 			for _, loc := range locs {
-				if loc.LocalIp != clientIp {
+				if loc.LocalIp == clientIp {
 					locId = loc.Id
 					c.SetSessionLocationId(locId)
 					break
