@@ -1,7 +1,11 @@
 var reactor = require('../reactor');
 var getters = require('../getters');
 var HeaderNav = require('./HeaderNav');
+var LoaderLocal = require('./LoaderLocal');
+var LocationActions = require('../actions/LocationActions');
+var LoginActions = require('../actions/LoginActions');
 var LoginStore = require('../stores/LoginStore');
+var {Navigation} = require('react-router');
 var React = require('react');
 var RouteHandler = require('react-router').RouteHandler;
 
@@ -15,12 +19,26 @@ var RouteHandler = require('react-router').RouteHandler;
  */
  var App = React.createClass({
 
-  mixins: [ reactor.ReactMixin ],
+  mixins: [ Navigation, reactor.ReactMixin ],
 
   getDataBindings() {
     return {
-      isLoading: getters.getIsLoading
+      isLoading: getters.getIsLoading,
+      isLogged: getters.getIsLogged
     };
+  },
+
+  componentWillMount() {
+    const isLogged = reactor.evaluateToJS(getters.getIsLogged);
+    if (!isLogged) {
+      console.log('not logged, trying to pass login form...');
+      LoginActions.tryPassLoginForm(this.context.router, () => {
+        if (window.location.hash !== '#/login') {
+          this.transitionTo('/login');
+        }
+      });
+      LocationActions.loadLocations();
+    }
   },
 
   /*
@@ -32,14 +50,14 @@ var RouteHandler = require('react-router').RouteHandler;
    * If he's logged and there is no nfc port, can switch to user interface
    */
   render() {
-    
-    const isLogged = reactor.evaluateToJS(getters.getIsLogged);
-    
     return (
       <div className="app">
         <HeaderNav />
-        <RouteHandler />
-        <footer className={isLogged ? '' : 'absolute-bottom'}>
+        {(this.state.isLogged || window.location.hash === '#/login') ? 
+          <RouteHandler /> :
+          <LoaderLocal />
+        }
+        <footer className={this.state.isLogged ? '' : 'absolute-bottom'}>
           <div className="container-fluid">
             <div className="col-md-4 text-center">
               <i className="fa fa-copyright"></i> Makea Industries GmbH 2016

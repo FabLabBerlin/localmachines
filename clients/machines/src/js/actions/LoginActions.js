@@ -47,7 +47,7 @@ export default {
   /*
    * Maybe the user is already logged in
    */
-  tryPassLoginForm(router) {
+  tryPassLoginForm(router, cb) {
     $.ajax({
       url: '/api/users/current',
       dataType: 'json',
@@ -61,7 +61,10 @@ export default {
             UserId: user.Id
           };
           reactor.dispatch(actionTypes.SUCCESS_LOGIN, { data });
-          router.transitionTo('/machine');
+        } else {
+          if (cb) {
+            cb();
+          }
         }
       },
       error(xhr, status, err) {

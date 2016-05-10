@@ -14,18 +14,6 @@ var UserPage = React.createClass({
 
   mixins: [ Navigation, reactor.ReactMixin, NfcLogoutMixin ],
 
-  /*
-   * If not logged then redirect to the login page
-   */
-  statics: {
-    willTransitionTo(transition) {
-      const isLogged = reactor.evaluateToJS(getters.getIsLogged);
-      if(!isLogged) {
-        transition.redirect('login');
-      }
-    }
-  },
-
   getDataBindings() {
     return {
       user: getters.getUser

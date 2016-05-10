@@ -11,18 +11,6 @@ var Machines = React.createClass({
 
   mixins: [ Navigation, reactor.ReactMixin ],
 
-  /*
-   * If not logged then redirect to the login page
-   */
-  statics: {
-    willTransitionTo(transition) {
-      const isLogged = reactor.evaluateToJS(getters.getIsLogged);
-      if(!isLogged) {
-        transition.redirect('login');
-      }
-    }
-  },
-
   getDataBindings() {
     return {
       location: LocationGetters.getLocation,

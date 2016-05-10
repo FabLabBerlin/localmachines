@@ -28,14 +28,15 @@ var MachinePage = React.createClass({
   /*
    * If not logged then redirect to the login page
    */
-  statics: {
+  /*statics: {
     willTransitionTo(transition) {
       const isLogged = reactor.evaluateToJS(getters.getIsLogged);
       if(!isLogged) {
+        alert('not logged!!!!');
         transition.redirect('login');
       }
     }
-  },
+  },*/
 
   getDataBindings() {
     return {

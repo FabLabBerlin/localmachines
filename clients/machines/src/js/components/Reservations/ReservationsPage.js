@@ -158,15 +158,6 @@ var ReservationsTable = React.createClass({
 var ReservationsPage = React.createClass({
   mixins: [ Navigation, reactor.ReactMixin ],
 
-  statics: {
-    willTransitionTo(transition) {
-      const isLogged = reactor.evaluateToJS(getters.getIsLogged);
-      if(!isLogged) {
-        transition.redirect('login');
-      }
-    }
-  },
-
   componentWillUnmount() {
     ReservationActions.newReservation.done();
   },

@@ -319,18 +319,6 @@ var Machine = React.createClass({
 
   mixins: [ Navigation, reactor.ReactMixin ],
 
-  /*
-   * If not logged then redirect to the login page
-   */
-  statics: {
-    willTransitionTo(transition) {
-      const isLogged = reactor.evaluateToJS(getters.getIsLogged);
-      if(!isLogged) {
-        transition.redirect('login');
-      }
-    }
-  },
-
   getDataBindings() {
     return {
       location: LocationGetters.getLocation,
@@ -346,11 +334,14 @@ var Machine = React.createClass({
 
   render() {
     const machineId = parseInt(this.props.params.machineId);
-    var machines = this.state.machines.toJS();
+    var machine;
     if (this.state.machines) {
-      var machine = this.state.machines.find((m) => {
+      machine = this.state.machines.find((m) => {
         return m.get('Id') === machineId;
       });
+    }
+    if (machine) {
+      console.log('this.state.machines=', this.state.machines);
 
       return (
         <div className="container-fluid">
