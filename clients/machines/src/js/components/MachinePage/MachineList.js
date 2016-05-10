@@ -20,7 +20,6 @@ var MachineList = React.createClass({
 
   render() {
     let activation = this.props.activation;
-    console.log('activations:', activation);
     var MachineNode;
     if (this.state.location && this.props.machines) {
       var machines = _.filter(this.props.machines, function(machine) {
@@ -48,7 +47,6 @@ var MachineList = React.createClass({
         }
       }.bind(this));
     } else {
-      console.log('bla');
       return <LoaderLocal/>;
     }
     return (

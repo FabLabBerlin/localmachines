@@ -84,7 +84,6 @@ var MachineChooser = React.createClass({
    * @nothing => FreeMachine
    */
   render() {
-    console.log('this.props.activation:', this.props.activation);
     const busy = !!this.props.activation;
     const sameUser = this.props.activation && this.props.user.get('Id') === this.props.activation.UserId;
     let isStaff = this.state.isStaff;
@@ -108,7 +107,6 @@ var MachineChooser = React.createClass({
         />
       );
     } else if (this.props.machine.UnderMaintenance) {
-      console.log('this.props.machine.UnderMaintenance=', this.props.machine.UnderMaintenance);
       machineBody = (
         <UnavailableMachine
           activation={this.props.activation}

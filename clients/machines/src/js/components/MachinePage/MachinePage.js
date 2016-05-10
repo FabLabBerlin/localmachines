@@ -135,7 +135,6 @@ var MachinePage = React.createClass({
         </div>
       );
     } else {
-      console.log('yo');
       return <LoaderLocal/>;
     }
   }

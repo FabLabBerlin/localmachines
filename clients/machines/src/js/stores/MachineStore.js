@@ -4,7 +4,6 @@ var actionTypes = require('../actionTypes');
 var Nuclear = require('nuclear-js');
 var toImmutable = Nuclear.toImmutable;
 
-console.log('toImmutable(undefined)=', toImmutable(undefined));
 const initialState = toImmutable({
   activations: undefined,
   machines: undefined,
