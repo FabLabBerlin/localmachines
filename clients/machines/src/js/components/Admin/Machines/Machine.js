@@ -23,8 +23,9 @@ var FirstRow = React.createClass({
             <input id="machine-name"
                    type="text"
                    className="form-control"
+                   onChange={this.update.bind(this, 'Name')}
                    placeholder="Enter machine name"
-                   defaultValue={machine.get('Name')}/>
+                   value={machine.get('Name')}/>
           </div>
         </div>
 
@@ -32,10 +33,10 @@ var FirstRow = React.createClass({
           <div className="form-group">
             <label>Short Name</label>
             <input type="text"
-                   id="machine-shortname"
+                   onChange={this.update.bind(this, 'Shortname')}
                    className="form-control"
                    placeholder="Enter short name"
-                   defaultValue={machine.get('Shortname')}/>
+                   value={machine.get('Shortname')}/>
           </div>
         </div>
 
@@ -43,10 +44,10 @@ var FirstRow = React.createClass({
           <div className="form-group">
             <label>Price</label>
             <input type="text"
-                   id="machine-price"
+                   onChange={this.update.bind(this, 'Price')}
                    className="form-control"
                    placeholder="Enter price"
-                   defaultValue={machine.get('Price')}/>
+                   value={machine.get('Price')}/>
           </div>
         </div>
 
@@ -54,8 +55,9 @@ var FirstRow = React.createClass({
           <div className="form-group">
             <label>Price Unit</label>
             <select className="form-control"
+                    onChange={this.update.bind(this, 'PriceUnit')}
                     id="machine-price-unit"
-                    defaultValue={machine.get('PriceUnit')}>
+                    value={machine.get('PriceUnit')}>
               <option value="" disabled>Select unit</option>
               <option value="minute">minute</option>
               <option value="hour">hour</option>
@@ -66,6 +68,17 @@ var FirstRow = React.createClass({
 
       </div>
     );
+  },
+
+  update(name, e) {
+    const id = this.props.machine.get('Id');
+    var value = e.target.value;
+    switch (name) {
+    case 'Price':
+      value = parseFloat(value);
+      break;
+    }
+    MachineActions.updateMachineField(id, name, value);
   }
 });
 
@@ -90,9 +103,9 @@ var SecondRow = React.createClass({
           <div className="form-group">
             <label>Machine Description</label>
             <textarea className="form-control"
-                      id="machine-description"
+                      onChange={this.update.bind(this, 'Description')}
                       placeholder="Enter machine description"
-                      defaultValue={machine.get('Description')}
+                      value={machine.get('Description')}
                       rows="5" />
           </div>
         </div>
@@ -123,12 +136,19 @@ var SecondRow = React.createClass({
 
       </div>
     );
+  },
+
+  update(name, e) {
+    const id = this.props.machine.get('Id');
+    console.log('updating', name, 'with', e.target.value);
+    MachineActions.updateMachineField(id, name, e.target.value);
   }
 });
 
 
 var MachineProperties = React.createClass({
   render() {
+    const machine = this.props.machine;
     const machineType = {};
 
     return (
@@ -138,16 +158,18 @@ var MachineProperties = React.createClass({
             <div className="form-group">
               <label>Start time (seconds)</label>
               <input type="number"
-                     id="grace-period"
+                     onChange={this.update.bind(this, 'GracePeriod')}
                      className="form-control"
-                     ng-model="machine.GracePeriod" />
+                     value={machine.get('GracePeriod')} />
             </div>
           </div>
 
           <div className="col-sm-3">
             <div className="form-group">
               <label>
-                <input type="checkbox" ng-model="machine.Visible" /> Visible
+                <input type="checkbox"
+                       onClick={this.update.bind(this, 'Visible')}
+                       checked={machine.get('Visible')} /> Visible
               </label>
             </div>
           </div>
@@ -157,8 +179,9 @@ var MachineProperties = React.createClass({
           <div className="col-sm-3">
             <div className="form-group">
               <label>Machine Type</label>
-              <select className="form-control" id="machine-type" 
-                      ng-model="machine.TypeId">
+              <select className="form-control"
+                      onChange={this.update.bind(this, 'TypeId')}
+                      value={machine.get('TypeId')}>
                 <option value="0" selected disabled>Select type</option>
                 <option ng-repeat="machineType in machineTypes"
                         value="{machineType.Id}">
@@ -171,8 +194,11 @@ var MachineProperties = React.createClass({
           <div className="col-sm-3">
             <div className="form-group">
               <label>Machine Brand</label>
-              <input type="text" id="machine-brand" className="form-control"
-                     placeholder="Enter machine brand" ng-model="machine.Brand" />
+              <input type="text"
+                     className="form-control"
+                     onChange={this.update.bind(this, 'Brand')}
+                     placeholder="Enter machine brand"
+                     value={machine.get('Brand')} />
             </div>
           </div>
         </div>
@@ -181,21 +207,41 @@ var MachineProperties = React.createClass({
           <div className="col-sm-6">
             <div className="form-group">
               <label>Dimensions</label>
-              <input type="text" id="machine-dimensions" className="form-control"
-                     placeholder="Enter dimensions" ng-model="machine.Dimensions" />
+              <input type="text"
+                     className="form-control"
+                     onChange={this.update.bind(this, 'Dimensions')}
+                     placeholder="Enter dimensions"
+                     value={machine.get('Dimensions')} />
             </div>
           </div>
 
           <div className="col-sm-6">
             <div className="form-group">
               <label>Workspace Dimensions</label>
-              <input type="text" id="machine-workspace-dimensions" className="form-control"
-                     placeholder="E.g. 200 mm x 200 mm x 200 mm or 1.5 m x 3 m" ng-model="machine.WorkspaceDimensions" />
+              <input type="text"
+                     className="form-control"
+                     onChange={this.update.bind(this, 'WorkspaceDimensions')}
+                     placeholder="E.g. 200 mm x 200 mm x 200 mm or 1.5 m x 3 m"
+                     value={machine.get('WorkspaceDimensions')} />
             </div>
           </div>
         </div>
       </div>
     );
+  },
+
+  update(name, e) {
+    const id = this.props.machine.get('Id');
+    var value = e.target.value;
+    switch (name) {
+    case 'GracePeriod':
+      value = parseInt(value);
+      break;
+    case 'Visible':
+      value = e.target.checked;
+      break;
+    }
+    MachineActions.updateMachineField(id, name, value);
   }
 });
 
@@ -213,32 +259,40 @@ var NetswitchConfig = React.createClass({
           <label>NetSwitch Config</label>
           <div className="row">
 
-            <div className="col-sm-3">
-              <div className="form-group" ng-hide="machine.NetswitchType">
-                <input type="text"
-                       className="form-control"
-                       placeholder="On URL"
-                       ng-model="machine.NetswitchUrlOn"
-                       ng-change="registerUnsavedChange()"/>
-              </div>
-              <div className="form-group" ng-show="machine.NetswitchType">
-                <input type="text"
-                       className="form-control"
-                       placeholder="Host (mfi only)"
-                       ng-model="machine.NetswitchHost"
-                       ng-change="registerUnsavedChange()"/>
-              </div>
-            </div>
-
-            <div className="col-sm-3">
-              <div className="form-group" ng-hide="machine.NetswitchType">
-                <input type="text"
-                       className="form-control"
-                       placeholder="Off URL"
-                       ng-model="machine.NetswitchUrlOff"
-                       ng-change="registerUnsavedChange()"/>
-              </div>
-            </div>
+            {machine.get('NetswitchType') ?
+              (
+                <div className="col-sm-3">
+                  <div className="form-group" ng-show="machine.NetswitchType">
+                    <input type="text"
+                           className="form-control"
+                           placeholder="Host (mfi only)"
+                           value={machine.get('NetswitchHost')}
+                           onChange={this.update.bind(this, 'NetswitchHost')}/>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <div className="col-sm-3">
+                    <div className="form-group" ng-hide="machine.NetswitchType">
+                      <input type="text"
+                             className="form-control"
+                             placeholder="On URL"
+                             value={machine.get('NetswitchUrlOn')}
+                             onChange={this.update.bind(this, 'NetswitchUrlOn')}/>
+                    </div>
+                  </div>
+                  <div className="col-sm-3">
+                    <div className="form-group" ng-hide="machine.NetswitchType">
+                      <input type="text"
+                             className="form-control"
+                             placeholder="Off URL"
+                             value={machine.get('NetswitchUrlOff')}
+                             onChange={this.update.bind(this, 'NetswitchUrlOff')}/>
+                    </div>
+                  </div>
+                </div>
+              )
+            }
 
           </div>
           <div className="row">
@@ -246,9 +300,9 @@ var NetswitchConfig = React.createClass({
             <div className="col-sm-3">
               <div className="form-group">
                 <select className="form-control"
-                        ng-model="machine.NetswitchType"
-                        ng-change="registerUnsavedChange()">
-                  <option value="" selected>Custom Powerswitch</option>
+                        value={machine.get('NetswitchType')}
+                        onChange={this.update.bind(this, 'NetswitchType')}>
+                  <option value="">Custom Powerswitch</option>
                   <option value="mfi">Ubiquiti mFi Powerswitch</option>
                 </select>
               </div>
@@ -261,20 +315,20 @@ var NetswitchConfig = React.createClass({
                     <button className="btn btn-danger btn-block"
                             ng-click="applyConfig()"
                             ng-disabled="true"
-                            ng-show="netswitchConfigStatus"
                             type="button">
                       <i className="fa fa-refresh fa-spin"></i>
                       {netswitchConfigStatus}
                     </button>
-                  ) :
+                  ) : null
+                }
+                {(!netswitchConfigStatus && machine.NetswitchType === 'mfi') ?
                   (
                     <button className="btn btn-danger btn-block"
                             ng-click="applyConfig()"
-                            ng-show="machine.NetswitchType === 'mfi' && !netswitchConfigStatus"
                             type="button">
                       Upgrade Powerswitch
                     </button>
-                  )
+                  ) : null
                 }
               </div>
             </div>
@@ -284,6 +338,12 @@ var NetswitchConfig = React.createClass({
 
       </div>
     );
+  },
+
+  update(name, e) {
+    const id = this.props.machine.get('Id');
+    console.log('updating', name, 'with', e.target.value);
+    MachineActions.updateMachineField(id, name, e.target.value);
   }
 });
 
@@ -317,14 +377,31 @@ var Buttons = React.createClass({
   },
 
   save() {
-    var machine = _.extend(this.props.machine.toJS(), {
-      Name: $('#machine-name').val(),
-      Shortname: $('#machine-shortname').val(),
-      Price: parseFloat($('#machine-price').val()),
-      PriceUnit: $('machine-price-unit').val(),
-      Description: $('machine-description').val()
-    });
+    var machine = this.props.machine.toJS();
+
     console.log('machine:', machine);
+
+    $.ajax({
+      method: 'PUT',
+      url: '/api/machines/' + machine.Id,
+      contentType: 'application/json',
+      data: JSON.stringify(machine),
+      params: {
+        ac: new Date().getTime()
+      }
+    })
+    .success(function(data) {
+      toastr.success('Update successful');
+    })
+    .error(function(message, statusCode) {
+      if (statusCode === 400 && message.indexOf('Dimensions') >= 0) {
+        toastr.error(message);
+      } else if (statusCode === 400 && message.indexOf('Found machine with same netswitch host') >= 0) {
+        toastr.error(message);
+      } else {
+        toastr.error('Failed to update');
+      }
+    });
   },
 
   toggleArchived() {

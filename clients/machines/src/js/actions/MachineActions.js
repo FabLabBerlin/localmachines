@@ -192,6 +192,10 @@ var MachineActions = {
                       toastr.error('Could not change maintenance mode');
                     }
     );
+  },
+
+  updateMachineField(mid, name, value) {
+    reactor.dispatch(actionTypes.UPDATE_MACHINE_FIELD, {mid, name, value});
   }
 
 };

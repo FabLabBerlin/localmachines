@@ -23,6 +23,7 @@ var MachineStore = new Nuclear.Store({
     this.on(actionTypes.SET_ACTIVATIONS, setActivations);
     this.on(actionTypes.SET_MACHINES, setMachines);
     this.on(actionTypes.SET_UNDER_MAINTENANCE, setUnderMaintenance);
+    this.on(actionTypes.UPDATE_MACHINE_FIELD, updateMachineField);
   }
 
 });
@@ -55,6 +56,14 @@ function setMachines(state, { machines }) {
 function setUnderMaintenance(state, { mid, onOrOff }) {
   var m = state.get('machinesById').get(mid)
                                    .set('UnderMaintenance', onOrOff === 'on');
+  return state.set('machinesById', state.get('machinesById')
+                                        .set(mid, m));
+}
+
+function updateMachineField(state, {mid, name, value}) {
+  console.log('store: updateMachineField: mid=', mid);
+  var m = state.get('machinesById').get(mid)
+                                   .set(name, value);
   return state.set('machinesById', state.get('machinesById')
                                         .set(mid, m));
 }

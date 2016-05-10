@@ -23,6 +23,7 @@ export default keyMirror({
   SET_LOADING: null,
   UNSET_LOADING: null,
   SET_UNDER_MAINTENANCE: null,
+  UPDATE_MACHINE_FIELD: null,
 
   SCROLL_UP: null,
   SCROLL_DOWN: null,
