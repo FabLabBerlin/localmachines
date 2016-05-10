@@ -84,17 +84,20 @@ var MachineChooser = React.createClass({
    * @nothing => FreeMachine
    */
   render() {
+    console.log('this.props.activation:', this.props.activation);
+    const busy = !!this.props.activation;
+    const sameUser = this.props.activation && this.props.user.get('Id') === this.props.activation.UserId;
     let isStaff = this.state.isStaff;
     var reservation;
     if (this.state.reservationsByMachineId) {
       reservation = this.state.reservationsByMachineId.toObject()[this.props.machine.Id];
     }
     var machineBody;
-    if (reservation && !this.props.busy && !reservation.get('ReservationDisabled') && !reservation.get('Cancelled')) {
+    if (reservation && !busy && !reservation.get('ReservationDisabled') && !reservation.get('Cancelled')) {
       machineBody = (
         <ReservedMachine
           activation={this.props.activation}
-          busy={this.props.busy}
+          busy={busy}
           machine={this.props.machine}
           isStaff={isStaff}
           endActivation={this.endActivation}
@@ -105,10 +108,11 @@ var MachineChooser = React.createClass({
         />
       );
     } else if (this.props.machine.UnderMaintenance) {
+      console.log('this.props.machine.UnderMaintenance=', this.props.machine.UnderMaintenance);
       machineBody = (
         <UnavailableMachine
           activation={this.props.activation}
-          busy={this.props.busy}
+          busy={busy}
           machine={this.props.machine}
           isStaff={isStaff}
           endActivation={this.endActivation}
@@ -117,8 +121,8 @@ var MachineChooser = React.createClass({
         />
       );
     } else {
-      if (this.props.busy) {
-        if (this.props.sameUser) {
+      if (busy) {
+        if (sameUser) {
           machineBody = (
             <BusyMachine
               activation={this.props.activation}

@@ -32,7 +32,7 @@ var UnavailableMachine = React.createClass({
    */
   render() {
     var users = this.state.machineUsers;
-    var user = users.get(this.props.activation.UserId) || {};
+    var user = this.props.activation ? users.get(this.props.activation.UserId, {}) : {};
     var startStopButton;
     if (this.props.busy) {
       startStopButton = (

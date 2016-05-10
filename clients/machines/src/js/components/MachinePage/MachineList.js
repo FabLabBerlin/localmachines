@@ -20,21 +20,18 @@ var MachineList = React.createClass({
 
   render() {
     let activation = this.props.activation;
+    console.log('activations:', activation);
     var MachineNode;
-    if(this.state.location && this.props.machines && _.size(this.props.machines) > 0) {
+    if (this.state.location && this.props.machines) {
       var machines = _.filter(this.props.machines, function(machine) {
         return machine.Visible && !machine.Archived;
       });
       MachineNode = _.map(machines, function(machine) {
         if (machine.LocationId === this.state.location.Id) {
-          let activationProps = false;
-          let isMachineBusy = false;
-          let isSameUser = false;
+          let activationProps;
           if (activation) {
             activation.forEach(function(a, i) {
               if( machine.Id === a.get('MachineId') ) {
-                isMachineBusy = true;
-                isSameUser = this.props.user.get('Id') === a.get('UserId');
                 activationProps = a.toJS();
                 return false;
               }
@@ -45,14 +42,13 @@ var MachineList = React.createClass({
               key={machine.Id}
               machine={machine}
               user={this.props.user}
-              busy={isMachineBusy}
-              sameUser={isSameUser}
               activation={activationProps}
             />
           );
         }
       }.bind(this));
     } else {
+      console.log('bla');
       return <LoaderLocal/>;
     }
     return (

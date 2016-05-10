@@ -1,6 +1,7 @@
 var _ = require('lodash');
 var $ = require('jquery');
 var getters = require('../../getters');
+var LoaderLocal = require('../LoaderLocal');
 var LocationGetters = require('../../modules/Location/getters');
 var LocationActions = require('../../actions/LocationActions');
 var LoginStore = require('../../stores/LoginStore');
@@ -134,7 +135,8 @@ var MachinePage = React.createClass({
         </div>
       );
     } else {
-      return <div/>;
+      console.log('yo');
+      return <LoaderLocal/>;
     }
   }
 });

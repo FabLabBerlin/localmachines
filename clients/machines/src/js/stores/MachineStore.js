@@ -4,10 +4,10 @@ var actionTypes = require('../actionTypes');
 var Nuclear = require('nuclear-js');
 var toImmutable = Nuclear.toImmutable;
 
-
+console.log('toImmutable(undefined)=', toImmutable(undefined));
 const initialState = toImmutable({
-  activations: [],
-  machines: [],
+  activations: undefined,
+  machines: undefined,
   machineUsers: {}
 });
 
@@ -41,6 +41,8 @@ function registerMachineUsers(state, users) {
 }
 
 function setActivations(state, { activations }) {
+  console.log('setActivations <- ', activations);
+  console.log('toImmutable(undefined)=', toImmutable(undefined));
   return state.set('activations', toImmutable(activations));
 }
 
