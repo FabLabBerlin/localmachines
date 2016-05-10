@@ -1,4 +1,5 @@
 var _ = require('lodash');
+var $ = require('jquery');
 var getters = require('../../../getters');
 var LoaderLocal = require('../../LoaderLocal');
 var LocationGetters = require('../../../modules/Location/getters');
@@ -6,6 +7,7 @@ var MachineActions = require('../../../actions/MachineActions');
 var Navigation = require('react-router').Navigation;
 var React = require('react');
 var reactor = require('../../../reactor');
+var toastr = require('../../../toastr');
 
 
 var FirstRow = React.createClass({
@@ -18,7 +20,8 @@ var FirstRow = React.createClass({
         <div className="col-sm-3">
           <div className="form-group">
             <label>Machine Name</label>
-            <input type="text"
+            <input id="machine-name"
+                   type="text"
                    className="form-control"
                    placeholder="Enter machine name"
                    defaultValue={machine.get('Name')}/>
@@ -29,6 +32,7 @@ var FirstRow = React.createClass({
           <div className="form-group">
             <label>Short Name</label>
             <input type="text"
+                   id="machine-shortname"
                    className="form-control"
                    placeholder="Enter short name"
                    defaultValue={machine.get('Shortname')}/>
@@ -39,6 +43,7 @@ var FirstRow = React.createClass({
           <div className="form-group">
             <label>Price</label>
             <input type="text"
+                   id="machine-price"
                    className="form-control"
                    placeholder="Enter price"
                    defaultValue={machine.get('Price')}/>
@@ -49,6 +54,7 @@ var FirstRow = React.createClass({
           <div className="form-group">
             <label>Price Unit</label>
             <select className="form-control"
+                    id="machine-price-unit"
                     defaultValue={machine.get('PriceUnit')}>
               <option value="" disabled>Select unit</option>
               <option value="minute">minute</option>
@@ -84,10 +90,10 @@ var SecondRow = React.createClass({
           <div className="form-group">
             <label>Machine Description</label>
             <textarea className="form-control"
+                      id="machine-description"
                       placeholder="Enter machine description"
                       defaultValue={machine.get('Description')}
-                      rows="5">
-            </textarea>
+                      rows="5" />
           </div>
         </div>
 
@@ -302,7 +308,7 @@ var Buttons = React.createClass({
         )}
 
         <button className="btn btn-primary"
-                ng-click="updateMachine()">
+                onClick={this.save}>
           <i className="fa fa-save"></i>&nbsp;Save
         </button>
 
@@ -310,7 +316,34 @@ var Buttons = React.createClass({
     );
   },
 
+  save() {
+    var machine = _.extend(this.props.machine.toJS(), {
+      Name: $('#machine-name').val(),
+      Shortname: $('#machine-shortname').val(),
+      Price: parseFloat($('#machine-price').val()),
+      PriceUnit: $('machine-price-unit').val(),
+      Description: $('machine-description').val()
+    });
+    console.log('machine:', machine);
+  },
+
   toggleArchived() {
+    const machine = this.props.machine;
+    const action = machine.get('Archived') ? 'unarchived' : 'archived';
+
+    $.ajax({
+      method: 'POST',
+      url: '/api/machines/' + machine.get('Id') + '/set_archived?archived=' + !machine.get('Archived')
+    })
+    .success(function(data) {
+      toastr.info('Successfully ' + action + ' machine');
+      const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
+      const uid = reactor.evaluateToJS(getters.getUid);
+      MachineActions.apiGetUserMachines(locationId, uid);
+    })
+    .error(function() {
+      toastr.error('Failed to ' + action + ' machine');
+    });
   }
 });
 
@@ -341,8 +374,6 @@ var Machine = React.createClass({
       });
     }
     if (machine) {
-      console.log('this.state.machines=', this.state.machines);
-
       return (
         <div className="container-fluid">
           <h1>Edit Machine</h1>

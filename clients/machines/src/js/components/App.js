@@ -31,7 +31,6 @@ var RouteHandler = require('react-router').RouteHandler;
   componentWillMount() {
     const isLogged = reactor.evaluateToJS(getters.getIsLogged);
     if (!isLogged) {
-      console.log('not logged, trying to pass login form...');
       LoginActions.tryPassLoginForm(this.context.router, () => {
         if (window.location.hash !== '#/login') {
           this.transitionTo('/login');

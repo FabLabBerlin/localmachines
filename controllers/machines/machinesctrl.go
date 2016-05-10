@@ -188,7 +188,7 @@ func (this *Controller) Update() {
 	if err = updated.Update(updateGateway); err != nil {
 		beego.Error("Failed updating machine:", err)
 		if err == machine.ErrDimensions ||
-			err == machine.ErrWorkspaceDimensions || 
+			err == machine.ErrWorkspaceDimensions ||
 			err == machine.ErrDuplicateNetswitchHost {
 			this.CustomAbort(400, err.Error())
 		} else {
