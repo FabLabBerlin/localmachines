@@ -30,6 +30,17 @@ const getMachineUsers = [
   }
 ];
 
+const getNewMachineImages = [
+  ['machineStore'],
+  (machineStore) => {
+    return machineStore.get('newMachineImages');
+  }
+];
+
 export default {
-  getActivations, getMachinesById, getMachines, getMachineUsers
+  getActivations,
+  getMachinesById,
+  getMachines,
+  getMachineUsers,
+  getNewMachineImages
 };

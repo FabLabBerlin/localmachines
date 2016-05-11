@@ -6,5 +6,9 @@ export default keyMirror({
   SET_ACTIVATIONS: null,
   SET_MACHINES: null,
   SET_UNDER_MAINTENANCE: null,
-  UPDATE_MACHINE_FIELD: null
+
+  // Admin Machine Edit
+  UPDATE_MACHINE_FIELD: null,
+  UPLOAD_MACHINE_IMAGE: null,
+  REPLACE_MACHINE_IMAGE: null
 });

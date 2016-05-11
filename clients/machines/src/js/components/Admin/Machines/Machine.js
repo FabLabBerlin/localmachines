@@ -11,7 +11,7 @@ var reactor = require('../../../reactor');
 var toastr = require('../../../toastr');
 
 
-var FirstRow = React.createClass({
+var BasicData = React.createClass({
   render() {
     const machine = this.props.machine;
 
@@ -84,7 +84,30 @@ var FirstRow = React.createClass({
 });
 
 
-var SecondRow = React.createClass({
+var ImageUpload = React.createClass({
+  mixins: [ reactor.ReactMixin ],
+
+  getDataBindings() {
+    return {
+      newMachineImages: Machines.getters.getNewMachineImages
+    };
+  },
+
+  fileChange: function(e) {
+    const files = e.target.files;
+    const mid = this.props.machine.get('Id');
+
+    if (files) {
+      var f = files[0];
+      var reader = new window.FileReader();
+      reader.onloadend = function() {
+        console.log('calling upload action...');
+        MachineActions.uploadMachineImage(mid, reader.result);
+      };
+      reader.readAsDataURL(f);
+    }
+  },
+
   render() {
     const machine = this.props.machine;
 
@@ -95,6 +118,10 @@ var SecondRow = React.createClass({
 
     if (machine.get('Image')) {
       machineImageFile = '/files/' + machine.get('Image');
+    }
+
+    if (this.state.newMachineImages.get(machine.get('Id'))) {
+      machineImageNewFile = this.state.newMachineImages.get(machine.get('Id'));
     }
 
     return (
@@ -124,10 +151,10 @@ var SecondRow = React.createClass({
             <div className="col-sm-6">
               <div className="form-group">
                 <input type="file"
-                       onchange="angular.element(this).scope().machineImageLoad(this)"/>
+                       onChange={this.fileChange}/>
                 <button className="btn btn-primary btn-block"
-                        ng-disabled="!machineImageNewFile"
-                        ng-click="machineImageReplace()">
+                        disabled={!machineImageNewFile}
+                        onClick={this.replaceImage}>
                   <i className="fa fa-file-image-o"/>&nbsp;Replace
                 </button>
               </div>
@@ -140,6 +167,30 @@ var SecondRow = React.createClass({
 
       </div>
     );
+  },
+
+  replaceImage() {
+    /*const mid = this.props.machine.get('Id');
+
+    toastr.info('Uploading machine image...');
+
+    $.ajax({
+      method: 'POST',
+      url: '/api/machines/' + mid + '/image',
+      data: {
+        Filename: $scope.machineImageNewFileName,
+        Image: $scope.machineImageNewFile
+      },
+      params: {
+        ac: new Date().getTime()
+      },
+    })
+    .success(function(){
+      toastr.success('Machine image successfully uploaded');
+    })
+    .error(function(){
+      toastr.error('Uploading machine image failed');
+    });*/
   },
 
   update(name, e) {
@@ -464,8 +515,8 @@ var Machine = React.createClass({
 
           <hr />
 
-          <FirstRow machine={machine} />
-          <SecondRow machine={machine} />
+          <BasicData machine={machine} />
+          <ImageUpload machine={machine} />
           <MachineProperties machine={machine} />
           <NetswitchConfig machine={machine} />
 

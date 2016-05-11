@@ -7,7 +7,8 @@ var toImmutable = Nuclear.toImmutable;
 const initialState = toImmutable({
   activations: undefined,
   machines: undefined,
-  machineUsers: {}
+  machineUsers: {},
+  newMachineImages: {}
 });
 
 
@@ -24,6 +25,7 @@ var MachineStore = new Nuclear.Store({
     this.on(actionTypes.SET_MACHINES, setMachines);
     this.on(actionTypes.SET_UNDER_MAINTENANCE, setUnderMaintenance);
     this.on(actionTypes.UPDATE_MACHINE_FIELD, updateMachineField);
+    this.on(actionTypes.UPLOAD_MACHINE_IMAGE, uploadMachineImage);
   }
 
 });
@@ -64,6 +66,10 @@ function updateMachineField(state, {mid, name, value}) {
                                    .set(name, value);
   return state.set('machinesById', state.get('machinesById')
                                         .set(mid, m));
+}
+
+function uploadMachineImage(state, {mid, dataUri}) {
+  return state.setIn(['newMachineImages', mid], dataUri);
 }
 
 export default MachineStore;
