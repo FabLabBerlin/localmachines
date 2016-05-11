@@ -73,7 +73,7 @@ describe('MachineStore', function() {
 
   describe('MACHINE_STORE_CLEAR_STATE', function() {
     it('clears the state', function() {
-      reactor.dispatch(actionTypes.MACHINE_STORE_CLEAR_STATE);
+      reactor.dispatch(Machines.actionTypes.MACHINE_STORE_CLEAR_STATE);
       expect(reactor.evaluateToJS(getters.getActivations)).toEqual(undefined);
       expect(reactor.evaluateToJS(getters.getMachines)).toEqual({});
     });

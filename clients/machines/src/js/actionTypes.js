@@ -8,7 +8,6 @@ export default keyMirror({
   LOGIN_FAILURE_HANDLED: null,
   KEEP_ALIVE: null,
 
-  MACHINE_STORE_CLEAR_STATE: null,
   SET_ACTIVATIONS: null,
   
   SET_LOCATION_ID: null,

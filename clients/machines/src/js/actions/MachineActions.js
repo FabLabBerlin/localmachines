@@ -90,7 +90,7 @@ var MachineActions = {
    * Clear store state while logout
    */
   clearState() {
-    reactor.dispatch(actionTypes.MACHINE_STORE_CLEAR_STATE);
+    reactor.dispatch(Machines.actionTypes.MACHINE_STORE_CLEAR_STATE);
   },
 
   lpDashboard(router, locationId, chained) {
