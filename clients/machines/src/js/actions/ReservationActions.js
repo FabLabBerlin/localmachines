@@ -4,6 +4,7 @@ var actionTypes = require('../actionTypes');
 var ApiActions = require('./ApiActions');
 var Cookies = require('js-cookie');
 var getters = require('../getters');
+var Machines = require('../modules/Machines');
 var moment = require('moment');
 var reactor = require('../reactor');
 var toastr = require('toastr');
@@ -44,7 +45,7 @@ var ReservationActions = {
         dataType: 'json',
         type: 'GET',
         success(data) {
-          reactor.dispatch(actionTypes.REGISTER_MACHINE_USERS, data.Users);
+          reactor.dispatch(Machines.actionTypes.REGISTER_MACHINE_USERS, data.Users);
         },
         error() {
             console.log('Error loading names');

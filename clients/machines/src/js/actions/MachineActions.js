@@ -242,7 +242,7 @@ function fetchUserNames(userIds) {
       dataType: 'json',
       type: 'GET',
       success(response) {
-        reactor.dispatch(actionTypes.REGISTER_MACHINE_USERS, response.Users);
+        reactor.dispatch(Machines.actionTypes.REGISTER_MACHINE_USERS, response.Users);
       },
       error() {
         console.log('Error loading names');
