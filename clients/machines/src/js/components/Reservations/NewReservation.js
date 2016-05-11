@@ -41,7 +41,7 @@ var SelectMachine = React.createClass({
 
   getDataBindings() {
     return {
-      machines: getters.getMachines,
+      machines: Machines.getters.getMachines,
       machinesById: Machines.getters.getMachinesById,
       newReservation: getters.getNewReservation
     };
@@ -187,7 +187,7 @@ var NewReservation = React.createClass({
 
   getDataBindings() {
     return {
-      machines: getters.getMachines,
+      machines: Machines.getters.getMachines,
       machinesById: Machines.getters.getMachinesById,
       newReservation: getters.getNewReservation
     };

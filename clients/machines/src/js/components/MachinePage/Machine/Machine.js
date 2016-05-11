@@ -7,6 +7,7 @@ var React = require('react');
 var LocationGetters = require('../../../modules/Location/getters');
 var LoginActions = require('../../../actions/LoginActions');
 var MachineActions = require('../../../actions/MachineActions');
+var Machines = require('../../../modules/Machines');
 var OccupiedMachine = require('./Occupied');
 var BusyMachine = require('./Busy');
 var FreeMachine = require('./Free');
@@ -34,7 +35,7 @@ var MachineChooser = React.createClass({
   getDataBindings() {
     return {
       isStaff: LocationGetters.getIsStaff,
-      machines: getters.getMachines,
+      machines: Machines.getters.getMachines,
       reservationsByMachineId: getters.getActiveReservationsByMachineId
     };
   },

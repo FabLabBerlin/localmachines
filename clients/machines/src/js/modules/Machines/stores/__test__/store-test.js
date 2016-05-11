@@ -68,7 +68,7 @@ describe('MachineStore', function() {
     it('does changes visible via getMachines', function() {
       var machines = getMachines();
       reactor.dispatch(Machines.actionTypes.SET_MACHINES, { machines });
-      var actual = reactor.evaluateToJS(getters.getMachines);
+      var actual = reactor.evaluateToJS(Machines.getters.getMachines);
       expect(actual).toEqual(getMachines());
     });
   });
@@ -77,7 +77,7 @@ describe('MachineStore', function() {
     it('clears the state', function() {
       reactor.dispatch(Machines.actionTypes.MACHINE_STORE_CLEAR_STATE);
       expect(reactor.evaluateToJS(Machines.getters.getActivations)).toEqual(undefined);
-      expect(reactor.evaluateToJS(getters.getMachines)).toEqual({});
+      expect(reactor.evaluateToJS(Machines.getters.getMachines)).toEqual({});
     });
   });
 });

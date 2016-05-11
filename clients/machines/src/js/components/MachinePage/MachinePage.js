@@ -41,7 +41,7 @@ var MachinePage = React.createClass({
   getDataBindings() {
     return {
       user: getters.getUser,
-      machines: getters.getMachines,
+      machines: Machines.getters.getMachines,
       activations: Machines.getters.getActivations,
       locations: LocationGetters.getLocations,
       location: LocationGetters.getLocation
@@ -104,7 +104,7 @@ var MachinePage = React.createClass({
   },
 
   render() {
-    var machines = reactor.evaluateToJS(getters.getMachines);
+    var machines = reactor.evaluateToJS(Machines.getters.getMachines);
     machines = _.sortBy(machines, (m) => {
       return m.Name;
     });

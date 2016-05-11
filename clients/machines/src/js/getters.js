@@ -239,13 +239,6 @@ const getMonthlyBills = [
  * Machine (Page) related getters
  */
 
-const getMachines = [
-  Machines.getters.getMachinesById,
-  (machinesById) => {
-    return machinesById.sortBy(m => m.Name);
-  }
-];
-
 const getMachineUsers = [
   ['machineStore'],
   (machineStore) => {
@@ -636,7 +629,7 @@ const getTutorings = [
 export default {
   getIsLogged, getUid, getFirstTry, getLoginSuccess, getLastActivity,
   getUser,
-  getMachines, getMachineUsers, getIsLoading, getBill, getBillMonths, getMonthlyBills, getMemberships, getMembershipsByMonth,
+  getMachineUsers, getIsLoading, getBill, getBillMonths, getMonthlyBills, getMemberships, getMembershipsByMonth,
   getFeedbackSubject, getFeedbackSubjectDropdown, getFeedbackSubjectOtherText, getFeedbackMessage,
   getNewReservation, getNewReservationPrice, getNewReservationTimes, getNewReservationFrom, getNewReservationTo, getReservations, getReservationsByDay, getActiveReservationsByMachineId, getSlotAvailabilities48h,
   getScrollUpEnabled, getScrollDownEnabled, getScrollPosition,

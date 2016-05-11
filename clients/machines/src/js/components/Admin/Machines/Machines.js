@@ -2,19 +2,20 @@ var _ = require('lodash');
 var getters = require('../../../getters');
 var LocationGetters = require('../../../modules/Location/getters');
 var MachineActions = require('../../../actions/MachineActions');
+var Machines = require('../../../modules/Machines');
 var Navigation = require('react-router').Navigation;
 var React = require('react');
 var reactor = require('../../../reactor');
 
 
-var Machines = React.createClass({
+var MachinesView = React.createClass({
 
   mixins: [ Navigation, reactor.ReactMixin ],
 
   getDataBindings() {
     return {
       location: LocationGetters.getLocation,
-      machines: getters.getMachines
+      machines: Machines.getters.getMachines
     };
   },
 
@@ -58,4 +59,4 @@ var Machines = React.createClass({
 
 });
 
-export default Machines;
+export default MachinesView;

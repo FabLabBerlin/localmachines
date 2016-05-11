@@ -3,6 +3,7 @@ var getters = require('../../getters');
 var LocationGetters = require('../../modules/Location/getters');
 var LoginActions = require('../../actions/LoginActions');
 var MachineActions = require('../../actions/MachineActions');
+var Machines = require('../../modules/Machines');
 var Membership = require('./Membership');
 var NfcLogoutMixin = require('../Login/NfcLogoutMixin');
 var {Navigation} = require('react-router');
@@ -38,7 +39,7 @@ var SpendingsPage = React.createClass({
   getDataBindings() {
     return {
       user: getters.getUser,
-      machines: getters.getMachines,
+      machines: Machines.getters.getMachines,
       bill: getters.getBill,
       memberships: getters.getMemberships
     };

@@ -3,6 +3,7 @@ var $ = require('jquery');
 var getters = require('../../../getters');
 var LoaderLocal = require('../../LoaderLocal');
 var LocationGetters = require('../../../modules/Location/getters');
+var Machines = require('../../../modules/Machines');
 var MachineActions = require('../../../actions/MachineActions');
 var Navigation = require('react-router').Navigation;
 var React = require('react');
@@ -438,7 +439,7 @@ var Machine = React.createClass({
   getDataBindings() {
     return {
       location: LocationGetters.getLocation,
-      machines: getters.getMachines
+      machines: Machines.getters.getMachines
     };
   },
 

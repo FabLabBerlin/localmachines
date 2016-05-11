@@ -16,6 +16,13 @@ const getMachinesById = [
   }
 ];
 
+const getMachines = [
+  getMachinesById,
+  (machinesById) => {
+    return machinesById.sortBy(m => m.Name);
+  }
+];
+
 export default {
-  getActivations, getMachinesById
+  getActivations, getMachinesById, getMachines
 };
