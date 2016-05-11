@@ -56,7 +56,7 @@ describe('MachineStore', function() {
   describe('SET_ACTIVATIONS', function() {
     it('does changes visible via getActivations', function() {
       var activations = getActivations();
-      reactor.dispatch(actionTypes.SET_ACTIVATIONS, { activations });
+      reactor.dispatch(Machines.actionTypes.SET_ACTIVATIONS, { activations });
       var actual = reactor.evaluateToJS(getters.getActivations);
       expect(actual).toEqual(getActivations());
     });

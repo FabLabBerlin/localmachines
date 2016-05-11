@@ -18,7 +18,7 @@ var socket;
 function dashboardDispatch(data) {
   var userIds = [];
 
-  reactor.dispatch(actionTypes.SET_ACTIVATIONS, {
+  reactor.dispatch(Machines.actionTypes.SET_ACTIVATIONS, {
     activations: data.Activations
   });
   if (data.Activations) {

@@ -7,8 +7,6 @@ export default keyMirror({
   SUCCESS_LOGOUT: null,
   LOGIN_FAILURE_HANDLED: null,
   KEEP_ALIVE: null,
-
-  SET_ACTIVATIONS: null,
   
   SET_LOCATION_ID: null,
   SET_LOCATIONS: null,
