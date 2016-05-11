@@ -23,7 +23,7 @@ var MachineStore = new Nuclear.Store({
     this.on(Machines.actionTypes.REGISTER_MACHINE_USERS, registerMachineUsers);
     this.on(Machines.actionTypes.SET_ACTIVATIONS, setActivations);
     this.on(Machines.actionTypes.SET_MACHINES, setMachines);
-    this.on(actionTypes.SET_UNDER_MAINTENANCE, setUnderMaintenance);
+    this.on(Machines.actionTypes.SET_UNDER_MAINTENANCE, setUnderMaintenance);
     this.on(actionTypes.UPDATE_MACHINE_FIELD, updateMachineField);
   }
 

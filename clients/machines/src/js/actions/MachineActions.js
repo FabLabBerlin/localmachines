@@ -182,7 +182,7 @@ var MachineActions = {
     ApiActions.postCall('/api/machines/' + mid + '/under_maintenance/' + onOrOff,
                     {},
                     function(data) {
-                      reactor.dispatch(actionTypes.SET_UNDER_MAINTENANCE, { mid, onOrOff });
+                      reactor.dispatch(Machines.actionTypes.SET_UNDER_MAINTENANCE, { mid, onOrOff });
                       if (onOrOff === 'on') {
                         toastr.info('Machine under maintenance');
                       } else {
