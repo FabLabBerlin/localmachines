@@ -2,6 +2,7 @@ var $ = require('jquery');
 var FeedbackActions = require('../../actions/FeedbackActions');
 var getters = require('../../getters');
 var LoginActions = require('../../actions/LoginActions');
+var Machines = require('../../modules/Machines');
 var reactor = require('../../reactor');
 
 // https://github.com/HubSpot/vex/issues/72
@@ -62,7 +63,7 @@ export default {
 
   machineIssue(machineId) {
     LoginActions.keepAlive();
-    const machinesById = reactor.evaluateToJS(getters.getMachinesById);
+    const machinesById = reactor.evaluateToJS(Machines.getters.getMachinesById);
     const machine = machinesById[machineId] || {};
     VexDialog.buttons.YES.text = 'Yes';
     VexDialog.buttons.NO.text = 'No';

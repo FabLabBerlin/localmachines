@@ -6,6 +6,7 @@ jest.dontMock('../../components/Reservations/helpers');
 jest.dontMock('../../getters');
 jest.dontMock('../../reactor');
 jest.dontMock('../../modules/Machines');
+jest.dontMock('../../modules/Machines/getters');
 jest.dontMock('../../modules/Machines/stores/store');
 jest.dontMock('../ReservationRulesStore');
 jest.dontMock('../ReservationsStore');

@@ -1,6 +1,7 @@
 var _ = require('lodash');
 var { Day, Time } = require('./components/Reservations/helpers');
 var { toCents, subtractVAT } = require('./components/UserProfile/helpers');
+var Machines = require('./modules/Machines');
 var moment = require('moment');
 var Nuclear = require('nuclear-js');
 var toImmutable = Nuclear.toImmutable;
@@ -238,15 +239,8 @@ const getMonthlyBills = [
  * Machine (Page) related getters
  */
 
-const getMachinesById = [
-  ['machineStore'],
-  (machineStore) => {
-    return machineStore.get('machinesById') || toImmutable({});
-  }
-];
-
 const getMachines = [
-  getMachinesById,
+  Machines.getters.getMachinesById,
   (machinesById) => {
     return machinesById.sortBy(m => m.Name);
   }
@@ -486,7 +480,7 @@ const getActiveReservationsByMachineId = [
 ];
 
 const getNewReservationTimes = [
-  getMachinesById,
+  Machines.getters.getMachinesById,
   ['reservationsStore'],
   ['reservationRulesStore'],
   getReservationsByDay,
@@ -544,7 +538,7 @@ const getNewReservationTo = [
 ];
 
 const getNewReservationPrice = [
-  getMachinesById,
+  Machines.getters.getMachinesById,
   getNewReservation,
   getNewReservationTimes,
   (machinesById, newReservation, times) => {
@@ -565,7 +559,7 @@ const getNewReservationPrice = [
 // getSlotAvailabilities48h returns a map...
 // machineId => [reservations in the next 48h]
 const getSlotAvailabilities48h = [
-  getMachinesById,
+  Machines.getters.getMachinesById,
   ['reservationsStore'],
   getReservations,
   (machinesById, reservationsStore, reservations) => {
@@ -642,7 +636,7 @@ const getTutorings = [
 export default {
   getIsLogged, getUid, getFirstTry, getLoginSuccess, getLastActivity,
   getUser,
-  getMachines, getMachinesById, getMachineUsers, getIsLoading, getBill, getBillMonths, getMonthlyBills, getMemberships, getMembershipsByMonth,
+  getMachines, getMachineUsers, getIsLoading, getBill, getBillMonths, getMonthlyBills, getMemberships, getMembershipsByMonth,
   getFeedbackSubject, getFeedbackSubjectDropdown, getFeedbackSubjectOtherText, getFeedbackMessage,
   getNewReservation, getNewReservationPrice, getNewReservationTimes, getNewReservationFrom, getNewReservationTo, getReservations, getReservationsByDay, getActiveReservationsByMachineId, getSlotAvailabilities48h,
   getScrollUpEnabled, getScrollDownEnabled, getScrollPosition,

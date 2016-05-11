@@ -1,5 +1,6 @@
 jest.dontMock('nuclear-js');
 jest.dontMock('../../actionTypes');
+jest.dontMock('../../getters');
 jest.dontMock('../../../../getters');
 jest.dontMock('lodash');
 jest.dontMock('../../../../stores/LoginStore.js');

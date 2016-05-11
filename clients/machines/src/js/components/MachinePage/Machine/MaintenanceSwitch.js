@@ -2,6 +2,7 @@ var $ = require('jquery');
 var getters = require('../../../getters');
 var LocationGetters = require('../../../modules/Location/getters');
 var MachineActions = require('../../../actions/MachineActions');
+var Machines = require('../../../modules/Machines');
 var React = require('react');
 var reactor = require('../../../reactor');
 var toastr = require('toastr');
@@ -19,7 +20,7 @@ var MaintenanceSwitch = React.createClass({
 
   getDataBindings() {
     return {
-      machinesById: getters.getMachinesById,
+      machinesById: Machines.getters.getMachinesById,
       user: getters.getUser,
       isStaff: LocationGetters.getIsStaff
     };

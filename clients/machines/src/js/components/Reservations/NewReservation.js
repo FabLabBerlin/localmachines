@@ -3,6 +3,7 @@ var DatePicker = require('./DatePicker');
 var getters = require('../../getters');
 var LocationGetters = require('../../modules/Location/getters');
 var MachineActions = require('../../actions/MachineActions');
+var Machines = require('../../modules/Machines');
 var moment = require('moment');
 var React = require('react');
 var reactor = require('../../reactor');
@@ -41,7 +42,7 @@ var SelectMachine = React.createClass({
   getDataBindings() {
     return {
       machines: getters.getMachines,
-      machinesById: getters.getMachinesById,
+      machinesById: Machines.getters.getMachinesById,
       newReservation: getters.getNewReservation
     };
   },
@@ -134,7 +135,7 @@ var SuccessMsg = React.createClass({
 
   getDataBindings() {
     return {
-      machinesById: getters.getMachinesById,
+      machinesById: Machines.getters.getMachinesById,
       newReservation: getters.getNewReservation,
       newReservationPrice: getters.getNewReservationPrice,
       from: getters.getNewReservationFrom,
@@ -187,7 +188,7 @@ var NewReservation = React.createClass({
   getDataBindings() {
     return {
       machines: getters.getMachines,
-      machinesById: getters.getMachinesById,
+      machinesById: Machines.getters.getMachinesById,
       newReservation: getters.getNewReservation
     };
   },

@@ -1,5 +1,6 @@
 var React = require('react');
 var getters = require('../../../getters');
+var Machines = require('../../../modules/Machines');
 var moment = require('moment');
 var reactor = require('../../../reactor');
 
@@ -79,7 +80,7 @@ var Timer = React.createClass({
   render() {
     const uid = reactor.evaluateToJS(getters.getUid);
     const sameUser = uid === this.props.activation.UserId;
-    const machinesById = reactor.evaluateToJS(getters.getMachinesById);
+    const machinesById = reactor.evaluateToJS(Machines.getters.getMachinesById);
     const machine = machinesById[this.props.activation.MachineId];
     var duration = this.initialSeconds + this.state.timeNow - this.startShow;
     var inGracePeriod = machine && machine.GracePeriod && 

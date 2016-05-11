@@ -5,6 +5,7 @@ var getters = require('../getters');
 var GlobalActions = require('./GlobalActions');
 var LocationGetters = require('../modules/Location/getters');
 var LoginActions = require('../actions/LoginActions');
+var Machines = require('../modules/Machines');
 var reactor = require('../reactor');
 var toastr = require('../toastr');
 
@@ -12,7 +13,7 @@ var FeedbackActions = {
 
   reportMachineBroken({ machineId }) {
     LoginActions.keepAlive();
-    const machinesById = reactor.evaluateToJS(getters.getMachinesById);
+    const machinesById = reactor.evaluateToJS(Machines.getters.getMachinesById);
     const machine = machinesById[machineId] || {};
     var user = reactor.evaluateToJS(getters.getUser);
     var fullName = user.FirstName + ' ' + user.LastName;

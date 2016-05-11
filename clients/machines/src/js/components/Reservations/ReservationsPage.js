@@ -5,6 +5,7 @@ var LoaderLocal = require('../LoaderLocal');
 var LocationActions = require('../../actions/LocationActions');
 var LocationGetters = require('../../modules/Location/getters');
 var MachineActions = require('../../actions/MachineActions');
+var Machines = require('../../modules/Machines');
 var moment = require('moment');
 var Navigation = require('react-router').Navigation;
 var NewReservation = require('./NewReservation');
@@ -107,7 +108,7 @@ var ReservationsTable = React.createClass({
 
   getDataBindings() {
     return {
-      machinesById: getters.getMachinesById,
+      machinesById: Machines.getters.getMachinesById,
       reservations: getters.getReservations
     };
   },
