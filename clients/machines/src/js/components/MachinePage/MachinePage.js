@@ -25,19 +25,6 @@ var MachinePage = React.createClass({
 
   mixins: [ Navigation, reactor.ReactMixin, NfcLogoutMixin ],
 
-  /*
-   * If not logged then redirect to the login page
-   */
-  /*statics: {
-    willTransitionTo(transition) {
-      const isLogged = reactor.evaluateToJS(getters.getIsLogged);
-      if(!isLogged) {
-        alert('not logged!!!!');
-        transition.redirect('login');
-      }
-    }
-  },*/
-
   getDataBindings() {
     return {
       user: getters.getUser,
@@ -48,10 +35,6 @@ var MachinePage = React.createClass({
     };
   },
 
-  /*
-   * Start fetching the data
-   * before the component is mounted
-   */
   componentWillMount() {
     const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
     const uid = reactor.evaluateToJS(getters.getUid);
@@ -62,30 +45,11 @@ var MachinePage = React.createClass({
     LocationActions.loadUserLocations(uid);
   },
 
-  /*
-   * Logout with the exit button
-   */
   handleLogout() {
     LoginActions.logout(this.context.router);
   },
 
-
-  /*
-   * Destructor
-   * Stop the polling
-   */
-  componentWillUnmount() {
-    this.nfcOnWillUnmount();
-    clearInterval(this.interval);
-  },
-
-  /*
-   * Call when the component is mounted in DOM
-   * Synchronize invent = require(stores
-   * Activate a polling (1,5s)
-   */
   componentDidMount() {
-    this.nfcOnDidMount();
     LoginStore.onChangeLogout = this.onChangeLogout;
     const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
     if (window.WebSocket) {
@@ -98,9 +62,6 @@ var MachinePage = React.createClass({
   render() {
     if (this.state.activations && this.state.location && this.state.machines) {
       const locationTitle = this.state.location.Title;
-      const machines = this.state.machines.sortBy((m) => {
-        return m.Name;
-      });
 
       return (
         <div>
@@ -112,7 +73,7 @@ var MachinePage = React.createClass({
           <TutoringList />
           <MachineList
             user={this.state.user}
-            machines={machines}
+            machines={this.state.machines}
             activation={this.state.activations}
           />
           <div className="container-fluid">

@@ -103,7 +103,7 @@ export default {
   },
 
   keepAlive() {
-    reactor.dispatch(actionTypes.KEEP_ALIVE);
+    //reactor.dispatch(actionTypes.KEEP_ALIVE);
   },
 
   /*

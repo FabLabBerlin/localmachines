@@ -53,7 +53,7 @@ var Membership = React.createClass({
               <th>Start Date</th>
               <th>End Date</th>
               <th>Price/month excl. VAT</th>
-              <th>VAT/month ({this.state.vatPercent})</th>
+              <th>VAT/month ({this.state.vatPercent}%)</th>
               <th>Total/month</th>
             </tr>
           </thead>

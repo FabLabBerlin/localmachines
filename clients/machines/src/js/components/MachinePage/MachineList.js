@@ -26,7 +26,10 @@ var MachineList = React.createClass({
       var machines = this.props.machines.filter((machine) => {
         return machine.get('Visible') && !machine.get('Archived');
       });
-      MachineNode = _.map(machines.toJS(), function(machine) {
+      machines = _.sortBy(machines.toJS(), (m) => {
+        return m.Name;
+      });
+      MachineNode = _.map(machines, function(machine) {
         if (machine.LocationId === this.state.location.Id) {
           let activationProps;
           if (activation) {

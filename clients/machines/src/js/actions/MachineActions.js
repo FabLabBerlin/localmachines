@@ -17,23 +17,25 @@ var socket;
 function dashboardDispatch(data) {
   var userIds = [];
 
-  reactor.dispatch(Machines.actionTypes.SET_ACTIVATIONS, {
-    activations: data.Activations
-  });
-  if (data.Activations) {
-    userIds = _.pluck(data.Activations, 'UserId');
-  }
-  reactor.dispatch(Machines.actionTypes.SET_MACHINES, {
-    machines: data.Machines
-  });
-  if (data.Tutorings) {
-    reactor.dispatch(actionTypes.SET_TUTORINGS, data.Tutorings.Data);
-    userIds = _.union(userIds, _.pluck(data.Tutorings.Data, 'UserId'));
-    userIds = _.filter(userIds, (userId) => {
-      return userId;
+  reactor.batch(() => {
+    reactor.dispatch(Machines.actionTypes.SET_ACTIVATIONS, {
+      activations: data.Activations
     });
-  }
-  fetchUserNames(userIds);
+    if (data.Activations) {
+      userIds = _.pluck(data.Activations, 'UserId');
+    }
+    reactor.dispatch(Machines.actionTypes.SET_MACHINES, {
+      machines: data.Machines
+    });
+    if (data.Tutorings) {
+      reactor.dispatch(actionTypes.SET_TUTORINGS, data.Tutorings.Data);
+      userIds = _.union(userIds, _.pluck(data.Tutorings.Data, 'UserId'));
+      userIds = _.filter(userIds, (userId) => {
+        return userId;
+      });
+    }
+    fetchUserNames(userIds);
+  });
 }
 
 
