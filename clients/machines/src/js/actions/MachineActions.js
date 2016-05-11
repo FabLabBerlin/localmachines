@@ -196,7 +196,7 @@ var MachineActions = {
   },
 
   updateMachineField(mid, name, value) {
-    reactor.dispatch(actionTypes.UPDATE_MACHINE_FIELD, {mid, name, value});
+    reactor.dispatch(Machines.actionTypes.UPDATE_MACHINE_FIELD, {mid, name, value});
   }
 
 };

@@ -5,5 +5,6 @@ export default keyMirror({
   REGISTER_MACHINE_USERS: null,
   SET_ACTIVATIONS: null,
   SET_MACHINES: null,
-  SET_UNDER_MAINTENANCE: null
+  SET_UNDER_MAINTENANCE: null,
+  UPDATE_MACHINE_FIELD: null
 });

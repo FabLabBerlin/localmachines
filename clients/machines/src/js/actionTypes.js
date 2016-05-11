@@ -17,7 +17,6 @@ export default keyMirror({
   SET_USER_PROPERTY: null,
   SET_LOADING: null,
   UNSET_LOADING: null,
-  UPDATE_MACHINE_FIELD: null,
 
   SCROLL_UP: null,
   SCROLL_DOWN: null,

@@ -24,7 +24,7 @@ var MachineStore = new Nuclear.Store({
     this.on(Machines.actionTypes.SET_ACTIVATIONS, setActivations);
     this.on(Machines.actionTypes.SET_MACHINES, setMachines);
     this.on(Machines.actionTypes.SET_UNDER_MAINTENANCE, setUnderMaintenance);
-    this.on(actionTypes.UPDATE_MACHINE_FIELD, updateMachineField);
+    this.on(Machines.actionTypes.UPDATE_MACHINE_FIELD, updateMachineField);
   }
 
 });
