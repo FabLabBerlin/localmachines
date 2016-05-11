@@ -68,8 +68,8 @@ function updateMachineField(state, {mid, name, value}) {
                                         .set(mid, m));
 }
 
-function uploadMachineImage(state, {mid, dataUri}) {
-  return state.setIn(['newMachineImages', mid], dataUri);
+function uploadMachineImage(state, {mid, data}) {
+  return state.setIn(['newMachineImages', mid], data);
 }
 
 export default MachineStore;

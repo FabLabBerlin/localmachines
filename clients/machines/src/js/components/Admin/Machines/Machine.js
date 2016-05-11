@@ -102,7 +102,11 @@ var ImageUpload = React.createClass({
       var reader = new window.FileReader();
       reader.onloadend = function() {
         console.log('calling upload action...');
-        MachineActions.uploadMachineImage(mid, reader.result);
+        MachineActions.uploadMachineImage(mid, {
+          dataUri: reader.result,
+          fileName: f.name,
+          fileSize: f.size
+        });
       };
       reader.readAsDataURL(f);
     }
@@ -121,7 +125,7 @@ var ImageUpload = React.createClass({
     }
 
     if (this.state.newMachineImages.get(machine.get('Id'))) {
-      machineImageNewFile = this.state.newMachineImages.get(machine.get('Id'));
+      machineImageNewFile = this.state.newMachineImages.get(machine.get('Id')).dataUri;
     }
 
     return (
@@ -170,7 +174,12 @@ var ImageUpload = React.createClass({
   },
 
   replaceImage() {
-    /*const mid = this.props.machine.get('Id');
+    const mid = this.props.machine.get('Id');
+    var data;
+
+    if (this.state.newMachineImages.get(mid)) {
+      data = this.state.newMachineImages.get(mid);
+    }
 
     toastr.info('Uploading machine image...');
 
@@ -178,19 +187,19 @@ var ImageUpload = React.createClass({
       method: 'POST',
       url: '/api/machines/' + mid + '/image',
       data: {
-        Filename: $scope.machineImageNewFileName,
-        Image: $scope.machineImageNewFile
+        Filename: data.fileName,
+        Image: data.dataUri
       },
       params: {
         ac: new Date().getTime()
-      },
+      }
     })
     .success(function(){
       toastr.success('Machine image successfully uploaded');
     })
     .error(function(){
       toastr.error('Uploading machine image failed');
-    });*/
+    });
   },
 
   update(name, e) {

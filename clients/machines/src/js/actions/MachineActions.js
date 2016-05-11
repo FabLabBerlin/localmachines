@@ -198,8 +198,8 @@ var MachineActions = {
     reactor.dispatch(Machines.actionTypes.UPDATE_MACHINE_FIELD, {mid, name, value});
   },
 
-  uploadMachineImage(mid, dataUri) {
-    reactor.dispatch(Machines.actionTypes.UPLOAD_MACHINE_IMAGE, {mid, dataUri});
+  uploadMachineImage(mid, data) {
+    reactor.dispatch(Machines.actionTypes.UPLOAD_MACHINE_IMAGE, {mid, data});
   }
 
 };
