@@ -3,6 +3,7 @@ jest.dontMock('../../components/Reservations/helpers');
 jest.dontMock('../../getters');
 jest.dontMock('lodash');
 jest.dontMock('../MachineStore.js');
+jest.dontMock('../../modules/Machines');
 jest.dontMock('moment');
 jest.dontMock('nuclear-js');
 jest.dontMock('../../reactor');
@@ -14,6 +15,7 @@ jest.mock('toastr');
 var _ = require('lodash');
 var actionTypes = require('../../actionTypes');
 var getters = require('../../getters');
+var Machines = require('../../modules/Machines');
 var MachineStore = require('../MachineStore');
 var moment = require('moment');
 var ReservationRulesStore = require('../ReservationRulesStore');
@@ -85,7 +87,7 @@ describe('ReservationsStore', function() {
   describe('CREATE_SET_DATE', function() {
     it('sets the date and possible times at that day', function() {
       reactor.dispatch(actionTypes.SET_RESERVATION_RULES, reservationRules());
-      reactor.dispatch(actionTypes.SET_MACHINES, {
+      reactor.dispatch(Machines.actionTypes.SET_MACHINES, {
         machines: getMachines()
       });
       reactor.dispatch(actionTypes.SET_RESERVATIONS, {

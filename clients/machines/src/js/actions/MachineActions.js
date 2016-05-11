@@ -6,6 +6,7 @@ var getters = require('../getters');
 var GlobalActions = require('./GlobalActions');
 var LocationGetters = require('../modules/Location/getters');
 var LoginActions = require('../actions/LoginActions');
+var Machines = require('../modules/Machines');
 var MachineStore = require('../stores/MachineStore');
 var reactor = require('../reactor');
 var toastr = require('../toastr');
@@ -23,7 +24,7 @@ function dashboardDispatch(data) {
   if (data.Activations) {
     userIds = _.pluck(data.Activations, 'UserId');
   }
-  reactor.dispatch(actionTypes.SET_MACHINES, {
+  reactor.dispatch(Machines.actionTypes.SET_MACHINES, {
     machines: data.Machines
   });
   if (data.Tutorings) {
@@ -81,7 +82,7 @@ var MachineActions = {
   apiGetUserMachines(locationId, uid) {
     var url = '/api/users/' + uid + '/machines?location=' + locationId;
     ApiActions.getCall(url, (machines) => {
-      reactor.dispatch(actionTypes.SET_MACHINES, { machines });
+      reactor.dispatch(Machines.actionTypes.SET_MACHINES, { machines });
     });
   },
 

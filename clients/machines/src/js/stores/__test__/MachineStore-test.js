@@ -4,12 +4,14 @@ jest.dontMock('../../getters');
 jest.dontMock('lodash');
 jest.dontMock('../LoginStore.js');
 jest.dontMock('../MachineStore.js');
+jest.dontMock('../../modules/Machines');
 jest.dontMock('../UserStore.js');
 jest.dontMock('../../reactor');
 jest.mock('jquery');
 
 var actionTypes = require('../../actionTypes');
 var getters = require('../../getters');
+var Machines = require('../../modules/Machines');
 var reactor = require('../../reactor');
 
 
@@ -63,7 +65,7 @@ describe('MachineStore', function() {
   describe('SET_MACHINES', function() {
     it('does changes visible via getMachines', function() {
       var machines = getMachines();
-      reactor.dispatch(actionTypes.SET_MACHINES, { machines });
+      reactor.dispatch(Machines.actionTypes.SET_MACHINES, { machines });
       var actual = reactor.evaluateToJS(getters.getMachines);
       expect(actual).toEqual(getMachines());
     });

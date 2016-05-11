@@ -1,6 +1,7 @@
 var $ = require('jquery');
 var _ = require('lodash');
 var actionTypes = require('../actionTypes');
+var Machines = require('../modules/Machines');
 var Nuclear = require('nuclear-js');
 var toImmutable = Nuclear.toImmutable;
 
@@ -21,7 +22,7 @@ var MachineStore = new Nuclear.Store({
     this.on(actionTypes.MACHINE_STORE_CLEAR_STATE, clearState);
     this.on(actionTypes.REGISTER_MACHINE_USERS, registerMachineUsers);
     this.on(actionTypes.SET_ACTIVATIONS, setActivations);
-    this.on(actionTypes.SET_MACHINES, setMachines);
+    this.on(Machines.actionTypes.SET_MACHINES, setMachines);
     this.on(actionTypes.SET_UNDER_MAINTENANCE, setUnderMaintenance);
     this.on(actionTypes.UPDATE_MACHINE_FIELD, updateMachineField);
   }

@@ -5,11 +5,13 @@ jest.dontMock('../../actionTypes');
 jest.dontMock('../../components/Reservations/helpers');
 jest.dontMock('../../getters');
 jest.dontMock('../../reactor');
+jest.dontMock('../../modules/Machines');
 jest.dontMock('../MachineStore');
 jest.dontMock('../ReservationRulesStore');
 jest.dontMock('../ReservationsStore');
 var actionTypes = require('../../actionTypes');
 var getters = require('../../getters');
+var Machines = require('../../modules/Machines');
 var moment = require('moment');
 var reactor = require('../../reactor');
 
@@ -270,7 +272,7 @@ describe('ReservationRulesStore', function() {
 
   var machines = getMachines();
   var reservations = existingReservations();
-  reactor.dispatch(actionTypes.SET_MACHINES, { machines });
+  reactor.dispatch(Machines.actionTypes.SET_MACHINES, { machines });
   reactor.dispatch(actionTypes.SET_RESERVATIONS, { reservations });
   reactor.dispatch(actionTypes.SET_RESERVATION_RULES, reservationRules());
 
