@@ -22,18 +22,6 @@ var SpendingsPage = React.createClass({
   mixins: [ Navigation, reactor.ReactMixin, NfcLogoutMixin ],
 
   /*
-   * If not logged then redirect to the login page
-   */
-  statics: {
-    willTransitionTo(transition) {
-      const isLogged = reactor.evaluateToJS(getters.getIsLogged);
-      if(!isLogged) {
-        transition.redirect('login');
-      }
-    }
-  },
-
-  /*
    * Fetching the user state from the store
    */
   getDataBindings() {
@@ -47,7 +35,7 @@ var SpendingsPage = React.createClass({
 
   componentDidMount() {
     this.nfcOnDidMount();
-    const locationId = reactor.evaluateToJS(LocationGetters.getLocation).Id;
+    const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
     const uid = reactor.evaluateToJS(getters.getUid);
     MachineActions.apiGetUserMachines(locationId, uid);
     UserActions.fetchUser(uid);
