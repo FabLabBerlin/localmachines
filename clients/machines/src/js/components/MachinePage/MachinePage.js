@@ -104,12 +104,12 @@ var MachinePage = React.createClass({
   },
 
   render() {
-    var machines = reactor.evaluateToJS(Machines.getters.getMachines);
-    machines = _.sortBy(machines, (m) => {
-      return m.Name;
-    });
-    if (this.state.activations && this.state.location) {
-      var locationTitle = this.state.location.Title;
+    if (this.state.activations && this.state.location && this.state.machines) {
+      const locationTitle = this.state.location.Title;
+      const machines = this.state.machines.sortBy((m) => {
+        return m.Name;
+      });
+
       return (
         <div>
           <div className="logged-user-name">

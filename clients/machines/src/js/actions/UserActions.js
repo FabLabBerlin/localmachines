@@ -62,7 +62,7 @@ var UserActions = {
       dataType: 'json',
       type: 'GET',
       success(memberships) {
-        var data = memberships.Data ? memberships.Data : [];
+        var data = memberships.Data;
         reactor.dispatch(actionTypes.SET_MEMBERSHIPS, { data });
       },
       error(xhr, status, err) {

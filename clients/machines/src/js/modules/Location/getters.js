@@ -13,7 +13,7 @@ const getLocation = [
   ['locationStore'],
   (locations, locationStore) => {
     if (locations) {
-      return _.find(locations, (l) => {
+      return locations.find((l) => {
         return l.Id === locationStore.get('locationId');
       });
     }

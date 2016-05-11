@@ -19,7 +19,7 @@ var toImmutable = Nuclear.toImmutable;
 
 var state = {
   'userStore': {
-    'memberships': [
+    'memberships': toImmutable([
       {
         'Id': 1,
         'UserId': 1,
@@ -34,7 +34,7 @@ var state = {
         'MachinePriceDeduction': 50,
         'AffectedMachines': '[1,2,3]'
       }
-    ]
+    ])
   }
 };
 

@@ -64,7 +64,7 @@ var TableRow = React.createClass({
       (reservationStart.year() === now.year()) &&
       (reservationStart.month() === now.month());
 
-    const rowClassName = (isPast || isToday || reservation.get('Cancelled')) ? 
+    const rowClassName = (isPast || reservation.get('Cancelled')) ? 
       'reservation disabled' : 
       'reservation'; 
 

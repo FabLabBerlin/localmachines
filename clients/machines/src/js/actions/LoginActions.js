@@ -1,6 +1,7 @@
 var $ = require('jquery');
 var actionTypes = require('../actionTypes');
 var LocationActions = require('./LocationActions');
+var Machines = require('../modules/Machines');
 var reactor = require('../reactor');
 var toastr = require('../toastr');
 
@@ -114,6 +115,7 @@ export default {
       type: 'GET',
       cache: false,
       success(data) {
+        reactor.dispatch(Machines.actionTypes.MACHINE_STORE_CLEAR_STATE);
         reactor.dispatch(actionTypes.SUCCESS_LOGOUT);
         if (router) {
           router.transitionTo('/login');

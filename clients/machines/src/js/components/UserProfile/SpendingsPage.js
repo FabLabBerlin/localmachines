@@ -48,13 +48,6 @@ var SpendingsPage = React.createClass({
     this.nfcOnWillUnmount();
   },
 
-  /*
-   * Logout with the exit button
-   */
-  handleLogout() {
-    LoginActions.logout();
-  },
-
   render() {
     return (
       <div className="container">

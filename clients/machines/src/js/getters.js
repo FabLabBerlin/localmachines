@@ -105,8 +105,12 @@ const getMemberships = [
 const getMembershipsByMonth = [
   ['userStore'],
   (userStore) => {
+    const memberships = userStore.get('memberships');
     var byMonths = {};
-    _.each(userStore.get('memberships'), function(membership) {
+    if (!memberships) {
+      return undefined;
+    }
+    memberships.forEach(function(membership) {
       var start = moment(membership.StartDate);
       var end = moment(membership.EndDate);
       for (var t = start; t.isBefore(end); t = t.add(1, 'M')) {

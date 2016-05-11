@@ -11,7 +11,7 @@ const initialState = toImmutable({
   isLogged: false,
   firstTry: true,
   bill: undefined,
-  memberships: [],
+  memberships: undefined,
   user: {}
 });
 
@@ -30,7 +30,7 @@ var UserStore = new Nuclear.Store({
 });
 
 function setMemberships(state, { data }) {
-  return state.set('memberships', data);
+  return state.set('memberships', toImmutable(data));
 }
 
 function setBill(state, { data }) {

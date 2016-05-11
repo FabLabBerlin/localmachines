@@ -52,7 +52,7 @@ var SelectMachine = React.createClass({
   },
 
   render() {
-    if (this.state.machines.length !== 0) {
+    if (this.state.machines && this.state.machines.count() > 0) {
       var selectedMachineId;
       var machinePricing;
       if (this.state.newReservation.get('machineId')) {
@@ -72,10 +72,10 @@ var SelectMachine = React.createClass({
               
               <option value="0">Please select a machine</option>
               
-              {_.map(this.state.machines.toArray(), function(machine){
+              {_.map(this.state.machines.toArray(), function(machine, i){
                 if (_.isNumber(machine.get('ReservationPriceHourly'))) {
                   return (
-                    <option value={machine.get('Id')}>
+                    <option key={i} value={machine.get('Id')}>
                       {machine.get('Name')}
                     </option>
                   );

@@ -23,10 +23,10 @@ var MachineList = React.createClass({
     let activation = this.props.activation;
     var MachineNode;
     if (this.state.location && this.props.machines) {
-      var machines = _.filter(this.props.machines, function(machine) {
-        return machine.Visible && !machine.Archived;
+      var machines = this.props.machines.filter((machine) => {
+        return machine.get('Visible') && !machine.get('Archived');
       });
-      MachineNode = _.map(machines, function(machine) {
+      MachineNode = _.map(machines.toJS(), function(machine) {
         if (machine.LocationId === this.state.location.Id) {
           let activationProps;
           if (activation) {

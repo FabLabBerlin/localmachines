@@ -50,13 +50,13 @@ var TimePicker = React.createClass({
               className += ' unavailable';
             } else {
               onChange = this.setTimes.bind(this, 
-                i + this.state.times.length - this.times().length);
+                i + this.state.times.count() - this.times().length);
               if (t.selected) {
                 className += ' selected';
               }
             }
 
-            if ((i + this.state.times.length - this.times().length) === lastIndex) {
+            if ((i + this.state.times.count() - this.times().length) === lastIndex) {
               pricing = (
                 <div className="total-price">
                   Total price: €{(this.state.newReservationPrice).toFixed(2)}
@@ -121,11 +121,11 @@ var TimePicker = React.createClass({
         lastIndex = i;
       }
 
-      times[i + this.state.times.length - this.times().length].selected = false;
+      times[i + this.state.times.count() - this.times().length].selected = false;
     }.bind(this));
 
     if ((firstIndex && lastIndex) && (firstIndex === lastIndex)) {
-      times[firstIndex + this.state.times.length - this.times().length].selected = true;
+      times[firstIndex + this.state.times.count() - this.times().length].selected = true;
     } else {
       var doSelect = false;
       $(this.refs.times.getDOMNode()).find('input').each(function(i, el) {
@@ -135,9 +135,9 @@ var TimePicker = React.createClass({
 
         // Do the selection between first and last checked time item
         if (doSelect) {
-          times[i + this.state.times.length - this.times().length].selected = true;
+          times[i + this.state.times.count() - this.times().length].selected = true;
         } else {
-          times[i + this.state.times.length - this.times().length].selected = false;
+          times[i + this.state.times.count() - this.times().length].selected = false;
         }
 
         if (parseInt(i) === parseInt(lastIndex)) {
