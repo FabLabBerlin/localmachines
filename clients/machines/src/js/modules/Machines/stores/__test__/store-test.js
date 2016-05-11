@@ -5,6 +5,7 @@ jest.dontMock('lodash');
 jest.dontMock('../../../../stores/LoginStore.js');
 jest.dontMock('../store');
 jest.dontMock('../../../../modules/Machines');
+jest.dontMock('../../../../modules/Machines/getters');
 jest.dontMock('../../../../stores/UserStore.js');
 jest.dontMock('../../../../reactor');
 jest.mock('jquery');
@@ -57,7 +58,7 @@ describe('MachineStore', function() {
     it('does changes visible via getActivations', function() {
       var activations = getActivations();
       reactor.dispatch(Machines.actionTypes.SET_ACTIVATIONS, { activations });
-      var actual = reactor.evaluateToJS(getters.getActivations);
+      var actual = reactor.evaluateToJS(Machines.getters.getActivations);
       expect(actual).toEqual(getActivations());
     });
   });
@@ -74,7 +75,7 @@ describe('MachineStore', function() {
   describe('MACHINE_STORE_CLEAR_STATE', function() {
     it('clears the state', function() {
       reactor.dispatch(Machines.actionTypes.MACHINE_STORE_CLEAR_STATE);
-      expect(reactor.evaluateToJS(getters.getActivations)).toEqual(undefined);
+      expect(reactor.evaluateToJS(Machines.getters.getActivations)).toEqual(undefined);
       expect(reactor.evaluateToJS(getters.getMachines)).toEqual({});
     });
   });

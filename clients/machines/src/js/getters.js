@@ -11,8 +11,8 @@ var toImmutable = Nuclear.toImmutable;
  */
 const getIsLoading = [
   ['globalStore'],
-  (machineStore) => {
-    return machineStore.get('loading');
+  (globalStore) => {
+    return globalStore.get('loading');
   }
 ];
 
@@ -237,12 +237,6 @@ const getMonthlyBills = [
 /*
  * Machine (Page) related getters
  */
-const getActivations = [
-  ['machineStore'],
-  (machineStore) => {
-    return machineStore.get('activations');
-  }
-];
 
 const getMachinesById = [
   ['machineStore'],
@@ -648,7 +642,7 @@ const getTutorings = [
 export default {
   getIsLogged, getUid, getFirstTry, getLoginSuccess, getLastActivity,
   getUser,
-  getActivations, getMachines, getMachinesById, getMachineUsers, getIsLoading, getBill, getBillMonths, getMonthlyBills, getMemberships, getMembershipsByMonth,
+  getMachines, getMachinesById, getMachineUsers, getIsLoading, getBill, getBillMonths, getMonthlyBills, getMemberships, getMembershipsByMonth,
   getFeedbackSubject, getFeedbackSubjectDropdown, getFeedbackSubjectOtherText, getFeedbackMessage,
   getNewReservation, getNewReservationPrice, getNewReservationTimes, getNewReservationFrom, getNewReservationTo, getReservations, getReservationsByDay, getActiveReservationsByMachineId, getSlotAvailabilities48h,
   getScrollUpEnabled, getScrollDownEnabled, getScrollPosition,

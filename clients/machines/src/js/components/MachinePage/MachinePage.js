@@ -7,6 +7,7 @@ var LocationActions = require('../../actions/LocationActions');
 var LoginStore = require('../../stores/LoginStore');
 var MachineList = require('./MachineList');
 var MachineActions = require('../../actions/MachineActions');
+var Machines = require('../../modules/Machines');
 var NfcLogoutMixin = require('../Login/NfcLogoutMixin');
 var LoginActions = require('../../actions/LoginActions');
 var Navigation = require('react-router').Navigation;
@@ -41,7 +42,7 @@ var MachinePage = React.createClass({
     return {
       user: getters.getUser,
       machines: getters.getMachines,
-      activations: getters.getActivations,
+      activations: Machines.getters.getActivations,
       locations: LocationGetters.getLocations,
       location: LocationGetters.getLocation
     };
