@@ -6,7 +6,7 @@ jest.dontMock('../../components/Reservations/helpers');
 jest.dontMock('../../getters');
 jest.dontMock('../../reactor');
 jest.dontMock('../../modules/Machines');
-jest.dontMock('../MachineStore');
+jest.dontMock('../../modules/Machines/stores/store');
 jest.dontMock('../ReservationRulesStore');
 jest.dontMock('../ReservationsStore');
 var actionTypes = require('../../actionTypes');
@@ -260,7 +260,7 @@ function getMachines() {
 
 
 describe('ReservationRulesStore', function() {
-  var MachineStore = require('../MachineStore');
+  var MachineStore = require('../../modules/Machines/stores/store');
   var ReservationRulesStore = require('../ReservationRulesStore');
   var ReservationsStore = require('../ReservationsStore');
 

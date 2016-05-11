@@ -6,7 +6,6 @@ var LocationGetters = require('../../modules/Location/getters');
 var LocationActions = require('../../actions/LocationActions');
 var LoginStore = require('../../stores/LoginStore');
 var MachineList = require('./MachineList');
-var MachineStore = require('../../stores/MachineStore');
 var MachineActions = require('../../actions/MachineActions');
 var NfcLogoutMixin = require('../Login/NfcLogoutMixin');
 var LoginActions = require('../../actions/LoginActions');
@@ -94,9 +93,7 @@ var MachinePage = React.createClass({
    */
   componentDidMount() {
     this.nfcOnDidMount();
-    MachineStore.onChangeActivation = this.onChangeActivation;
     LoginStore.onChangeLogout = this.onChangeLogout;
-    MachineStore.onChangeLogin = this.onChangeLogin;
     const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
     if (window.WebSocket) {
       MachineActions.wsDashboard(this.context.router, locationId);

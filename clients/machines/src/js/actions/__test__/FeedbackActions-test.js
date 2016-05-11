@@ -3,7 +3,7 @@ jest.dontMock('../FeedbackActions');
 jest.dontMock('../../getters');
 jest.dontMock('nuclear-js');
 jest.dontMock('../../stores/FeedbackStore');
-jest.dontMock('../../stores/MachineStore');
+jest.dontMock('../../modules/Machines/stores/store');
 jest.dontMock('../../stores/UserStore');
 
 var $ = require('jquery');
@@ -11,7 +11,7 @@ var actionTypes = require('../../actionTypes');
 var FeedbackActions = require('../FeedbackActions');
 var FeedbackStore = require('../../stores/FeedbackStore');
 var GlobalActions = require('../GlobalActions');
-var MachineStore = require('../../stores/MachineStore');
+var MachineStore = require('../../modules/Machines/stores/store');
 var reactor = require('../../reactor');
 var UserStore = require('../../stores/UserStore');
 

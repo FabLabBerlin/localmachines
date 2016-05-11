@@ -1,7 +1,6 @@
 var $ = require('jquery');
 var _ = require('lodash');
 var actionTypes = require('../actionTypes');
-var Machines = require('../modules/Machines');
 var Nuclear = require('nuclear-js');
 var toImmutable = Nuclear.toImmutable;
 
@@ -19,12 +18,12 @@ var MachineStore = new Nuclear.Store({
   },
 
   initialize() {
-    this.on(Machines.actionTypes.MACHINE_STORE_CLEAR_STATE, clearState);
-    this.on(Machines.actionTypes.REGISTER_MACHINE_USERS, registerMachineUsers);
-    this.on(Machines.actionTypes.SET_ACTIVATIONS, setActivations);
-    this.on(Machines.actionTypes.SET_MACHINES, setMachines);
-    this.on(Machines.actionTypes.SET_UNDER_MAINTENANCE, setUnderMaintenance);
-    this.on(Machines.actionTypes.UPDATE_MACHINE_FIELD, updateMachineField);
+    this.on(actionTypes.MACHINE_STORE_CLEAR_STATE, clearState);
+    this.on(actionTypes.REGISTER_MACHINE_USERS, registerMachineUsers);
+    this.on(actionTypes.SET_ACTIVATIONS, setActivations);
+    this.on(actionTypes.SET_MACHINES, setMachines);
+    this.on(actionTypes.SET_UNDER_MAINTENANCE, setUnderMaintenance);
+    this.on(actionTypes.UPDATE_MACHINE_FIELD, updateMachineField);
   }
 
 });
@@ -42,8 +41,6 @@ function registerMachineUsers(state, users) {
 }
 
 function setActivations(state, { activations }) {
-  console.log('setActivations <- ', activations);
-  console.log('toImmutable(undefined)=', toImmutable(undefined));
   return state.set('activations', toImmutable(activations));
 }
 

@@ -7,7 +7,6 @@ var GlobalActions = require('./GlobalActions');
 var LocationGetters = require('../modules/Location/getters');
 var LoginActions = require('../actions/LoginActions');
 var Machines = require('../modules/Machines');
-var MachineStore = require('../stores/MachineStore');
 var reactor = require('../reactor');
 var toastr = require('../toastr');
 

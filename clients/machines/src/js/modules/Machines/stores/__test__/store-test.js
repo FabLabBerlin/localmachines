@@ -1,18 +1,18 @@
 jest.dontMock('nuclear-js');
 jest.dontMock('../../actionTypes');
-jest.dontMock('../../getters');
+jest.dontMock('../../../../getters');
 jest.dontMock('lodash');
-jest.dontMock('../LoginStore.js');
-jest.dontMock('../MachineStore.js');
-jest.dontMock('../../modules/Machines');
-jest.dontMock('../UserStore.js');
-jest.dontMock('../../reactor');
+jest.dontMock('../../../../stores/LoginStore.js');
+jest.dontMock('../store');
+jest.dontMock('../../../../modules/Machines');
+jest.dontMock('../../../../stores/UserStore.js');
+jest.dontMock('../../../../reactor');
 jest.mock('jquery');
 
 var actionTypes = require('../../actionTypes');
-var getters = require('../../getters');
-var Machines = require('../../modules/Machines');
-var reactor = require('../../reactor');
+var getters = require('../../../../getters');
+var Machines = require('../../../../modules/Machines');
+var reactor = require('../../../../reactor');
 
 
 function getActivations() {
@@ -43,9 +43,9 @@ function getMachines() {
 
 describe('MachineStore', function() {
   var $ = require('jquery');
-  var LoginStore = require('../LoginStore');
-  var MachineStore = require('../MachineStore');
-  var UserStore = require('../UserStore');
+  var LoginStore = require('../../../../stores/LoginStore');
+  var MachineStore = require('../../../../modules/Machines/stores/store');
+  var UserStore = require('../../../../stores/UserStore');
 
   reactor.registerStores({
     loginStore: LoginStore,

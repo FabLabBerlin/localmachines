@@ -1,3 +1,4 @@
 export default {
-  actionTypes: require('./actionTypes')
+  actionTypes: require('./actionTypes'),
+  store: require('./stores/store')
 };

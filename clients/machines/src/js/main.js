@@ -10,7 +10,7 @@ var GlobalStore = require('./stores/GlobalStore');
 var LoginChooser = require('./components/Login/LoginChooser');
 var LoginStore = require('./stores/LoginStore');
 var MachinePage = require('./components/MachinePage/MachinePage');
-var MachineStore = require('./stores/MachineStore');
+var Machines = require('./modules/Machines');
 var React = require('react');
 var reactor = require('./reactor');
 var RegisterExisting = require('./components/RegisterExisting');
@@ -92,7 +92,7 @@ reactor.registerStores({
   forgotPasswordStore: ForgotPasswordStore,
   globalStore: GlobalStore,
   loginStore: LoginStore,
-  machineStore: MachineStore,
+  machineStore: Machines.store,
   reservationsStore: ReservationsStore,
   reservationRulesStore: ReservationRulesStore,
   scrollNavStore: ScrollNavStore,
