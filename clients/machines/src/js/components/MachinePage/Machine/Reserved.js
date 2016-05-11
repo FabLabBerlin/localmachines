@@ -1,5 +1,6 @@
 var getters = require('../../../getters');
 var MachineActions = require('../../../actions/MachineActions');
+var Machines = require('../../../modules/Machines');
 var React = require('react');
 var reactor = require('../../../reactor');
 
@@ -9,7 +10,7 @@ var ReservedMachine = React.createClass({
 
   getDataBindings() {
     return {
-      machineUsers: getters.getMachineUsers
+      machineUsers: Machines.getters.getMachineUsers
     };
   },
 

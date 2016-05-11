@@ -1,4 +1,5 @@
 var getters = require('../../getters');
+var Machines = require('../../modules/Machines');
 var moment = require('moment');
 var React = require('react');
 var reactor = require('../../reactor');
@@ -38,7 +39,7 @@ var Tutoring = React.createClass({
   render() {
     var start = moment(this.props.tutoring.TimeStart);
     var end = moment(this.props.tutoring.TimeEnd);
-    var machineUsers = reactor.evaluateToJS(getters.getMachineUsers);
+    var machineUsers = reactor.evaluateToJS(Machines.getters.getMachineUsers);
 
     var currentTimerDuration;
     if (this.props.tutoring.PriceUnit === 'day') {

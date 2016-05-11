@@ -229,7 +229,7 @@ function endActivation(aid, cb) {
 }
 
 function fetchUserNames(userIds) {
-  var fetchedUserIds = _.keys(reactor.evaluateToJS(getters.getMachineUsers));
+  var fetchedUserIds = _.keys(reactor.evaluateToJS(Machines.getters.getMachineUsers));
   fetchedUserIds = _.map(fetchedUserIds, function(id) {
     return parseInt(id, 10);
   });

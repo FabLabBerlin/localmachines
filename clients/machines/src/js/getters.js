@@ -235,17 +235,6 @@ const getMonthlyBills = [
   }
 ];
 
-/*
- * Machine (Page) related getters
- */
-
-const getMachineUsers = [
-  ['machineStore'],
-  (machineStore) => {
-    return machineStore.get('machineUsers') || {};
-  }
-];
-
 
 /*
  * Feedback related getters
@@ -629,7 +618,7 @@ const getTutorings = [
 export default {
   getIsLogged, getUid, getFirstTry, getLoginSuccess, getLastActivity,
   getUser,
-  getMachineUsers, getIsLoading, getBill, getBillMonths, getMonthlyBills, getMemberships, getMembershipsByMonth,
+  getIsLoading, getBill, getBillMonths, getMonthlyBills, getMemberships, getMembershipsByMonth,
   getFeedbackSubject, getFeedbackSubjectDropdown, getFeedbackSubjectOtherText, getFeedbackMessage,
   getNewReservation, getNewReservationPrice, getNewReservationTimes, getNewReservationFrom, getNewReservationTo, getReservations, getReservationsByDay, getActiveReservationsByMachineId, getSlotAvailabilities48h,
   getScrollUpEnabled, getScrollDownEnabled, getScrollPosition,

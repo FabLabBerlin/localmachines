@@ -23,6 +23,13 @@ const getMachines = [
   }
 ];
 
+const getMachineUsers = [
+  ['machineStore'],
+  (machineStore) => {
+    return machineStore.get('machineUsers') || {};
+  }
+];
+
 export default {
-  getActivations, getMachinesById, getMachines
+  getActivations, getMachinesById, getMachines, getMachineUsers
 };

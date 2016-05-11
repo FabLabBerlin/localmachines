@@ -1,4 +1,5 @@
 var getters = require('../../getters');
+var Machines = require('../../modules/Machines');
 var moment = require('moment');
 var React = require('react');
 var reactor = require('../../reactor');
@@ -21,7 +22,7 @@ var Slot = React.createClass({
   getDataBindings() {
     return {
       userId: getters.getUid,
-      machineUsers: getters.getMachineUsers
+      machineUsers: Machines.getters.getMachineUsers
     };
   },
 
