@@ -63,13 +63,6 @@ var MachinePage = React.createClass({
   },
 
   /*
-   * Clear state while logout
-   */
-  clearState() {
-    MachineActions.clearState();
-  },
-
-  /*
    * Logout with the exit button
    */
   handleLogout() {
@@ -83,7 +76,6 @@ var MachinePage = React.createClass({
    */
   componentWillUnmount() {
     this.nfcOnWillUnmount();
-    this.clearState();
     clearInterval(this.interval);
   },
 

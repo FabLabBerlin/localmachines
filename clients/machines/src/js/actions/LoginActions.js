@@ -115,13 +115,8 @@ export default {
       type: 'GET',
       cache: false,
       success(data) {
-        reactor.dispatch(Machines.actionTypes.MACHINE_STORE_CLEAR_STATE);
         reactor.dispatch(actionTypes.SUCCESS_LOGOUT);
-        if (router) {
-          router.transitionTo('/login');
-        } else {
-          toastr.info('router not defined');
-        }
+        window.location.href = '/machines/#/login';
       },
       error(xhr, status, err) {
         console.error('/users/logout', status, err);
