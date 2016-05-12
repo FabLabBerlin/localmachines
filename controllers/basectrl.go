@@ -3,6 +3,7 @@ package controllers
 
 import (
 	"errors"
+	"github.com/FabLabBerlin/localmachines/lib/redis"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"github.com/FabLabBerlin/localmachines/models/users"
@@ -59,9 +60,8 @@ func init() {
 	runmode := beego.AppConfig.String("runmode")
 	if runmode == "dev" || runmode == "prod" {
 		var err error
-		dsn := beego.AppConfig.String("SessionProviderConfig")
 		secret := []byte(beego.AppConfig.String("sessionhashkey"))
-		store, err = redistore.NewRediStore(10, "tcp", dsn, "", secret)
+		store, err = redistore.NewRediStoreWithPool(redis.GetPool(), secret)
 		if err != nil {
 			panic(err.Error())
 		}

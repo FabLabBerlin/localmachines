@@ -32,6 +32,10 @@ func init() {
 	}
 }
 
+func GetPool() *redis.Pool {
+	return pool
+}
+
 func GetPubSubConn() (psc redis.PubSubConn) {
 	psc = redis.PubSubConn{
 		Conn: pool.Get(),
