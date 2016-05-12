@@ -209,7 +209,7 @@ func (this *UserDashboardController) WS() {
 	}
 	defer conn.Unsubscribe(chName)
 
-	go func() {
+	/*go func() {
 		for {
 			beego.Info("Pinnggg ws...")
 			<-time.After(WS_PING_INTERVAL_SECONDS * time.Second)
@@ -219,7 +219,7 @@ func (this *UserDashboardController) WS() {
 				return
 			}
 		}
-	}()
+	}()*/
 
 	for {
 		var data DashboardData
