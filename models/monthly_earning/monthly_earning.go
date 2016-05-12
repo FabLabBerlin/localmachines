@@ -5,6 +5,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/machine"
+	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoice"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/settings"
 	"github.com/FabLabBerlin/localmachines/models/users"
@@ -33,7 +34,7 @@ type MonthlyEarning struct {
 	Activations string `orm:"type(text)"`
 	FilePath    string `orm:"size(255)"`
 	Created     time.Time
-	Invoices    []*Invoice `orm:"-"`
+	Invoices    []*invoice.Invoice `orm:"-"`
 }
 
 func (this *MonthlyEarning) Interval() lib.Interval {
@@ -281,7 +282,7 @@ func (this *MonthlyEarning) getPurchases(locationId int64, interval lib.Interval
 	return
 }
 
-func (this *MonthlyEarning) NewInvoices(vatPercent float64) (invs []*Invoice, err error) {
+func (this *MonthlyEarning) NewInvoices(vatPercent float64) (invs []*invoice.Invoice, err error) {
 	// Enhance activations with user and membership data
 	ps, err := this.getPurchases(this.LocationId, this.Interval())
 	if err != nil {
@@ -301,10 +302,10 @@ func (this *MonthlyEarning) NewInvoices(vatPercent float64) (invs []*Invoice, er
 	if err != nil {
 		return nil, err
 	}
-	invs = make([]*Invoice, 0, len(users))
+	invs = make([]*invoice.Invoice, 0, len(users))
 	for _, user := range users {
-		inv := Invoice{
-			User:       *user,
+		inv := invoice.Invoice{
+			User:       user,
 			VatPercent: vatPercent,
 		}
 		invs = append(invs, &inv)
@@ -314,7 +315,7 @@ func (this *MonthlyEarning) NewInvoices(vatPercent float64) (invs []*Invoice, er
 	for _, p := range ps {
 
 		invExists := false
-		var foundInv *Invoice
+		var foundInv *invoice.Invoice
 
 		for _, inv := range invs {
 			if p.User.Id == inv.User.Id {
@@ -327,8 +328,8 @@ func (this *MonthlyEarning) NewInvoices(vatPercent float64) (invs []*Invoice, er
 		// Create new invoice if it does not exist for the user.
 		if !invExists {
 			beego.Warn("Creating invoice for purchase that has no matching user")
-			newInv := Invoice{
-				User: p.User,
+			newInv := invoice.Invoice{
+				User: &p.User,
 			}
 			invs = append(invs, &newInv)
 			foundInv = invs[len(invs)-1]

@@ -5,6 +5,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/lib/fastbill"
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/coupons"
+	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoice"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"github.com/astaxie/beego"
@@ -79,7 +80,7 @@ func CreateFastbillDrafts(me *MonthlyEarning) (report DraftsCreationReport) {
 	return
 }
 
-func CreateFastbillDraft(me *MonthlyEarning, inv *Invoice) (fbDraft *fastbill.Invoice, empty bool, err error) {
+func CreateFastbillDraft(me *MonthlyEarning, inv *invoice.Invoice) (fbDraft *fastbill.Invoice, empty bool, err error) {
 	fbDraft = &fastbill.Invoice{
 		CustomerNumber: inv.User.ClientId,
 		TemplateId:     fastbill.TemplateStandardId,
@@ -91,7 +92,7 @@ func CreateFastbillDraft(me *MonthlyEarning, inv *Invoice) (fbDraft *fastbill.In
 		return nil, false, fmt.Errorf("GetUserMemberships: %v", err)
 	}
 
-	fbDraft.CustomerId, err = fastbill.GetCustomerId(inv.User)
+	fbDraft.CustomerId, err = fastbill.GetCustomerId(*inv.User)
 	if err != nil {
 		return nil, false, fmt.Errorf("error getting fastbill customer id: %v", err)
 	}
@@ -119,7 +120,7 @@ func CreateFastbillDraft(me *MonthlyEarning, inv *Invoice) (fbDraft *fastbill.In
 	}
 
 	// Add Product Purchases
-	byProductNameAndPricePerUnit := inv.byProductNameAndPricePerUnit()
+	byProductNameAndPricePerUnit := inv.ByProductNameAndPricePerUnit()
 
 	for productName, byPricePerUnit := range byProductNameAndPricePerUnit {
 		for pricePerUnit, ps := range byPricePerUnit {

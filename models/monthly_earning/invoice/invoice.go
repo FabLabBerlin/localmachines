@@ -1,17 +1,26 @@
-package monthly_earning
+package invoice
 
 import (
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/users"
+	"github.com/astaxie/beego/orm"
 )
 
+func init() {
+	orm.RegisterModel(new(Invoice))
+}
+
 type Invoice struct {
-	User       users.User
-	Purchases  purchases.Purchases
+	Id         int64
+	UserId     int64
+	Version    int
+	Items      []*Item             `orm:"-"`
+	User       *users.User         `orm:"-"`
+	Purchases  purchases.Purchases `orm:"-"`
 	VatPercent float64
 }
 
-func (inv *Invoice) byProductNameAndPricePerUnit() map[string]map[float64][]*purchases.Purchase {
+func (inv *Invoice) ByProductNameAndPricePerUnit() map[string]map[float64][]*purchases.Purchase {
 	byProductNameAndPricePerUnit := make(map[string]map[float64][]*purchases.Purchase)
 	for _, p := range inv.Purchases.Data {
 		if _, ok := byProductNameAndPricePerUnit[p.ProductName()]; !ok {
@@ -23,4 +32,8 @@ func (inv *Invoice) byProductNameAndPricePerUnit() map[string]map[float64][]*pur
 		byProductNameAndPricePerUnit[p.ProductName()][p.PricePerUnit] = append(byProductNameAndPricePerUnit[p.ProductName()][p.PricePerUnit], p)
 	}
 	return byProductNameAndPricePerUnit
+}
+
+func (inv *Invoice) TableName() string {
+	return "invoices"
 }

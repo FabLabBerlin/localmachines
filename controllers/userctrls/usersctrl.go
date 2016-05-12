@@ -8,6 +8,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
+	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoice"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/user_permissions"
@@ -558,7 +559,7 @@ func (this *UsersController) GetUserBill() {
 		beego.Error("new monthly earning:", err)
 	}
 
-	var userInv *monthly_earning.Invoice
+	var userInv *invoice.Invoice
 
 	for _, inv := range me.Invoices {
 		if inv.User.Id == uid {
