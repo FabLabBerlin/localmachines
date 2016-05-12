@@ -6,8 +6,8 @@ import (
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
-	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/FabLabBerlin/localmachines/models/settings"
+	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"math/rand"
@@ -28,10 +28,8 @@ func init() {
 type MonthlyEarning struct {
 	Id          int64
 	LocationId  int64
-	MonthFrom   int
-	YearFrom    int
-	MonthTo     int
-	YearTo      int
+	Month       int
+	Year        int
 	Activations string `orm:"type(text)"`
 	FilePath    string `orm:"size(255)"`
 	Created     time.Time
@@ -40,10 +38,10 @@ type MonthlyEarning struct {
 
 func (this *MonthlyEarning) Interval() lib.Interval {
 	return lib.Interval{
-		MonthFrom: this.MonthFrom,
-		YearFrom:  this.YearFrom,
-		MonthTo:   this.MonthTo,
-		YearTo:    this.YearTo,
+		MonthFrom: this.Month,
+		YearFrom:  this.Year,
+		MonthTo:   this.Month,
+		YearTo:    this.Year,
 	}
 }
 
@@ -89,12 +87,14 @@ func exists(path string) (bool, error) {
 
 // Returns MonthlyEarning with populated Invoices
 func New(locationId int64, interval lib.Interval) (me *MonthlyEarning, err error) {
+	if !interval.OneMonth() {
+		return nil, fmt.Errorf("not one month")
+	}
+
 	me = &MonthlyEarning{
 		LocationId: locationId,
-		MonthFrom:  interval.MonthFrom,
-		YearFrom:   interval.YearFrom,
-		MonthTo:    interval.MonthTo,
-		YearTo:     interval.YearTo,
+		Month:      interval.MonthFrom,
+		Year:       interval.YearFrom,
 	}
 
 	locSettings, err := settings.GetAllAt(locationId)
@@ -131,6 +131,9 @@ func New(locationId int64, interval lib.Interval) (me *MonthlyEarning, err error
 
 // Creates monthly earning entry in the database
 func Create(locationId int64, interval lib.Interval) (me *MonthlyEarning, err error) {
+	if !interval.OneMonth() {
+		return nil, fmt.Errorf("not one month")
+	}
 
 	if me, err = New(locationId, interval); err != nil {
 		return nil, fmt.Errorf("New: %v", err)
@@ -157,10 +160,10 @@ func Create(locationId int64, interval lib.Interval) (me *MonthlyEarning, err er
 	}
 
 	me.Created = time.Now()
-	me.MonthFrom = interval.MonthFrom
-	me.YearFrom = interval.YearFrom
-	me.MonthTo = interval.MonthTo
-	me.YearTo = interval.YearTo
+	me.Month = interval.MonthFrom
+	me.Year = interval.YearFrom
+	me.Month = interval.MonthTo
+	me.Year = interval.YearTo
 
 	if err = me.Save(); err != nil {
 		return nil, fmt.Errorf("save: %v", err)
@@ -301,7 +304,7 @@ func (this *MonthlyEarning) NewInvoices(vatPercent float64) (invs []*Invoice, er
 	invs = make([]*Invoice, 0, len(users))
 	for _, user := range users {
 		inv := Invoice{
-			User: *user,
+			User:       *user,
 			VatPercent: vatPercent,
 		}
 		invs = append(invs, &inv)

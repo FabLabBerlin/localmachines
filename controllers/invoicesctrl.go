@@ -16,8 +16,8 @@ type InvoicesController struct {
 // @Title Get All monthly earnings
 // @Description Get all monthly earnings from the database
 // @Success 200 []*monthly_earning.MonthlyEarning
-// @Failure	403	Failed to get all monthly earnings
 // @Failure	401	Not authorized
+// @Failure	500	Failed to get all monthly earnings
 // @router / [get]
 func (this *InvoicesController) GetAll() {
 
@@ -28,8 +28,8 @@ func (this *InvoicesController) GetAll() {
 
 	mes, err := monthly_earning.GetAllAt(locId)
 	if err != nil {
-		beego.Error("Failed to get all monthly earnings")
-		this.CustomAbort(403, "Failed to get all monthly earnings")
+		beego.Error("Failed to get all monthly earnings:", err)
+		this.CustomAbort(500, "Failed to get all monthly earnings")
 	}
 
 	this.Data["json"] = mes
@@ -41,8 +41,8 @@ func (this *InvoicesController) GetAll() {
 // @Param	startDate	query 	string	true	"Period start date"
 // @Param	endDate		query 	string	true	"Period end date"
 // @Success 200 {object}
-// @Failure	403	Failed to create monthly earning
 // @Failure	401	Not authorized
+// @Failure	500	Failed to create monthly earning
 // @router / [post]
 func (this *InvoicesController) Create() {
 
@@ -58,10 +58,15 @@ func (this *InvoicesController) Create() {
 		this.CustomAbort(400, "Bad request")
 	}
 
+	if !interval.OneMonth() {
+		beego.Error("not one month")
+		this.CustomAbort(400, "Bad request")
+	}
+
 	mes, err := monthly_earning.Create(locId, interval)
 	if err != nil {
 		beego.Error("Failed to create monthly earnings:", err)
-		this.CustomAbort(403, "Failed to create monthly earnings")
+		this.CustomAbort(500, "Failed to create monthly earnings")
 	}
 
 	this.Data["json"] = mes

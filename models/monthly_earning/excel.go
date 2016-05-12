@@ -142,15 +142,9 @@ func createXlsxFile(filePath string, monthlyEarning *MonthlyEarning) error {
 
 	row = sheet.AddRow()
 	cell = row.AddCell()
-	cell.Value = "Period Start Date"
+	cell.Value = "Month"
 	cell = row.AddCell()
-	cell.Value = fmt.Sprintf("%v/%v", monthlyEarning.MonthFrom, monthlyEarning.YearFrom)
-
-	row = sheet.AddRow()
-	cell = row.AddCell()
-	cell.Value = "Period End Date"
-	cell = row.AddCell()
-	cell.Value = fmt.Sprintf("%v/%v", monthlyEarning.MonthTo, monthlyEarning.YearTo)
+	cell.Value = fmt.Sprintf("%v/%v", monthlyEarning.Month, monthlyEarning.Year)
 
 	row = sheet.AddRow()
 	row = sheet.AddRow()
