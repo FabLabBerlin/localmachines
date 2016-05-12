@@ -1,4 +1,4 @@
-var BillTable = require('./BillTable');
+var BillTables = require('./BillTables');
 var getters = require('../../getters');
 var LocationGetters = require('../../modules/Location/getters');
 var LoginActions = require('../../actions/LoginActions');
@@ -55,7 +55,7 @@ var SpendingsPage = React.createClass({
         {<Membership memberships={this.state.memberships} />}
 
         <h3>Pay-As-You-Go</h3>
-        <BillTable bill={this.state.bill} membership={this.state.membership}/>
+        <BillTables bill={this.state.bill} membership={this.state.membership}/>
         <ScrollNav/>
       </div>
     );

@@ -1,3 +1,4 @@
+var AdminInvoices = require('./components/Admin/Invoices/Invoices');
 var AdminMachine = require('./components/Admin/Machines/Machine');
 var AdminMachines = require('./components/Admin/Machines/Machines');
 var App = require('./components/App');
@@ -64,6 +65,7 @@ let routes = (
     <Route name="admin" path="admin">
       <Route path="machines" handler={AdminMachines} />
       <Route path="machines/:machineId" handler={AdminMachine} />
+      <Route path="invoices" handler={AdminInvoices} />
     </Route>
     <Route name="forgot_password" path="forgot_password">
       <Route name="email_sent" handler={ForgotPassword.EmailSent} />

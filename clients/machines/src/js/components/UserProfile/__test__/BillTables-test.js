@@ -5,7 +5,7 @@ jest.dontMock('react');
 jest.dontMock('../../../actionTypes');
 jest.dontMock('../../../getters');
 jest.dontMock('../../../reactor');
-jest.dontMock('../BillTable');
+jest.dontMock('../BillTables');
 jest.dontMock('../helpers');
 jest.dontMock('../../../stores/UserStore.js');
 
@@ -13,7 +13,7 @@ jest.dontMock('../../../stores/UserStore.js');
 var React = require('react');
 var actionTypes = require('../../../actionTypes');
 var getters = require('../../../getters');
-var BillTable = React.createFactory(require('../BillTable'));
+var BillTables = React.createFactory(require('../BillTables'));
 var Nuclear = require('nuclear-js');
 var reactor = require('../../../reactor');
 var toImmutable = Nuclear.toImmutable;
@@ -234,7 +234,7 @@ var state = {
 };
 
 
-describe('BillTable', function() {
+describe('BillTables', function() {
   var $ = require('jquery');
   var UserStore = require('../../../stores/UserStore');
 
@@ -251,8 +251,8 @@ describe('BillTable', function() {
           unwatchMs();
           unwatchBl();
 
-          var billTable = new BillTable();
-          var html = React.renderToString(billTable);
+          var billTables = new BillTables();
+          var html = React.renderToString(billTables);
           /* Activations */
           expect(html).toContain('Laser Cutter - Epilog Zing 6030');
           expect(html).toContain('1m 12s');
