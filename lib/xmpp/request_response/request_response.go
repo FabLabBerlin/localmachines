@@ -15,8 +15,8 @@ type Dispatcher struct {
 	// responses are matched here to the RPC requests.  We don't want to have
 	// much blocking here, therefore the channels are buffered (capacity 1) and
 	// all reads/writes must happen asynchronously.
-	responses            map[string]chan xmpp.Message
-	xmppClient           *xmpp.Xmpp
+	responses  map[string]chan xmpp.Message
+	xmppClient *xmpp.Xmpp
 }
 
 type DispatchFunc func(msg xmpp.Message) (ipAddress string, err error)
@@ -39,12 +39,15 @@ func NewDispatcher(server, user, pass string, dispatch DispatchFunc) (d *Dispatc
 							log.Printf("xmpp dispatcher: dispatch: %v", err)
 						}
 						response := xmpp.Message{
-							Remote:    msg.Remote,
-							Data:      msg.Data,
+							Remote: msg.Remote,
+							Data:   msg.Data,
 						}
 						response.Data.IsRequest = false
 						response.Data.IpAddress = ipAddress
-						response.Data.Error = err != nil
+						if err != nil {
+							response.Data.Error = true
+							response.Data.ErrorMessage = err.Error()
+						}
 						if err := d.xmppClient.Send(response); err != nil {
 							log.Printf("xmpp: failed to send response")
 						}

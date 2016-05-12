@@ -35,18 +35,19 @@ type Xmpp struct {
 }
 
 type Message struct {
-	Remote    string
-	Data      Data
+	Remote string
+	Data   Data
 }
 
 type Data struct {
-	IsRequest  bool
-	Command    string
-	MachineId  int64
-	TrackingId string
-	LocationId int64
-	IpAddress  string
-	Error      bool
+	IsRequest    bool
+	Command      string
+	MachineId    int64
+	TrackingId   string
+	LocationId   int64
+	IpAddress    string
+	Error        bool
+	ErrorMessage string `json:",omitempty"`
 }
 
 func NewXmpp(server, user, pass string) (x *Xmpp) {
@@ -154,6 +155,9 @@ func (x *Xmpp) Run() {
 					log.Printf("remote was: '%v'", v.Remote)
 					log.Printf("text was: '%v'", v.Text)
 				} else {
+					if data.Error {
+						log.Printf("error was: '%v'", data.ErrorMessage)
+					}
 					x.ch <- Message{
 						Remote: v.Remote,
 						Data:   data,
