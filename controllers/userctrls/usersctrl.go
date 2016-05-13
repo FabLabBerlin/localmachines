@@ -525,7 +525,7 @@ func (this *UsersController) GetUserMachines() {
 }
 
 // @Title GetUserBill
-// @Description Get a user's PayAsYouGo data (Machines, usage and price per machine and total price)
+// @Description Get a user PayAsYouGo data (Machines, usage and price per machine and total price)
 // @Param	uid		path 	int	true		"User ID"
 // @Success 200 machine.Machine
 // @Failure	401	Unauthorized

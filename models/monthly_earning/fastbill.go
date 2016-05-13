@@ -85,7 +85,9 @@ func CreateFastbillDraft(me *MonthlyEarning, inv *Invoice) (fbDraft *fastbill.In
 		TemplateId:     fastbill.TemplateStandardId,
 		Items:          make([]fastbill.Item, 0, 10),
 	}
-	fbDraft.Month, fbDraft.Year = getFastbillMonthYear(me)
+	if fbDraft.Month, fbDraft.Year, err = getFastbillMonthYear(me); err != nil {
+		return nil, false, fmt.Errorf("get fastbill month: %v", err)
+	}
 	memberships, err := models.GetUserMemberships(inv.User.Id)
 	if err != nil {
 		return nil, false, fmt.Errorf("GetUserMemberships: %v", err)
@@ -170,7 +172,7 @@ func CreateFastbillDraft(me *MonthlyEarning, inv *Invoice) (fbDraft *fastbill.In
 	}
 	rebateValue := 0.0
 	for _, c := range cs {
-		usage, err := c.UseForInvoice(invoiceValue-rebateValue, time.Month(me.Month), me.Year)
+		usage, err := c.UseForInvoice(invoiceValue - rebateValue, time.Month(me.MonthFrom), me.YearFrom)
 		if err != nil {
 			return nil, false, fmt.Errorf("use for invoice: %v", err)
 		}
@@ -178,7 +180,7 @@ func CreateFastbillDraft(me *MonthlyEarning, inv *Invoice) (fbDraft *fastbill.In
 			rebateValue += usage.Value
 		}
 	}
-	fbDraft.CashDiscountPercent = fmt.Sprintf("%v", rebateValue/invoiceValue*100)
+	fbDraft.CashDiscountPercent = fmt.Sprintf("%v", rebateValue / invoiceValue * 100)
 
 	if _, err := fbDraft.Submit(); err == fastbill.ErrInvoiceAlreadyExported {
 		return nil, false, fastbill.ErrInvoiceAlreadyExported
@@ -189,6 +191,9 @@ func CreateFastbillDraft(me *MonthlyEarning, inv *Invoice) (fbDraft *fastbill.In
 	return
 }
 
-func getFastbillMonthYear(me *MonthlyEarning) (month string, year int) {
-	return time.Month(me.Month).String(), me.Year
+func getFastbillMonthYear(me *MonthlyEarning) (month string, year int, err error) {
+	if me.MonthFrom != me.MonthTo || me.YearFrom != me.YearTo {
+		return "", 0, fmt.Errorf("2 months present")
+	}
+	return time.Month(me.MonthFrom).String(), me.YearFrom, nil
 }
