@@ -31,6 +31,9 @@ type Membership struct {
 func (this *Membership) AffectedMachineIds() ([]int64, error) {
 	parseErr := fmt.Errorf("cannot parse AffectedMachines property: '%v'", this.AffectedMachines)
 	l := len(this.AffectedMachines)
+	if l == 0 || this.AffectedMachines == "[]" {
+		return []int64{}, nil
+	}
 	if l < 2 || this.AffectedMachines[0:1] != "[" || this.AffectedMachines[l-1:l] != "]" {
 		return nil, parseErr
 	}
@@ -92,7 +95,7 @@ func CreateMembership(locationId int64, name string) (m *Membership, err error) 
 
 	_, err = orm.NewOrm().Insert(m)
 
-	return 
+	return
 }
 
 // Gets single membership from database using membership unique ID
