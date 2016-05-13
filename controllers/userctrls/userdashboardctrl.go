@@ -138,19 +138,26 @@ func (this *UserDashboardController) LP() {
 	ch := make(chan int)
 	done := false
 
-	conn := redis.GetPubSubConn()
+	conn := redis.GetPoolConn()
 	defer conn.Close()
+	psc := &redigo.PubSubConn{
+		Conn: conn,
+	}
+	defer func() {
+		psc.Conn.Send("QUIT")
+		psc.Conn.Flush()
+	}()
 
 	go func() {
 		chName := redis.MachinesUpdateCh(locId)
-		if err := conn.Subscribe(chName); err != nil {
+		if err := psc.Subscribe(chName); err != nil {
 			beego.Error("subscribe:", err)
 			this.Abort("500")
 		}
 		beego.Info("uid", uid, "subscribed")
-		defer conn.Unsubscribe(chName)
+		defer psc.Unsubscribe(chName)
 		for !done {
-			obj := conn.Receive()
+			obj := psc.Receive()
 			if _, ok := obj.(redigo.Message); ok {
 				beego.Info("received smth on the lp, uid", uid)
 				ch <- 1
@@ -188,6 +195,8 @@ func (this *UserDashboardController) WS() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
+	done := false
+
 	// Upgrade from http request to WebSocket.
 	beego.Info("WS upgrade for", uid, "...")
 	ws, err := websocket.Upgrade(this.Ctx.ResponseWriter, this.Ctx.Request, nil, 1024, 1024)
@@ -198,30 +207,41 @@ func (this *UserDashboardController) WS() {
 		beego.Error("Cannot setup WebSocket connection:", err)
 		return
 	}
+	defer ws.Close()
 
 	beego.Info("WS upgrade done for", uid, ".")
-	conn := redis.GetPubSubConn()
+	conn := redis.GetPoolConn()
 	defer conn.Close()
+	psc := &redigo.PubSubConn{
+		Conn: conn,
+	}
+	defer func() {
+		psc.Conn.Send("QUIT")
+		psc.Conn.Flush()
+	}()
+
 	chName := redis.MachinesUpdateCh(locId)
-	if err := conn.Subscribe(chName); err != nil {
+	if err := psc.Subscribe(chName); err != nil {
 		beego.Error("subscribe:", err)
 		this.Abort("500")
 	}
-	defer conn.Unsubscribe(chName)
+	defer psc.Unsubscribe(chName)
+	defer beego.Info("WS() END")
 
-	/*go func() {
-		for {
+	go func() {
+		for !done {
 			beego.Info("Pinnggg ws...")
 			<-time.After(WS_PING_INTERVAL_SECONDS * time.Second)
 			err = ws.WriteMessage(websocket.PingMessage, []byte{})
 			if err != nil {
+				done = true
 				beego.Error("Write ping message:", err)
 				return
 			}
 		}
-	}()*/
+	}()
 
-	for {
+	for !done {
 		var data DashboardData
 		if err := data.load(isStaff, uid, locId); err != nil {
 			beego.Error("Failed to load dashboard data:", err)
@@ -232,10 +252,13 @@ func (this *UserDashboardController) WS() {
 		}
 		err = ws.WriteMessage(websocket.TextMessage, buf)
 		if err != nil {
+			done = true
 			beego.Error("Write text message:", err)
 			return
 		}
-		conn.Receive()
+		psc.Receive()
 		beego.Info("user", uid, "receives")
 	}
+
+	this.Finish()
 }

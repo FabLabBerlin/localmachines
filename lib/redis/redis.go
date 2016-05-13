@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/astaxie/beego"
 	"github.com/garyburd/redigo/redis"
 	"strconv"
@@ -30,17 +31,28 @@ func init() {
 			return err
 		},
 	}
+	go func() {
+		for {
+			beego.Info("pub update for all locations")
+			<-time.After(time.Minute)
+			locs, err := locations.GetAll()
+			if err != nil {
+				beego.Error("locations get all:", err)
+				continue
+			}
+			for _, loc := range locs {
+				PublishMachinesUpdate(loc.Id)
+			}
+		}
+	}()
 }
 
 func GetPool() *redis.Pool {
 	return pool
 }
 
-func GetPubSubConn() (psc redis.PubSubConn) {
-	psc = redis.PubSubConn{
-		Conn: pool.Get(),
-	}
-	return
+func GetPoolConn() (psc redis.Conn) {
+	return pool.Get()
 }
 
 func MachinesUpdateCh(locationId int64) string {
@@ -50,6 +62,8 @@ func MachinesUpdateCh(locationId int64) string {
 func PublishMachinesUpdate(locationId int64) (err error) {
 	beego.Info("PublishMachinesUpdate()")
 	ch := MachinesUpdateCh(locationId)
-	_, err = pool.Get().Do("PUBLISH", ch, "")
+	conn := pool.Get()
+	defer conn.Close()
+	_, err = conn.Do("PUBLISH", ch, "")
 	return
 }
