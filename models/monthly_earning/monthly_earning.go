@@ -6,8 +6,8 @@ import (
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
-	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/FabLabBerlin/localmachines/models/settings"
+	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"math/rand"
@@ -121,7 +121,7 @@ func New(locationId int64, interval lib.Interval) (me *MonthlyEarning, err error
 			purchase.TotalPrice = purchases.PriceTotalExclDisc(purchase)
 			purchase.DiscountedTotal, err = purchases.PriceTotalDisc(purchase)
 			if err != nil {
-				return
+				return nil, fmt.Errorf("price total disc (purchase %v): %v", purchase.Id, err)
 			}
 		}
 	}
@@ -301,7 +301,7 @@ func (this *MonthlyEarning) NewInvoices(vatPercent float64) (invs []*Invoice, er
 	invs = make([]*Invoice, 0, len(users))
 	for _, user := range users {
 		inv := Invoice{
-			User: *user,
+			User:       *user,
 			VatPercent: vatPercent,
 		}
 		invs = append(invs, &inv)
