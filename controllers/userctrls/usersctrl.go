@@ -28,7 +28,7 @@ func (this *Controller) GetRouteUid() (uid int64, authorized bool) {
 	// Check if logged in
 	suid, err := this.GetSessionUserId()
 	if err != nil {
-		beego.Info("Not logged in")
+		beego.Info("GetRouteUid: Not logged in")
 		return 0, false
 	}
 
