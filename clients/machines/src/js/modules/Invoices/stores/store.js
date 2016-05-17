@@ -8,7 +8,7 @@ var toImmutable = Nuclear.toImmutable;
 const initialState = toImmutable({
   monthlySummaries: {
   selected: {
-      month: moment().month() + 1,
+      month: moment().month(),
       year: moment().year()
     }
   }
