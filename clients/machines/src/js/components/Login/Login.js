@@ -31,6 +31,7 @@ var Login = React.createClass({
   getDataBindings() {
     return {
       location: LocationGetters.getLocation,
+      locationId: LocationGetters.getLocationId,
       locations: LocationGetters.getLocations
     };
   },
@@ -44,7 +45,7 @@ var Login = React.createClass({
     var data = {
       username: this.refs.name.getDOMNode().value,
       password: this.refs.password.getDOMNode().value,
-      location: this.state.location.Id
+      location: parseInt(this.refs.location.getDOMNode().value)
     };
     LoginActions.submitLoginForm(data, this.context.router);
   },
@@ -97,7 +98,7 @@ var Login = React.createClass({
       locations = [];
     }
 
-    if (locations && this.state.location) {
+    if (locations) {
     return (
       <form className="login-form" method="post" onSubmit={this.handleSubmit}>
         <div className="regular-login">
@@ -126,7 +127,7 @@ var Login = React.createClass({
             className="form-control location-picker"
             ref="location"
             name="location"
-            value={this.state.location.Id}
+            value={this.state.locationId}
             onChange={this.updateLocation}
             required>
             {locations.map((location, i) => {
