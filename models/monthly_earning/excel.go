@@ -304,7 +304,7 @@ func createXlsxFile(filePath string, monthlyEarning *MonthlyEarning) error {
 		cell.Value = "Activations By Machine"
 		AddRowActivationsHeaderXlsx(sheet)
 
-		byProductNameAndPricePerUnit := inv.byProductNameAndPricePerUnit()
+		byProductNameAndPricePerUnit := inv.ByProductNameAndPricePerUnit()
 
 		for productName, byPricePerUnit := range byProductNameAndPricePerUnit {
 			for pricePerUnit, ps := range byPricePerUnit {

@@ -26,7 +26,7 @@ var MachinesView = React.createClass({
   },
 
   render() {
-    var machines = this.state.machines.toJS();
+    var machines = _.sortBy(this.state.machines.toJS(), m => m.Name);
     return (
       <div className="container-fluid">
         <div className="row">

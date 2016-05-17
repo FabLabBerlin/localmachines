@@ -1,4 +1,4 @@
-package monthly_earning
+package invoices
 
 import (
 	"github.com/FabLabBerlin/localmachines/models/purchases"
@@ -11,7 +11,7 @@ type Invoice struct {
 	VatPercent float64
 }
 
-func (inv *Invoice) byProductNameAndPricePerUnit() map[string]map[float64][]*purchases.Purchase {
+func (inv *Invoice) ByProductNameAndPricePerUnit() map[string]map[float64][]*purchases.Purchase {
 	byProductNameAndPricePerUnit := make(map[string]map[float64][]*purchases.Purchase)
 	for _, p := range inv.Purchases.Data {
 		if _, ok := byProductNameAndPricePerUnit[p.ProductName()]; !ok {
