@@ -1,3 +1,4 @@
+var Invoices = require('../../../modules/Invoices');
 var LocationGetters = require('../../../modules/Location/getters');
 var moment = require('moment');
 var React = require('react');
@@ -10,8 +11,18 @@ var InvoicesView = React.createClass({
 
   getDataBindings() {
     return {
-      location: LocationGetters.getLocation
+      location: LocationGetters.getLocation,
+      locationId: LocationGetters.getLocationId,
+      monthlySummaries: Invoices.getters.getMonthlySummaries
     };
+  },
+
+  componentWillMount() {
+    const t = moment();
+    Invoices.actions.fetchMonthlySummaries(this.state.locationId, {
+      month: t.month() + 1,
+      year: t.year()
+    });
   },
 
   render() {

@@ -8,6 +8,7 @@ var ForgotPassword = require('./components/ForgotPassword');
 var ForgotPasswordStore = require('./modules/ForgotPassword/stores/store');
 var getters = require('./getters');
 var GlobalStore = require('./stores/GlobalStore');
+var Invoices = require('./modules/Invoices');
 var LoginChooser = require('./components/Login/LoginChooser');
 var LoginStore = require('./stores/LoginStore');
 var MachinePage = require('./components/MachinePage/MachinePage');
@@ -93,6 +94,7 @@ reactor.registerStores({
   feedbackStore: FeedbackStore,
   forgotPasswordStore: ForgotPasswordStore,
   globalStore: GlobalStore,
+  invoicesStore: Invoices.store,
   loginStore: LoginStore,
   machineStore: Machines.store,
   reservationsStore: ReservationsStore,
