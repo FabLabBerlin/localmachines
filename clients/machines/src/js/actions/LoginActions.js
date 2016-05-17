@@ -48,7 +48,7 @@ export default {
   /*
    * Maybe the user is already logged in
    */
-  tryPassLoginForm(router, cb) {
+  tryPassLoginForm(router, {loggedIn, loggedOut}) {
     $.ajax({
       url: '/api/users/current',
       dataType: 'json',
@@ -62,9 +62,12 @@ export default {
             UserId: user.Id
           };
           reactor.dispatch(actionTypes.SUCCESS_LOGIN, { data });
+          if (loggedIn) {
+            loggedIn();
+          }
         } else {
-          if (cb) {
-            cb();
+          if (loggedOut) {
+            loggedOut();
           }
         }
       },

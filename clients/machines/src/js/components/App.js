@@ -31,12 +31,23 @@ var RouteHandler = require('react-router').RouteHandler;
   componentWillMount() {
     const isLogged = reactor.evaluateToJS(getters.getIsLogged);
     if (!isLogged) {
-      LoginActions.tryPassLoginForm(this.context.router, () => {
-        if (window.location.hash !== '#/login') {
-          this.transitionTo('/login');
+      LoginActions.tryPassLoginForm(this.context.router, {
+        loggedIn: () => {
+          if (window.location.hash === '#/login') {
+            this.transitionTo('/machine');
+          }
+        },
+        loggedOut: () => {
+          if (window.location.hash !== '#/login') {
+            this.transitionTo('/login');
+          }
         }
       });
       LocationActions.loadLocations();
+    } else {
+      if (window.location.hash === '#/login') {
+        this.transitionTo('/machines');
+      }
     }
   },
 
