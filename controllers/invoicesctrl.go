@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
+	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 	"io"
 	"os"
@@ -180,4 +181,66 @@ func (this *InvoicesController) DownloadExcelExport() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 	this.Finish()
+}
+
+type MonthlySummary struct {
+	User   users.User
+	Amount float64
+}
+
+// @Title GetMonth
+// @Description Get overview for a month
+// @Success 200 {object}
+// @Failure	401	Not authorized
+// @Failure	500	Internal Server Error
+// @router /months/:year/:month [get]
+func (this *InvoicesController) GetMonth() {
+	locId, authorized := this.GetLocIdAdmin()
+	if !authorized {
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	if !this.IsSuperAdmin() {
+		beego.Error("User must be super admin")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	year, err := this.GetInt64(":year")
+	if err != nil {
+		beego.Error("Failed to get year:", err)
+		this.CustomAbort(400, "Bad request")
+	}
+
+	month, err := this.GetInt64(":month")
+	if err != nil {
+		beego.Error("Failed to get month:", err)
+		this.CustomAbort(400, "Bad request")
+	}
+
+	interval := lib.Interval{
+		MonthFrom: int(month),
+		YearFrom:  int(year),
+		MonthTo:   int(month),
+		YearTo:    int(year),
+	}
+
+	me, err := monthly_earning.New(locId, interval)
+	if err != nil {
+		beego.Error("Failed to make new invoices:", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	sums := make([]MonthlySummary, 0, len(me.Invoices))
+	for _, inv := range me.Invoices {
+		sum := MonthlySummary{
+			User: inv.User,
+		}
+		for _, p := range inv.Purchases.Data {
+			sum.Amount += p.DiscountedTotal
+		}
+		sums = append(sums, sum)
+	}
+
+	this.Data["json"] = sums
+	this.ServeJSON()
 }
