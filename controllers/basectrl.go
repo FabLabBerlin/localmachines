@@ -196,7 +196,9 @@ func (this *Controller) IsLogged() bool {
 // Return true if user is super admin, if no args are passed, uses session user ID,
 // if single user ID is passed, checks the passed one. Fails otherwise.
 func (this *Controller) IsSuperAdmin() bool {
+	beego.Info("IsSuperAdmin()")
 	role := this.globalUserRole()
+	beego.Info("glboal user role:", role)
 	return role == user_roles.SUPER_ADMIN
 }
 
@@ -206,14 +208,16 @@ func (this *Controller) IsSuperAdmin() bool {
 func (this *Controller) IsAdminAt(locationId int64) bool {
 	role := this.localUserRole(locationId)
 	return role == user_roles.ADMIN ||
-		role == user_roles.SUPER_ADMIN
+		role == user_roles.SUPER_ADMIN ||
+		this.IsSuperAdmin()
 }
 
 func (this *Controller) IsStaffAt(locationId int64) bool {
 	role := this.localUserRole(locationId)
 	return role == user_roles.STAFF ||
 		role == user_roles.ADMIN ||
-		role == user_roles.SUPER_ADMIN
+		role == user_roles.SUPER_ADMIN ||
+		this.IsSuperAdmin()
 }
 
 func (this *Controller) IsApiAt(locationId int64) bool {
@@ -221,7 +225,8 @@ func (this *Controller) IsApiAt(locationId int64) bool {
 	return role == user_roles.API ||
 		role == user_roles.ADMIN ||
 		role == user_roles.STAFF ||
-		role == user_roles.SUPER_ADMIN
+		role == user_roles.SUPER_ADMIN ||
+		this.IsSuperAdmin()
 }
 
 // Return true if user is member at that location, if only the location id is
@@ -232,16 +237,19 @@ func (this *Controller) IsMemberAt(locationId int64) bool {
 	return role == user_roles.MEMBER ||
 		role == user_roles.ADMIN ||
 		role == user_roles.STAFF ||
-		role == user_roles.SUPER_ADMIN
+		role == user_roles.SUPER_ADMIN ||
+		this.IsSuperAdmin()
 }
 
 func (this *Controller) globalUserRole() user_roles.Role {
 	userId, ok := this.getUserId()
 	if !ok {
+		beego.Info("globalUserRole: couldn't get user id")
 		return user_roles.NOT_AFFILIATED
 	}
 	user, err := users.GetUser(userId)
 	if err != nil {
+		beego.Info("globalUserRole: couldn't get user:", err)
 		return user_roles.NOT_AFFILIATED
 	}
 	return user.GetRole()

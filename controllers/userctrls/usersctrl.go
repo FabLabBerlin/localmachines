@@ -21,6 +21,7 @@ import (
 
 type Controller struct {
 	controllers.Controller
+	i int
 }
 
 func (this *Controller) GetRouteUid() (uid int64, authorized bool) {
@@ -118,8 +119,15 @@ func (this *UsersController) Login() {
 			}
 			if this.GetString("admin") != "" {
 				if userLocation == nil || userLocation.GetRole() != user_roles.ADMIN {
-					beego.Error("User is not admin at that location")
-					this.CustomAbort(401, "Not authorized")
+					u, err := users.GetUser(userId)
+					if err != nil {
+						beego.Error("Failed to get user:", err)
+						this.CustomAbort(401, "Not authorized")
+					}
+					if u.UserRole != user_roles.SUPER_ADMIN.String() {
+						beego.Error("User is not admin at that location")
+						this.CustomAbort(401, "Not authorized")
+					}
 				}
 			}
 			this.SetLogged(username, userId, locationId)
