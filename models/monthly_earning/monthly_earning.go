@@ -261,17 +261,22 @@ func (this *MonthlyEarning) getPurchases(locationId int64, interval lib.Interval
 	}
 
 	// Get all uninvoiced purchases in the time range
-	ps, err = purchases.GetAllBetweenAt(locationId, interval)
+	all, err := purchases.GetAllBetweenAt(locationId, interval)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get purchases: %v", err)
 	}
 
+	ps = make([]*purchases.Purchase, 0, len(all))
+
 	// Enhance purchases
-	for _, p := range ps {
+	for _, p := range all {
 		err := this.enhancePurchase(p, machinesById,
 			usersById, userMembershipsById, membershipsById)
 		if err != nil {
 			return nil, fmt.Errorf("Failed to enhance purchase: %v", err)
+		}
+		if !p.Cancelled {
+			ps = append(ps, p)
 		}
 	}
 
