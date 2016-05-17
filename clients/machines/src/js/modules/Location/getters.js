@@ -14,7 +14,7 @@ const getLocation = [
   (locations, locationStore) => {
     if (locations) {
       return locations.find((l) => {
-        return l.Id === locationStore.get('locationId');
+        return l.get('Id') === locationStore.get('locationId');
       });
     }
   }

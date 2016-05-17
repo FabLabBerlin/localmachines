@@ -16,7 +16,6 @@ var reactor = require('../../reactor');
 var ReservationRulesActions = require('../../actions/ReservationRulesActions');
 var ReservationActions = require('../../actions/ReservationActions');
 var ScrollNav = require('../ScrollNav');
-var Location = require('./Location');
 var toastr = require('../../toastr');
 var UserActions = require('../../actions/UserActions');
 var TutoringList = require('./TutoringList');
@@ -61,7 +60,7 @@ var MachinePage = React.createClass({
 
   render() {
     if (this.state.activations && this.state.location && this.state.machines) {
-      const locationTitle = this.state.location.Title;
+      const locationTitle = this.state.location.get('Title');
 
       return (
         <div>

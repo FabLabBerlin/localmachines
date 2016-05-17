@@ -131,10 +131,10 @@ var Login = React.createClass({
             onChange={this.updateLocation}
             required>
             {locations.map((location, i) => {
-              if (location.Approved) {
+              if (location.get('Approved')) {
                 return (
-                  <option key={i} value={location.Id}>
-                    {location.Title}
+                  <option key={i} value={location.get('Id')}>
+                    {location.get('Title')}
                   </option>
                 );
               }
@@ -145,9 +145,9 @@ var Login = React.createClass({
 
           {this.state.location ? (
             <div className="signup-link">
-              Do not have an account yet? <a href={'/signup/#/form?location=' + this.state.location.Id}
+              Do not have an account yet? <a href={'/signup/#/form?location=' + this.state.location.get('Id')}
                 onClick={this.goToSignUp}>
-                Sign up for {this.state.location.Title}
+                Sign up for {this.state.location.get('Title')}
               </a> now!
             </div>
           ) : null}

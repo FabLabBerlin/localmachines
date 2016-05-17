@@ -14,7 +14,7 @@ var MachineList = React.createClass({
 
   getDataBindings() {
     return {
-      location: LocationGetters.getLocation,
+      locationId: LocationGetters.getLocationId,
       machines: Machines.getters.getMachines
     };
   },
@@ -22,7 +22,7 @@ var MachineList = React.createClass({
   render() {
     let activation = this.props.activation;
     var MachineNode;
-    if (this.state.location && this.props.machines) {
+    if (this.state.locationId && this.props.machines) {
       var machines = this.props.machines.filter((machine) => {
         return machine.get('Visible') && !machine.get('Archived');
       });
@@ -30,7 +30,7 @@ var MachineList = React.createClass({
         return m.Name;
       });
       MachineNode = _.map(machines, function(machine) {
-        if (machine.LocationId === this.state.location.Id) {
+        if (machine.LocationId === this.state.locationId) {
           let activationProps;
           if (activation) {
             activation.forEach(function(a, i) {

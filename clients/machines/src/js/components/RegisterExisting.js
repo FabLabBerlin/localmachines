@@ -38,7 +38,7 @@ var RegisterExisting = React.createClass({
           <h3>Oops...</h3>
           <p>
             You are already registered on easylab.io but not a member
-            of {this.state.location.Title} yet. Do you want to use your
+            of {this.state.location.get('Title')} yet. Do you want to use your
             existing Easy Lab account to use their serivces? We will give
             them access to some of your user Data that they need to
             provide you with a good service.
@@ -48,8 +48,8 @@ var RegisterExisting = React.createClass({
               <input ref="acceptTerms" type="checkbox"/>
               &nbsp;
               Ja, Makea Industries GmbH darf meine Nutzerdaten
-              an {this.state.location.Title} weitergeben und ich habe die
-              die <a href={this.state.locationTermsUrl}>AGB {this.state.location.Title}</a> gelesen
+              an {this.state.location.get('Title')} weitergeben und ich habe die
+              die <a href={this.state.locationTermsUrl}>AGB {this.state.location.get('Title')}</a> gelesen
               und stimme ihnen uneingeschränkt zu.
             </label>
           </p>
@@ -74,7 +74,7 @@ var RegisterExisting = React.createClass({
   submit() {
     var acceptTerms = this.refs.acceptTerms.getDOMNode().checked;
     if (acceptTerms) {
-      var locationId = this.state.location.Id;
+      var locationId = this.state.location.get('Id');
       var userId = this.state.userId;
       var router = this.context.router;
 

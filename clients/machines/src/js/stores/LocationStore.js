@@ -22,7 +22,7 @@ var LocationStore = new Nuclear.Store({
 });
 
 function setLocations(state, { locations }) {
-  return state.set('locations', locations);
+  return state.set('locations', toImmutable(locations));
 }
 
 function setLocationId(state, { id }) {
