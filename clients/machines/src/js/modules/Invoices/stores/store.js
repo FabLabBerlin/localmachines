@@ -23,12 +23,18 @@ var InvoicesStore = new Nuclear.Store({
 
   initialize() {
     this.on(actionTypes.FETCH_MONTHLY_SUMMARIES, fetchMonthlySummaries);
+    this.on(actionTypes.SET_SELECTED_MONTH, setSelectedMonth);
   }
 
 });
 
 function fetchMonthlySummaries(state, { month, year, summaries }) {
   return state.setIn(['monthlySummaries', year, month], toImmutable(summaries));
+}
+
+function setSelectedMonth(state, { month, year }) {
+  return state.setIn(['monthlySummaries', 'selected'],
+               toImmutable({ month: month, year: year }));
 }
 
 export default InvoicesStore;

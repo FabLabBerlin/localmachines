@@ -24,6 +24,11 @@ function fetchMonthlySummaries(locId, {month, year}) {
   });
 }
 
+function setSelectedMonth({month, year}) {
+  reactor.dispatch(actionTypes.SET_SELECTED_MONTH, { month, year });
+}
+
 export default {
-  fetchMonthlySummaries
+  fetchMonthlySummaries,
+  setSelectedMonth
 };

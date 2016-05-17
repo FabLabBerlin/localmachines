@@ -21,10 +21,12 @@ var Summaries = React.createClass({
           <tr>
             <th>User</th>
             <th>Amount (EUR)</th>
+            <th>Invoiced?</th>
+            <th>Paid?</th>
           </tr>
         </thead>
         <tbody>
-          {summaries.map((sum) => {
+          {summaries.map((sum, i) => {
             const name = sum.getIn(['User', 'FirstName'])
                        + ' ' + sum.getIn(['User', 'LastName']);
             const amount = (Math.round(sum.get('Amount') * 100)
@@ -32,9 +34,11 @@ var Summaries = React.createClass({
                                .toFixed(2);
 
             return (
-              <tr>
+              <tr key={i}>
                 <td>{name}</td>
                 <td className="text-right">{amount}</td>
+                <td></td>
+                <td></td>
               </tr>
             );
           })}
@@ -58,6 +62,26 @@ var Month = React.createClass({
     };
   },
 
+  componentWillMount() {
+    console.log('Month#componentWillMount');
+
+    const t = this.props.t;
+    const month = this.state.monthlySummaries
+                      .get('selected').get('month');
+    const year = this.state.monthlySummaries
+                      .get('selected').get('year');
+    const selected = month === t.month() + 1 &&
+                     year === t.year();
+    const summaries = this.state.monthlySummaries.getIn([t.year(), t.month() + 1]);
+
+    if (selected && !summaries) {
+      Invoices.actions.fetchMonthlySummaries(this.state.locationId, {
+        month: t.month() + 1,
+        year: t.year()
+      });
+    }
+  },
+
   render() {
     const t = this.props.t;
     const month = this.state.monthlySummaries
@@ -73,7 +97,7 @@ var Month = React.createClass({
     } else {
       return (
         <div>
-          <h3>{t.format('MMMM YYYY')}</h3>
+          <h3 onClick={this.select}>{t.format('MMMM YYYY')}</h3>
           {
             selected ? (
               <Summaries summaries={summaries}/>
@@ -82,6 +106,13 @@ var Month = React.createClass({
         </div>
       );
     }
+  },
+
+  select() {
+    Invoices.actions.setSelectedMonth({
+      month: this.props.t.month() + 1,
+      year: this.props.t.year()
+    });
   }
 
 });
@@ -97,14 +128,6 @@ var InvoicesView = React.createClass({
       locationId: LocationGetters.getLocationId,
       monthlySummaries: Invoices.getters.getMonthlySummaries
     };
-  },
-
-  componentWillMount() {
-    const t = moment();
-    Invoices.actions.fetchMonthlySummaries(this.state.locationId, {
-      month: t.month(),
-      year: t.year()
-    });
   },
 
   render() {
