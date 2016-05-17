@@ -139,6 +139,7 @@ func (this *Controller) Prepare() {
 
 func (this *Controller) GetSessionUserId() (int64, error) {
 	tmp := this.GetSession(SESSION_USER_ID)
+	isWs := this.Ctx.Input.IsWebsocket()
 	if sid, ok := tmp.(int64); ok {
 		ip := this.GetSession(SESSION_IP)
 		if ip != this.ClientIp() {
@@ -151,8 +152,10 @@ func (this *Controller) GetSessionUserId() (int64, error) {
 			return 0, errors.New("user not correctly logged in")
 		}
 		accLang := this.GetSession(SESSION_ACCEPT_LANGUAGE)
-		if accLang != this.Ctx.Input.Header("Accept-Language") {
+		if accLang != this.Ctx.Input.Header("Accept-Language") && !isWs {
 			beego.Error("GetSessionUserId: wrong Accept-Language, ip=", ip)
+			beego.Info("expected", accLang)
+			beego.Info("but got", this.Ctx.Input.Header("Accept-Language"))
 			return 0, errors.New("user not correctly logged in")
 		}
 		return sid, nil
