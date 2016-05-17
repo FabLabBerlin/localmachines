@@ -177,6 +177,7 @@ app.controller('MachineCtrl',
     })
     .success(function(){
       toastr.success('Machine image successfully uploaded');
+      $scope.loadMachine();
     })
     .error(function(){
       toastr.error('Uploading machine image failed');
