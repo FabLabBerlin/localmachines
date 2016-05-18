@@ -9,6 +9,9 @@ var reactor = require('../../../reactor');
  * Use in timer to display the time you spend
  */
 function toHHMMSS(d) {
+  if (d < 0) {
+    d = 0;
+  }
   var h = Math.floor(d / 3600);
   var m = Math.floor(d % 3600 / 60);
   var s = Math.floor(d % 3600 % 60);
