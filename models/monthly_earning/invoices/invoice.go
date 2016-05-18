@@ -9,6 +9,12 @@ type Invoice struct {
 	User       users.User
 	Purchases  purchases.Purchases
 	VatPercent float64
+	Totals     struct {
+		Memberships struct {
+		}
+		Purchases struct {
+		}
+	}
 }
 
 func (inv *Invoice) ByProductNameAndPricePerUnit() map[string]map[float64][]*purchases.Purchase {
