@@ -1,6 +1,7 @@
 var $ = require('jquery');
 var actionTypes = require('../actionTypes');
 var Cookies = require('js-cookie');
+var getters = require('../getters');
 var reactor = require('../reactor');
 var toastr = require('../toastr');
 
@@ -27,8 +28,9 @@ var LocationActions = {
         reactor.dispatch(actionTypes.SET_USER_LOCATIONS, userLocations);
       },
       error(xhr, status, err) {
+        console.log('loadUserLocations: xhr=', xhr);
         toastr.error('Error.  Please try again later.');
-        console.error(url, status, err);
+        console.log('loadUserLocations:', url, status, err);
       }
     });
   },

@@ -160,6 +160,7 @@ var MachineActions = {
       dashboardDispatch(JSON.parse(e.data));
     };
     socket.onclose = function(e) {
+      console.log('WebSocket closed, e=', e);
       var duration = new Date() - t0;
       if (duration < 30000) {
         toastr.warning('Falling back to longpoll...');
