@@ -30,7 +30,7 @@ var Month = React.createClass({
     const summaries = this.state.MonthlySums.getIn([year, month]);
 
     return (
-      <div>
+      <div className="inv-monthly-sums">
         <h3 onClick={this.select}>{t.format('MMMM YYYY')}</h3>
         {
           selected ? (

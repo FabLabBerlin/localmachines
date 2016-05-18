@@ -1,3 +1,4 @@
+var Invoice = require('./Invoice');
 var Invoices = require('../../../modules/Invoices');
 var LoaderLocal = require('../../LoaderLocal');
 var LocationGetters = require('../../../modules/Location/getters');
@@ -8,6 +9,14 @@ var reactor = require('../../../reactor');
 
 var Summaries = React.createClass({
 
+  mixins: [ reactor.ReactMixin ],
+
+  getDataBindings() {
+    return {
+      MonthlySums: Invoices.getters.getMonthlySums
+    };
+  },
+
   render() {
     const summaries = this.props.summaries.sortBy((sum) => {
       return (sum.getIn(['User', 'FirstName'])
@@ -16,35 +25,44 @@ var Summaries = React.createClass({
     });
 
     return (
-      <table>
-        <thead>
-          <tr>
-            <th>User</th>
-            <th>Amount (EUR)</th>
-            <th>Invoiced?</th>
-            <th>Paid?</th>
-          </tr>
-        </thead>
-        <tbody>
-          {summaries.map((sum, i) => {
-            const name = sum.getIn(['User', 'FirstName'])
-                       + ' ' + sum.getIn(['User', 'LastName']);
-            const amount = (Math.round(sum.get('Amount') * 100)
-                               / 100)
-                               .toFixed(2);
+      <div>
+        {this.state.MonthlySums.getIn(['selected', 'userId']) ? (
+          <Invoice/>
+        ) : null}
+        <table>
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Amount (EUR)</th>
+              <th>Invoiced?</th>
+              <th>Paid?</th>
+            </tr>
+          </thead>
+          <tbody>
+            {summaries.map((sum, i) => {
+              const name = sum.getIn(['User', 'FirstName'])
+                         + ' ' + sum.getIn(['User', 'LastName']);
+              const amount = (Math.round(sum.get('Amount') * 100)
+                                 / 100)
+                                 .toFixed(2);
 
-            return (
-              <tr key={i}>
-                <td>{name}</td>
-                <td className="text-right">{amount}</td>
-                <td></td>
-                <td></td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+              return (
+                <tr key={i} onClick={this.select.bind(this, sum.get('User'))}>
+                  <td>{name}</td>
+                  <td className="text-right">{amount}</td>
+                  <td></td>
+                  <td></td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     );
+  },
+
+  select(user) {
+    Invoices.actions.selectUserId(user.get('Id'));
   }
 
 });

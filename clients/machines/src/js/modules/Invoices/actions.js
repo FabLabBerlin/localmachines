@@ -24,11 +24,16 @@ function fetchMonthlySums(locId, {month, year}) {
   });
 }
 
+function selectUserId(userId) {
+  reactor.dispatch(actionTypes.SELECT_USER_ID, userId);
+}
+
 function setSelectedMonth({month, year}) {
   reactor.dispatch(actionTypes.SET_SELECTED_MONTH, { month, year });
 }
 
 export default {
   fetchMonthlySums,
+  selectUserId,
   setSelectedMonth
 };
