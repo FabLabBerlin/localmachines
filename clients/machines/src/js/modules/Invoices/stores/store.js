@@ -7,6 +7,7 @@ var toImmutable = Nuclear.toImmutable;
 
 const initialState = toImmutable({
   MonthlySums: {
+  invoices: {},
   selected: {
       month: moment().month(),
       year: moment().year(),
@@ -26,6 +27,7 @@ var InvoicesStore = new Nuclear.Store({
     this.on(actionTypes.FETCH_MONTHLY_SUMMARIES, fetchMonthlySums);
     this.on(actionTypes.SELECT_USER_ID, selectUserId);
     this.on(actionTypes.SET_SELECTED_MONTH, setSelectedMonth);
+    this.on(actionTypes.SET_INVOICE, setInvoice);
   }
 
 });
@@ -41,6 +43,10 @@ function selectUserId(state, userId) {
 function setSelectedMonth(state, { month, year }) {
   return state.setIn(['MonthlySums', 'selected', 'month'], month)
               .setIn(['MonthlySums', 'selected', 'year'], year);
+}
+
+function setInvoice(state, { month, year, userId, invoice }) {
+  return state.setIn(['invoices', year, month, userId], invoice);
 }
 
 export default InvoicesStore;

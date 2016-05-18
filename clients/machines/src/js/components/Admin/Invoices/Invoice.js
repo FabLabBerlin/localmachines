@@ -1,3 +1,4 @@
+var BillTable = require('../../UserProfile/BillTable');
 var Invoices = require('../../../modules/Invoices');
 var LoaderLocal = require('../../LoaderLocal');
 var LocationGetters = require('../../../modules/Location/getters');
@@ -12,6 +13,7 @@ var Invoice = React.createClass({
 
   getDataBindings() {
     return {
+      invoice: Invoices.getters.getInvoice,
       location: LocationGetters.getLocation,
       locationId: LocationGetters.getLocationId,
       MonthlySums: Invoices.getters.getMonthlySums
@@ -23,16 +25,22 @@ var Invoice = React.createClass({
   },
 
   render() {
-    return (
-      <div className="inv-invoice-container" onClick={this.hide}>
-        <div className="inv-invoice-background"/>
-        <div className="inv-invoice-aligner">
-          <div className="inv-invoice">
-            User Invoice
+    if (this.state.invoice) {
+      console.log('this.state.invoice:', this.state.invoice);
+      return (
+        <div className="inv-invoice-container" onClick={this.hide}>
+          <div className="inv-invoice-background"/>
+          <div className="inv-invoice-aligner">
+            <div className="inv-invoice">
+              User Invoice
+              <BillTable bill={this.state.invoice}/>
+            </div>
           </div>
         </div>
-      </div>
-    );
+      );
+    } else {
+      return <LoaderLocal/>;
+    }
   }
 
 });

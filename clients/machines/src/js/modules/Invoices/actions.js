@@ -24,6 +24,27 @@ function fetchMonthlySums(locId, {month, year}) {
   });
 }
 
+function fetchUser(locId, {month, year, userId}) {
+  $.ajax({
+    method: 'GET',
+    url: '/api/invoices/months/' + year + '/' + month + '/users/' + userId,
+    data: {
+      location: locId
+    }
+  })
+  .success(function(invoice) {
+    reactor.dispatch(actionTypes.SET_INVOICE, {
+      year: year,
+      month: month,
+      userId: userId,
+      invoice: invoice
+    });
+  })
+  .error(function() {
+    toastr.error('Error fetch monthly summaries.  Please try again later.');
+  });
+}
+
 function selectUserId(userId) {
   reactor.dispatch(actionTypes.SELECT_USER_ID, userId);
 }
@@ -34,6 +55,7 @@ function setSelectedMonth({month, year}) {
 
 export default {
   fetchMonthlySums,
+  fetchUser,
   selectUserId,
   setSelectedMonth
 };

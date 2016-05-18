@@ -13,6 +13,7 @@ var Summaries = React.createClass({
 
   getDataBindings() {
     return {
+      locationId: LocationGetters.getLocationId,
       MonthlySums: Invoices.getters.getMonthlySums
     };
   },
@@ -62,7 +63,18 @@ var Summaries = React.createClass({
   },
 
   select(user) {
-    Invoices.actions.selectUserId(user.get('Id'));
+    const month = this.state.MonthlySums
+                      .get('selected').get('month');
+    const year = this.state.MonthlySums
+                      .get('selected').get('year');
+    const userId = user.get('Id');
+
+    Invoices.actions.fetchUser(this.state.locationId, {
+      year: year,
+      month: month,
+      userId: userId
+    });
+    Invoices.actions.selectUserId(userId);
   }
 
 });
