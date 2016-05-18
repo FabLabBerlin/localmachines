@@ -2,13 +2,13 @@ var Nuclear = require('nuclear-js');
 var toImmutable = Nuclear.toImmutable;
 
 
-const getMonthlySummaries = [
+const getMonthlySums = [
   ['invoicesStore'],
   (invoicesStore) => {
-    return invoicesStore.get('monthlySummaries');
+    return invoicesStore.get('MonthlySums');
   }
 ];
 
 export default {
-  getMonthlySummaries
+  getMonthlySums
 };

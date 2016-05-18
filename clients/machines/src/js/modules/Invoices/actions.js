@@ -4,7 +4,7 @@ var reactor = require('../../reactor');
 var toastr = require('../../toastr');
 
 
-function fetchMonthlySummaries(locId, {month, year}) {
+function fetchMonthlySums(locId, {month, year}) {
   $.ajax({
     method: 'GET',
     url: '/api/invoices/months/' + year + '/' + month,
@@ -29,6 +29,6 @@ function setSelectedMonth({month, year}) {
 }
 
 export default {
-  fetchMonthlySummaries,
+  fetchMonthlySums,
   setSelectedMonth
 };
