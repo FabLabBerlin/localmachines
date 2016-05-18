@@ -289,14 +289,10 @@ func createXlsxFile(filePath string, monthlyEarning *MonthlyEarning) error {
 			sheet.AddRow()
 		}
 
-		sumTotal := 0.0
-		sumTotalDisc := 0.0
 		ps := PurchasesXlsx(inv.Purchases.Data)
 		sort.Stable(ps)
-		for _, purchase := range ps {
-			sumTotal += purchase.TotalPrice
-			sumTotalDisc += purchase.DiscountedTotal
-
+		if err := inv.CalculateTotals(); err != nil {
+			return fmt.Errorf("CalculateTotals: %v", err)
 		}
 
 		row = sheet.AddRow()
@@ -351,12 +347,12 @@ func createXlsxFile(filePath string, monthlyEarning *MonthlyEarning) error {
 			cell = row.AddCell()
 			cell.Value = "Subtotal €"
 			cell = row.AddCell()
-			cell.SetFloatWithFormat(sumTotal, FORMAT_2_DIGIT)
+			cell.SetFloatWithFormat(inv.Sums.Purchases.Undiscounted, FORMAT_2_DIGIT)
 			cell = row.AddCell()
 			cell.SetStyle(boldStyle())
 			cell.Value = "Discounted €"
 			cell = row.AddCell()
-			cell.SetFloatWithFormat(sumTotalDisc, FORMAT_2_DIGIT)
+			cell.SetFloatWithFormat(inv.Sums.Purchases.PriceInclVAT, FORMAT_2_DIGIT)
 			cell.SetStyle(colorStyle(totalColor))
 		}
 		printTotal(BLUE)
