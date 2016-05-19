@@ -1,12 +1,37 @@
 var _ = require('lodash');
+var moment = require('moment');
 var React = require('react');
 var reactor = require('../../reactor');
 var SettingsGetters = require('../../modules/Settings/getters');
 var {formatDate, subtractVAT, toEuro, toCents} = require('./helpers');
 
-function formatDuration(t) {
-  if (t) {
-    var d = parseInt(t.toString(), 10);
+function formatDuration(purchase) {
+  if (purchase.Quantity) {
+    var duration = purchase.Quantity;
+    switch (purchase.PriceUnit) {
+    case 'month':
+      duration *= 60 * 60 * 24 * 30;
+      break;
+    case 'day':
+      duration *= 60 * 60 * 24;
+      break;
+    case 'hour':
+      duration *= 60 * 60;
+      break;
+    case '30 minutes':
+      duration *= 60 * 30;
+      break;
+    case 'minute':
+      duration *= 60;
+      break;
+    case 'second':
+      break;
+    default:
+      console.log('unknown price unit', purchase.PriceUnit);
+      return undefined;
+    }
+
+    var d = parseInt(duration.toString(), 10);
     var h = Math.floor(d / 3600);
     var m = Math.floor(d % 3600 / 60);
     var s = Math.floor(d % 3600 % 60);
@@ -22,6 +47,10 @@ function formatDuration(t) {
     }
     return str;
   }
+}
+
+function formatPrice(price) {
+  return (Math.round(price * 100) / 100).toFixed(2);
 }
 
 var BillTable = React.createClass({
@@ -41,12 +70,12 @@ var BillTable = React.createClass({
     var thead = [];
     var tbody = [];
     var tfoot = [];
-
+    console.log('bill:', bill);
     caption.push( 
       <div key={i++}>
         <h4 className="text-left">{bill.month}</h4>
         <h5 className="text-left">
-          ({toEuro(bill.sums.total.priceInclVAT)} 
+          ({formatPrice(bill.Sums.All.PriceInclVAT)} 
           <i className="fa fa-eur"/> total incl. VAT)
         </h5>
       </div>
@@ -63,8 +92,8 @@ var BillTable = React.createClass({
       </tr>
     );
 
-    _.each(bill.purchases, function(purchase) {
-      var label = purchase.MachineName;
+    _.each(bill.Purchases.Data, function(purchase) {
+      var label = purchase.Machine ? purchase.Machine.Name : '';
       switch (purchase.Type) {
       case 'activation':
         // already okay
@@ -84,11 +113,11 @@ var BillTable = React.createClass({
       tbody.push(
         <tr key={i++}>
           <td>{label}</td>
-          <td>{formatDate(purchase.TimeStart)}</td>
-          <td>{formatDuration(purchase.duration)}</td>
-          <td>{toEuro(purchase.priceExclVAT)}€</td>
-          <td>{toEuro(purchase.priceVAT)}€</td>
-          <td>{toEuro(purchase.priceInclVAT)}€</td>
+          <td>{formatDate(moment(purchase.TimeStart))}</td>
+          <td>{formatDuration(purchase)}</td>
+          <td>{formatPrice(purchase.PriceExclVAT)}€</td>
+          <td>{formatPrice(purchase.PriceVAT)}€</td>
+          <td>{formatPrice(purchase.DiscountedTotal)}€</td>
         </tr>
       );
     });
@@ -101,10 +130,10 @@ var BillTable = React.createClass({
       <tr key={i++}>
         <td><b>Total Pay-As-You-Go</b></td>
         <td>&nbsp;</td>
-        <td><b>{formatDuration(bill.sums.purchases.durations)}</b></td>
-        <td><b>{toEuro(bill.sums.purchases.priceExclVAT)}€</b></td>
-        <td><b>{toEuro(bill.sums.purchases.priceVAT)}€</b></td>
-        <td><b>{toEuro(bill.sums.purchases.priceInclVAT)}€</b></td>
+        <td></td>
+        <td><b>{formatPrice(bill.Sums.Purchases.PriceExclVAT)}€</b></td>
+        <td><b>{formatPrice(bill.Sums.Purchases.PriceVAT)}€</b></td>
+        <td><b>{formatPrice(bill.Sums.Purchases.PriceInclVAT)}€</b></td>
       </tr>
     );
 
@@ -113,9 +142,9 @@ var BillTable = React.createClass({
         <td><b>Total Memberships</b></td>
         <td>&nbsp;</td>
         <td>&nbsp;</td>
-        <td><b>{toEuro(bill.sums.memberships.priceExclVAT)}€</b></td>
-        <td><b>{toEuro(bill.sums.memberships.priceVAT)}€</b></td>
-        <td><b>{toEuro(bill.sums.memberships.priceInclVAT)}€</b></td>
+        <td><b>{formatPrice(bill.Sums.Memberships.PriceExclVAT)}€</b></td>
+        <td><b>{formatPrice(bill.Sums.Memberships.PriceVAT)}€</b></td>
+        <td><b>{formatPrice(bill.Sums.Memberships.PriceInclVAT)}€</b></td>
       </tr>
     );
 
@@ -124,9 +153,9 @@ var BillTable = React.createClass({
         <td><b>Total</b></td>
         <td>&nbsp;</td>
         <td>&nbsp;</td>
-        <td><b>{toEuro(bill.sums.total.priceExclVAT)}€</b></td>
-        <td><b>{toEuro(bill.sums.total.priceVAT)}€</b></td>
-        <td><b>{toEuro(bill.sums.total.priceInclVAT)}€</b></td>
+        <td><b>{formatPrice(bill.Sums.All.PriceExclVAT)}€</b></td>
+        <td><b>{formatPrice(bill.Sums.All.PriceVAT)}€</b></td>
+        <td><b>{formatPrice(bill.Sums.All.PriceInclVAT)}€</b></td>
       </tr>
     );
 

@@ -575,7 +575,13 @@ func (this *UsersController) GetUserBill() {
 		}
 	}
 
-	this.Data["json"] = userInv
+	invs, err := userInv.SplitByMonths()
+	if err != nil {
+		beego.Error("Split by months:", err)
+		this.Abort("500")
+	}
+
+	this.Data["json"] = invs
 	this.ServeJSON()
 }
 

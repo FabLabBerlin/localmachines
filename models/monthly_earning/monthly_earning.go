@@ -124,6 +124,9 @@ func New(locationId int64, interval lib.Interval) (me *MonthlyEarning, err error
 			if err != nil {
 				return nil, fmt.Errorf("price total disc (purchase %v): %v", purchase.Id, err)
 			}
+			p := (100.0 + vatPercent) / 100.0
+			purchase.PriceExclVAT = purchase.DiscountedTotal / p
+			purchase.PriceVAT = purchase.DiscountedTotal - purchase.PriceExclVAT
 		}
 	}
 
