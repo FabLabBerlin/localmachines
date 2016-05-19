@@ -143,13 +143,26 @@ var OldHeaderNav = React.createClass({
 
 
 var HeaderNav = React.createClass({
+
+  mixins: [ reactor.ReactMixin ],
+
+  getDataBindings() {
+    return {
+      isLogged: getters.getIsLogged
+    }
+  },
+
   render() {
-    return (
-      <div>
-        <Top/>
-        <Bottom/>
-      </div>
-    );
+    if (this.state.isLogged) {
+      return (
+        <div>
+          <Top/>
+          <Bottom/>
+        </div>
+      );
+    } else {
+      return <div/>;
+    }
   }
 });
 

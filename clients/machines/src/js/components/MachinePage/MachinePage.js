@@ -64,11 +64,6 @@ var MachinePage = React.createClass({
 
       return (
         <div>
-          <div className="logged-user-name">
-            <div className="text-center">
-              <strong>Welcome to {locationTitle}</strong>
-            </div>
-          </div>
           <TutoringList />
           <MachineList
             user={this.state.user}
