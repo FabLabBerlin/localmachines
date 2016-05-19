@@ -1,6 +1,6 @@
 var reactor = require('../reactor');
 var getters = require('../getters');
-var HeaderNav = require('./HeaderNav');
+var HeaderNav = require('./Header/HeaderNav');
 var LoaderLocal = require('./LoaderLocal');
 var LocationActions = require('../actions/LocationActions');
 var LoginActions = require('../actions/LoginActions');

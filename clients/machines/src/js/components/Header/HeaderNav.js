@@ -1,8 +1,8 @@
-var LoginActions = require('../actions/LoginActions');
+var LoginActions = require('../../actions/LoginActions');
 var {Navigation} = require('react-router');
 var React = require('react');
-var reactor = require('../reactor');
-var getters = require('../getters');
+var reactor = require('../../reactor');
+var getters = require('../../getters');
 
 
 var HeaderNavBrand = React.createClass({

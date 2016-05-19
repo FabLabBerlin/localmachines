@@ -22,7 +22,6 @@ var Membership = React.createClass({
    * Display it
    */
   render() {
-    console.log('Membership: this.state.vatPercent=', this.state.vatPercent);
     var MembershipNode;
     if (this.props.memberships && this.props.memberships.length > 0) {
       MembershipNode = this.props.memberships.map(function(membership) {
