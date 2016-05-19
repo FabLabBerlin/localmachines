@@ -341,7 +341,9 @@ nav.navbar a.sign-out {
 .nav-top {
   align-items: baseline;
   display: flex;
+  flex-direction: row;
   height: 105px;
+  justify-content: flex-between;
   width: 100%;
 }
 
@@ -368,6 +370,15 @@ nav.navbar a.sign-out {
   border-left: 1px solid black;
   font-weight: 300px;
   padding-left: 15px;
+}
+
+.nav-right {
+  align-self: flex-end;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  flex-grow: 1;
 }
 
 /*

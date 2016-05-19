@@ -149,7 +149,7 @@ var HeaderNav = React.createClass({
   getDataBindings() {
     return {
       isLogged: getters.getIsLogged
-    }
+    };
   },
 
   render() {

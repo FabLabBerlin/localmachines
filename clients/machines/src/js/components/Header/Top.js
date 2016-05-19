@@ -1,6 +1,32 @@
+var getters = require('../../getters');
 var LocationGetters = require('../../modules/Location/getters');
 var React = require('react');
 var reactor = require('../../reactor');
+
+
+var Right = React.createClass({
+
+  mixins: [ reactor.ReactMixin ],
+
+  getDataBindings() {
+    return {
+      user: getters.getUser
+    };
+  },
+
+  render() {
+    return (
+      <div className="nav-right">
+        {this.state.user ? (
+          <div>
+            {this.state.user.get('FirstName')} {this.state.user.get('LastName')}
+          </div>
+        ) : null}
+      </div>
+    );
+  }
+
+});
 
 
 var Top = React.createClass({
@@ -9,8 +35,9 @@ var Top = React.createClass({
 
   getDataBindings() {
     return {
-      location: LocationGetters.getLocation
-    }
+      location: LocationGetters.getLocation,
+      user: getters.getUser
+    };
   },
 
   render() {
@@ -31,6 +58,7 @@ var Top = React.createClass({
               ) : null}
               <span className="nav-title-easylab">EASY LAB</span>
             </div>
+            <Right/>
           </div>
         </div>
       </div>
