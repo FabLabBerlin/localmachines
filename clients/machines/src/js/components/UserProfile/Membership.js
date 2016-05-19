@@ -22,17 +22,18 @@ var Membership = React.createClass({
    * Display it
    */
   render() {
+    console.log('Membership: this.state.vatPercent=', this.state.vatPercent);
     var MembershipNode;
-    if (this.props.memberships && this.props.memberships.count() > 0) {
+    if (this.props.memberships && this.props.memberships.length > 0) {
       MembershipNode = this.props.memberships.map(function(membership) {
-        var startDate = moment(membership.get('StartDate'));
-        var endDate = moment(membership.get('EndDate'));
-        var totalPrice = toCents(membership.get('MonthlyPrice'));
-        var priceExclVat = toCents(subtractVAT(membership.get('MonthlyPrice')));
+        var startDate = moment(membership.StartDate);
+        var endDate = moment(membership.EndDate);
+        var totalPrice = toCents(membership.MonthlyPrice);
+        var priceExclVat = toCents(subtractVAT(membership.MonthlyPrice));
         var vat = totalPrice - priceExclVat;
         return (
-          <tr key={membership.get('Id')} >
-            <td>{membership.get('Title')}</td>
+          <tr key={membership.Id} >
+            <td>{membership.Title}</td>
             <td>{formatDate(startDate)}</td>
             <td>{formatDate(endDate)}</td>
             <td>{toEuro(priceExclVat)}€</td>

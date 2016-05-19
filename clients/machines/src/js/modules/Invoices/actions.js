@@ -4,6 +4,25 @@ var reactor = require('../../reactor');
 var toastr = require('../../toastr');
 
 
+function fetchUserMemberships(locId, {userId}) {
+  $.ajax({
+    method: 'GET',
+    url: '/api/users/' + userId + '/memberships',
+    data: {
+      location: locId
+    }
+  })
+  .success(function(userMemberships) {
+    reactor.dispatch(actionTypes.SET_USER_MEMBERSHIPS, {
+      userId: userId,
+      userMemberships: userMemberships
+    });
+  })
+  .error(function() {
+    toastr.error('Error fetch user memberships');
+  });
+}
+
 function fetchMonthlySums(locId, {month, year}) {
   $.ajax({
     method: 'GET',
@@ -56,6 +75,7 @@ function setSelectedMonth({month, year}) {
 export default {
   fetchMonthlySums,
   fetchUser,
+  fetchUserMemberships,
   selectUserId,
   setSelectedMonth
 };

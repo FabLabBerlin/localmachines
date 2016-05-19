@@ -303,6 +303,11 @@ func (this *InvoicesController) GetUser() {
 		}
 	}
 
+	if err := userInv.CalculateTotals(); err != nil {
+		beego.Error("CalculateTotals:", err)
+		this.Abort("500")
+	}
+
 	this.Data["json"] = userInv
 	this.ServeJSON()
 }

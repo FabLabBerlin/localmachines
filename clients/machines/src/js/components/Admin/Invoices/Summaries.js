@@ -74,6 +74,9 @@ var Summaries = React.createClass({
       month: month,
       userId: userId
     });
+    Invoices.actions.fetchUserMemberships(this.state.locationId, {
+      userId: userId
+    });
     Invoices.actions.selectUserId(userId);
   }
 

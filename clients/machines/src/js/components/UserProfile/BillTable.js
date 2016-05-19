@@ -70,7 +70,7 @@ var BillTable = React.createClass({
     var thead = [];
     var tbody = [];
     var tfoot = [];
-    console.log('bill:', bill);
+
     caption.push( 
       <div key={i++}>
         <h4 className="text-left">{bill.month}</h4>

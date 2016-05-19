@@ -21,7 +21,17 @@ const getInvoice = [
   }
 ];
 
+const getUserMemberships = [
+  ['invoicesStore'],
+  (invoicesStore) => {
+    const userId = invoicesStore.getIn(['MonthlySums', 'selected', 'userId']);
+
+    return invoicesStore.getIn(['userMemberships', userId]);
+  }
+];
+
 export default {
   getInvoice,
-  getMonthlySums
+  getMonthlySums,
+  getUserMemberships
 };

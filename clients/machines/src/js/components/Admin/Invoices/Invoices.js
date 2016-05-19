@@ -4,6 +4,7 @@ var LocationGetters = require('../../../modules/Location/getters');
 var moment = require('moment');
 var React = require('react');
 var reactor = require('../../../reactor');
+var SettingsActions = require('../../../modules/Settings/actions');
 var Summaries = require('./Summaries');
 
 
@@ -70,11 +71,13 @@ var InvoicesView = React.createClass({
   mixins: [ reactor.ReactMixin ],
 
   componentWillMount() {
+    const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
     var t = moment();
     Invoices.actions.fetchMonthlySums(this.state.locationId, {
       month: t.month(),
       year: t.year()
     });
+    SettingsActions.loadSettings({locationId});
   },
 
   getDataBindings() {

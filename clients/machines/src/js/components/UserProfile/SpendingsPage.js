@@ -52,7 +52,7 @@ var SpendingsPage = React.createClass({
     return (
       <div className="container">
         <h3>Your Memberships</h3>
-        {<Membership memberships={this.state.memberships} />}
+        {<Membership memberships={this.state.memberships.toJS()} />}
 
         <h3>Pay-As-You-Go</h3>
         <BillTables bill={this.state.bill} membership={this.state.membership}/>
