@@ -77,5 +77,5 @@ const getIsAdmin = [
 
 export default {
   getLocation, getLocationId, getLocations, getLocationTermsUrl,
-  getIsStaff, getIsAdmin
+  getIsStaff, getIsAdmin, getUserLocation
 };
