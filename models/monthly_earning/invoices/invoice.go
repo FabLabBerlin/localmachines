@@ -6,15 +6,31 @@ import (
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/users"
+	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/orm"
 	"time"
 )
 
+const TABLE_NAME = "invoices"
+
+// Invoice represents an actual or future invoice. Future invoices do not
+// have a FastbillId.
 type Invoice struct {
-	Interval   lib.Interval
-	User       users.User
-	Purchases  purchases.Purchases
+	Id         int64
+	FastbillId int64 `json:",omitempty"`
+	FastbillNo int64 `json:",omitempty"`
+	Month      int
+	Year       int
+	UserId     int64
+	Interval   lib.Interval        `orm:"-"`
+	User       users.User          `orm:"-"`
+	Purchases  purchases.Purchases `orm:"-"`
+	Sums       Sums                `orm:"-"`
 	VatPercent float64
-	Sums       Sums
+}
+
+func init() {
+	orm.RegisterModel(new(Invoice))
 }
 
 type Sums struct {
@@ -67,9 +83,19 @@ func (inv *Invoice) CalculateTotals() (err error) {
 	if err != nil {
 		return fmt.Errorf("GetUserMemberships: %v", err)
 	}
+	if inv.User.Id == 57 {
+		beego.Info("CalculateTotals: len(memberships) = ", len(memberships.Data))
+	}
 	for _, m := range memberships.Data {
+		if inv.User.Id == 57 {
+			beego.Info("m=", m)
+			beego.Info("inv.Interval=", inv.Interval)
+		}
 		if m.StartDate.Before(inv.Interval.TimeFrom()) &&
 			m.EndDate.After(inv.Interval.TimeTo()) {
+			if inv.User.Id == 57 {
+				beego.Info("if => true")
+			}
 			inv.Sums.Memberships.Undiscounted += m.MonthlyPrice
 			inv.Sums.Memberships.PriceInclVAT += m.MonthlyPrice
 		}
@@ -80,6 +106,11 @@ func (inv *Invoice) CalculateTotals() (err error) {
 	inv.Sums.All.PriceInclVAT = inv.Sums.Purchases.PriceInclVAT + inv.Sums.Memberships.PriceInclVAT
 	inv.Sums.All.PriceExclVAT = inv.Sums.Purchases.PriceExclVAT + inv.Sums.Memberships.PriceExclVAT
 	inv.Sums.All.PriceVAT = inv.Sums.Purchases.PriceVAT + inv.Sums.Memberships.PriceVAT
+	if inv.User.Id == 57 {
+		beego.Info("CalculateTotals: inv.Sums.Purchases.PriceInclVAT=", inv.Sums.Purchases.PriceInclVAT)
+		beego.Info("CalculateTotals: inv.Sums.Memberships.PriceInclVAT=", inv.Sums.Memberships.PriceInclVAT)
+		beego.Info("CalculateTotals: inv.Sums.All.PriceInclVAT=", inv.Sums.All.PriceInclVAT)
+	}
 
 	return
 }
@@ -133,4 +164,8 @@ func (inv *Invoice) SplitByMonths() (invs []*Invoice, err error) {
 	}
 
 	return
+}
+
+func (inv *Invoice) TableName() string {
+	return TABLE_NAME
 }

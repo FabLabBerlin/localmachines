@@ -228,11 +228,17 @@ func (this *InvoicesController) GetMonth() {
 
 	sums := make([]MonthlySummary, 0, len(me.Invoices))
 	for _, inv := range me.Invoices {
-		sum := MonthlySummary{
-			User: inv.User,
+		if err := inv.CalculateTotals(); err != nil {
+			beego.Error("CalculateTotals:", err)
+			this.Abort("500")
 		}
-		for _, p := range inv.Purchases.Data {
-			sum.Amount += p.DiscountedTotal
+		if inv.User.Id == 57 {
+			beego.Info("57:")
+			beego.Info("sums:", inv.Sums)
+		}
+		sum := MonthlySummary{
+			User:   inv.User,
+			Amount: inv.Sums.All.PriceInclVAT,
 		}
 		sums = append(sums, sum)
 	}
