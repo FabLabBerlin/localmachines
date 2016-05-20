@@ -155,7 +155,7 @@ var HeaderNav = React.createClass({
   render() {
     if (this.state.isLogged) {
       return (
-        <div>
+        <div className="nav">
           <Top/>
           <Bottom/>
         </div>

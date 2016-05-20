@@ -4,10 +4,7 @@ var React = require('react');
 var reactor = require('../../reactor');
 var SettingsGetters = require('../../modules/Settings/getters');
 
-/*
- * Membership component:
- * Display the membership the user is subscribing
- */
+
 var Membership = React.createClass({
   mixins: [ reactor.ReactMixin ],
 
@@ -17,10 +14,6 @@ var Membership = React.createClass({
     };
   },
 
-  /*
-   * Create the table for each data
-   * Display it
-   */
   render() {
     var MembershipNode;
     if (this.props.memberships && this.props.memberships.length > 0) {
@@ -42,7 +35,7 @@ var Membership = React.createClass({
         );
       });
     } else {
-      return <p>You do not have any memberships</p>;
+      return <p>No memberships</p>;
     }
     return (
       <div className="table-responsive">

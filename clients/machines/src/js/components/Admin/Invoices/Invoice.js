@@ -38,6 +38,11 @@ var Invoice = React.createClass({
           <div className="inv-invoice-aligner">
             <div className="inv-invoice">
               User Invoice for {name}
+              <div>
+                <button type="button">
+                  <i className="fa fa-send"/> Send
+                </button>
+              </div>
               <Membership memberships={this.state.userMemberships.Data}/>
               <BillTable bill={invoice}/>
             </div>

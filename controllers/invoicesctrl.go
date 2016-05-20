@@ -3,12 +3,14 @@ package controllers
 import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
+	"github.com/FabLabBerlin/localmachines/lib/fastbill"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 	"io"
 	"os"
+	"time"
 )
 
 type InvoicesController struct {
@@ -315,5 +317,59 @@ func (this *InvoicesController) GetUser() {
 	}
 
 	this.Data["json"] = userInv
+	this.ServeJSON()
+}
+
+// @Title GetStatus
+// @Description Get status for a user
+// @Success 200 {object}
+// @Failure	401	Not authorized
+// @Failure	500	Internal Server Error
+// @router /months/:year/:month/users/:uid/status [get]
+func (this *InvoicesController) GetStatus() {
+	_, authorized := this.GetLocIdAdmin()
+	if !authorized {
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	year, err := this.GetInt64(":year")
+	if err != nil {
+		beego.Error("Failed to get year:", err)
+		this.CustomAbort(400, "Bad request")
+	}
+
+	month, err := this.GetInt64(":month")
+	if err != nil {
+		beego.Error("Failed to get month:", err)
+		this.CustomAbort(400, "Bad request")
+	}
+
+	uid, err := this.GetInt64(":uid")
+	if err != nil {
+		beego.Error("Failed to get uid:", err)
+		this.CustomAbort(400, "Bad request")
+	}
+
+	user, err := users.GetUser(uid)
+	if err != nil {
+		beego.Error("Failed to get user:", err)
+		this.Abort("500")
+	}
+
+	inv := fastbill.Invoice{
+		Month:          time.Month(month).String(),
+		Year:           int(year),
+		CustomerNumber: user.ClientId,
+	}
+
+	fbInvs, err := inv.FetchExisting()
+	if err != nil {
+		beego.Error("Failed to fetch existing fastbill invoice:", err)
+		this.Abort("500")
+	}
+
+	beego.Info("fbInv=", fbInvs)
+
+	this.Data["json"] = fbInvs
 	this.ServeJSON()
 }

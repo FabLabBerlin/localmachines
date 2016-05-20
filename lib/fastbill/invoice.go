@@ -50,10 +50,16 @@ type InvoiceCreateResponse struct {
 type InvoiceGetResponse struct {
 	Request  Request `json:"REQUEST,omitempty"`
 	Response struct {
-		Invoices []struct {
-			Id int64 `json:"INVOICE_ID,string"`
-		} `json:"INVOICES,omitempty"`
+		Invoices []InvoiceGetResponseInvoice `json:"INVOICES,omitempty"`
 	} `json:"RESPONSE,omitempty"`
+}
+
+type InvoiceGetResponseInvoice struct {
+	Id          int64  `json:"INVOICE_ID,string"`
+	Type        string `json:"TYPE,omitempty"`
+	InvoiceDate string `json:"INVOICE_DATE,omitempty"`
+	PaidDate    string `json:"PAID_DATE,omitempty"`
+	IsCanceled  string `json:"IS_CANCELED,omitempty"`
 }
 
 type InvoiceFilter struct {
@@ -61,11 +67,11 @@ type InvoiceFilter struct {
 	Type         string `json:"TYPE,omitempty"`
 }
 
-func (inv *Invoice) AlreadyExported() (yes bool, err error) {
+func (inv *Invoice) FetchExisting() (fbInv []InvoiceGetResponseInvoice, err error) {
 	fb := New()
 	filter := InvoiceFilter{}
 	if filter.InvoiceTitle, err = inv.GetTitle(); err != nil {
-		return false, fmt.Errorf("get title: %v", err)
+		return nil, fmt.Errorf("get title: %v", err)
 	}
 	request := Request{
 		SERVICE: SERVICE_INVOICE_GET,
@@ -74,13 +80,9 @@ func (inv *Invoice) AlreadyExported() (yes bool, err error) {
 	}
 	var response InvoiceGetResponse
 	if err = fb.execGetRequest(&request, &response); err != nil {
-		return false, fmt.Errorf("get request: %v", err)
+		return nil, fmt.Errorf("get request: %v", err)
 	}
-	n := len(response.Response.Invoices)
-	if n > 1 {
-		return true, fmt.Errorf("%v duplicate invoices found")
-	}
-	return n == 1, nil
+	return response.Response.Invoices, nil
 }
 
 func (inv *Invoice) GetTitle() (title string, err error) {
@@ -100,10 +102,14 @@ func (inv *Invoice) GetTitle() (title string, err error) {
 
 func (inv *Invoice) Submit() (id int64, err error) {
 	fb := New()
-	alreadyExported, err := inv.AlreadyExported()
+	fbInvs, err := inv.FetchExisting()
 	if err != nil {
 		return 0, fmt.Errorf("checking if already exported: %v", err)
 	}
+	if len(fbInvs) > 1 {
+		return 0, fmt.Errorf("duplicate fastbill invoices found")
+	}
+	alreadyExported := len(fbInvs) == 1
 	if alreadyExported {
 		return 0, ErrInvoiceAlreadyExported
 	}
