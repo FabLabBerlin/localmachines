@@ -1,5 +1,6 @@
 var getters = require('../../getters');
 var LocationGetters = require('../../modules/Location/getters');
+var LoginActions = require('../../actions/LoginActions');
 var React = require('react');
 var reactor = require('../../reactor');
 
@@ -15,12 +16,26 @@ var Right = React.createClass({
     };
   },
 
+  signOut() {
+    LoginActions.logout(this.context.router);
+  },
+
   render() {
     if (this.state.user) {
       return (
         <div className="nav-right pull-right">
           <div className="nav-dropdown">
-            <i className="fa fa-caret-down"/>
+            <div className="dropdown">
+              <button className="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                <span className="caret"></span>
+              </button>
+              <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
+                <li><a href="/machines/#/profile">My Info</a></li>
+                <li><a href="/machines/#/feedback">Feedback</a></li>
+                <li role="separator" className="divider"></li>
+                <li><a href="#" onClick={this.signOut}>Logout</a></li>
+              </ul>
+            </div>
           </div>
           <div className="nav-user">
             <div className="nav-user-name">
