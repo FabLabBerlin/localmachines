@@ -18,7 +18,7 @@ var Right = React.createClass({
   render() {
     if (this.state.user) {
       return (
-        <div className="nav-right">
+        <div className="nav-right pull-right">
           <div className="nav-dropdown">
             <i className="fa fa-caret-down"/>
           </div>
@@ -66,24 +66,23 @@ var Top = React.createClass({
 
   render() {
     return (
-      <div className="row">
-        <div className="col-xs-12">
-          <div className="nav-top">
-            <a className="nav-logo" 
-               href="/machines/#/machine">
-              <img src="/machines/assets/img/logo-easylab.svg" className="brand-image hidden-xs"/>
-              <img src="/machines/assets/img/logo-small.svg" className="brand-image visible-xs-block"/>
-            </a>
-            <div className="nav-title">
-              {this.state.location ? (
-                <span className="nav-title-lab">
-                  {this.state.location.get('Title')}
-                </span>
-              ) : null}
-              <span className="nav-title-easylab">EASY LAB</span>
-            </div>
-            <Right/>
+      <div className="nav-top row">
+        <div className="col-xs-6 nav-left">
+          <a className="nav-logo" 
+             href="/machines/#/machine">
+            <img src="/machines/assets/img/logo-easylab.svg"/>
+          </a>
+          <div className="nav-title hidden-xs">
+            {this.state.location ? (
+              <span className="nav-title-lab">
+                {this.state.location.get('Title')}
+              </span>
+            ) : null}
+            <span className="nav-title-easylab">EASY LAB</span>
           </div>
+        </div>
+        <div className="col-xs-6 pull-right">
+          <Right/>
         </div>
       </div>
     );
