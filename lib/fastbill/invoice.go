@@ -1,8 +1,10 @@
 package fastbill
 
 import (
+	"errors"
 	"fmt"
 	"github.com/astaxie/beego"
+	"strings"
 )
 
 const (
@@ -47,6 +49,14 @@ type InvoiceCreateResponse struct {
 	}
 }
 
+func (this *InvoiceCreateResponse) Error() error {
+	if len(this.Response.Errors) == 0 {
+		return nil
+	} else {
+		return errors.New(strings.Join(this.Response.Errors, "; "))
+	}
+}
+
 type InvoiceGetResponse struct {
 	Request  Request `json:"REQUEST,omitempty"`
 	Response struct {
@@ -60,6 +70,10 @@ type InvoiceGetResponseInvoice struct {
 	InvoiceDate string `json:"INVOICE_DATE,omitempty"`
 	PaidDate    string `json:"PAID_DATE,omitempty"`
 	IsCanceled  string `json:"IS_CANCELED,omitempty"`
+}
+
+func (this *InvoiceGetResponseInvoice) Canceled() bool {
+	return this.IsCanceled == "1"
 }
 
 type InvoiceFilter struct {
@@ -106,10 +120,17 @@ func (inv *Invoice) Submit() (id int64, err error) {
 	if err != nil {
 		return 0, fmt.Errorf("checking if already exported: %v", err)
 	}
-	if len(fbInvs) > 1 {
+	beego.Info("lib.fastbill:Invoice#Submit fbInvs=", fbInvs)
+	uncanceledFbInvs := 0
+	for _, fbInv := range fbInvs {
+		if !fbInv.Canceled() {
+			uncanceledFbInvs++
+		}
+	}
+	if uncanceledFbInvs > 1 {
 		return 0, fmt.Errorf("duplicate fastbill invoices found")
 	}
-	alreadyExported := len(fbInvs) == 1
+	alreadyExported := uncanceledFbInvs == 1
 	if alreadyExported {
 		return 0, ErrInvoiceAlreadyExported
 	}
@@ -130,6 +151,10 @@ func (inv *Invoice) Submit() (id int64, err error) {
 	}
 
 	beego.Info("response response:", response.Response)
+
+	if err := response.Error(); err != nil {
+		return 0, err
+	}
 
 	inv.Id = response.Response.InvoiceId
 

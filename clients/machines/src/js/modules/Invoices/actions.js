@@ -24,6 +24,8 @@ function fetchUserMemberships(locId, {userId}) {
 }
 
 function fetchMonthlySums(locId, {month, year}) {
+  const selected = 
+
   $.ajax({
     method: 'GET',
     url: '/api/invoices/months/' + year + '/' + month,
@@ -64,6 +66,23 @@ function fetchUser(locId, {month, year, userId}) {
   });
 }
 
+function makeDraft(locId, {month, year, userId}) {
+  $.ajax({
+    method: 'POST',
+    url: '/api/invoices/months/' + year + '/' + month + '/users/' + userId + '/draft',
+    data: {
+      location: locId
+    }
+  })
+  .success(function(invoice) {
+    console.log('invoice=', invoice);
+    toastr.info('Draft created');
+  })
+  .error(function() {
+    toastr.error('Error creating draft.');
+  });
+}
+
 function selectUserId(userId) {
   reactor.dispatch(actionTypes.SELECT_USER_ID, userId);
 }
@@ -76,6 +95,7 @@ export default {
   fetchMonthlySums,
   fetchUser,
   fetchUserMemberships,
+  makeDraft,
   selectUserId,
   setSelectedMonth
 };
