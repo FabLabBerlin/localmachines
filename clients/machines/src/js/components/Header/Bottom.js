@@ -3,9 +3,14 @@ var React = require('react');
 
 var Item = React.createClass({
   render() {
+    var activeClass = '';
+    if (this.props.href === (window.location.pathname + window.location.hash)) {
+      activeClass = 'active';
+    }
+
     return (
       <div className="col-xs-4 text-center">
-        <div className="nav-item">
+        <div className={'nav-item ' + activeClass}>
           <a href={this.props.href}>
             {this.props.label}
           </a>

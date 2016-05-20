@@ -4,22 +4,37 @@ var React = require('react');
 var reactor = require('../../reactor');
 
 
-var UserRole = React.createClass({
+var Right = React.createClass({
 
   mixins: [ reactor.ReactMixin ],
 
   getDataBindings() {
     return {
+      user: getters.getUser,
       userLocation: LocationGetters.getUserLocation
     };
   },
 
   render() {
-    return (
-      <div className="nav-user-role">
-        {this.userRole()}
-      </div>
-    );
+    if (this.state.user) {
+      return (
+        <div className="nav-right">
+          <div className="nav-dropdown">
+            <i className="fa fa-caret-down"/>
+          </div>
+          <div className="nav-user">
+            <div className="nav-user-name">
+              {this.state.user.get('FirstName')} {this.state.user.get('LastName')}
+            </div>
+            <div className="nav-user-role">
+              {this.userRole()}
+            </div>
+          </div>
+        </div>
+      );
+    } else {
+      return <div className="nav-right"/>;
+    }
   },
 
   userRole() {
@@ -33,35 +48,6 @@ var UserRole = React.createClass({
         return 'Member';
       }
     }
-  }
-
-});
-
-
-var Right = React.createClass({
-
-  mixins: [ reactor.ReactMixin ],
-
-  getDataBindings() {
-    return {
-      user: getters.getUser,
-      userLocation: LocationGetters.getUserLocation
-    };
-  },
-
-  render() {
-    return (
-      <div className="nav-right">
-        {this.state.user ? (
-          <div>
-            <div className="nav-user-name">
-              {this.state.user.get('FirstName')} {this.state.user.get('LastName')}
-            </div>
-            <UserRole/>
-          </div>
-        ) : null}
-      </div>
-    );
   }
 
 });
