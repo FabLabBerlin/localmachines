@@ -69,6 +69,11 @@ var Summaries = React.createClass({
                       .get('selected').get('year');
     const userId = user.get('Id');
 
+    Invoices.actions.fetchFastbillStatuses(this.state.locationId, {
+      year: year,
+      month: month,
+      userId: userId
+    });
     Invoices.actions.fetchUser(this.state.locationId, {
       year: year,
       month: month,

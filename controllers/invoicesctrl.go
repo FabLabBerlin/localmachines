@@ -321,8 +321,8 @@ func (this *InvoicesController) GetUser() {
 // @Success 200 {object}
 // @Failure	401	Not authorized
 // @Failure	500	Internal Server Error
-// @router /months/:year/:month/users/:uid/status [get]
-func (this *InvoicesController) GetStatus() {
+// @router /months/:year/:month/users/:uid/statuses [get]
+func (this *InvoicesController) GetStatuses() {
 	_, authorized := this.GetLocIdAdmin()
 	if !authorized {
 		this.CustomAbort(401, "Not authorized")

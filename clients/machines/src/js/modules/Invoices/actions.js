@@ -4,6 +4,27 @@ var reactor = require('../../reactor');
 var toastr = require('../../toastr');
 
 
+function fetchFastbillStatuses(locId, {month, year, userId}) {
+  $.ajax({
+    url: '/api/invoices/months/' + year + '/' + month + '/users/' + userId + '/statuses',
+    data: {
+      location: locId
+    }
+  })
+  .success(function(invoiceStatuses) {
+    console.log('invoiceStatuses=', invoiceStatuses);
+    reactor.dispatch(actionTypes.SET_INVOICE_STATUSES, {
+      month: month,
+      year: year,
+      userId: userId,
+      invoiceStatuses: invoiceStatuses
+    })
+  })
+  .error(function() {
+    toastr.error('Error fetching invoice statuses.');
+  });
+}
+
 function fetchUserMemberships(locId, {userId}) {
   $.ajax({
     method: 'GET',
@@ -92,6 +113,7 @@ function setSelectedMonth({month, year}) {
 }
 
 export default {
+  fetchFastbillStatuses,
   fetchMonthlySums,
   fetchUser,
   fetchUserMemberships,

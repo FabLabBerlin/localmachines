@@ -17,6 +17,7 @@ var Invoice = React.createClass({
   getDataBindings() {
     return {
       invoice: Invoices.getters.getInvoice,
+      invoiceStatuses: Invoices.getters.getInvoiceStatuses,
       location: LocationGetters.getLocation,
       locationId: LocationGetters.getLocationId,
       MonthlySums: Invoices.getters.getMonthlySums,
@@ -44,6 +45,9 @@ var Invoice = React.createClass({
 
   render() {
     const invoice = this.state.invoice;
+    const invoiceStatuses = this.state.invoiceStatuses;
+
+    console.log('invoiceStatuses:', invoiceStatuses);
 
     if (invoice && this.state.userMemberships) {
       const name = invoice.User.FirstName + ' ' + invoice.User.LastName;

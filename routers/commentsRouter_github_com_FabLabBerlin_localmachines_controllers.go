@@ -148,8 +148,8 @@ func init() {
 
 	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"],
 		beego.ControllerComments{
-			"GetStatus",
-			`/months/:year/:month/users/:uid/status`,
+			"GetStatuses",
+			`/months/:year/:month/users/:uid/statuses`,
 			[]string{"get"},
 			nil})
 

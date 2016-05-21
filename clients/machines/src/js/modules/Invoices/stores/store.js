@@ -28,6 +28,7 @@ var InvoicesStore = new Nuclear.Store({
     this.on(actionTypes.SELECT_USER_ID, selectUserId);
     this.on(actionTypes.SET_SELECTED_MONTH, setSelectedMonth);
     this.on(actionTypes.SET_INVOICE, setInvoice);
+    this.on(actionTypes.SET_INVOICE_STATUSES, setInvoiceStatuses);
     this.on(actionTypes.SET_USER_MEMBERSHIPS, setUserMemberships);
   }
 
@@ -48,6 +49,10 @@ function setSelectedMonth(state, { month, year }) {
 
 function setInvoice(state, { month, year, userId, invoice }) {
   return state.setIn(['invoices', year, month, userId], invoice);
+}
+
+function setInvoiceStatuses(state, { month, year, userId, invoiceStatuses }) {
+  return state.setIn(['invoiceStatuses', year, month, userId], invoiceStatuses);
 }
 
 function setUserMemberships(state, { userId, userMemberships }) {
