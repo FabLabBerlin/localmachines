@@ -24,7 +24,7 @@ var Item = React.createClass({
 var Bottom = React.createClass({
   render() {
     return (
-      <div className="row">
+      <div className="nav-bottom row">
         <Item label="Machines"
               href="/machines/#/machine"/>
         <Item label="Reservations"
