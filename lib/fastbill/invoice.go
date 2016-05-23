@@ -65,15 +65,23 @@ type InvoiceGetResponse struct {
 }
 
 type InvoiceGetResponseInvoice struct {
-	Id          int64  `json:"INVOICE_ID,string"`
-	Type        string `json:"TYPE,omitempty"`
-	InvoiceDate string `json:"INVOICE_DATE,omitempty"`
-	PaidDate    string `json:"PAID_DATE,omitempty"`
-	IsCanceled  string `json:"IS_CANCELED,omitempty"`
+	Id          int64   `json:"INVOICE_ID,string"`
+	Type        string  `json:"TYPE,omitempty"`
+	InvoiceDate string  `json:"INVOICE_DATE,omitempty"`
+	PaidDate    string  `json:"PAID_DATE,omitempty"`
+	IsCanceled  string  `json:"IS_CANCELED,omitempty"`
+	Total       float64 `json:"TOTAL,omitempty"`
 }
 
 func (this *InvoiceGetResponseInvoice) Canceled() bool {
 	return this.IsCanceled == "1"
+}
+
+type ExistingMonth struct {
+	Invoices  []InvoiceGetResponseInvoice
+	CanCancel bool
+	CanDraft  bool
+	CanSend   bool
 }
 
 type InvoiceFilter struct {
@@ -81,7 +89,7 @@ type InvoiceFilter struct {
 	Type         string `json:"TYPE,omitempty"`
 }
 
-func (inv *Invoice) FetchExisting() (fbInv []InvoiceGetResponseInvoice, err error) {
+func (inv *Invoice) FetchExisting() (existingMonth *ExistingMonth, err error) {
 	fb := New()
 	filter := InvoiceFilter{}
 	if filter.InvoiceTitle, err = inv.GetTitle(); err != nil {
@@ -96,7 +104,31 @@ func (inv *Invoice) FetchExisting() (fbInv []InvoiceGetResponseInvoice, err erro
 	if err = fb.execGetRequest(&request, &response); err != nil {
 		return nil, fmt.Errorf("get request: %v", err)
 	}
-	return response.Response.Invoices, nil
+	existingMonth = &ExistingMonth{
+		Invoices: response.Response.Invoices,
+	}
+	numDrafts := 0
+	numCanceledOutgoing := 0
+	numUncanceledOutgoing := 0
+	for _, inv := range existingMonth.Invoices {
+		if inv.Type == INVOICE_TYPE_DRAFT {
+			existingMonth.CanSend = true
+			numDrafts++
+		} else if inv.Type == INVOICE_TYPE_OUTGOING {
+			if inv.Canceled() {
+				numCanceledOutgoing++
+			} else {
+				numUncanceledOutgoing++
+			}
+		}
+	}
+	if numUncanceledOutgoing > 0 {
+		existingMonth.CanCancel = true
+	}
+	if numDrafts == 0 && numUncanceledOutgoing == 0 {
+		existingMonth.CanDraft = true
+	}
+	return
 }
 
 func (inv *Invoice) GetTitle() (title string, err error) {
@@ -122,7 +154,7 @@ func (inv *Invoice) Submit() (id int64, err error) {
 	}
 	beego.Info("lib.fastbill:Invoice#Submit fbInvs=", fbInvs)
 	uncanceledFbInvs := 0
-	for _, fbInv := range fbInvs {
+	for _, fbInv := range fbInvs.Invoices {
 		if !fbInv.Canceled() {
 			uncanceledFbInvs++
 		}

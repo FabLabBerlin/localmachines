@@ -359,21 +359,19 @@ func (this *InvoicesController) GetStatuses() {
 		CustomerNumber: user.ClientId,
 	}
 
-	var fbInvs []fastbill.InvoiceGetResponseInvoice
+	var existingMonth fastbill.ExistingMonth
 
 	key := fmt.Sprintf("/months/%v/%v/users/%v/statuses", year, month, user.Id)
-	redis.Cached(key, 3600, &fbInvs, func() interface{} {
+	redis.Cached(key, 3600, &existingMonth, func() interface{} {
 		ivs, err := inv.FetchExisting()
 		if err != nil {
 			beego.Error("Failed to fetch existing fastbill invoice:", err)
 			this.Abort("500")
 		}
-		return ivs
+		return *ivs
 	})
 
-	beego.Info("fbInv=", fbInvs)
-
-	this.Data["json"] = fbInvs
+	this.Data["json"] = existingMonth
 	this.ServeJSON()
 }
 

@@ -3,7 +3,6 @@ package redis
 import (
 	"encoding/json"
 	"github.com/astaxie/beego"
-	//"github.com/garyburd/redigo/redis"
 )
 
 type Seconds int
