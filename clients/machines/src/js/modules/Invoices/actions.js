@@ -18,7 +18,7 @@ function fetchFastbillStatuses(locId, {month, year, userId}) {
       year: year,
       userId: userId,
       invoiceStatuses: invoiceStatuses
-    })
+    });
   })
   .error(function() {
     toastr.error('Error fetching invoice statuses.');

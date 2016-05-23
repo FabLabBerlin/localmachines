@@ -28,6 +28,14 @@ var Right = React.createClass({
             <div className="dropdown">
               <button className="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                 <span className="caret"></span>
+                <div className="nav-user">
+                  <div className="nav-user-name">
+                    {this.state.user.get('FirstName')} {this.state.user.get('LastName')}
+                  </div>
+                  <div className="nav-user-role">
+                    {this.userRole()}
+                  </div>
+                </div>
               </button>
               <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
                 <li><a href="/machines/#/profile">My Info</a></li>
@@ -35,14 +43,6 @@ var Right = React.createClass({
                 <li role="separator" className="divider"></li>
                 <li><a href="#" onClick={this.signOut}>Logout</a></li>
               </ul>
-            </div>
-          </div>
-          <div className="nav-user">
-            <div className="nav-user-name">
-              {this.state.user.get('FirstName')} {this.state.user.get('LastName')}
-            </div>
-            <div className="nav-user-role">
-              {this.userRole()}
             </div>
           </div>
         </div>
