@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/lib/fastbill"
+	"github.com/FabLabBerlin/localmachines/lib/redis"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices"
 	"github.com/FabLabBerlin/localmachines/models/users"
@@ -316,8 +317,8 @@ func (this *InvoicesController) GetUser() {
 	this.ServeJSON()
 }
 
-// @Title GetStatus
-// @Description Get status for a user
+// @Title GetStatuses
+// @Description Get statuses for a user
 // @Success 200 {object}
 // @Failure	401	Not authorized
 // @Failure	500	Internal Server Error
@@ -358,11 +359,17 @@ func (this *InvoicesController) GetStatuses() {
 		CustomerNumber: user.ClientId,
 	}
 
-	fbInvs, err := inv.FetchExisting()
-	if err != nil {
-		beego.Error("Failed to fetch existing fastbill invoice:", err)
-		this.Abort("500")
-	}
+	var fbInvs []fastbill.InvoiceGetResponseInvoice
+
+	key := fmt.Sprintf("/months/%v/%v/users/%v/statuses", year, month, user.Id)
+	redis.Cached(key, 3600, &fbInvs, func() interface{} {
+		ivs, err := inv.FetchExisting()
+		if err != nil {
+			beego.Error("Failed to fetch existing fastbill invoice:", err)
+			this.Abort("500")
+		}
+		return ivs
+	})
 
 	beego.Info("fbInv=", fbInvs)
 

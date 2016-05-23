@@ -24,6 +24,10 @@ var Summaries = React.createClass({
            + ' ' + sum.getIn(['User', 'LastName']))
            .toLowerCase();
     });
+    const total = (Math.round(summaries.reduce((result, monthlySum) => {
+      return result + monthlySum.get('Amount');
+    }, 0) * 100) / 100).toFixed(2);
+    console.log('total=', total);
 
     return (
       <div>
@@ -34,13 +38,16 @@ var Summaries = React.createClass({
           <thead>
             <tr>
               <th>User</th>
-              <th>Amount (EUR)</th>
               <th>Invoiced?</th>
               <th>Paid?</th>
+              <th>Amount (EUR)</th>
             </tr>
           </thead>
           <tbody>
             {summaries.map((sum, i) => {
+              if (sum.getIn(['User', 'Id']) !== 19) {
+                return undefined;
+              }
               const name = sum.getIn(['User', 'FirstName'])
                          + ' ' + sum.getIn(['User', 'LastName']);
               const amount = (Math.round(sum.get('Amount') * 100)
@@ -50,9 +57,9 @@ var Summaries = React.createClass({
               return (
                 <tr key={i} onClick={this.select.bind(this, sum.get('User'))}>
                   <td>{name}</td>
+                  <td></td>
+                  <td></td>
                   <td className="text-right">{amount}</td>
-                  <td></td>
-                  <td></td>
                 </tr>
               );
             })}
