@@ -33,8 +33,7 @@ func Cached(key string, expire Seconds, o interface{}, f ...func() interface{}) 
 
 uncached:
 	if len(f) == 1 {
-		o = f[0]()
-		buf, err := json.Marshal(o)
+		buf, err := json.Marshal(f[0]())
 		if err != nil {
 			beego.Info("redis cached: marshal:", err)
 			return
@@ -43,6 +42,9 @@ uncached:
 			beego.Info("redis cached: set:", err)
 		}
 		c.Flush()
+		if err := json.Unmarshal(buf, &o); err != nil {
+			beego.Info("redis cached: cache miss: unmarshal:", err)
+		}
 	}
 	return
 }
