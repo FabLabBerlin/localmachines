@@ -1,8 +1,12 @@
 var _ = require('lodash');
+var $ = require('jquery');
+var Invoices = require('../../modules/Invoices');
+var LocationGetters = require('../../modules/Location/getters');
 var moment = require('moment');
 var React = require('react');
 var reactor = require('../../reactor');
 var SettingsGetters = require('../../modules/Settings/getters');
+var toastr = require('../../toastr');
 var {formatDate, subtractVAT, toEuro, toCents} = require('./helpers');
 
 function formatDuration(purchase) {
@@ -45,7 +49,7 @@ function formatDuration(purchase) {
     if (h || m || s) {
       str += String(s) + 's ';
     }
-    return str;
+    return str.trim();
   }
 }
 
@@ -53,13 +57,40 @@ function formatPrice(price) {
   return (Math.round(price * 100) / 100).toFixed(2);
 }
 
+
+var DurationEdit = React.createClass({
+  componentDidMount() {
+    $(this.refs.duration.getDOMNode()).focus()
+                                      .select();
+  },
+
+  render() {
+    return (
+      <input type="text"
+             ref="duration"
+             value={formatDuration(this.props.purchase)}/>
+    );
+  }
+});
+
+
+
 var BillTable = React.createClass({
   mixins: [ reactor.ReactMixin ],
 
   getDataBindings() {
     return {
+      editPurchaseId: Invoices.getters.getEditPurchaseId,
+      isAdmin: LocationGetters.getIsAdmin,
       vatPercent: SettingsGetters.getVatPercent
     };
+  },
+
+  edit(purchase, e) {
+    if (this.state.isAdmin) {
+      Invoices.actions.editPurchase(purchase.Id);
+    }
+    e.stopPropagation();
   },
 
   render() {
@@ -92,7 +123,7 @@ var BillTable = React.createClass({
       </tr>
     );
 
-    _.each(bill.Purchases.Data, function(purchase) {
+    _.each(bill.Purchases.Data, (purchase) => {
       var label = purchase.Machine ? purchase.Machine.Name : '';
       switch (purchase.Type) {
       case 'activation':
@@ -110,11 +141,21 @@ var BillTable = React.createClass({
       default:
         console.log('unhandled purchase type ', purchase.Type);
       }
+      console.log('this.state.editPurchaseId=', this.state.editPurchaseId,
+        'purchase.Id=', purchase.Id);
+      const selected = this.state.editPurchaseId === purchase.Id;
       tbody.push(
-        <tr key={i++}>
+        <tr key={i++}
+            onClick={this.edit.bind(this, purchase)}
+            className={!selected ? 'unselected' : undefined}>
           <td>{label}</td>
           <td>{formatDate(moment(purchase.TimeStart))}</td>
-          <td>{formatDuration(purchase)}</td>
+          <td>
+            {selected ?
+              <DurationEdit purchase={purchase}/> :
+              formatDuration(purchase)
+            }
+          </td>
           <td>{formatPrice(purchase.PriceExclVAT)}€</td>
           <td>{formatPrice(purchase.PriceVAT)}€</td>
           <td>{formatPrice(purchase.DiscountedTotal)}€</td>

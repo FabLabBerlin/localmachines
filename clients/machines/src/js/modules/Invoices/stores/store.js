@@ -24,6 +24,7 @@ var InvoicesStore = new Nuclear.Store({
   },
 
   initialize() {
+    this.on(actionTypes.EDIT_PURCHASE, editPurchase);
     this.on(actionTypes.FETCH_MONTHLY_SUMMARIES, fetchMonthlySums);
     this.on(actionTypes.SELECT_USER_ID, selectUserId);
     this.on(actionTypes.SET_SELECTED_MONTH, setSelectedMonth);
@@ -33,6 +34,10 @@ var InvoicesStore = new Nuclear.Store({
   }
 
 });
+
+function editPurchase(state, id) {
+  return state.set('editPurchaseId', id);
+}
 
 function fetchMonthlySums(state, { month, year, summaries }) {
   return state.setIn(['MonthlySums', year, month], toImmutable(summaries));

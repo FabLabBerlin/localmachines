@@ -1,5 +1,7 @@
+var getters = require('../../../getters');
 var Invoices = require('../../../modules/Invoices');
 var LoaderLocal = require('../../LoaderLocal');
+var LocationActions = require('../../../actions/LocationActions');
 var LocationGetters = require('../../../modules/Location/getters');
 var moment = require('moment');
 var React = require('react');
@@ -16,8 +18,13 @@ var Month = React.createClass({
     return {
       location: LocationGetters.getLocation,
       locationId: LocationGetters.getLocationId,
-      MonthlySums: Invoices.getters.getMonthlySums
+      MonthlySums: Invoices.getters.getMonthlySums,
+      uid: getters.getUid
     };
+  },
+
+  componentWillMount() {
+    LocationActions.loadUserLocations(this.state.uid);
   },
 
   render() {

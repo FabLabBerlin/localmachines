@@ -3,6 +3,9 @@ var actionTypes = require('./actionTypes');
 var reactor = require('../../reactor');
 var toastr = require('../../toastr');
 
+function editPurchase(id) {
+  reactor.dispatch(actionTypes.EDIT_PURCHASE, id);
+}
 
 function fetchFastbillStatuses(locId, {month, year, userId}) {
   $.ajax({
@@ -113,6 +116,7 @@ function setSelectedMonth({month, year}) {
 }
 
 export default {
+  editPurchase,
   fetchFastbillStatuses,
   fetchMonthlySums,
   fetchUser,

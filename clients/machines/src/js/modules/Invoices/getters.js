@@ -2,6 +2,13 @@ var Nuclear = require('nuclear-js');
 var toImmutable = Nuclear.toImmutable;
 
 
+const getEditPurchaseId = [
+  ['invoicesStore'],
+  (invoicesStore) => {
+    return invoicesStore.get('editPurchaseId');
+  }
+];
+
 const getMonthlySums = [
   ['invoicesStore'],
   (invoicesStore) => {
@@ -43,6 +50,7 @@ const getUserMemberships = [
 ];
 
 export default {
+  getEditPurchaseId,
   getInvoice,
   getInvoiceStatuses,
   getMonthlySums,
