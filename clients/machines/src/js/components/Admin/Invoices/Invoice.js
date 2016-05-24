@@ -50,24 +50,44 @@ var Invoice = React.createClass({
     console.log('invoiceStatuses:', invoiceStatuses);
 
     if (invoice && this.state.userMemberships) {
+      const amount = (Math.round(invoice.Sums.All.PriceInclVAT * 100)
+                      / 100).toFixed(2);
       const name = invoice.User.FirstName + ' ' + invoice.User.LastName;
+      const timeFrame = '' + invoice.Interval.MonthFrom + '/' +
+                             invoice.Interval.YearFrom;
+      console.log('invoice=', invoice);
 
       return (
         <div className="inv-invoice-container" onClick={this.hide}>
           <div className="inv-invoice-background"/>
           <div className="inv-invoice-aligner">
             <div className="inv-invoice">
-              User Invoice for {name}
-              <div>
-                <button type="button" onClick={this.makeDraft}>
-                  <i className="fa fa-pencil"/> Make Draft
-                </button>
-                <button type="button">
-                  <i className="fa fa-send"/> Send
-                </button>
+              <div className="row">
+                <div className="col-xs-3">
+                  <h3>{name}</h3>
+                </div>
+                <div className="col-xs-3 inv-time-frame">
+                  <h3>Invoice {timeFrame}</h3>
+                </div>
+                <div className="col-xs-3 inv-amount">
+                  <h3>Amount {amount} €</h3>
+                </div>
+                <div className="col-xs-3">
+                  <button type="button"
+                          onClick={this.makeDraft}
+                          title="Make Draft">
+                    <i className="fa fa-pencil"/>
+                  </button>
+                  <button type="button"
+                          title="Send">
+                    <i className="fa fa-send"/>
+                  </button>
+                </div>
               </div>
-              <Membership memberships={this.state.userMemberships.Data}/>
+              <h5>Activations</h5>
               <BillTable bill={invoice}/>
+              <h5>Memberships</h5>
+              <Membership memberships={this.state.userMemberships.Data}/>
             </div>
           </div>
         </div>

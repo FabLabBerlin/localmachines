@@ -34,7 +34,7 @@ func (this *InvoicesController) GetAll() {
 	mes, err := monthly_earning.GetAllAt(locId)
 	if err != nil {
 		beego.Error("Failed to get all monthly earnings")
-		this.CustomAbort(403, "Failed to get all monthly earnings")
+		this.Abort("500")
 	}
 
 	this.Data["json"] = mes
@@ -170,7 +170,7 @@ func (this *InvoicesController) DownloadExcelExport() {
 
 	f, err := os.Open(me.FilePath)
 	if err != nil {
-		beego.Error("open ", me.FilePath, ":", err)
+		beego.Error("open", me.FilePath, ":", err)
 		if os.IsNotExist(err) {
 			this.CustomAbort(404, "Cannot find Excel Export file")
 		} else {

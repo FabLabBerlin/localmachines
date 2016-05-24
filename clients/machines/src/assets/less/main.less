@@ -630,10 +630,15 @@ Y888888P VP   V8P    YP     `Y88P'  Y888888P  `Y88P' Y88888P `8888Y'
 }
 
 .inv-invoice-background {
-  background-color: black;
+  background-color: white;
+  -webkit-filter: blur(20px);
+  -moz-filter: blur(20px);
+  -o-filter: blur(20px);
+  -ms-filter: blur(20px);
+  filter: blur(20px);
   height: 100%;
   left: 0;
-  opacity: 0.3;
+  opacity: 0.7;
   position: absolute;
   top: 0;
   width: 100%;
@@ -651,12 +656,31 @@ Y888888P VP   V8P    YP     `Y88P'  Y888888P  `Y88P' Y88888P `8888Y'
 }
 
 .inv-invoice {
-  background: white;
+  background: #E7E7E7;
   color: black;
   height: 80%;
   overflow-y: scroll;
   padding: 20px;
   width: 80%;
+}
+
+.inv-invoice button {
+  background: white;
+  border-radius: 50%;
+  border-style: none;
+  color: #4A4A4A;
+  float: right;
+  height: 40px;
+  margin: 9px;
+  width: 40px;
+}
+
+.inv-time-frame {
+  white-space: nowrap;
+}
+
+.inv-amount {
+  white-space: nowrap;
 }
 
 
