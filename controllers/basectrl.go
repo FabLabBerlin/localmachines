@@ -16,6 +16,8 @@ import (
 	"time"
 )
 
+const COOKIE_LIFETIME_SECONDS = 86400
+
 // Field names for session variables
 const (
 	SESSION_USER_ID         = "user_id"
@@ -65,7 +67,7 @@ func init() {
 		if err != nil {
 			panic(err.Error())
 		}
-		store.SetMaxAge(86400)
+		store.SetMaxAge(COOKIE_LIFETIME_SECONDS)
 	} else {
 		runmodeTest = true
 	}
@@ -174,7 +176,7 @@ func (this *Controller) SetSessionLocationId(locId int64) {
 		Name:    "location",
 		Value:   strconv.FormatInt(locId, 10),
 		Path:    "/",
-		Expires: time.Now().AddDate(0, 0, 1),
+		Expires: time.Now().Add(COOKIE_LIFETIME_SECONDS * time.Second),
 		Secure:  beego.AppConfig.String("runmode") == "prod",
 	}
 	http.SetCookie(this.Ctx.ResponseWriter, c)

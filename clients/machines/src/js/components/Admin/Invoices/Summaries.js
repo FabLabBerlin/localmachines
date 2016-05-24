@@ -34,9 +34,10 @@ var Summaries = React.createClass({
         {this.state.MonthlySums.getIn(['selected', 'userId']) ? (
           <Invoice/>
         ) : null}
-        <table>
+        <table className="table table-striped table-hover">
           <thead>
             <tr>
+              <th>Fastbill Number</th>
               <th>User</th>
               <th>Invoiced?</th>
               <th>Paid?</th>
@@ -56,6 +57,7 @@ var Summaries = React.createClass({
 
               return (
                 <tr key={i} onClick={this.select.bind(this, sum.get('User'))}>
+                  <td>{sum.getIn(['User', 'ClientId'])}</td>
                   <td>{name}</td>
                   <td></td>
                   <td></td>
