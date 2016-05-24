@@ -36,20 +36,21 @@ function formatDuration(purchase) {
     }
 
     var d = parseInt(duration.toString(), 10);
-    var h = Math.floor(d / 3600);
-    var m = Math.floor(d % 3600 / 60);
-    var s = Math.floor(d % 3600 % 60);
-    var str = '';
-    if (h) {
-      str += String(h) + 'h ';
+    var h = String(Math.floor(d / 3600));
+    var m = String(Math.floor(d % 3600 / 60));
+    var s = String(Math.floor(d % 3600 % 60));
+    if (h.length === 1) {
+      h = '0' + h;
     }
-    if (h || m) {
-      str += String(m) + 'm ';
+    if (m.length === 1) {
+      m = '0' + m;
     }
-    if (h || m || s) {
-      str += String(s) + 's ';
+    if (s.length === 1) {
+      s = '0' + s;
     }
-    return str.trim();
+    var str = h + ':' + m + ':' + s + ' h';
+
+    return str;
   }
 }
 
@@ -141,8 +142,6 @@ var BillTable = React.createClass({
       default:
         console.log('unhandled purchase type ', purchase.Type);
       }
-      console.log('this.state.editPurchaseId=', this.state.editPurchaseId,
-        'purchase.Id=', purchase.Id);
       const selected = this.state.editPurchaseId === purchase.Id;
       tbody.push(
         <tr key={i++}

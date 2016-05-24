@@ -16,6 +16,7 @@ var Invoice = React.createClass({
 
   getDataBindings() {
     return {
+      editPurchaseId: Invoices.getters.getEditPurchaseId,
       invoice: Invoices.getters.getInvoice,
       invoiceStatuses: Invoices.getters.getInvoiceStatuses,
       location: LocationGetters.getLocation,
@@ -27,7 +28,9 @@ var Invoice = React.createClass({
   },
 
   hide() {
-    Invoices.actions.selectUserId(null);
+    if (!this.state.editPurchaseId) {
+      Invoices.actions.selectUserId(null);
+    }
   },
 
   makeDraft(e) {
@@ -58,10 +61,12 @@ var Invoice = React.createClass({
       console.log('invoice=', invoice);
 
       return (
-        <div className="inv-invoice-container" onClick={this.hide}>
+        <div className="inv-invoice-container"
+             onClick={this.hide}>
           <div className="inv-invoice-background"/>
           <div className="inv-invoice-aligner">
-            <div className="inv-invoice">
+            <div className="inv-invoice"
+                 onClick={this.stopPropagation}>
               <div className="row">
                 <div className="col-xs-3">
                   <h3>{name}</h3>
@@ -95,6 +100,10 @@ var Invoice = React.createClass({
     } else {
       return <LoaderLocal/>;
     }
+  },
+
+  stopPropagation(e) {
+    e.stopPropagation();
   }
 
 });
