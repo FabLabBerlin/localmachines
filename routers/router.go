@@ -26,6 +26,7 @@ func Init() {
 	beego.Router("/favicon.png", &controllers.FaviconController{})
 	beego.Router("/admin", &clients.Admin{})
 	beego.Router("/machines", &clients.Machines{})
+	beego.Router("/logout", &controllers.LogoutController{})
 	// No need to create a router for favicon.ico and robots.txt as they are
 	// handled by beego router.go
 
