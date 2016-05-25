@@ -256,14 +256,17 @@ func (activation *Activation) Close(endTime time.Time) error {
 func (activation *Activation) Update() error {
 	o := orm.NewOrm()
 
+	if mid := activation.Purchase.MachineId; mid != 0 {
+		m, err := machine.Get(mid)
+		if err != nil {
+			return err
+		}
+		activation.Purchase.PriceUnit = m.PriceUnit
+		activation.Purchase.PricePerUnit = m.Price
+	}
 	activation.Purchase.Quantity = activation.Purchase.quantityFromTimes()
 
 	_, err := o.Update(&activation.Purchase)
 
-	if err != nil {
-		beego.Error("Failed to update activation:", err)
-		return fmt.Errorf("Failed to update activation: %v", err)
-	}
-
-	return nil
+	return err
 }

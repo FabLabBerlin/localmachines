@@ -42,7 +42,6 @@ var Invoice = React.createClass({
     const year = this.state.MonthlySums
                       .get('selected').get('year');
 
-    toastr.info('Invoice#makeDraft()');
     Invoices.actions.makeDraft(locId, {month, year, userId});
   },
 
@@ -50,15 +49,12 @@ var Invoice = React.createClass({
     const invoice = this.state.invoice;
     const invoiceStatuses = this.state.invoiceStatuses;
 
-    console.log('invoiceStatuses:', invoiceStatuses);
-
     if (invoice && this.state.userMemberships) {
       const amount = (Math.round(invoice.Sums.All.PriceInclVAT * 100)
                       / 100).toFixed(2);
       const name = invoice.User.FirstName + ' ' + invoice.User.LastName;
       const timeFrame = '' + invoice.Interval.MonthFrom + '/' +
                              invoice.Interval.YearFrom;
-      console.log('invoice=', invoice);
 
       return (
         <div className="inv-invoice-container"
