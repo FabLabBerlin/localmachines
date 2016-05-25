@@ -28,9 +28,16 @@ var Invoice = React.createClass({
   },
 
   hide() {
-    if (!this.state.editPurchaseId) {
-      Invoices.actions.selectUserId(null);
+    if (this.state.editPurchaseId) {
+      /*eslint-disable no-alert */
+      if (window.confirm('Discard unsaved changes?')) {
+        Invoices.actions.editPurchase(null);
+      } else {
+        return;
+      }
+      /*eslint-enable no-alert */
     }
+    Invoices.actions.selectUserId(null);
   },
 
   makeDraft(e) {
@@ -74,6 +81,11 @@ var Invoice = React.createClass({
                   <h3>Amount {amount} €</h3>
                 </div>
                 <div className="col-xs-3">
+                  <button type="button"
+                          title="Close"
+                          onClick={this.hide}>
+                    <i className="fa fa-close"/>
+                  </button>
                   <button type="button"
                           onClick={this.makeDraft}
                           title="Make Draft">
