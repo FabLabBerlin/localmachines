@@ -92,6 +92,11 @@ var Invoice = React.createClass({
                     <i className="fa fa-pencil"/>
                   </button>
                   <button type="button"
+                          onClick={this.save}
+                          title="Save">
+                    <i className="fa fa-check"/>
+                  </button>
+                  <button type="button"
                           title="Send">
                     <i className="fa fa-send"/>
                   </button>
@@ -108,6 +113,18 @@ var Invoice = React.createClass({
     } else {
       return <LoaderLocal/>;
     }
+  },
+
+  save(e) {
+    e.stopPropagation();
+    const locId = this.state.locationId;
+    const userId = this.state.uid;
+    const month = this.state.MonthlySums
+                      .get('selected').get('month');
+    const year = this.state.MonthlySums
+                      .get('selected').get('year');
+
+    Invoices.actions.save(locId, {month, year, userId});
   },
 
   stopPropagation(e) {

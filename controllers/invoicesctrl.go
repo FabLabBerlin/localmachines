@@ -453,3 +453,74 @@ func (this *InvoicesController) CreateDraft() {
 	this.Data["json"] = fbDraft
 	this.ServeJSON()
 }
+
+// @Title Update user invoicing data
+// @Description Update invoicing data for a user
+// @Success 200 {object}
+// @Failure	401	Not authorized
+// @Failure	500	Internal Server Error
+// @router /months/:year/:month/users/:uid/update [post]
+func (this *InvoicesController) Update() {
+	locId, authorized := this.GetLocIdAdmin()
+	if !authorized {
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	year, err := this.GetInt64(":year")
+	if err != nil {
+		beego.Error("Failed to get year:", err)
+		this.CustomAbort(400, "Bad request")
+	}
+
+	month, err := this.GetInt64(":month")
+	if err != nil {
+		beego.Error("Failed to get month:", err)
+		this.CustomAbort(400, "Bad request")
+	}
+
+	uid, err := this.GetInt64(":uid")
+	if err != nil {
+		beego.Error("Failed to get uid:", err)
+		this.CustomAbort(400, "Bad request")
+	}
+
+	interval := lib.Interval{
+		MonthFrom: int(month),
+		YearFrom:  int(year),
+		MonthTo:   int(month),
+		YearTo:    int(year),
+	}
+
+	me, err := monthly_earning.New(locId, interval)
+	if err != nil {
+		beego.Error("Failed to make new invoices:", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	sums := make([]MonthlySummary, 0, len(me.Invoices))
+	for _, inv := range me.Invoices {
+		sum := MonthlySummary{
+			User: inv.User,
+		}
+		for _, p := range inv.Purchases.Data {
+			sum.Amount += p.DiscountedTotal
+		}
+		sums = append(sums, sum)
+	}
+
+	var userInv *invoices.Invoice
+
+	for _, inv := range me.Invoices {
+		if inv.User.Id == uid {
+			userInv = inv
+		}
+	}
+
+	if err := userInv.CalculateTotals(); err != nil {
+		beego.Error("CalculateTotals:", err)
+		this.Abort("500")
+	}
+
+	beego.Error("Not implemented")
+	this.CustomAbort(500, "Not implemented")
+}

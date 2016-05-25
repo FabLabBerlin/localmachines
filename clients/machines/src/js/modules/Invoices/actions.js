@@ -107,6 +107,22 @@ function makeDraft(locId, {month, year, userId}) {
   });
 }
 
+function save(locId, {month, year, userId}) {
+  $.ajax({
+    method: 'POST',
+    url: '/api/invoices/months/' + year + '/' + month + '/users/' + userId + '/update',
+    data: {
+      location: locId
+    }
+  })
+  .success(function(invoice) {
+    toastr.info('Changes saved');
+  })
+  .error(function() {
+    toastr.error('Error saving changes.');
+  });
+}
+
 function selectUserId(userId) {
   reactor.dispatch(actionTypes.SELECT_USER_ID, userId);
 }
@@ -122,6 +138,7 @@ export default {
   fetchUser,
   fetchUserMemberships,
   makeDraft,
+  save,
   selectUserId,
   setSelectedMonth
 };
