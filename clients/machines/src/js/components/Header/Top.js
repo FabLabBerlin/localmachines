@@ -11,6 +11,7 @@ var Right = React.createClass({
 
   getDataBindings() {
     return {
+      isAdmin: LocationGetters.getIsAdmin,
       user: getters.getUser,
       userLocation: LocationGetters.getUserLocation
     };
@@ -40,6 +41,11 @@ var Right = React.createClass({
               <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
                 <li><a href="/machines/#/profile">My Info</a></li>
                 <li><a href="/machines/#/feedback">Feedback</a></li>
+                {this.state.isAdmin ? (
+                  <li>
+                    <a href="/machines/#/admin/settings">Settings</a>
+                  </li>
+                ) : null}
                 <li role="separator" className="divider"></li>
                 <li><a href="#" onClick={this.signOut}>Logout</a></li>
               </ul>

@@ -1,6 +1,7 @@
 var AdminInvoices = require('./components/Admin/Invoices/Invoices');
 var AdminMachine = require('./components/Admin/Machines/Machine');
 var AdminMachines = require('./components/Admin/Machines/Machines');
+var AdminSettings = require('./components/Admin/Settings/Settings');
 var App = require('./components/App');
 var FeedbackPage = require('./components/Feedback/FeedbackPage');
 var FeedbackStore = require('./stores/FeedbackStore');
@@ -21,6 +22,7 @@ var ReservationsStore = require('./stores/ReservationsStore');
 var ReservationRulesStore = require('./stores/ReservationRulesStore');
 var Router = require('react-router');
 var ScrollNavStore = require('./stores/ScrollNavStore');
+var Page = require('./components/UserProfile/SpendingsPage');
 var SettingsStore = require('./modules/Settings/stores/store');
 var SpendingsPage = require('./components/UserProfile/SpendingsPage');
 var TutoringsStore = require('./stores/TutoringsStore');
@@ -67,6 +69,7 @@ let routes = (
       <Route path="machines" handler={AdminMachines} />
       <Route path="machines/:machineId" handler={AdminMachine} />
       <Route path="invoices" handler={AdminInvoices} />
+      <Route path="settings" handler={AdminSettings} />
     </Route>
     <Route name="forgot_password" path="forgot_password">
       <Route name="email_sent" handler={ForgotPassword.EmailSent} />
