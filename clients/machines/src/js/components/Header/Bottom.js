@@ -9,7 +9,7 @@ var Item = React.createClass({
     }
 
     return (
-      <div className="col-xs-4 text-center">
+      <div className="nav-item-container">
         <div className={'nav-item ' + activeClass}>
           <a href={this.props.href}>
             {this.props.label}

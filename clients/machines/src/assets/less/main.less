@@ -315,6 +315,11 @@ nav.navbar a.sign-out {
   margin-right: 0;
 }
 
+.nav-item-container {
+  width: 33.33333333%;
+  float: left; 
+}
+
 .nav-item {
   .align-items(center);
   border-top: 3px solid black;
@@ -324,6 +329,20 @@ nav.navbar a.sign-out {
   font-weight: bold;
   .justify-content(center);
   height: 50px;
+  text-align: center;
+}
+
+.nav-item-container:nth-child(1) {
+  padding-right: 10px;
+}
+
+.nav-item-container:nth-child(2) {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.nav-item-container:nth-child(3) {
+  padding-left: 11px;
 }
 
 .nav-item:hover {
