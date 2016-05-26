@@ -81,6 +81,7 @@ var Top = React.createClass({
   getDataBindings() {
     return {
       location: LocationGetters.getLocation,
+      locationId: LocationGetters.getLocationId,
       user: getters.getUser
     };
   },
@@ -91,7 +92,10 @@ var Top = React.createClass({
         <div className="col-xs-6 nav-left">
           <a className="nav-logo" 
              href="/machines/#/machine">
-            <img src="/machines/assets/img/logo-easylab.svg"/>
+            {this.state.locationId === 1 ?
+              <img src="/machines/assets/img/logo-small.svg"/> :
+              <img src="/machines/assets/img/logo-easylab.svg"/>
+            }
           </a>
           <div className="nav-title hidden-xs">
             {this.state.location ? (

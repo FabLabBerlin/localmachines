@@ -42,7 +42,7 @@ html {
 }
 
 body {
-  background-color: @bg-color-default;
+  background-color: #f6f7f8;
   color: @text-color-default;
   font-family: 'Helvetica', 'Arial', sans-serif;
   font-weight: normal;
@@ -58,6 +58,10 @@ ul, li {
   padding: 0;
   padding-right: 10px;
   list-style: none;
+}
+
+#main-content {
+  background: #f6f7f8;
 }
 
 /*
@@ -311,8 +315,10 @@ nav.navbar a.sign-out {
 }
 
 .nav-bottom.row {
+  background: white;
   margin-left: 0;
   margin-right: 0;
+  padding-bottom: 2px;
 }
 
 .nav-item-container {
@@ -372,11 +378,13 @@ nav.navbar a.sign-out {
 }
 
 .nav {
+  background: white;
   margin-bottom: 30px;
 }
 
 .nav-top {
   .align-items(flex-start);
+  background: white;
   color: black;
   .flex-block();
   .flex-direction(row);
@@ -445,6 +453,16 @@ nav.navbar a.sign-out {
 
 .nav-dropdown .dropdown .divider {
   background: white;
+}
+
+.btn-default:hover, .btn-default:active:hover, .btn-default:focus:hover, .btn-default:visited:hover {
+  background: white;
+  color: black;
+}
+
+.btn-default:active, .btn-default.active, .open > .dropdown-toggle.btn-default {
+  background: white;
+  color: black;
 }
 
 .nav-user {
@@ -580,9 +598,10 @@ Dashboard/Main View
 
 */
 footer {
+  background: #f6f7f8;
+  border-top: 2px solid darken(@bg-color-default, 10%);
   margin-top: 20px;
   margin-bottom: 0;
-  border-top: 2px solid darken(@bg-color-default, 10%);
 }
 
 footer div {
