@@ -17,10 +17,6 @@ var Right = React.createClass({
     };
   },
 
-  signOut() {
-    LoginActions.logout(this.context.router);
-  },
-
   render() {
     if (this.state.user) {
       return (
@@ -47,7 +43,7 @@ var Right = React.createClass({
                 ) : null}
                 <li><a href="/machines/#/feedback">Feedback</a></li>
                 <li role="separator" className="divider"></li>
-                <li><a href="#" onClick={this.signOut}>Log out</a></li>
+                <li><a href="/logout">Log out</a></li>
               </ul>
             </div>
           </div>
