@@ -2,6 +2,7 @@ var AdminInvoices = require('./components/Admin/Invoices/Invoices');
 var AdminMachine = require('./components/Admin/Machines/Machine');
 var AdminMachines = require('./components/Admin/Machines/Machines');
 var AdminSettings = require('./components/Admin/Settings/Settings');
+var AdminUser = require('./components/Admin/Users/User');
 var AdminUsers = require('./components/Admin/Users/Users');
 var App = require('./components/App');
 var FeedbackPage = require('./components/Feedback/FeedbackPage');
@@ -73,6 +74,7 @@ let routes = (
       <Route path="invoices" handler={AdminInvoices} />
       <Route path="settings" handler={AdminSettings} />
       <Route path="users" handler={AdminUsers} />
+      <Route path="users/:userId" handler={AdminUser} />
     </Route>
     <Route name="forgot_password" path="forgot_password">
       <Route name="email_sent" handler={ForgotPassword.EmailSent} />

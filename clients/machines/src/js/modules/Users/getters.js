@@ -1,10 +1,10 @@
 const getUsers = [
-	['usersStore'],
+  ['usersStore'],
   (usersStore) => {
     return usersStore.get('users');
   }
 ];
 
 export default {
-	getUsers
+  getUsers
 };
