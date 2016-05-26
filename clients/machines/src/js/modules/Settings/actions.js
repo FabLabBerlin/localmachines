@@ -7,6 +7,7 @@ var reactor = require('../../reactor');
 var SettingsGetters = require('../../modules/Settings/getters');
 var toastr = require('../../toastr');
 
+
 var SettingsActions = {
 
   loadAdminSettings({locationId}) {

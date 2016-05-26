@@ -85,7 +85,7 @@ var Top = React.createClass({
   render() {
     return (
       <div className="nav-top row">
-        <div className="col-xs-6 nav-left">
+        <div className="col-xs-5 nav-left" style={{overflow: 'hidden'}}>
           <a className="nav-logo" 
              href="/machines/#/machine">
             {this.state.locationId === 1 ?
@@ -102,7 +102,7 @@ var Top = React.createClass({
             <span className="nav-title-easylab">EASY LAB</span>
           </div>
         </div>
-        <div className="col-xs-6 pull-right">
+        <div className="col-xs-7 pull-right">
           <Right/>
         </div>
       </div>

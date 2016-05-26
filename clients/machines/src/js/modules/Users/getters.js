@@ -4,3 +4,7 @@ const getUsers = [
     return usersStore.get('users');
   }
 ];
+
+export default {
+	getUsers
+};

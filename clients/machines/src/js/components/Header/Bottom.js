@@ -25,11 +25,11 @@ var Bottom = React.createClass({
   render() {
     return (
       <div className="nav-bottom row">
-        <Item label="Machines"
+        <Item label={<span><i className="fa fa-plug"/> <span className="hidden-xs">Machines</span></span>}
               href="/machines/#/machine"/>
-        <Item label="Reservations"
+        <Item label={<span><i className="fa fa-calendar-check-o"/> <span className="hidden-xs">Reservations</span></span>}
               href="/machines/#/reservations"/>
-        <Item label="Spendings"
+        <Item label={<span><i className="fa fa-money"/> <span className="hidden-xs">Spendings</span></span>}
               href="/machines/#/spendings"/>
       </div>
     );
