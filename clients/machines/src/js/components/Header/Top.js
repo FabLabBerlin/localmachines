@@ -39,15 +39,15 @@ var Right = React.createClass({
                 </div>
               </button>
               <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
-                <li><a href="/machines/#/profile">My Info</a></li>
-                <li><a href="/machines/#/feedback">Feedback</a></li>
+                <li><a href="/machines/#/profile">My info</a></li>
                 {this.state.isAdmin ? (
                   <li>
                     <a href="/machines/#/admin/settings">Settings</a>
                   </li>
                 ) : null}
+                <li><a href="/machines/#/feedback">Feedback</a></li>
                 <li role="separator" className="divider"></li>
-                <li><a href="#" onClick={this.signOut}>Logout</a></li>
+                <li><a href="#" onClick={this.signOut}>Log out</a></li>
               </ul>
             </div>
           </div>
