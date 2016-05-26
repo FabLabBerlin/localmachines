@@ -1,11 +1,14 @@
 var _ = require('lodash');
 var getters = require('../../../getters');
 var LoaderLocal = require('../../LoaderLocal');
+var LocationActions = require('../../../actions/LocationActions');
 var LocationGetters = require('../../../modules/Location/getters');
 var MachineActions = require('../../../actions/MachineActions');
+var Machines = require('../../../modules/Machines');
 var Navigation = require('react-router').Navigation;
 var React = require('react');
 var reactor = require('../../../reactor');
+var UserActions = require('../../../actions/UserActions');
 var Users = require('../../../modules/Users');
 
 
@@ -216,6 +219,35 @@ var Password = React.createClass({
   render() {
     return (
       <div>
+        <div>
+          <label for="user-password">User Password</label>
+        </div>
+
+        <div className="row">
+          
+            <div className="col-sm-3">
+              <div className="form-group">
+                <input type="password" className="form-control" 
+                       id="user-password" placeholder="New password"/>
+              </div>
+            </div>
+
+            <div className="col-sm-3">
+              <div className="form-group">
+                <input type="password" className="form-control"
+                       placeholder="Repeat password"/>
+              </div>
+            </div>
+
+            <div className="col-sm-3">
+              <div className="form-group">
+                <button className="btn btn-primary btn-block" ng-click="updatePassword()">
+                  Update Password
+                </button>
+              </div>
+            </div>
+          
+        </div>
       </div>
     );
   }
@@ -234,8 +266,16 @@ var Comments = React.createClass({
   },
 
   render() {
+    const user = this.props.user;
+
     return (
-      <div>
+      <div className="row">
+        <div className="col-sm-12">
+          <h2>Comments</h2>
+        </div>
+        <div className="col-sm-6">
+          <textarea className="form-control" value={user.Comments}></textarea>
+        </div>
       </div>
     );
   }
@@ -249,13 +289,85 @@ var Permissions = React.createClass({
 
   getDataBindings() {
     return {
-      location: LocationGetters.getLocation
+      location: LocationGetters.getLocation,
+      machines: Machines.getters.getMachines,
+      userLocation: LocationGetters.getUserLocation
     };
   },
 
   render() {
+    if (!this.state.userLocation || !this.state.machines) {
+      return <LoaderLocal/>;
+    }
+
+    const userLocation = this.state.userLocation.toJS();
+    const machines = this.state.machines.toJS();
+
+    console.log('Permissions: machines=', machines);
+
     return (
       <div>
+        <div className="row">
+
+          <div className="col-sm-6">
+            <div className="row">
+              <div className="col-sm-12">
+                <h2>Role</h2>
+              </div>
+              <div className="col-sm-12 form-group">
+                <div className="col-sm-12" ng-repeat="userLocation in userLocations">
+                  <div ng-show="globalConfigVisible || userLocation.LocationId == locationId">
+                    <div className="col-sm-6">
+                      {userLocation.Location.Title}
+                    </div>
+                    <div className="col-sm-6">
+                      <select className="form-control"
+                              value={userLocation.UserRole}
+                              ng-change="updateUserLocation(userLocation)">
+                        <option value="archived">Archived</option>
+                        <option value="member">Member</option>
+                        <option value="staff">Staff</option>
+                        <option value="api">Api</option>
+                        <option value="admin">Admin</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-sm-6">
+            <div className="row">
+              
+              <div className="col-sm-12">
+                <h2>Machine Permissions</h2>
+              </div>
+
+              <div className="col-sm-6" ng-repeat="machine in availableMachines | machinesFilter:this">
+                {_.map(machines, (machine) => {
+                  if (machine.Archived) {
+                    return undefined;
+                  }
+
+                  return (
+                    <div className="checkbox-inline">
+                      <label title={machine.Description}>
+                        <input 
+                          type="checkbox" 
+                          ng-model="machine['Checked']"
+                          ng-disabled="machine['Disabled']"/> 
+                        {machine.Name}
+                      </label>
+                    </div>
+                  );
+                })}
+              </div>
+              
+            </div>
+          </div>
+
+        </div>
       </div>
     );
   }
@@ -312,17 +424,21 @@ var UserView = React.createClass({
     const uid = reactor.evaluateToJS(getters.getUid);
     MachineActions.apiGetUserMachines(locationId, uid);
     Users.actions.fetchUsers({locationId});
+    UserActions.fetchUser(uid);
+    LocationActions.loadUserLocations(uid);
   },
 
   getDataBindings() {
     return {
+      locations: LocationGetters.getLocations,
       location: LocationGetters.getLocation,
       users: Users.getters.getUsers
     };
   },
 
   render() {
-    if (this.state.users) {
+    console.log('UserView: this.state.locations=', this.state.locations);
+    if (this.state.users && this.state.locations) {
       const userId = parseInt(this.props.params.userId);
       const user = _.find(this.state.users, u => u.Id === userId);
 
