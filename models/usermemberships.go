@@ -16,6 +16,9 @@ type UserMembership struct {
 	StartDate    time.Time `orm:"type(datetime)"`
 	EndDate      time.Time `orm:"type(datetime)"`
 	AutoExtend   bool
+
+	InvoiceId     uint64
+	InvoiceStatus string
 }
 
 func (this *UserMembership) Interval() lib.Interval {
