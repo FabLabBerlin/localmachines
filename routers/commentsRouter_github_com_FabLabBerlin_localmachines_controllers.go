@@ -141,6 +141,13 @@ func init() {
 
 	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"],
 		beego.ControllerComments{
+			"GetInvoices",
+			`/months/:year/:month/invoices`,
+			[]string{"get"},
+			nil})
+
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"],
+		beego.ControllerComments{
 			"GetUser",
 			`/months/:year/:month/users/:uid`,
 			[]string{"get"},

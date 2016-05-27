@@ -246,6 +246,42 @@ func (this *InvoicesController) GetMonth() {
 	this.ServeJSON()
 }
 
+// @Title GetInvoices
+// @Description Get invoices for a month including drafts and canceled ones
+// @Success 200 {object}
+// @Failure	401	Not authorized
+// @Failure	500	Internal Server Error
+// @router /months/:year/:month/invoices [get]
+func (this *InvoicesController) GetInvoices() {
+	locId, authorized := this.GetLocIdAdmin()
+	if !authorized {
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	year, err := this.GetInt64(":year")
+	if err != nil {
+		beego.Error("Failed to get year:", err)
+		this.CustomAbort(400, "Bad request")
+	}
+
+	month, err := this.GetInt64(":month")
+	if err != nil {
+		beego.Error("Failed to get month:", err)
+		this.CustomAbort(400, "Bad request")
+	}
+
+	_ = locId
+	_ = year
+	_ = month
+
+	// purchases:
+	// select user_id, invoice_id, invoice_status from purchases where "2016-05-01" < time_end and time_end < "2016-05-31" group by concat(user_id, '-', invoice_id);
+	// user memberships:
+	// select user_id, invoice_id, invoice_status from user_membership where "2016-05-31" > start_date and end_date > "2016-05-01" group by concat(user_id, '-', invoice_id);
+	beego.Error("Not implemented")
+	this.CustomAbort(500, "Not implemented")
+}
+
 // @Title GetUser
 // @Description Get monthly overview for a user
 // @Success 200 {object}

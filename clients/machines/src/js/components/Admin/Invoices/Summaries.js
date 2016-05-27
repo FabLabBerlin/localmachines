@@ -46,9 +46,6 @@ var Summaries = React.createClass({
           </thead>
           <tbody>
             {summaries.map((sum, i) => {
-              if (sum.getIn(['User', 'Id']) !== 19) {
-                return undefined;
-              }
               const name = sum.getIn(['User', 'FirstName'])
                          + ' ' + sum.getIn(['User', 'LastName']);
               const amount = (Math.round(sum.get('Amount') * 100)
