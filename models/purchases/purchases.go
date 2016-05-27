@@ -234,6 +234,25 @@ func (this *Purchase) Seconds() (seconds float64) {
 	return
 }
 
+func Update(p *Purchase) (err error) {
+	o := orm.NewOrm()
+	s := p.InvoiceStatus
+	switch s {
+	case "":
+		// Not in any invoice yet
+		break
+	case "draft":
+		// In a draft invoice
+		break
+	case "outgoing", "credit":
+		return fmt.Errorf("cannot change invoice with status %v", s)
+	default:
+		return fmt.Errorf("unknown invoice status %v", s)
+	}
+	_, err = o.Update(p)
+	return
+}
+
 func PriceTotalExclDisc(p *Purchase) float64 {
 	return p.Quantity * p.PricePerUnit
 }

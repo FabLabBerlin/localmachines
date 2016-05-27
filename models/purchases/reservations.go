@@ -88,10 +88,8 @@ func CreateReservation(reservation *Reservation) (int64, error) {
 }
 
 func (reservation *Reservation) Update() (err error) {
-	o := orm.NewOrm()
 	reservation.Purchase.Quantity = reservation.Purchase.quantityFromTimes()
-	_, err = o.Update(&reservation.Purchase)
-	return
+	return Update(&reservation.Purchase)
 }
 
 func DeleteReservation(id int64, isAdmin bool) (err error) {

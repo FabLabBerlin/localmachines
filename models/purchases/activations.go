@@ -254,8 +254,6 @@ func (activation *Activation) Close(endTime time.Time) error {
 // Updates existing activation by consuming a pointer to
 // existing activation store.
 func (activation *Activation) Update() error {
-	o := orm.NewOrm()
-
 	if mid := activation.Purchase.MachineId; mid != 0 {
 		m, err := machine.Get(mid)
 		if err != nil {
@@ -266,7 +264,5 @@ func (activation *Activation) Update() error {
 	}
 	activation.Purchase.Quantity = activation.Purchase.quantityFromTimes()
 
-	_, err := o.Update(&activation.Purchase)
-
-	return err
+	return Update(&activation.Purchase)
 }

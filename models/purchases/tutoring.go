@@ -164,7 +164,5 @@ func StopTutoring(id int64) (err error) {
 }
 
 func (tp *Tutoring) Update() (err error) {
-	o := orm.NewOrm()
-	_, err = o.Update(&tp.Purchase)
-	return
+	return Update(&tp.Purchase)
 }
