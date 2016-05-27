@@ -386,6 +386,9 @@ var UserMemberships = React.createClass({
   },
 
   render() {
+    var membership = {};
+    var userMembership = {};
+
     return (
       <div>
         <h2>User Memberships</h2>
