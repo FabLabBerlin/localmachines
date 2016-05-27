@@ -388,6 +388,93 @@ var UserMemberships = React.createClass({
   render() {
     return (
       <div>
+        <h2>User Memberships</h2>
+        <table className="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th>Membership Name</th>
+              <th>Start Date</th>
+              <th>End Date</th>
+              <th>Extends Automatically</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-hide="userMemberships.length">
+              <td colspan="6">User has no memberships</td>
+            </tr>
+            <tr ng-repeat="userMembership in userMemberships">
+              <td>{userMembership.Title}</td>
+              <td style="min-width:90px">{userMembership.StartDate}</td>
+              <td style="min-width:160px">
+                <div className="form-inline">
+                  <div className="input-group">
+                    <input
+                      className="adm-user-membership-end-date form-control datepicker"
+                      data-user-membership-id="{userMembership.Id}"
+                      placeholder="End Date"
+                      value="{userMembership.EndDate}"/>
+                    <div className="input-group-addon">
+                      <i className="fa fa-calendar"/>
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <input 
+                  type="checkbox" 
+                  ng-model="userMembership.AutoExtend"
+                  ng-disabled="userMemberhip.Inactive"
+                  ng-change="updateUserMembership(userMembership.Id)"/>
+              </td>
+              <td>
+                <div ng-show="userMembership.Active">Active</div>
+                <div ng-show="userMembership.Cancelled">Cancelled</div>
+                <div ng-show="userMembership.Inactive">Inactive</div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div className="row">
+          <div className="col-sm-3">
+            <div className="form-group">
+              <select 
+                className="form-control" 
+                id="user-select-membership" 
+                placeholder="Membership">
+                <option value="" selected disabled>Select Membership</option>
+                <option ng-repeat="membership in memberships | membershipsFilter:this" 
+                        value={membership.Id}>
+                  {membership.Title}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div className="col-sm-3">
+            <div className="form-group">
+              <div className="input-group">
+                <input 
+                  id="adm-add-user-membership-start-date" 
+                  className="form-control datepicker" 
+                  placeholder="Start Date"/>
+                <div className="input-group-addon">
+                  <i className="fa fa-calendar"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-sm-3">
+            <button 
+              className="btn btn-primary btn-block" 
+              id="user-add-membership-btn" 
+              ng-click="addUserMembership()">
+              <i className="fa fa-plus"></i>&nbsp;Add Membership
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
