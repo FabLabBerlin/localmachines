@@ -117,14 +117,17 @@ func (inv *Invoice) CalculateTotals() (err error) {
 
 func (inv *Invoice) SplitByMonths() (invs []*Invoice, err error) {
 	var tMin time.Time
+	invs = make([]*Invoice, 0, 10)
+
+	if len(inv.Purchases.Data) == 0 {
+		return
+	}
 
 	for _, p := range inv.Purchases.Data {
 		if tMin.IsZero() || p.TimeStart.Before(tMin) {
 			tMin = p.TimeStart
 		}
 	}
-
-	invs = make([]*Invoice, 0, 10)
 
 	i := 0
 	for t := tMin; ; t = t.AddDate(0, 1, 0) {
