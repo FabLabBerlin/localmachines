@@ -36,6 +36,7 @@ func CreateActivation(locationId int64) (activation Activation, err error) {
 // Items per page and page number can be specified. Already invoiced
 // activations can be excluded.
 func GetActivations(locationId int64, interval lib.Interval, search string) (activations []Activation, err error) {
+	beego.Info("GetActivations(.................)")
 	// Get activations from database
 	var purchases []*Purchase
 	act := Activation{}
@@ -46,6 +47,7 @@ func GetActivations(locationId int64, interval lib.Interval, search string) (act
 			"LEFT JOIN user u ON a.user_id = u.id "+
 			"WHERE a.type=? AND a.time_start>=? AND a.time_start<=? AND a.running=false "+
 			"      AND (u.username LIKE ? OR u.first_name LIKE ? OR u.last_name LIKE ?) "+
+			"      AND ((invoice_status IS NULL) OR invoice_status = '' OR invoice_status = 'draft')"+
 			"      AND a.location_id=? "+
 			"ORDER BY a.time_start DESC ",
 			act.Purchase.TableName())
@@ -62,6 +64,7 @@ func GetActivations(locationId int64, interval lib.Interval, search string) (act
 		query := fmt.Sprintf("SELECT a.* FROM %s a "+
 			"WHERE a.type=? AND a.time_start>=? AND a.time_start<=? AND a.running=false "+
 			"               AND a.location_id=? "+
+			"               AND ((invoice_status IS NULL) OR invoice_status = '' OR invoice_status = 'draft')"+
 			"ORDER BY a.time_start DESC ",
 			act.Purchase.TableName())
 
