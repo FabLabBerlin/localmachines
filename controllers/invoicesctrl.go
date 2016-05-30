@@ -236,7 +236,7 @@ func (this *InvoicesController) GetMonth() {
 			this.Abort("500")
 		}
 		sum := MonthlySummary{
-			User:   inv.User,
+			User:   *inv.User,
 			Amount: inv.Sums.All.PriceInclVAT,
 		}
 		sums = append(sums, sum)
@@ -258,28 +258,26 @@ func (this *InvoicesController) GetInvoices() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	year, err := this.GetInt64(":year")
+	year, err := this.GetInt(":year")
 	if err != nil {
 		beego.Error("Failed to get year:", err)
 		this.CustomAbort(400, "Bad request")
 	}
 
-	month, err := this.GetInt64(":month")
+	month, err := this.GetInt(":month")
 	if err != nil {
 		beego.Error("Failed to get month:", err)
 		this.CustomAbort(400, "Bad request")
 	}
 
-	_ = locId
-	_ = year
-	_ = month
+	invs, err := invoices.GetIdsAndStatuses(locId, year, month)
+	if err != nil {
+		beego.Error("Failed to get invoices ids and statuses:", err)
+		this.Abort("500")
+	}
 
-	// purchases:
-	// select user_id, invoice_id, invoice_status from purchases where "2016-05-01" < time_end and time_end < "2016-05-31" group by concat(user_id, '-', invoice_id);
-	// user memberships:
-	// select user_id, invoice_id, invoice_status from user_membership where "2016-05-31" > start_date and end_date > "2016-05-01" group by concat(user_id, '-', invoice_id);
-	beego.Error("Not implemented")
-	this.CustomAbort(500, "Not implemented")
+	this.Data["json"] = invs
+	this.ServeJSON()
 }
 
 // @Title GetUser
@@ -328,7 +326,7 @@ func (this *InvoicesController) GetUser() {
 	sums := make([]MonthlySummary, 0, len(me.Invoices))
 	for _, inv := range me.Invoices {
 		sum := MonthlySummary{
-			User: inv.User,
+			User: *inv.User,
 		}
 		for _, p := range inv.Purchases.Data {
 			sum.Amount += p.DiscountedTotal
@@ -457,7 +455,7 @@ func (this *InvoicesController) CreateDraft() {
 	sums := make([]MonthlySummary, 0, len(me.Invoices))
 	for _, inv := range me.Invoices {
 		sum := MonthlySummary{
-			User: inv.User,
+			User: *inv.User,
 		}
 		for _, p := range inv.Purchases.Data {
 			sum.Amount += p.DiscountedTotal
@@ -536,7 +534,7 @@ func (this *InvoicesController) Update() {
 	sums := make([]MonthlySummary, 0, len(me.Invoices))
 	for _, inv := range me.Invoices {
 		sum := MonthlySummary{
-			User: inv.User,
+			User: *inv.User,
 		}
 		for _, p := range inv.Purchases.Data {
 			sum.Amount += p.DiscountedTotal

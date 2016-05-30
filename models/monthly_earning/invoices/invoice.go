@@ -16,17 +16,17 @@ const TABLE_NAME = "invoices"
 // Invoice represents an actual or future invoice. Future invoices do not
 // have a FastbillId.
 type Invoice struct {
-	Id         int64
+	Id         int64 `json:",omitempty"`
 	FastbillId int64 `json:",omitempty"`
 	FastbillNo int64 `json:",omitempty"`
 	Month      int
 	Year       int
 	UserId     int64
-	Interval   lib.Interval        `orm:"-"`
-	User       users.User          `orm:"-"`
-	Purchases  purchases.Purchases `orm:"-"`
-	Sums       Sums                `orm:"-"`
-	VatPercent float64
+	Interval   lib.Interval        `orm:"-" json:",omitempty"`
+	User       *users.User         `orm:"-" json:",omitempty"`
+	Purchases  purchases.Purchases `orm:"-" json:",omitempty"`
+	Sums       *Sums               `orm:"-" json:",omitempty"`
+	VatPercent float64             `json:",omitempty"`
 }
 
 func init() {
@@ -69,7 +69,7 @@ func (inv *Invoice) ByProductNameAndPricePerUnit() map[string]map[float64][]*pur
 }
 
 func (inv *Invoice) CalculateTotals() (err error) {
-	inv.Sums = Sums{}
+	inv.Sums = &Sums{}
 
 	for _, purchase := range inv.Purchases.Data {
 		inv.Sums.Purchases.Undiscounted += purchase.TotalPrice
@@ -171,4 +171,50 @@ func (inv *Invoice) SplitByMonths() (invs []*Invoice, err error) {
 
 func (inv *Invoice) TableName() string {
 	return TABLE_NAME
+}
+
+// GetIdsAndStatuses in Invoice struct.  Leaving other fields empty.
+func GetIdsAndStatuses(locId int64, year, month int) ([]*Invoice, error) {
+	interval := lib.Interval{
+		MonthFrom: month,
+		YearFrom:  year,
+		MonthTo:   month,
+		YearTo:    year,
+	}
+
+	query := `
+SELECT *
+FROM
+  (SELECT user_id,
+          invoice_id,
+          invoice_status
+   FROM purchases
+   WHERE ? < time_end
+     AND time_end < ?
+     AND location_id = ?
+     AND user_id <> 0
+   UNION SELECT user_id,
+                invoice_id,
+                invoice_status
+   FROM user_membership
+   JOIN membership ON user_membership.membership_id = membership.id
+   WHERE ? > start_date
+     AND end_date > ?
+     AND location_id = ?
+     AND user_id <> 0) AS id_data
+GROUP BY concat(user_id, '-', COALESCE(invoice_id, ''));
+	`
+
+	var invs []*Invoice
+
+	o := orm.NewOrm()
+	_, err := o.Raw(query,
+		interval.TimeFrom(),
+		interval.TimeTo(),
+		locId,
+		interval.TimeTo(),
+		interval.TimeFrom(),
+		locId).QueryRows(&invs)
+
+	return invs, err
 }

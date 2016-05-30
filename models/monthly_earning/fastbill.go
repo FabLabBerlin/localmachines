@@ -94,7 +94,7 @@ func CreateFastbillDraft(me *MonthlyEarning, inv *invoices.Invoice) (fbDraft *fa
 		return nil, false, fmt.Errorf("GetUserMemberships: %v", err)
 	}
 
-	fbDraft.CustomerId, err = fastbill.GetCustomerId(inv.User)
+	fbDraft.CustomerId, err = fastbill.GetCustomerId(*inv.User)
 	if err != nil {
 		return nil, false, fmt.Errorf("error getting fastbill customer id: %v", err)
 	}

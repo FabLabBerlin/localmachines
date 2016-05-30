@@ -311,7 +311,7 @@ func (this *MonthlyEarning) NewInvoices(vatPercent float64) (invs []*invoices.In
 	for _, user := range users {
 		inv := invoices.Invoice{
 			Interval:   this.Interval(),
-			User:       *user,
+			User:       user,
 			VatPercent: vatPercent,
 		}
 		invs = append(invs, &inv)
@@ -335,7 +335,7 @@ func (this *MonthlyEarning) NewInvoices(vatPercent float64) (invs []*invoices.In
 		if !invExists {
 			beego.Warn("Creating invoice for purchase that has no matching user")
 			newInv := invoices.Invoice{
-				User: p.User,
+				User: &p.User,
 			}
 			invs = append(invs, &newInv)
 			foundInv = invs[len(invs)-1]
