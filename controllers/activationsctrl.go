@@ -113,6 +113,11 @@ func (this *ActivationsController) Get() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
+	if !this.IsAdminAt(a.Purchase.LocationId) {
+		beego.Error("Unauthorized attempt to get activation")
+		this.CustomAbort(401, "Unauthorized")
+	}
+
 	this.Data["json"] = a
 	this.ServeJSON()
 }
