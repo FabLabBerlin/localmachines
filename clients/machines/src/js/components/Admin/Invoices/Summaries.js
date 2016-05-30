@@ -40,11 +40,21 @@ var Summaries = React.createClass({
               <th>
                 <label><input type="checkbox"/> All</label>
               </th>
-              <th><label>Fastbill Number</label></th>
-              <th><label>User</label></th>
-              <th><label>Invoiced?</label></th>
-              <th><label>Paid?</label></th>
-              <th><label>Amount (EUR)</label></th>
+              <th className="text-center">
+                <label>No.</label>
+              </th>
+              <th className="text-center">
+                <label>Users</label>
+              </th>
+              <th className="text-center">
+                <label>Paid</label>
+              </th>
+              <th className="text-center">
+                <label>Send</label>
+              </th>
+              <th className="text-center">
+                <label>Amount (EUR)</label>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -58,11 +68,11 @@ var Summaries = React.createClass({
               return (
                 <tr key={i} onClick={this.select.bind(this, sum.get('User'))}>
                   <td><input type="checkbox"/></td>
-                  <td>{sum.getIn(['User', 'ClientId'])}</td>
+                  <td className="text-right">{sum.getIn(['User', 'ClientId'])}</td>
                   <td>{name}</td>
-                  <td></td>
-                  <td></td>
-                  <td className="text-right">{amount}</td>
+                  <td>-</td>
+                  <td>-</td>
+                  <td className="text-right">{amount} €</td>
                 </tr>
               );
             })}

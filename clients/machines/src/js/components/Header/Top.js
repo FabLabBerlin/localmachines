@@ -35,7 +35,7 @@ var Right = React.createClass({
                 </div>
               </button>
               <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
-                <li><a href="/machines/#/profile">My info</a></li>
+                <li><a href="/machines/#/profile">Info</a></li>
                 {this.state.isAdmin ? (
                   <li>
                     <a href="/machines/#/admin/settings">Settings</a>
