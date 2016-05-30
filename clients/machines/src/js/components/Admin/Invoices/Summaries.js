@@ -37,11 +37,14 @@ var Summaries = React.createClass({
         <table className="table table-striped table-hover">
           <thead>
             <tr>
-              <th>Fastbill Number</th>
-              <th>User</th>
-              <th>Invoiced?</th>
-              <th>Paid?</th>
-              <th>Amount (EUR)</th>
+              <th>
+                <label><input type="checkbox"/> All</label>
+              </th>
+              <th><label>Fastbill Number</label></th>
+              <th><label>User</label></th>
+              <th><label>Invoiced?</label></th>
+              <th><label>Paid?</label></th>
+              <th><label>Amount (EUR)</label></th>
             </tr>
           </thead>
           <tbody>
@@ -54,6 +57,7 @@ var Summaries = React.createClass({
 
               return (
                 <tr key={i} onClick={this.select.bind(this, sum.get('User'))}>
+                  <td><input type="checkbox"/></td>
                   <td>{sum.getIn(['User', 'ClientId'])}</td>
                   <td>{name}</td>
                   <td></td>
