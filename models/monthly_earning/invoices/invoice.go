@@ -56,7 +56,7 @@ type Sums struct {
 
 func (inv *Invoice) ByProductNameAndPricePerUnit() map[string]map[float64][]*purchases.Purchase {
 	byProductNameAndPricePerUnit := make(map[string]map[float64][]*purchases.Purchase)
-	for _, p := range inv.Purchases.Data {
+	for _, p := range inv.Purchases {
 		if _, ok := byProductNameAndPricePerUnit[p.ProductName()]; !ok {
 			byProductNameAndPricePerUnit[p.ProductName()] = make(map[float64][]*purchases.Purchase)
 		}
@@ -71,7 +71,7 @@ func (inv *Invoice) ByProductNameAndPricePerUnit() map[string]map[float64][]*pur
 func (inv *Invoice) CalculateTotals() (err error) {
 	inv.Sums = &Sums{}
 
-	for _, purchase := range inv.Purchases.Data {
+	for _, purchase := range inv.Purchases {
 		inv.Sums.Purchases.Undiscounted += purchase.TotalPrice
 		inv.Sums.Purchases.PriceInclVAT += purchase.DiscountedTotal
 	}
@@ -119,11 +119,11 @@ func (inv *Invoice) SplitByMonths() (invs []*Invoice, err error) {
 	var tMin time.Time
 	invs = make([]*Invoice, 0, 10)
 
-	if len(inv.Purchases.Data) == 0 {
+	if len(inv.Purchases) == 0 {
 		return
 	}
 
-	for _, p := range inv.Purchases.Data {
+	for _, p := range inv.Purchases {
 		if tMin.IsZero() || p.TimeStart.Before(tMin) {
 			tMin = p.TimeStart
 		}
@@ -139,9 +139,7 @@ func (inv *Invoice) SplitByMonths() (invs []*Invoice, err error) {
 				MonthTo:   int(t.Month()),
 				YearTo:    t.Year(),
 			},
-			Purchases: purchases.Purchases{
-				Data: make([]*purchases.Purchase, 0, 20),
-			},
+			Purchases:  make([]*purchases.Purchase, 0, 20),
 			User:       inv.User,
 			VatPercent: inv.VatPercent,
 		}
@@ -156,9 +154,9 @@ func (inv *Invoice) SplitByMonths() (invs []*Invoice, err error) {
 	}
 
 	for _, iv := range invs {
-		for _, p := range inv.Purchases.Data {
+		for _, p := range inv.Purchases {
 			if iv.Interval.Contains(p.TimeStart) {
-				iv.Purchases.Data = append(iv.Purchases.Data, p)
+				iv.Purchases = append(iv.Purchases, p)
 			}
 		}
 		if err := iv.CalculateTotals(); err != nil {
@@ -215,6 +213,12 @@ GROUP BY concat(user_id, '-', COALESCE(invoice_id, ''));
 		interval.TimeTo(),
 		interval.TimeFrom(),
 		locId).QueryRows(&invs)
+
+	for _, inv := range invs {
+		inv.Month = month
+		inv.Year = year
+		inv.Interval = interval
+	}
 
 	return invs, err
 }

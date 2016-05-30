@@ -118,7 +118,7 @@ func New(locationId int64, interval lib.Interval) (me *MonthlyEarning, err error
 
 	for i := 0; i < len(me.Invoices); i++ {
 		sort.Stable(me.Invoices[i].Purchases)
-		for _, purchase := range me.Invoices[i].Purchases.Data {
+		for _, purchase := range me.Invoices[i].Purchases {
 			purchase.TotalPrice = purchases.PriceTotalExclDisc(purchase)
 			purchase.DiscountedTotal, err = purchases.PriceTotalDisc(purchase)
 			if err != nil {
@@ -343,7 +343,7 @@ func (this *MonthlyEarning) NewInvoices(vatPercent float64) (invs []*invoices.In
 
 		// Append the purchase to the invoice.
 		if foundInv.User.Id == p.User.Id {
-			foundInv.Purchases.Data = append(foundInv.Purchases.Data, p)
+			foundInv.Purchases = append(foundInv.Purchases, p)
 		}
 	}
 

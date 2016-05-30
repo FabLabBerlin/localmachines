@@ -87,7 +87,7 @@ func (c *Controller) GetActivations() {
 		"Billed Price (EUR)",
 	})
 	for _, inv := range monthlyEarning.Invoices {
-		for _, p := range inv.Purchases.Data {
+		for _, p := range inv.Purchases {
 			row := make([]string, 0, 20)
 			if p.Type != purchases.TYPE_ACTIVATION {
 				continue
@@ -138,4 +138,3 @@ func (c *Controller) GetMachineRevenue() {
 	c.Data["json"] = s
 	c.ServeJSON()
 }
-

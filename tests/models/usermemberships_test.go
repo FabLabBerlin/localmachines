@@ -146,14 +146,14 @@ func TestUserMemberships(t *testing.T) {
 					numUserSummaries := len(me.Invoices)
 					So(numUserSummaries, ShouldEqual, 1)
 
-					numActivations := len(me.Invoices[0].Purchases.Data)
+					numActivations := len(me.Invoices[0].Purchases)
 					So(numActivations, ShouldEqual, 4)
 
 					// 2 of the activations should contain memberships
 					numAffectedActivations := 0
 					for i := 0; i < numActivations; i++ {
 
-						activation := me.Invoices[0].Purchases.Data[i]
+						activation := me.Invoices[0].Purchases[i]
 						memberships := activation.Memberships
 						if len(memberships) > 0 {
 							numAffectedActivations += 1

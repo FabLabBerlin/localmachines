@@ -99,7 +99,7 @@ func (this Data) sumActivationsBy(timeFormat string) (sums map[string]float64, e
 	sums = make(map[string]float64)
 
 	for _, inv := range this.monthlyEarning.Invoices {
-		for _, purchase := range inv.Purchases.Data {
+		for _, purchase := range inv.Purchases {
 			if purchase.Type == purchases.TYPE_ACTIVATION {
 				priceTotalDisc, err := purchases.PriceTotalDisc(purchase)
 				if err != nil {
@@ -156,7 +156,7 @@ func (this Data) sumMinutesBy(timeFormat string) (sums map[string]float64, err e
 
 	for _, inv := range this.monthlyEarning.Invoices {
 		if inv.User.GetRole() != user_roles.STAFF && inv.User.GetRole() != user_roles.ADMIN {
-			for _, purchase := range inv.Purchases.Data {
+			for _, purchase := range inv.Purchases {
 				if purchase.Type == purchases.TYPE_ACTIVATION {
 					key := purchase.TimeStart.Format(timeFormat)
 					sums[key] = sums[key] + float64(purchase.Seconds())/60

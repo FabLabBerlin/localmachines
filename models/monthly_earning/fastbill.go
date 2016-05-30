@@ -99,7 +99,7 @@ func CreateFastbillDraft(me *MonthlyEarning, inv *invoices.Invoice) (fbDraft *fa
 		return nil, false, fmt.Errorf("error getting fastbill customer id: %v", err)
 	}
 
-	if len(inv.Purchases.Data) == 0 &&
+	if len(inv.Purchases) == 0 &&
 		(memberships == nil || len(memberships.Data) == 0) {
 		return nil, true, nil
 	}

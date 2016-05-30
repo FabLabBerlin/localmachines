@@ -163,7 +163,7 @@ func createXlsxFile(filePath string, monthlyEarning *MonthlyEarning) error {
 			return fmt.Errorf("GetUserMemberships: %v", err)
 		}
 
-		if len(inv.Purchases.Data) == 0 &&
+		if len(inv.Purchases) == 0 &&
 			(memberships == nil || len(memberships.Data) == 0) {
 			// nothing to bill
 			continue
@@ -289,7 +289,7 @@ func createXlsxFile(filePath string, monthlyEarning *MonthlyEarning) error {
 			sheet.AddRow()
 		}
 
-		ps := PurchasesXlsx(inv.Purchases.Data)
+		ps := PurchasesXlsx(inv.Purchases)
 		sort.Stable(ps)
 		if err := inv.CalculateTotals(); err != nil {
 			return fmt.Errorf("CalculateTotals: %v", err)

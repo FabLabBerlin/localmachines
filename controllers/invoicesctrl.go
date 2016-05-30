@@ -328,7 +328,7 @@ func (this *InvoicesController) GetUser() {
 		sum := MonthlySummary{
 			User: *inv.User,
 		}
-		for _, p := range inv.Purchases.Data {
+		for _, p := range inv.Purchases {
 			sum.Amount += p.DiscountedTotal
 		}
 		sums = append(sums, sum)
@@ -457,7 +457,7 @@ func (this *InvoicesController) CreateDraft() {
 		sum := MonthlySummary{
 			User: *inv.User,
 		}
-		for _, p := range inv.Purchases.Data {
+		for _, p := range inv.Purchases {
 			sum.Amount += p.DiscountedTotal
 		}
 		sums = append(sums, sum)
@@ -536,7 +536,7 @@ func (this *InvoicesController) Update() {
 		sum := MonthlySummary{
 			User: *inv.User,
 		}
-		for _, p := range inv.Purchases.Data {
+		for _, p := range inv.Purchases {
 			sum.Amount += p.DiscountedTotal
 		}
 		sums = append(sums, sum)

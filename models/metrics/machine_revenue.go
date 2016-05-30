@@ -6,8 +6,8 @@ import (
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
-	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
+	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"time"
 )
 
@@ -16,39 +16,39 @@ const TROTEC_LOCATION_ID = 1
 const TROTEC_ID = 17
 
 const (
-	PLUS_M = 6
-	PLUS_M_B2B = 7
+	PLUS_M         = 6
+	PLUS_M_B2B     = 7
 	PLUS_M_STUDENT = 9
-	PLUS_M_PAO = 12
+	PLUS_M_PAO     = 12
 )
 
 type Trotec struct {
-	TrotecMinutesByMonth map[string]float64
-	TrotecPaygMinutesByMonth map[string]float64
+	TrotecMinutesByMonth               map[string]float64
+	TrotecPaygMinutesByMonth           map[string]float64
 	TrotecPlusMembershipMinutesByMonth map[string]float64
-	AllPlusMembershipMinutesByMonth map[string]float64
+	AllPlusMembershipMinutesByMonth    map[string]float64
 
 	TrotecReservationsEurByMonth map[string]float64
 
-	TrotecPaygEurByMonth map[string]float64
+	TrotecPaygEurByMonth                       map[string]float64
 	TrotecPlusMembershipUndiscountedEurByMonth map[string]float64
-	AllPlusMembershipUndiscountedEurByMonth map[string]float64
+	AllPlusMembershipUndiscountedEurByMonth    map[string]float64
 
 	AllPlusMembershipsEurByMonth map[string]float64
 }
 
 func NewTrotecStats() (t *Trotec, err error) {
 	t = &Trotec{
-		TrotecMinutesByMonth: make(map[string]float64),
-		TrotecPaygMinutesByMonth: make(map[string]float64),
+		TrotecMinutesByMonth:               make(map[string]float64),
+		TrotecPaygMinutesByMonth:           make(map[string]float64),
 		TrotecPlusMembershipMinutesByMonth: make(map[string]float64),
-		AllPlusMembershipMinutesByMonth: make(map[string]float64),
+		AllPlusMembershipMinutesByMonth:    make(map[string]float64),
 
 		TrotecReservationsEurByMonth: make(map[string]float64),
 
-		TrotecPaygEurByMonth: make(map[string]float64),
+		TrotecPaygEurByMonth:                       make(map[string]float64),
 		TrotecPlusMembershipUndiscountedEurByMonth: make(map[string]float64),
-		AllPlusMembershipUndiscountedEurByMonth: make(map[string]float64),
+		AllPlusMembershipUndiscountedEurByMonth:    make(map[string]float64),
 
 		AllPlusMembershipsEurByMonth: make(map[string]float64),
 	}
@@ -64,28 +64,28 @@ func NewTrotecStats() (t *Trotec, err error) {
 		return nil, fmt.Errorf("Failed to get invoice summary: %v", err)
 	}
 	for _, inv := range monthlyEarning.Invoices {
-		for _, purchase := range inv.Purchases.Data {
+		for _, purchase := range inv.Purchases {
 			if hasFreeMembership(purchase.Memberships) {
 				continue
 			}
 			isStaff := false
-		 	switch purchase.User.GetRole().String() {
-		 	case user_roles.STAFF.String(), user_roles.ADMIN.String(), user_roles.SUPER_ADMIN.String():
-		 		isStaff = true
-		 	}
-		 	uls, err := user_locations.GetAllForUser(purchase.UserId)
-		 	for _, ul := range uls {
-		 		if ul.LocationId == TROTEC_LOCATION_ID {
-			 		switch ul.GetRole().String() {
-			 		case user_roles.STAFF.String(), user_roles.ADMIN.String(), user_roles.SUPER_ADMIN.String():
-			 			isStaff = true
-			 		}
-			 	}
-		 	}
-		 	if isStaff {
-		 		continue
-		 	}
-		 	priceTotalDisc, err := purchases.PriceTotalDisc(purchase)
+			switch purchase.User.GetRole().String() {
+			case user_roles.STAFF.String(), user_roles.ADMIN.String(), user_roles.SUPER_ADMIN.String():
+				isStaff = true
+			}
+			uls, err := user_locations.GetAllForUser(purchase.UserId)
+			for _, ul := range uls {
+				if ul.LocationId == TROTEC_LOCATION_ID {
+					switch ul.GetRole().String() {
+					case user_roles.STAFF.String(), user_roles.ADMIN.String(), user_roles.SUPER_ADMIN.String():
+						isStaff = true
+					}
+				}
+			}
+			if isStaff {
+				continue
+			}
+			priceTotalDisc, err := purchases.PriceTotalDisc(purchase)
 			if err != nil {
 				return nil, fmt.Errorf("PriceTotalDisc: %v", err)
 			}
@@ -93,7 +93,7 @@ func NewTrotecStats() (t *Trotec, err error) {
 			month := purchase.TimeStart.Month().String()
 			if purchase.Type == purchases.TYPE_ACTIVATION {
 				if purchase.MachineId == TROTEC_ID {
-				 	t.TrotecMinutesByMonth[month] = t.TrotecMinutesByMonth[month] + purchase.Quantity
+					t.TrotecMinutesByMonth[month] = t.TrotecMinutesByMonth[month] + purchase.Quantity
 					if hasTrotecRebate(purchase.Memberships) {
 						t.TrotecPlusMembershipMinutesByMonth[month] = t.TrotecPlusMembershipMinutesByMonth[month] + purchase.Quantity
 						t.TrotecPlusMembershipUndiscountedEurByMonth[month] = t.TrotecPlusMembershipUndiscountedEurByMonth[month] + priceUndiscounted
@@ -106,11 +106,11 @@ func NewTrotecStats() (t *Trotec, err error) {
 					t.AllPlusMembershipMinutesByMonth[month] = t.AllPlusMembershipMinutesByMonth[month] + purchase.Quantity
 					t.AllPlusMembershipUndiscountedEurByMonth[month] = t.AllPlusMembershipUndiscountedEurByMonth[month] + priceUndiscounted
 				}
-			 } else if purchase.Type == purchases.TYPE_RESERVATION {
-			 	if purchase.MachineId == TROTEC_ID {
-			 		t.TrotecReservationsEurByMonth[month] = t.TrotecReservationsEurByMonth[month] + priceUndiscounted
-			 	}
-			 }
+			} else if purchase.Type == purchases.TYPE_RESERVATION {
+				if purchase.MachineId == TROTEC_ID {
+					t.TrotecReservationsEurByMonth[month] = t.TrotecReservationsEurByMonth[month] + priceUndiscounted
+				}
+			}
 		}
 	}
 

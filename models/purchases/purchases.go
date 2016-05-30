@@ -297,23 +297,21 @@ func AffectedMemberships(p *Purchase) (affected []*models.Membership, err error)
 	return
 }
 
-type Purchases struct {
-	Data []*Purchase
-}
+type Purchases []*Purchase
 
 func (this Purchases) Len() int {
-	return len(this.Data)
+	return len(this)
 }
 
 func (this Purchases) Less(i, j int) bool {
-	var timeStartI = (*this.Data[i]).TimeStart
-	var timeStartJ = (*this.Data[j]).TimeStart
+	var timeStartI = (*this[i]).TimeStart
+	var timeStartJ = (*this[j]).TimeStart
 	if timeStartI.Before(timeStartJ) {
 		return true
 	} else if timeStartJ.Before(timeStartI) {
 		return false
-	} else if (*this.Data[i]).Machine != nil && (*this.Data[j]).Machine != nil {
-		return (*this.Data[i]).Machine.Name < (*this.Data[j]).Machine.Name
+	} else if (*this[i]).Machine != nil && (*this[j]).Machine != nil {
+		return (*this[i]).Machine.Name < (*this[j]).Machine.Name
 	} else {
 		return false
 	}
@@ -332,5 +330,5 @@ func (this Purchase) ProductName() string {
 }
 
 func (this Purchases) Swap(i, j int) {
-	*this.Data[i], *this.Data[j] = *this.Data[j], *this.Data[i]
+	*this[i], *this[j] = *this[j], *this[i]
 }

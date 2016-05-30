@@ -124,7 +124,7 @@ var BillTable = React.createClass({
       </tr>
     );
 
-    _.each(bill.Purchases.Data, (purchase) => {
+    _.each(bill.Purchases, (purchase) => {
       var label = purchase.Machine ? purchase.Machine.Name : '';
       switch (purchase.Type) {
       case 'activation':
