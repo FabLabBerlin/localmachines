@@ -1,3 +1,10 @@
+const getAdminSettings = [
+  ['settingsStore'],
+  (settingsStore) => {
+    return settingsStore.get('adminSettings');
+  }
+];
+
 const getVatPercent = [
   ['settingsStore'],
   (settingsStore) => {
@@ -6,5 +13,6 @@ const getVatPercent = [
 ];
 
 export default {
+	getAdminSettings,
   getVatPercent
 };

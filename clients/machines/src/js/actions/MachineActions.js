@@ -59,21 +59,46 @@ var MachineActions = {
         toastr.info('Machine activated');
       },
       error(xhr, status, err) {
-        GlobalActions.hideGlobalLoader();
-        if (xhr.status === 403 && status === 'No remote activation') {
-          toastr.error('Activations only possible through Lab Wifi for safety reasons');
+        if (xhr.responseText === 'Not logged in') {
+          window.location.href = '/logout';
         } else {
-          toastr.error('Can not activate the machine');
-          console.error(status, err);
+          GlobalActions.hideGlobalLoader();
+          if (xhr.status === 403 && status === 'No remote activation') {
+            toastr.error('Activations only possible through Lab Wifi for safety reasons');
+          } else {
+            toastr.error('Can not activate the machine');
+            console.error(status, err);
+          }
         }
       }
     });
-    LoginActions.keepAlive();
   },
 
   endActivation(aid, cb) {
-    endActivation(aid, cb);
-    LoginActions.keepAlive();
+    GlobalActions.showGlobalLoader();
+    $.ajax({
+      url: '/api/activations/' + aid + '/close',
+      method: 'POST',
+      data: {
+        ac: new Date().getTime()
+      },
+      success(data) {
+        GlobalActions.hideGlobalLoader();
+        toastr.info('Machine deactivated');
+        if (cb) {
+          cb();
+        }
+      },
+      error(xhr, status, err) {
+        if (xhr.responseText === 'Not logged in') {
+          window.location.href = '/logout';
+        } else {
+          GlobalActions.hideGlobalLoader();
+          toastr.error('Failed to deactivate');
+          console.error('/api/activation/aid', status, err.toString());
+        }
+      }
+    });
   },
 
   /*
@@ -213,26 +238,7 @@ var MachineActions = {
  * @aid: activation id you want to shut down
  */
 function endActivation(aid, cb) {
-  GlobalActions.showGlobalLoader();
-  $.ajax({
-    url: '/api/activations/' + aid + '/close',
-    method: 'POST',
-    data: {
-      ac: new Date().getTime()
-    },
-    success(data) {
-      GlobalActions.hideGlobalLoader();
-      toastr.info('Machine deactivated');
-      if (cb) {
-        cb();
-      }
-    },
-    error(xhr, status, err) {
-      GlobalActions.hideGlobalLoader();
-      toastr.error('Failed to deactivate');
-      console.error('/api/activation/aid', status, err.toString());
-    }
-  });
+
 }
 
 function fetchUserNames(userIds) {

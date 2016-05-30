@@ -38,7 +38,6 @@ var MachinePage = React.createClass({
     const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
     const uid = reactor.evaluateToJS(getters.getUid);
     UserActions.fetchUser(uid);
-    MachineActions.apiGetUserMachines(locationId, uid);
     ReservationActions.load();
     ReservationRulesActions.load(locationId);
     LocationActions.loadUserLocations(uid);
@@ -64,11 +63,6 @@ var MachinePage = React.createClass({
 
       return (
         <div>
-          <div className="logged-user-name">
-            <div className="text-center">
-              <strong>Welcome to {locationTitle}</strong>
-            </div>
-          </div>
           <TutoringList />
           <MachineList
             user={this.state.user}

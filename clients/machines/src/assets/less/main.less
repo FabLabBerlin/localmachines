@@ -42,8 +42,8 @@ html {
 }
 
 body {
-  background-color: @bg-color-default;
-  color: @text-color-default;
+  background-color: #f6f7f8;
+  color: black;
   font-family: 'Helvetica', 'Arial', sans-serif;
   font-weight: normal;
   height: 100%;
@@ -56,8 +56,11 @@ h1, h2, h3, h4, h5, h6 {
 ul, li {
   margin: 0;
   padding: 0;
-  padding-right: 10px;
   list-style: none;
+}
+
+#main-content {
+  background: #f6f7f8;
 }
 
 /*
@@ -310,6 +313,184 @@ nav.navbar a.sign-out {
   border-top: 1px solid darken(@bg-color-default, 10%);
 }
 
+.nav-bottom.row {
+  background: white;
+  margin-left: 0;
+  margin-right: 0;
+  padding-bottom: 2px;
+}
+
+.nav-item-container {
+  width: 33.33333333%;
+  float: left; 
+}
+
+.nav-item {
+  .align-items(center);
+  border-top: 3px solid black;
+  cursor: pointer;
+  .flex-block();
+  font-size: 19px;
+  font-weight: bold;
+  .justify-content(center);
+  height: 50px;
+  text-align: center;
+}
+
+.nav-item-container:nth-child(1) {
+  padding-right: 10px;
+}
+
+.nav-item-container:nth-child(2) {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.nav-item-container:nth-child(3) {
+  padding-left: 11px;
+}
+
+.nav-item:hover {
+  background: black;
+  color: white;
+}
+
+.nav-item:hover a {
+  color: white;
+}
+
+.nav-item.active {
+  background: black;
+  color: white;
+}
+
+.nav-item.active a {
+  color: white;
+}
+
+.nav-item a {
+  color: black;
+  margin: 0 10px;
+  padding: 10px 0;
+  text-decoration: none;
+  width: 100%;
+}
+
+.nav {
+  background: white;
+  margin-bottom: 30px;
+}
+
+.nav-top {
+  .align-items(flex-start);
+  background: white;
+  color: black;
+  .flex-block();
+  .flex-direction(row);
+  height: 80px;
+  .justify-content(flex-start);
+  width: 100%;
+}
+
+.nav-left {
+  height: 100%;
+}
+
+.nav-logo {
+  float: left;
+  height: 100%;
+  padding: 16px 23px;
+}
+
+.nav-logo img {
+  height: 100%;
+}
+
+.nav-title {
+  float: left;
+  font-size: 20px;
+  height: 100%;
+  padding: 27px 0;
+}
+
+.nav-title-lab {
+  font-weight: bold;
+  height: 29px;
+  padding-right: 15px;
+  margin: 28px 0;
+  white-space: nowrap;
+}
+
+.nav-title-easylab {
+  border-left: 1px solid black;
+  font-weight: 300px;
+  height: 29px;
+  padding-left: 15px;
+  margin: 28px 0;
+  white-space: nowrap;
+}
+
+.nav-right {
+  height: 100%;
+  padding-top: 19px;
+}
+
+.nav-dropdown {
+  float: left;
+  height: 100%;
+  margin-right: 15px;
+}
+
+.nav-dropdown .dropdown .caret {
+  float: left;
+  margin-top: 18px;
+}
+
+.nav-dropdown .dropdown button {
+  background: white;
+  color: black;
+}
+
+.nav-dropdown .dropdown .divider {
+  background: white;
+}
+
+.btn-default:hover, .btn-default:active:hover, .btn-default:focus:hover, .btn-default:visited:hover {
+  background: white;
+  color: black;
+}
+
+.btn-default:active, .btn-default.active, .open > .dropdown-toggle.btn-default {
+  background: white;
+  color: black;
+}
+
+.dropdown-menu > li > a {
+  font-size: 18px;
+  padding: 5px 37px;
+}
+
+.dropdown-menu > li > a:hover {
+  background: black;
+  color: white;
+}
+
+.nav-user {
+  float: left;
+  height: 100%;
+  padding-left: 10px;
+}
+
+.nav-user-name {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.nav-user-role {
+  text-align: left;
+  width: 100%;
+}
+
 /*
 
 http://www.network-science.de/ascii/ 
@@ -427,9 +608,10 @@ Dashboard/Main View
 
 */
 footer {
+  background: #f6f7f8;
+  border-top: 2px solid darken(@bg-color-default, 10%);
   margin-top: 20px;
   margin-bottom: 0;
-  border-top: 2px solid darken(@bg-color-default, 10%);
 }
 
 footer div {
@@ -461,6 +643,108 @@ footer div {
     margin-bottom: 0;
   }
 }
+
+/*
+
+http://www.network-science.de/ascii/ 
+font: basic
+
+d888888b d8b   db db    db  .d88b.  d888888b  .o88b. d88888b .d8888. 
+  `88'   888o  88 88    88 .8P  Y8.   `88'   d8P  Y8 88'     88'  YP 
+   88    88V8o 88 Y8    8P 88    88    88    8P      88ooooo `8bo.   
+   88    88 V8o88 `8b  d8' 88    88    88    8b      88~~~~~   `Y8b. 
+  .88.   88  V888  `8bd8'  `8b  d8'   .88.   Y8b  d8 88.     db   8D 
+Y888888P VP   V8P    YP     `Y88P'  Y888888P  `Y88P' Y88888P `8888Y' 
+
+// User Profile styling
+
+*/
+
+.inv-monthly-sums {
+  border: 1px solid #979797;
+  -webkit-box-shadow: 4px 4px 5px 0px rgba(151,151,151,1);
+  -moz-box-shadow: 4px 4px 5px 0px rgba(151,151,151,1);
+  box-shadow: 4px 4px 5px 0px rgba(151,151,151,1);
+  margin: 30px 0;
+  padding: 27px 34px;
+}
+
+.inv-monthly-sums h3 {
+  cursor: pointer;
+}
+
+.inv-monthly-sums tbody tr:hover {
+  background: black;
+  color: white;
+  cursor: pointer;
+}
+
+.inv-monthly-sums tbody tr input {
+  color: black;
+}
+
+.inv-invoice-container {
+  height: 100%;
+  left: 0;
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+
+.inv-invoice-background {
+  background-color: white;
+  -webkit-filter: blur(20px);
+  -moz-filter: blur(20px);
+  -o-filter: blur(20px);
+  -ms-filter: blur(20px);
+  filter: blur(20px);
+  height: 100%;
+  left: 0;
+  opacity: 0.7;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+.inv-invoice-aligner {
+  .align-items(center);
+  .flex-block();
+  height: 100%;
+  .justify-content(center);
+  width: 100%;
+  z-index: 20;
+  opacity: 1.0;
+  position: absolute;
+}
+
+.inv-invoice {
+  background: #E7E7E7;
+  color: black;
+  height: 100%;
+  overflow-y: scroll;
+  padding: 20px;
+  width: 100%;
+}
+
+.inv-invoice button {
+  background: white;
+  border-radius: 50%;
+  border-style: none;
+  color: #4A4A4A;
+  float: right;
+  height: 40px;
+  margin: 9px 3px;
+  width: 40px;
+}
+
+.inv-time-frame {
+  white-space: nowrap;
+}
+
+.inv-amount {
+  white-space: nowrap;
+}
+
 
 /*
 
@@ -507,7 +791,6 @@ YP  YP  YP YP   YP  `Y88P' YP   YP Y888888P VP   V8P Y88888P
 */
 
 .machine-container {
-  background-image: linear-gradient(180deg, darken(#FFFFFF, 5%) 0%, #FFFFFF 100%);
   padding-top: 10px;
   padding-bottom: 10px;
   border-bottom: 2px solid darken(#ffffff, 10%);
@@ -524,7 +807,6 @@ YP  YP  YP YP   YP  `Y88P' YP   YP Y888888P VP   V8P Y88888P
 }
 
 .machine-header {
-  border-bottom: 1px solid darken(#ffffff, 10%);
   padding-bottom: 10px;
   padding-top: 10px;
   font-size: 18px;

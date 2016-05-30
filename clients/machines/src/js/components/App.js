@@ -1,6 +1,6 @@
 var reactor = require('../reactor');
 var getters = require('../getters');
-var HeaderNav = require('./HeaderNav');
+var HeaderNav = require('./Header/HeaderNav');
 var LoaderLocal = require('./LoaderLocal');
 var LocationActions = require('../actions/LocationActions');
 var LoginActions = require('../actions/LoginActions');
@@ -63,10 +63,12 @@ var RouteHandler = require('react-router').RouteHandler;
     return (
       <div className="app">
         <HeaderNav />
-        {(this.state.isLogged || window.location.hash === '#/login') ? 
-          <RouteHandler /> :
-          <LoaderLocal />
-        }
+        <div id="main-content">
+          {(this.state.isLogged || window.location.hash === '#/login') ? 
+            <RouteHandler /> :
+            <LoaderLocal />
+          }
+        </div>
         <footer className={this.state.isLogged ? '' : 'absolute-bottom'}>
           <div className="container-fluid">
             <div className="col-md-4 text-center">

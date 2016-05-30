@@ -139,6 +139,34 @@ func init() {
 			[]string{"get"},
 			nil})
 
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"],
+		beego.ControllerComments{
+			"GetUser",
+			`/months/:year/:month/users/:uid`,
+			[]string{"get"},
+			nil})
+
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"],
+		beego.ControllerComments{
+			"GetStatuses",
+			`/months/:year/:month/users/:uid/statuses`,
+			[]string{"get"},
+			nil})
+
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"],
+		beego.ControllerComments{
+			"CreateDraft",
+			`/months/:year/:month/users/:uid/draft`,
+			[]string{"post"},
+			nil})
+
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"],
+		beego.ControllerComments{
+			"Update",
+			`/months/:year/:month/users/:uid/update`,
+			[]string{"post"},
+			nil})
+
 	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:MachineTypeController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:MachineTypeController"],
 		beego.ControllerComments{
 			"GetAll",

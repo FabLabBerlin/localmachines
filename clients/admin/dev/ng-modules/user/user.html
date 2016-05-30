@@ -184,43 +184,6 @@
     
   </div> <!-- /.row -->
 
-  <div>
-    <label for="user-nfc-uid">NFC UID</label>
-  </div>
-
-  <div class="row">
-
-    <div class="col-sm-3">
-      <div class="form-group">
-        <input id="user-nfc-uid" type="text" 
-               class="form-control" ng-model="nfcUid">
-      </div>
-    </div>
-
-    <div class="col-sm-3" ng-show="nfcSupport">
-      <div class="form-group">
-        <button 
-          class="btn btn-warning btn-block" 
-          ng-disabled="nfcPolling"
-          ng-click="getNfcUid()">
-          {{nfcButtonLabel}}
-        </button>
-      </div>
-    </div>
-
-    <div class="col-sm-3">
-      <div class="form-group">
-        <button 
-          class="btn btn-primary btn-block" 
-          ng-click="updateNfcUid()">
-          Update NFC UID
-        </button>
-      </div>
-    </div>
-
-    
-  </div><!-- /.row -->
-
   <div class="row">
     <div class="col-sm-12">
       <h2>Comments</h2>

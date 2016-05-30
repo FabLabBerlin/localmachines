@@ -1,6 +1,9 @@
 var AdminInvoices = require('./components/Admin/Invoices/Invoices');
 var AdminMachine = require('./components/Admin/Machines/Machine');
 var AdminMachines = require('./components/Admin/Machines/Machines');
+var AdminSettings = require('./components/Admin/Settings/Settings');
+var AdminUser = require('./components/Admin/Users/User');
+var AdminUsers = require('./components/Admin/Users/Users');
 var App = require('./components/App');
 var FeedbackPage = require('./components/Feedback/FeedbackPage');
 var FeedbackStore = require('./stores/FeedbackStore');
@@ -21,10 +24,12 @@ var ReservationsStore = require('./stores/ReservationsStore');
 var ReservationRulesStore = require('./stores/ReservationRulesStore');
 var Router = require('react-router');
 var ScrollNavStore = require('./stores/ScrollNavStore');
+var Page = require('./components/UserProfile/SpendingsPage');
 var SettingsStore = require('./modules/Settings/stores/store');
 var SpendingsPage = require('./components/UserProfile/SpendingsPage');
 var TutoringsStore = require('./stores/TutoringsStore');
 var UserPage = require('./components/UserProfile/UserPage');
+var Users = require('./modules/Users');
 var UserStore = require('./stores/UserStore');
 var LocationStore = require('./stores/LocationStore');
 
@@ -67,6 +72,9 @@ let routes = (
       <Route path="machines" handler={AdminMachines} />
       <Route path="machines/:machineId" handler={AdminMachine} />
       <Route path="invoices" handler={AdminInvoices} />
+      <Route path="settings" handler={AdminSettings} />
+      <Route path="users" handler={AdminUsers} />
+      <Route path="users/:userId" handler={AdminUser} />
     </Route>
     <Route name="forgot_password" path="forgot_password">
       <Route name="email_sent" handler={ForgotPassword.EmailSent} />
@@ -103,6 +111,7 @@ reactor.registerStores({
   settingsStore: SettingsStore,
   tutoringsStore: TutoringsStore,
   userStore: UserStore,
+  usersStore: Users.store,
   locationStore: LocationStore
 });
 

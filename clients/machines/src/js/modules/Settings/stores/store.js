@@ -13,9 +13,14 @@ var SettingsStore = new Nuclear.Store({
   },
 
   initialize() {
+    this.on(actionTypes.SET_ADMIN_SETTINGS, setAdminSettings);
     this.on(actionTypes.SET_VAT_PERCENT, setVatPercent);
   }
 });
+
+function setAdminSettings(state, adminSettings) {
+  return state.set('adminSettings', adminSettings);
+}
 
 function setVatPercent(state, vatPercent) {
   return state.set('VatPercent', vatPercent);

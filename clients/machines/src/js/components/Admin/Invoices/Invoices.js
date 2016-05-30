@@ -1,9 +1,12 @@
+var getters = require('../../../getters');
 var Invoices = require('../../../modules/Invoices');
 var LoaderLocal = require('../../LoaderLocal');
+var LocationActions = require('../../../actions/LocationActions');
 var LocationGetters = require('../../../modules/Location/getters');
 var moment = require('moment');
 var React = require('react');
 var reactor = require('../../../reactor');
+var SettingsActions = require('../../../modules/Settings/actions');
 var Summaries = require('./Summaries');
 
 
@@ -15,8 +18,13 @@ var Month = React.createClass({
     return {
       location: LocationGetters.getLocation,
       locationId: LocationGetters.getLocationId,
-      MonthlySums: Invoices.getters.getMonthlySums
+      MonthlySums: Invoices.getters.getMonthlySums,
+      uid: getters.getUid
     };
+  },
+
+  componentWillMount() {
+    LocationActions.loadUserLocations(this.state.uid);
   },
 
   render() {
@@ -30,7 +38,7 @@ var Month = React.createClass({
     const summaries = this.state.MonthlySums.getIn([year, month]);
 
     return (
-      <div>
+      <div className="inv-monthly-sums">
         <h3 onClick={this.select}>{t.format('MMMM YYYY')}</h3>
         {
           selected ? (
@@ -70,11 +78,13 @@ var InvoicesView = React.createClass({
   mixins: [ reactor.ReactMixin ],
 
   componentWillMount() {
+    const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
     var t = moment();
     Invoices.actions.fetchMonthlySums(this.state.locationId, {
       month: t.month(),
       year: t.year()
     });
+    SettingsActions.loadSettings({locationId});
   },
 
   getDataBindings() {

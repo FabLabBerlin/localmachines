@@ -1,36 +1,97 @@
 var _ = require('lodash');
+var $ = require('jquery');
+var Invoices = require('../../modules/Invoices');
+var LocationGetters = require('../../modules/Location/getters');
+var moment = require('moment');
 var React = require('react');
 var reactor = require('../../reactor');
 var SettingsGetters = require('../../modules/Settings/getters');
+var toastr = require('../../toastr');
 var {formatDate, subtractVAT, toEuro, toCents} = require('./helpers');
 
-function formatDuration(t) {
-  if (t) {
-    var d = parseInt(t.toString(), 10);
-    var h = Math.floor(d / 3600);
-    var m = Math.floor(d % 3600 / 60);
-    var s = Math.floor(d % 3600 % 60);
-    var str = '';
-    if (h) {
-      str += String(h) + 'h ';
+function formatDuration(purchase) {
+  if (purchase.Quantity) {
+    var duration = purchase.Quantity;
+    switch (purchase.PriceUnit) {
+    case 'month':
+      duration *= 60 * 60 * 24 * 30;
+      break;
+    case 'day':
+      duration *= 60 * 60 * 24;
+      break;
+    case 'hour':
+      duration *= 60 * 60;
+      break;
+    case '30 minutes':
+      duration *= 60 * 30;
+      break;
+    case 'minute':
+      duration *= 60;
+      break;
+    case 'second':
+      break;
+    default:
+      console.log('unknown price unit', purchase.PriceUnit);
+      return undefined;
     }
-    if (h || m) {
-      str += String(m) + 'm ';
+
+    var d = parseInt(duration.toString(), 10);
+    var h = String(Math.floor(d / 3600));
+    var m = String(Math.floor(d % 3600 / 60));
+    var s = String(Math.floor(d % 3600 % 60));
+    if (h.length === 1) {
+      h = '0' + h;
     }
-    if (h || m || s) {
-      str += String(s) + 's ';
+    if (m.length === 1) {
+      m = '0' + m;
     }
+    if (s.length === 1) {
+      s = '0' + s;
+    }
+    var str = h + ':' + m + ':' + s + ' h';
+
     return str;
   }
 }
+
+function formatPrice(price) {
+  return (Math.round(price * 100) / 100).toFixed(2);
+}
+
+
+var DurationEdit = React.createClass({
+  componentDidMount() {
+    $(this.refs.duration.getDOMNode()).focus()
+                                      .select();
+  },
+
+  render() {
+    return (
+      <input type="text"
+             ref="duration"
+             value={formatDuration(this.props.purchase)}/>
+    );
+  }
+});
+
+
 
 var BillTable = React.createClass({
   mixins: [ reactor.ReactMixin ],
 
   getDataBindings() {
     return {
+      editPurchaseId: Invoices.getters.getEditPurchaseId,
+      isAdmin: LocationGetters.getIsAdmin,
       vatPercent: SettingsGetters.getVatPercent
     };
+  },
+
+  edit(purchase, e) {
+    if (this.state.isAdmin) {
+      Invoices.actions.editPurchase(purchase.Id);
+    }
+    e.stopPropagation();
   },
 
   render() {
@@ -46,7 +107,7 @@ var BillTable = React.createClass({
       <div key={i++}>
         <h4 className="text-left">{bill.month}</h4>
         <h5 className="text-left">
-          ({toEuro(bill.sums.total.priceInclVAT)} 
+          ({formatPrice(bill.Sums.All.PriceInclVAT)} 
           <i className="fa fa-eur"/> total incl. VAT)
         </h5>
       </div>
@@ -63,8 +124,8 @@ var BillTable = React.createClass({
       </tr>
     );
 
-    _.each(bill.purchases, function(purchase) {
-      var label = purchase.MachineName;
+    _.each(bill.Purchases.Data, (purchase) => {
+      var label = purchase.Machine ? purchase.Machine.Name : '';
       switch (purchase.Type) {
       case 'activation':
         // already okay
@@ -81,14 +142,22 @@ var BillTable = React.createClass({
       default:
         console.log('unhandled purchase type ', purchase.Type);
       }
+      const selected = this.state.editPurchaseId === purchase.Id;
       tbody.push(
-        <tr key={i++}>
+        <tr key={i++}
+            onClick={this.edit.bind(this, purchase)}
+            className={!selected ? 'unselected' : undefined}>
           <td>{label}</td>
-          <td>{formatDate(purchase.TimeStart)}</td>
-          <td>{formatDuration(purchase.duration)}</td>
-          <td>{toEuro(purchase.priceExclVAT)}€</td>
-          <td>{toEuro(purchase.priceVAT)}€</td>
-          <td>{toEuro(purchase.priceInclVAT)}€</td>
+          <td>{formatDate(moment(purchase.TimeStart))}</td>
+          <td>
+            {selected ?
+              <DurationEdit purchase={purchase}/> :
+              formatDuration(purchase)
+            }
+          </td>
+          <td>{formatPrice(purchase.PriceExclVAT)}€</td>
+          <td>{formatPrice(purchase.PriceVAT)}€</td>
+          <td>{formatPrice(purchase.DiscountedTotal)}€</td>
         </tr>
       );
     });
@@ -101,10 +170,10 @@ var BillTable = React.createClass({
       <tr key={i++}>
         <td><b>Total Pay-As-You-Go</b></td>
         <td>&nbsp;</td>
-        <td><b>{formatDuration(bill.sums.purchases.durations)}</b></td>
-        <td><b>{toEuro(bill.sums.purchases.priceExclVAT)}€</b></td>
-        <td><b>{toEuro(bill.sums.purchases.priceVAT)}€</b></td>
-        <td><b>{toEuro(bill.sums.purchases.priceInclVAT)}€</b></td>
+        <td></td>
+        <td><b>{formatPrice(bill.Sums.Purchases.PriceExclVAT)}€</b></td>
+        <td><b>{formatPrice(bill.Sums.Purchases.PriceVAT)}€</b></td>
+        <td><b>{formatPrice(bill.Sums.Purchases.PriceInclVAT)}€</b></td>
       </tr>
     );
 
@@ -113,9 +182,9 @@ var BillTable = React.createClass({
         <td><b>Total Memberships</b></td>
         <td>&nbsp;</td>
         <td>&nbsp;</td>
-        <td><b>{toEuro(bill.sums.memberships.priceExclVAT)}€</b></td>
-        <td><b>{toEuro(bill.sums.memberships.priceVAT)}€</b></td>
-        <td><b>{toEuro(bill.sums.memberships.priceInclVAT)}€</b></td>
+        <td><b>{formatPrice(bill.Sums.Memberships.PriceExclVAT)}€</b></td>
+        <td><b>{formatPrice(bill.Sums.Memberships.PriceVAT)}€</b></td>
+        <td><b>{formatPrice(bill.Sums.Memberships.PriceInclVAT)}€</b></td>
       </tr>
     );
 
@@ -124,9 +193,9 @@ var BillTable = React.createClass({
         <td><b>Total</b></td>
         <td>&nbsp;</td>
         <td>&nbsp;</td>
-        <td><b>{toEuro(bill.sums.total.priceExclVAT)}€</b></td>
-        <td><b>{toEuro(bill.sums.total.priceVAT)}€</b></td>
-        <td><b>{toEuro(bill.sums.total.priceInclVAT)}€</b></td>
+        <td><b>{formatPrice(bill.Sums.All.PriceExclVAT)}€</b></td>
+        <td><b>{formatPrice(bill.Sums.All.PriceVAT)}€</b></td>
+        <td><b>{formatPrice(bill.Sums.All.PriceInclVAT)}€</b></td>
       </tr>
     );
 

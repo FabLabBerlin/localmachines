@@ -43,7 +43,7 @@ describe('Membership', function() {
   describe('render', function() {
     it('renders the memberships and the totals', function() {
       var membership = new Membership({
-        memberships: state.userStore.memberships
+        memberships: state.userStore.memberships.toJS()
       });
       var html = React.renderToString(membership);
       /* Memberships */

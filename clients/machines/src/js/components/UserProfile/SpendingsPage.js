@@ -1,5 +1,6 @@
 var BillTables = require('./BillTables');
 var getters = require('../../getters');
+var LoaderLocal = require('../LoaderLocal');
 var LocationGetters = require('../../modules/Location/getters');
 var LoginActions = require('../../actions/LoginActions');
 var MachineActions = require('../../actions/MachineActions');
@@ -49,16 +50,20 @@ var SpendingsPage = React.createClass({
   },
 
   render() {
-    return (
-      <div className="container">
-        <h3>Your Memberships</h3>
-        {<Membership memberships={this.state.memberships} />}
+    if (this.state.memberships && this.state.bill) {
+      return (
+        <div className="container">
+          <h3>Your Memberships</h3>
+          {<Membership memberships={this.state.memberships.toJS()} />}
 
-        <h3>Pay-As-You-Go</h3>
-        <BillTables bill={this.state.bill} membership={this.state.membership}/>
-        <ScrollNav/>
-      </div>
-    );
+          <h3>Pay-As-You-Go</h3>
+          <BillTables bill={this.state.bill} membership={this.state.membership}/>
+          <ScrollNav/>
+        </div>
+      );
+    } else {
+      return <LoaderLocal/>;
+    }
   }
 });
 
