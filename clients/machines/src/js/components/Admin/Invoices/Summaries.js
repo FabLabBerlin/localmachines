@@ -68,7 +68,7 @@ var Summaries = React.createClass({
               return (
                 <tr key={i} onClick={this.select.bind(this, sum.get('User'))}>
                   <td><input type="checkbox"/></td>
-                  <td className="text-right">{sum.getIn(['User', 'ClientId'])}</td>
+                  <td className="text-right">{sum.getIn(['User', 'ClientId']) || 'Draft'}</td>
                   <td>{name}</td>
                   <td>-</td>
                   <td>-</td>
