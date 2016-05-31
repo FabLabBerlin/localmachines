@@ -188,8 +188,10 @@ func (this *InvoicesController) DownloadExcelExport() {
 }
 
 type MonthlySummary struct {
-	User   users.User
-	Amount float64
+	User          users.User
+	InvoiceNumber int64
+	InvoiceStatus string
+	Amount        float64
 }
 
 // @Title GetMonth
@@ -204,13 +206,13 @@ func (this *InvoicesController) GetMonth() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	year, err := this.GetInt64(":year")
+	year, err := this.GetInt(":year")
 	if err != nil {
 		beego.Error("Failed to get year:", err)
 		this.CustomAbort(400, "Bad request")
 	}
 
-	month, err := this.GetInt64(":month")
+	month, err := this.GetInt(":month")
 	if err != nil {
 		beego.Error("Failed to get month:", err)
 		this.CustomAbort(400, "Bad request")
@@ -241,6 +243,13 @@ func (this *InvoicesController) GetMonth() {
 		}
 		sums = append(sums, sum)
 	}
+
+	l, err := fastbill.ListInvoices(year, time.Month(month))
+	if err != nil {
+		beego.Error("Failed to get invoice list from fastbill:", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+	beego.Info("l:", l)
 
 	this.Data["json"] = sums
 	this.ServeJSON()

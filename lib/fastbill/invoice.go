@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/astaxie/beego"
 	"strings"
+	"time"
 )
 
 const (
@@ -87,6 +88,8 @@ type ExistingMonth struct {
 type InvoiceFilter struct {
 	InvoiceTitle string `json:"INVOICE_TITLE,omitempty"`
 	Type         string `json:"TYPE,omitempty"`
+	Month        int    `json:"MONTH,string,omitempty"`
+	Year         int    `json:"YEAR,string,omitempty"`
 }
 
 func (inv *Invoice) FetchExisting() (existingMonth *ExistingMonth, err error) {
@@ -201,4 +204,42 @@ type Item struct {
 	VatPercent    float64 `json:"VAT_PERCENT,string"`
 	IsGross       string  `json:"IS_GROSS,omitempty"`
 	SortOrder     string  `json:"SORT_ORDER,"`
+}
+
+func ListInvoices(year int, month time.Month) ([]InvoiceGetResponseInvoice, error) {
+	all := make([]InvoiceGetResponseInvoice, 0, 100)
+	limit := 100
+	for offset := 0; ; offset += limit {
+		l, err := listInvoices(year, month, offset, limit)
+		if err != nil {
+			return nil, fmt.Errorf("@offset=%v: err", offset, err)
+		}
+		for _, inv := range l {
+			all = append(all, inv)
+		}
+		if len(l) < limit {
+			break
+		}
+	}
+	return all, nil
+}
+
+func listInvoices(year int, month time.Month, offset, limit int) ([]InvoiceGetResponseInvoice, error) {
+	var err error
+	fb := New()
+	filter := InvoiceFilter{
+		Year:  year,
+		Month: int(month),
+	}
+	request := Request{
+		SERVICE: SERVICE_INVOICE_GET,
+		FILTER:  filter,
+		LIMIT:   int64(limit),
+		OFFSET:  int64(offset),
+	}
+	var response InvoiceGetResponse
+	if err = fb.execGetRequest(&request, &response); err != nil {
+		return nil, fmt.Errorf("get request: %v", err)
+	}
+	return response.Response.Invoices, err
 }
