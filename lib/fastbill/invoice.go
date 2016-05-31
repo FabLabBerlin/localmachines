@@ -76,6 +76,7 @@ type InvoiceGetResponseInvoice struct {
 	CustomerId    int64   `json:"CUSTOMER_ID,string,omitempty"`
 	InvoiceNumber string  `json:"INVOICE_NUMBER,omitempty"`
 	InvoiceTitle  string  `json:"INVOICE_TITLE,omitempty"`
+	VatPercent    float64 `json:"VAT_PERCENT,omitempty,string"`
 }
 
 func (this *InvoiceGetResponseInvoice) Canceled() bool {

@@ -25,12 +25,13 @@ type Invoice struct {
 	CustomerId int64
 	CustomerNo int64
 	UserId     int64
+	Total      float64
 	Status     string
 	Interval   lib.Interval        `orm:"-" json:",omitempty"`
 	User       *users.User         `orm:"-" json:",omitempty"`
 	Purchases  purchases.Purchases `orm:"-" json:",omitempty"`
 	Sums       *Sums               `orm:"-" json:",omitempty"`
-	VatPercent float64             `orm:"-" json:",omitempty"`
+	VatPercent float64             `json:",omitempty"`
 }
 
 type Sums struct {

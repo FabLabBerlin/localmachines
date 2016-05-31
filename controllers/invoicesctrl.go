@@ -639,6 +639,8 @@ func (this *InvoicesController) SyncFastbillInvoices() {
 			FastbillNo: fbInv.InvoiceNumber,
 			CustomerId: fbInv.CustomerId,
 			Status:     fbInv.Type,
+			Total:      fbInv.Total,
+			VatPercent: fbInv.VatPercent,
 		}
 		inv.Month, inv.Year, inv.CustomerNo, err = fbInv.ParseTitle()
 		if err != nil {
