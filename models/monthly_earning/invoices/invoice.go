@@ -16,10 +16,10 @@ const TABLE_NAME = "invoices"
 // Invoice represents an actual or future invoice. Future invoices do not
 // have a FastbillId.
 type Invoice struct {
-	Id         int64 `json:",omitempty"`
-	LocationId int64 `json:",omitempty"`
-	FastbillId int64 `json:",omitempty"`
-	FastbillNo int64 `json:",omitempty"`
+	Id         int64  `json:",omitempty"`
+	LocationId uint64 `json:",omitempty"`
+	FastbillId uint64 `json:",omitempty"`
+	FastbillNo int64  `json:",omitempty"`
 	Month      int
 	Year       int
 	CustomerId int64
@@ -29,11 +29,7 @@ type Invoice struct {
 	User       *users.User         `orm:"-" json:",omitempty"`
 	Purchases  purchases.Purchases `orm:"-" json:",omitempty"`
 	Sums       *Sums               `orm:"-" json:",omitempty"`
-	VatPercent float64             `json:",omitempty"`
-}
-
-func init() {
-	orm.RegisterModel(new(Invoice))
+	VatPercent float64             `orm:"-" json:",omitempty"`
 }
 
 type Sums struct {
@@ -168,10 +164,6 @@ func (inv *Invoice) SplitByMonths() (invs []*Invoice, err error) {
 	}
 
 	return
-}
-
-func (inv *Invoice) TableName() string {
-	return TABLE_NAME
 }
 
 // GetIdsAndStatuses in Invoice struct.  Leaving other fields empty.
