@@ -41,3 +41,14 @@ func CreateOrUpdate(invOrig *Invoice) (id int64, err error) {
 	}
 	return
 }
+
+func GetAllInvoicesAt(locId int64, year, month int) ([]*Invoice, error) {
+	var ivs []*Invoice
+	_, err := orm.NewOrm().
+		QueryTable(TABLE_NAME).
+		Filter("location_id", locId).
+		Filter("year", year).
+		Filter("month", month).
+		All(&ivs)
+	return ivs, err
+}

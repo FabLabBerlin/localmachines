@@ -50,7 +50,7 @@ var Summaries = React.createClass({
                 <label>Paid</label>
               </th>
               <th className="text-center">
-                <label>Send</label>
+                <label>Sent</label>
               </th>
               <th className="text-center">
                 <label>Amount (EUR)</label>
@@ -61,17 +61,19 @@ var Summaries = React.createClass({
             {summaries.map((sum, i) => {
               const name = sum.getIn(['User', 'FirstName'])
                          + ' ' + sum.getIn(['User', 'LastName']);
-              const amount = (Math.round(sum.get('Amount') * 100)
+              const amount = (Math.round(sum.get('Total') * 100)
                                  / 100)
                                  .toFixed(2);
 
               return (
                 <tr key={i} onClick={this.select.bind(this, sum.get('User'))}>
                   <td><input type="checkbox"/></td>
-                  <td className="text-right">{sum.getIn(['User', 'ClientId']) || 'Draft'}</td>
+                  <td className="text-right">
+                    {sum.getIn(['FastbillNo']) || 'Draft'}
+                  </td>
                   <td>{name}</td>
-                  <td>-</td>
-                  <td>-</td>
+                  <td className="text-center">-</td>
+                  <td className="text-center">-</td>
                   <td className="text-right">{amount} €</td>
                 </tr>
               );

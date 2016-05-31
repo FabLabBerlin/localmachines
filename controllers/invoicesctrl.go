@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/lib/fastbill"
@@ -220,66 +219,28 @@ func (this *InvoicesController) GetMonth() {
 		this.CustomAbort(400, "Bad request")
 	}
 
-	interval := lib.Interval{
-		MonthFrom: int(month),
-		YearFrom:  int(year),
-		MonthTo:   int(month),
-		YearTo:    int(year),
-	}
-
-	me, err := monthly_earning.New(locId, interval)
+	usrs, err := users.GetAllUsersAt(locId)
 	if err != nil {
-		beego.Error("Failed to make new invoices:", err)
+		beego.Error("Failed to get users:", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	sumsByCustomerId := make(map[int64]MonthlySummary)
-	for _, inv := range me.Invoices {
-		if err := inv.CalculateTotals(); err != nil {
-			beego.Error("CalculateTotals:", err)
-			this.Abort("500")
-		}
-		sum := MonthlySummary{
-			User:   *inv.User,
-			Amount: inv.Sums.All.PriceInclVAT,
-		}
-		if sum.User.ClientId != 0 {
-			customerId, err := fastbill.GetCustomerId(sum.User)
-			if err == nil {
-				sumsByCustomerId[customerId] = sum
-			} else {
-				beego.Error("Failed to get customer id for customer #", sum.User.ClientId)
-			}
-		} else {
-			beego.Error("ClientId=0 for User", sum.User.FirstName, sum.User.LastName)
-		}
+	usrsById := make(map[int64]*users.User)
+	for _, u := range usrs {
+		usrsById[u.Id] = u
 	}
 
-	l, err := fastbill.ListInvoices(year, time.Month(month))
+	ivs, err := invoices.GetAllInvoicesAt(locId, year, month)
 	if err != nil {
-		beego.Error("Failed to get invoice list from fastbill:", err)
+		beego.Error("Failed to get invoices:", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	result := make([]MonthlySummary, 0, 2*len(sumsByCustomerId))
-	beego.Info("Processing", len(l), "Fastbill invoices")
-	for _, inv := range l {
-		sum, ok := sumsByCustomerId[inv.CustomerId]
-		if ok {
-			tmp := sum
-			beego.Info("Processing sum for CustomerId", inv.CustomerId)
-			tmp.InvoiceNumber = inv.InvoiceNumber
-			tmp.CustomerId = inv.CustomerId
-			tmp.InvoiceStatus = inv.Type
-			result = append(result, tmp)
-		} else {
-			beego.Info("no sum for CustomerId", inv.CustomerId)
-		}
+	for _, iv := range ivs {
+		iv.User = usrsById[iv.UserId]
 	}
-	buf, _ := json.Marshal(l)
-	fmt.Printf("l = %v\n", string(buf))
 
-	this.Data["json"] = result
+	this.Data["json"] = ivs
 	this.ServeJSON()
 }
 
@@ -641,6 +602,7 @@ func (this *InvoicesController) SyncFastbillInvoices() {
 			Status:     fbInv.Type,
 			Total:      fbInv.Total,
 			VatPercent: fbInv.VatPercent,
+			Canceled:   fbInv.Canceled(),
 		}
 		inv.Month, inv.Year, inv.CustomerNo, err = fbInv.ParseTitle()
 		if err != nil {

@@ -27,11 +27,12 @@ type Invoice struct {
 	UserId     int64
 	Total      float64
 	Status     string
-	Interval   lib.Interval        `orm:"-" json:",omitempty"`
+	Interval   *lib.Interval       `orm:"-" json:",omitempty"`
 	User       *users.User         `orm:"-" json:",omitempty"`
 	Purchases  purchases.Purchases `orm:"-" json:",omitempty"`
 	Sums       *Sums               `orm:"-" json:",omitempty"`
 	VatPercent float64             `json:",omitempty"`
+	Canceled   bool
 }
 
 type Sums struct {
@@ -134,7 +135,7 @@ func (inv *Invoice) SplitByMonths() (invs []*Invoice, err error) {
 	for t := tMin; ; t = t.AddDate(0, 1, 0) {
 		i++
 		iv := &Invoice{
-			Interval: lib.Interval{
+			Interval: &lib.Interval{
 				MonthFrom: int(t.Month()),
 				YearFrom:  t.Year(),
 				MonthTo:   int(t.Month()),
@@ -214,7 +215,7 @@ GROUP BY concat(user_id, '-', COALESCE(invoice_id, ''));
 	for _, inv := range invs {
 		inv.Month = month
 		inv.Year = year
-		inv.Interval = interval
+		inv.Interval = &interval
 	}
 
 	return invs, err
