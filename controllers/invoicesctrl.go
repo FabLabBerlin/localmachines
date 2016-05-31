@@ -190,7 +190,7 @@ func (this *InvoicesController) DownloadExcelExport() {
 
 type MonthlySummary struct {
 	User          users.User
-	InvoiceNumber int64
+	InvoiceNumber string
 	InvoiceStatus string
 	Amount        float64
 	CustomerId    int64
@@ -268,8 +268,9 @@ func (this *InvoicesController) GetMonth() {
 		if ok {
 			tmp := sum
 			beego.Info("Processing sum for CustomerId", inv.CustomerId)
-			tmp.InvoiceNumber = inv.InvoiceNumber()
+			tmp.InvoiceNumber = inv.InvoiceNumber
 			tmp.CustomerId = inv.CustomerId
+			tmp.InvoiceStatus = inv.Type
 			result = append(result, tmp)
 		} else {
 			beego.Info("no sum for CustomerId", inv.CustomerId)

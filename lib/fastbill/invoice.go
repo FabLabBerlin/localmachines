@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/astaxie/beego"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -67,23 +66,18 @@ type InvoiceGetResponse struct {
 }
 
 type InvoiceGetResponseInvoice struct {
-	Id                  int64   `json:"INVOICE_ID,string"`
-	Type                string  `json:"TYPE,omitempty"`
-	InvoiceDate         string  `json:"INVOICE_DATE,omitempty"`
-	PaidDate            string  `json:"PAID_DATE,omitempty"`
-	IsCanceled          string  `json:"IS_CANCELED,omitempty"`
-	Total               float64 `json:"TOTAL,omitempty"`
-	CustomerId          int64   `json:"CUSTOMER_ID,string,omitempty"`
-	InvoiceNumberString string  `json:"INVOICE_NUMBER,omitempty"`
+	Id            int64   `json:"INVOICE_ID,string"`
+	Type          string  `json:"TYPE,omitempty"`
+	InvoiceDate   string  `json:"INVOICE_DATE,omitempty"`
+	PaidDate      string  `json:"PAID_DATE,omitempty"`
+	IsCanceled    string  `json:"IS_CANCELED,omitempty"`
+	Total         float64 `json:"TOTAL,omitempty"`
+	CustomerId    int64   `json:"CUSTOMER_ID,string,omitempty"`
+	InvoiceNumber string  `json:"INVOICE_NUMBER,omitempty"`
 }
 
 func (this *InvoiceGetResponseInvoice) Canceled() bool {
 	return this.IsCanceled == "1"
-}
-
-func (this *InvoiceGetResponseInvoice) InvoiceNumber() int64 {
-	n, _ := strconv.ParseInt(this.InvoiceNumberString, 10, 64)
-	return n
 }
 
 type ExistingMonth struct {
