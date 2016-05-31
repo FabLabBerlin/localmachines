@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/lib/fastbill"
@@ -192,6 +193,7 @@ type MonthlySummary struct {
 	InvoiceNumber int64
 	InvoiceStatus string
 	Amount        float64
+	CustomerId    int64
 }
 
 // @Title GetMonth
@@ -231,7 +233,7 @@ func (this *InvoicesController) GetMonth() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	sums := make([]MonthlySummary, 0, len(me.Invoices))
+	sumsByCustomerId := make(map[int64]MonthlySummary)
 	for _, inv := range me.Invoices {
 		if err := inv.CalculateTotals(); err != nil {
 			beego.Error("CalculateTotals:", err)
@@ -241,7 +243,16 @@ func (this *InvoicesController) GetMonth() {
 			User:   *inv.User,
 			Amount: inv.Sums.All.PriceInclVAT,
 		}
-		sums = append(sums, sum)
+		if sum.User.ClientId != 0 {
+			customerId, err := fastbill.GetCustomerId(sum.User)
+			if err == nil {
+				sumsByCustomerId[customerId] = sum
+			} else {
+				beego.Error("Failed to get customer id for customer #", sum.User.ClientId)
+			}
+		} else {
+			beego.Error("ClientId=0 for User", sum.User.FirstName, sum.User.LastName)
+		}
 	}
 
 	l, err := fastbill.ListInvoices(year, time.Month(month))
@@ -249,9 +260,25 @@ func (this *InvoicesController) GetMonth() {
 		beego.Error("Failed to get invoice list from fastbill:", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
-	beego.Info("l:", l)
 
-	this.Data["json"] = sums
+	result := make([]MonthlySummary, 0, 2*len(sumsByCustomerId))
+	beego.Info("Processing", len(l), "Fastbill invoices")
+	for _, inv := range l {
+		sum, ok := sumsByCustomerId[inv.CustomerId]
+		if ok {
+			tmp := sum
+			beego.Info("Processing sum for CustomerId", inv.CustomerId)
+			tmp.InvoiceNumber = inv.InvoiceNumber()
+			tmp.CustomerId = inv.CustomerId
+			result = append(result, tmp)
+		} else {
+			beego.Info("no sum for CustomerId", inv.CustomerId)
+		}
+	}
+	buf, _ := json.Marshal(l)
+	fmt.Printf("l = %v\n", string(buf))
+
+	this.Data["json"] = result
 	this.ServeJSON()
 }
 
