@@ -595,3 +595,72 @@ func (this *InvoicesController) Update() {
 	beego.Error("Not implemented")
 	this.CustomAbort(500, "Not implemented")
 }
+
+// @Title SyncFastbillInvoices
+// @Description SyncFastbillInvoices
+// @Success 200 {object}
+// @Failure	401	Not authorized
+// @Failure	500	Internal Server Error
+// @router /months/:year/:month/sync [get]
+func (this *InvoicesController) SyncFastbillInvoices() {
+	locId, authorized := this.GetLocIdAdmin()
+	if !authorized {
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	year, err := this.GetInt(":year")
+	if err != nil {
+		beego.Error("Failed to get year:", err)
+		this.CustomAbort(400, "Bad request")
+	}
+
+	month, err := this.GetInt64(":month")
+	if err != nil {
+		beego.Error("Failed to get month:", err)
+		this.CustomAbort(400, "Bad request")
+	}
+
+	l, err := fastbill.ListInvoices(year, time.Month(month))
+	if err != nil {
+		beego.Error("Failed to get invoice list from fastbill:", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	usrs, err := users.GetAllUsersAt(locId)
+	if err != nil {
+		beego.Error("Failed to get user list:", err)
+		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	for _, fbInv := range l {
+		inv := invoices.Invoice{
+			LocationId: locId,
+			FastbillId: fbInv.Id,
+			FastbillNo: fbInv.InvoiceNumber,
+			CustomerId: fbInv.CustomerId,
+			Status:     fbInv.Type,
+		}
+		inv.Month, inv.Year, inv.CustomerNo, err = fbInv.ParseTitle()
+		if err != nil {
+			beego.Error("Cannot parse", fbInv.InvoiceTitle)
+			continue
+		}
+		for _, u := range usrs {
+			if u.ClientId == inv.CustomerNo {
+				inv.UserId = u.Id
+				break
+			}
+		}
+		if inv.UserId == 0 {
+			beego.Error("Cannot find user for customer number", inv.CustomerNo)
+			continue
+		}
+		beego.Info("Adding invoice of user", inv.UserId)
+		if _, err := invoices.CreateOrUpdate(&inv); err != nil {
+			beego.Error("Failed to create or update inv:", err)
+			this.CustomAbort(500, "Internal Server Error")
+		}
+	}
+
+	this.ServeJSON()
+}

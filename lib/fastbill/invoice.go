@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/astaxie/beego"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -74,10 +75,40 @@ type InvoiceGetResponseInvoice struct {
 	Total         float64 `json:"TOTAL,omitempty"`
 	CustomerId    int64   `json:"CUSTOMER_ID,string,omitempty"`
 	InvoiceNumber string  `json:"INVOICE_NUMBER,omitempty"`
+	InvoiceTitle  string  `json:"INVOICE_TITLE,omitempty"`
 }
 
 func (this *InvoiceGetResponseInvoice) Canceled() bool {
 	return this.IsCanceled == "1"
+}
+
+// ParseTitle like "March 2016 Invoice for Customer Number 696"
+func (this *InvoiceGetResponseInvoice) ParseTitle() (month, year int, customerNo int64, err error) {
+	parts := strings.Split(this.InvoiceTitle, " ")
+
+	if len(parts) != 7 {
+		return 0, 0, 0, fmt.Errorf("cannot parse '%v'", this.InvoiceTitle)
+	}
+
+	for i := 1; i <= 12; i++ {
+		if time.Month(i).String() == parts[0] {
+			month = i
+			break
+		}
+	}
+	if month == 0 {
+		return 0, 0, 0, fmt.Errorf("cannot parse month '%v'", parts[0])
+	}
+
+	if year, err = strconv.Atoi(parts[1]); err != nil {
+		return 0, 0, 0, fmt.Errorf("cannot parse year '%v'", parts[1])
+	}
+
+	if customerNo, err = strconv.ParseInt(parts[6], 10, 64); err != nil {
+		return 0, 0, 0, fmt.Errorf("cannot parse customer no '%v'", parts[6])
+	}
+
+	return
 }
 
 type ExistingMonth struct {

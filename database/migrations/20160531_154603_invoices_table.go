@@ -23,7 +23,7 @@ func (m *InvoicesTable_20160531_154603) Up() {
 			id int(11) unsigned NOT NULL AUTO_INCREMENT,
 			location_id int(11) unsigned,
 			fastbill_id int(11) unsigned,
-			fastbill_no int(11) unsigned,
+			fastbill_no varchar(100),
 			month tinyint unsigned,
 			year smallint unsigned,
 			customer_id int(11) unsigned,
