@@ -17,10 +17,13 @@ const TABLE_NAME = "invoices"
 // have a FastbillId.
 type Invoice struct {
 	Id         int64 `json:",omitempty"`
+	LocationId int64 `json:",omitempty"`
 	FastbillId int64 `json:",omitempty"`
 	FastbillNo int64 `json:",omitempty"`
 	Month      int
 	Year       int
+	CustomerId int64
+	CustomerNo int64
 	UserId     int64
 	Interval   lib.Interval        `orm:"-" json:",omitempty"`
 	User       *users.User         `orm:"-" json:",omitempty"`
