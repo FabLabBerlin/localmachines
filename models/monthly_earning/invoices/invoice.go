@@ -3,6 +3,7 @@ package invoices
 import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
+	"github.com/FabLabBerlin/localmachines/lib/fastbill"
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/users"
@@ -35,6 +36,14 @@ type Invoice struct {
 	InvoiceDate time.Time
 	PaidDate    time.Time
 	DueDate     time.Time
+}
+
+// Send an invoice transactionally. This includes:
+// 1. Send invoice through Fastbill
+// 2. Synchronize Fastbill
+// 3. Propagate Fastbill sync changes to associated purchases
+func (inv *Invoice) Send() (err error) {
+	return fmt.Errorf("not implemented")
 }
 
 type Sums struct {
@@ -168,5 +177,54 @@ func (inv *Invoice) SplitByMonths() (invs []*Invoice, err error) {
 		}
 	}
 
+	return
+}
+
+func SyncFastbillInvoices(locId int64, year int, month time.Month) (err error) {
+	l, err := fastbill.ListInvoices(year, time.Month(month))
+	if err != nil {
+		return fmt.Errorf("Failed to get invoice list from fastbill: %v", err)
+	}
+
+	usrs, err := users.GetAllUsersAt(locId)
+	if err != nil {
+		return fmt.Errorf("Failed to get user list: %v", err)
+	}
+
+	for _, fbInv := range l {
+		inv := Invoice{
+			LocationId:  locId,
+			FastbillId:  fbInv.Id,
+			FastbillNo:  fbInv.InvoiceNumber,
+			CustomerId:  fbInv.CustomerId,
+			Status:      fbInv.Type,
+			Total:       fbInv.Total,
+			VatPercent:  fbInv.VatPercent,
+			Canceled:    fbInv.Canceled(),
+			DueDate:     fbInv.DueDate(),
+			InvoiceDate: fbInv.InvoiceDate(),
+			PaidDate:    fbInv.PaidDate(),
+		}
+		inv.Month, inv.Year, inv.CustomerNo, err = fbInv.ParseTitle()
+		if err != nil {
+			beego.Error("Cannot parse", fbInv.InvoiceTitle)
+			err = nil
+			continue
+		}
+		for _, u := range usrs {
+			if u.ClientId == inv.CustomerNo {
+				inv.UserId = u.Id
+				break
+			}
+		}
+		if inv.UserId == 0 {
+			beego.Error("Cannot find user for customer number", inv.CustomerNo)
+			continue
+		}
+		beego.Info("Adding invoice of user", inv.UserId)
+		if _, err := CreateOrUpdate(&inv); err != nil {
+			return fmt.Errorf("Failed to create or update inv: %v", err)
+		}
+	}
 	return
 }

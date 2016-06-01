@@ -411,52 +411,10 @@ func (this *Controller) SyncFastbillInvoices() {
 		this.CustomAbort(400, "Bad request")
 	}
 
-	l, err := fastbill.ListInvoices(year, time.Month(month))
+	err = invoices.SyncFastbillInvoices(locId, year, time.Month(month))
 	if err != nil {
-		beego.Error("Failed to get invoice list from fastbill:", err)
-		this.CustomAbort(500, "Internal Server Error")
-	}
-
-	usrs, err := users.GetAllUsersAt(locId)
-	if err != nil {
-		beego.Error("Failed to get user list:", err)
-		this.CustomAbort(500, "Internal Server Error")
-	}
-
-	for _, fbInv := range l {
-		inv := invoices.Invoice{
-			LocationId:  locId,
-			FastbillId:  fbInv.Id,
-			FastbillNo:  fbInv.InvoiceNumber,
-			CustomerId:  fbInv.CustomerId,
-			Status:      fbInv.Type,
-			Total:       fbInv.Total,
-			VatPercent:  fbInv.VatPercent,
-			Canceled:    fbInv.Canceled(),
-			DueDate:     fbInv.DueDate(),
-			InvoiceDate: fbInv.InvoiceDate(),
-			PaidDate:    fbInv.PaidDate(),
-		}
-		inv.Month, inv.Year, inv.CustomerNo, err = fbInv.ParseTitle()
-		if err != nil {
-			beego.Error("Cannot parse", fbInv.InvoiceTitle)
-			continue
-		}
-		for _, u := range usrs {
-			if u.ClientId == inv.CustomerNo {
-				inv.UserId = u.Id
-				break
-			}
-		}
-		if inv.UserId == 0 {
-			beego.Error("Cannot find user for customer number", inv.CustomerNo)
-			continue
-		}
-		beego.Info("Adding invoice of user", inv.UserId)
-		if _, err := invoices.CreateOrUpdate(&inv); err != nil {
-			beego.Error("Failed to create or update inv:", err)
-			this.CustomAbort(500, "Internal Server Error")
-		}
+		beego.Error("Failed to sync fastbill invoices:", err)
+		this.Abort("500")
 	}
 
 	this.ServeJSON()
