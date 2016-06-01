@@ -128,7 +128,8 @@ func GetAllOfType(purchaseType string) (purchases []*Purchase, err error) {
 	o := orm.NewOrm()
 	_, err = o.QueryTable(TABLE_NAME).
 		Filter("type", purchaseType).
-		Filter("invoice_status__in", nil, "", "draft").
+		Exclude("invoice_status", "outgoing").
+		Exclude("invoice_status", "credit").
 		Exclude("archived", 1).
 		All(&purchases)
 	return
@@ -139,7 +140,8 @@ func GetAllOfTypeAt(locationId int64, typ string) (ps []*Purchase, err error) {
 	_, err = o.QueryTable(TABLE_NAME).
 		Filter("location_id", locationId).
 		Filter("type", typ).
-		Filter("invoice_status__in", nil, "", "draft").
+		Exclude("invoice_status", "outgoing").
+		Exclude("invoice_status", "credit").
 		Exclude("archived", 1).
 		All(&ps)
 	return
