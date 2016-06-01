@@ -101,7 +101,8 @@ func GetAllBetweenAt(locationId int64, interval lib.Interval) (ps []*Purchase, e
 
 	_, err = o.QueryTable(TABLE_NAME).
 		Filter("location_id", locationId).
-		Filter("invoice_status__in", nil, "", "draft").
+		Exclude("invoice_status", "outgoing").
+		Exclude("invoice_status", "credit").
 		Limit(1000000).
 		All(&all)
 
