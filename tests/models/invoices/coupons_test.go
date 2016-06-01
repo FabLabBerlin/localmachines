@@ -96,10 +96,10 @@ func TestInvoiceCouponUsage(t *testing.T) {
 		y := TIME_START.Year()
 		me := monthly_earning.MonthlyEarning{
 			LocationId: 1,
-				MonthFrom:  int(m),
-				YearFrom:   y,
-				MonthTo:    int(m),
-				YearTo:     y,
+			MonthFrom:  int(m),
+			YearFrom:   y,
+			MonthTo:    int(m),
+			YearTo:     y,
 		}
 		invs, err := me.NewInvoices(19)
 		if err != nil {
@@ -112,13 +112,13 @@ func TestInvoiceCouponUsage(t *testing.T) {
 
 		testServer := mock.NewServer()
 
-		_, empty, err := monthly_earning.CreateFastbillDraft(&me, invs[0])
+		_, empty, err := monthly_earning.CreateFastbillDraft(invs[0])
 		So(empty, ShouldBeFalse)
 		So(err, ShouldBeNil)
 		So(testServer.FbInv.Items, ShouldHaveLength, 1)
 		rebate := 10 / (float64(lasercutterMinutes) * lasercutterPricePerMinute)
 		So(testServer.FbInv.CashDiscountPercent,
 			ShouldEqual,
-			fmt.Sprintf("%v", 100 * rebate))
+			fmt.Sprintf("%v", 100*rebate))
 	})
 }

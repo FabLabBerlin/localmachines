@@ -265,7 +265,7 @@ func (this *Controller) CreateDraft() {
 		this.Abort("500")
 	}
 
-	fbDraft, empty, err := monthly_earning.CreateFastbillDraft(me, userInv)
+	fbDraft, empty, err := monthly_earning.CreateFastbillDraft(userInv)
 	if err != nil {
 		beego.Error("Create fastbill draft:", err)
 		this.Abort("500")

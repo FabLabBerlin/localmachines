@@ -77,7 +77,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 
 			testServer := mock.NewServer()
 
-			_, empty, err := monthly_earning.CreateFastbillDraft(&me, invs[0])
+			_, empty, err := monthly_earning.CreateFastbillDraft(invs[0])
 			So(empty, ShouldBeFalse)
 			So(err, ShouldBeNil)
 			So(testServer.FbInv.Items, ShouldHaveLength, 1)
@@ -137,7 +137,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 
 			fastbill.API_URL = testServer.URL()
 
-			_, empty, err := monthly_earning.CreateFastbillDraft(&me, invs[0])
+			_, empty, err := monthly_earning.CreateFastbillDraft(invs[0])
 			So(empty, ShouldBeFalse)
 			So(err, ShouldBeNil)
 			So(testServer.FbInv.Items, ShouldHaveLength, 1)

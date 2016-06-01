@@ -2,6 +2,7 @@ package monthly_earning
 
 import (
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/lib/fastbill"
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/coupons"
@@ -50,7 +51,7 @@ func CreateFastbillDrafts(me *MonthlyEarning) (report DraftsCreationReport) {
 			report.Errors = append(report.Errors, e)
 			beego.Error("no draft created for user", uid, ":", e.Problem)
 		} else {
-			fbDraft, empty, err := CreateFastbillDraft(me, inv)
+			fbDraft, empty, err := CreateFastbillDraft(inv)
 			if err == fastbill.ErrInvoiceAlreadyExported {
 				beego.Info("draft for user", uid, "already exported")
 				report.AlreadyExportedUids = append(report.AlreadyExportedUids, uid)
@@ -80,13 +81,13 @@ func CreateFastbillDrafts(me *MonthlyEarning) (report DraftsCreationReport) {
 	return
 }
 
-func CreateFastbillDraft(me *MonthlyEarning, inv *invoices.Invoice) (fbDraft *fastbill.Invoice, empty bool, err error) {
+func CreateFastbillDraft(inv *invoices.Invoice) (fbDraft *fastbill.Invoice, empty bool, err error) {
 	fbDraft = &fastbill.Invoice{
 		CustomerNumber: inv.User.ClientId,
 		TemplateId:     fastbill.TemplateStandardId,
 		Items:          make([]fastbill.Item, 0, 10),
 	}
-	if fbDraft.Month, fbDraft.Year, err = getFastbillMonthYear(me); err != nil {
+	if fbDraft.Month, fbDraft.Year, err = getFastbillMonthYear(inv.Interval); err != nil {
 		return nil, false, fmt.Errorf("get fastbill month: %v", err)
 	}
 	memberships, err := models.GetUserMemberships(inv.User.Id)
@@ -108,7 +109,7 @@ func CreateFastbillDraft(me *MonthlyEarning, inv *invoices.Invoice) (fbDraft *fa
 
 	// Add Memberships
 	for _, m := range memberships.Data {
-		if m.MonthlyPrice > 0 && m.StartDate.Before(me.PeriodTo()) && m.EndDate.After(me.PeriodFrom()) {
+		if m.MonthlyPrice > 0 && m.StartDate.Before(inv.Interval.TimeTo()) && m.EndDate.After(inv.Interval.TimeFrom()) {
 			item := fastbill.Item{
 				Description: m.Title + " Membership (unit: month)",
 				Quantity:    1,
@@ -167,13 +168,13 @@ func CreateFastbillDraft(me *MonthlyEarning, inv *invoices.Invoice) (fbDraft *fa
 	}
 
 	// Add Coupons
-	cs, err := coupons.GetAllCouponsOf(me.LocationId, inv.User.Id)
+	cs, err := coupons.GetAllCouponsOf(inv.LocationId, inv.User.Id)
 	if err != nil {
 		return nil, false, fmt.Errorf("get all coupons: %v", err)
 	}
 	rebateValue := 0.0
 	for _, c := range cs {
-		usage, err := c.UseForInvoice(invoiceValue-rebateValue, time.Month(me.MonthFrom), me.YearFrom)
+		usage, err := c.UseForInvoice(invoiceValue-rebateValue, time.Month(inv.Interval.MonthFrom), inv.Interval.YearFrom)
 		if err != nil {
 			return nil, false, fmt.Errorf("use for invoice: %v", err)
 		}
@@ -192,9 +193,9 @@ func CreateFastbillDraft(me *MonthlyEarning, inv *invoices.Invoice) (fbDraft *fa
 	return
 }
 
-func getFastbillMonthYear(me *MonthlyEarning) (month string, year int, err error) {
-	if me.MonthFrom != me.MonthTo || me.YearFrom != me.YearTo {
+func getFastbillMonthYear(i *lib.Interval) (month string, year int, err error) {
+	if i.MonthFrom != i.MonthTo || i.YearFrom != i.YearTo {
 		return "", 0, fmt.Errorf("2 months present")
 	}
-	return time.Month(me.MonthFrom).String(), me.YearFrom, nil
+	return time.Month(i.MonthFrom).String(), i.YearFrom, nil
 }
