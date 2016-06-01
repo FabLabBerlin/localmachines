@@ -44,6 +44,9 @@ var Summaries = React.createClass({
                 <label>No.</label>
               </th>
               <th className="text-center">
+                <label>Canceled</label>
+              </th>
+              <th className="text-center">
                 <label>Users</label>
               </th>
               <th className="text-center">
@@ -67,6 +70,12 @@ var Summaries = React.createClass({
                   <td><input type="checkbox"/></td>
                   <td className="text-right">
                     {sum.get('FastbillNo') || 'Draft'}
+                  </td>
+                  <td className="text-center">
+                    {sum.get('Canceled') ?
+                      <i className="fa fa-check"/> :
+                      '-'
+                    }
                   </td>
                   <td>{name}</td>
                   <td className="text-center">
