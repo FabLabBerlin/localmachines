@@ -43,6 +43,15 @@ type Invoice struct {
 // 2. Synchronize Fastbill
 // 3. Propagate Fastbill sync changes to associated purchases
 func (inv *Invoice) Send() (err error) {
+	panic("send invoice through fb not impl")
+	year := 2016
+	month := time.Month(3)
+	err = SyncFastbillInvoicesSince(inv.LocationId, year, month)
+	if err != nil {
+		return fmt.Errorf("sync fb invoices since %v/%v: %v", month, year, err)
+	}
+	err = PropagateSyncChangesToPurchases(inv.LocationId)
+	panic("Propagate Fastbill sync changes to associated purchases")
 	return fmt.Errorf("not implemented")
 }
 
@@ -180,8 +189,20 @@ func (inv *Invoice) SplitByMonths() (invs []*Invoice, err error) {
 	return
 }
 
+func SyncFastbillInvoicesSince(locId int64, year int, month time.Month) (err error) {
+	t := time.Date(year, month, 1, 0, 0, 0, 0, time.UTC)
+	for ; t.Before(time.Now()); t = t.AddDate(0, 1, 0) {
+		month := t.Month()
+		year := t.Year()
+		if err := SyncFastbillInvoices(locId, year, month); err != nil {
+			return fmt.Errorf("sync fb invoices %v/%v: %v", month, year, err)
+		}
+	}
+	return
+}
+
 func SyncFastbillInvoices(locId int64, year int, month time.Month) (err error) {
-	l, err := fastbill.ListInvoices(year, time.Month(month))
+	l, err := fastbill.ListInvoices(year, month)
 	if err != nil {
 		return fmt.Errorf("Failed to get invoice list from fastbill: %v", err)
 	}
@@ -227,4 +248,8 @@ func SyncFastbillInvoices(locId int64, year int, month time.Month) (err error) {
 		}
 	}
 	return
+}
+
+func PropagateSyncChangesToPurchases(locId int64) (err error) {
+	return fmt.Errorf("not implemented")
 }

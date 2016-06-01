@@ -45,7 +45,7 @@ type Purchase struct {
 	PriceVAT        float64 `orm:"-"`
 	PriceExclVAT    float64 `orm:"-"`
 
-	InvoiceId     uint64
+	InvoiceNo     uint64
 	InvoiceStatus string
 
 	// Reservation fields:
