@@ -6,6 +6,7 @@ package routers
 
 import (
 	"github.com/FabLabBerlin/localmachines/controllers"
+	"github.com/FabLabBerlin/localmachines/controllers/billing"
 	"github.com/FabLabBerlin/localmachines/controllers/clients"
 	"github.com/FabLabBerlin/localmachines/controllers/coupons"
 	"github.com/FabLabBerlin/localmachines/controllers/custom_url"
@@ -31,6 +32,16 @@ func Init() {
 	// handled by beego router.go
 
 	ns := beego.NewNamespace("/api",
+		beego.NSNamespace("/activations",
+			beego.NSInclude(
+				&controllers.ActivationsController{},
+			),
+		),
+		beego.NSNamespace("/billing",
+			beego.NSInclude(
+				&billing.Controller{},
+			),
+		),
 		beego.NSNamespace("/coupons",
 			beego.NSInclude(
 				&coupons.Controller{},
@@ -79,16 +90,6 @@ func Init() {
 		beego.NSNamespace("/products",
 			beego.NSInclude(
 				&controllers.ProductsController{},
-			),
-		),
-		beego.NSNamespace("/activations",
-			beego.NSInclude(
-				&controllers.ActivationsController{},
-			),
-		),
-		beego.NSNamespace("/billing",
-			beego.NSInclude(
-				&controllers.BillingController{},
 			),
 		),
 		beego.NSNamespace("/fastbill",

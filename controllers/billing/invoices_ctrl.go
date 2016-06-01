@@ -1,4 +1,4 @@
-package controllers
+package billing
 
 import (
 	"fmt"
@@ -9,183 +9,8 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
-	"io"
-	"os"
 	"time"
 )
-
-type BillingController struct {
-	Controller
-}
-
-// @Title Get All monthly earnings
-// @Description Get all monthly earnings from the database
-// @Success 200 []*monthly_earning.MonthlyEarning
-// @Failure	403	Failed to get all monthly earnings
-// @Failure	401	Not authorized
-// @router /monthly_earnings [get]
-func (this *BillingController) GetAll() {
-
-	locId, authorized := this.GetLocIdAdmin()
-	if !authorized {
-		this.CustomAbort(401, "Not authorized")
-	}
-
-	mes, err := monthly_earning.GetAllAt(locId)
-	if err != nil {
-		beego.Error("Failed to get all monthly earnings")
-		this.Abort("500")
-	}
-
-	this.Data["json"] = mes
-	this.ServeJSON()
-}
-
-// @Title Create monthly earning
-// @Description Create monthly earning from date range
-// @Param	startDate	query 	string	true	"Period start date"
-// @Param	endDate		query 	string	true	"Period end date"
-// @Success 200 {object}
-// @Failure	403	Failed to create monthly earning
-// @Failure	401	Not authorized
-// @router /monthly_earnings [post]
-func (this *BillingController) Create() {
-
-	// Only local admin can use this API call
-	locId, authorized := this.GetLocIdAdmin()
-	if !authorized {
-		this.CustomAbort(401, "Not authorized")
-	}
-
-	interval, err := this.parseParams()
-	if err != nil {
-		beego.Error("Request parameters:", err)
-		this.CustomAbort(400, "Bad request")
-	}
-
-	mes, err := monthly_earning.Create(locId, interval)
-	if err != nil {
-		beego.Error("Failed to create monthly earnings:", err)
-		this.CustomAbort(403, "Failed to create monthly earnings")
-	}
-
-	this.Data["json"] = mes
-	this.ServeJSON()
-}
-
-// @Title Create Fastbill drafts
-// @Description Create fastbill drafts from date range
-// @Param	startDate	query 	string	true	"Period start date"
-// @Param	endDate		query 	string	true	"Period end date"
-// @Success 200 {object}
-// @Failure	401	Not authorized
-// @Failure	403	Failed to create Fastbill drafts
-// @router /monthly_earnings/:iid/create_drafts [post]
-func (this *BillingController) CreateDrafts() {
-
-	locId, authorized := this.GetLocIdAdmin()
-	if !authorized {
-		this.CustomAbort(401, "Not authorized")
-	}
-
-	if locId != 1 {
-		this.CustomAbort(400, "Fastbill not activated for this location")
-	}
-
-	if !this.IsSuperAdmin() {
-		beego.Error("User must be super admin")
-		this.CustomAbort(401, "Not authorized")
-	}
-
-	iid, err := this.GetInt64(":iid")
-	if err != nil {
-		beego.Error("Failed to get iid:", err)
-		this.CustomAbort(400, "Bad request")
-	}
-
-	dbMes, err := monthly_earning.Get(iid)
-	if err != nil {
-		beego.Error("invoices get:", err)
-		this.CustomAbort(500, "Internal Server Error")
-	}
-
-	me, err := monthly_earning.New(locId, dbMes.Interval())
-	if err != nil {
-		beego.Error("Failed to make new invoices:", err)
-		this.CustomAbort(500, "Internal Server Error")
-	}
-
-	creationReport := monthly_earning.CreateFastbillDrafts(me)
-	beego.Info("created invoice drafts with IDs", creationReport.Ids)
-
-	this.Data["json"] = creationReport
-	this.ServeJSON()
-}
-
-func (this *BillingController) parseParams() (interval lib.Interval, err error) {
-	startDate := this.GetString("startDate")
-	if startDate == "" {
-		err = fmt.Errorf("Missing start date")
-		return
-	}
-
-	endDate := this.GetString("endDate")
-	if endDate == "" {
-		err = fmt.Errorf("Missing end date")
-		return
-	}
-
-	interval, err = lib.NewInterval(startDate, endDate)
-	if err != nil {
-		err = fmt.Errorf("parse interval: %v", err)
-		return
-	}
-
-	return
-}
-
-// @Title DownloadExcelExport
-// @Description Download existing excel export
-// @Success 200 {object}
-// @Failure	401	Not authorized
-// @Failure	500	Internal Server Error
-// @router /monthly_earnings/:id/download_excel [get]
-func (this *BillingController) DownloadExcelExport() {
-
-	id, err := this.GetInt64(":id")
-	if err != nil {
-		beego.Error("Failed to get id:", err)
-		this.CustomAbort(400, "Bad request")
-	}
-
-	me, err := monthly_earning.Get(id)
-	if err != nil {
-		beego.Error("invoices get:", err)
-		this.CustomAbort(500, "Internal Server Error")
-	}
-
-	if !this.IsAdminAt(me.LocationId) {
-		this.CustomAbort(401, "Not authorized")
-	}
-
-	f, err := os.Open(me.FilePath)
-	if err != nil {
-		beego.Error("open", me.FilePath, ":", err)
-		if os.IsNotExist(err) {
-			this.CustomAbort(404, "Cannot find Excel Export file")
-		} else {
-			this.CustomAbort(500, "Internal Server Error")
-		}
-	}
-
-	defer f.Close()
-	this.Ctx.Output.ContentType("xlsx")
-	if _, err := io.Copy(this.Ctx.ResponseWriter, f); err != nil {
-		beego.Error("copy ", me.FilePath, ":", err)
-		this.CustomAbort(500, "Internal Server Error")
-	}
-	this.Finish()
-}
 
 type MonthlySummary struct {
 	User          users.User
@@ -201,7 +26,7 @@ type MonthlySummary struct {
 // @Failure	401	Not authorized
 // @Failure	500	Internal Server Error
 // @router /months/:year/:month [get]
-func (this *BillingController) GetMonth() {
+func (this *Controller) GetMonth() {
 	locId, authorized := this.GetLocIdAdmin()
 	if !authorized {
 		this.CustomAbort(401, "Not authorized")
@@ -250,7 +75,7 @@ func (this *BillingController) GetMonth() {
 // @Failure	401	Not authorized
 // @Failure	500	Internal Server Error
 // @router /months/:year/:month/invoices [get]
-func (this *BillingController) GetInvoices() {
+func (this *Controller) GetInvoices() {
 	locId, authorized := this.GetLocIdAdmin()
 	if !authorized {
 		this.CustomAbort(401, "Not authorized")
@@ -284,7 +109,7 @@ func (this *BillingController) GetInvoices() {
 // @Failure	401	Not authorized
 // @Failure	500	Internal Server Error
 // @router /months/:year/:month/users/:uid [get]
-func (this *BillingController) GetUser() {
+func (this *Controller) GetUser() {
 	locId, authorized := this.GetLocIdAdmin()
 	if !authorized {
 		this.CustomAbort(401, "Not authorized")
@@ -355,7 +180,7 @@ func (this *BillingController) GetUser() {
 // @Failure	401	Not authorized
 // @Failure	500	Internal Server Error
 // @router /months/:year/:month/users/:uid/statuses [get]
-func (this *BillingController) GetStatuses() {
+func (this *Controller) GetStatuses() {
 	_, authorized := this.GetLocIdAdmin()
 	if !authorized {
 		this.CustomAbort(401, "Not authorized")
@@ -413,7 +238,7 @@ func (this *BillingController) GetStatuses() {
 // @Failure	401	Not authorized
 // @Failure	500	Internal Server Error
 // @router /months/:year/:month/users/:uid/draft [post]
-func (this *BillingController) CreateDraft() {
+func (this *Controller) CreateDraft() {
 	locId, authorized := this.GetLocIdAdmin()
 	if !authorized {
 		this.CustomAbort(401, "Not authorized")
@@ -492,7 +317,7 @@ func (this *BillingController) CreateDraft() {
 // @Failure	401	Not authorized
 // @Failure	500	Internal Server Error
 // @router /months/:year/:month/users/:uid/invoices/:id/send [post]
-func (this *BillingController) Send() {
+func (this *Controller) Send() {
 	locId, authorized := this.GetLocIdAdmin()
 	if !authorized {
 		this.CustomAbort(401, "Not authorized")
@@ -531,7 +356,7 @@ func (this *BillingController) Send() {
 // @Failure	401	Not authorized
 // @Failure	500	Internal Server Error
 // @router /months/:year/:month/users/:uid/update [post]
-func (this *BillingController) Update() {
+func (this *Controller) Update() {
 	locId, authorized := this.GetLocIdAdmin()
 	if !authorized {
 		this.CustomAbort(401, "Not authorized")
@@ -602,7 +427,7 @@ func (this *BillingController) Update() {
 // @Failure	401	Not authorized
 // @Failure	500	Internal Server Error
 // @router /months/:year/:month/sync [get]
-func (this *BillingController) SyncFastbillInvoices() {
+func (this *Controller) SyncFastbillInvoices() {
 	locId, authorized := this.GetLocIdAdmin()
 	if !authorized {
 		this.CustomAbort(401, "Not authorized")
