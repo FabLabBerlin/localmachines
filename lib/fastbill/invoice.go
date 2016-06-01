@@ -10,6 +10,14 @@ import (
 )
 
 const (
+	FB_DATE_LONG    = "2006-01-02 15:04:05"
+	FB_DATE_SHORT   = "2006-01-02"
+	FB_DATE_PAID    = FB_DATE_LONG
+	FB_DATE_INVOICE = FB_DATE_SHORT
+	FB_DATE_DUE     = FB_DATE_LONG
+)
+
+const (
 	TemplateStandardId = 1
 	TemplateEnglishId  = 3063
 )
@@ -67,20 +75,42 @@ type InvoiceGetResponse struct {
 }
 
 type InvoiceGetResponseInvoice struct {
-	Id            int64   `json:"INVOICE_ID,string"`
-	Type          string  `json:"TYPE,omitempty"`
-	InvoiceDate   string  `json:"INVOICE_DATE,omitempty"`
-	PaidDate      string  `json:"PAID_DATE,omitempty"`
-	IsCanceled    string  `json:"IS_CANCELED,omitempty"`
-	Total         float64 `json:"TOTAL,omitempty"`
-	CustomerId    int64   `json:"CUSTOMER_ID,string,omitempty"`
-	InvoiceNumber string  `json:"INVOICE_NUMBER,omitempty"`
-	InvoiceTitle  string  `json:"INVOICE_TITLE,omitempty"`
-	VatPercent    float64 `json:"VAT_PERCENT,omitempty,string"`
+	Id                int64   `json:"INVOICE_ID,string"`
+	Type              string  `json:"TYPE,omitempty"`
+	InvoiceDateString string  `json:"INVOICE_DATE,omitempty"`
+	PaidDateString    string  `json:"PAID_DATE,omitempty"`
+	DueDateString     string  `json:"DUE_DATE,omitempty"`
+	IsCanceled        string  `json:"IS_CANCELED,omitempty"`
+	Total             float64 `json:"TOTAL,omitempty"`
+	CustomerId        int64   `json:"CUSTOMER_ID,string,omitempty"`
+	InvoiceNumber     string  `json:"INVOICE_NUMBER,omitempty"`
+	InvoiceTitle      string  `json:"INVOICE_TITLE,omitempty"`
+	VatPercent        float64 `json:"VAT_PERCENT,omitempty,string"`
 }
 
 func (this *InvoiceGetResponseInvoice) Canceled() bool {
 	return this.IsCanceled == "1"
+}
+
+func (this *InvoiceGetResponseInvoice) DueDate() time.Time {
+	return this.parseDate(FB_DATE_DUE, this.DueDateString)
+}
+
+func (this *InvoiceGetResponseInvoice) InvoiceDate() time.Time {
+	return this.parseDate(FB_DATE_INVOICE, this.InvoiceDateString)
+}
+
+func (this *InvoiceGetResponseInvoice) PaidDate() time.Time {
+	return this.parseDate(FB_DATE_PAID, this.PaidDateString)
+}
+
+func (this *InvoiceGetResponseInvoice) parseDate(layout, s string) time.Time {
+	t, err := time.Parse(layout, s)
+	if err == nil {
+		return t
+	} else {
+		return time.Time{}
+	}
 }
 
 // ParseTitle like "March 2016 Invoice for Customer Number 696"

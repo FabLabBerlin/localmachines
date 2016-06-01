@@ -33,6 +33,9 @@ func (m *InvoicesTable_20160531_154603) Up() {
 			canceled tinyint(1) DEFAULT 0,
 			total real,
 			vat_percent real,
+			invoice_date DATETIME,
+			paid_date DATETIME,
+			due_date DATETIME,
 			PRIMARY KEY (id)
 	)`)
 }

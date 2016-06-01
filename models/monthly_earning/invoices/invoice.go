@@ -16,23 +16,26 @@ const TABLE_NAME = "invoices"
 // Invoice represents an actual or future invoice. Future invoices do not
 // have a FastbillId.
 type Invoice struct {
-	Id         int64  `json:",omitempty"`
-	LocationId int64  `json:",omitempty"`
-	FastbillId int64  `json:",omitempty"`
-	FastbillNo string `json:",omitempty"`
-	Month      int
-	Year       int
-	CustomerId int64
-	CustomerNo int64
-	UserId     int64
-	Total      float64
-	Status     string
-	Interval   *lib.Interval       `orm:"-" json:",omitempty"`
-	User       *users.User         `orm:"-" json:",omitempty"`
-	Purchases  purchases.Purchases `orm:"-" json:",omitempty"`
-	Sums       *Sums               `orm:"-" json:",omitempty"`
-	VatPercent float64             `json:",omitempty"`
-	Canceled   bool
+	Id          int64  `json:",omitempty"`
+	LocationId  int64  `json:",omitempty"`
+	FastbillId  int64  `json:",omitempty"`
+	FastbillNo  string `json:",omitempty"`
+	Month       int
+	Year        int
+	CustomerId  int64
+	CustomerNo  int64
+	UserId      int64
+	Total       float64
+	Status      string
+	Interval    *lib.Interval       `orm:"-" json:",omitempty"`
+	User        *users.User         `orm:"-" json:",omitempty"`
+	Purchases   purchases.Purchases `orm:"-" json:",omitempty"`
+	Sums        *Sums               `orm:"-" json:",omitempty"`
+	VatPercent  float64             `json:",omitempty"`
+	Canceled    bool
+	InvoiceDate time.Time
+	PaidDate    time.Time
+	DueDate     time.Time
 }
 
 type Sums struct {

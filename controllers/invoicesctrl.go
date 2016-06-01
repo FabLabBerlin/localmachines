@@ -595,14 +595,17 @@ func (this *InvoicesController) SyncFastbillInvoices() {
 
 	for _, fbInv := range l {
 		inv := invoices.Invoice{
-			LocationId: locId,
-			FastbillId: fbInv.Id,
-			FastbillNo: fbInv.InvoiceNumber,
-			CustomerId: fbInv.CustomerId,
-			Status:     fbInv.Type,
-			Total:      fbInv.Total,
-			VatPercent: fbInv.VatPercent,
-			Canceled:   fbInv.Canceled(),
+			LocationId:  locId,
+			FastbillId:  fbInv.Id,
+			FastbillNo:  fbInv.InvoiceNumber,
+			CustomerId:  fbInv.CustomerId,
+			Status:      fbInv.Type,
+			Total:       fbInv.Total,
+			VatPercent:  fbInv.VatPercent,
+			Canceled:    fbInv.Canceled(),
+			DueDate:     fbInv.DueDate(),
+			InvoiceDate: fbInv.InvoiceDate(),
+			PaidDate:    fbInv.PaidDate(),
 		}
 		inv.Month, inv.Year, inv.CustomerNo, err = fbInv.ParseTitle()
 		if err != nil {
