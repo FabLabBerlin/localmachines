@@ -167,7 +167,7 @@ app.controller('ActivationsCtrl',
   $scope.exportSpreadsheet = function() {
     $http({
       method: 'POST',
-      url: '/api/invoices',
+      url: '/api/billing/monthly_earnings',
       params: getExportParams()
     })
     .success(function(invoiceData) {

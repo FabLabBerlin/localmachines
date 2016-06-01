@@ -34,3 +34,5 @@ Send                          POST /api/billing/months/:yyyy/:mm/users/:uid/send
 Need to save Stuff that is sent to Fastbill for the historical read-only access, i.e. the user invoices that are not current.
 
 Purchases table contains 2 additional columns: invoice_id and invoice_status, where invoice_status = 'draft' / 'credit' / 'outgoing'. only invoice_id = 'draft' is used for current stuff. invoice_id corresponds to the Fastbill invoice number (which does NOT equal the Fastbill invoice id) for the moment but it'll be normalized at some point, i.e. easylab.invoice_id <> fastbill.invoice_id, thus allowing for other billing backends in the future. Items with invoice_status = 'draft' are read-only. This column will be normalized at some point as well. The fields will also be added to the user_membership table.
+
+Note that only the combination (invoice_id, invoice_status) is guaranteed to be unique. That's from Fastbill but also allows interoperability with similar systems.

@@ -86,9 +86,9 @@ func Init() {
 				&controllers.ActivationsController{},
 			),
 		),
-		beego.NSNamespace("/invoices",
+		beego.NSNamespace("/billing",
 			beego.NSInclude(
-				&controllers.InvoicesController{},
+				&controllers.BillingController{},
 			),
 		),
 		beego.NSNamespace("/fastbill",

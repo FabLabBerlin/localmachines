@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-type InvoicesController struct {
+type BillingController struct {
 	Controller
 }
 
@@ -23,8 +23,8 @@ type InvoicesController struct {
 // @Success 200 []*monthly_earning.MonthlyEarning
 // @Failure	403	Failed to get all monthly earnings
 // @Failure	401	Not authorized
-// @router / [get]
-func (this *InvoicesController) GetAll() {
+// @router /monthly_earnings [get]
+func (this *BillingController) GetAll() {
 
 	locId, authorized := this.GetLocIdAdmin()
 	if !authorized {
@@ -48,8 +48,8 @@ func (this *InvoicesController) GetAll() {
 // @Success 200 {object}
 // @Failure	403	Failed to create monthly earning
 // @Failure	401	Not authorized
-// @router / [post]
-func (this *InvoicesController) Create() {
+// @router /monthly_earnings [post]
+func (this *BillingController) Create() {
 
 	// Only local admin can use this API call
 	locId, authorized := this.GetLocIdAdmin()
@@ -80,8 +80,8 @@ func (this *InvoicesController) Create() {
 // @Success 200 {object}
 // @Failure	401	Not authorized
 // @Failure	403	Failed to create Fastbill drafts
-// @router /:iid/create_drafts [post]
-func (this *InvoicesController) CreateDrafts() {
+// @router /monthly_earnings/:iid/create_drafts [post]
+func (this *BillingController) CreateDrafts() {
 
 	locId, authorized := this.GetLocIdAdmin()
 	if !authorized {
@@ -122,7 +122,7 @@ func (this *InvoicesController) CreateDrafts() {
 	this.ServeJSON()
 }
 
-func (this *InvoicesController) parseParams() (interval lib.Interval, err error) {
+func (this *BillingController) parseParams() (interval lib.Interval, err error) {
 	startDate := this.GetString("startDate")
 	if startDate == "" {
 		err = fmt.Errorf("Missing start date")
@@ -149,8 +149,8 @@ func (this *InvoicesController) parseParams() (interval lib.Interval, err error)
 // @Success 200 {object}
 // @Failure	401	Not authorized
 // @Failure	500	Internal Server Error
-// @router /:id/download_excel [get]
-func (this *InvoicesController) DownloadExcelExport() {
+// @router /monthly_earnings/:id/download_excel [get]
+func (this *BillingController) DownloadExcelExport() {
 
 	id, err := this.GetInt64(":id")
 	if err != nil {
@@ -201,7 +201,7 @@ type MonthlySummary struct {
 // @Failure	401	Not authorized
 // @Failure	500	Internal Server Error
 // @router /months/:year/:month [get]
-func (this *InvoicesController) GetMonth() {
+func (this *BillingController) GetMonth() {
 	locId, authorized := this.GetLocIdAdmin()
 	if !authorized {
 		this.CustomAbort(401, "Not authorized")
@@ -250,7 +250,7 @@ func (this *InvoicesController) GetMonth() {
 // @Failure	401	Not authorized
 // @Failure	500	Internal Server Error
 // @router /months/:year/:month/invoices [get]
-func (this *InvoicesController) GetInvoices() {
+func (this *BillingController) GetInvoices() {
 	locId, authorized := this.GetLocIdAdmin()
 	if !authorized {
 		this.CustomAbort(401, "Not authorized")
@@ -284,7 +284,7 @@ func (this *InvoicesController) GetInvoices() {
 // @Failure	401	Not authorized
 // @Failure	500	Internal Server Error
 // @router /months/:year/:month/users/:uid [get]
-func (this *InvoicesController) GetUser() {
+func (this *BillingController) GetUser() {
 	locId, authorized := this.GetLocIdAdmin()
 	if !authorized {
 		this.CustomAbort(401, "Not authorized")
@@ -355,7 +355,7 @@ func (this *InvoicesController) GetUser() {
 // @Failure	401	Not authorized
 // @Failure	500	Internal Server Error
 // @router /months/:year/:month/users/:uid/statuses [get]
-func (this *InvoicesController) GetStatuses() {
+func (this *BillingController) GetStatuses() {
 	_, authorized := this.GetLocIdAdmin()
 	if !authorized {
 		this.CustomAbort(401, "Not authorized")
@@ -413,7 +413,7 @@ func (this *InvoicesController) GetStatuses() {
 // @Failure	401	Not authorized
 // @Failure	500	Internal Server Error
 // @router /months/:year/:month/users/:uid/draft [post]
-func (this *InvoicesController) CreateDraft() {
+func (this *BillingController) CreateDraft() {
 	locId, authorized := this.GetLocIdAdmin()
 	if !authorized {
 		this.CustomAbort(401, "Not authorized")
@@ -486,13 +486,52 @@ func (this *InvoicesController) CreateDraft() {
 	this.ServeJSON()
 }
 
+// @Title Send user invoicing data
+// @Description Send invoicing data for a user
+// @Success 200 {object}
+// @Failure	401	Not authorized
+// @Failure	500	Internal Server Error
+// @router /months/:year/:month/users/:uid/invoices/:id/send [post]
+func (this *BillingController) Send() {
+	locId, authorized := this.GetLocIdAdmin()
+	if !authorized {
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	year, err := this.GetInt64(":year")
+	if err != nil {
+		beego.Error("Failed to get year:", err)
+		this.CustomAbort(400, "Bad request")
+	}
+
+	month, err := this.GetInt64(":month")
+	if err != nil {
+		beego.Error("Failed to get month:", err)
+		this.CustomAbort(400, "Bad request")
+	}
+
+	uid, err := this.GetInt64(":uid")
+	if err != nil {
+		beego.Error("Failed to get uid:", err)
+		this.CustomAbort(400, "Bad request")
+	}
+	_ = locId
+	_ = year
+	_ = month
+	_ = uid
+	//invoices.Send()
+
+	beego.Error("Not implemented")
+	this.CustomAbort(500, "Not implemented")
+}
+
 // @Title Update user invoicing data
 // @Description Update invoicing data for a user
 // @Success 200 {object}
 // @Failure	401	Not authorized
 // @Failure	500	Internal Server Error
 // @router /months/:year/:month/users/:uid/update [post]
-func (this *InvoicesController) Update() {
+func (this *BillingController) Update() {
 	locId, authorized := this.GetLocIdAdmin()
 	if !authorized {
 		this.CustomAbort(401, "Not authorized")
@@ -563,7 +602,7 @@ func (this *InvoicesController) Update() {
 // @Failure	401	Not authorized
 // @Failure	500	Internal Server Error
 // @router /months/:year/:month/sync [get]
-func (this *InvoicesController) SyncFastbillInvoices() {
+func (this *BillingController) SyncFastbillInvoices() {
 	locId, authorized := this.GetLocIdAdmin()
 	if !authorized {
 		this.CustomAbort(401, "Not authorized")

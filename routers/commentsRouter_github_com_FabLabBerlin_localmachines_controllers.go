@@ -62,6 +62,90 @@ func init() {
 			[]string{"post"},
 			nil})
 
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:BillingController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:BillingController"],
+		beego.ControllerComments{
+			"GetAll",
+			`/monthly_earnings`,
+			[]string{"get"},
+			nil})
+
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:BillingController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:BillingController"],
+		beego.ControllerComments{
+			"Create",
+			`/monthly_earnings`,
+			[]string{"post"},
+			nil})
+
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:BillingController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:BillingController"],
+		beego.ControllerComments{
+			"CreateDrafts",
+			`/monthly_earnings/:iid/create_drafts`,
+			[]string{"post"},
+			nil})
+
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:BillingController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:BillingController"],
+		beego.ControllerComments{
+			"DownloadExcelExport",
+			`/monthly_earnings/:id/download_excel`,
+			[]string{"get"},
+			nil})
+
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:BillingController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:BillingController"],
+		beego.ControllerComments{
+			"GetMonth",
+			`/months/:year/:month`,
+			[]string{"get"},
+			nil})
+
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:BillingController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:BillingController"],
+		beego.ControllerComments{
+			"GetInvoices",
+			`/months/:year/:month/invoices`,
+			[]string{"get"},
+			nil})
+
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:BillingController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:BillingController"],
+		beego.ControllerComments{
+			"GetUser",
+			`/months/:year/:month/users/:uid`,
+			[]string{"get"},
+			nil})
+
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:BillingController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:BillingController"],
+		beego.ControllerComments{
+			"GetStatuses",
+			`/months/:year/:month/users/:uid/statuses`,
+			[]string{"get"},
+			nil})
+
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:BillingController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:BillingController"],
+		beego.ControllerComments{
+			"CreateDraft",
+			`/months/:year/:month/users/:uid/draft`,
+			[]string{"post"},
+			nil})
+
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:BillingController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:BillingController"],
+		beego.ControllerComments{
+			"Send",
+			`/months/:year/:month/users/:uid/invoices/:id/send`,
+			[]string{"post"},
+			nil})
+
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:BillingController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:BillingController"],
+		beego.ControllerComments{
+			"Update",
+			`/months/:year/:month/users/:uid/update`,
+			[]string{"post"},
+			nil})
+
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:BillingController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:BillingController"],
+		beego.ControllerComments{
+			"SyncFastbillInvoices",
+			`/months/:year/:month/sync`,
+			[]string{"get"},
+			nil})
+
 	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:DebugController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:DebugController"],
 		beego.ControllerComments{
 			"Get",
@@ -102,83 +186,6 @@ func init() {
 			"PostFeedback",
 			`/`,
 			[]string{"post"},
-			nil})
-
-	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"],
-		beego.ControllerComments{
-			"GetAll",
-			`/`,
-			[]string{"get"},
-			nil})
-
-	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"],
-		beego.ControllerComments{
-			"Create",
-			`/`,
-			[]string{"post"},
-			nil})
-
-	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"],
-		beego.ControllerComments{
-			"CreateDrafts",
-			`/:iid/create_drafts`,
-			[]string{"post"},
-			nil})
-
-	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"],
-		beego.ControllerComments{
-			"DownloadExcelExport",
-			`/:id/download_excel`,
-			[]string{"get"},
-			nil})
-
-	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"],
-		beego.ControllerComments{
-			"GetMonth",
-			`/months/:year/:month`,
-			[]string{"get"},
-			nil})
-
-	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"],
-		beego.ControllerComments{
-			"GetInvoices",
-			`/months/:year/:month/invoices`,
-			[]string{"get"},
-			nil})
-
-	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"],
-		beego.ControllerComments{
-			"GetUser",
-			`/months/:year/:month/users/:uid`,
-			[]string{"get"},
-			nil})
-
-	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"],
-		beego.ControllerComments{
-			"GetStatuses",
-			`/months/:year/:month/users/:uid/statuses`,
-			[]string{"get"},
-			nil})
-
-	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"],
-		beego.ControllerComments{
-			"CreateDraft",
-			`/months/:year/:month/users/:uid/draft`,
-			[]string{"post"},
-			nil})
-
-	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"],
-		beego.ControllerComments{
-			"Update",
-			`/months/:year/:month/users/:uid/update`,
-			[]string{"post"},
-			nil})
-
-	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:InvoicesController"],
-		beego.ControllerComments{
-			"SyncFastbillInvoices",
-			`/months/:year/:month/sync`,
-			[]string{"get"},
 			nil})
 
 	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:MachineTypeController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:MachineTypeController"],

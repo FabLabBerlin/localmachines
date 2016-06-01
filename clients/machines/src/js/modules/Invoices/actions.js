@@ -9,7 +9,7 @@ function editPurchase(id) {
 
 function fetchFastbillStatuses(locId, {month, year, userId}) {
   $.ajax({
-    url: '/api/invoices/months/' + year + '/' + month + '/users/' + userId + '/statuses',
+    url: '/api/billing/months/' + year + '/' + month + '/users/' + userId + '/statuses',
     data: {
       location: locId
     }
@@ -52,7 +52,7 @@ function fetchMonthlySums(locId, {month, year}) {
 
   $.ajax({
     method: 'GET',
-    url: '/api/invoices/months/' + year + '/' + month,
+    url: '/api/billing/months/' + year + '/' + month,
     data: {
       location: locId
     }
@@ -72,7 +72,7 @@ function fetchMonthlySums(locId, {month, year}) {
 function fetchUser(locId, {month, year, userId}) {
   $.ajax({
     method: 'GET',
-    url: '/api/invoices/months/' + year + '/' + month + '/users/' + userId,
+    url: '/api/billing/months/' + year + '/' + month + '/users/' + userId,
     data: {
       location: locId
     }
@@ -93,7 +93,7 @@ function fetchUser(locId, {month, year, userId}) {
 function makeDraft(locId, {month, year, userId}) {
   $.ajax({
     method: 'POST',
-    url: '/api/invoices/months/' + year + '/' + month + '/users/' + userId + '/draft',
+    url: '/api/billing/months/' + year + '/' + month + '/users/' + userId + '/draft',
     data: {
       location: locId
     }
@@ -110,7 +110,7 @@ function makeDraft(locId, {month, year, userId}) {
 function save(locId, {month, year, userId}) {
   $.ajax({
     method: 'POST',
-    url: '/api/invoices/months/' + year + '/' + month + '/users/' + userId + '/update',
+    url: '/api/billing/months/' + year + '/' + month + '/users/' + userId + '/update',
     data: {
       location: locId
     }

@@ -22,7 +22,7 @@ app.controller('InvoicesCtrl',
   $scope.loadInvoices = function() {
     $http({
       method: 'GET',
-      url: '/api/invoices',
+      url: '/api/billing/monthly_earnings',
       params: {
         ac: new Date().getTime(),
         location: $cookies.get('location')
@@ -61,7 +61,7 @@ app.controller('InvoicesCtrl',
     $scope.loading = true;
     $http({
       method: 'POST',
-      url: '/api/invoices/' + id + '/create_drafts',
+      url: '/api/billing/monthly_earnings/' + id + '/create_drafts',
       params: {
         location: $cookies.get('location')
       }
