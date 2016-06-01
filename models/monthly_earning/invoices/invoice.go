@@ -7,7 +7,6 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/orm"
 	"time"
 )
 
@@ -170,56 +169,4 @@ func (inv *Invoice) SplitByMonths() (invs []*Invoice, err error) {
 	}
 
 	return
-}
-
-// GetIdsAndStatuses in Invoice struct.  Leaving other fields empty.
-func GetIdsAndStatuses(locId int64, year, month int) ([]*Invoice, error) {
-	interval := lib.Interval{
-		MonthFrom: month,
-		YearFrom:  year,
-		MonthTo:   month,
-		YearTo:    year,
-	}
-
-	query := `
-SELECT *
-FROM
-  (SELECT user_id,
-          invoice_id,
-          invoice_status
-   FROM purchases
-   WHERE ? < time_end
-     AND time_end < ?
-     AND location_id = ?
-     AND user_id <> 0
-   UNION SELECT user_id,
-                invoice_id,
-                invoice_status
-   FROM user_membership
-   JOIN membership ON user_membership.membership_id = membership.id
-   WHERE ? > start_date
-     AND end_date > ?
-     AND location_id = ?
-     AND user_id <> 0) AS id_data
-GROUP BY concat(user_id, '-', COALESCE(invoice_id, ''));
-	`
-
-	var invs []*Invoice
-
-	o := orm.NewOrm()
-	_, err := o.Raw(query,
-		interval.TimeFrom(),
-		interval.TimeTo(),
-		locId,
-		interval.TimeTo(),
-		interval.TimeFrom(),
-		locId).QueryRows(&invs)
-
-	for _, inv := range invs {
-		inv.Month = month
-		inv.Year = year
-		inv.Interval = &interval
-	}
-
-	return invs, err
 }

@@ -69,40 +69,6 @@ func (this *Controller) GetMonth() {
 	this.ServeJSON()
 }
 
-// @Title GetInvoices
-// @Description Get invoices for a month including drafts and canceled ones
-// @Success 200 {object}
-// @Failure	401	Not authorized
-// @Failure	500	Internal Server Error
-// @router /months/:year/:month/invoices [get]
-func (this *Controller) GetInvoices() {
-	locId, authorized := this.GetLocIdAdmin()
-	if !authorized {
-		this.CustomAbort(401, "Not authorized")
-	}
-
-	year, err := this.GetInt(":year")
-	if err != nil {
-		beego.Error("Failed to get year:", err)
-		this.CustomAbort(400, "Bad request")
-	}
-
-	month, err := this.GetInt(":month")
-	if err != nil {
-		beego.Error("Failed to get month:", err)
-		this.CustomAbort(400, "Bad request")
-	}
-
-	invs, err := invoices.GetIdsAndStatuses(locId, year, month)
-	if err != nil {
-		beego.Error("Failed to get invoices ids and statuses:", err)
-		this.Abort("500")
-	}
-
-	this.Data["json"] = invs
-	this.ServeJSON()
-}
-
 // @Title GetUser
 // @Description Get monthly overview for a user
 // @Success 200 {object}
