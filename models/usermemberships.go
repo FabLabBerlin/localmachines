@@ -17,7 +17,7 @@ type UserMembership struct {
 	EndDate      time.Time `orm:"type(datetime)"`
 	AutoExtend   bool
 
-	InvoiceNo     uint64
+	InvoiceId     uint64
 	InvoiceStatus string
 }
 
