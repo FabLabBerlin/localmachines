@@ -27,7 +27,6 @@ type Invoice struct {
 	UserId      int64
 	Total       float64
 	Status      string
-	Interval    *lib.Interval       `orm:"-" json:",omitempty"`
 	User        *users.User         `orm:"-" json:",omitempty"`
 	Purchases   purchases.Purchases `orm:"-" json:",omitempty"`
 	Sums        *Sums               `orm:"-" json:",omitempty"`
@@ -104,8 +103,8 @@ func (inv *Invoice) CalculateTotals() (err error) {
 			beego.Info("m=", m)
 			beego.Info("inv.Interval=", inv.Interval)
 		}
-		if m.StartDate.Before(inv.Interval.TimeFrom()) &&
-			m.EndDate.After(inv.Interval.TimeTo()) {
+		if m.StartDate.Before(inv.Interval().TimeFrom()) &&
+			m.EndDate.After(inv.Interval().TimeTo()) {
 			if inv.User.Id == 57 {
 				beego.Info("if => true")
 			}
@@ -126,6 +125,19 @@ func (inv *Invoice) CalculateTotals() (err error) {
 	}
 
 	return
+}
+
+func (inv *Invoice) Interval() lib.Interval {
+	if inv.Month == 0 || inv.Year == 0 {
+		panic(fmt.Sprintf("inv.Month=%v, inv.Year=%v", inv.Month, inv.Year))
+	}
+
+	return lib.Interval{
+		MonthFrom: inv.Month,
+		YearFrom:  inv.Year,
+		MonthTo:   inv.Month,
+		YearTo:    inv.Year,
+	}
 }
 
 func (inv *Invoice) SplitByMonths() (invs []*Invoice, err error) {
