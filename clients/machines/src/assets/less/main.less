@@ -393,7 +393,8 @@ nav.navbar a.sign-out {
 }
 
 .nav-left {
-  height: 100%;
+  height: 80px;
+  position: absolute;
 }
 
 .nav-logo {
@@ -431,19 +432,26 @@ nav.navbar a.sign-out {
 }
 
 .nav-right {
-  height: 100%;
-  padding-top: 19px;
+  height: 80px;
+  left: 0;
+  position: absolute;
+  width: 100%;
 }
 
 .nav-dropdown {
-  float: left;
+  float: right;
   height: 100%;
-  margin-right: 15px;
+  margin: 19px 15px 0 0;
+}
+
+#nav-caret-container {
+  float: left;
+  padding-left: 13px;
 }
 
 .nav-dropdown .dropdown .caret {
-  float: left;
-  margin-top: 18px;
+  margin: 18px 0 0 0;
+  position: absolute;
 }
 
 .nav-dropdown .dropdown button {
@@ -478,7 +486,7 @@ nav.navbar a.sign-out {
 .nav-user {
   float: left;
   height: 100%;
-  padding-left: 10px;
+  padding-left: 17px;
 }
 
 .nav-user-name {
