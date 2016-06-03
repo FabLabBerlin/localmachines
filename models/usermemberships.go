@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
+	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"time"
@@ -158,61 +159,55 @@ func GetUserMemberships(userId int64) (*UserMembershipList, error) {
 
 // Automatically extend user membership end date if auto_extend for the specific
 // membership is true and the end_date is before current date.
-func AutoExtendUserMemberships() error {
+func AutoExtendUserMemberships() (err error) {
 
 	beego.Info("Running AutoExtendUserMemberships Task")
-	currentTime := time.Now()
 
-	// Get user memberships for all users
-	um := UserMembership{} // Use this for the TableName() func only
-	m := Membership{}      // Same goes for this one
-
-	var userMembershipsArr []UserMembership
-	o := orm.NewOrm()
-	_, err := o.QueryTable(um.TableName()).All(&userMembershipsArr)
-	if err != nil {
+	if err = autoExtendUserMemberships(); err != nil {
 		beego.Error("Failed to get all user memberships:", err)
-		return fmt.Errorf("Failde to get all user memberships")
 	}
 
-	// Loop through the user memberships and check the end date
-	for i := 0; i < len(userMembershipsArr); i++ {
-		userMembership := userMembershipsArr[i]
-		if userMembership.AutoExtend == true {
+	return
+}
 
-			// Check whether we need to extend the membership after all
-			// by comparing membership end date with current date.
-			if userMembership.EndDate.Before(currentTime) {
-				beego.Trace("Extending user membership with ID:", userMembership.Id)
-				beego.Trace("Base membership ID:", userMembership.MembershipId)
-				beego.Trace("Current user membership end date:", userMembership.EndDate)
+func autoExtendUserMemberships() (err error) {
+	ls, err := locations.GetAll()
+	if err != nil {
+		return fmt.Errorf("get all locations: %v", err)
+	}
 
-				// Get the amount of days we should extend from the base membership
-				sql := fmt.Sprintf("SELECT auto_extend_duration_months FROM %s WHERE id=?",
-					m.TableName())
-				var autoExtendDuration int64
-				beego.Trace("userMembership.MembershipId:", userMembership.MembershipId)
-				err = o.Raw(sql, userMembership.MembershipId).QueryRow(&autoExtendDuration)
-				if err != nil {
-					beego.Error("Failed to exec raw query:", err)
-					return fmt.Errorf("Failed to exec raw query")
-				}
-				beego.Trace("Auto extend duration in months:", autoExtendDuration)
-
-				// Extend the user membership end date by number of days stored
-				// in the base membership
-				userMembership.EndDate = userMembership.EndDate.AddDate(0, int(autoExtendDuration), 0)
-				beego.Trace("Extended user membership end date:", userMembership.EndDate)
-				_, err = o.Update(&userMembership, "end_date")
-				if err != nil {
-					beego.Error("Failed to update user membership end date:", err)
-					return fmt.Errorf("Failed to update user membership end date")
-				}
-				beego.Trace("Done extending user membership. Saved in the database.")
-			}
-
+	for _, l := range ls {
+		if err := extendUserMembershipsAt(l.Id); err != nil {
+			return fmt.Errorf("extend userMemberships at %v: %v", l.Id, err)
 		}
 	}
 
-	return nil
+	return
+}
+
+func extendUserMembershipsAt(locId int64) (err error) {
+	ums, err := GetAllUserMembershipsAt(locId)
+	if err != nil {
+		return fmt.Errorf("get all user memberships: %v", err)
+	}
+
+	for _, um := range ums {
+		if !um.AutoExtend || um.EndDate.After(time.Now()) {
+			continue
+		}
+
+		beego.Trace("Extending user membership with Id", um.Id)
+
+		m, err := GetMembership(um.MembershipId)
+		if err != nil {
+			return fmt.Errorf("get membership: %v", err)
+		}
+
+		um.EndDate = um.EndDate.AddDate(0, int(m.AutoExtendDurationMonths), 0)
+		if err = um.Update(); err != nil {
+			return fmt.Errorf("Failed to update user membership end date")
+		}
+	}
+
+	return
 }
