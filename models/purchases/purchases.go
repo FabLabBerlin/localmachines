@@ -94,20 +94,24 @@ func Get(purchaseId int64) (purchase *Purchase, err error) {
 	return
 }
 
-func GetAllBetweenAt(locationId int64, interval lib.Interval) (ps []*Purchase, err error) {
+func GetAllAt(locationId int64) (ps []*Purchase, err error) {
 	o := orm.NewOrm()
-
-	var all []*Purchase
 
 	_, err = o.QueryTable(TABLE_NAME).
 		Filter("location_id", locationId).
 		Exclude("invoice_status", "outgoing").
 		Exclude("invoice_status", "credit").
 		Limit(1000000).
-		All(&all)
+		All(&ps)
 
+	return
+
+}
+
+func GetAllBetweenAt(locationId int64, interval lib.Interval) (ps []*Purchase, err error) {
+	all, err := GetAllAt(locationId)
 	if err != nil {
-		return
+		return nil, fmt.Errorf("get all at: %v", err)
 	}
 
 	ps = make([]*Purchase, 0, len(all))
