@@ -132,9 +132,9 @@ func TestUserMemberships(t *testing.T) {
 				Convey("The activations made during the user membership period should be affected by the base membership discount rules", func() {
 
 					interval := lib.Interval{
-						MonthFrom: 1,
+						MonthFrom: 6,
 						YearFrom:  2015,
-						MonthTo:   12,
+						MonthTo:   6,
 						YearTo:    2015,
 					}
 					me, err := monthly_earning.New(1, interval)
@@ -142,12 +142,12 @@ func TestUserMemberships(t *testing.T) {
 						panic(err.Error())
 					}
 
-					// there should be 4 activations and 2 of them should be affected
+					// there should be 2 activations and 2 of them should be affected
 					numUserSummaries := len(me.Invoices)
 					So(numUserSummaries, ShouldEqual, 1)
 
 					numActivations := len(me.Invoices[0].Purchases)
-					So(numActivations, ShouldEqual, 4)
+					So(numActivations, ShouldEqual, 2)
 
 					// 2 of the activations should contain memberships
 					numAffectedActivations := 0
@@ -164,7 +164,7 @@ func TestUserMemberships(t *testing.T) {
 			})
 		})
 
-		Convey("Testing GetUserMembership", func() {
+		Convey("GetUserMembership", func() {
 			Convey("Try getting a nonexistent user membership", func() {
 				_, err := models.GetUserMembership(-6)
 
