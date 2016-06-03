@@ -75,13 +75,26 @@ func (this *Controller) Migrate() {
 
 	newInvoices := make([]*invoices.Invoice, 0, 1000)
 
+	newInvoice := func(userId int64, year int, month time.Month) invoices.Invoice {
+		u := usrsById[userId]
+		inv := &invoices.Invoice{
+			LocationId: locId,
+			Month:      int(month),
+			Year:       year,
+			CustomerNo: u.ClientId,
+			UserId:     u.Id,
+		}
+		newInvoices = append(newInvoices, inv)
+		return *inv
+	}
+
 	for _, p := range ps {
 		if p.InvoiceId > 0 {
 			continue
 		}
 
-		/*if inv.Interval().Contains(p.TimeStart) {
-			p.InvoiceId = inv.Id
+		/* << if inv.Interval().Contains(p.TimeStart) {
+			p.InvoiceId = inv.Id >>
 		}*/
 		month := p.TimeStart.Month()
 		year := p.TimeStart.Year()
@@ -89,22 +102,15 @@ func (this *Controller) Migrate() {
 		invs := invsByYearMonth[year][month]
 		switch len(invs) {
 		case 0:
-			u := usrsById[p.UserId]
-			inv := &invoices.Invoice{
-				LocationId: locId,
-				Month:      int(month),
-				Year:       year,
-				CustomerNo: u.ClientId,
-				UserId:     u.Id,
+			invs = []invoices.Invoice{
+				newInvoice(p.UserId, year, month),
 			}
-			newInvoices = append(newInvoices, inv)
-			invs = []invoices.Invoice{*inv}
 			invsByYearMonth[year][month] = invs
 			fallthrough
 		case 1:
 			if p.InvoiceId == 0 {
 				inv := invs[0]
-				p.InvoiceId = inv.Id
+				p.InvoiceId = uint64(inv.Id)
 			}
 		default:
 			beego.Error("Matched", len(invs), "invoices to purchase", p.Id)
@@ -117,13 +123,45 @@ func (this *Controller) Migrate() {
 			continue
 		}
 
-		/*if um.StartDate.Before(inv.Interval().TimeTo()) &&
+		/* << if um.StartDate.Before(inv.Interval().TimeTo()) &&
 			um.EndDate.After(inv.Interval().TimeFrom()) {
-
+			>>
 		}*/
 
+		t := um.StartDate
+		endMonth := um.EndDate.Month()
+		endYear := um.EndDate.Year()
+
 		// "Multiply"
-		// ...
+		for {
+			month := t.Month()
+			year := t.Year()
+
+			invs := invsByYearMonth[year][month]
+			switch len(invs) {
+			case 0:
+				invs = []invoices.Invoice{
+					newInvoice(um.UserId, year, month),
+				}
+				invsByYearMonth[year][month] = invs
+				fallthrough
+			case 1:
+				if um.InvoiceId == 0 {
+					inv := invs[0]
+					um.InvoiceId = uint64(inv.Id)
+				}
+			default:
+				beego.Error("Matched", len(invs), "invoices to user m'ship",
+					um.Id)
+				this.Abort("500")
+			}
+
+			if t.Month() == endMonth && t.Year() == endYear {
+				break
+			} else {
+				t = t.AddDate(0, 1, 0)
+			}
+		}
 	}
 
 	// Persist it all
