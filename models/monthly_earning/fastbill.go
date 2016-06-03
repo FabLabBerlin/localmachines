@@ -87,7 +87,8 @@ func CreateFastbillDraft(inv *invoices.Invoice) (fbDraft *fastbill.Invoice, empt
 		TemplateId:     fastbill.TemplateStandardId,
 		Items:          make([]fastbill.Item, 0, 10),
 	}
-	if fbDraft.Month, fbDraft.Year, err = getFastbillMonthYear(inv.Interval); err != nil {
+	intv := inv.Interval()
+	if fbDraft.Month, fbDraft.Year, err = getFastbillMonthYear(&intv); err != nil {
 		return nil, false, fmt.Errorf("get fastbill month: %v", err)
 	}
 	memberships, err := models.GetUserMemberships(inv.User.Id)
@@ -109,7 +110,7 @@ func CreateFastbillDraft(inv *invoices.Invoice) (fbDraft *fastbill.Invoice, empt
 
 	// Add Memberships
 	for _, m := range memberships.Data {
-		if m.MonthlyPrice > 0 && m.StartDate.Before(inv.Interval.TimeTo()) && m.EndDate.After(inv.Interval.TimeFrom()) {
+		if m.MonthlyPrice > 0 && m.StartDate.Before(inv.Interval().TimeTo()) && m.EndDate.After(inv.Interval().TimeFrom()) {
 			item := fastbill.Item{
 				Description: m.Title + " Membership (unit: month)",
 				Quantity:    1,
@@ -174,7 +175,7 @@ func CreateFastbillDraft(inv *invoices.Invoice) (fbDraft *fastbill.Invoice, empt
 	}
 	rebateValue := 0.0
 	for _, c := range cs {
-		usage, err := c.UseForInvoice(invoiceValue-rebateValue, time.Month(inv.Interval.MonthFrom), inv.Interval.YearFrom)
+		usage, err := c.UseForInvoice(invoiceValue-rebateValue, time.Month(inv.Interval().MonthFrom), inv.Interval().YearFrom)
 		if err != nil {
 			return nil, false, fmt.Errorf("use for invoice: %v", err)
 		}

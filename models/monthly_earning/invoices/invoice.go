@@ -158,12 +158,8 @@ func (inv *Invoice) SplitByMonths() (invs []*Invoice, err error) {
 	for t := tMin; ; t = t.AddDate(0, 1, 0) {
 		i++
 		iv := &Invoice{
-			Interval: &lib.Interval{
-				MonthFrom: int(t.Month()),
-				YearFrom:  t.Year(),
-				MonthTo:   int(t.Month()),
-				YearTo:    t.Year(),
-			},
+			Month:      int(t.Month()),
+			Year:       t.Year(),
 			Purchases:  make([]*purchases.Purchase, 0, 20),
 			User:       inv.User,
 			VatPercent: inv.VatPercent,
@@ -180,7 +176,7 @@ func (inv *Invoice) SplitByMonths() (invs []*Invoice, err error) {
 
 	for _, iv := range invs {
 		for _, p := range inv.Purchases {
-			if iv.Interval.Contains(p.TimeStart) {
+			if iv.Interval().Contains(p.TimeStart) {
 				iv.Purchases = append(iv.Purchases, p)
 			}
 		}

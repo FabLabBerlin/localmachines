@@ -310,9 +310,13 @@ func (this *MonthlyEarning) NewInvoices(vatPercent float64) (invs []*invoices.In
 	invs = make([]*invoices.Invoice, 0, len(users))
 	for _, user := range users {
 		interval := this.Interval()
+		if !interval.OneMonth() {
+			return nil, fmt.Errorf("expected one month")
+		}
 		inv := invoices.Invoice{
 			LocationId: this.LocationId,
-			Interval:   &interval,
+			Year:       interval.YearFrom,
+			Month:      interval.MonthFrom,
 			User:       user,
 			VatPercent: vatPercent,
 		}
