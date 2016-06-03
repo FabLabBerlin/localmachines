@@ -6,7 +6,7 @@ package metrics
 import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
-	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_roles"
@@ -60,8 +60,8 @@ type Data struct {
 	startTime       time.Time
 	endTime         time.Time
 	monthlyEarning  *monthly_earning.MonthlyEarning
-	userMemberships []*models.UserMembership
-	membershipsById map[int64]*models.Membership
+	userMemberships []*memberships.UserMembership
+	membershipsById map[int64]*memberships.Membership
 }
 
 func FetchData(locationId int64) (data Data, err error) {
@@ -78,16 +78,16 @@ func FetchData(locationId int64) (data Data, err error) {
 		return data, fmt.Errorf("Failed to get invoice summary: %v", err)
 	}
 
-	memberships, err := models.GetAllMembershipsAt(locationId)
+	ms, err := memberships.GetAllMembershipsAt(locationId)
 	if err != nil {
 		return data, fmt.Errorf("Failed to get memberships: %v", err)
 	}
-	data.membershipsById = make(map[int64]*models.Membership)
-	for _, membership := range memberships {
-		data.membershipsById[membership.Id] = membership
+	data.membershipsById = make(map[int64]*memberships.Membership)
+	for _, m := range ms {
+		data.membershipsById[m.Id] = m
 	}
 
-	data.userMemberships, err = models.GetAllUserMembershipsAt(locationId)
+	data.userMemberships, err = memberships.GetAllUserMembershipsAt(locationId)
 	if err != nil {
 		return data, fmt.Errorf("Failed to get user memberships: %v", err)
 	}

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/lib/fastbill"
-	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
@@ -91,23 +91,14 @@ func (inv *Invoice) CalculateTotals() (err error) {
 	inv.Sums.Purchases.PriceExclVAT = inv.Sums.Purchases.PriceInclVAT / p
 	inv.Sums.Purchases.PriceVAT = inv.Sums.Purchases.PriceInclVAT - inv.Sums.Purchases.PriceExclVAT
 
-	memberships, err := models.GetUserMemberships(inv.User.Id)
+	ms, err := memberships.GetUserMemberships(inv.User.Id)
 	if err != nil {
 		return fmt.Errorf("GetUserMemberships: %v", err)
 	}
-	if inv.User.Id == 57 {
-		beego.Info("CalculateTotals: len(memberships) = ", len(memberships.Data))
-	}
-	for _, m := range memberships.Data {
-		if inv.User.Id == 57 {
-			beego.Info("m=", m)
-			beego.Info("inv.Interval=", inv.Interval)
-		}
+
+	for _, m := range ms.Data {
 		if m.StartDate.Before(inv.Interval().TimeFrom()) &&
 			m.EndDate.After(inv.Interval().TimeTo()) {
-			if inv.User.Id == 57 {
-				beego.Info("if => true")
-			}
 			inv.Sums.Memberships.Undiscounted += m.MonthlyPrice
 			inv.Sums.Memberships.PriceInclVAT += m.MonthlyPrice
 		}
@@ -118,11 +109,6 @@ func (inv *Invoice) CalculateTotals() (err error) {
 	inv.Sums.All.PriceInclVAT = inv.Sums.Purchases.PriceInclVAT + inv.Sums.Memberships.PriceInclVAT
 	inv.Sums.All.PriceExclVAT = inv.Sums.Purchases.PriceExclVAT + inv.Sums.Memberships.PriceExclVAT
 	inv.Sums.All.PriceVAT = inv.Sums.Purchases.PriceVAT + inv.Sums.Memberships.PriceVAT
-	if inv.User.Id == 57 {
-		beego.Info("CalculateTotals: inv.Sums.Purchases.PriceInclVAT=", inv.Sums.Purchases.PriceInclVAT)
-		beego.Info("CalculateTotals: inv.Sums.Memberships.PriceInclVAT=", inv.Sums.Memberships.PriceInclVAT)
-		beego.Info("CalculateTotals: inv.Sums.All.PriceInclVAT=", inv.Sums.All.PriceInclVAT)
-	}
 
 	return
 }

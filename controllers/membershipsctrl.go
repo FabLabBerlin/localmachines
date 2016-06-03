@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
-	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/astaxie/beego"
 )
 
@@ -18,7 +18,7 @@ func (this *MembershipsController) Prepare() {
 
 // @Title GetAll
 // @Description Get all memberships
-// @Success 200 {object} models.Membership
+// @Success 200 {object} memberships.Membership
 // @Failure	403	Failed to get all memberships
 // @router / [get]
 func (this *MembershipsController) GetAll() {
@@ -27,11 +27,11 @@ func (this *MembershipsController) GetAll() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	memberships, err := models.GetAllMembershipsAt(locId)
+	ms, err := memberships.GetAllMembershipsAt(locId)
 	if err != nil {
 		this.CustomAbort(403, "Failed to get all memberships")
 	}
-	this.Data["json"] = memberships
+	this.Data["json"] = ms
 	this.ServeJSON()
 }
 
@@ -48,9 +48,9 @@ func (this *MembershipsController) Create() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	membershipName := this.GetString("mname")
+	name := this.GetString("mname")
 
-	m, err := models.CreateMembership(locId, membershipName)
+	m, err := memberships.CreateMembership(locId, name)
 	if err != nil {
 		beego.Error("Failed to create membership", err)
 		this.Abort("500")
@@ -64,28 +64,28 @@ func (this *MembershipsController) Create() {
 // @Description Get membership by membership ID
 // @Param	mid		path 	int	true		"Membership ID"
 // @Success 200 {object} models.Membership
-// @Failure	403	Failed to get membership
 // @Failure	401	Not authorized
+// @Failure	500	Failed to get membership
 // @router /:mid [get]
 func (this *MembershipsController) Get() {
 	mid, err := this.GetInt64(":mid")
 	if err != nil {
 		beego.Error("Could not get mid")
-		this.CustomAbort(500, "Failed to get membership")
+		this.Abort("400")
 	}
 
-	membership, err := models.GetMembership(mid)
+	m, err := memberships.GetMembership(mid)
 	if err != nil {
 		beego.Error("Could not get membership")
-		this.CustomAbort(500, "Failed to get membership")
+		this.Abort("500")
 	}
 
-	if !this.IsAdminAt(membership.LocationId) {
+	if !this.IsAdminAt(m.LocationId) {
 		beego.Error("Not authorized")
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	this.Data["json"] = membership
+	this.Data["json"] = m
 	this.ServeJSON()
 }
 
@@ -107,7 +107,7 @@ func (this *MembershipsController) Update() {
 		this.CustomAbort(500, "Failed to update membership")
 	}
 
-	existing, err := models.GetMembership(mid)
+	existing, err := memberships.GetMembership(mid)
 	if err != nil {
 		beego.Error("Get membership:", err)
 		this.CustomAbort(500, "Internal Server Error")
@@ -119,7 +119,7 @@ func (this *MembershipsController) Update() {
 
 	// Attempt to decode passed json
 	dec := json.NewDecoder(this.Ctx.Request.Body)
-	req := models.Membership{}
+	req := memberships.Membership{}
 	if err := dec.Decode(&req); err != nil {
 		beego.Error("Failed to decode json:", err)
 		this.CustomAbort(400, "Failed to update membership")
@@ -159,7 +159,7 @@ func (this *MembershipsController) SetArchived() {
 		this.Abort("400")
 	}
 
-	m, err := models.GetMembership(id)
+	m, err := memberships.GetMembership(id)
 	if err != nil {
 		beego.Error("get", err)
 		this.Abort("500")

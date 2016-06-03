@@ -2,7 +2,7 @@ package monthly_earning
 
 import (
 	"fmt"
-	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/tealeg/xlsx"
 	"sort"
@@ -158,13 +158,13 @@ func createXlsxFile(filePath string, monthlyEarning *MonthlyEarning) error {
 	// Fill the xlsx sheet
 	for _, inv := range monthlyEarning.Invoices {
 
-		memberships, err := models.GetUserMemberships(inv.User.Id)
+		ms, err := memberships.GetUserMemberships(inv.User.Id)
 		if err != nil {
 			return fmt.Errorf("GetUserMemberships: %v", err)
 		}
 
 		if len(inv.Purchases) == 0 &&
-			(memberships == nil || len(memberships.Data) == 0) {
+			(ms == nil || len(ms.Data) == 0) {
 			// nothing to bill
 			continue
 		}
@@ -238,7 +238,7 @@ func createXlsxFile(filePath string, monthlyEarning *MonthlyEarning) error {
 		cell = row.AddCell()
 		cell.Value = inv.User.Comments
 
-		if memberships != nil {
+		if ms != nil {
 			sheet.AddRow()
 			sheet.AddRow()
 			row = sheet.AddRow()
@@ -260,7 +260,7 @@ func createXlsxFile(filePath string, monthlyEarning *MonthlyEarning) error {
 			cell.Value = "Duration Unit"
 			cell = row.AddCell()
 			cell.Value = "Machine Price Deduction"
-			for _, m := range memberships.Data {
+			for _, m := range ms.Data {
 
 				if m.StartDate.Before(monthlyEarning.PeriodTo()) &&
 					m.EndDate.After(monthlyEarning.PeriodFrom()) {

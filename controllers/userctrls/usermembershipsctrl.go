@@ -2,7 +2,7 @@ package userctrls
 
 import (
 	"encoding/json"
-	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/astaxie/beego"
 	"time"
 )
@@ -33,19 +33,19 @@ func (this *UserMembershipsController) PostUserMemberships() {
 		this.CustomAbort(400, "Bad request")
 	}
 
-	membershipId, err := this.GetInt64("membershipId")
+	mId, err := this.GetInt64("membershipId")
 	if err != nil {
 		beego.Error("Failed to get membership ID")
 		this.CustomAbort(400, "Bad request")
 	}
-	membership, err := models.GetMembership(membershipId)
+	m, err := memberships.GetMembership(mId)
 	if err != nil {
 		beego.Error("get membership:", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	if !this.IsAdminAt(membership.LocationId) {
-		beego.Error("not authorized for", membership.LocationId)
+	if !this.IsAdminAt(m.LocationId) {
+		beego.Error("not authorized for", m.LocationId)
 		this.CustomAbort(401, "Not authorized")
 	}
 
@@ -57,13 +57,13 @@ func (this *UserMembershipsController) PostUserMemberships() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	userMembershipId, err := models.CreateUserMembership(uid, membershipId, startDate)
+	umId, err := memberships.CreateUserMembership(uid, mId, startDate)
 	if err != nil {
 		beego.Error("Error creating user membership:", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	userMembership, err := models.GetUserMembership(userMembershipId)
+	userMembership, err := memberships.GetUserMembership(umId)
 	if err != nil {
 		beego.Error("Failed to get user membership:", err)
 		this.CustomAbort(500, "Failed to get user membership")
@@ -89,22 +89,22 @@ func (this *UserMembershipsController) GetUserMemberships() {
 	}
 	locationId, _ := this.GetInt64("location")
 
-	all, err := models.GetUserMemberships(uid)
+	all, err := memberships.GetUserMemberships(uid)
 	if err != nil {
 		beego.Error("Failed to get user machine permissions")
-		this.CustomAbort(403, "Failed to get user machines")
+		this.Abort("500")
 	}
 
-	userMemberships := &models.UserMembershipList{
-		Data: make([]models.UserMembershipCombo, 0, len(all.Data)),
+	list := &memberships.UserMembershipList{
+		Data: make([]memberships.UserMembershipCombo, 0, len(all.Data)),
 	}
 	for _, um := range all.Data {
 		if locationId <= 0 || locationId == um.LocationId {
-			userMemberships.Data = append(userMemberships.Data, um)
+			list.Data = append(list.Data, um)
 		}
 	}
 
-	this.Data["json"] = userMemberships
+	this.Data["json"] = list
 	this.ServeJSON()
 }
 
@@ -119,28 +119,27 @@ func (this *UserMembershipsController) GetUserMemberships() {
 // @router /:uid/memberships/:umid [put]
 func (this *UserMembershipsController) PutUserMembership() {
 	dec := json.NewDecoder(this.Ctx.Request.Body)
-	var userMembership models.UserMembership
-	if err := dec.Decode(&userMembership); err == nil {
-		beego.Info("userMembership: ", userMembership)
-	} else {
+	var um memberships.UserMembership
+
+	if err := dec.Decode(&um); err != nil {
 		beego.Error("Failed to decode json", err)
-		this.CustomAbort(500, "Internal Server Error")
+		this.Abort("500")
 	}
 
-	membership, err := models.GetMembership(userMembership.MembershipId)
+	m, err := memberships.GetMembership(um.MembershipId)
 	if err != nil {
 		beego.Error("Get membership:", err)
-		this.CustomAbort(500, "Internal Server Error")
+		this.Abort("500")
 	}
 
-	if !this.IsAdminAt(membership.LocationId) {
+	if !this.IsAdminAt(m.LocationId) {
 		beego.Error("Not authorized")
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	if err := userMembership.Update(); err != nil {
+	if err := m.Update(); err != nil {
 		beego.Error("UpdateMembership: ", err)
-		this.CustomAbort(500, "Internal Server Error")
+		this.Abort("500")
 	}
 
 	this.Data["json"] = "ok"

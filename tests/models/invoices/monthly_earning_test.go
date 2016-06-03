@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/FabLabBerlin/localmachines/lib"
-	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/machine"
+	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
@@ -42,8 +42,8 @@ func CreateTestPurchase(machineId int64, machineName string,
 		Machine:      &m,
 		MachineId:    machineId,
 		MachineUsage: minutes,
-		Memberships: []*models.Membership{
-			&models.Membership{
+		Memberships: []*memberships.Membership{
+			{
 				Id:                    42,
 				Title:                 "Half price",
 				ShortName:             "HP",
@@ -89,11 +89,11 @@ func TestInvoiceActivation(t *testing.T) {
 		})
 		Convey("Testing AddRowXlsx", func() {
 			testTable := [][]interface{}{
-				[]interface{}{"", "Machine Name", "Product ID",
+				{"", "Machine Name", "Product ID",
 					"Start Time", "Usage", "Usage Unit", "€ per Unit",
 					"Total €", "Memberships", "Discounted €"},
 
-				[]interface{}{"", "Lasercutter", "Undefined",
+				{"", "Lasercutter", "Undefined",
 					TIME_START.Format(time.RFC1123), "12", "minute",
 					"0.50", "6.00", "HP (50%)", "3.00"},
 			}

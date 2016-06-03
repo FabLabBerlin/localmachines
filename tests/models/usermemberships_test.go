@@ -6,8 +6,9 @@ import (
 	"time"
 
 	"github.com/FabLabBerlin/localmachines/lib"
-	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/machine"
+	"github.com/FabLabBerlin/localmachines/models/memberships"
+	"github.com/FabLabBerlin/localmachines/models/memberships/auto_extend"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/user_permissions"
@@ -31,19 +32,19 @@ func TestUserMemberships(t *testing.T) {
 			machineOne, _ := machine.Create(1, "Machine One")
 			machineTwo, _ := machine.Create(1, "Machine Two")
 
-			baseMembership, err := models.CreateMembership(1, "Test Membership")
+			membership, err := memberships.CreateMembership(1, "Test Membership")
 			if err != nil {
 				panic(err.Error())
 			}
-			baseMembership.DurationMonths = 1
-			baseMembership.MachinePriceDeduction = 50
-			baseMembership.AutoExtend = true
-			baseMembership.AutoExtendDurationMonths = 30
-			baseMembership.AffectedMachines = fmt.Sprintf("[%v,%v]", machineOne.Id, machineTwo.Id)
-			if err := baseMembership.Update(); err != nil {
+			membership.DurationMonths = 1
+			membership.MachinePriceDeduction = 50
+			membership.AutoExtend = true
+			membership.AutoExtendDurationMonths = 30
+			membership.AffectedMachines = fmt.Sprintf("[%v,%v]", machineOne.Id, machineTwo.Id)
+			if err := membership.Update(); err != nil {
 				panic(err.Error())
 			}
-			if baseMembership, err = models.GetMembership(baseMembership.Id); err != nil {
+			if membership, err = memberships.GetMembership(membership.Id); err != nil {
 				panic(err.Error())
 			}
 
@@ -78,7 +79,7 @@ func TestUserMemberships(t *testing.T) {
 				fakeMembershipId := int64(-23)
 				startDate := time.Now()
 				fakeUserId := int64(1)
-				userMembershipId, err := models.CreateUserMembership(
+				userMembershipId, err := memberships.CreateUserMembership(
 					fakeUserId, fakeMembershipId, startDate)
 
 				Convey("It should return error", func() {
@@ -92,12 +93,12 @@ func TestUserMemberships(t *testing.T) {
 
 			Convey("When creating user membership normally", func() {
 				startDate := time.Date(2015, 6, 1, 0, 0, 0, 0, time.UTC)
-				userMembershipId, err := models.CreateUserMembership(
-					userId, baseMembership.Id, startDate)
+				userMembershipId, err := memberships.CreateUserMembership(
+					userId, membership.Id, startDate)
 				if err != nil {
 					panic(err.Error())
 				}
-				gotUserMembership, err := models.GetUserMembership(userMembershipId)
+				gotUserMembership, err := memberships.GetUserMembership(userMembershipId)
 				if err != nil {
 					panic(err.Error())
 				}
@@ -121,12 +122,12 @@ func TestUserMemberships(t *testing.T) {
 
 				Convey("The end date should be correct according to the base membership", func() {
 					validEndDate := gotUserMembership.StartDate.AddDate(
-						0, int(baseMembership.DurationMonths), 0)
+						0, int(membership.DurationMonths), 0)
 					So(gotUserMembership.EndDate.Equal(validEndDate), ShouldBeTrue)
 				})
 
 				Convey("The auto_extend flag should be set to the one in the base membership", func() {
-					So(gotUserMembership.AutoExtend, ShouldEqual, baseMembership.AutoExtend)
+					So(gotUserMembership.AutoExtend, ShouldEqual, membership.AutoExtend)
 				})
 
 				Convey("The activations made during the user membership period should be affected by the base membership discount rules", func() {
@@ -166,7 +167,7 @@ func TestUserMemberships(t *testing.T) {
 
 		Convey("GetUserMembership", func() {
 			Convey("Try getting a nonexistent user membership", func() {
-				_, err := models.GetUserMembership(-6)
+				_, err := memberships.GetUserMembership(-6)
 
 				Convey("It should return error", func() {
 					So(err, ShouldNotBeNil)
@@ -177,8 +178,8 @@ func TestUserMemberships(t *testing.T) {
 		Convey("When automatically extending user membership", func() {
 
 			// Create empty base membership
-			baseMembership, err := models.CreateMembership(1, "Test Membership")
-			So(baseMembership.Id, ShouldBeGreaterThan, 0)
+			m, err := memberships.CreateMembership(1, "Test Membership")
+			So(m.Id, ShouldBeGreaterThan, 0)
 			So(err, ShouldBeNil)
 
 			// Create user membership with a start and end date some time in the past
@@ -186,14 +187,14 @@ func TestUserMemberships(t *testing.T) {
 			loc, _ := time.LoadLocation("Europe/Berlin")
 			startTime := time.Date(2015, time.July, 10, 23, 0, 0, 0, loc)
 
-			userMembershipId, err := models.CreateUserMembership(
-				fakeUserId, baseMembership.Id, startTime)
+			userMembershipId, err := memberships.CreateUserMembership(
+				fakeUserId, m.Id, startTime)
 
 			So(userMembershipId, ShouldBeGreaterThan, 0)
 			So(err, ShouldBeNil)
 
 			// Get the created membership for later comparison
-			userMembership, err := models.GetUserMembership(userMembershipId)
+			userMembership, err := memberships.GetUserMembership(userMembershipId)
 			So(err, ShouldBeNil)
 			So(userMembership, ShouldNotBeNil)
 
@@ -201,16 +202,16 @@ func TestUserMemberships(t *testing.T) {
 				time.Duration(1)*time.Second, startTime)
 
 			// Call user membership auto extend function and check the new end date
-			err = models.AutoExtendUserMemberships()
+			err = auto_extend.AutoExtendUserMemberships()
 			So(err, ShouldBeNil)
 
 			Convey("Check if it is extended by duration specified in the base membership", func() {
 
 				// Get the now extended user membership
-				extendedUserMembership, _ := models.GetUserMembership(userMembershipId)
+				extendedUserMembership, _ := memberships.GetUserMembership(userMembershipId)
 
 				validEndDate := userMembership.EndDate.AddDate(
-					0, int(baseMembership.AutoExtendDurationMonths), 0)
+					0, int(m.AutoExtendDurationMonths), 0)
 
 				So(extendedUserMembership.EndDate, ShouldHappenWithin,
 					time.Duration(1)*time.Second, validEndDate)

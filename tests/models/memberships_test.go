@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
 	"github.com/astaxie/beego/orm"
@@ -45,10 +45,10 @@ func TestMemberships(t *testing.T) {
 		Reset(setup.ResetDB)
 
 		Convey("Testing CreateMembership", func() {
-			membershipName := "Membership X"
+			name := "Membership X"
 
 			Convey("When creating a single membership", func() {
-				membership, err := models.CreateMembership(1, membershipName)
+				membership, err := memberships.CreateMembership(1, name)
 				if err != nil {
 					panic(err.Error())
 				}
@@ -59,7 +59,7 @@ func TestMemberships(t *testing.T) {
 				})
 
 				Convey("When reading it back by using the ID", func() {
-					membership, err := models.GetMembership(membership.Id)
+					membership, err := memberships.GetMembership(membership.Id)
 					if err != nil {
 						panic(fmt.Sprintf("%v ... membershipId: %v", err.Error(), membership.Id))
 					}
@@ -70,13 +70,13 @@ func TestMemberships(t *testing.T) {
 					Convey("It should return the membership", func() {
 						So(membership, ShouldNotBeNil)
 
-						var membershipType *models.Membership
+						var membershipType *memberships.Membership
 						So(membership, ShouldHaveSameTypeAs, membershipType)
 					})
 
 					Convey("Title should equal the initially given one", func() {
 						title := membership.Title
-						So(title, ShouldEqual, membershipName)
+						So(title, ShouldEqual, name)
 					})
 
 					Convey("The duration of the membership should be set "+
@@ -98,40 +98,40 @@ func TestMemberships(t *testing.T) {
 
 		Convey("Testing GetAllMemberships", func() {
 
-			membershipName := "The Membership"
+			name := "The Membership"
 
 			Convey("Getting all memberships with empty database", func() {
-				memberships, err := models.GetAllMembershipsAt(1)
+				ms, err := memberships.GetAllMembershipsAt(1)
 
 				Convey("Should return no error", func() {
 					So(err, ShouldBeNil)
 				})
 
 				Convey("Should return an empty array", func() {
-					So(len(memberships), ShouldEqual, 0)
+					So(len(ms), ShouldEqual, 0)
 				})
 			})
 
 			Convey("Getting existing memberships", func() {
-				models.CreateMembership(1, membershipName)
-				models.CreateMembership(1, membershipName)
-				memberships, err := models.GetAllMembershipsAt(1)
+				memberships.CreateMembership(1, name)
+				memberships.CreateMembership(1, name)
+				ms, err := memberships.GetAllMembershipsAt(1)
 
 				Convey("Shoud return no error", func() {
 					So(err, ShouldBeNil)
 				})
 
 				Convey("Should return an array with 2 memberships", func() {
-					So(len(memberships), ShouldEqual, 2)
+					So(len(ms), ShouldEqual, 2)
 				})
 			})
 		})
 
 		Convey("Testing GetMembership", func() {
-			membershipName := "The Membership"
+			name := "The Membership"
 
 			Convey("Getting non-existing membership", func() {
-				_, err := models.GetMembership(0)
+				_, err := memberships.GetMembership(0)
 
 				Convey("Should return an error", func() {
 					So(err, ShouldNotBeNil)
@@ -139,8 +139,8 @@ func TestMemberships(t *testing.T) {
 			})
 
 			Convey("Creating a membership and getting it", func() {
-				m, _ := models.CreateMembership(1, membershipName)
-				membership, err := models.GetMembership(m.Id)
+				m, _ := memberships.CreateMembership(1, name)
+				membership, err := memberships.GetMembership(m.Id)
 
 				Convey("There should be no error", func() {
 					So(err, ShouldBeNil)
@@ -153,12 +153,12 @@ func TestMemberships(t *testing.T) {
 		})
 
 		Convey("Testing UpdateMembership", func() {
-			membershipName := "Update Membership"
-			newMembershipName := "New Membership Name"
+			name := "Update Membership"
+			newName := "New Membership Name"
 
 			Convey("Try to update non existing membership", func() {
-				m := &models.Membership{
-					Title: membershipName,
+				m := &memberships.Membership{
+					Title: name,
 				}
 				err := m.Update()
 
@@ -168,26 +168,26 @@ func TestMemberships(t *testing.T) {
 			})
 
 			Convey("Create membership and update it", func() {
-				m, _ := models.CreateMembership(1, membershipName)
-				m.Title = newMembershipName
+				m, _ := memberships.CreateMembership(1, name)
+				m.Title = newName
 				err := m.Update()
-				nm, _ := models.GetMembership(m.Id)
+				nm, _ := memberships.GetMembership(m.Id)
 
 				Convey("There should be no error", func() {
 					So(err, ShouldBeNil)
 				})
 
 				Convey("The title of the read-back membership should equal given one", func() {
-					So(nm.Title, ShouldEqual, newMembershipName)
+					So(nm.Title, ShouldEqual, newName)
 				})
 			})
 		})
 
 		Convey("Testing DeleteMembership", func() {
-			membershipName := "Super Membership"
+			name := "Super Membership"
 
 			Convey("Try to delete non-existing membership", func() {
-				err := models.DeleteMembership(0)
+				err := memberships.DeleteMembership(0)
 
 				Convey("It should return an error", func() {
 					So(err, ShouldNotBeNil)
@@ -195,8 +195,8 @@ func TestMemberships(t *testing.T) {
 			})
 
 			Convey("Creating a membership and delete it", func() {
-				m, _ := models.CreateMembership(1, membershipName)
-				err := models.DeleteMembership(m.Id)
+				m, _ := memberships.CreateMembership(1, name)
+				err := memberships.DeleteMembership(m.Id)
 
 				Convey("There should be no error", func() {
 					So(err, ShouldBeNil)

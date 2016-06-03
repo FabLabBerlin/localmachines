@@ -6,9 +6,9 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/FabLabBerlin/localmachines/database/connect"
-	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/coupons"
 	"github.com/FabLabBerlin/localmachines/models/machine"
+	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/products"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
@@ -25,12 +25,12 @@ var dbModels = []Model{
 	&monthly_earning.MonthlyEarning{},
 	&users.Auth{},
 	&machine.Machine{},
-	&models.Membership{},
+	&memberships.Membership{},
 	&user_permissions.Permission{},
 	&users.User{},
 	&products.Product{},
 	&purchases.Purchase{},
-	&models.UserMembership{},
+	&memberships.UserMembership{},
 	&user_locations.UserLocation{},
 }
 

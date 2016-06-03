@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
-	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/machine"
+	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
@@ -59,8 +59,8 @@ type Purchase struct {
 	Running bool
 
 	// Old fields:
-	MachineUsage time.Duration        `orm:"-"`
-	Memberships  []*models.Membership `orm:"-"`
+	MachineUsage time.Duration             `orm:"-"`
+	Memberships  []*memberships.Membership `orm:"-"`
 
 	Archived       bool
 	Comments       string
@@ -285,8 +285,8 @@ func PriceTotalDisc(p *Purchase) (float64, error) {
 	return priceTotal, nil
 }
 
-func AffectedMemberships(p *Purchase) (affected []*models.Membership, err error) {
-	affected = make([]*models.Membership, 0, 2)
+func AffectedMemberships(p *Purchase) (affected []*memberships.Membership, err error) {
+	affected = make([]*memberships.Membership, 0, 2)
 
 	for _, membership := range p.Memberships {
 

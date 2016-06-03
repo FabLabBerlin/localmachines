@@ -1,7 +1,7 @@
 package billing
 
 import (
-	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/users"
@@ -38,7 +38,7 @@ func (this *Controller) Migrate() {
 		this.Abort("500")
 	}
 
-	ums, err := models.GetAllUserMembershipsAt(locId)
+	ums, err := memberships.GetAllUserMembershipsAt(locId)
 	if err != nil {
 		beego.Error("Failed to get user memberships:", err)
 		this.Abort("500")
@@ -161,7 +161,7 @@ func (this *Controller) Migrate() {
 		}
 	}
 
-	newUms := make([]*models.UserMembership, 0, 1000)
+	newUms := make([]*memberships.UserMembership, 0, 1000)
 
 	for _, umCurrent := range ums {
 		if umCurrent.InvoiceId > 0 {
@@ -179,7 +179,7 @@ func (this *Controller) Migrate() {
 
 		// "Multiply"
 		for i := 0; ; i++ {
-			var um *models.UserMembership
+			var um *memberships.UserMembership
 
 			if i == 0 {
 				um = umCurrent
@@ -203,7 +203,7 @@ func (this *Controller) Migrate() {
 			case 1:
 				if um.InvoiceId == 0 {
 					inv := invs[0]
-					um.InvoiceId = uint64(inv.Id)
+					um.InvoiceId = inv.Id
 				}
 			default:
 				beego.Error("Matched", len(invs), "invoices to user m'ship",

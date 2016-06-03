@@ -1,10 +1,8 @@
-package models
+package memberships
 
 import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
-	"github.com/FabLabBerlin/localmachines/models/locations"
-	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"time"
 )
@@ -18,7 +16,7 @@ type UserMembership struct {
 	EndDate      time.Time `orm:"type(datetime)"`
 	AutoExtend   bool
 
-	InvoiceId     uint64
+	InvoiceId     int64
 	InvoiceStatus string
 }
 
@@ -155,59 +153,4 @@ func GetUserMemberships(userId int64) (*UserMembershipList, error) {
 	}
 
 	return &userMembershipList, nil
-}
-
-// Automatically extend user membership end date if auto_extend for the specific
-// membership is true and the end_date is before current date.
-func AutoExtendUserMemberships() (err error) {
-
-	beego.Info("Running AutoExtendUserMemberships Task")
-
-	if err = autoExtendUserMemberships(); err != nil {
-		beego.Error("Failed to get all user memberships:", err)
-	}
-
-	return
-}
-
-func autoExtendUserMemberships() (err error) {
-	ls, err := locations.GetAll()
-	if err != nil {
-		return fmt.Errorf("get all locations: %v", err)
-	}
-
-	for _, l := range ls {
-		if err := extendUserMembershipsAt(l.Id); err != nil {
-			return fmt.Errorf("extend userMemberships at %v: %v", l.Id, err)
-		}
-	}
-
-	return
-}
-
-func extendUserMembershipsAt(locId int64) (err error) {
-	ums, err := GetAllUserMembershipsAt(locId)
-	if err != nil {
-		return fmt.Errorf("get all user memberships: %v", err)
-	}
-
-	for _, um := range ums {
-		if !um.AutoExtend || um.EndDate.After(time.Now()) {
-			continue
-		}
-
-		beego.Trace("Extending user membership with Id", um.Id)
-
-		m, err := GetMembership(um.MembershipId)
-		if err != nil {
-			return fmt.Errorf("get membership: %v", err)
-		}
-
-		um.EndDate = um.EndDate.AddDate(0, int(m.AutoExtendDurationMonths), 0)
-		if err = um.Update(); err != nil {
-			return fmt.Errorf("Failed to update user membership end date")
-		}
-	}
-
-	return
 }

@@ -3,8 +3,8 @@ package monthly_earning
 import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
-	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/machine"
+	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/settings"
@@ -239,15 +239,15 @@ func (this *MonthlyEarning) getPurchases(locationId int64, interval lib.Interval
 		usersById[user.Id] = *user
 	}
 
-	userMemberships, err := models.GetAllUserMembershipsAt(locationId)
+	userMemberships, err := memberships.GetAllUserMembershipsAt(locationId)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get user memberships: %v", err)
 	}
-	userMembershipsById := make(map[int64][]*models.UserMembership)
+	userMembershipsById := make(map[int64][]*memberships.UserMembership)
 	for _, userMembership := range userMemberships {
 		uid := userMembership.UserId
 		if _, ok := userMembershipsById[uid]; !ok {
-			userMembershipsById[uid] = []*models.UserMembership{
+			userMembershipsById[uid] = []*memberships.UserMembership{
 				userMembership,
 			}
 		} else {
@@ -255,12 +255,12 @@ func (this *MonthlyEarning) getPurchases(locationId int64, interval lib.Interval
 		}
 	}
 
-	memberships, err := models.GetAllMembershipsAt(locationId)
+	ms, err := memberships.GetAllMembershipsAt(locationId)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get memberships: %v", err)
 	}
-	membershipsById := make(map[int64]*models.Membership)
-	for _, membership := range memberships {
+	membershipsById := make(map[int64]*memberships.Membership)
+	for _, membership := range ms {
 		membershipsById[membership.Id] = membership
 	}
 
@@ -358,8 +358,8 @@ func (this *MonthlyEarning) NewInvoices(vatPercent float64) (invs []*invoices.In
 
 func (this *MonthlyEarning) enhancePurchase(purchase *purchases.Purchase,
 	machinesById map[int64]*machine.Machine, usersById map[int64]users.User,
-	userMembershipsByUserId map[int64][]*models.UserMembership,
-	membershipsById map[int64]*models.Membership) error {
+	userMembershipsByUserId map[int64][]*memberships.UserMembership,
+	membershipsById map[int64]*memberships.Membership) error {
 
 	var ok bool
 	purchase.Machine, ok = machinesById[purchase.MachineId]
@@ -373,7 +373,7 @@ func (this *MonthlyEarning) enhancePurchase(purchase *purchases.Purchase,
 
 	usrMemberships, ok := userMembershipsByUserId[purchase.UserId]
 	if !ok {
-		usrMemberships = []*models.UserMembership{}
+		usrMemberships = []*memberships.UserMembership{}
 	}
 
 	// Check if the membership dates of the user overlap with the activation.

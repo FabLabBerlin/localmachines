@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/lib/fastbill"
-	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/coupons"
+	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_roles"
@@ -91,7 +91,7 @@ func CreateFastbillDraft(inv *invoices.Invoice) (fbDraft *fastbill.Invoice, empt
 	if fbDraft.Month, fbDraft.Year, err = getFastbillMonthYear(&intv); err != nil {
 		return nil, false, fmt.Errorf("get fastbill month: %v", err)
 	}
-	memberships, err := models.GetUserMemberships(inv.User.Id)
+	ms, err := memberships.GetUserMemberships(inv.User.Id)
 	if err != nil {
 		return nil, false, fmt.Errorf("GetUserMemberships: %v", err)
 	}
@@ -102,14 +102,14 @@ func CreateFastbillDraft(inv *invoices.Invoice) (fbDraft *fastbill.Invoice, empt
 	}
 
 	if len(inv.Purchases) == 0 &&
-		(memberships == nil || len(memberships.Data) == 0) {
+		(ms == nil || len(ms.Data) == 0) {
 		return nil, true, nil
 	}
 
 	invoiceValue := 0.0
 
 	// Add Memberships
-	for _, m := range memberships.Data {
+	for _, m := range ms.Data {
 		if m.MonthlyPrice > 0 && m.StartDate.Before(inv.Interval().TimeTo()) && m.EndDate.After(inv.Interval().TimeFrom()) {
 			item := fastbill.Item{
 				Description: m.Title + " Membership (unit: month)",

@@ -3,7 +3,7 @@ package metrics
 import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
-	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
@@ -114,16 +114,16 @@ func NewTrotecStats() (t *Trotec, err error) {
 		}
 	}
 
-	memberships, err := models.GetAllMembershipsAt(TROTEC_LOCATION_ID)
+	ms, err := memberships.GetAllMembershipsAt(TROTEC_LOCATION_ID)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get memberships: %v", err)
 	}
-	membershipsById := make(map[int64]*models.Membership)
-	for _, membership := range memberships {
-		membershipsById[membership.Id] = membership
+	membershipsById := make(map[int64]*memberships.Membership)
+	for _, m := range ms {
+		membershipsById[m.Id] = m
 	}
 
-	userMemberships, err := models.GetAllUserMembershipsAt(TROTEC_LOCATION_ID)
+	userMemberships, err := memberships.GetAllUserMembershipsAt(TROTEC_LOCATION_ID)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get user memberships: %v", err)
 	}
@@ -142,7 +142,7 @@ func NewTrotecStats() (t *Trotec, err error) {
 	return
 }
 
-func hasTrotecRebate(ms []*models.Membership) bool {
+func hasTrotecRebate(ms []*memberships.Membership) bool {
 	for _, m := range ms {
 		if membershipIdHasTrotecRebate(m.Id) {
 			return true
@@ -159,7 +159,7 @@ func membershipIdHasTrotecRebate(id int64) bool {
 	return false
 }
 
-func hasFreeMembership(ms []*models.Membership) bool {
+func hasFreeMembership(ms []*memberships.Membership) bool {
 	for _, m := range ms {
 		if m.MonthlyPrice < 1 {
 			return true

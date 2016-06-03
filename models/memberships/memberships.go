@@ -1,13 +1,12 @@
-package models
+package memberships
 
 import (
 	"errors"
 	"fmt"
-	"strconv"
-	"strings"
-
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"strconv"
+	"strings"
 )
 
 // Main membership type/struct that contains information
