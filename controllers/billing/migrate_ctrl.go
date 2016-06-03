@@ -161,8 +161,10 @@ func (this *Controller) Migrate() {
 		}
 	}
 
-	for _, um := range ums {
-		if um.InvoiceId > 0 {
+	newUms := make([]*models.UserMembership, 0, 1000)
+
+	for _, umCurrent := range ums {
+		if umCurrent.InvoiceId > 0 {
 			continue
 		}
 
@@ -171,12 +173,22 @@ func (this *Controller) Migrate() {
 			>>
 		}*/
 
-		t := um.StartDate
-		endMonth := um.EndDate.Month()
-		endYear := um.EndDate.Year()
+		t := umCurrent.EndDate
+		startMonth := umCurrent.StartDate.Month()
+		startYear := umCurrent.StartDate.Year()
 
 		// "Multiply"
-		for {
+		for i := 0; ; i++ {
+			var um *models.UserMembership
+
+			if i == 0 {
+				um = umCurrent
+			} else {
+				clone := *umCurrent
+				um = &clone
+				newUms = append(newUms, um)
+			}
+
 			month := t.Month()
 			year := t.Year()
 
@@ -199,10 +211,10 @@ func (this *Controller) Migrate() {
 				this.Abort("500")
 			}
 
-			if t.Month() == endMonth && t.Year() == endYear {
+			if t.Month() == startMonth && t.Year() == startYear {
 				break
 			} else {
-				t = t.AddDate(0, 1, 0)
+				t = t.AddDate(0, -1, 0)
 			}
 		}
 	}
@@ -221,6 +233,14 @@ func (this *Controller) Migrate() {
 	for _, um := range ums {
 		if _, err = o.Update(um); err != nil {
 			beego.Error("Update user membership:", err)
+			this.Abort("500")
+		}
+	}
+
+	// 3. New User memberships
+	for _, newUm := range newUms {
+		if _, err = o.Insert(&newUm); err != nil {
+			beego.Error("Insert new user membership:", err)
 			this.Abort("500")
 		}
 	}
