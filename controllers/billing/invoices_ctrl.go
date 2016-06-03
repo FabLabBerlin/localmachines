@@ -55,7 +55,7 @@ func (this *Controller) GetMonth() {
 		usrsById[u.Id] = u
 	}
 
-	ivs, err := invoices.GetAllInvoicesAt(locId, year, month)
+	ivs, err := invoices.GetAllInvoicesBetween(locId, year, month)
 	if err != nil {
 		beego.Error("Failed to get invoices:", err)
 		this.CustomAbort(500, "Internal Server Error")

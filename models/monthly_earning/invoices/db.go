@@ -42,7 +42,16 @@ func CreateOrUpdate(invOrig *Invoice) (id int64, err error) {
 	return
 }
 
-func GetAllInvoicesAt(locId int64, year, month int) ([]*Invoice, error) {
+func GetAllInvoices(locId int64) ([]*Invoice, error) {
+	var ivs []*Invoice
+	_, err := orm.NewOrm().
+		QueryTable(TABLE_NAME).
+		Filter("location_id", locId).
+		All(&ivs)
+	return ivs, err
+}
+
+func GetAllInvoicesBetween(locId int64, year, month int) ([]*Invoice, error) {
 	var ivs []*Invoice
 	_, err := orm.NewOrm().
 		QueryTable(TABLE_NAME).
