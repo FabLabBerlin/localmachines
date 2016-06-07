@@ -3,6 +3,7 @@ package userctrls
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/FabLabBerlin/localmachines/controllers"
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models"
@@ -105,6 +106,9 @@ func (this *UsersController) Login() {
 		userId, err := users.AuthenticateUser(username, password)
 		if err != nil {
 			beego.Error("Failed to authenticate @ location = ", locationId)
+			if locationId == 5 && strings.Contains(strings.ToLower(username), "api") {
+				beego.Info("lol123:", fmt.Sprintf("'%v' - '%v'", username, password))
+			}
 			this.CustomAbort(401, "Failed to authenticate")
 		} else {
 			userLocations, err := user_locations.GetAllForUser(userId)
