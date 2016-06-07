@@ -121,6 +121,7 @@ func (c *Controller) Get() {
 // @Failure	500	Internal Server Error
 // @router /my_ip [get]
 func (c *Controller) MyIp() {
+	beego.Info("Requesting MyIp: location=", c.GetString("location"))
 	c.Ctx.WriteString(c.ClientIp())
 	c.Finish()
 }
