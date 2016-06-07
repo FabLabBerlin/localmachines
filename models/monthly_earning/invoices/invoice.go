@@ -66,6 +66,37 @@ type Sums struct {
 	}
 }
 
+func (inv *Invoice) AttachUserMembership(um *memberships.UserMembership) error {
+	switch um.InvoiceId {
+	case inv.Id:
+		return nil
+	case 0:
+		um.InvoiceId = inv.Id
+		if err := um.Update(); err != nil {
+			return fmt.Errorf("update user membership: %v", err)
+		}
+		return
+	default:
+		locId := inv.LocationId
+		ums, err := memberships.GetAllUserMembershipsAt(locId)
+		if err != nil {
+			return fmt.Errorf("get all user memberships at %v: %v", locId, err)
+		}
+		for _, existing := range ums {
+			if existing.InvoiceId == inv.Id {
+				// Already done
+				return nil
+			}
+		}
+
+		newUm := *um
+		newUm.InvoiceId = inv.Id
+		newUm.InvoiceStatus = inv.Status
+		panic("still need to create and save the object")
+	}
+	return nil
+}
+
 func (inv *Invoice) ByProductNameAndPricePerUnit() map[string]map[float64][]*purchases.Purchase {
 	byProductNameAndPricePerUnit := make(map[string]map[float64][]*purchases.Purchase)
 	for _, p := range inv.Purchases {

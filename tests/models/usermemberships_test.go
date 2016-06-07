@@ -176,14 +176,6 @@ func TestUserMemberships(t *testing.T) {
 		})
 
 		Convey("When automatically extending user membership", func() {
-			panic(`
-				No more auto extend membership; instead there'll be a
-				function that will create a new invoice for the current
-				month if none exists and make sure a membership exists for
-				that.
-				This way the /api/billing/migrate could use that function
-				iteratively and be idempotent.
-			`)
 			// Create empty base membership
 			m, err := memberships.CreateMembership(1, "Test Membership")
 			So(m.Id, ShouldBeGreaterThan, 0)
