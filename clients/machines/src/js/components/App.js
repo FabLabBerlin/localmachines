@@ -1,5 +1,7 @@
+var $ = require('jquery');
 var reactor = require('../reactor');
 var getters = require('../getters');
+var GlobalActions = require('../actions/GlobalActions');
 var HeaderNav = require('./Header/HeaderNav');
 var LoaderLocal = require('./LoaderLocal');
 var LocationActions = require('../actions/LocationActions');
@@ -8,6 +10,13 @@ var LoginStore = require('../stores/LoginStore');
 var {Navigation} = require('react-router');
 var React = require('react');
 var RouteHandler = require('react-router').RouteHandler;
+var toastr = require('../toastr');
+
+// https://github.com/HubSpot/vex/issues/72
+var vex = require('vex-js'),
+VexDialog = require('vex-js/js/vex.dialog.js');
+
+vex.defaultOptions.className = 'vex-theme-custom';
 
 
 /*
@@ -74,7 +83,10 @@ var RouteHandler = require('react-router').RouteHandler;
             <div className="col-md-4 text-center">
               <i className="fa fa-copyright"></i> Makea Industries GmbH 2016
             </div>
-            <div className="col-md-4 text-center"></div>
+            <div className="col-md-4 text-center">
+              In case you are interested in using EASY LAB in your own
+              Lab, <a href="javascript:void(0);" onClick={this.signupNewsletter}>signup to our newsletter</a>.
+            </div>
             <div className="col-md-4 text-center">
               <a href="https://fablab.berlin/en/content/2-Imprint">Imprint</a>
             </div>
@@ -94,7 +106,43 @@ var RouteHandler = require('react-router').RouteHandler;
       </div>
     );
 
+  },
+
+  signupNewsletter() {
+    VexDialog.prompt({
+      message: 'Please enter your E-Mail address:',
+      placeholder: 'E-Mail',
+      callback: (value) => {
+        if (value) {
+          var email = value;
+
+          this.performSubscribe(email);
+        } else if (value !== false) {
+          toastr.error('No token');
+        }
+      }
+    });
+  },
+
+  performSubscribe(email) {
+    GlobalActions.showGlobalLoader();
+    $.ajax({
+      method: 'POST',
+      url: '/api/newsletters/easylab_dev',
+      data: {
+        email: email
+      },
+      success: function() {
+        GlobalActions.hideGlobalLoader();
+        toastr.info('Please check your E-Mails to confirm the subscription.');
+      },
+      error: function() {
+        GlobalActions.hideGlobalLoader();
+        toastr.error('An error occurred, please try again later.');
+      }
+    });
   }
+
 });
 
 export default App;
