@@ -195,7 +195,6 @@ func TestUserMemberships(t *testing.T) {
 
 			inv := &invoices.Invoice{
 				LocationId: 1,
-				FastbillId: 696,
 				UserId:     fakeUserId,
 				Month:      int(time.Now().Month()),
 				Year:       time.Now().Year(),
@@ -256,7 +255,6 @@ func TestUserMemberships(t *testing.T) {
 				fakeUserId, m.Id, startTime)
 			inv7_15 := &invoices.Invoice{
 				LocationId: 1,
-				FastbillId: 124,
 				UserId:     fakeUserId,
 				Month:      int(time.July),
 				Year:       2015,
@@ -271,7 +269,6 @@ func TestUserMemberships(t *testing.T) {
 
 			invNow := &invoices.Invoice{
 				LocationId: 1,
-				FastbillId: 125,
 				UserId:     fakeUserId,
 				Month:      int(time.Now().Month()),
 				Year:       time.Now().Year(),
@@ -306,7 +303,8 @@ func TestUserMemberships(t *testing.T) {
 			So(umNow.StartDate.Format("2006-01"), ShouldEqual, startTime.Format("2006-01"))
 			So(umNow.EndDate.Format("2006-01"), ShouldEqual, startTime.AddDate(0, 2, 0).Format("2006-01"))
 
-			// Call user memberhip often enough, so it extends until today
+			// Call auto extend user membership often enough, so it extends
+			// until today
 			for i := 0; i < 100; i++ {
 				err = auto_extend.AutoExtendUserMemberships()
 				if err != nil {

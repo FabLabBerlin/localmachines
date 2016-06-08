@@ -18,12 +18,18 @@ func CreateOrUpdate(invOrig *Invoice) (id int64, err error) {
 	if invOrig.LocationId == 0 {
 		return 0, fmt.Errorf("missing location id")
 	}
-	if invOrig.FastbillId == 0 {
-		return 0, fmt.Errorf("missing fastbill id")
+	if invOrig.UserId == 0 {
+		return 0, fmt.Errorf("missing user id")
+	}
+	if invOrig.Month == 0 {
+		return 0, fmt.Errorf("missing month")
+	}
+	if invOrig.Year == 0 {
+		return 0, fmt.Errorf("missing year")
 	}
 	o := orm.NewOrm()
 	inv := *invOrig
-	_, id, err = o.ReadOrCreate(&inv, "LocationId", "FastbillId")
+	_, id, err = o.ReadOrCreate(&inv, "LocationId", "UserId", "Month", "Year")
 	if err != nil {
 		return 0, fmt.Errorf("read or create: %v", err)
 	}
