@@ -79,26 +79,26 @@ func TestUserMemberships(t *testing.T) {
 				fakeMembershipId := int64(-23)
 				startDate := time.Now()
 				fakeUserId := int64(1)
-				userMembershipId, err := memberships.CreateUserMembership(
+				userMembership, err := memberships.CreateUserMembership(
 					fakeUserId, fakeMembershipId, startDate)
 
 				Convey("It should return error", func() {
 					So(err, ShouldNotBeNil)
 				})
 
-				Convey("The returned user membership ID should be 0", func() {
-					So(userMembershipId, ShouldEqual, 0)
+				Convey("The returned user membership should be nil", func() {
+					So(userMembership, ShouldBeNil)
 				})
 			})
 
 			Convey("When creating user membership normally", func() {
 				startDate := time.Date(2015, 6, 1, 0, 0, 0, 0, time.UTC)
-				userMembershipId, err := memberships.CreateUserMembership(
+				userMembership, err := memberships.CreateUserMembership(
 					userId, membership.Id, startDate)
 				if err != nil {
 					panic(err.Error())
 				}
-				gotUserMembership, err := memberships.GetUserMembership(userMembershipId)
+				gotUserMembership, err := memberships.GetUserMembership(userMembership.Id)
 				if err != nil {
 					panic(err.Error())
 				}
@@ -107,7 +107,7 @@ func TestUserMemberships(t *testing.T) {
 				})
 
 				Convey("The user membership ID should be returned", func() {
-					So(userMembershipId, ShouldBeGreaterThan, 0)
+					So(userMembership.Id, ShouldBeGreaterThan, 0)
 				})
 
 				Convey("It should be possible to read it back again", func() {
@@ -186,14 +186,14 @@ func TestUserMemberships(t *testing.T) {
 			loc, _ := time.LoadLocation("Europe/Berlin")
 			startTime := time.Date(2015, time.July, 10, 23, 0, 0, 0, loc)
 
-			userMembershipId, err := memberships.CreateUserMembership(
+			userMembership, err := memberships.CreateUserMembership(
 				fakeUserId, m.Id, startTime)
 
-			So(userMembershipId, ShouldBeGreaterThan, 0)
+			So(userMembership.Id, ShouldBeGreaterThan, 0)
 			So(err, ShouldBeNil)
 
 			// Get the created membership for later comparison
-			userMembership, err := memberships.GetUserMembership(userMembershipId)
+			userMembership, err = memberships.GetUserMembership(userMembership.Id)
 			So(err, ShouldBeNil)
 			So(userMembership, ShouldNotBeNil)
 
@@ -207,7 +207,7 @@ func TestUserMemberships(t *testing.T) {
 			Convey("Check if it is extended by duration specified in the base membership", func() {
 
 				// Get the now extended user membership
-				extendedUserMembership, _ := memberships.GetUserMembership(userMembershipId)
+				extendedUserMembership, _ := memberships.GetUserMembership(userMembership.Id)
 
 				validEndDate := userMembership.EndDate.AddDate(
 					0, int(m.AutoExtendDurationMonths), 0)

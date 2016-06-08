@@ -73,22 +73,26 @@ type UserMembershipList struct {
 }
 
 // Creates user membership from user ID, membership ID and start time.
-func CreateUserMembership(userId, membershipId int64, startTime time.Time) (id int64, err error) {
-	baseMembership, err := GetMembership(membershipId)
+func CreateUserMembership(userId, membershipId int64, start time.Time) (*UserMembership, error) {
+	m, err := GetMembership(membershipId)
 	if err != nil {
-		return 0, fmt.Errorf("Failed to get membership")
+		return nil, fmt.Errorf("Failed to get membership: %v", err)
 	}
 
-	userMembership := UserMembership{
+	um := UserMembership{
 		UserId:       userId,
 		MembershipId: membershipId,
-		StartDate:    startTime,
-		EndDate:      startTime.AddDate(0, int(baseMembership.DurationMonths), 0),
-		AutoExtend:   baseMembership.AutoExtend,
+		StartDate:    start,
+		EndDate:      start.AddDate(0, int(m.DurationMonths), 0),
+		AutoExtend:   m.AutoExtend,
 	}
 
 	o := orm.NewOrm()
-	return o.Insert(&userMembership)
+	if um.Id, err = o.Insert(&um); err != nil {
+		return nil, fmt.Errorf("insert: %v", err)
+	}
+
+	return &um, nil
 }
 
 func GetAllUserMembershipsAt(locationId int64) (userMemberships []*UserMembership, err error) {

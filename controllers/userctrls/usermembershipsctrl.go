@@ -26,22 +26,22 @@ func (this *UserMembershipsController) PostUserMemberships() {
 	uid, err := this.GetInt64(":uid")
 	if err != nil {
 		beego.Error("Failed to get requested user ID:", err)
-		this.CustomAbort(400, "Bad request")
+		this.Abort("400")
 	}
 	if uid <= 0 {
 		beego.Error("Wrong User ID:", uid)
-		this.CustomAbort(400, "Bad request")
+		this.Abort("400")
 	}
 
 	mId, err := this.GetInt64("membershipId")
 	if err != nil {
 		beego.Error("Failed to get membership ID")
-		this.CustomAbort(400, "Bad request")
+		this.Abort("400")
 	}
 	m, err := memberships.GetMembership(mId)
 	if err != nil {
 		beego.Error("get membership:", err)
-		this.CustomAbort(500, "Internal Server Error")
+		this.Abort("500")
 	}
 
 	if !this.IsAdminAt(m.LocationId) {
@@ -54,19 +54,13 @@ func (this *UserMembershipsController) PostUserMemberships() {
 		time.UTC)
 	if err != nil {
 		beego.Error("Failed to parse startDate=", startDate)
-		this.CustomAbort(500, "Internal Server Error")
+		this.Abort("500")
 	}
 
-	umId, err := memberships.CreateUserMembership(uid, mId, startDate)
+	userMembership, err := memberships.CreateUserMembership(uid, mId, startDate)
 	if err != nil {
 		beego.Error("Error creating user membership:", err)
-		this.CustomAbort(500, "Internal Server Error")
-	}
-
-	userMembership, err := memberships.GetUserMembership(umId)
-	if err != nil {
-		beego.Error("Failed to get user membership:", err)
-		this.CustomAbort(500, "Failed to get user membership")
+		this.Abort("500")
 	}
 
 	this.Data["json"] = userMembership
