@@ -10,6 +10,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_roles"
+	"github.com/astaxie/beego"
 	"time"
 )
 
@@ -57,6 +58,7 @@ func NewResponse(data Data) (resp Response, err error) {
 }
 
 type Data struct {
+	LocationId      int64
 	startTime       time.Time
 	endTime         time.Time
 	monthlyEarning  *monthly_earning.MonthlyEarning
@@ -73,6 +75,7 @@ func FetchData(locationId int64) (data Data, err error) {
 		YearTo:    endTime.Year(),
 	}
 
+	data.LocationId = locationId
 	data.monthlyEarning, err = monthly_earning.New(locationId, interval)
 	if err != nil {
 		return data, fmt.Errorf("Failed to get invoice summary: %v", err)
@@ -126,6 +129,17 @@ func (this Data) sumMembershipsBy(timeFormat string) (sums map[string]float64, e
 		for t := userMembership.StartDate; t.Before(userMembership.EndDate); t = t.AddDate(0, 1, 0) {
 			key := t.Format(timeFormat)
 			sums[key] = sums[key] + float64(membership.MonthlyPrice)
+		}
+	}
+
+	// Fab Lab Berlin (Location Id 1) was closed half of the December 2015.
+	// At that time only half of the membership price was charged.
+	if this.LocationId == 1 {
+		d2015 := time.Date(2015, time.December, 1, 13, 0, 0, 0, time.UTC).
+			Format(timeFormat)
+		if _, ok := sums[d2015]; ok {
+			beego.Info("Dividing 12-2015 memberships by 2 @ locId 1")
+			sums[d2015] = sums[d2015] / 2
 		}
 	}
 
