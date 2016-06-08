@@ -52,6 +52,9 @@ func (ns *NetSwitch) turnOn() (err error) {
 	if resp == nil {
 		log.Printf("turnOn: resp is nil!")
 	} else {
+		if resp.Body != nil {
+			defer resp.Body.Close()
+		}
 		if resp.StatusCode != 200 {
 			return fmt.Errorf("unexpected status code: %v", resp.StatusCode)
 		}
@@ -78,6 +81,9 @@ func (ns *NetSwitch) turnOff() (err error) {
 	if resp == nil {
 		log.Printf("turnOff: resp is nil!")
 	} else {
+		if resp.Body != nil {
+			defer resp.Body.Close()
+		}
 		if resp.StatusCode != 200 {
 			return fmt.Errorf("unexpected status code: %v", resp.StatusCode)
 		}
