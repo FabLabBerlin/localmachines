@@ -10,6 +10,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/memberships/auto_extend"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
+	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/user_permissions"
 	"github.com/FabLabBerlin/localmachines/models/users"
@@ -192,6 +193,17 @@ func TestUserMemberships(t *testing.T) {
 			So(userMembership.Id, ShouldBeGreaterThan, 0)
 			So(err, ShouldBeNil)
 
+			inv := &invoices.Invoice{
+				LocationId: 1,
+				FastbillId: 696,
+				UserId:     fakeUserId,
+				Month:      int(time.Now().Month()),
+				Year:       time.Now().Year(),
+			}
+			if _, err = invoices.CreateOrUpdate(inv); err != nil {
+				panic(err.Error())
+			}
+
 			// Get the created membership for later comparison
 			userMembership, err = memberships.GetUserMembership(userMembership.Id)
 			So(err, ShouldBeNil)
@@ -200,9 +212,15 @@ func TestUserMemberships(t *testing.T) {
 			So(userMembership.StartDate, ShouldHappenWithin,
 				time.Duration(1)*time.Second, startTime)
 
+			if err = inv.AttachUserMembership(userMembership); err != nil {
+				panic(err.Error())
+			}
+
 			// Call user membership auto extend function and check the new end date
 			err = auto_extend.AutoExtendUserMemberships()
-			So(err, ShouldBeNil)
+			if err != nil {
+				panic(err.Error())
+			}
 
 			Convey("Check if it is extended by duration specified in the base membership", func() {
 

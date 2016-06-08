@@ -1,6 +1,7 @@
 package invoices
 
 import (
+	"errors"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/lib/fastbill"
@@ -67,16 +68,26 @@ type Sums struct {
 }
 
 func (inv *Invoice) AttachUserMembership(um *memberships.UserMembership) error {
+	if inv.Id == 0 {
+		return errors.New("invoice Id = 0")
+	}
+
+	fmt.Printf("AttachUserMembership(um=%v)\n", um.Id)
 	switch um.InvoiceId {
 	case inv.Id:
+		fmt.Printf("AttachUserMembership: case a)\n")
+		fmt.Printf("AttachUserMembership: case a): um.InvoiceId=%v, inv.Id=%v\n", um.InvoiceId, inv.Id)
 		return nil
 	case 0:
+		fmt.Printf("AttachUserMembership: case b)\n")
+		fmt.Printf("AttachUserMembership: case b): um.InvoiceId <- inv.Id(=%v)\n", inv.Id)
 		um.InvoiceId = inv.Id
 		if err := um.Update(); err != nil {
 			return fmt.Errorf("update user membership: %v", err)
 		}
 		return nil
 	default:
+		fmt.Printf("AttachUserMembership: case default)\n")
 		locId := inv.LocationId
 		ums, err := memberships.GetAllUserMembershipsAt(locId)
 		if err != nil {
@@ -89,10 +100,15 @@ func (inv *Invoice) AttachUserMembership(um *memberships.UserMembership) error {
 			}
 		}
 
-		newUm := *um
+		newUm, err := memberships.CreateUserMembership(um.UserId, um.MembershipId, um.StartDate)
+		if err != nil {
+			return fmt.Errorf("create user membership: %v", err)
+		}
 		newUm.InvoiceId = inv.Id
 		newUm.InvoiceStatus = inv.Status
-		panic("still need to create and save the object")
+		if newUm.Update(); err != nil {
+			return fmt.Errorf("update user membership: %v", err)
+		}
 	}
 	return nil
 }

@@ -2,7 +2,6 @@ package invoices
 
 import (
 	"fmt"
-	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 )
 
@@ -16,7 +15,6 @@ func (inv *Invoice) TableName() string {
 
 // CreateOrUpdate based on LocationId and FastbillId
 func CreateOrUpdate(invOrig *Invoice) (id int64, err error) {
-	beego.Info("CreateOrUpdate: invOrig.UserId=", invOrig.UserId)
 	if invOrig.LocationId == 0 {
 		return 0, fmt.Errorf("missing location id")
 	}
@@ -32,6 +30,7 @@ func CreateOrUpdate(invOrig *Invoice) (id int64, err error) {
 
 	inv = *invOrig
 	inv.Id = id
+	invOrig.Id = id
 	if _, err = o.Update(&inv); err != nil {
 		return inv.Id, fmt.Errorf("update: %v", err)
 	}

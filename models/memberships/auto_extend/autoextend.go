@@ -43,6 +43,8 @@ func extendUserMembershipsAt(locId int64) (err error) {
 		return fmt.Errorf("get all user memberships: %v", err)
 	}
 
+	fmt.Printf("len(ums)=%v\n", len(ums))
+
 	for _, um := range ums {
 		if !um.AutoExtend || um.EndDate.After(time.Now()) {
 			continue
@@ -52,6 +54,9 @@ func extendUserMembershipsAt(locId int64) (err error) {
 		if err != nil {
 			return fmt.Errorf("get membership: %v", err)
 		}
+
+		fmt.Printf("invoices.Get: um=%v\n", um)
+		fmt.Printf("invoices.Get: um.InvoiceId=%v\n", um.InvoiceId)
 
 		inv, err := invoices.Get(um.InvoiceId)
 		if err != nil {

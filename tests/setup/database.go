@@ -10,6 +10,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
+	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices"
 	"github.com/FabLabBerlin/localmachines/models/products"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
@@ -22,6 +23,7 @@ import (
 var dbModels = []Model{
 	&coupons.Coupon{},
 	&coupons.CouponUsage{},
+	&invoices.Invoice{},
 	&monthly_earning.MonthlyEarning{},
 	&users.Auth{},
 	&machine.Machine{},

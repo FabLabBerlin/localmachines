@@ -118,15 +118,12 @@ func GetAllUserMembershipsAt(locationId int64) (userMemberships []*UserMembershi
 
 // Gets pointer to filled user membership store
 // by using user membership ID.
-func GetUserMembership(userMembershipId int64) (*UserMembership, error) {
-	userMembership := UserMembership{}
-	userMembership.Id = userMembershipId
-	o := orm.NewOrm()
-	err := o.Read(&userMembership)
-	if err != nil {
-		return nil, fmt.Errorf("Failed to read user membership")
+func GetUserMembership(id int64) (*UserMembership, error) {
+	userMembership := UserMembership{
+		Id: id,
 	}
-	return &userMembership, nil
+	err := orm.NewOrm().Read(&userMembership)
+	return &userMembership, err
 }
 
 // Gets all user memberships for a user by consuming user ID.
