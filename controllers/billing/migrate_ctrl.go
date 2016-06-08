@@ -1,6 +1,7 @@
 package billing
 
 import (
+	"fmt"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
@@ -128,6 +129,9 @@ func (this *Controller) Migrate() {
 		if p.UserId == 0 {
 			continue
 		}
+		if p.TimeStart.IsZero() {
+			continue
+		}
 
 		beego.Info("purchase", p.Id)
 
@@ -192,6 +196,7 @@ func (this *Controller) Migrate() {
 			month := t.Month()
 			year := t.Year()
 
+			fmt.Printf("y,m,uid=%v,%v,%v\n", year, month, um.UserId)
 			invs := invsByYearMonthUserId[year][month][um.UserId]
 			switch len(invs) {
 			case 0:

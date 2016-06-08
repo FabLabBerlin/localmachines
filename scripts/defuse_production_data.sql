@@ -19,4 +19,4 @@ UPDATE user SET client_id = 0 WHERE id <> 19;
 
 UPDATE user SET first_name = concat('f', '-', id),
                 last_name = concat('l', '-', id)
-            WHERE id > 20;
+            WHERE id > 20 AND username <> 'testuser';
