@@ -75,7 +75,7 @@ func (inv *Invoice) AttachUserMembership(um *memberships.UserMembership) error {
 		if err := um.Update(); err != nil {
 			return fmt.Errorf("update user membership: %v", err)
 		}
-		return
+		return nil
 	default:
 		locId := inv.LocationId
 		ums, err := memberships.GetAllUserMembershipsAt(locId)
