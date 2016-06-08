@@ -236,5 +236,97 @@ func TestUserMemberships(t *testing.T) {
 			})
 		})
 
+		Convey("When automatically extending an already extended user membership", func() {
+			Reset(setup.ResetDB)
+
+			m, err := memberships.CreateMembership(1, "Test Membership")
+			if err != nil {
+				panic(err.Error())
+			}
+			So(m.AutoExtend, ShouldBeTrue)
+			So(m.DurationMonths, ShouldEqual, 1)
+			So(m.AutoExtendDurationMonths, ShouldEqual, 1)
+
+			// Create user membership with a start and end date some time in the past
+			fakeUserId := int64(11)
+			loc, _ := time.LoadLocation("Europe/Berlin")
+			startTime := time.Date(2015, time.July, 10, 23, 0, 0, 0, loc)
+
+			userMembership, err := memberships.CreateUserMembership(
+				fakeUserId, m.Id, startTime)
+			inv7_15 := &invoices.Invoice{
+				LocationId: 1,
+				FastbillId: 124,
+				UserId:     fakeUserId,
+				Month:      int(time.July),
+				Year:       2015,
+			}
+			if _, err = invoices.CreateOrUpdate(inv7_15); err != nil {
+				panic(err.Error())
+			}
+
+			if err = inv7_15.AttachUserMembership(userMembership); err != nil {
+				panic(err.Error())
+			}
+
+			invNow := &invoices.Invoice{
+				LocationId: 1,
+				FastbillId: 125,
+				UserId:     fakeUserId,
+				Month:      int(time.Now().Month()),
+				Year:       time.Now().Year(),
+			}
+			if _, err = invoices.CreateOrUpdate(invNow); err != nil {
+				panic(err.Error())
+			}
+
+			if err = invNow.AttachUserMembership(userMembership); err != nil {
+				panic(err.Error())
+			}
+
+			// Call user membership auto extend function and check the new end date
+			err = auto_extend.AutoExtendUserMemberships()
+			if err != nil {
+				panic(err.Error())
+			}
+
+			ums, err := memberships.GetAllUserMembershipsAt(1)
+			if err != nil {
+				panic(err.Error())
+			}
+			So(len(ums), ShouldEqual, 2)
+			um7_15 := ums[0]
+			umNow := ums[1]
+			So(um7_15.InvoiceId, ShouldEqual, inv7_15.Id)
+			So(umNow.InvoiceId, ShouldEqual, invNow.Id)
+
+			So(um7_15.StartDate.Format("2006-01"), ShouldEqual, startTime.Format("2006-01"))
+			So(um7_15.EndDate.Format("2006-01"), ShouldEqual, startTime.AddDate(0, 1, 0).Format("2006-01"))
+
+			So(umNow.StartDate.Format("2006-01"), ShouldEqual, startTime.Format("2006-01"))
+			So(umNow.EndDate.Format("2006-01"), ShouldEqual, startTime.AddDate(0, 2, 0).Format("2006-01"))
+
+			// Call user memberhip often enough, so it extends until today
+			for i := 0; i < 100; i++ {
+				err = auto_extend.AutoExtendUserMemberships()
+				if err != nil {
+					panic(err.Error())
+				}
+			}
+
+			umNow, err = memberships.GetUserMembership(umNow.Id)
+			if err != nil {
+				panic(err.Error())
+			}
+			So(umNow.StartDate.Format("2006-01"), ShouldEqual, startTime.Format("2006-01"))
+			So(umNow.EndDate.Format("2006-01"), ShouldEqual, time.Now().Format("2006-01"))
+
+			ums, err = memberships.GetAllUserMembershipsAt(1)
+			if err != nil {
+				panic(err.Error())
+			}
+			So(len(ums), ShouldEqual, 2)
+		})
+
 	})
 }

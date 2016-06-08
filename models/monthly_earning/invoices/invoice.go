@@ -72,22 +72,16 @@ func (inv *Invoice) AttachUserMembership(um *memberships.UserMembership) error {
 		return errors.New("invoice Id = 0")
 	}
 
-	fmt.Printf("AttachUserMembership(um=%v)\n", um.Id)
 	switch um.InvoiceId {
 	case inv.Id:
-		fmt.Printf("AttachUserMembership: case a)\n")
-		fmt.Printf("AttachUserMembership: case a): um.InvoiceId=%v, inv.Id=%v\n", um.InvoiceId, inv.Id)
 		return nil
 	case 0:
-		fmt.Printf("AttachUserMembership: case b)\n")
-		fmt.Printf("AttachUserMembership: case b): um.InvoiceId <- inv.Id(=%v)\n", inv.Id)
 		um.InvoiceId = inv.Id
 		if err := um.Update(); err != nil {
 			return fmt.Errorf("update user membership: %v", err)
 		}
 		return nil
 	default:
-		fmt.Printf("AttachUserMembership: case default)\n")
 		locId := inv.LocationId
 		ums, err := memberships.GetAllUserMembershipsAt(locId)
 		if err != nil {
