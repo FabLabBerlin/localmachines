@@ -104,7 +104,7 @@ func (this *UsersController) Login() {
 
 		userId, err := users.AuthenticateUser(username, password)
 		if err != nil {
-			beego.Error("Failed to authenticate @ location = ", locationId)
+			beego.Error(username, "failed to authenticate @ location = ", locationId)
 			this.CustomAbort(401, "Failed to authenticate")
 		} else {
 			userLocations, err := user_locations.GetAllForUser(userId)
