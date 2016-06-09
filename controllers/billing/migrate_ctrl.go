@@ -119,6 +119,11 @@ func (this *Controller) Migrate() {
 			Year:       year,
 			CustomerNo: u.ClientId,
 			UserId:     u.Id,
+			Status:     "draft",
+		}
+
+		if inv.Year < 2016 || inv.Month < 3 {
+			inv.Status = "outgoing"
 		}
 
 		if _, err = o.Insert(inv); err != nil {
