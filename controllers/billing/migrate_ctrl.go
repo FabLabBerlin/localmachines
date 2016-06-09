@@ -3,6 +3,7 @@ package billing
 import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
+	"github.com/FabLabBerlin/localmachines/models/memberships/auto_extend"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/users"
@@ -17,10 +18,15 @@ import (
 // @Failure	500	Internal Server Error
 // @router /migrate [get]
 func (this *Controller) Migrate() {
+	auto_extend.Lock()
+	defer auto_extend.Unlock()
+
 	locId, authorized := this.GetLocIdAdmin()
 	if !authorized {
 		this.CustomAbort(401, "Not authorized")
 	}
+
+	beego.Info("Loading data...")
 
 	usrs, err := users.GetAllUsersAt(locId)
 	if err != nil {
@@ -103,8 +109,10 @@ func (this *Controller) Migrate() {
 	newInvoices := make([]*invoices.Invoice, 0, 1000)
 
 	newInvoice := func(userId int64, year int, month time.Month) invoices.Invoice {
-		beego.Info("new invoice for user id", userId)
-		u := usrsById[userId]
+		u, ok := usrsById[userId]
+		if !ok {
+			beego.Error("didn't find user with id", userId)
+		}
 		inv := &invoices.Invoice{
 			LocationId: locId,
 			Month:      int(month),
@@ -122,6 +130,7 @@ func (this *Controller) Migrate() {
 		return *inv
 	}
 
+	beego.Info("Checking each purchase...")
 	for _, p := range ps {
 		if p.InvoiceId > 0 {
 			continue
@@ -132,8 +141,6 @@ func (this *Controller) Migrate() {
 		if p.TimeStart.IsZero() {
 			continue
 		}
-
-		beego.Info("purchase", p.Id)
 
 		/* << if inv.Interval().Contains(p.TimeStart) {
 			p.InvoiceId = inv.Id >>
@@ -147,11 +154,6 @@ func (this *Controller) Migrate() {
 			invs = []invoices.Invoice{
 				newInvoice(p.UserId, year, month),
 			}
-			beego.Info("invsByYearMonthUserId[year]=", invsByYearMonthUserId[year])
-			beego.Info("invsByYearMonthUserId[year][month]=", invsByYearMonthUserId[year][month])
-			beego.Info("year=", year)
-			beego.Info("month=", month)
-			beego.Info("invsByYearMonthUserId[year][month][p.UserId]=", invsByYearMonthUserId[year][month][p.UserId])
 			invsByYearMonthUserId[year][month][p.UserId] = invs
 			fallthrough
 		case 1:
@@ -167,8 +169,15 @@ func (this *Controller) Migrate() {
 
 	newUms := make([]*memberships.UserMembership, 0, 1000)
 
+	beego.Info("Checking each user membership...")
 	for _, umCurrent := range ums {
+		fmt.Printf("o")
 		if umCurrent.InvoiceId > 0 {
+			continue
+		}
+
+		if _, ok := usrsById[umCurrent.UserId]; !ok {
+			beego.Error("no user has ID", umCurrent.UserId)
 			continue
 		}
 
@@ -183,37 +192,47 @@ func (this *Controller) Migrate() {
 
 		// "Multiply"
 		for i := 0; ; i++ {
-			var um *memberships.UserMembership
-
-			if i == 0 {
-				um = umCurrent
-			} else {
-				clone := *umCurrent
-				um = &clone
-				newUms = append(newUms, um)
+			fmt.Printf(".")
+			future := false
+			if t.Year() > 2016 {
+				future = true
+			} else if t.Year() == 2016 &&
+				int(t.Month()) > int(time.Now().Month()) {
+				future = true
 			}
 
-			month := t.Month()
-			year := t.Year()
+			if !future {
+				var um *memberships.UserMembership
 
-			fmt.Printf("y,m,uid=%v,%v,%v\n", year, month, um.UserId)
-			invs := invsByYearMonthUserId[year][month][um.UserId]
-			switch len(invs) {
-			case 0:
-				invs = []invoices.Invoice{
-					newInvoice(um.UserId, year, month),
+				if i == 0 {
+					um = umCurrent
+				} else {
+					clone := *umCurrent
+					um = &clone
+					newUms = append(newUms, um)
 				}
-				invsByYearMonthUserId[year][month][um.UserId] = invs
-				fallthrough
-			case 1:
-				if um.InvoiceId == 0 {
-					inv := invs[0]
-					um.InvoiceId = inv.Id
+
+				month := t.Month()
+				year := t.Year()
+
+				invs := invsByYearMonthUserId[year][month][um.UserId]
+				switch len(invs) {
+				case 0:
+					invs = []invoices.Invoice{
+						newInvoice(um.UserId, year, month),
+					}
+					invsByYearMonthUserId[year][month][um.UserId] = invs
+					fallthrough
+				case 1:
+					if um.InvoiceId == 0 {
+						inv := invs[0]
+						um.InvoiceId = inv.Id
+					}
+				default:
+					beego.Error("Matched", len(invs), "invoices to user m'ship",
+						um.Id)
+					this.Abort("500")
 				}
-			default:
-				beego.Error("Matched", len(invs), "invoices to user m'ship",
-					um.Id)
-				this.Abort("500")
 			}
 
 			if t.Month() == startMonth && t.Year() == startYear {
@@ -221,12 +240,17 @@ func (this *Controller) Migrate() {
 			} else {
 				t = t.AddDate(0, -1, 0)
 			}
+
+			if i > 100 {
+				panic(fmt.Sprintf("i = %v", i))
+			}
 		}
 	}
 
 	// Persist items
 
 	// 1. Purchases
+	beego.Info("Persisting purchases...")
 	for _, p := range ps {
 		if _, err = o.Update(p); err != nil {
 			beego.Error("Update purchase:", err)
@@ -235,6 +259,7 @@ func (this *Controller) Migrate() {
 	}
 
 	// 2. User memberships
+	beego.Info("Persisting user memberships...")
 	for _, um := range ums {
 		if _, err = o.Update(um); err != nil {
 			beego.Error("Update user membership:", err)
@@ -243,8 +268,9 @@ func (this *Controller) Migrate() {
 	}
 
 	// 3. New User memberships
+	beego.Info("Persisting new user memberships...")
 	for _, newUm := range newUms {
-		if _, err = o.Insert(&newUm); err != nil {
+		if _, err = o.Insert(newUm); err != nil {
 			beego.Error("Insert new user membership:", err)
 			this.Abort("500")
 		}

@@ -6,12 +6,26 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices"
 	"github.com/astaxie/beego"
+	"sync"
 	"time"
 )
+
+var mu sync.Mutex
+
+func Lock() {
+	mu.Lock()
+}
+
+func Unlock() {
+	mu.Unlock()
+}
 
 // Automatically extend user membership end date if auto_extend for the specific
 // membership is true and the end_date is before current date.
 func AutoExtendUserMemberships() (err error) {
+
+	mu.Lock()
+	defer mu.Unlock()
 
 	beego.Info("Running AutoExtendUserMemberships Task")
 

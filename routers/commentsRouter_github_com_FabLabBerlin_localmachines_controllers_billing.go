@@ -8,13 +8,6 @@ func init() {
 
 	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/billing:Controller"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/billing:Controller"],
 		beego.ControllerComments{
-			"Migrate",
-			`/migrate`,
-			[]string{"get"},
-			nil})
-
-	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/billing:Controller"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/billing:Controller"],
-		beego.ControllerComments{
 			"GetAll",
 			`/monthly_earnings`,
 			[]string{"get"},
@@ -87,6 +80,13 @@ func init() {
 		beego.ControllerComments{
 			"SyncFastbillInvoices",
 			`/months/:year/:month/sync`,
+			[]string{"get"},
+			nil})
+
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/billing:Controller"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/billing:Controller"],
+		beego.ControllerComments{
+			"Migrate",
+			`/migrate`,
 			[]string{"get"},
 			nil})
 
