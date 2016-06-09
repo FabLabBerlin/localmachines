@@ -159,7 +159,7 @@ func (this *Controller) Migrate() {
 		case 1:
 			if p.InvoiceId == 0 {
 				inv := invs[0]
-				p.InvoiceId = uint64(inv.Id)
+				p.InvoiceId = inv.Id
 			}
 		default:
 			beego.Error("Matched", len(invs), "invoices to purchase", p.Id)

@@ -6,6 +6,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/lib/redis"
 	"github.com/FabLabBerlin/localmachines/models/machine"
+	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"strings"
@@ -22,13 +23,9 @@ func (this *Activation) MarshalJSON() ([]byte, error) {
 }
 
 func CreateActivation(locationId int64) (activation Activation, err error) {
-	o := orm.NewOrm()
-	if locationId <= 0 {
-		return activation, fmt.Errorf("invalid location id: %v", locationId)
-	}
 	activation.Purchase.Type = TYPE_ACTIVATION
 	activation.Purchase.LocationId = locationId
-	activation.Purchase.Id, err = o.Insert(&activation.Purchase)
+	_, err = Create(&activation.Purchase)
 	return
 }
 
@@ -127,22 +124,17 @@ func GetActiveActivations() ([]*Activation, error) {
 }
 
 // Creates activation and returns activation ID.
-func StartActivation(machineId, userId int64, startTime time.Time) (
+func StartActivation(m *machine.Machine, uid int64, start time.Time) (
 	activationId int64, err error) {
 
 	o := orm.NewOrm()
-
-	mch, err := machine.Get(machineId)
-	if err != nil {
-		return 0, fmt.Errorf("get machine: %v", err)
-	}
 
 	// Check for duplicate activations
 	// TODO: Replace this with a more readable helper function
 	var dupActivations []*Purchase
 	numDuplicates, err := o.QueryTable(TABLE_NAME).
-		Filter("machine_id", machineId).
-		Filter("user_id", userId).
+		Filter("machine_id", m.Id).
+		Filter("user_id", uid).
 		Filter("running", 1).
 		Filter("type", TYPE_ACTIVATION).
 		All(&dupActivations)
@@ -156,98 +148,89 @@ func StartActivation(machineId, userId int64, startTime time.Time) (
 		return 0, fmt.Errorf("Duplicate activations found")
 	}
 
-	if !mch.IsAvailable() {
+	if !m.IsAvailable() {
 		activationId = 0
 		err = fmt.Errorf("Machine with provided ID is not available")
 		return
 	}
 
+	inv, err := invoices.CurrentInvoice(m.LocationId, uid)
+	if err != nil {
+		return 0, fmt.Errorf("current invoice: %v", err)
+	}
+
 	newActivation := Activation{
 		Purchase: Purchase{
-			LocationId: mch.LocationId,
+			LocationId: m.LocationId,
 			Type:       TYPE_ACTIVATION,
-			UserId:     userId,
-			MachineId:  machineId,
+			UserId:     uid,
+			MachineId:  m.Id,
 			Running:    true,
-			TimeStart:  startTime,
+			TimeStart:  start,
+			InvoiceId:  inv.Id,
 
 			// Save current activation price, currency and price unit (minute, hour, pcs)
-			PricePerUnit: mch.Price,
-			PriceUnit:    mch.PriceUnit,
+			PricePerUnit: m.Price,
+			PriceUnit:    m.PriceUnit,
 		},
 	}
 
-	activationId, err = o.Insert(&newActivation.Purchase)
+	activationId, err = Create(&newActivation.Purchase)
 	if err != nil {
 		beego.Error("Failed to insert activation:", err)
 		return 0, fmt.Errorf("Failed to insert activation %v", err)
 	}
-	beego.Trace("Created activation with ID", activationId)
 
 	// Update machine as unavailable
-	_, err = o.QueryTable(mch.TableName()).
-		Filter("Id", machineId).
-		Update(orm.Params{"available": false})
-	if err != nil {
+	m.Available = false
+	if m.Update(false); err != nil {
 		beego.Error("Failed to update activated machine")
-	}
-
-	if err := redis.PublishMachinesUpdate(mch.LocationId); err != nil {
-		beego.Error("publish machines update:", err)
 	}
 
 	return activationId, nil
 }
 
 // Gets pointer to activation store by activation ID.
-func GetActivation(activationId int64) (activation *Activation, err error) {
-	activation = &Activation{}
-	activation.Purchase.Id = activationId
+func GetActivation(id int64) (a *Activation, err error) {
+	a = &Activation{}
+	a.Purchase.Id = id
 
-	o := orm.NewOrm()
-	err = o.Read(&activation.Purchase)
-
-	if err != nil {
-		return nil, fmt.Errorf("Failed to read activation: %v", err)
-	}
+	err = orm.NewOrm().Read(&a.Purchase)
 
 	return
 }
 
 // Close running/active activation.
-func (activation *Activation) Close(endTime time.Time) error {
-	machine, err := machine.Get(activation.Purchase.MachineId)
+func (a *Activation) Close(endTime time.Time) error {
+	m, err := machine.Get(a.Purchase.MachineId)
 	if err != nil {
 		beego.Error("Failed to get machine:", err)
 		return fmt.Errorf("Failed to get machine: %v", err)
 	}
 
-	gracePeriod := machine.GetGracePeriod()
+	gracePeriod := m.GetGracePeriod()
 
 	// Calculate activation duration and update activation.
-	activation.Purchase.Running = false
-	activation.Purchase.TimeStart = activation.Purchase.TimeStart.Add(gracePeriod)
-	activation.Purchase.TimeEnd = endTime
-	if activation.Purchase.TimeEnd.Before(activation.Purchase.TimeStart) {
-		activation.Purchase.TimeEnd = activation.Purchase.TimeStart
+	a.Purchase.Running = false
+	a.Purchase.TimeStart = a.Purchase.TimeStart.Add(gracePeriod)
+	a.Purchase.TimeEnd = endTime
+	if a.Purchase.TimeEnd.Before(a.Purchase.TimeStart) {
+		a.Purchase.TimeEnd = a.Purchase.TimeStart
 		if gracePeriod == 0 {
 			beego.Error("time end before time start?!")
 		}
 	}
 
-	err = activation.Update()
-	if err != nil {
+	if err = a.Update(); err != nil {
 		return fmt.Errorf("Failed to update activation: %v", err)
 	}
 
-	// Make the machine available again.
-	machine.Available = true
-	if err = machine.Update(false); err != nil {
-		beego.Error("Failed to update machine:", err)
+	m.Available = true
+	if err = m.Update(false); err != nil {
 		return fmt.Errorf("Failed to update machine: %v", err)
 	}
 
-	if err := redis.PublishMachinesUpdate(machine.LocationId); err != nil {
+	if err := redis.PublishMachinesUpdate(m.LocationId); err != nil {
 		beego.Error("publish machines update:", err)
 	}
 

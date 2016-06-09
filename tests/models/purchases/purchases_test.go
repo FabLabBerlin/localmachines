@@ -20,6 +20,7 @@ func TestPurchases(t *testing.T) {
 		Convey("Creating a purchase", func() {
 			purchase := purchases.Purchase{
 				LocationId: 1,
+				InvoiceId:  11,
 			}
 			id, err := purchases.Create(&purchase)
 			Convey("should return no error", func() {
@@ -35,11 +36,12 @@ func TestPurchases(t *testing.T) {
 
 		Convey("Archiving a purchase", func() {
 
-			// I am adding all of the following fields because we should not lose
+			// I am adding all of the following fields because we should not
 			// lose the values during archiving.
 			purchase := purchases.Purchase{
 				LocationId:   1,
 				Type:         purchases.TYPE_TUTOR,
+				InvoiceId:    111,
 				ProductId:    2,
 				Created:      time.Now(),
 				UserId:       1,
@@ -52,9 +54,12 @@ func TestPurchases(t *testing.T) {
 				Cancelled:    false,
 			}
 
-			id, _ := purchases.Create(&purchase) //
-			err := purchases.Archive(&purchase)  // Archive purchase
-			ap, aperr := purchases.Get(id)       // Get archived purchase
+			id, err := purchases.Create(&purchase)
+			if err != nil {
+				panic(err.Error())
+			}
+			err = purchases.Archive(&purchase) // Archive purchase
+			ap, aperr := purchases.Get(id)     // Get archived purchase
 			Convey("should not result in an error", func() {
 				So(err, ShouldBeNil)
 			})

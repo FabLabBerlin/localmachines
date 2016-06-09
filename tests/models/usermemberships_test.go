@@ -11,6 +11,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/memberships/auto_extend"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices"
+	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/user_permissions"
 	"github.com/FabLabBerlin/localmachines/models/users"
@@ -193,13 +194,12 @@ func TestUserMemberships(t *testing.T) {
 			So(userMembership.Id, ShouldBeGreaterThan, 0)
 			So(err, ShouldBeNil)
 
-			inv := &invoices.Invoice{
-				LocationId: 1,
-				UserId:     fakeUserId,
-				Month:      int(time.Now().Month()),
-				Year:       time.Now().Year(),
-			}
-			if _, err = invoices.CreateOrUpdate(inv); err != nil {
+			inv := &invutil.Invoice{}
+			inv.LocationId = 1
+			inv.UserId = fakeUserId
+			inv.Month = int(time.Now().Month())
+			inv.Year = time.Now().Year()
+			if _, err = invoices.CreateOrUpdate(&inv.Invoice); err != nil {
 				panic(err.Error())
 			}
 
@@ -253,13 +253,12 @@ func TestUserMemberships(t *testing.T) {
 
 			userMembership, err := memberships.CreateUserMembership(
 				fakeUserId, m.Id, startTime)
-			inv7_15 := &invoices.Invoice{
-				LocationId: 1,
-				UserId:     fakeUserId,
-				Month:      int(time.July),
-				Year:       2015,
-			}
-			if _, err = invoices.CreateOrUpdate(inv7_15); err != nil {
+			inv7_15 := &invutil.Invoice{}
+			inv7_15.LocationId = 1
+			inv7_15.UserId = fakeUserId
+			inv7_15.Month = int(time.July)
+			inv7_15.Year = 2015
+			if _, err = invoices.CreateOrUpdate(&inv7_15.Invoice); err != nil {
 				panic(err.Error())
 			}
 
@@ -267,13 +266,12 @@ func TestUserMemberships(t *testing.T) {
 				panic(err.Error())
 			}
 
-			invNow := &invoices.Invoice{
-				LocationId: 1,
-				UserId:     fakeUserId,
-				Month:      int(time.Now().Month()),
-				Year:       time.Now().Year(),
-			}
-			if _, err = invoices.CreateOrUpdate(invNow); err != nil {
+			invNow := &invutil.Invoice{}
+			invNow.LocationId = 1
+			invNow.UserId = fakeUserId
+			invNow.Month = int(time.Now().Month())
+			invNow.Year = time.Now().Year()
+			if _, err = invoices.CreateOrUpdate(&invNow.Invoice); err != nil {
 				panic(err.Error())
 			}
 

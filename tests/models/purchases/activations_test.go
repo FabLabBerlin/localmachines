@@ -38,14 +38,9 @@ func TestActivations(t *testing.T) {
 				Email:     "awesome@example.com",
 			}
 
-			Convey("Creating activation with non-existing machine", func() {
-				_, err := purchases.StartActivation(0, 0, time.Now())
-				So(err, ShouldNotBeNil)
-			})
-
 			Convey("Creating activation with non-existing user", func() {
 				machine, _ := CreateMachine("lel")
-				_, err := purchases.StartActivation(machine.Id, 0, time.Now())
+				_, err := purchases.StartActivation(machine, 0, time.Now())
 				So(err, ShouldBeNil)
 			})
 
@@ -53,7 +48,7 @@ func TestActivations(t *testing.T) {
 				machine, err1 := CreateMachine("lel")
 				uid, err2 := users.CreateUser(&user)
 				activationStartTime := time.Date(2015, 5, 8, 2, 15, 3, 1, time.Local)
-				aid, err3 := purchases.StartActivation(machine.Id, uid, activationStartTime)
+				aid, err3 := purchases.StartActivation(machine, uid, activationStartTime)
 				activation, err4 := purchases.GetActivation(aid)
 				assert.NoErrors(err1, err2, err3, err4)
 
@@ -117,12 +112,12 @@ func TestActivations(t *testing.T) {
 							panic(err.Error())
 						}
 						activationStartTime := time.Date(2015, 5, 8, 2, 15, 3, 1, time.Local)
-						aid, err := purchases.StartActivation(machine.Id, uid, activationStartTime)
+						aid, err := purchases.StartActivation(machine, uid, activationStartTime)
 						if err != nil {
 							panic(err.Error())
 						}
 						_ = aid
-						aid2, err := purchases.StartActivation(machine.Id, uid, activationStartTime)
+						aid2, err := purchases.StartActivation(machine, uid, activationStartTime)
 						if err != nil {
 							panic(err.Error())
 						}
@@ -141,7 +136,7 @@ func TestActivations(t *testing.T) {
 			})
 			Convey("Starting an activation and closing it", func() {
 				machine, _ := CreateMachine("lel")
-				aid, err1 := purchases.StartActivation(machine.Id, 0, time.Now())
+				aid, err1 := purchases.StartActivation(machine, 0, time.Now())
 				a, err := purchases.GetActivation(aid)
 				if err != nil {
 					panic(err.Error())
@@ -157,7 +152,7 @@ func TestActivations(t *testing.T) {
 				if err != nil {
 					panic(err.Error())
 				}
-				aid, err := purchases.StartActivation(machine.Id, 0, time.Now())
+				aid, err := purchases.StartActivation(machine, 0, time.Now())
 				if err != nil {
 					panic(err.Error())
 				}

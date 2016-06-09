@@ -6,7 +6,8 @@
 -- - netswitch hosts, url ons and offs are nulled
 -- - all passwords are set to 123456
 
-UPDATE locations SET xmpp_id = '';
+UPDATE locations SET local_ip = '',
+                     xmpp_id = '';
 
 UPDATE machines SET netswitch_host = '',
                     netswitch_url_on = '',

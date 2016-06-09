@@ -5,7 +5,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
-	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices"
+	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/settings"
 	"github.com/FabLabBerlin/localmachines/models/users"
@@ -36,7 +36,7 @@ type MonthlyEarning struct {
 	Activations string `orm:"type(text)"`
 	FilePath    string `orm:"size(255)"`
 	Created     time.Time
-	Invoices    []*invoices.Invoice `orm:"-"`
+	Invoices    []*invutil.Invoice `orm:"-"`
 }
 
 func (this *MonthlyEarning) Interval() lib.Interval {
@@ -287,7 +287,7 @@ func (this *MonthlyEarning) getPurchases(locationId int64, interval lib.Interval
 	return
 }
 
-func (this *MonthlyEarning) NewInvoices(vatPercent float64) (invs []*invoices.Invoice, err error) {
+func (this *MonthlyEarning) NewInvoices(vatPercent float64) (invs []*invutil.Invoice, err error) {
 	// Enhance activations with user and membership data
 	ps, err := this.getPurchases(this.LocationId, this.Interval())
 	if err != nil {
@@ -307,19 +307,18 @@ func (this *MonthlyEarning) NewInvoices(vatPercent float64) (invs []*invoices.In
 	if err != nil {
 		return nil, err
 	}
-	invs = make([]*invoices.Invoice, 0, len(users))
+	invs = make([]*invutil.Invoice, 0, len(users))
 	for _, user := range users {
 		interval := this.Interval()
 		if !interval.OneMonth() {
 			return nil, fmt.Errorf("expected one month")
 		}
-		inv := invoices.Invoice{
-			LocationId: this.LocationId,
-			Year:       interval.YearFrom,
-			Month:      interval.MonthFrom,
-			User:       user,
-			VatPercent: vatPercent,
-		}
+		inv := invutil.Invoice{}
+		inv.LocationId = this.LocationId
+		inv.Year = interval.YearFrom
+		inv.Month = interval.MonthFrom
+		inv.User = user
+		inv.VatPercent = vatPercent
 		invs = append(invs, &inv)
 	}
 
@@ -327,7 +326,7 @@ func (this *MonthlyEarning) NewInvoices(vatPercent float64) (invs []*invoices.In
 	for _, p := range ps {
 
 		invExists := false
-		var foundInv *invoices.Invoice
+		var foundInv *invutil.Invoice
 
 		for _, inv := range invs {
 			if p.User.Id == inv.User.Id {
@@ -340,7 +339,7 @@ func (this *MonthlyEarning) NewInvoices(vatPercent float64) (invs []*invoices.In
 		// Create new invoice if it does not exist for the user.
 		if !invExists {
 			beego.Warn("Creating invoice for purchase that has no matching user")
-			newInv := invoices.Invoice{
+			newInv := invutil.Invoice{
 				User: &p.User,
 			}
 			invs = append(invs, &newInv)

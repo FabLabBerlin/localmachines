@@ -256,7 +256,7 @@ func (this *ActivationsController) Start() {
 
 	// Continue with creating activation
 	var startTime time.Time = time.Now()
-	activationId, err := purchases.StartActivation(machineId, userId, startTime)
+	activationId, err := purchases.StartActivation(machine, userId, startTime)
 	if err != nil {
 		beego.Error("Failed to create activation:", err)
 		this.CustomAbort(403, "Failed to create activation")

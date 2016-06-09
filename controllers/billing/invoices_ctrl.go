@@ -7,6 +7,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/lib/redis"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices"
+	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 	"time"
@@ -61,11 +62,16 @@ func (this *Controller) GetMonth() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	for _, iv := range ivs {
-		iv.User = usrsById[iv.UserId]
+	list := make([]invutil.Invoice, len(ivs))
+
+	for i, iv := range ivs {
+		list[i] = invutil.Invoice{
+			Invoice: *iv,
+			User:    usrsById[iv.UserId],
+		}
 	}
 
-	this.Data["json"] = ivs
+	this.Data["json"] = list
 	this.ServeJSON()
 }
 
@@ -123,7 +129,7 @@ func (this *Controller) GetUser() {
 		sums = append(sums, sum)
 	}
 
-	var userInv *invoices.Invoice
+	var userInv *invutil.Invoice
 
 	for _, inv := range me.Invoices {
 		if inv.User.Id == uid {
@@ -252,7 +258,7 @@ func (this *Controller) CreateDraft() {
 		sums = append(sums, sum)
 	}
 
-	var userInv *invoices.Invoice
+	var userInv *invutil.Invoice
 
 	for _, inv := range me.Invoices {
 		if inv.User.Id == uid {
@@ -370,7 +376,7 @@ func (this *Controller) Update() {
 		sums = append(sums, sum)
 	}
 
-	var userInv *invoices.Invoice
+	var userInv *invutil.Invoice
 
 	for _, inv := range me.Invoices {
 		if inv.User.Id == uid {
@@ -411,7 +417,7 @@ func (this *Controller) SyncFastbillInvoices() {
 		this.CustomAbort(400, "Bad request")
 	}
 
-	err = invoices.SyncFastbillInvoices(locId, year, time.Month(month))
+	err = invutil.SyncFastbillInvoices(locId, year, time.Month(month))
 	if err != nil {
 		beego.Error("Failed to sync fastbill invoices:", err)
 		this.Abort("500")

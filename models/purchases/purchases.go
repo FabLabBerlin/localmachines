@@ -45,7 +45,7 @@ type Purchase struct {
 	PriceVAT        float64 `orm:"-"`
 	PriceExclVAT    float64 `orm:"-"`
 
-	InvoiceId     uint64
+	InvoiceId     int64
 	InvoiceStatus string
 
 	// Reservation fields:
@@ -78,6 +78,9 @@ func init() {
 func Create(p *Purchase) (id int64, err error) {
 	if p.LocationId <= 0 {
 		return 0, errors.New("LocationId must be > 0")
+	}
+	if p.InvoiceId <= 0 {
+		return 0, errors.New("InvoiceId must be > 0")
 	}
 	o := orm.NewOrm()
 	if id, err = o.Insert(p); err != nil {
