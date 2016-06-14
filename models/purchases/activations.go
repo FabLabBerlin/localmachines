@@ -240,6 +240,9 @@ func (a *Activation) Close(endTime time.Time) error {
 // Updates existing activation by consuming a pointer to
 // existing activation store.
 func (activation *Activation) Update() error {
+	if activation.Purchase.InvoiceId <= 0 {
+		return fmt.Errorf("undefined invoice id")
+	}
 	if mid := activation.Purchase.MachineId; mid != 0 {
 		m, err := machine.Get(mid)
 		if err != nil {

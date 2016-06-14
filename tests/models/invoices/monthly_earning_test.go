@@ -132,7 +132,7 @@ func TestInvoiceActivation(t *testing.T) {
 
 	Convey("When creating Monthly Earning with monthly_earning.New()", t, func() {
 		endTime := time.Now()
-		startTime := endTime.AddDate(0, -1, 0)
+		startTime := time.Now()
 		interval := lib.Interval{
 			MonthFrom: int(startTime.Month()),
 			YearFrom:  startTime.Year(),

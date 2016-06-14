@@ -69,13 +69,31 @@ func TestUserMemberships(t *testing.T) {
 			user_permissions.Create(userId, machineOne.Id)
 			user_permissions.Create(userId, machineTwo.Id)
 
+			invNow := &invutil.Invoice{}
+			invNow.LocationId = 1
+			invNow.UserId = userId
+			invNow.Month = 6
+			invNow.Year = 2015
+			if _, err = invoices.CreateOrUpdate(&invNow.Invoice); err != nil {
+				panic(err.Error())
+			}
+
+			invThen := &invutil.Invoice{}
+			invThen.LocationId = 1
+			invThen.UserId = userId
+			invThen.Month = 2
+			invThen.Year = 2015
+			if _, err = invoices.CreateOrUpdate(&invThen.Invoice); err != nil {
+				panic(err.Error())
+			}
+
 			// Create some activations
 			timeNow := time.Date(2015, 6, 4, 0, 0, 0, 0, time.UTC)  // In membership
 			timeThen := time.Date(2015, 2, 1, 0, 0, 0, 0, time.UTC) // Out of membership
-			CreateMembershipsActivation(userId, machineOne.Id, timeNow, 5.4)
-			CreateMembershipsActivation(userId, machineTwo.Id, timeNow, 6.2)
-			CreateMembershipsActivation(userId, machineOne.Id, timeThen, 54.5)
-			CreateMembershipsActivation(userId, machineTwo.Id, timeThen, 12.2)
+			CreateMembershipsActivation(userId, machineOne.Id, invNow.Id, timeNow, 5.4)
+			CreateMembershipsActivation(userId, machineTwo.Id, invNow.Id, timeNow, 6.2)
+			CreateMembershipsActivation(userId, machineOne.Id, invThen.Id, timeThen, 54.5)
+			CreateMembershipsActivation(userId, machineTwo.Id, invThen.Id, timeThen, 12.2)
 
 			Convey("Try creating a user membership with non existend membership ID", func() {
 				fakeMembershipId := int64(-23)
@@ -133,7 +151,6 @@ func TestUserMemberships(t *testing.T) {
 				})
 
 				Convey("The activations made during the user membership period should be affected by the base membership discount rules", func() {
-
 					interval := lib.Interval{
 						MonthFrom: 6,
 						YearFrom:  2015,

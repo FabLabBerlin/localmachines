@@ -110,24 +110,20 @@ func New(locationId int64, interval lib.Interval) (me *MonthlyEarning, err error
 	}
 	beego.Info("vatPercent=", vatPercent)
 
+	if !interval.OneMonth() {
+		return nil, fmt.Errorf("expected one month")
+	}
+	m := time.Month(interval.MonthFrom)
+	y := interval.YearFrom
+
 	// Create invoices from purchases
-	if me.Invoices, err = me.NewInvoices(vatPercent); err != nil {
+	if me.Invoices, err = invutil.GetAllOfMonthAt(locationId, y, m); err != nil {
 		err = fmt.Errorf("Failed to get user summaries: %v", err)
 		return
 	}
 
 	for i := 0; i < len(me.Invoices); i++ {
 		sort.Stable(me.Invoices[i].Purchases)
-		for _, purchase := range me.Invoices[i].Purchases {
-			purchase.TotalPrice = purchases.PriceTotalExclDisc(purchase)
-			purchase.DiscountedTotal, err = purchases.PriceTotalDisc(purchase)
-			if err != nil {
-				return nil, fmt.Errorf("price total disc (purchase %v): %v", purchase.Id, err)
-			}
-			p := (100.0 + vatPercent) / 100.0
-			purchase.PriceExclVAT = purchase.DiscountedTotal / p
-			purchase.PriceVAT = purchase.DiscountedTotal - purchase.PriceExclVAT
-		}
 	}
 
 	return me, err
@@ -318,6 +314,7 @@ func (this *MonthlyEarning) NewInvoices(vatPercent float64) (invs []*invutil.Inv
 		inv.Year = interval.YearFrom
 		inv.Month = interval.MonthFrom
 		inv.User = user
+		inv.UserId = user.Id
 		inv.VatPercent = vatPercent
 		invs = append(invs, &inv)
 	}

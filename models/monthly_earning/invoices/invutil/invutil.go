@@ -153,7 +153,7 @@ func (inv *Invoice) Interval() lib.Interval {
 
 func (inv *Invoice) Load() (err error) {
 	if inv.User, err = users.GetUser(inv.UserId); err != nil {
-		return fmt.Errorf("get user: %v", err)
+		return fmt.Errorf("get user(id=%v): %v", inv.UserId, err)
 	}
 	if inv.Purchases, err = purchases.GetByInvoiceId(inv.Id); err != nil {
 		return fmt.Errorf("get purchases by invoice id: %v", err)
@@ -252,6 +252,29 @@ func GetAllOfUserAt(locId, userId int64) (invs []*Invoice, err error) {
 		return nil, fmt.Errorf("invoices.GetAllUserAt: %v", err)
 	}
 
+	if invs, err = toUtilInvoices(locId, ivs); err != nil {
+		return nil, fmt.Errorf("to util invoices: %v", err)
+	}
+
+	return
+}
+
+func GetAllOfMonthAt(locId int64, year int, m time.Month) ([]*Invoice, error) {
+	var invs []*Invoice
+
+	ivs, err := invoices.GetAllInvoicesBetween(locId, year, int(m))
+	if err != nil {
+		return nil, fmt.Errorf("get all invoices between: %v", err)
+	}
+
+	if invs, err = toUtilInvoices(locId, ivs); err != nil {
+		return nil, fmt.Errorf("to util invoices: %v", err)
+	}
+
+	return invs, err
+}
+
+func toUtilInvoices(locId int64, ivs []*invoices.Invoice) (invs []*Invoice, err error) {
 	invs = make([]*Invoice, 0, len(ivs))
 
 	for _, iv := range ivs {
@@ -272,11 +295,54 @@ func GetAllOfUserAt(locId, userId int64) (invs []*Invoice, err error) {
 	for _, m := range ms {
 		msById[m.Id] = m
 	}
+
+	umbsByUid := make(map[int64][]*memberships.UserMembership)
+	if umbs, err := memberships.GetAllUserMembershipsAt(locId); err == nil {
+		for _, umb := range umbs {
+			uid := umb.UserId
+			if _, ok := umbsByUid[uid]; !ok {
+				umbsByUid[uid] = []*memberships.UserMembership{
+					umb,
+				}
+			} else {
+				umbsByUid[uid] = append(umbsByUid[uid], umb)
+			}
+		}
+	} else {
+		return nil, fmt.Errorf("Failed to get user memberships: %v", err)
+	}
+
+	mbsById := make(map[int64]*memberships.Membership)
+	if mbs, err := memberships.GetAllMembershipsAt(locId); err == nil {
+		for _, mb := range mbs {
+			mbsById[mb.Id] = mb
+		}
+	} else {
+		return nil, fmt.Errorf("Failed to get memberships: %v", err)
+	}
+
 	for _, inv := range invs {
 		for _, p := range inv.Purchases {
 			if m, ok := msById[p.MachineId]; ok {
 				p.Machine = m
+			}
 
+			umbs, ok := umbsByUid[p.UserId]
+			if !ok {
+				umbs = []*memberships.UserMembership{}
+			}
+			for _, umb := range umbs {
+				mbId := umb.MembershipId
+				mb, ok := mbsById[mbId]
+				if !ok {
+					return nil, fmt.Errorf("Unknown membership id: %v", mbId)
+				}
+				if umb.EndDate.IsZero() {
+					return nil, fmt.Errorf("end date is zero")
+				}
+				if umb.Interval().Contains(p.TimeStart) {
+					p.Memberships = append(p.Memberships, mb)
+				}
 			}
 		}
 	}

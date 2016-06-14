@@ -8,7 +8,6 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
-	"github.com/astaxie/beego/orm"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -19,7 +18,7 @@ func init() {
 // TODO: The way go convey tests are supposed to be written is more
 // human readable than this. Improve on that.
 
-func CreateMembershipsActivation(userId, machineId int64, startTime time.Time, minutes float64) (id int64) {
+func CreateMembershipsActivation(userId, machineId, invoiceId int64, startTime time.Time, minutes float64) (id int64) {
 
 	activation := purchases.Activation{
 		Purchase: purchases.Purchase{
@@ -27,12 +26,12 @@ func CreateMembershipsActivation(userId, machineId int64, startTime time.Time, m
 			TimeStart:  startTime,
 			UserId:     userId,
 			MachineId:  machineId,
+			InvoiceId:  invoiceId,
 		},
 	}
 	activation.Purchase.TimeEnd = activation.Purchase.TimeStart.Add(time.Duration(minutes) * time.Minute)
 
-	o := orm.NewOrm()
-	id, err := o.Insert(&activation.Purchase)
+	id, err := purchases.Create(&activation.Purchase)
 	if err != nil {
 		panic(err.Error())
 	}
