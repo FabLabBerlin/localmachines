@@ -9,6 +9,9 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
+	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices"
+	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices/invutil"
+	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/FabLabBerlin/localmachines/tests/lib/fastbill/mock"
@@ -46,7 +49,18 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 		if err != nil {
 			panic(err.Error())
 		}
+
+		inv := &invutil.Invoice{}
+		inv.LocationId = 1
+		inv.UserId = uid
+		inv.Month = int(TIME_START.Month())
+		inv.Year = TIME_START.Year()
+		if _, err = invoices.CreateOrUpdate(&inv.Invoice); err != nil {
+			panic(err.Error())
+		}
+
 		p := CreateTestPurchase(lasercutter.Id, "Lasercutter", time.Duration(12)*time.Minute, 0.5)
+		p.InvoiceId = inv.Id
 		p.UserId = uid
 		o := orm.NewOrm()
 		if _, err := o.Insert(p); err != nil {
@@ -57,15 +71,8 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 
 			m := TIME_START.Month()
 			y := TIME_START.Year()
-			me := monthly_earning.MonthlyEarning{
-				LocationId: 1,
-				MonthFrom:  int(m),
-				YearFrom:   y,
-				MonthTo:    int(m),
-				YearTo:     y,
-			}
 
-			invs, err := me.NewInvoices(19)
+			invs, err := invutil.GetAllOfMonthAt(1, y, m)
 			if err != nil {
 				panic(err.Error())
 			}
@@ -89,9 +96,20 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 			if _, err := o.Insert(p); err != nil {
 				panic(err.Error())
 			}
+
+			inv := &invutil.Invoice{}
+			inv.LocationId = 1
+			inv.UserId = uid
+			inv.Month = int(TIME_START.Month())
+			inv.Year = TIME_START.Year()
+			if _, err = invoices.CreateOrUpdate(&inv.Invoice); err != nil {
+				panic(err.Error())
+			}
+
 			p = CreateTestPurchase(i3.Id, "i3", time.Duration(100)*time.Nanosecond, 0.1)
+			p.InvoiceId = inv.Id
 			p.UserId = uid
-			if _, err := o.Insert(p); err != nil {
+			if purchases.Create(p); err != nil {
 				panic(err.Error())
 			}
 
@@ -114,16 +132,9 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 			if err != nil {
 				panic(err.Error())
 			}
-			t := time.Now()
-			me := monthly_earning.MonthlyEarning{
-				LocationId: 1,
-				MonthFrom:  int(t.Month()),
-				YearFrom:   t.Year(),
-				MonthTo:    int(t.Month()),
-				YearTo:     t.Year(),
-			}
+			//t := time.Now()
 
-			invs, err := me.NewInvoices(19)
+			invs, err := invutil.GetAllOfMonthAt(1, TIME_START.Year(), TIME_START.Month())
 			if err != nil {
 				panic(err.Error())
 			}

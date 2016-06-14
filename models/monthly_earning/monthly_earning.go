@@ -3,18 +3,13 @@ package monthly_earning
 import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
-	"github.com/FabLabBerlin/localmachines/models/machine"
-	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices/invutil"
-	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/settings"
-	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"math/rand"
 	"os"
 	"sort"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -214,184 +209,6 @@ func (this *MonthlyEarning) getFileName(interval lib.Interval) string {
 	}
 
 	return fmt.Sprintf("monthly-earnings-%s-%s", interval.String(), string(b))
-}
-
-func (this *MonthlyEarning) getPurchases(locationId int64, interval lib.Interval) (ps []*purchases.Purchase, err error) {
-	machines, err := machine.GetAll()
-	if err != nil {
-		return nil, fmt.Errorf("Failed to get machines: %v", err)
-	}
-	machinesById := make(map[int64]*machine.Machine)
-	for _, machine := range machines {
-		machinesById[machine.Id] = machine
-	}
-
-	usrs, err := users.GetAllUsersAt(locationId)
-	if err != nil {
-		return nil, fmt.Errorf("Failed to get users: %v", err)
-	}
-	usersById := make(map[int64]users.User)
-	for _, user := range usrs {
-		usersById[user.Id] = *user
-	}
-
-	userMemberships, err := memberships.GetAllUserMembershipsAt(locationId)
-	if err != nil {
-		return nil, fmt.Errorf("Failed to get user memberships: %v", err)
-	}
-	userMembershipsById := make(map[int64][]*memberships.UserMembership)
-	for _, userMembership := range userMemberships {
-		uid := userMembership.UserId
-		if _, ok := userMembershipsById[uid]; !ok {
-			userMembershipsById[uid] = []*memberships.UserMembership{
-				userMembership,
-			}
-		} else {
-			userMembershipsById[uid] = append(userMembershipsById[uid], userMembership)
-		}
-	}
-
-	ms, err := memberships.GetAllMembershipsAt(locationId)
-	if err != nil {
-		return nil, fmt.Errorf("Failed to get memberships: %v", err)
-	}
-	membershipsById := make(map[int64]*memberships.Membership)
-	for _, membership := range ms {
-		membershipsById[membership.Id] = membership
-	}
-
-	// Get all uninvoiced purchases in the time range
-	all, err := purchases.GetAllBetweenAt(locationId, interval)
-	if err != nil {
-		return nil, fmt.Errorf("Failed to get purchases: %v", err)
-	}
-
-	ps = make([]*purchases.Purchase, 0, len(all))
-
-	// Enhance purchases
-	for _, p := range all {
-		err := this.enhancePurchase(p, machinesById,
-			usersById, userMembershipsById, membershipsById)
-		if err != nil {
-			return nil, fmt.Errorf("Failed to enhance purchase: %v", err)
-		}
-		if !p.Cancelled {
-			ps = append(ps, p)
-		}
-	}
-
-	return
-}
-
-func (this *MonthlyEarning) NewInvoices(vatPercent float64) (invs []*invutil.Invoice, err error) {
-	// Enhance activations with user and membership data
-	ps, err := this.getPurchases(this.LocationId, this.Interval())
-	if err != nil {
-		return nil, fmt.Errorf("Failed to get enhanced purchaes: %v", err)
-	}
-
-	activationIds := make([]string, 0, len(ps))
-	for _, p := range ps {
-		if p.Type == purchases.TYPE_ACTIVATION {
-			activationIds = append(activationIds, strconv.FormatInt(p.Id, 10))
-		}
-	}
-	this.Activations = "[" + strings.Join(activationIds, ",") + "]"
-
-	// Create a slice for unique user summaries.
-	users, err := users.GetAllUsersAt(this.LocationId)
-	if err != nil {
-		return nil, err
-	}
-	invs = make([]*invutil.Invoice, 0, len(users))
-	for _, user := range users {
-		interval := this.Interval()
-		if !interval.OneMonth() {
-			return nil, fmt.Errorf("expected one month")
-		}
-		inv := invutil.Invoice{}
-		inv.LocationId = this.LocationId
-		inv.Year = interval.YearFrom
-		inv.Month = interval.MonthFrom
-		inv.User = user
-		inv.UserId = user.Id
-		inv.VatPercent = vatPercent
-		invs = append(invs, &inv)
-	}
-
-	// Sort purchases by user.
-	for _, p := range ps {
-
-		invExists := false
-		var foundInv *invutil.Invoice
-
-		for _, inv := range invs {
-			if p.User.Id == inv.User.Id {
-				invExists = true
-				foundInv = inv
-				break
-			}
-		}
-
-		// Create new invoice if it does not exist for the user.
-		if !invExists {
-			beego.Warn("Creating invoice for purchase that has no matching user")
-			newInv := invutil.Invoice{
-				User: &p.User,
-			}
-			invs = append(invs, &newInv)
-			foundInv = invs[len(invs)-1]
-		}
-
-		// Append the purchase to the invoice.
-		if foundInv.User.Id == p.User.Id {
-			foundInv.Purchases = append(foundInv.Purchases, p)
-		}
-	}
-
-	return
-}
-
-func (this *MonthlyEarning) enhancePurchase(purchase *purchases.Purchase,
-	machinesById map[int64]*machine.Machine, usersById map[int64]users.User,
-	userMembershipsByUserId map[int64][]*memberships.UserMembership,
-	membershipsById map[int64]*memberships.Membership) error {
-
-	var ok bool
-	purchase.Machine, ok = machinesById[purchase.MachineId]
-	if !ok && (purchase.Type == purchases.TYPE_ACTIVATION || purchase.Type == purchases.TYPE_RESERVATION) {
-		return fmt.Errorf("No machine has the ID %v", purchase.MachineId)
-	}
-
-	if purchase.User, ok = usersById[purchase.UserId]; !ok {
-		return fmt.Errorf("No user has the ID %v", purchase.UserId)
-	}
-
-	usrMemberships, ok := userMembershipsByUserId[purchase.UserId]
-	if !ok {
-		usrMemberships = []*memberships.UserMembership{}
-	}
-
-	// Check if the membership dates of the user overlap with the activation.
-	// If they overlap, add the membership to the invActivation
-	for _, usrMem := range usrMemberships {
-
-		// Get membership
-		mem, ok := membershipsById[usrMem.MembershipId]
-		if !ok {
-			return fmt.Errorf("Unknown membership id: %v", usrMem.MembershipId)
-		}
-
-		if usrMem.EndDate.IsZero() {
-			return fmt.Errorf("end date is zero")
-		}
-
-		if usrMem.Interval().Contains(purchase.TimeStart) {
-			purchase.Memberships = append(purchase.Memberships, mem)
-		}
-	}
-
-	return nil
 }
 
 func (this *MonthlyEarning) Save() (err error) {

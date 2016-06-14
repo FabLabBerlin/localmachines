@@ -5,15 +5,16 @@ import (
 	"testing"
 	"time"
 
-	//"github.com/FabLabBerlin/localmachines/lib/fastbill"
 	"github.com/FabLabBerlin/localmachines/models/coupons"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
+	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices"
+	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices/invutil"
+	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/FabLabBerlin/localmachines/tests/lib/fastbill/mock"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
-	"github.com/astaxie/beego/orm"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -76,12 +77,22 @@ func TestInvoiceCouponUsage(t *testing.T) {
 		}
 		lasercutterMinutes := 80
 		lasercutterPricePerMinute := 1.0
+		inv := &invutil.Invoice{}
+		inv.LocationId = 1
+		inv.UserId = uid
+		inv.Month = int(TIME_START.Month())
+		inv.Year = TIME_START.Year()
+		if _, err = invoices.CreateOrUpdate(&inv.Invoice); err != nil {
+			panic(err.Error())
+		}
+
 		p := CreateTestPurchase(lasercutter.Id, "Lasercutter",
 			time.Duration(lasercutterMinutes)*time.Minute,
 			lasercutterPricePerMinute)
+		p.InvoiceId = inv.Id
 		p.UserId = uid
-		o := orm.NewOrm()
-		if _, err := o.Insert(p); err != nil {
+
+		if _, err := purchases.Create(p); err != nil {
 			panic(err.Error())
 		}
 		cs, err := coupons.Generate(1, "foo", 10, 10)
@@ -94,14 +105,7 @@ func TestInvoiceCouponUsage(t *testing.T) {
 		}
 		m := TIME_START.Month()
 		y := TIME_START.Year()
-		me := monthly_earning.MonthlyEarning{
-			LocationId: 1,
-			MonthFrom:  int(m),
-			YearFrom:   y,
-			MonthTo:    int(m),
-			YearTo:     y,
-		}
-		invs, err := me.NewInvoices(19)
+		invs, err := invutil.GetAllOfMonthAt(1, y, m)
 		if err != nil {
 			panic(err.Error())
 		}
