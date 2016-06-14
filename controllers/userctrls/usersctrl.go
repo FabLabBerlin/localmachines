@@ -4,12 +4,9 @@ package userctrls
 import (
 	"encoding/json"
 	"github.com/FabLabBerlin/localmachines/controllers"
-	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/machine"
-	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices/invutil"
-	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/user_permissions"
 	"github.com/FabLabBerlin/localmachines/models/user_roles"
@@ -17,7 +14,6 @@ import (
 	"github.com/astaxie/beego"
 	"strconv"
 	"strings"
-	"time"
 )
 
 type Controller struct {
@@ -549,35 +545,9 @@ func (this *UsersController) GetUserBill() {
 	if !authorized {
 		this.CustomAbort(401, "Not authorized for this location")
 	}
-
-	startTime, err := purchases.GetUserStartTime(uid)
+	invs, err := invutil.GetAllOfUserAt(locId, uid)
 	if err != nil {
-		beego.Error("GetUserStartTime:", err)
-		this.CustomAbort(500, "Internal Server Error")
-	}
-
-	interval := lib.Interval{
-		MonthFrom: int(startTime.Month()),
-		YearFrom:  startTime.Year(),
-		MonthTo:   int(time.Now().Month()),
-		YearTo:    time.Now().Year(),
-	}
-	me, err := monthly_earning.New(locId, interval)
-	if err != nil {
-		beego.Error("new monthly earning:", err)
-	}
-
-	var userInv *invutil.Invoice
-
-	for _, inv := range me.Invoices {
-		if inv.User.Id == uid {
-			userInv = inv
-		}
-	}
-
-	invs, err := userInv.SplitByMonths()
-	if err != nil {
-		beego.Error("Split by months:", err)
+		beego.Error("invutil.GetAllOfUserAt:", err)
 		this.Abort("500")
 	}
 

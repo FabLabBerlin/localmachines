@@ -315,7 +315,7 @@ func TestUserMemberships(t *testing.T) {
 				panic(err.Error())
 			}
 			So(umNow.StartDate.Format("2006-01"), ShouldEqual, startTime.Format("2006-01"))
-			So(umNow.EndDate.Format("2006-01"), ShouldEqual, time.Now().Format("2006-01"))
+			So(umNow.EndDate.Format("2006-01"), ShouldEqual, time.Now().AddDate(0, 1, 0).Format("2006-01"))
 
 			ums, err = memberships.GetAllUserMembershipsAt(1)
 			if err != nil {

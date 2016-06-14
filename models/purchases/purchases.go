@@ -111,6 +111,20 @@ func GetAllAt(locationId int64) (ps []*Purchase, err error) {
 
 }
 
+func GetByInvoiceId(invoiceId int64) (ps []*Purchase, err error) {
+	if invoiceId <= 0 {
+		return nil, fmt.Errorf("invoice id is %v", invoiceId)
+	}
+
+	o := orm.NewOrm()
+
+	_, err = o.QueryTable(TABLE_NAME).
+		Filter("invoice_id", invoiceId).
+		All(&ps)
+
+	return
+}
+
 func GetAllBetweenAt(locationId int64, interval lib.Interval) (ps []*Purchase, err error) {
 	all, err := GetAllAt(locationId)
 	if err != nil {

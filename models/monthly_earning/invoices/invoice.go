@@ -108,3 +108,13 @@ func GetAllInvoicesBetween(locId int64, year, month int) ([]*Invoice, error) {
 		All(&ivs)
 	return ivs, err
 }
+
+func GetAllOfUserAt(locId, userId int64) ([]*Invoice, error) {
+	var ivs []*Invoice
+	_, err := orm.NewOrm().
+		QueryTable(TABLE_NAME).
+		Filter("location_id", locId).
+		Filter("user_id", userId).
+		All(&ivs)
+	return ivs, err
+}

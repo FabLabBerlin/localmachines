@@ -149,6 +149,19 @@ func (inv *Invoice) Interval() lib.Interval {
 	}
 }
 
+func (inv *Invoice) Load() (err error) {
+	if inv.User, err = users.GetUser(inv.UserId); err != nil {
+		return fmt.Errorf("get user: %v", err)
+	}
+	if inv.Purchases, err = purchases.GetByInvoiceId(inv.Id); err != nil {
+		return fmt.Errorf("get purchases by invoice id: %v", err)
+	}
+	if err = inv.CalculateTotals(); err != nil {
+		return fmt.Errorf("calculate totals: %v", err)
+	}
+	return
+}
+
 func (inv *Invoice) SplitByMonths() (invs []*Invoice, err error) {
 	var tMin time.Time
 	invs = make([]*Invoice, 0, 10)
@@ -191,6 +204,42 @@ func (inv *Invoice) SplitByMonths() (invs []*Invoice, err error) {
 		if err := iv.CalculateTotals(); err != nil {
 			return nil, fmt.Errorf("CalculateTotals: %v", err)
 		}
+	}
+
+	return
+}
+
+func Get(id int64) (inv *Invoice, err error) {
+	inv = &Invoice{}
+
+	if iv, err := invoices.Get(id); err == nil {
+		inv.Invoice = *iv
+	} else {
+		return nil, fmt.Errorf("get invoice entity: %v", err)
+	}
+	if err = inv.Load(); err != nil {
+		return nil, fmt.Errorf("load: %v", err)
+	}
+
+	return
+}
+
+func GetAllOfUserAt(locationId, userId int64) (invs []*Invoice, err error) {
+	ivs, err := invoices.GetAllOfUserAt(locationId, userId)
+	if err != nil {
+		return nil, fmt.Errorf("invoices.GetAllUserAt: %v", err)
+	}
+
+	invs = make([]*Invoice, 0, len(ivs))
+
+	for _, iv := range ivs {
+		inv := &Invoice{
+			Invoice: *iv,
+		}
+		if err = inv.Load(); err != nil {
+			return nil, fmt.Errorf("load: %v", err)
+		}
+		invs = append(invs, inv)
 	}
 
 	return
