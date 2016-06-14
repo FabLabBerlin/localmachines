@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/lib/fastbill"
+	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
@@ -224,8 +225,8 @@ func Get(id int64) (inv *Invoice, err error) {
 	return
 }
 
-func GetAllOfUserAt(locationId, userId int64) (invs []*Invoice, err error) {
-	ivs, err := invoices.GetAllOfUserAt(locationId, userId)
+func GetAllOfUserAt(locId, userId int64) (invs []*Invoice, err error) {
+	ivs, err := invoices.GetAllOfUserAt(locId, userId)
 	if err != nil {
 		return nil, fmt.Errorf("invoices.GetAllUserAt: %v", err)
 	}
@@ -240,6 +241,22 @@ func GetAllOfUserAt(locationId, userId int64) (invs []*Invoice, err error) {
 			return nil, fmt.Errorf("load: %v", err)
 		}
 		invs = append(invs, inv)
+	}
+
+	ms, err := machine.GetAllAt(locId)
+	if err != nil {
+		return nil, fmt.Errorf("get all machines at %v: %v", locId, err)
+	}
+	msById := make(map[int64]*machine.Machine)
+	for _, m := range ms {
+		msById[m.Id] = m
+	}
+	for _, inv := range invs {
+		for _, p := range inv.Purchases {
+			if m, ok := msById[p.MachineId]; ok {
+				p.Machine = m
+			}
+		}
 	}
 
 	return
