@@ -9,6 +9,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
+	"github.com/FabLabBerlin/localmachines/models/settings"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 	"time"
@@ -157,6 +158,26 @@ func (inv *Invoice) Load() (err error) {
 	if inv.Purchases, err = purchases.GetByInvoiceId(inv.Id); err != nil {
 		return fmt.Errorf("get purchases by invoice id: %v", err)
 	}
+	locSettings, err := settings.GetAllAt(inv.LocationId)
+	if err != nil {
+		return fmt.Errorf("get settings: %v", err)
+	}
+	var vatPercent float64
+	if vat := locSettings.GetFloat(inv.LocationId, settings.VAT); vat != nil {
+		vatPercent = *vat
+	} else {
+		vatPercent = 19.0
+	}
+	for _, p := range inv.Purchases {
+		p.TotalPrice = purchases.PriceTotalExclDisc(p)
+		p.DiscountedTotal, err = purchases.PriceTotalDisc(p)
+		if err != nil {
+			return fmt.Errorf("price total disc (purchase %v): %v", p.Id, err)
+		}
+		percent := (100.0 + vatPercent) / 100.0
+		p.PriceExclVAT = p.DiscountedTotal / percent
+		p.PriceVAT = p.DiscountedTotal - p.PriceExclVAT
+	}
 	if err = inv.CalculateTotals(); err != nil {
 		return fmt.Errorf("calculate totals: %v", err)
 	}
@@ -255,6 +276,7 @@ func GetAllOfUserAt(locId, userId int64) (invs []*Invoice, err error) {
 		for _, p := range inv.Purchases {
 			if m, ok := msById[p.MachineId]; ok {
 				p.Machine = m
+
 			}
 		}
 	}
