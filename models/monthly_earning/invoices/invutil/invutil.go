@@ -1,7 +1,6 @@
 package invutil
 
 import (
-	"errors"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/lib/fastbill"
@@ -49,46 +48,6 @@ type Sums struct {
 		PriceVAT     float64
 		Undiscounted float64
 	}
-}
-
-func (inv *Invoice) AttachUserMembership(um *memberships.UserMembership) error {
-	if inv.Id == 0 {
-		return errors.New("invoice Id = 0")
-	}
-
-	switch um.InvoiceId {
-	case inv.Id:
-		return nil
-	case 0:
-		um.InvoiceId = inv.Id
-		if err := um.Update(); err != nil {
-			return fmt.Errorf("update user membership: %v", err)
-		}
-		return nil
-	default:
-		locId := inv.LocationId
-		ums, err := memberships.GetAllUserMembershipsAt(locId)
-		if err != nil {
-			return fmt.Errorf("get all user memberships at %v: %v", locId, err)
-		}
-		for _, existing := range ums {
-			if existing.InvoiceId == inv.Id {
-				// Already done
-				return nil
-			}
-		}
-
-		newUm, err := memberships.CreateUserMembership(um.UserId, um.MembershipId, um.StartDate)
-		if err != nil {
-			return fmt.Errorf("create user membership: %v", err)
-		}
-		newUm.InvoiceId = inv.Id
-		newUm.InvoiceStatus = inv.Status
-		if newUm.Update(); err != nil {
-			return fmt.Errorf("update user membership: %v", err)
-		}
-	}
-	return nil
 }
 
 func (inv *Invoice) ByProductNameAndPricePerUnit() map[string]map[float64][]*purchases.Purchase {

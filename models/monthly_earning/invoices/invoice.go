@@ -1,7 +1,9 @@
 package invoices
 
 import (
+	"errors"
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/astaxie/beego/orm"
 	"time"
 )
@@ -44,7 +46,10 @@ func Create(inv *Invoice) (id int64, err error) {
 	}
 
 	o := orm.NewOrm()
-	_, err = o.Insert(inv)
+
+	if _, err = o.Insert(inv); err != nil {
+		return 0, fmt.Errorf("insert inv: %v", err)
+	}
 
 	return
 }
@@ -79,8 +84,6 @@ func CreateOrUpdate(invOrig *Invoice) (id int64, err error) {
 	} else {
 		return 0, fmt.Errorf("get by props: %v", err)
 	}
-
-	return
 }
 
 func CurrentInvoice(locationId, userId int64) (*Invoice, error) {
@@ -111,8 +114,6 @@ func CurrentInvoice(locationId, userId int64) (*Invoice, error) {
 	} else {
 		return nil, fmt.Errorf("get by props: %v", err)
 	}
-
-	return &inv, err
 }
 
 func Get(id int64) (*Invoice, error) {
@@ -202,6 +203,136 @@ func (inv *Invoice) assertDataOk() (err error) {
 			return fmt.Errorf("(id=%v) conflicting with invoice %v",
 				inv.Id, iv.Id)
 		}
+	}
+
+	return
+}
+
+func (inv *Invoice) AttachUserMembership(um *memberships.UserMembership) error {
+	if inv.Id == 0 {
+		return errors.New("invoice Id = 0")
+	}
+
+	switch um.InvoiceId {
+	case inv.Id:
+		return nil
+	case 0:
+		um.InvoiceId = inv.Id
+		if err := um.Update(); err != nil {
+			return fmt.Errorf("update user membership: %v", err)
+		}
+		return nil
+	default:
+		locId := inv.LocationId
+		ums, err := memberships.GetAllUserMembershipsAt(locId)
+		if err != nil {
+			return fmt.Errorf("get all user memberships at %v: %v", locId, err)
+		}
+		for _, existing := range ums {
+			if existing.InvoiceId == inv.Id {
+				// Already done
+				return nil
+			}
+		}
+
+		newUm, err := memberships.CreateUserMembership(um.UserId, um.MembershipId, um.StartDate)
+		if err != nil {
+			return fmt.Errorf("create user membership: %v", err)
+		}
+		newUm.InvoiceId = inv.Id
+		newUm.InvoiceStatus = inv.Status
+		if newUm.Update(); err != nil {
+			return fmt.Errorf("update user membership: %v", err)
+		}
+	}
+	return nil
+}
+
+// SetCurrent sets inv as the current invoice.  The function is idempotent.
+// To avoid expensive transactions, it does these steps:
+//
+// 1. If there is already another current invoice for user @ location:
+// 1a. Get all memberships from it
+// 1b. Clone them for the new invoice, if all aren't already present
+// 2. Transactionally switch over current=true state
+func (inv *Invoice) SetCurrent() (err error) {
+	if inv.Current {
+		return nil
+	}
+
+	var currentInvoice *Invoice
+
+	o := orm.NewOrm()
+
+	var tmp Invoice
+	err = o.QueryTable(TABLE_NAME).
+		Filter("location_id", inv.LocationId).
+		Filter("user_id", inv.UserId).
+		Filter("current", true).
+		One(&tmp)
+
+	if err == nil {
+		currentInvoice = &tmp
+	} else if err == orm.ErrNoRows {
+		err = nil
+	} else {
+		return fmt.Errorf("one: %v", err)
+	}
+
+	if currentInvoice != nil {
+		currentUms, err := memberships.GetUserMembershipsForInvoice(currentInvoice.Id)
+		if err != nil {
+			return fmt.Errorf("get user memberships for current inv: %v", err)
+		}
+
+		thisUms, err := memberships.GetUserMembershipsForInvoice(inv.Id)
+		if err != nil {
+			return fmt.Errorf("get user memberships for this inv: %v", err)
+		}
+
+		umsToBeCloned := make([]memberships.UserMembershipCombo, 0, len(currentUms.Data))
+		for _, um := range currentUms.Data {
+			alreadyCloned := false
+			for _, existing := range thisUms.Data {
+				if um.Id == existing.Id {
+					alreadyCloned = true
+					break
+				}
+			}
+			if !alreadyCloned {
+				umsToBeCloned = append(umsToBeCloned, um)
+			}
+		}
+
+		for _, umCombo := range umsToBeCloned {
+			um, err := memberships.GetUserMembership(umCombo.Id)
+			if err != nil {
+				return fmt.Errorf("get user membership: %v", err)
+			}
+			if err := inv.AttachUserMembership(um); err != nil {
+				return fmt.Errorf("attach user membership: %v", err)
+			}
+		}
+	}
+
+	if err := o.Begin(); err != nil {
+		return fmt.Errorf("begin tx: %v", err)
+	}
+
+	if currentInvoice != nil {
+		currentInvoice.Current = false
+		if _, err := o.Update(currentInvoice); err != nil {
+			return fmt.Errorf("update current invoice: %v", err)
+		}
+	}
+
+	inv.Current = true
+	if _, err := o.Update(inv); err != nil {
+		return fmt.Errorf("update this invoice: %v", err)
+	}
+
+	if err := o.Commit(); err != nil {
+		return fmt.Errorf("commit tx: %v", err)
 	}
 
 	return
