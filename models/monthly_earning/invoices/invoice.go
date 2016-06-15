@@ -107,6 +107,9 @@ func CurrentInvoice(locationId, userId int64) (*Invoice, error) {
 		return existing, nil
 	} else if err == orm.ErrNoRows {
 		if _, err := Create(&inv); err == nil {
+			if err := inv.SetCurrent(); err != nil {
+				return nil, fmt.Errorf("set current: %v", err)
+			}
 			return &inv, nil
 		} else {
 			return nil, fmt.Errorf("create: %v", err)
