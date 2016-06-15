@@ -31,6 +31,7 @@ type Invoice struct {
 	InvoiceDate time.Time
 	PaidDate    time.Time
 	DueDate     time.Time
+	Current     bool
 }
 
 func (inv *Invoice) TableName() string {
