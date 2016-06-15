@@ -56,12 +56,15 @@ var Invoice = React.createClass({
     const invoice = this.state.invoice;
     const invoiceStatuses = this.state.invoiceStatuses;
 
-    if (invoice && this.state.userMemberships) {
+    console.log('Invoice#render: invoice=', invoice);
+
+    if (invoice) {
       const amount = (Math.round(invoice.Sums.All.PriceInclVAT * 100)
                       / 100).toFixed(2);
       const name = invoice.User.FirstName + ' ' + invoice.User.LastName;
-      const timeFrame = '' + invoice.Interval.MonthFrom + '/' +
-                             invoice.Interval.YearFrom;
+      console.log('Invoice#render: invoice=', invoice);
+      const timeFrame = '' + invoice.Month + '/' +
+                             invoice.Year;
 
       return (
         <div className="inv-invoice-container"
@@ -105,7 +108,7 @@ var Invoice = React.createClass({
               <h5>Activations</h5>
               <BillTable bill={invoice}/>
               <h5>Memberships</h5>
-              <Membership memberships={this.state.userMemberships.Data}/>
+              <Membership memberships={null/*this.state.userMemberships.Data*/}/>
             </div>
           </div>
         </div>

@@ -69,19 +69,16 @@ function fetchMonthlySums(locId, {month, year}) {
   });
 }
 
-function fetchUser(locId, {month, year, userId}) {
+function fetchInvoice(locId, {invoiceId}) {
   $.ajax({
     method: 'GET',
-    url: '/api/billing/months/' + year + '/' + month + '/users/' + userId,
+    url: '/api/billing/invoices/' + invoiceId,
     data: {
       location: locId
     }
   })
   .success(function(invoice) {
     reactor.dispatch(actionTypes.SET_INVOICE, {
-      year: year,
-      month: month,
-      userId: userId,
       invoice: invoice
     });
   })
@@ -123,8 +120,8 @@ function save(locId, {month, year, userId}) {
   });
 }
 
-function selectUserId(userId) {
-  reactor.dispatch(actionTypes.SELECT_USER_ID, userId);
+function selectInvoiceId(invoiceId) {
+  reactor.dispatch(actionTypes.SELECT_INVOICE_ID, invoiceId);
 }
 
 function setSelectedMonth({month, year}) {
@@ -134,11 +131,11 @@ function setSelectedMonth({month, year}) {
 export default {
   editPurchase,
   fetchFastbillStatuses,
+  fetchInvoice,
   fetchMonthlySums,
-  fetchUser,
   fetchUserMemberships,
   makeDraft,
   save,
-  selectUserId,
+  selectInvoiceId,
   setSelectedMonth
 };

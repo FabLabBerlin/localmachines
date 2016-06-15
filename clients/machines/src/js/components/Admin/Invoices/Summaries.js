@@ -31,7 +31,7 @@ var Summaries = React.createClass({
 
     return (
       <div>
-        {this.state.MonthlySums.getIn(['selected', 'userId']) ? (
+        {this.state.MonthlySums.getIn(['selected', 'invoiceId']) ? (
           <Invoice/>
         ) : null}
         <table className="table table-striped table-hover">
@@ -66,7 +66,7 @@ var Summaries = React.createClass({
                                  .toFixed(2);
 
               return (
-                <tr key={i} onClick={this.select.bind(this, sum.get('User'))}>
+                <tr key={i} onClick={this.select.bind(this, sum.get('User'), sum.get('Id'))}>
                   <td><input type="checkbox"/></td>
                   <td className="text-right">
                     {sum.get('FastbillNo') || 'Draft'}
@@ -94,27 +94,17 @@ var Summaries = React.createClass({
     );
   },
 
-  select(user) {
+  select(user, invoiceId) {
     const month = this.state.MonthlySums
                       .get('selected').get('month');
     const year = this.state.MonthlySums
                       .get('selected').get('year');
     const userId = user.get('Id');
 
-    Invoices.actions.fetchFastbillStatuses(this.state.locationId, {
-      year: year,
-      month: month,
-      userId: userId
+    Invoices.actions.fetchInvoice(this.state.locationId, {
+      invoiceId: invoiceId
     });
-    Invoices.actions.fetchUser(this.state.locationId, {
-      year: year,
-      month: month,
-      userId: userId
-    });
-    Invoices.actions.fetchUserMemberships(this.state.locationId, {
-      userId: userId
-    });
-    Invoices.actions.selectUserId(userId);
+    Invoices.actions.selectInvoiceId(invoiceId);
   }
 
 });

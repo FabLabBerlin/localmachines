@@ -21,8 +21,8 @@ const getInvoice = [
   (invoicesStore) => {
     const month = invoicesStore.getIn(['MonthlySums', 'selected', 'month']);
     const year = invoicesStore.getIn(['MonthlySums', 'selected', 'year']);
-    const userId = invoicesStore.getIn(['MonthlySums', 'selected', 'userId']);
-    const invoice = invoicesStore.getIn(['invoices', year, month, userId]);
+    const invoiceId = invoicesStore.getIn(['MonthlySums', 'selected', 'invoiceId']);
+    const invoice = invoicesStore.getIn(['invoices', 'detailedInvoices', invoiceId]);
 
     return invoice;
   }

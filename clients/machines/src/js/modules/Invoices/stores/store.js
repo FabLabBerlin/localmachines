@@ -26,7 +26,7 @@ var InvoicesStore = new Nuclear.Store({
   initialize() {
     this.on(actionTypes.EDIT_PURCHASE, editPurchase);
     this.on(actionTypes.FETCH_MONTHLY_SUMMARIES, fetchMonthlySums);
-    this.on(actionTypes.SELECT_USER_ID, selectUserId);
+    this.on(actionTypes.SELECT_INVOICE_ID, selectInvoiceId);
     this.on(actionTypes.SET_SELECTED_MONTH, setSelectedMonth);
     this.on(actionTypes.SET_INVOICE, setInvoice);
     this.on(actionTypes.SET_INVOICE_STATUSES, setInvoiceStatuses);
@@ -43,8 +43,8 @@ function fetchMonthlySums(state, { month, year, summaries }) {
   return state.setIn(['MonthlySums', year, month], toImmutable(summaries));
 }
 
-function selectUserId(state, userId) {
-  return state.setIn(['MonthlySums', 'selected', 'userId'], userId);
+function selectInvoiceId(state, invoiceId) {
+  return state.setIn(['MonthlySums', 'selected', 'invoiceId'], invoiceId);
 }
 
 function setSelectedMonth(state, { month, year }) {
@@ -52,8 +52,9 @@ function setSelectedMonth(state, { month, year }) {
               .setIn(['MonthlySums', 'selected', 'year'], year);
 }
 
-function setInvoice(state, { month, year, userId, invoice }) {
-  return state.setIn(['invoices', year, month, userId], invoice);
+function setInvoice(state, { invoice }) {
+  console.log('invociestore#setInvoice: invoice=', invoice);
+  return state.setIn(['invoices', 'detailedInvoices', invoice.Id], invoice);
 }
 
 function setInvoiceStatuses(state, { month, year, userId, invoiceStatuses }) {

@@ -21,6 +21,38 @@ type MonthlySummary struct {
 	CustomerId    int64
 }
 
+// @Title GetInvoice
+// @Description Get invoice
+// @Success 200 {object}
+// @Failure	401	Not authorized
+// @Failure	403	Forbidden
+// @Failure	500	Internal Server Error
+// @router /invoices/:id [get]
+func (this *Controller) GetInvoice() {
+	locId, authorized := this.GetLocIdAdmin()
+	if !authorized {
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	id, err := this.GetInt64(":id")
+	if err != nil {
+		this.Abort("400")
+	}
+
+	inv, err := invutil.Get(id)
+	if err != nil {
+		beego.Error("invutil get:", err)
+		this.Abort("500")
+	}
+
+	if inv.LocationId != locId {
+		this.Abort("403")
+	}
+
+	this.Data["json"] = inv
+	this.ServeJSON()
+}
+
 // @Title GetMonth
 // @Description Get overview for a month
 // @Success 200 {object}
