@@ -40,7 +40,7 @@ func TestActivations(t *testing.T) {
 
 			Convey("Creating activation with non-existing user", func() {
 				machine, _ := CreateMachine("lel")
-				_, err := purchases.StartActivation(machine, 0, time.Now())
+				_, err := purchases.StartActivation(machine, 123, time.Now())
 				So(err, ShouldBeNil)
 			})
 
@@ -136,7 +136,7 @@ func TestActivations(t *testing.T) {
 			})
 			Convey("Starting an activation and closing it", func() {
 				machine, _ := CreateMachine("lel")
-				aid, err1 := purchases.StartActivation(machine, 0, time.Now())
+				aid, err1 := purchases.StartActivation(machine, 123, time.Now())
 				a, err := purchases.GetActivation(aid)
 				if err != nil {
 					panic(err.Error())
@@ -152,7 +152,7 @@ func TestActivations(t *testing.T) {
 				if err != nil {
 					panic(err.Error())
 				}
-				aid, err := purchases.StartActivation(machine, 0, time.Now())
+				aid, err := purchases.StartActivation(machine, 123, time.Now())
 				if err != nil {
 					panic(err.Error())
 				}

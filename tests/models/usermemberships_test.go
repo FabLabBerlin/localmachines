@@ -74,6 +74,7 @@ func TestUserMemberships(t *testing.T) {
 			invNow.UserId = userId
 			invNow.Month = 6
 			invNow.Year = 2015
+			invNow.Status = "outgoing"
 			if _, err = invoices.CreateOrUpdate(&invNow.Invoice); err != nil {
 				panic(err.Error())
 			}
@@ -83,6 +84,7 @@ func TestUserMemberships(t *testing.T) {
 			invThen.UserId = userId
 			invThen.Month = 2
 			invThen.Year = 2015
+			invThen.Status = "outgoing"
 			if _, err = invoices.CreateOrUpdate(&invThen.Invoice); err != nil {
 				panic(err.Error())
 			}
@@ -216,6 +218,7 @@ func TestUserMemberships(t *testing.T) {
 			inv.UserId = fakeUserId
 			inv.Month = int(time.Now().Month())
 			inv.Year = time.Now().Year()
+			inv.Status = "outgoing"
 			if _, err = invoices.CreateOrUpdate(&inv.Invoice); err != nil {
 				panic(err.Error())
 			}
@@ -275,6 +278,7 @@ func TestUserMemberships(t *testing.T) {
 			inv7_15.UserId = fakeUserId
 			inv7_15.Month = int(time.July)
 			inv7_15.Year = 2015
+			inv7_15.Status = "outgoing"
 			if _, err = invoices.CreateOrUpdate(&inv7_15.Invoice); err != nil {
 				panic(err.Error())
 			}
@@ -288,6 +292,7 @@ func TestUserMemberships(t *testing.T) {
 			invNow.UserId = fakeUserId
 			invNow.Month = int(time.Now().Month())
 			invNow.Year = time.Now().Year()
+			invNow.Status = "outgoing"
 			if _, err = invoices.CreateOrUpdate(&invNow.Invoice); err != nil {
 				panic(err.Error())
 			}

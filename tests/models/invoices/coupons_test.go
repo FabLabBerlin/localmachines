@@ -82,6 +82,7 @@ func TestInvoiceCouponUsage(t *testing.T) {
 		inv.UserId = uid
 		inv.Month = int(TIME_START.Month())
 		inv.Year = TIME_START.Year()
+		inv.Status = "outgoing"
 		if _, err = invoices.CreateOrUpdate(&inv.Invoice); err != nil {
 			panic(err.Error())
 		}

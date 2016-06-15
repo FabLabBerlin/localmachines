@@ -38,33 +38,48 @@ func (inv *Invoice) TableName() string {
 	return TABLE_NAME
 }
 
-// CreateOrUpdate based on LocationId and FastbillId
-func CreateOrUpdate(invOrig *Invoice) (id int64, err error) {
-	if invOrig.LocationId == 0 {
-		return 0, fmt.Errorf("missing location id")
-	}
-	if invOrig.UserId == 0 {
-		return 0, fmt.Errorf("missing user id")
-	}
-	if invOrig.Month == 0 {
-		return 0, fmt.Errorf("missing month")
-	}
-	if invOrig.Year == 0 {
-		return 0, fmt.Errorf("missing year")
-	}
-	o := orm.NewOrm()
-	inv := *invOrig
-	_, id, err = o.ReadOrCreate(&inv, "LocationId", "UserId", "Month", "Year", "Status")
-	if err != nil {
-		return 0, fmt.Errorf("read or create: %v", err)
+func Create(inv *Invoice) (id int64, err error) {
+	if err := inv.assertDataOk(); err != nil {
+		return 0, fmt.Errorf("assert data ok: %v", err)
 	}
 
-	inv = *invOrig
-	inv.Id = id
-	invOrig.Id = id
-	if _, err = o.Update(&inv); err != nil {
-		return inv.Id, fmt.Errorf("update: %v", err)
+	o := orm.NewOrm()
+	_, err = o.Insert(inv)
+
+	return
+}
+
+// CreateOrUpdate based on LocationId and FastbillId
+func CreateOrUpdate(invOrig *Invoice) (id int64, err error) {
+	if err := invOrig.assertDataOk(); err != nil {
+		return 0, fmt.Errorf("assert data ok: %v", err)
 	}
+
+	existing, err := GetByProps(
+		invOrig.LocationId,
+		invOrig.UserId,
+		time.Month(invOrig.Month),
+		invOrig.Year,
+		invOrig.Status,
+	)
+	if err == nil {
+		invOrig.Id = existing.Id
+		if err = invOrig.Update(); err == nil {
+			return existing.Id, nil
+		} else {
+			return 0, fmt.Errorf("update: %v", err)
+		}
+	} else if err == orm.ErrNoRows {
+		id, err := Create(invOrig)
+		if err == nil {
+			return id, err
+		} else {
+			return 0, fmt.Errorf("create: %v", err)
+		}
+	} else {
+		return 0, fmt.Errorf("get by props: %v", err)
+	}
+
 	return
 }
 
@@ -76,11 +91,27 @@ func CurrentInvoice(locationId, userId int64) (*Invoice, error) {
 		Year:       time.Now().Year(),
 		Status:     "draft",
 	}
-	_, _, err := orm.NewOrm().
-		ReadOrCreate(&inv, "LocationId", "UserId", "Month", "Year", "Status")
-	if err != nil {
-		return nil, fmt.Errorf("read or create: %v", err)
+
+	existing, err := GetByProps(
+		inv.LocationId,
+		inv.UserId,
+		time.Month(inv.Month),
+		inv.Year,
+		inv.Status,
+	)
+
+	if err == nil {
+		return existing, nil
+	} else if err == orm.ErrNoRows {
+		if _, err := Create(&inv); err == nil {
+			return &inv, nil
+		} else {
+			return nil, fmt.Errorf("create: %v", err)
+		}
+	} else {
+		return nil, fmt.Errorf("get by props: %v", err)
 	}
+
 	return &inv, err
 }
 
@@ -118,4 +149,46 @@ func GetAllOfUserAt(locId, userId int64) ([]*Invoice, error) {
 		Filter("user_id", userId).
 		All(&ivs)
 	return ivs, err
+}
+
+func GetByProps(locId, uid int64, m time.Month, y int, status string) (*Invoice, error) {
+	var inv Invoice
+
+	err := orm.NewOrm().
+		QueryTable(TABLE_NAME).
+		Filter("location_id", locId).
+		Filter("user_id", uid).
+		Filter("month", int(m)).
+		Filter("year", y).
+		Filter("status", status).
+		One(&inv)
+
+	return &inv, err
+}
+
+func (inv *Invoice) assertDataOk() (err error) {
+	if inv.LocationId == 0 {
+		return fmt.Errorf("missing location id")
+	}
+	if inv.UserId == 0 {
+		return fmt.Errorf("missing user id")
+	}
+	if inv.Month == 0 {
+		return fmt.Errorf("missing month")
+	}
+	if inv.Year == 0 {
+		return fmt.Errorf("missing year")
+	}
+	if inv.Status == "" {
+		return fmt.Errorf("missing status")
+	}
+	return
+}
+
+func (inv *Invoice) Update() (err error) {
+	if err := inv.assertDataOk(); err != nil {
+		return fmt.Errorf("assert data ok: %v", err)
+	}
+	_, err = orm.NewOrm().Update(inv)
+	return
 }
