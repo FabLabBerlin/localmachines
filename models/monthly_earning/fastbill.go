@@ -91,7 +91,7 @@ func CreateFastbillDraft(inv *invutil.Invoice) (fbDraft *fastbill.Invoice, empty
 	if fbDraft.Month, fbDraft.Year, err = getFastbillMonthYear(&intv); err != nil {
 		return nil, false, fmt.Errorf("get fastbill month: %v", err)
 	}
-	ms, err := memberships.GetUserMemberships(inv.User.Id)
+	ms, err := memberships.GetUserMembershipsForInvoice(inv.Id)
 	if err != nil {
 		return nil, false, fmt.Errorf("GetUserMemberships: %v", err)
 	}

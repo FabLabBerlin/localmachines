@@ -3,6 +3,7 @@ package userctrls
 import (
 	"encoding/json"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
+	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices"
 	"github.com/astaxie/beego"
 	"time"
 )
@@ -83,7 +84,20 @@ func (this *UserMembershipsController) GetUserMemberships() {
 	}
 	locationId, _ := this.GetInt64("location")
 
-	all, err := memberships.GetUserMemberships(uid)
+	if locationId <= 0 {
+		beego.Error("location id:", locationId)
+		this.Abort("400")
+	}
+
+	inv, err := invoices.CurrentInvoice(locationId, uid)
+	if err != nil {
+		beego.Error("current invoice:", err)
+		this.Abort("500")
+	}
+
+	beego.Info("current inv.Id=", inv.Id)
+
+	all, err := memberships.GetUserMembershipsForInvoice(inv.Id)
 	if err != nil {
 		beego.Error("Failed to get user machine permissions")
 		this.Abort("500")

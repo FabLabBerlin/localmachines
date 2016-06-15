@@ -53,7 +53,7 @@ func CreateOrUpdate(invOrig *Invoice) (id int64, err error) {
 	}
 	o := orm.NewOrm()
 	inv := *invOrig
-	_, id, err = o.ReadOrCreate(&inv, "LocationId", "UserId", "Month", "Year")
+	_, id, err = o.ReadOrCreate(&inv, "LocationId", "UserId", "Month", "Year", "Status")
 	if err != nil {
 		return 0, fmt.Errorf("read or create: %v", err)
 	}

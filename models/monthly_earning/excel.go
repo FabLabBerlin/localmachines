@@ -158,7 +158,7 @@ func createXlsxFile(filePath string, monthlyEarning *MonthlyEarning) error {
 	// Fill the xlsx sheet
 	for _, inv := range monthlyEarning.Invoices {
 
-		ms, err := memberships.GetUserMemberships(inv.User.Id)
+		ms, err := memberships.GetUserMembershipsForInvoice(inv.Id)
 		if err != nil {
 			return fmt.Errorf("GetUserMemberships: %v", err)
 		}

@@ -49,11 +49,15 @@ func init() {
 // Extended user membership type that contains the same fields as
 // the UserMembership model and fields of the Membership model.
 type UserMembershipCombo struct {
-	Id                    int64
-	UserId                int64
-	MembershipId          int64
-	StartDate             time.Time
-	EndDate               time.Time
+	Id            int64
+	UserId        int64
+	MembershipId  int64
+	StartDate     time.Time
+	EndDate       time.Time
+	AutoExtend    bool
+	InvoiceId     int64
+	InvoiceStatus string
+
 	LocationId            int64
 	Title                 string
 	ShortName             string
@@ -62,7 +66,6 @@ type UserMembershipCombo struct {
 	MonthlyPrice          float64
 	MachinePriceDeduction int
 	AffectedMachines      string
-	AutoExtend            bool
 }
 
 // List container for the UserMembershipCombo type. Beego swagger
@@ -127,7 +130,7 @@ func GetUserMembership(id int64) (*UserMembership, error) {
 }
 
 // Gets all user memberships for a user by consuming user ID.
-func GetUserMemberships(userId int64) (*UserMembershipList, error) {
+func GetUserMembershipsForInvoice(invoiceId int64) (*UserMembershipList, error) {
 
 	o := orm.NewOrm()
 
@@ -138,15 +141,15 @@ func GetUserMemberships(userId int64) (*UserMembershipList, error) {
 	// Joint query, select user memberships and expands them with
 	// membership base information.
 	sql := fmt.Sprintf("SELECT um.*, m.location_id, m.title, m.short_name, m.duration_months, "+
-		"m.monthly_price, m.machine_price_deduction, m.affected_machines "+
+		"m.monthly_price, m.machine_price_deduction, m.affected_machines, m.auto_extend "+
 		"FROM %s AS um "+
 		"JOIN %s m ON um.membership_id=m.id "+
-		"WHERE um.user_id=?",
+		"WHERE um.invoice_id=?",
 		um.TableName(), m.TableName())
 
 	var userMemberships []UserMembershipCombo
-	if _, err := o.Raw(sql, userId).QueryRows(&userMemberships); err != nil {
-		return nil, fmt.Errorf("Failed to get user memberships")
+	if _, err := o.Raw(sql, invoiceId).QueryRows(&userMemberships); err != nil {
+		return nil, fmt.Errorf("query rows: %v", err)
 	}
 
 	userMembershipList := UserMembershipList{

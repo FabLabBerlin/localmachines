@@ -116,7 +116,7 @@ func (inv *Invoice) CalculateTotals() (err error) {
 	inv.Sums.Purchases.PriceExclVAT = inv.Sums.Purchases.PriceInclVAT / p
 	inv.Sums.Purchases.PriceVAT = inv.Sums.Purchases.PriceInclVAT - inv.Sums.Purchases.PriceExclVAT
 
-	ms, err := memberships.GetUserMemberships(inv.User.Id)
+	ms, err := memberships.GetUserMembershipsForInvoice(inv.Id)
 	if err != nil {
 		return fmt.Errorf("GetUserMemberships: %v", err)
 	}

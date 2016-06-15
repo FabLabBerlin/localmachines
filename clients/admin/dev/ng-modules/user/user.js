@@ -245,7 +245,8 @@ app.controller('UserCtrl',
       method: 'GET',
       url: '/api/users/' + $scope.user.Id + '/memberships',
       params: {
-        ac: new Date().getTime()
+        ac: new Date().getTime(),
+        location: $cookies.get('location')
       }
     })
     .success(function(userMembershipList) {
