@@ -126,6 +126,11 @@ func (this *Controller) Migrate() {
 			inv.Status = "outgoing"
 		}
 
+		if inv.Year == time.Now().Year() &&
+			inv.Month == int(time.Now().Month()) {
+			inv.Current = true
+		}
+
 		if _, err = o.Insert(inv); err != nil {
 			beego.Error("Create new user invoice:", err)
 			this.Abort("500")

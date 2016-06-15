@@ -36,6 +36,7 @@ func (m *InvoicesTable_20160531_154603) Up() {
 			invoice_date DATETIME,
 			paid_date DATETIME,
 			due_date DATETIME,
+			current TINYINT(1),
 			PRIMARY KEY (id)
 	)`)
 }
