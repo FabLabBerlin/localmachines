@@ -167,6 +167,7 @@ func GetByProps(locId, uid int64, m time.Month, y int, status string) (*Invoice,
 }
 
 func (inv *Invoice) assertDataOk() (err error) {
+	// Basic checks
 	if inv.LocationId == 0 {
 		return fmt.Errorf("missing location id")
 	}
@@ -182,6 +183,27 @@ func (inv *Invoice) assertDataOk() (err error) {
 	if inv.Status == "" {
 		return fmt.Errorf("missing status")
 	}
+
+	// Check for possible conflicts
+	ivs, err := GetAllOfUserAt(inv.LocationId, inv.UserId)
+	if err != nil {
+		return fmt.Errorf("get all of user at: %v", err)
+	}
+	for _, iv := range ivs {
+		if iv.Id == inv.Id {
+			continue
+		}
+
+		if iv.LocationId == inv.LocationId &&
+			iv.UserId == inv.UserId &&
+			iv.Month == inv.Month &&
+			iv.Year == inv.Year &&
+			iv.Status == inv.Status {
+			return fmt.Errorf("(id=%v) conflicting with invoice %v",
+				inv.Id, iv.Id)
+		}
+	}
+
 	return
 }
 

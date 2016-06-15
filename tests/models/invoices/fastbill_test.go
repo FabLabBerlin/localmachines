@@ -92,6 +92,8 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 		})
 
 		Convey("Flatrate Memberships in draft leave no 0 price items", func() {
+			Reset(setup.ResetDB)
+
 			p := CreateTestPurchase(lasercutter.Id, "Lasercutter", time.Duration(34)*time.Hour, 0.5)
 			p.UserId = uid
 			if _, err := o.Insert(p); err != nil {
@@ -103,7 +105,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 			inv.UserId = uid
 			inv.Month = int(TIME_START.Month())
 			inv.Year = TIME_START.Year()
-			inv.Status = "outgoing"
+			inv.Status = "draft"
 			if _, err = invoices.CreateOrUpdate(&inv.Invoice); err != nil {
 				panic(err.Error())
 			}
@@ -140,21 +142,27 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 			}
 			//t := time.Now()
 
-			invs, err := invutil.GetAllOfMonthAt(1, TIME_START.Year(), TIME_START.Month())
+			all, err := invutil.GetAllOfMonthAt(1, TIME_START.Year(), TIME_START.Month())
 			if err != nil {
 				panic(err.Error())
 			}
-			if n := len(invs); n != 1 {
+			drafts := make([]*invutil.Invoice, 0, 1)
+			for _, iv := range all {
+				if iv.Status == "draft" {
+					drafts = append(drafts, iv)
+				}
+			}
+			if n := len(drafts); n != 1 {
 				panic(fmt.Sprintf("expected 1 but got %v", n))
 			}
 
-			invs[0].User.ClientId = 1
+			drafts[0].User.ClientId = 1
 
 			testServer := mock.NewServer()
 
 			fastbill.API_URL = testServer.URL()
 
-			_, empty, err := monthly_earning.CreateFastbillDraft(invs[0])
+			_, empty, err := monthly_earning.CreateFastbillDraft(drafts[0])
 			So(empty, ShouldBeFalse)
 			So(err, ShouldBeNil)
 			So(testServer.FbInv.Items, ShouldHaveLength, 1)
