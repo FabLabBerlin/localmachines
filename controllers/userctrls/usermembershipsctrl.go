@@ -89,7 +89,7 @@ func (this *UserMembershipsController) GetUserMemberships() {
 		this.Abort("400")
 	}
 
-	inv, err := invoices.CurrentInvoice(locationId, uid)
+	inv, err := invoices.ThisMonthInvoice(locationId, uid)
 	if err != nil {
 		beego.Error("current invoice:", err)
 		this.Abort("500")

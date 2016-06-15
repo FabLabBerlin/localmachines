@@ -86,7 +86,7 @@ func CreateOrUpdate(invOrig *Invoice) (id int64, err error) {
 	}
 }
 
-func CurrentInvoice(locationId, userId int64) (*Invoice, error) {
+func ThisMonthInvoice(locationId, userId int64) (*Invoice, error) {
 	inv := Invoice{
 		LocationId: locationId,
 		UserId:     userId,
