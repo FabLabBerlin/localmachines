@@ -200,7 +200,6 @@ var BillTable = React.createClass({
     );
 
     _.each(bill.UserMemberships.Data, (um) => {
-      console.log('um=', um);
       tbody.push(
         <tr key={i++}>
           <td>{um.Title}</td>
