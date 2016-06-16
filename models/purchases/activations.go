@@ -239,19 +239,19 @@ func (a *Activation) Close(endTime time.Time) error {
 
 // Updates existing activation by consuming a pointer to
 // existing activation store.
-func (activation *Activation) Update() error {
-	if activation.Purchase.InvoiceId <= 0 {
+func (a *Activation) Update() error {
+	if a.Purchase.InvoiceId <= 0 {
 		return fmt.Errorf("undefined invoice id")
 	}
-	if mid := activation.Purchase.MachineId; mid != 0 {
+	if mid := a.Purchase.MachineId; mid != 0 {
 		m, err := machine.Get(mid)
 		if err != nil {
 			return err
 		}
-		activation.Purchase.PriceUnit = m.PriceUnit
-		activation.Purchase.PricePerUnit = m.Price
+		a.Purchase.PriceUnit = m.PriceUnit
+		a.Purchase.PricePerUnit = m.Price
 	}
-	activation.Purchase.Quantity = activation.Purchase.quantityFromTimes()
+	a.Purchase.Quantity = a.Purchase.quantityFromTimes()
 
-	return Update(&activation.Purchase)
+	return Update(&a.Purchase)
 }

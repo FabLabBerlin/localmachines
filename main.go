@@ -120,7 +120,7 @@ func setupTasks() {
 		"0 0/2 * * * *",
 		machine.FetchLocalIpsTask)
 	calculateInvoiceTotals := toolbox.NewTask("Calculate Invoice Totals",
-		" 0 0/50 * * * *",
+		" 0 0/1 * * * *",
 		invutil.CalculateInvoiceTotalsTask)
 
 	toolbox.AddTask("Calculate Invoice Totals", calculateInvoiceTotals)

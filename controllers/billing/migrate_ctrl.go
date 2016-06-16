@@ -215,7 +215,8 @@ func (this *Controller) Migrate() {
 				var um *memberships.UserMembership
 
 				if i == 0 {
-					um = umCurrent
+					clone := *umCurrent
+					um = &clone
 				} else {
 					clone := *umCurrent
 					um = &clone
