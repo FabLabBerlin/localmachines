@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/lib/fastbill"
+	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices"
@@ -95,6 +96,13 @@ func (inv *Invoice) CalculateTotals() (err error) {
 	inv.Sums.All.PriceExclVAT = inv.Sums.Purchases.PriceExclVAT + inv.Sums.Memberships.PriceExclVAT
 	inv.Sums.All.PriceVAT = inv.Sums.Purchases.PriceVAT + inv.Sums.Memberships.PriceVAT
 
+	if inv.Invoice.Total != inv.Sums.All.PriceInclVAT {
+		inv.Invoice.Total = inv.Sums.All.PriceInclVAT
+		go func() {
+			inv.SaveTotal()
+		}()
+	}
+
 	return
 }
 
@@ -172,6 +180,28 @@ func (inv *Invoice) SplitByMonths() (invs []*Invoice, err error) {
 	return
 }
 
+func CalculateInvoiceTotalsTask() (err error) {
+	beego.Info("Running CalculateInvoiceTotalsTask")
+
+	ls, err := locations.GetAll()
+	if err != nil {
+		return fmt.Errorf("get all locations: %v", err)
+	}
+	for _, l := range ls {
+		invs, err := GetAllAt(l.Id)
+		if err != nil {
+			return fmt.Errorf("get all invoices @ %v: %v", l.Id, err)
+		}
+		for _, inv := range invs {
+			if err := inv.CalculateTotals(); err != nil {
+				return fmt.Errorf("calculate totals for %v: %v", inv.Id, err)
+			}
+		}
+	}
+
+	return
+}
+
 func Get(id int64) (inv *Invoice, err error) {
 	iv, err := invoices.Get(id)
 	if err != nil {
@@ -182,6 +212,19 @@ func Get(id int64) (inv *Invoice, err error) {
 	})
 
 	return tmp[0], err
+}
+
+func GetAllAt(locId int64) (invs []*Invoice, err error) {
+	ivs, err := invoices.GetAllInvoices(locId)
+	if err != nil {
+		return nil, fmt.Errorf("invoices.GetAllInvoices: %v", err)
+	}
+
+	if invs, err = toUtilInvoices(locId, ivs); err != nil {
+		return nil, fmt.Errorf("to util invoices: %v", err)
+	}
+
+	return
 }
 
 func GetAllOfUserAt(locId, userId int64) (invs []*Invoice, err error) {

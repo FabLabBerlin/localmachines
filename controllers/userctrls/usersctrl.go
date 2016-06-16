@@ -650,33 +650,3 @@ func (this *UsersController) PostUserPassword() {
 	}
 	this.ServeJSON()
 }
-
-// @Title UpdateNfcUid
-// @Description Update user NFC UID
-// @Param	uid		path 	int	true		"User ID"
-// @Param	nfcuid		query 	int	true		"NFC UID"
-// @Success 200	string	ok
-// @Failure	403	Failed to update NFC UID
-// @Failure	401	Not authorized
-// @router /:uid/nfcuid [put]
-func (this *UsersController) UpdateNfcUid() {
-	uid, authorized := this.GetRouteUid()
-	if !authorized {
-		this.CustomAbort(400, "Wrong uid in url or not authorized")
-	}
-
-	// Get the NFC UID
-	nfcuid := this.GetString("nfcuid")
-	if nfcuid == "" {
-		beego.Error("Empty nfcuid")
-		this.CustomAbort(403, "Failed to update NFC UID")
-	}
-
-	if err := users.AuthUpdateNfcUid(uid, nfcuid); err != nil {
-		beego.Error("Unable to update NFC UID: ", err)
-		this.CustomAbort(403, "Failed to update NFC UID")
-	}
-
-	this.Data["json"] = "ok"
-	this.ServeJSON()
-}

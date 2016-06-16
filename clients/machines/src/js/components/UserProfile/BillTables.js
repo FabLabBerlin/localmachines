@@ -12,7 +12,7 @@ var BillTables = React.createClass({
   getDataBindings() {
     return {
       bill: getters.getBill,
-      monthlyBills: getters.getMonthlyBills,
+      monthlyBills: getters.getMonthlyBills
     };
   },
 

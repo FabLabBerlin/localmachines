@@ -6,6 +6,7 @@ import (
 	_ "github.com/FabLabBerlin/localmachines/docs"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/memberships/auto_extend"
+	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/routers"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
@@ -118,7 +119,11 @@ func setupTasks() {
 	fetchLocalIpsTask := toolbox.NewTask("Fetch Local IPs",
 		"0 0/2 * * * *",
 		machine.FetchLocalIpsTask)
+	calculateInvoiceTotals := toolbox.NewTask("Calculate Invoice Totals",
+		" 0 0/50 * * * *",
+		invutil.CalculateInvoiceTotalsTask)
 
+	toolbox.AddTask("Calculate Invoice Totals", calculateInvoiceTotals)
 	toolbox.AddTask("Extend User Memberships", extUsrMemberships)
 	toolbox.AddTask("Fetch Local IPs", fetchLocalIpsTask)
 }

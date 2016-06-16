@@ -69,7 +69,7 @@ func CreateOrUpdate(invOrig *Invoice) (id int64, err error) {
 	)
 	if err == nil {
 		invOrig.Id = existing.Id
-		if err = invOrig.Update(); err == nil {
+		if err = invOrig.Save(); err == nil {
 			return existing.Id, nil
 		} else {
 			return 0, fmt.Errorf("update: %v", err)
@@ -251,6 +251,34 @@ func (inv *Invoice) AttachUserMembership(um *memberships.UserMembership) error {
 	return nil
 }
 
+func (inv *Invoice) Save() (err error) {
+	if err := inv.assertDataOk(); err != nil {
+		return fmt.Errorf("assert data ok: %v", err)
+	}
+	_, err = orm.NewOrm().Update(inv)
+	return
+}
+
+func (inv *Invoice) SaveTotal() (err error) {
+	if err := inv.assertDataOk(); err != nil {
+		return fmt.Errorf("assert data ok: %v", err)
+	}
+	if inv.Id <= 0 {
+		return fmt.Errorf("no (valid) invoice id")
+	}
+
+	query := `
+	UPDATE invoices
+	SET total = ?
+	WHERE id = ?
+	`
+
+	o := orm.NewOrm()
+	_, err = o.Raw(query, inv.Total, inv.Id).Exec()
+
+	return
+}
+
 // SetCurrent sets inv as the current invoice.  The function is idempotent.
 // To avoid expensive transactions, it does these steps:
 //
@@ -338,13 +366,5 @@ func (inv *Invoice) SetCurrent() (err error) {
 		return fmt.Errorf("commit tx: %v", err)
 	}
 
-	return
-}
-
-func (inv *Invoice) Update() (err error) {
-	if err := inv.assertDataOk(); err != nil {
-		return fmt.Errorf("assert data ok: %v", err)
-	}
-	_, err = orm.NewOrm().Update(inv)
 	return
 }
