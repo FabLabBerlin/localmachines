@@ -58,7 +58,13 @@ func (this *UserMembershipsController) PostUserMemberships() {
 		this.Abort("500")
 	}
 
-	userMembership, err := memberships.CreateUserMembership(uid, mId, startDate)
+	inv, err := invoices.ThisMonthInvoice(m.LocationId, uid)
+	if err != nil {
+		beego.Error("error getting this month' invoice:", err)
+		this.Abort("500")
+	}
+
+	userMembership, err := memberships.CreateUserMembership(uid, mId, inv.Id, startDate)
 	if err != nil {
 		beego.Error("Error creating user membership:", err)
 		this.Abort("500")

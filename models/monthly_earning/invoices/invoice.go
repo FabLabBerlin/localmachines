@@ -238,11 +238,10 @@ func (inv *Invoice) AttachUserMembership(um *memberships.UserMembership) error {
 			}
 		}
 
-		newUm, err := memberships.CreateUserMembership(um.UserId, um.MembershipId, um.StartDate)
+		newUm, err := memberships.CreateUserMembership(um.UserId, um.MembershipId, inv.Id, um.StartDate)
 		if err != nil {
 			return fmt.Errorf("create user membership: %v", err)
 		}
-		newUm.InvoiceId = inv.Id
 		newUm.InvoiceStatus = inv.Status
 		if newUm.Update(); err != nil {
 			return fmt.Errorf("update user membership: %v", err)

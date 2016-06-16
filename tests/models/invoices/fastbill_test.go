@@ -132,12 +132,8 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 				panic(err.Error())
 			}
 			startTime := time.Now().AddDate(0, -2, 0)
-			um, err := memberships.CreateUserMembership(uid, ms.Id, startTime)
+			_, err = memberships.CreateUserMembership(uid, ms.Id, inv.Id, startTime)
 			if err != nil {
-				panic(err.Error())
-			}
-			um.InvoiceId = inv.Id
-			if err := um.Update(); err != nil {
 				panic(err.Error())
 			}
 			//t := time.Now()

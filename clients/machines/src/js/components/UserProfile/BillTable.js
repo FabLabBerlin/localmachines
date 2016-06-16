@@ -135,7 +135,11 @@ var BillTable = React.createClass({
       </tr>
     );
 
-    _.each(bill.Purchases, (purchase) => {
+    var sorted = _.sortBy(bill.Purchases, (p) => {
+      return -moment(p.TimeStart).unix();
+    });
+
+    _.each(sorted, (purchase) => {
       var label = purchase.Machine ? purchase.Machine.Name : '';
       switch (purchase.Type) {
       case 'activation':
@@ -171,10 +175,6 @@ var BillTable = React.createClass({
           <td>{formatPrice(purchase.DiscountedTotal)}€</td>
         </tr>
       );
-    });
-
-    bill.purchases = _.sortBy(bill.purchases, (p) => {
-      return -p.TimeStart.unix();
     });
 
     tbody.push(

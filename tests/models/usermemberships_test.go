@@ -102,7 +102,7 @@ func TestUserMemberships(t *testing.T) {
 				startDate := time.Now()
 				fakeUserId := int64(1)
 				userMembership, err := memberships.CreateUserMembership(
-					fakeUserId, fakeMembershipId, startDate)
+					fakeUserId, fakeMembershipId, 123, startDate)
 
 				Convey("It should return error", func() {
 					So(err, ShouldNotBeNil)
@@ -116,7 +116,7 @@ func TestUserMemberships(t *testing.T) {
 			Convey("When creating user membership normally", func() {
 				startDate := time.Date(2015, 6, 1, 0, 0, 0, 0, time.UTC)
 				userMembership, err := memberships.CreateUserMembership(
-					userId, membership.Id, startDate)
+					userId, membership.Id, invNow.Id, startDate)
 				if err != nil {
 					panic(err.Error())
 				}
@@ -210,12 +210,6 @@ func TestUserMemberships(t *testing.T) {
 			loc, _ := time.LoadLocation("Europe/Berlin")
 			startTime := time.Date(2015, time.July, 10, 23, 0, 0, 0, loc)
 
-			userMembership, err := memberships.CreateUserMembership(
-				fakeUserId, m.Id, startTime)
-
-			So(userMembership.Id, ShouldBeGreaterThan, 0)
-			So(err, ShouldBeNil)
-
 			inv := &invutil.Invoice{}
 			inv.LocationId = 1
 			inv.UserId = fakeUserId
@@ -225,6 +219,12 @@ func TestUserMemberships(t *testing.T) {
 			if _, err = invoices.CreateOrUpdate(&inv.Invoice); err != nil {
 				panic(err.Error())
 			}
+
+			userMembership, err := memberships.CreateUserMembership(
+				fakeUserId, m.Id, inv.Id, startTime)
+
+			So(userMembership.Id, ShouldBeGreaterThan, 0)
+			So(err, ShouldBeNil)
 
 			// Get the created membership for later comparison
 			userMembership, err = memberships.GetUserMembership(userMembership.Id)
@@ -274,8 +274,6 @@ func TestUserMemberships(t *testing.T) {
 			loc, _ := time.LoadLocation("Europe/Berlin")
 			startTime := time.Date(2015, time.July, 10, 23, 0, 0, 0, loc)
 
-			userMembership, err := memberships.CreateUserMembership(
-				fakeUserId, m.Id, startTime)
 			inv7_15 := &invutil.Invoice{}
 			inv7_15.LocationId = 1
 			inv7_15.UserId = fakeUserId
@@ -283,6 +281,12 @@ func TestUserMemberships(t *testing.T) {
 			inv7_15.Year = 2015
 			inv7_15.Status = "outgoing"
 			if _, err = invoices.CreateOrUpdate(&inv7_15.Invoice); err != nil {
+				panic(err.Error())
+			}
+
+			userMembership, err := memberships.CreateUserMembership(
+				fakeUserId, m.Id, inv7_15.Id, startTime)
+			if err != nil {
 				panic(err.Error())
 			}
 
