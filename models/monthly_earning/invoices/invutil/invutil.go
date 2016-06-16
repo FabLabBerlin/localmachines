@@ -16,9 +16,10 @@ import (
 
 type Invoice struct {
 	invoices.Invoice
-	User      *users.User         `json:",omitempty"`
-	Purchases purchases.Purchases `json:",omitempty"`
-	Sums      *Sums               `json:",omitempty"`
+	User            *users.User                     `json:",omitempty"`
+	UserMemberships *memberships.UserMembershipList `json:",omitempty"`
+	Purchases       purchases.Purchases             `json:",omitempty"`
+	Sums            *Sums                           `json:",omitempty"`
 }
 
 // Send an invoice transactionally. This includes:
@@ -116,6 +117,10 @@ func (inv *Invoice) Load() (err error) {
 	}
 	if inv.Purchases, err = purchases.GetByInvoiceId(inv.Id); err != nil {
 		return fmt.Errorf("get purchases by invoice id: %v", err)
+	}
+	inv.UserMemberships, err = memberships.GetUserMembershipsForInvoice(inv.Id)
+	if err != nil {
+		return fmt.Errorf("get user memberships for invoice: %v", err)
 	}
 	locSettings, err := settings.GetAllAt(inv.LocationId)
 	if err != nil {
