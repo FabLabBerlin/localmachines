@@ -238,6 +238,15 @@ func (this *Controller) Migrate() {
 					if um.InvoiceId == 0 {
 						inv := invs[0]
 						um.InvoiceId = inv.Id
+						if i == 0 {
+							if um.UserId == 441 {
+								beego.Info("o.Update'ing in-place um.id=", um.Id)
+							}
+							if _, err = o.Update(um); err != nil {
+								beego.Error("Update user membership:", err)
+								this.Abort("500")
+							}
+						}
 					}
 				default:
 					beego.Error("Matched", len(invs), "invoices to user m'ship",
@@ -269,16 +278,7 @@ func (this *Controller) Migrate() {
 		}
 	}
 
-	// 2. User memberships
-	beego.Info("Persisting user memberships...")
-	for _, um := range ums {
-		if _, err = o.Update(um); err != nil {
-			beego.Error("Update user membership:", err)
-			this.Abort("500")
-		}
-	}
-
-	// 3. New User memberships
+	// 2. New User memberships
 	beego.Info("Persisting new user memberships...")
 	for _, newUm := range newUms {
 		if _, err = o.Insert(newUm); err != nil {
