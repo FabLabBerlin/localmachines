@@ -5,7 +5,6 @@ var LocationGetters = require('../../modules/Location/getters');
 var LoginActions = require('../../actions/LoginActions');
 var MachineActions = require('../../actions/MachineActions');
 var Machines = require('../../modules/Machines');
-var Membership = require('./Membership');
 var NfcLogoutMixin = require('../Login/NfcLogoutMixin');
 var {Navigation} = require('react-router');
 var React = require('react');
@@ -50,15 +49,11 @@ var SpendingsPage = React.createClass({
   },
 
   render() {
+    console.log('SpendingsPage: bill=', this.state.bill);
     if (this.state.memberships && this.state.bill) {
       return (
         <div className="container">
-          <h3>Your Memberships</h3>
-          {<Membership memberships={this.state.memberships.toJS()} />}
-
-          <h3>Pay-As-You-Go</h3>
           <BillTables bill={this.state.bill} membership={this.state.membership}/>
-          <ScrollNav/>
         </div>
       );
     } else {

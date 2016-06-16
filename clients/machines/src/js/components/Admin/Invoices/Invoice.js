@@ -3,7 +3,6 @@ var getters = require('../../../getters');
 var Invoices = require('../../../modules/Invoices');
 var LoaderLocal = require('../../LoaderLocal');
 var LocationGetters = require('../../../modules/Location/getters');
-var Membership = require('../../UserProfile/Membership');
 var moment = require('moment');
 var React = require('react');
 var reactor = require('../../../reactor');
@@ -37,7 +36,7 @@ var Invoice = React.createClass({
       }
       /*eslint-enable no-alert */
     }
-    Invoices.actions.selectUserId(null);
+    Invoices.actions.selectInvoiceId(null);
   },
 
   makeDraft(e) {

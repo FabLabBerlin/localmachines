@@ -113,7 +113,18 @@ var BillTable = React.createClass({
       </div>
     );
 
-    thead.push(
+    tbody.push(
+      <tr key={i++}>
+        <td><b>Purchases</b></td>
+        <td>&nbsp;</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+    );
+
+    tbody.push(
       <tr key={i++}>
         <th>Machine</th>
         <th>Date</th>
@@ -164,6 +175,42 @@ var BillTable = React.createClass({
 
     bill.purchases = _.sortBy(bill.purchases, (p) => {
       return -p.TimeStart.unix();
+    });
+
+    tbody.push(
+      <tr key={i++}>
+        <td><b>Memberships</b></td>
+        <td>&nbsp;</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+    );
+
+    tbody.push(
+      <tr key={i++}>
+        <th>Type</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th></th>
+        <th></th>
+        <th>Value/month</th>
+      </tr>
+    );
+
+    _.each(bill.UserMemberships.Data, (um) => {
+      console.log('um=', um);
+      tbody.push(
+        <tr key={i++}>
+          <td>{um.Title}</td>
+          <td>{formatDate(moment(um.StartDate))}</td>
+          <td>{formatDate(moment(um.EndDate))}</td>
+          <td></td>
+          <td></td>
+          <td>{formatPrice(um.MonthlyPrice)}€</td>
+        </tr>
+      );
     });
 
     tfoot.push(
