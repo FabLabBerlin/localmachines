@@ -132,6 +132,10 @@ const getMonthlyBills = [
   (bill, billMonths, membershipsByMonth) => {
     if (bill) {
       var list = bill.slice();
+      console.log('getMonthlyBills: list=', list);
+      list = _.sortBy(list, (inv) => {
+        return inv.Year * 100 + inv.Month;
+      });
       list.reverse();
       return list;
     }

@@ -120,6 +120,9 @@ func TestUserMemberships(t *testing.T) {
 				if err != nil {
 					panic(err.Error())
 				}
+				if err := invNow.AttachUserMembership(userMembership); err != nil {
+					panic(err.Error())
+				}
 				gotUserMembership, err := memberships.GetUserMembership(userMembership.Id)
 				if err != nil {
 					panic(err.Error())
