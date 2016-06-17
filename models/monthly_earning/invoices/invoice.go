@@ -320,7 +320,7 @@ func (inv *Invoice) SetCurrent() (err error) {
 			return fmt.Errorf("get user memberships for this inv: %v", err)
 		}
 
-		umsToBeCloned := make([]memberships.UserMembershipCombo, 0, len(currentUms.Data))
+		umsToBeCloned := make([]*memberships.UserMembershipCombo, 0, len(currentUms.Data))
 		for _, um := range currentUms.Data {
 			alreadyCloned := false
 			for _, existing := range thisUms.Data {

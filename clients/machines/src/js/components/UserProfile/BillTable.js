@@ -195,7 +195,7 @@ var BillTable = React.createClass({
         <th>End Date</th>
         <th></th>
         <th></th>
-        <th>Value/month</th>
+        <th>Total</th>
       </tr>
     );
 
@@ -207,7 +207,7 @@ var BillTable = React.createClass({
           <td>{formatDate(moment(um.EndDate))}</td>
           <td></td>
           <td></td>
-          <td>{formatPrice(um.MonthlyPrice)}€</td>
+          <td>{um.Bill ? (formatPrice(um.MonthlyPrice) + '€') : '-'}</td>
         </tr>
       );
     });

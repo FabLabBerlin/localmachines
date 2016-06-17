@@ -110,7 +110,7 @@ func (this *UserMembershipsController) GetUserMemberships() {
 	}
 
 	list := &memberships.UserMembershipList{
-		Data: make([]memberships.UserMembershipCombo, 0, len(all.Data)),
+		Data: make([]*memberships.UserMembershipCombo, 0, len(all.Data)),
 	}
 	for _, um := range all.Data {
 		if locationId <= 0 || locationId == um.LocationId {

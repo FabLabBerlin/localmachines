@@ -133,6 +133,10 @@ func (inv *Invoice) Load() (err error) {
 	if err != nil {
 		return fmt.Errorf("get user memberships for invoice: %v", err)
 	}
+	for _, umb := range inv.UserMemberships.Data {
+		bill := umb.Interval().Contains(inv.Interval().TimeTo())
+		umb.Bill = &bill
+	}
 	return
 }
 

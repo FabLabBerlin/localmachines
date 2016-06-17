@@ -66,6 +66,8 @@ type UserMembershipCombo struct {
 	MonthlyPrice          float64
 	MachinePriceDeduction int
 	AffectedMachines      string
+
+	Bill *bool `json:",omitempty"`
 }
 
 func (umc *UserMembershipCombo) Interval() lib.Interval {
@@ -90,7 +92,7 @@ func (umc *UserMembershipCombo) UserMembership() UserMembership {
 // has problems with interpretting plain arrays as documentable
 // data type.
 type UserMembershipList struct {
-	Data []UserMembershipCombo
+	Data []*UserMembershipCombo
 }
 
 // Creates user membership from user ID, membership ID and start time.
@@ -170,7 +172,7 @@ func GetUserMembershipsForInvoice(invoiceId int64) (*UserMembershipList, error) 
 		"WHERE um.invoice_id=?",
 		um.TableName(), m.TableName())
 
-	var userMemberships []UserMembershipCombo
+	var userMemberships []*UserMembershipCombo
 	if _, err := o.Raw(sql, invoiceId).QueryRows(&userMemberships); err != nil {
 		return nil, fmt.Errorf("query rows: %v", err)
 	}
