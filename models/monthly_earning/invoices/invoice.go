@@ -86,12 +86,18 @@ func CreateOrUpdate(invOrig *Invoice) (id int64, err error) {
 	}
 }
 
-func ThisMonthInvoice(locationId, userId int64) (*Invoice, error) {
+func ThisMonthInvoice(locId, uid int64) (*Invoice, error) {
+	return InvoiceOfMonth(locId, uid, time.Now().Year(), time.Now().Month())
+}
+
+func InvoiceOfMonth(locId, uid int64, y int, m time.Month) (*Invoice, error) {
+	isThisMonth := time.Now().Month() == m && time.Now().Year() == y
+
 	inv := Invoice{
-		LocationId: locationId,
-		UserId:     userId,
-		Month:      int(time.Now().Month()),
-		Year:       time.Now().Year(),
+		LocationId: locId,
+		UserId:     uid,
+		Month:      int(m),
+		Year:       y,
 		Status:     "draft",
 	}
 
@@ -106,13 +112,18 @@ func ThisMonthInvoice(locationId, userId int64) (*Invoice, error) {
 	if err == nil {
 		return existing, nil
 	} else if err == orm.ErrNoRows {
-		if _, err := Create(&inv); err == nil {
-			if err := inv.SetCurrent(); err != nil {
-				return nil, fmt.Errorf("set current: %v", err)
+		if isThisMonth {
+			if _, err := Create(&inv); err == nil {
+				if err := inv.SetCurrent(); err != nil {
+					return nil, fmt.Errorf("set current: %v", err)
+				}
+				return &inv, nil
+			} else {
+				return nil, fmt.Errorf("create: %v", err)
 			}
-			return &inv, nil
 		} else {
-			return nil, fmt.Errorf("create: %v", err)
+			return nil, fmt.Errorf("not auto creating inv for past month %v/%v",
+				int(m), y)
 		}
 	} else {
 		return nil, fmt.Errorf("get by props: %v", err)
@@ -238,7 +249,8 @@ func (inv *Invoice) AttachUserMembership(um *memberships.UserMembership) error {
 			}
 		}
 
-		newUm, err := memberships.CreateUserMembership(um.UserId, um.MembershipId, inv.Id, um.StartDate)
+		o := orm.NewOrm()
+		newUm, err := memberships.CreateUserMembership(o, um.UserId, um.MembershipId, inv.Id, um.StartDate)
 		if err != nil {
 			return fmt.Errorf("create user membership: %v", err)
 		}

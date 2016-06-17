@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"strconv"
 	"testing"
+	"time"
 
 	_ "github.com/FabLabBerlin/localmachines/controllers"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
@@ -450,7 +451,8 @@ func TestUsersAPI(t *testing.T) {
 					strconv.FormatInt(user.Id, 10)+
 					"/memberships?membershipId="+
 					strconv.FormatInt(membershipId, 10)+
-					"&startDate=2015-09-11", nil)
+					"&startDate="+
+					time.Now().Format("2006-01-02"), nil)
 				r.AddCookie(adminCookie)
 				w := httptest.NewRecorder()
 				beego.BeeApp.Handlers.ServeHTTP(w, r)

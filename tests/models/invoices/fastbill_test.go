@@ -94,6 +94,8 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 		Convey("Flatrate Memberships in draft leave no 0 price items", func() {
 			Reset(setup.ResetDB)
 
+			o := orm.NewOrm()
+
 			p := CreateTestPurchase(lasercutter.Id, "Lasercutter", time.Duration(34)*time.Hour, 0.5)
 			p.UserId = uid
 			if _, err := o.Insert(p); err != nil {
@@ -132,7 +134,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 				panic(err.Error())
 			}
 			startTime := time.Now().AddDate(0, -2, 0)
-			_, err = memberships.CreateUserMembership(uid, ms.Id, inv.Id, startTime)
+			_, err = memberships.CreateUserMembership(o, uid, ms.Id, inv.Id, startTime)
 			if err != nil {
 				panic(err.Error())
 			}

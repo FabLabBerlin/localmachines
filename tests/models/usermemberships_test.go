@@ -16,6 +16,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/user_permissions"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
+	"github.com/astaxie/beego/orm"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -101,8 +102,11 @@ func TestUserMemberships(t *testing.T) {
 				fakeMembershipId := int64(-23)
 				startDate := time.Now()
 				fakeUserId := int64(1)
+
+				o := orm.NewOrm()
+
 				userMembership, err := memberships.CreateUserMembership(
-					fakeUserId, fakeMembershipId, 123, startDate)
+					o, fakeUserId, fakeMembershipId, 123, startDate)
 
 				Convey("It should return error", func() {
 					So(err, ShouldNotBeNil)
@@ -115,8 +119,11 @@ func TestUserMemberships(t *testing.T) {
 
 			Convey("When creating user membership normally", func() {
 				startDate := time.Date(2015, 6, 1, 0, 0, 0, 0, time.UTC)
+
+				o := orm.NewOrm()
+
 				userMembership, err := memberships.CreateUserMembership(
-					userId, membership.Id, invNow.Id, startDate)
+					o, userId, membership.Id, invNow.Id, startDate)
 				if err != nil {
 					panic(err.Error())
 				}
@@ -200,6 +207,8 @@ func TestUserMemberships(t *testing.T) {
 		})
 
 		Convey("When automatically extending user membership", func() {
+			o := orm.NewOrm()
+
 			// Create empty base membership
 			m, err := memberships.CreateMembership(1, "Test Membership")
 			So(m.Id, ShouldBeGreaterThan, 0)
@@ -221,7 +230,7 @@ func TestUserMemberships(t *testing.T) {
 			}
 
 			userMembership, err := memberships.CreateUserMembership(
-				fakeUserId, m.Id, inv.Id, startTime)
+				o, fakeUserId, m.Id, inv.Id, startTime)
 
 			So(userMembership.Id, ShouldBeGreaterThan, 0)
 			So(err, ShouldBeNil)
@@ -261,6 +270,8 @@ func TestUserMemberships(t *testing.T) {
 		Convey("When automatically extending an already extended user membership", func() {
 			Reset(setup.ResetDB)
 
+			o := orm.NewOrm()
+
 			m, err := memberships.CreateMembership(1, "Test Membership")
 			if err != nil {
 				panic(err.Error())
@@ -285,7 +296,7 @@ func TestUserMemberships(t *testing.T) {
 			}
 
 			userMembership, err := memberships.CreateUserMembership(
-				fakeUserId, m.Id, inv7_15.Id, startTime)
+				o, fakeUserId, m.Id, inv7_15.Id, startTime)
 			if err != nil {
 				panic(err.Error())
 			}

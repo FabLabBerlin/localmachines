@@ -96,7 +96,7 @@ type UserMembershipList struct {
 }
 
 // Creates user membership from user ID, membership ID and start time.
-func CreateUserMembership(userId, membershipId, invoiceId int64, start time.Time) (*UserMembership, error) {
+func CreateUserMembership(o orm.Ormer, userId, membershipId, invoiceId int64, start time.Time) (*UserMembership, error) {
 	if invoiceId <= 0 {
 		return nil, fmt.Errorf("need (valid) invoice id")
 	}
@@ -115,7 +115,6 @@ func CreateUserMembership(userId, membershipId, invoiceId int64, start time.Time
 		InvoiceId:    invoiceId,
 	}
 
-	o := orm.NewOrm()
 	if um.Id, err = o.Insert(&um); err != nil {
 		return nil, fmt.Errorf("insert: %v", err)
 	}

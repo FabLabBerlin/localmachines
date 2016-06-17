@@ -5,6 +5,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices"
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/orm"
 	"time"
 )
 
@@ -58,19 +59,50 @@ func (this *UserMembershipsController) PostUserMemberships() {
 		this.Abort("500")
 	}
 
-	inv, err := invoices.ThisMonthInvoice(m.LocationId, uid)
-	if err != nil {
-		beego.Error("error getting this month' invoice:", err)
+	t := time.Now()
+
+	invoiceIds := make([]int64, 0, 1)
+
+	for i := 0; ; i++ {
+		inv, err := invoices.InvoiceOfMonth(m.LocationId, uid, t.Year(), t.Month())
+		if err != nil {
+			beego.Error("error getting this month' invoice:", err)
+			this.Abort("500")
+		}
+
+		invoiceIds = append(invoiceIds, inv.Id)
+
+		if t.Month() == startDate.Month() && t.Year() == startDate.Year() {
+			break
+		} else {
+			t = t.AddDate(0, -1, 0)
+		}
+
+		if i > 100 {
+			beego.Error("loop executed more than 100x")
+			this.Abort("500")
+		}
+	}
+
+	o := orm.NewOrm()
+	if err := o.Begin(); err != nil {
+		beego.Error("begin tx:", err)
 		this.Abort("500")
 	}
 
-	userMembership, err := memberships.CreateUserMembership(uid, mId, inv.Id, startDate)
-	if err != nil {
-		beego.Error("Error creating user membership:", err)
+	for _, invId := range invoiceIds {
+		_, err = memberships.CreateUserMembership(o, uid, mId, invId, startDate)
+		if err != nil {
+			beego.Error("Error creating user membership:", err)
+			this.Abort("500")
+		}
+	}
+
+	if err := o.Commit(); err != nil {
+		beego.Error("commit tx:", err)
 		this.Abort("500")
 	}
 
-	this.Data["json"] = userMembership
 	this.ServeJSON()
 }
 
