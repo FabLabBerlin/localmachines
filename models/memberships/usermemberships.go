@@ -20,7 +20,7 @@ type UserMembership struct {
 	InvoiceStatus string
 }
 
-func (this *UserMembership) Interval() lib.Interval {
+func (this UserMembership) Interval() lib.Interval {
 	return lib.Interval{
 		MonthFrom: int(this.StartDate.Month()),
 		YearFrom:  this.StartDate.Year(),
@@ -66,6 +66,24 @@ type UserMembershipCombo struct {
 	MonthlyPrice          float64
 	MachinePriceDeduction int
 	AffectedMachines      string
+}
+
+func (umc *UserMembershipCombo) Interval() lib.Interval {
+	return umc.UserMembership().Interval()
+}
+
+func (umc *UserMembershipCombo) UserMembership() UserMembership {
+	return UserMembership{
+		Id:           umc.Id,
+		UserId:       umc.UserId,
+		MembershipId: umc.MembershipId,
+		StartDate:    umc.StartDate,
+		EndDate:      umc.EndDate,
+		AutoExtend:   umc.AutoExtend,
+
+		InvoiceId:     umc.InvoiceId,
+		InvoiceStatus: umc.InvoiceStatus,
+	}
 }
 
 // List container for the UserMembershipCombo type. Beego swagger
