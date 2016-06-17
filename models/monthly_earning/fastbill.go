@@ -83,7 +83,7 @@ func CreateFastbillDrafts(me *MonthlyEarning) (report DraftsCreationReport) {
 func CreateFastbillDraft(me *MonthlyEarning, inv *invoices.Invoice) (fbDraft *fastbill.Invoice, empty bool, err error) {
 	fbDraft = &fastbill.Invoice{
 		CustomerNumber: inv.User.ClientId,
-		TemplateId:     fastbill.TemplateStandardId,
+		TemplateId:     fastbill.TemplateMakeaIndustriesId,
 		Items:          make([]fastbill.Item, 0, 10),
 	}
 	if fbDraft.Month, fbDraft.Year, err = getFastbillMonthYear(me); err != nil {
