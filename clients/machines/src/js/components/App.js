@@ -73,7 +73,10 @@ vex.defaultOptions.className = 'vex-theme-custom';
       <div className="app">
         <HeaderNav />
         <div id="main-content">
-          {(this.state.isLogged || window.location.hash === '#/login') ? 
+          {(this.state.isLogged ||
+            window.location.hash === '#/login' ||
+            window.location.hash.indexOf('forgot_password') > 0
+            ) ? 
             <RouteHandler /> :
             <LoaderLocal />
           }
