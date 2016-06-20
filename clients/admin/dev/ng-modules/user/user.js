@@ -331,6 +331,26 @@ app.controller('UserCtrl',
     }
   };
 
+  $scope.deleteUserMembershipPrompt = function(userMembershipId) {
+    var token = randomToken.generate();
+    vex.dialog.prompt({
+      message: 'Enter <span class="delete-prompt-token">' +
+      token + '</span> to delete',
+      placeholder: 'Token',
+      callback: function(value) {
+        if (value) {
+          if (value === token) {
+            $scope.deleteUserMembership(userMembershipId);
+          } else {
+            toastr.error('Wrong token');
+          }
+        } else if (value !== false) {
+          toastr.error('No token');
+        }
+      } // callback
+    });
+  };
+
   $scope.updateUserMembership = function(userMembershipId) {
     var userMembership;
     _.each($scope.userMemberships, function(um) {
@@ -365,6 +385,24 @@ app.controller('UserCtrl',
     } else {
       toastr.error('Fatal error.');
     }
+  };
+
+  $scope.deleteUserMembership = function(userMembershipId) {
+    console.log('Delete user membership ID: ' + userMembershipId);
+    $http({
+      method: 'DELETE',
+      url: '/api/users/' + $scope.user.Id + '/memberships/' + userMembershipId,
+      params: {
+        ac: new Date().getTime()
+      }
+    })
+    .success(function() {
+      toastr.success('Membership deleted.');
+      $scope.getUserMemberships();
+    })
+    .error(function() {
+      toastr.error('Error while trying to delete user membership');
+    });
   };
 
   $scope.saveUser = function() {
