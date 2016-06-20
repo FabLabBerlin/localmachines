@@ -58,56 +58,6 @@ mod.service('api',
     });
   };
 
-  this.loadSpaces = function(cb) {
-    $http({
-      method: 'GET',
-      url: '/api/products',
-      params: {
-        location: $cookies.get('location'),
-        ac: new Date().getTime(),
-        type: 'space'
-      }
-    })
-    .success(function(data) {
-      var spaces = _.sortBy(data, function(space) {
-        return space.Product.Name;
-      });
-      var spacesById = {};
-      _.each(spaces, function(space) {
-        spacesById[space.Product.Id] = space;
-      });
-      if (cb) {
-        cb({
-          spaces: spaces,
-          spacesById: spacesById
-        });
-      }
-    })
-    .error(function() {
-      toastr.error('Failed to get spaces');
-    });
-  };
-
-  this.loadSpacePurchase = function(id, cb) {
-    $http({
-      method: 'GET',
-      url: '/api/purchases/' + id,
-      params: {
-        ac: new Date().getTime(),
-        type: 'space'
-      }
-    })
-    .success(function(sp) {
-      generateStartEndDateTimesLocal(sp);
-      if (cb) {
-        cb(sp);
-      }
-    })
-    .error(function(data, status) {
-      toastr.error('Failed to load space purchase data');
-    });
-  };
-
   this.loadTutoringPurchase = function(id, cb) {
     $http({
       method: 'GET',

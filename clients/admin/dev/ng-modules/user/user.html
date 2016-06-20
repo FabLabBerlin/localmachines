@@ -287,11 +287,11 @@
       <tr ng-hide="userMemberships.length">
         <td colspan="6">User has no memberships</td>
       </tr>
-      <tr ng-repeat="userMembership in userMemberships">
+      <tr ng-repeat="userMembership in userMemberships | userMembershipsFilter:this">
         <td>{{userMembership.Title}}</td>
         <td style="min-width:90px">{{userMembership.StartDate}}</td>
         <td style="min-width:160px">
-          <div class="form-inline">
+          <div class="form-inline" ng-show="userMembership.Invoice.Current">
             <div class="input-group">
               <input
                 class="adm-user-membership-end-date form-control datepicker"
@@ -303,13 +303,17 @@
               </div>
             </div>
           </div>
+          <div ng-hide="userMembership.Invoice.Current">
+            {{userMembership.EndDate}}
+          </div>
         </td>
         <td>
           <input 
             type="checkbox" 
             ng-model="userMembership.AutoExtend"
             ng-disabled="userMemberhip.Inactive"
-            ng-change="updateUserMembership(userMembership.Id)">
+            ng-change="updateUserMembership(userMembership.Id)"
+            ng-show="userMembership.Invoice.Current">
         </td>
         <td>
           <div ng-show="userMembership.Active">Active</div>
@@ -321,7 +325,8 @@
             <button 
               type="button" 
               class="btn btn-danger btn-ico" 
-              ng-click="deleteUserMembershipPrompt(userMembership.Id)">
+              ng-click="deleteUserMembershipPrompt(userMembership.Id)"
+              ng-hide="!userMembership.Invoice.Current">
               <i class="fa fa-close"></i>
             </button>
           </div>
@@ -367,6 +372,23 @@
         id="user-add-membership-btn" 
         ng-click="addUserMembership()">
         <i class="fa fa-plus"></i>&nbsp;Add Membership
+      </button>
+    </div>
+
+    <div class="col-sm-3">
+      <button 
+        class="btn btn-primary btn-block" 
+        id="user-add-membership-btn" 
+        ng-click="showUserMembershipHistory()"
+        ng-hide="userMembershipsHistoryVisible">
+        Show History
+      </button>
+      <button 
+        class="btn btn-primary btn-block" 
+        id="user-add-membership-btn" 
+        ng-click="hideUserMembershipHistory()"
+        ng-show="userMembershipsHistoryVisible">
+        Hide History
       </button>
     </div>
   </div>

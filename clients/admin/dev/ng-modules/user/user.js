@@ -16,6 +16,7 @@ app.controller('UserCtrl',
 
   $scope.locationId = parseInt($cookies.get('location'));
   $scope.globalConfigVisible = $scope.locationId === 1;
+  $scope.userMembershipsHistoryVisible = false;
 
   // Check for NFC browser
   if (window.libnfc) {
@@ -243,14 +244,21 @@ app.controller('UserCtrl',
   $scope.getUserMemberships = function() {
     $http({
       method: 'GET',
-      url: '/api/users/' + $scope.user.Id + '/memberships',
+      url: '/api/users/' + $scope.user.Id + '/bill',
       params: {
         ac: new Date().getTime(),
         location: $cookies.get('location')
       }
     })
-    .success(function(userMembershipList) {
-      var data = userMembershipList.Data;
+    .success(function(invoices) {
+      var data = [];
+      _.each(invoices, function(invoice) {
+        _.each(invoice.UserMemberships.Data, function(umb) {
+          umb.Invoice = invoice;
+          data.push(umb);
+        });
+      });
+
       $scope.userMemberships = _.map(data, function(userMembership) {
         
         console.log('User membership ID: ' + userMembership.Id);
@@ -282,6 +290,10 @@ app.controller('UserCtrl',
         userMembership.StartDate = formatDate(userMembership.StartDate);
         userMembership.EndDate = formatDate(userMembership.EndDate);
         return userMembership;
+      });
+
+      $scope.userMemberships = _.sortBy($scope.userMemberships, function(umb) {
+        return !umb.Invoice.Current;
       });
     })
     .error(function(data, status) {
@@ -848,6 +860,22 @@ app.controller('UserCtrl',
     });
   };
 
+  $scope.hideUserMembershipHistory = function() {
+    $scope.userMembershipsHistoryVisible = false;
+  };
+
+  $scope.showUserMembershipHistory = function() {
+    $scope.userMembershipsHistoryVisible = true;
+  };
+
 }]); // app.controller
+
+app.filter('userMembershipsFilter', function() {
+  return function(userMemberships, scope) {
+    return _.filter(userMemberships, function(umb) {
+      return umb.Invoice.Current || scope.userMembershipsHistoryVisible;
+    });
+  };
+});
 
 })(); // closure
