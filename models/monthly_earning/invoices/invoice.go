@@ -3,6 +3,7 @@ package invoices
 import (
 	"errors"
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/astaxie/beego/orm"
 	"time"
@@ -65,10 +66,16 @@ func Create(inv *Invoice) (id int64, err error) {
 				return 0, fmt.Errorf("get user memberships for last month: %v", err)
 			}
 			for _, umb := range umbs.Data {
+				if !umb.AutoExtend &&
+					umb.EndDate.Before(inv.Interval().TimeFrom()) {
+					continue
+				}
+
 				clone := umb.UserMembership()
 				clone.Id = 0
 				clone.InvoiceId = inv.Id
 				clone.InvoiceStatus = inv.Status
+
 				if _, err := o.Insert(&clone); err != nil {
 					return 0, fmt.Errorf("inserting cloned membership: %v", err)
 				}
@@ -295,6 +302,19 @@ func (inv *Invoice) AttachUserMembership(um *memberships.UserMembership) error {
 		}
 	}
 	return nil
+}
+
+func (inv *Invoice) Interval() lib.Interval {
+	if inv.Month == 0 || inv.Year == 0 {
+		panic(fmt.Sprintf("inv.Month=%v, inv.Year=%v", inv.Month, inv.Year))
+	}
+
+	return lib.Interval{
+		MonthFrom: inv.Month,
+		YearFrom:  inv.Year,
+		MonthTo:   inv.Month,
+		YearTo:    inv.Year,
+	}
 }
 
 func (inv *Invoice) Save() (err error) {

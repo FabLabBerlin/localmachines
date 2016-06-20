@@ -2,7 +2,6 @@ package invutil
 
 import (
 	"fmt"
-	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/lib/fastbill"
 	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/FabLabBerlin/localmachines/models/machine"
@@ -107,19 +106,6 @@ func (inv *Invoice) CalculateTotals() (err error) {
 	}
 
 	return
-}
-
-func (inv *Invoice) Interval() lib.Interval {
-	if inv.Month == 0 || inv.Year == 0 {
-		panic(fmt.Sprintf("inv.Month=%v, inv.Year=%v", inv.Month, inv.Year))
-	}
-
-	return lib.Interval{
-		MonthFrom: inv.Month,
-		YearFrom:  inv.Year,
-		MonthTo:   inv.Month,
-		YearTo:    inv.Year,
-	}
 }
 
 func (inv *Invoice) Load() (err error) {
