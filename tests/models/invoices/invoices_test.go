@@ -13,7 +13,7 @@ func init() {
 }
 
 func TestInvoices(t *testing.T) {
-	Convey("Testing Invoice model", t, func() {
+	Convey("Testing invoices.Invoice model", t, func() {
 		Reset(setup.ResetDB)
 		Convey("InvoiceOfMonth()", func() {
 			Convey("Auto creates new invoice for current month", func() {
@@ -25,6 +25,7 @@ func TestInvoices(t *testing.T) {
 				iv2, err := invoices.InvoiceOfMonth(1, 123, y, m)
 				So(err, ShouldBeNil)
 
+				So(iv1.Current, ShouldBeTrue)
 				So(iv1.Id, ShouldNotEqual, 0)
 				So(iv1.Id, ShouldEqual, iv2.Id)
 			})

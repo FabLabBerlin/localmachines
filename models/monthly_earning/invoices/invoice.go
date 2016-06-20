@@ -47,8 +47,42 @@ func Create(inv *Invoice) (id int64, err error) {
 
 	o := orm.NewOrm()
 
+	if err = o.Begin(); err != nil {
+		return 0, fmt.Errorf("begin tx: %v", err)
+	}
+
 	if _, err = o.Insert(inv); err != nil {
 		return 0, fmt.Errorf("insert inv: %v", err)
+	}
+
+	if now := time.Now(); inv.Month == int(now.Month()) &&
+		inv.Year == now.Year() {
+		lastMonth := now.AddDate(0, -1, 0)
+		lastInv, err := InvoiceOfMonth(inv.LocationId, inv.UserId, lastMonth.Year(), lastMonth.Month())
+		if err == nil {
+			umbs, err := memberships.GetUserMembershipsForInvoice(lastInv.Id)
+			if err != nil {
+				return 0, fmt.Errorf("get user memberships for last month: %v", err)
+			}
+			for _, umb := range umbs.Data {
+				clone := umb.UserMembership()
+				clone.Id = 0
+				clone.InvoiceId = inv.Id
+				clone.InvoiceStatus = inv.Status
+				if _, err := o.Insert(&clone); err != nil {
+					return 0, fmt.Errorf("inserting cloned membership: %v", err)
+				}
+			}
+		} else if err == ErrNoInvoiceForThatMonth {
+			// Nothing to do:
+			err = nil
+		} else {
+			return 0, fmt.Errorf("getting in inv of last month: %v", err)
+		}
+	}
+
+	if err = o.Commit(); err != nil {
+		return 0, fmt.Errorf("commit tx: %v", err)
 	}
 
 	return
@@ -90,6 +124,8 @@ func ThisMonthInvoice(locId, uid int64) (*Invoice, error) {
 	return InvoiceOfMonth(locId, uid, time.Now().Year(), time.Now().Month())
 }
 
+var ErrNoInvoiceForThatMonth = errors.New("no invoice exists for that month (and none will be auto-created)")
+
 func InvoiceOfMonth(locId, uid int64, y int, m time.Month) (*Invoice, error) {
 	isThisMonth := time.Now().Month() == m && time.Now().Year() == y
 
@@ -122,8 +158,7 @@ func InvoiceOfMonth(locId, uid int64, y int, m time.Month) (*Invoice, error) {
 				return nil, fmt.Errorf("create: %v", err)
 			}
 		} else {
-			return nil, fmt.Errorf("not auto creating inv for past month %v/%v",
-				int(m), y)
+			return nil, ErrNoInvoiceForThatMonth
 		}
 	} else {
 		return nil, fmt.Errorf("get by props: %v", err)
