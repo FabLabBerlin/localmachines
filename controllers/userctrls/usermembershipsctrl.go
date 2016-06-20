@@ -84,6 +84,11 @@ func (this *UserMembershipsController) PostUserMemberships() {
 		}
 	}
 
+	if len(invoiceIds) > 2 {
+		beego.Error("more than 2 invoice months would be affected")
+		this.Abort("500")
+	}
+
 	o := orm.NewOrm()
 	if err := o.Begin(); err != nil {
 		beego.Error("begin tx:", err)
