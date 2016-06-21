@@ -153,6 +153,12 @@ func GetUserMembership(id int64) (*UserMembership, error) {
 	return &userMembership, err
 }
 
+func DeleteUserMembership(id int64) (err error) {
+	o := orm.NewOrm()
+	_, err = o.Delete(&UserMembership{Id: id})
+	return
+}
+
 // Gets all user memberships for a user by consuming user ID.
 func GetUserMembershipsForInvoice(invoiceId int64) (*UserMembershipList, error) {
 

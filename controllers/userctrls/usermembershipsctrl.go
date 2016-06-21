@@ -196,3 +196,46 @@ func (this *UserMembershipsController) PutUserMembership() {
 	this.Data["json"] = "ok"
 	this.ServeJSON()
 }
+
+// @Title Delete
+// @Description Delete UserMembership
+// @Param	uid		path 	int	true						"User Membership Id"
+// @Success	200	ok
+// @Failure	400	Variable message
+// @Failure	401	Unauthorized
+// @Failure	403	Variable message
+// @router /:uid/memberships/:umid [delete]
+func (this *UserMembershipsController) DeleteUserMembership() {
+	umid, err := this.GetInt64(":umid")
+	if err != nil {
+		this.Abort("400")
+	}
+
+	um, err := memberships.GetUserMembership(umid)
+	if err != nil {
+		beego.Error("Get user membership:", err)
+		this.Abort("500")
+	}
+
+	inv, err := invoices.Get(um.InvoiceId)
+	if err != nil {
+		beego.Error("get invoice:", err)
+		this.Abort("500")
+	}
+
+	if !this.IsAdminAt(inv.LocationId) {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	if inv.Status == "draft" {
+		err = memberships.DeleteUserMembership(umid)
+		if err != nil {
+			beego.Error("delete user membership:", err)
+			this.Abort("500")
+		}
+	}
+
+	this.Data["json"] = "ok"
+	this.ServeJSON()
+}
