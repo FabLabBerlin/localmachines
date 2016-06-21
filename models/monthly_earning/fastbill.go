@@ -179,6 +179,11 @@ func CreateFastbillDraft(inv *invutil.Invoice) (fbDraft *fastbill.Invoice, empty
 		return nil, false, fastbill.ErrInvoiceAlreadyExported
 	} else if err != nil {
 		return nil, false, fmt.Errorf("submit: %v", err)
+	} else {
+		inv.FastbillId = fbDraft.Id
+		if err := inv.Save(); err != nil {
+			return nil, false, fmt.Errorf("invoice save fastbill db id: %v", err)
+		}
 	}
 
 	return
