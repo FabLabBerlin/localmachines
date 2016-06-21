@@ -13,6 +13,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/controllers/locations"
 	"github.com/FabLabBerlin/localmachines/controllers/machines"
 	"github.com/FabLabBerlin/localmachines/controllers/metrics"
+	"github.com/FabLabBerlin/localmachines/controllers/newsletters"
 	"github.com/FabLabBerlin/localmachines/controllers/userctrls"
 	locationModels "github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/astaxie/beego"
@@ -85,6 +86,11 @@ func Init() {
 		beego.NSNamespace("/machine_types",
 			beego.NSInclude(
 				&controllers.MachineTypeController{},
+			),
+		),
+		beego.NSNamespace("/newsletters",
+			beego.NSInclude(
+				&newsletters.Controller{},
 			),
 		),
 		beego.NSNamespace("/products",

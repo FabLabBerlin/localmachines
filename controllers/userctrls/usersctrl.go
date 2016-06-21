@@ -100,11 +100,12 @@ func (this *UsersController) Login() {
 
 		userId, err := users.AuthenticateUser(username, password)
 		if err != nil {
+			beego.Error(username, "failed to authenticate @ location = ", locationId)
 			this.CustomAbort(401, "Failed to authenticate")
 		} else {
 			userLocations, err := user_locations.GetAllForUser(userId)
 			if err != nil {
-				beego.Error("Failed to get user locations:", err)
+				beego.Error("Failed to get user locations:", err, "location=", locationId)
 				this.CustomAbort(500, "Internal Server Error")
 			}
 			var userLocation *user_locations.UserLocation
@@ -118,11 +119,11 @@ func (this *UsersController) Login() {
 				if userLocation == nil || userLocation.GetRole() != user_roles.ADMIN {
 					u, err := users.GetUser(userId)
 					if err != nil {
-						beego.Error("Failed to get user:", err)
+						beego.Error("Failed to get user:", err, ", location=", locationId)
 						this.CustomAbort(401, "Not authorized")
 					}
 					if u.UserRole != user_roles.SUPER_ADMIN.String() {
-						beego.Error("User is not admin at that location")
+						beego.Error("User is not admin at location", locationId)
 						this.CustomAbort(401, "Not authorized")
 					}
 				}
@@ -144,7 +145,7 @@ func (this *UsersController) Login() {
 			}
 		}
 	} else {
-		beego.Info("failed to get session user id")
+		beego.Info("failed to get session user id, location=", locationId)
 		locationId, _ = this.GetSessionLocationId()
 		this.Data["json"] = models.LoginResponse{
 			Status:     "logged",

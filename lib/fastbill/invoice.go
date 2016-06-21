@@ -18,8 +18,8 @@ const (
 )
 
 const (
-	TemplateStandardId = 1
-	TemplateEnglishId  = 3063
+	TemplateStandardId        = 1
+	TemplateMakeaIndustriesId = 875511
 )
 
 const (

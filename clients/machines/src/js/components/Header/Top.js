@@ -1,3 +1,4 @@
+var $ = require('jquery');
 var getters = require('../../getters');
 var LocationGetters = require('../../modules/Location/getters');
 var LoginActions = require('../../actions/LoginActions');
@@ -24,7 +25,6 @@ var Right = React.createClass({
           <div className="nav-dropdown">
             <div className="dropdown">
               <button className="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                <span className="caret"></span>
                 <div className="nav-user">
                   <div className="nav-user-name">
                     {this.state.user.get('FirstName')} {this.state.user.get('LastName')}
@@ -33,8 +33,11 @@ var Right = React.createClass({
                     {this.userRole()}
                   </div>
                 </div>
+                <div id="nav-caret-container">
+                  <span className="caret"></span>
+                </div>
               </button>
-              <ul className="dropdown-menu" aria-labelledby="dropdownMenu1">
+              <ul className="dropdown-menu pull-right" aria-labelledby="dropdownMenu1">
                 <li><a href="/machines/#/profile">Info</a></li>
                 {this.state.isAdmin ? (
                   <li>
@@ -90,7 +93,7 @@ var Top = React.createClass({
   render() {
     return (
       <div className="nav-top row">
-        <div className="col-xs-5 nav-left" style={{overflow: 'hidden'}}>
+        <div className="nav-left" style={{overflow: 'hidden'}}>
           <a className="nav-logo" 
              href="/machines/#/machine">
             {this.state.locationId === 1 ?
@@ -107,9 +110,7 @@ var Top = React.createClass({
             <span className="nav-title-easylab">EASY LAB</span>
           </div>
         </div>
-        <div className="col-xs-7 pull-right">
-          <Right/>
-        </div>
+        <Right/>
       </div>
     );
   }

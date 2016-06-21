@@ -84,7 +84,7 @@ func CreateFastbillDrafts(me *MonthlyEarning) (report DraftsCreationReport) {
 func CreateFastbillDraft(inv *invutil.Invoice) (fbDraft *fastbill.Invoice, empty bool, err error) {
 	fbDraft = &fastbill.Invoice{
 		CustomerNumber: inv.User.ClientId,
-		TemplateId:     fastbill.TemplateStandardId,
+		TemplateId:     fastbill.TemplateMakeaIndustriesId,
 		Items:          make([]fastbill.Item, 0, 10),
 	}
 	intv := inv.Interval()
