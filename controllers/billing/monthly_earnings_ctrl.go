@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
+	"github.com/FabLabBerlin/localmachines/models/settings"
 	"github.com/astaxie/beego"
 	"io"
 	"os"
@@ -106,7 +107,20 @@ func (this *Controller) CreateDrafts() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	creationReport := monthly_earning.CreateFastbillDrafts(me)
+	locSettings, err := settings.GetAllAt(me.LocationId)
+	if err != nil {
+		beego.Error("get settings:", err)
+		this.Abort("500")
+	}
+
+	var vatPercent float64
+	if vat := locSettings.GetFloat(me.LocationId, settings.VAT); vat != nil {
+		vatPercent = *vat
+	} else {
+		vatPercent = 19.0
+	}
+
+	creationReport := monthly_earning.CreateFastbillDrafts(me, vatPercent)
 	beego.Info("created invoice drafts with IDs", creationReport.Ids)
 
 	this.Data["json"] = creationReport

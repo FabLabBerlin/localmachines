@@ -31,7 +31,7 @@ type DraftsCreationError struct {
 	Problem string
 }
 
-func CreateFastbillDrafts(me *MonthlyEarning) (report DraftsCreationReport) {
+func CreateFastbillDrafts(me *MonthlyEarning, vatPercent float64) (report DraftsCreationReport) {
 	report.Ids = make([]int64, 0, len(me.Invoices))
 	report.SuccessUids = make([]int64, 0, len(me.Invoices))
 	report.EmptyUids = make([]int64, 0, len(me.Invoices))
@@ -40,6 +40,7 @@ func CreateFastbillDrafts(me *MonthlyEarning) (report DraftsCreationReport) {
 
 	for _, inv := range me.Invoices {
 		uid := inv.User.Id
+		inv.VatPercent = vatPercent
 		if inv.User.NoAutoInvoicing {
 			continue
 		}
