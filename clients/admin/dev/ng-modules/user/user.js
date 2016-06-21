@@ -328,6 +328,7 @@ app.controller('UserCtrl',
           if (endDate) {
             transformed.EndDate = new Date(endDate);
           }
+          delete transformed.Invoice;
           return JSON.stringify(transformed);
         },
       })

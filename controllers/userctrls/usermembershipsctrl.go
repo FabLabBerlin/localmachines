@@ -177,18 +177,23 @@ func (this *UserMembershipsController) PutUserMembership() {
 		this.Abort("500")
 	}
 
-	m, err := memberships.GetMembership(um.MembershipId)
+	inv, err := invoices.Get(um.InvoiceId)
 	if err != nil {
-		beego.Error("Get membership:", err)
+		beego.Error("get invoice:", err)
 		this.Abort("500")
 	}
 
-	if !this.IsAdminAt(m.LocationId) {
+	if inv.Status != "draft" {
+		beego.Error("cannot delete user membership because it's bound to non-draft invoice")
+		this.Abort("403")
+	}
+
+	if !this.IsAdminAt(inv.LocationId) {
 		beego.Error("Not authorized")
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	if err := m.Update(); err != nil {
+	if err := um.Update(); err != nil {
 		beego.Error("UpdateMembership: ", err)
 		this.Abort("500")
 	}
@@ -228,12 +233,14 @@ func (this *UserMembershipsController) DeleteUserMembership() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	if inv.Status == "draft" {
-		err = memberships.DeleteUserMembership(umid)
-		if err != nil {
-			beego.Error("delete user membership:", err)
-			this.Abort("500")
-		}
+	if inv.Status != "draft" {
+		beego.Error("cannot delete user membership because it's bound to non-draft invoice")
+		this.Abort("403")
+	}
+	err = memberships.DeleteUserMembership(umid)
+	if err != nil {
+		beego.Error("delete user membership:", err)
+		this.Abort("500")
 	}
 
 	this.Data["json"] = "ok"
