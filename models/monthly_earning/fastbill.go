@@ -124,47 +124,36 @@ func CreateFastbillDraft(inv *invutil.Invoice) (fbDraft *fastbill.Invoice, empty
 	}
 
 	// Add Product Purchases
-	byProductNameAndPricePerUnit := inv.ByProductNameAndPricePerUnit()
 
-	for productName, byPricePerUnit := range byProductNameAndPricePerUnit {
-		for pricePerUnit, ps := range byPricePerUnit {
-			var quantity float64
-			var discPrice float64
-			var unitPrice float64
-			var unit string
-			discount := false
-			for _, purchase := range ps {
-				unit = purchase.PriceUnit
-				quantity += purchase.Quantity
-				priceDisc, err := purchases.PriceTotalDisc(purchase)
-				if err != nil {
-					return nil, false, fmt.Errorf("PriceTotalDisc: %v", err)
-				}
-				discPrice += priceDisc
-				affected, err := purchases.AffectedMemberships(purchase)
-				if err != nil {
-					return nil, false, fmt.Errorf("affected memberships: %v", err)
-				}
-				discount = len(affected) > 0
-			}
-			if discount {
-				unitPrice = discPrice / quantity
-			} else {
-				unitPrice = pricePerUnit
-			}
+	for _, p := range inv.Purchases {
+		discount := false
+		priceDisc, err := purchases.PriceTotalDisc(p)
+		if err != nil {
+			return nil, false, fmt.Errorf("PriceTotalDisc: %v", err)
+		}
+		affected, err := purchases.AffectedMemberships(p)
+		if err != nil {
+			return nil, false, fmt.Errorf("affected memberships: %v", err)
+		}
+		discount = len(affected) > 0
+		var unitPrice float64
+		if discount {
+			unitPrice = priceDisc / p.Quantity
+		} else {
+			unitPrice = p.PricePerUnit
+		}
 
-			item := fastbill.Item{
-				Description: productName + " (unit: " + unit + ")",
-				Quantity:    quantity,
-				UnitPrice:   unitPrice,
-				IsGross:     IS_GROSS_BRUTTO,
-				VatPercent:  inv.VatPercent,
-			}
+		item := fastbill.Item{
+			Description: p.ProductName() + " (unit: " + p.PriceUnit + ")",
+			Quantity:    p.Quantity,
+			UnitPrice:   unitPrice,
+			IsGross:     IS_GROSS_BRUTTO,
+			VatPercent:  inv.VatPercent,
+		}
 
-			if v := item.UnitPrice * item.Quantity; v > 0.01 {
-				invoiceValue += v
-				fbDraft.Items = append(fbDraft.Items, item)
-			}
+		if v := item.UnitPrice * item.Quantity; v > 0.01 {
+			invoiceValue += v
+			fbDraft.Items = append(fbDraft.Items, item)
 		}
 	}
 
