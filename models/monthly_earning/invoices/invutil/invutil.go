@@ -81,12 +81,8 @@ func (inv *Invoice) CalculateTotals() (err error) {
 		return fmt.Errorf("GetUserMemberships: %v", err)
 	}
 
-	beego.Info("CalculateTotals: len(ms)=", len(ms.Data))
-
 	for _, m := range ms.Data {
-		beego.Info("iter...")
 		if m.Interval().Contains(inv.Interval().TimeTo()) {
-			beego.Info("iter...if is true")
 			inv.Sums.Memberships.Undiscounted += m.MonthlyPrice
 			inv.Sums.Memberships.PriceInclVAT += m.MonthlyPrice
 		}

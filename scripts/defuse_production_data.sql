@@ -19,5 +19,7 @@ UPDATE auth SET hash = 'f7c19341b9c14c27136b4653514f1b7d7ad16b1c2306181481956fb9
 UPDATE user SET client_id = 0 WHERE id <> 19;
 
 UPDATE user SET first_name = concat('f', '-', id),
-                last_name = concat('l', '-', id)
-            WHERE id > 20 AND username <> 'testuser';
+                last_name = concat('l', '-', id),
+                username = concat('f', '-', id, '.', 'l', '-', id),
+                email = concat('f', '-', id, '.', 'l', '-', id, '@example.com')
+            WHERE (id > 20 OR id = 11 OR id = 14) AND username <> 'testuser';

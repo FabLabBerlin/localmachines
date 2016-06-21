@@ -165,12 +165,15 @@ app.controller('ActivationsCtrl',
 
   // Creates invoice on the server side and returns link
   $scope.exportSpreadsheet = function() {
+    $scope.loading = true;
+
     $http({
       method: 'POST',
       url: '/api/billing/monthly_earnings',
       params: getExportParams()
     })
     .success(function(invoiceData) {
+      $scope.loading = false;
       // invoiceData should contain link to the generated xls file
       toastr.success('Invoice created');
       console.log(invoiceData);
@@ -182,13 +185,14 @@ app.controller('ActivationsCtrl',
         '<div class="col-xs-6"><b>Invoice created!</b><br>'+
         '<b>File name:</b> ' + fileName + '</div>'+
         '<div class="col-xs-6"><a '+
-        'href="/api/invoices/' + invoiceData.Id + '/download_excel" '+
+        'href="/api/billing/monthly_earnings/' + invoiceData.Id + '/download_excel" '+
         'class="btn btn-primary btn-block">'+
         'Download</a></div>'+
         '</div>';
       vex.dialog.alert(alertContent);
     })
     .error(function() {
+      $scope.loading = false;
       toastr.error('Error creating invoice');
     });
   };

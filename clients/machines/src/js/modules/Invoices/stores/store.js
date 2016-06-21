@@ -9,7 +9,7 @@ const initialState = toImmutable({
   MonthlySums: {
   invoices: {},
   selected: {
-      month: moment().month(),
+      month: moment().month() + 1,
       year: moment().year(),
       userId: undefined
     }

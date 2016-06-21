@@ -81,7 +81,7 @@ var InvoicesView = React.createClass({
     const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
     var t = moment();
     Invoices.actions.fetchMonthlySums(this.state.locationId, {
-      month: t.month(),
+      month: t.month() + 1,
       year: t.year()
     });
     SettingsActions.loadSettings({locationId});
@@ -100,14 +100,14 @@ var InvoicesView = React.createClass({
     var nodes = [];
 
     for (var i = 0; i < 12; i++) {
-      t = t.clone().subtract(1, 'months');
       nodes.push(
         <Month key={i} t={t}/>
       );
+      t = t.clone().subtract(1, 'months');
     }
     return (
       <div className="container-fluid">
-        <h2>Invoices</h2>
+        <h2>Invoices EXPERIMENTAL</h2>
         {nodes}
       </div>
     );
