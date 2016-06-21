@@ -168,7 +168,7 @@ app.controller('UserCtrl',
     .success(function(data) {
 
       $scope.memberships = data;
-      $('.adm-user-membership-end-date').each(function() {
+      $('.adm-user-membership-date').each(function() {
         var eachUserMembershipId = $(this).attr('data-user-membership-id');
         eachUserMembershipId = parseInt(eachUserMembershipId);
         $(this).pickadate({
@@ -321,8 +321,9 @@ app.controller('UserCtrl',
         data: userMembership,
         transformRequest: function(data) {
           var transformed = _.extend({}, data);
-          if (data.StartDate) {
-            transformed.StartDate = new Date(data.StartDate);
+          var startDate = $('.adm-user-membership-start-date[data-user-membership-id=' + userMembershipId + ']').val();
+          if (startDate) {
+            transformed.StartDate = new Date(startDate);
           }
           var endDate = $('.adm-user-membership-end-date[data-user-membership-id=' + userMembershipId + ']').val();
           if (endDate) {
