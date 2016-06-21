@@ -279,7 +279,7 @@
         <th>Start Date</th>
         <th>End Date</th>
         <th>Extends Automatically</th>
-        <th>Status</th>
+        <th>Invoice</th>
         <th style="min-width:60px">&nbsp;</th>
       </tr>
     </thead>
@@ -332,9 +332,7 @@
             ng-show="userMembership.Invoice.Current">
         </td>
         <td>
-          <div ng-show="userMembership.Active">Active</div>
-          <div ng-show="userMembership.Cancelled">Cancelled</div>
-          <div ng-show="userMembership.Inactive">Inactive</div>
+          {{userMembership.Invoice.Month}}/{{userMembership.Invoice.Year}}
         </td>
         <td>
           <div class="pull-right">

@@ -234,7 +234,10 @@ app.controller('UserCtrl',
       });
 
       $scope.userMemberships = _.sortBy($scope.userMemberships, function(umb) {
-        return !umb.Invoice.Current;
+        var n = umb.Invoice.Current ? 1000000 : 0;
+        n += umb.Invoice.Year * 100;
+        n += umb.Invoice.Month;
+        return -n;
       });
 
       $scope.getAvailableMemberships();
