@@ -84,11 +84,19 @@ func (this *ReservationsController) Create() {
 		this.CustomAbort(400, "Bad request")
 	}
 
-	inv, err := invoices.ThisMonthInvoice(locId, req.UserId())
+	t := req.Purchase.TimeStart
+
+	inv, err := invoices.InvoiceOfMonth(locId, req.UserId(), t.Year(), t.Month())
 	if err != nil {
-		beego.Error("getting this month' invoice:", err)
+		beego.Error("getting invoice of", t.Format("01-2006"), ":", err)
 		this.Abort("500")
 	}
+
+	if inv.Status != "draft" {
+		beego.Error("the invoice for that month is in status", inv.Status)
+		this.Abort("500")
+	}
+
 	req.Purchase.InvoiceId = inv.Id
 
 	if locId == 0 || locId == req.LocationId() {

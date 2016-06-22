@@ -20,7 +20,9 @@ func TestTutoringPurchases(t *testing.T) {
 		Convey("CreateTutoring and GetTutoring", func() {
 			t := &purchases.Tutoring{
 				Purchase: purchases.Purchase{
-					UserId: 123,
+					UserId:     123,
+					LocationId: 1,
+					InvoiceId:  789,
 				},
 			}
 			id, err1 := purchases.CreateTutoring(t)
@@ -30,8 +32,20 @@ func TestTutoringPurchases(t *testing.T) {
 		})
 
 		Convey("GetAllTutorings", func() {
-			id1, err1 := purchases.CreateTutoring(&purchases.Tutoring{})
-			id2, err2 := purchases.CreateTutoring(&purchases.Tutoring{})
+			id1, err1 := purchases.CreateTutoring(&purchases.Tutoring{
+				Purchase: purchases.Purchase{
+					UserId:     123,
+					LocationId: 1,
+					InvoiceId:  789,
+				},
+			})
+			id2, err2 := purchases.CreateTutoring(&purchases.Tutoring{
+				Purchase: purchases.Purchase{
+					UserId:     123,
+					LocationId: 1,
+					InvoiceId:  789,
+				},
+			})
 			ts, err := purchases.GetAllTutorings()
 			assert.NoErrors(err1, err2, err)
 			So(len(ts.Data), ShouldEqual, 2)
@@ -42,7 +56,9 @@ func TestTutoringPurchases(t *testing.T) {
 		Convey("Update", func() {
 			t := &purchases.Tutoring{
 				Purchase: purchases.Purchase{
-					UserId: 123,
+					UserId:     123,
+					LocationId: 1,
+					InvoiceId:  789,
 				},
 			}
 			id, err := purchases.CreateTutoring(t)

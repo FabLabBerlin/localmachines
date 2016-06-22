@@ -189,21 +189,7 @@ app.controller('TutoringCtrl',
   };
 
   $scope.addPurchase = function() {
-    $http({
-      method: 'POST',
-      url: '/api/purchases',
-      params: {
-        location: $cookies.get('location'),
-        ac: new Date().getTime(),
-        type: 'tutor'
-      }
-    })
-    .success(function(tutoringPurchase) {
-      $location.path('/tutoring/purchases/' + tutoringPurchase.Id);
-    })
-    .error(function() {
-      toastr.error('Failed to create tutoring purchase');
-    });
+    $location.path('/tutoring/purchases/create');
   };
 
   $scope.editPurchase = function(id) {

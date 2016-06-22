@@ -12,8 +12,8 @@ app.config(['$routeProvider', function($routeProvider) {
   });
 }]); // app.config
 
-app.controller('PurchaseCtrl', ['$scope', '$routeParams', '$http', '$location', '$filter', 'api',
-  function($scope, $routeParams, $http, $location, $filter, api) {
+app.controller('PurchaseCtrl', ['$scope', '$routeParams', '$http', '$location', '$filter', '$cookies', 'api',
+  function($scope, $routeParams, $http, $location, $filter, $cookies, api) {
 
   $scope.purchase = {
     Id: $routeParams.id
@@ -26,7 +26,8 @@ app.controller('PurchaseCtrl', ['$scope', '$routeParams', '$http', '$location', 
     api.loadUsers(function(userData) {
       $scope.users = userData.users;
       $scope.usersById = userData.usersById;
-      api.loadTutoringPurchase($scope.purchase.Id, function(purchase) {
+
+      var cb = function(purchase) {
         $scope.purchase = purchase;
         console.log('$scope.purchase = ', $scope.purchase);
         setTimeout(function() {
@@ -47,7 +48,9 @@ app.controller('PurchaseCtrl', ['$scope', '$routeParams', '$http', '$location', 
         var end = moment($scope.purchase.TimeEnd);
         $scope.purchase.DateEndLocal = end.format('YYYY-MM-DD');
         $scope.purchase.TimeEndLocal = end.format('HH:mm');
-      });
+      };
+
+      api.loadTutoringPurchase($scope.purchase.Id, cb);
     });
   });
 
@@ -134,16 +137,21 @@ app.controller('PurchaseCtrl', ['$scope', '$routeParams', '$http', '$location', 
       data: $scope.purchase,
       transformRequest: function(data) {
         var transformed = _.extend({}, data);
+        transformed.LocationId = parseInt(data.LocationId);
         transformed.ProductId = parseInt(data.ProductId);
         transformed.UserId = parseInt(data.UserId);
         transformed.Quantity = parseFloat(data.Quantity);
         transformed.PricePerUnit = parseInt(data.PricePerUnit);
         transformed.TotalPrice = parseFloat(data.TotalPrice);
+        if (transformed.Id === 'create') {
+          delete transformed.Id;
+        }
         console.log('transformed:', transformed);
         return JSON.stringify(transformed);
       },
       params: {
-        ac: new Date().getTime()
+        ac: new Date().getTime(),
+        location: $cookies.get('location')
       }
     })
     .success(function() {

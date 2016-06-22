@@ -59,6 +59,20 @@ mod.service('api',
   };
 
   this.loadTutoringPurchase = function(id, cb) {
+    if (id === 'create') {
+      var tp = {
+        Id: 'create',
+        LocationId: $cookies.get('location'),
+        TimeStart: new Date(),
+        TimeEnd: new Date()
+      };
+      generateStartEndDateTimesLocal(tp);
+      if (cb) {
+        cb(tp);
+      }
+      return;
+    }
+
     $http({
       method: 'GET',
       url: '/api/purchases/' + id,

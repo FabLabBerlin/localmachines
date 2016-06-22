@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/astaxie/beego"
 )
@@ -151,19 +152,32 @@ func (this *PurchasesController) Get() {
 // @Failure 500 Internal Server Error
 // @router /:id [put]
 func (this *PurchasesController) Put() {
-	id, err := this.GetInt64(":id")
-	if err != nil {
-		this.Abort("400")
-	}
-	existing, err := purchases.Get(id)
-	if err != nil {
-		beego.Error("Cannot get purchase:", err)
-		this.Abort("500")
-	}
+	var existing *purchases.Purchase
+	if this.GetString(":id") != "create" {
+		id, err := this.GetInt64(":id")
+		if err != nil {
+			this.Abort("400")
+		}
+		existing, err = purchases.Get(id)
+		if err != nil {
+			beego.Error("Cannot get purchase:", err)
+			this.Abort("500")
+		}
 
-	if !this.IsAdminAt(existing.LocationId) {
-		beego.Error("Unauthorized attempt to update purchase")
-		this.Abort("401")
+		if !this.IsAdminAt(existing.LocationId) {
+			beego.Error("Unauthorized attempt to update purchase")
+			this.Abort("401")
+		}
+
+		existingInv, err := invoices.Get(existing.InvoiceId)
+		if err != nil {
+			beego.Error("get invoice associated to existing purchase:", err)
+			this.Abort("500")
+		}
+		if existingInv.Status != "draft" {
+			beego.Error("existing invoice has status", existingInv.Status)
+			this.Abort("403")
+		}
 	}
 
 	assertSameIds := func(newId, newLocationId int64) {
@@ -180,6 +194,7 @@ func (this *PurchasesController) Put() {
 	purchaseType := this.GetString("type")
 
 	var response interface{}
+	var err error
 
 	switch purchaseType {
 	case purchases.TYPE_TUTOR:
@@ -191,18 +206,48 @@ func (this *PurchasesController) Put() {
 			this.Abort("400")
 		}
 
-		assertSameIds(tp.Id, tp.LocationId)
+		t := tp.TimeStart
 
-		if err = tp.Update(); err == nil {
-			response = tp
+		var inv *invoices.Invoice
+		if tp.InvoiceId == 0 {
+			inv, err = invoices.InvoiceOfMonth(tp.LocationId, tp.UserId, t.Year(), t.Month())
+			if err != nil {
+				beego.Error("getting invoice of", t.Format("01-2006"), ":", err)
+				this.Abort("500")
+			}
+			tp.InvoiceId = inv.Id
+		} else {
+			inv, err = invoices.Get(tp.InvoiceId)
+			if err != nil {
+				beego.Error("getting invoice", inv.Id, ":", err)
+				this.Abort("500")
+			}
 		}
+
+		if inv.Status != "draft" {
+			beego.Error("the invoice for that month is in status", inv.Status)
+			this.Abort("500")
+		}
+
+		if this.GetString(":id") == "create" {
+			tp.Purchase.Type = purchases.TYPE_TUTOR
+			if _, err = purchases.Create(&tp.Purchase); err == nil {
+				response = tp.Purchase
+			}
+		} else {
+			assertSameIds(tp.Id, tp.LocationId)
+			if err = tp.Update(); err == nil {
+				response = tp
+			}
+		}
+
 		break
 	default:
 		err = fmt.Errorf("unknown purchase type")
 	}
 
 	if err != nil {
-		beego.Error("Failed to update purchase", err, " (purchaseType=", purchaseType, ")")
+		beego.Error("Failed to save purchase", err, " (purchaseType=", purchaseType, ")")
 		this.Abort("500")
 	}
 
