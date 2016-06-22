@@ -69,7 +69,7 @@ var DurationEdit = React.createClass({
     return (
       <input type="text"
              ref="duration"
-             value={formatDuration(this.props.purchase)}/>
+             defaultValue={formatDuration(this.props.purchase)}/>
     );
   }
 });
@@ -168,7 +168,7 @@ var BillTable = React.createClass({
           <td>{label}</td>
           <td>{formatDate(moment(purchase.TimeStart))}</td>
           <td>
-            {selected ?
+            {selected && moment(purchase.TimeEnd).unix() > 0 ?
               <DurationEdit purchase={purchase}/> :
               formatDuration(purchase)
             }
