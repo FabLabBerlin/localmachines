@@ -56,11 +56,12 @@ var Invoice = React.createClass({
     const invoiceStatuses = this.state.invoiceStatuses;
 
     if (invoice) {
-      const amount = (Math.round(invoice.Sums.All.PriceInclVAT * 100)
+      const amount = (Math.round(invoice.getIn(['Sums', 'All', 'PriceInclVAT']) * 100)
                       / 100).toFixed(2);
-      const name = invoice.User.FirstName + ' ' + invoice.User.LastName;
-      const timeFrame = '' + invoice.Month + '/' +
-                             invoice.Year;
+      const name = invoice.getIn(['User', 'FirstName']) +
+                   ' ' + invoice.getIn(['User', 'LastName']);
+      const timeFrame = '' + invoice.get('Month') + '/' +
+                             invoice.get('Year');
 
       return (
         <div className="inv-invoice-container"

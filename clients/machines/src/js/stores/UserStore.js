@@ -34,7 +34,7 @@ function setMemberships(state, { data }) {
 }
 
 function setBill(state, { data }) {
-  return state.set('bill', data);
+  return state.set('bill', toImmutable(data));
 }
 
 function setUser(state, { user }) {

@@ -66,11 +66,18 @@ var DurationEdit = React.createClass({
   },
 
   render() {
+    console.log('DurationEdit#render');
     return (
       <input type="text"
              ref="duration"
-             defaultValue={formatDuration(this.props.purchase)}/>
+             onChange={this.update}
+             value={this.props.purchase.editedDuration ||
+                    formatDuration(this.props.purchase)}/>
     );
+  },
+
+  update(e) {
+    Invoices.actions.editPurchaseDuration(e.target.value);
   }
 });
 
@@ -95,7 +102,11 @@ var BillTable = React.createClass({
   },
 
   render() {
-    const bill = this.props.bill;
+    if (!this.props.bill) {
+      return <div/>;
+    }
+
+    const bill = this.props.bill.toJS();
 
     var i = 0;
     var caption = [];

@@ -18,11 +18,15 @@ var BillTables = React.createClass({
 
   render() {
     if (this.state.bill) {
+      var nodes = [];
+
+      this.state.monthlyBills.forEach((bill, i) => {
+        nodes.push(<BillTable bill={bill} key={i}/>);
+      });
+
       return (
         <div>
-          {_.map(this.state.monthlyBills, (bill, i) => {
-            return <BillTable bill={bill} key={i}/>;
-          })}
+          {nodes}
         </div>
       );
     } else {

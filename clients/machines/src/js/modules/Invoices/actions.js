@@ -7,6 +7,10 @@ function editPurchase(id) {
   reactor.dispatch(actionTypes.EDIT_PURCHASE, id);
 }
 
+function editPurchaseDuration(duration) {
+  reactor.dispatch(actionTypes.EDIT_PURCHASE_DURATION, duration);
+}
+
 function fetchFastbillStatuses(locId, {month, year, userId}) {
   $.ajax({
     url: '/api/billing/months/' + year + '/' + month + '/users/' + userId + '/statuses',
@@ -130,6 +134,7 @@ function setSelectedMonth({month, year}) {
 
 export default {
   editPurchase,
+  editPurchaseDuration,
   fetchFastbillStatuses,
   fetchInvoice,
   fetchMonthlySums,

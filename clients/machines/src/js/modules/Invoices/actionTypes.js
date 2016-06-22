@@ -2,6 +2,7 @@ var keyMirror = require('react/lib/keyMirror');
 
 export default keyMirror({
   EDIT_PURCHASE: null,
+  EDIT_PURCHASE_DURATION: null,
   FETCH_MONTHLY_SUMMARIES: null,
   SELECT_INVOICE_ID: null,
   SET_SELECTED_MONTH: null,

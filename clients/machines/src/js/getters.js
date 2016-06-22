@@ -130,13 +130,13 @@ const getMonthlyBills = [
   getBillMonths,
   getMembershipsByMonth,
   (bill, billMonths, membershipsByMonth) => {
+    console.log('getMonthlyBills: bill=', bill);
     if (bill) {
-      var list = bill.slice();
-      console.log('getMonthlyBills: list=', list);
-      list = _.sortBy(list, (inv) => {
-        return inv.Year * 100 + inv.Month;
+      var list = bill.sortBy((inv) => {
+        return inv.get('Year') * 100 + inv.get('Month');
       });
-      list.reverse();
+      list = list.reverse();
+      console.log('    returning list=', list);
       return list;
     }
   }

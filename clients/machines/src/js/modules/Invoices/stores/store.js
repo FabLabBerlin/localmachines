@@ -1,4 +1,3 @@
-var $ = require('jquery');
 var _ = require('lodash');
 var actionTypes = require('../actionTypes');
 var moment = require('moment');
@@ -25,6 +24,7 @@ var InvoicesStore = new Nuclear.Store({
 
   initialize() {
     this.on(actionTypes.EDIT_PURCHASE, editPurchase);
+    this.on(actionTypes.EDIT_PURCHASE_DURATION, editPurchaseDuration);
     this.on(actionTypes.FETCH_MONTHLY_SUMMARIES, fetchMonthlySums);
     this.on(actionTypes.SELECT_INVOICE_ID, selectInvoiceId);
     this.on(actionTypes.SET_SELECTED_MONTH, setSelectedMonth);
@@ -37,6 +37,29 @@ var InvoicesStore = new Nuclear.Store({
 
 function editPurchase(state, id) {
   return state.set('editPurchaseId', id);
+}
+
+function editPurchaseDuration(state, duration) {
+  var invoiceId = state.getIn(['MonthlySums', 'selected', 'invoiceId']);
+  var purchaseId = state.get('editPurchaseId');
+
+  var keyPath = [
+    'invoices',
+    'detailedInvoices',
+    state.getIn(['MonthlySums', 'selected', 'invoiceId'])
+  ];
+
+  console.log('invoiceId=', invoiceId);
+  var iv = state.getIn(keyPath).toJS();
+  iv.Purchases = _.map(iv.Purchases, (p) => {
+    if (p.Id === purchaseId) {
+      p.editedDuration = duration;
+      console.log('hit');
+    }
+    return p;
+  });
+  console.log('iv=', iv);
+  return state.setIn(keyPath, toImmutable(iv));
 }
 
 function fetchMonthlySums(state, { month, year, summaries }) {
@@ -54,7 +77,7 @@ function setSelectedMonth(state, { month, year }) {
 
 function setInvoice(state, { invoice }) {
   console.log('invociestore#setInvoice: invoice=', invoice);
-  return state.setIn(['invoices', 'detailedInvoices', invoice.Id], invoice);
+  return state.setIn(['invoices', 'detailedInvoices', invoice.Id], toImmutable(invoice));
 }
 
 function setInvoiceStatuses(state, { month, year, userId, invoiceStatuses }) {
