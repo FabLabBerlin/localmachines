@@ -154,6 +154,9 @@ var BillTable = React.createClass({
       case 'space':
         label = 'Space Booking';
         break;
+      case 'tutor':
+        label = 'Tutoring';
+        break;
       default:
         console.log('unhandled purchase type ', purchase.Type);
       }
