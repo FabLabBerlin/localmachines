@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/FabLabBerlin/localmachines/lib/icalendar"
 	"github.com/FabLabBerlin/localmachines/models/machine"
+	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/user_roles"
@@ -83,13 +84,20 @@ func (this *ReservationsController) Create() {
 		this.CustomAbort(400, "Bad request")
 	}
 
+	inv, err := invoices.ThisMonthInvoice(locId, req.UserId())
+	if err != nil {
+		beego.Error("getting this month' invoice:", err)
+		this.Abort("500")
+	}
+	req.Purchase.InvoiceId = inv.Id
+
 	if locId == 0 || locId == req.LocationId() {
-		id, err := purchases.CreateReservation(&req)
+		_, err := purchases.CreateReservation(&req)
 		if err != nil {
 			beego.Error("Failed to create reservation", err)
-			this.CustomAbort(500, "Failed to create reservation")
+			this.Abort("500")
 		}
-		this.Data["json"] = purchases.ReservationCreatedResponse{Id: id}
+		this.Data["json"] = req.Purchase
 	} else {
 		this.CustomAbort(401, "Not authorized")
 	}

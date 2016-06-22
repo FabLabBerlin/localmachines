@@ -35,10 +35,6 @@ func (this *Reservation) UserId() int64 {
 	return this.Purchase.UserId
 }
 
-type ReservationCreatedResponse struct {
-	Id int64
-}
-
 func GetReservation(id int64) (reservation *Reservation, err error) {
 	reservation = &Reservation{}
 	reservation.Purchase.Id = id
@@ -83,8 +79,7 @@ func CreateReservation(reservation *Reservation) (int64, error) {
 	reservation.Purchase.PriceUnit = "30 minutes"
 	reservation.Purchase.Quantity = reservation.Purchase.quantityFromTimes()
 
-	o := orm.NewOrm()
-	return o.Insert(&reservation.Purchase)
+	return Create(&reservation.Purchase)
 }
 
 func (reservation *Reservation) Update() (err error) {

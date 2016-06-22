@@ -37,8 +37,7 @@ func CreateTutoring(tp *Tutoring) (id int64, err error) {
 	//tp.TimeEndPlanned = time.Now()
 	tp.PriceUnit = "hour"
 
-	o := orm.NewOrm()
-	id, err = o.Insert(&tp.Purchase)
+	id, err = Create(&tp.Purchase)
 	tp.Purchase.Id = id
 	return
 }
