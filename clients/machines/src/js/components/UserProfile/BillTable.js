@@ -66,7 +66,6 @@ var DurationEdit = React.createClass({
   },
 
   render() {
-    console.log('DurationEdit#render');
     return (
       <input type="text"
              ref="duration"
@@ -139,7 +138,7 @@ var BillTable = React.createClass({
       <tr key={i++}>
         <th>Machine</th>
         <th>Date</th>
-        <th>Time</th>
+        <th>Duration</th>
         <th>Price excl. VAT</th>
         <th>VAT ({this.state.vatPercent}%)</th>
         <th>Total</th>
@@ -177,7 +176,7 @@ var BillTable = React.createClass({
             onClick={this.edit.bind(this, purchase)}
             className={!selected ? 'unselected' : undefined}>
           <td>{label}</td>
-          <td>{formatDate(moment(purchase.TimeStart))}</td>
+          <td>{formatDate(moment(purchase.TimeStart))} {moment(purchase.TimeStart).format('HH:mm')}</td>
           <td>
             {selected && moment(purchase.TimeEnd).unix() > 0 ?
               <DurationEdit purchase={purchase}/> :

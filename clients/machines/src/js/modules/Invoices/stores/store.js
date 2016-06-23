@@ -55,12 +55,10 @@ function editPurchaseDuration(state, duration) {
       p.editValid = false;
       p.editedDuration = duration;
 
-      if (duration.length === 10) {
-        var timeEnd = toTimeEnd(p, duration);
-        if (timeEnd) {
-          p.editValid = true;
-          p.TimeEnd = timeEnd.toDate();
-        }
+      var timeEnd = toTimeEnd(p, duration);
+      if (timeEnd) {
+        p.editValid = true;
+        p.TimeEnd = timeEnd;
       }
     }
     return p;
@@ -97,7 +95,12 @@ function setUserMemberships(state, { userId, userMemberships }) {
 // Private:
 
 function toTimeEnd(p, duration) {
-  var str = duration.slice(0, 8);
+  var i = duration.indexOf('h');
+  if (i <= 0) {
+    return undefined;
+  }
+
+  var str = duration.slice(0, i).trim();
   var hms = str.split(':');
 
   if (hms.length !== 3) {
@@ -114,7 +117,8 @@ function toTimeEnd(p, duration) {
 
   return moment(p.TimeStart).add(hh, 'hours')
                             .add(mm, 'minutes')
-                            .add(mm, 'seconds');
+                            .add(ss, 'seconds')
+                            .toDate();
 }
 
 export default InvoicesStore;
