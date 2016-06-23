@@ -241,69 +241,39 @@ func (this *Controller) GetStatuses() {
 // @Success 200 {object}
 // @Failure	401	Not authorized
 // @Failure	500	Internal Server Error
-// @router /months/:year/:month/users/:uid/draft [post]
+// @router /invoices/:id/draft [post]
 func (this *Controller) CreateDraft() {
 	locId, authorized := this.GetLocIdAdmin()
 	if !authorized {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	year, err := this.GetInt64(":year")
+	id, err := this.GetInt64(":id")
 	if err != nil {
-		beego.Error("Failed to get year:", err)
-		this.CustomAbort(400, "Bad request")
+		this.Abort("400")
 	}
 
-	month, err := this.GetInt64(":month")
+	inv, err := invutil.Get(id)
 	if err != nil {
-		beego.Error("Failed to get month:", err)
-		this.CustomAbort(400, "Bad request")
+		beego.Error("invutil get:", err)
+		this.Abort("500")
 	}
 
-	uid, err := this.GetInt64(":uid")
-	if err != nil {
-		beego.Error("Failed to get uid:", err)
-		this.CustomAbort(400, "Bad request")
+	if inv.LocationId != locId {
+		this.Abort("403")
 	}
 
-	interval := lib.Interval{
-		MonthFrom: int(month),
-		YearFrom:  int(year),
-		MonthTo:   int(month),
-		YearTo:    int(year),
+	if s := inv.Status; s != "draft" {
+		beego.Error("wrong status to create fastbill draft:", s)
+		this.Abort("400")
 	}
 
-	me, err := monthly_earning.New(locId, interval)
-	if err != nil {
-		beego.Error("Failed to make new invoices:", err)
-		this.CustomAbort(500, "Internal Server Error")
-	}
-
-	sums := make([]MonthlySummary, 0, len(me.Invoices))
-	for _, inv := range me.Invoices {
-		sum := MonthlySummary{
-			User: *inv.User,
-		}
-		for _, p := range inv.Purchases {
-			sum.Amount += p.DiscountedTotal
-		}
-		sums = append(sums, sum)
-	}
-
-	var userInv *invutil.Invoice
-
-	for _, inv := range me.Invoices {
-		if inv.User.Id == uid {
-			userInv = inv
-		}
-	}
-
-	if err := userInv.CalculateTotals(); err != nil {
+	if err := inv.CalculateTotals(); err != nil {
 		beego.Error("CalculateTotals:", err)
 		this.Abort("500")
 	}
 
-	fbDraft, empty, err := monthly_earning.CreateFastbillDraft(userInv)
+	fbDraft, empty, err := inv.CreateFastbillDraft(true)
 	if err != nil {
 		beego.Error("Create fastbill draft:", err)
 		this.Abort("500")

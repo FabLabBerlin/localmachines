@@ -37,7 +37,7 @@ func init() {
 	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/billing:Controller"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/billing:Controller"],
 		beego.ControllerComments{
 			"CreateDraft",
-			`/months/:year/:month/users/:uid/draft`,
+			`/invoices/:id/draft`,
 			[]string{"post"},
 			nil})
 

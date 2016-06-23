@@ -8,7 +8,6 @@ import (
 	"github.com/FabLabBerlin/localmachines/lib/fastbill"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
-	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
@@ -85,7 +84,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 
 			testServer := mock.NewServer()
 
-			_, empty, err := monthly_earning.CreateFastbillDraft(invs[0])
+			_, empty, err := invs[0].CreateFastbillDraft(false)
 			So(empty, ShouldBeFalse)
 			So(err, ShouldBeNil)
 			So(testServer.FbInv.Items, ShouldHaveLength, 1)
@@ -160,7 +159,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 
 			fastbill.API_URL = testServer.URL()
 
-			_, empty, err := monthly_earning.CreateFastbillDraft(drafts[0])
+			_, empty, err := drafts[0].CreateFastbillDraft(false)
 			So(empty, ShouldBeFalse)
 			So(err, ShouldBeNil)
 			So(testServer.FbInv.Items, ShouldHaveLength, 1)

@@ -137,7 +137,6 @@ func (this *ActivationsController) Put() {
 		beego.Error("Failed to read all:", err)
 		this.CustomAbort(400, "Failed to read all")
 	}
-	beego.Info("buf:", string(buf))
 	defer this.Ctx.Request.Body.Close()
 
 	data := bytes.NewBuffer(buf)
@@ -147,8 +146,6 @@ func (this *ActivationsController) Put() {
 		beego.Error("Failed to decode json:", err)
 		this.CustomAbort(400, "Failed to update Activation")
 	}
-
-	beego.Info("activation.Purchase.Quantity=", activation.Purchase.Quantity)
 
 	m, err := machine.Get(activation.Purchase.MachineId)
 	if err != nil {

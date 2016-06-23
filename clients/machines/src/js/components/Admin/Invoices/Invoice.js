@@ -42,13 +42,9 @@ var Invoice = React.createClass({
   makeDraft(e) {
     e.stopPropagation();
     const locId = this.state.locationId;
-    const userId = this.state.uid;
-    const month = this.state.MonthlySums
-                      .get('selected').get('month');
-    const year = this.state.MonthlySums
-                      .get('selected').get('year');
+    const invoice = this.state.invoice;
 
-    Invoices.actions.makeDraft(locId, {month, year, userId});
+    Invoices.actions.makeDraft(locId);
   },
 
   render() {

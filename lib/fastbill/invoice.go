@@ -213,25 +213,31 @@ func (inv *Invoice) GetTitle() (title string, err error) {
 	return
 }
 
-func (inv *Invoice) Submit() (id int64, err error) {
+func (inv *Invoice) Submit(overwriteExisting bool) (id int64, err error) {
 	fb := New()
 	fbInvs, err := inv.FetchExisting()
 	if err != nil {
 		return 0, fmt.Errorf("checking if already exported: %v", err)
 	}
 	beego.Info("lib.fastbill:Invoice#Submit fbInvs=", fbInvs)
-	uncanceledFbInvs := 0
+	uncanceledFbInvIds := make([]int64, 0, 1)
 	for _, fbInv := range fbInvs.Invoices {
 		if !fbInv.Canceled() {
-			uncanceledFbInvs++
+			uncanceledFbInvIds = append(uncanceledFbInvIds, fbInv.Id)
 		}
 	}
-	if uncanceledFbInvs > 1 {
+	if len(uncanceledFbInvIds) > 1 {
 		return 0, fmt.Errorf("duplicate fastbill invoices found")
 	}
-	alreadyExported := uncanceledFbInvs == 1
+	alreadyExported := len(uncanceledFbInvIds) == 1
 	if alreadyExported {
-		return 0, ErrInvoiceAlreadyExported
+		if overwriteExisting {
+			if err := deleteInvoice(uncanceledFbInvIds[0]); err != nil {
+				return 0, fmt.Errorf("error while deleting old draft: %v", err)
+			}
+		} else {
+			return 0, ErrInvoiceAlreadyExported
+		}
 	}
 
 	if inv.InvoiceTitle, err = inv.GetTitle(); err != nil {
@@ -258,6 +264,53 @@ func (inv *Invoice) Submit() (id int64, err error) {
 	inv.Id = response.Response.InvoiceId
 
 	return inv.Id, nil
+}
+
+type InvoiceDeleteResponse struct {
+	Request struct {
+		Id int64 `json:"INVOICE_ID,string,omitempty"`
+	} `json:"REQUEST,omitempty"`
+	Response struct {
+		Status string   `json:"STATUS,omitempty"`
+		Errors []string `json:"ERRORS,omitempty"`
+	}
+}
+
+func (this *InvoiceDeleteResponse) Error() error {
+	if len(this.Response.Errors) == 0 {
+		return nil
+	} else {
+		return errors.New(strings.Join(this.Response.Errors, "; "))
+	}
+}
+
+func deleteInvoice(id int64) (err error) {
+	fb := New()
+
+	if id <= 0 {
+		return fmt.Errorf("invalid id: %v", err)
+	}
+
+	request := Request{
+		SERVICE: SERVICE_INVOICE_DELETE,
+		DATA: map[string]string{
+			"INVOICE_ID": strconv.FormatInt(id, 10),
+		},
+	}
+
+	var response InvoiceDeleteResponse
+
+	if err := fb.execGetRequest(&request, &response); err != nil {
+		return fmt.Errorf("fb request: %v", err)
+	}
+
+	beego.Info("response response:", response.Response)
+
+	if err := response.Error(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 type Item struct {

@@ -91,16 +91,26 @@ function fetchInvoice(locId, {invoiceId}) {
   });
 }
 
-function makeDraft(locId, {month, year, userId}) {
+function makeDraft(locId) {
+  const invoice = reactor.evaluateToJS(getters.getInvoice);
+
+  if (invoice.FastbillId) {
+    /*eslint-disable no-alert */
+    if (!window.confirm('Invoice already pushed to Fastbill. Overwrite changes in Fastbill?')) {
+      toastr.warning('Aborted make draft');
+      return;
+    }
+    /*eslint-enable no-alert */
+  }
+
   $.ajax({
     method: 'POST',
-    url: '/api/billing/months/' + year + '/' + month + '/users/' + userId + '/draft',
+    url: '/api/billing/invoices/' + invoice.Id + '/draft',
     data: {
       location: locId
     }
   })
-  .success(function(invoice) {
-    console.log('invoice=', invoice);
+  .success(function() {
     toastr.info('Draft created');
   })
   .error(function() {
