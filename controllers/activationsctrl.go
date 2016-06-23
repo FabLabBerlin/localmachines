@@ -148,6 +148,8 @@ func (this *ActivationsController) Put() {
 		this.CustomAbort(400, "Failed to update Activation")
 	}
 
+	beego.Info("activation.Purchase.Quantity=", activation.Purchase.Quantity)
+
 	m, err := machine.Get(activation.Purchase.MachineId)
 	if err != nil {
 		beego.Error("Failed to get machine:", err)

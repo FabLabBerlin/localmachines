@@ -1,5 +1,7 @@
+var _ = require('lodash');
 var $ = require('jquery');
 var actionTypes = require('./actionTypes');
+var getters = require('./getters');
 var reactor = require('../../reactor');
 var toastr = require('../../toastr');
 
@@ -52,8 +54,6 @@ function fetchUserMemberships(locId, {userId}) {
 }
 
 function fetchMonthlySums(locId, {month, year}) {
-  const selected = 
-
   $.ajax({
     method: 'GET',
     url: '/api/billing/months/' + year + '/' + month,
@@ -108,19 +108,44 @@ function makeDraft(locId, {month, year, userId}) {
   });
 }
 
-function save(locId, {month, year, userId}) {
-  $.ajax({
-    method: 'POST',
-    url: '/api/billing/months/' + year + '/' + month + '/users/' + userId + '/update',
-    data: {
-      location: locId
+function save(locId, {invoiceId}) {
+  var inv = reactor.evaluateToJS(getters.getInvoice);
+  var falseEdits = false;
+  var mutated = _.filter(inv.Purchases, (p) => {
+    if (p.editValid === false) {
+      falseEdits = true;
     }
+
+    return p.editedDuration;
+  });
+
+  if (falseEdits) {
+    toastr.error('Trying to save invalid edit');
+    return;
+  }
+
+  var promises = _.map(mutated, (p) => {
+    return $.ajax({
+      headers: {'Content-Type': 'application/json'},
+      method: 'PUT',
+      url: '/api/activations/' + p.Id,
+      data: JSON.stringify(p),
+      params: {
+        location: locId
+      }
+    });
+  });
+
+  $.when(promises)
+  .done(() => {
+    toastr.info('Successfully saved updates');
+    editPurchase(undefined);
+    fetchInvoice(inv.LocationId, {
+      invoiceId: inv.Id
+    });
   })
-  .success(function(invoice) {
-    toastr.info('Changes saved');
-  })
-  .error(function() {
-    toastr.error('Error saving changes.');
+  .fail(() => {
+    toastr.error('Error while saving.');
   });
 }
 

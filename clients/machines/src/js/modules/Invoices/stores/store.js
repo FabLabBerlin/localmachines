@@ -46,19 +46,26 @@ function editPurchaseDuration(state, duration) {
   var keyPath = [
     'invoices',
     'detailedInvoices',
-    state.getIn(['MonthlySums', 'selected', 'invoiceId'])
+    invoiceId
   ];
 
-  console.log('invoiceId=', invoiceId);
   var iv = state.getIn(keyPath).toJS();
   iv.Purchases = _.map(iv.Purchases, (p) => {
     if (p.Id === purchaseId) {
+      p.editValid = false;
       p.editedDuration = duration;
-      console.log('hit');
+
+      if (duration.length === 10) {
+        var timeEnd = toTimeEnd(p, duration);
+        if (timeEnd) {
+          p.editValid = true;
+          p.TimeEnd = timeEnd.toDate();
+        }
+      }
     }
     return p;
   });
-  console.log('iv=', iv);
+
   return state.setIn(keyPath, toImmutable(iv));
 }
 
@@ -76,7 +83,6 @@ function setSelectedMonth(state, { month, year }) {
 }
 
 function setInvoice(state, { invoice }) {
-  console.log('invociestore#setInvoice: invoice=', invoice);
   return state.setIn(['invoices', 'detailedInvoices', invoice.Id], toImmutable(invoice));
 }
 
@@ -86,6 +92,29 @@ function setInvoiceStatuses(state, { month, year, userId, invoiceStatuses }) {
 
 function setUserMemberships(state, { userId, userMemberships }) {
   return state.setIn(['userMemberships', userId], userMemberships);
+}
+
+// Private:
+
+function toTimeEnd(p, duration) {
+  var str = duration.slice(0, 8);
+  var hms = str.split(':');
+
+  if (hms.length !== 3) {
+    return undefined;
+  }
+
+  var hh = parseInt(hms[0], 10);
+  var mm = parseInt(hms[1], 10);
+  var ss = parseInt(hms[2], 10);
+
+  if (!_.isNumber(hh) || !_.isNumber(mm) || !_.isNumber(ss)) {
+    return undefined;
+  }
+
+  return moment(p.TimeStart).add(hh, 'hours')
+                            .add(mm, 'minutes')
+                            .add(mm, 'seconds');
 }
 
 export default InvoicesStore;

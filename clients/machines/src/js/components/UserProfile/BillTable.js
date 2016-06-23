@@ -181,7 +181,8 @@ var BillTable = React.createClass({
           <td>
             {selected && moment(purchase.TimeEnd).unix() > 0 ?
               <DurationEdit purchase={purchase}/> :
-              formatDuration(purchase)
+              (purchase.editedDuration ? purchase.editedDuration :
+              formatDuration(purchase))
             }
           </td>
           <td>{formatPrice(purchase.PriceExclVAT)}€</td>
