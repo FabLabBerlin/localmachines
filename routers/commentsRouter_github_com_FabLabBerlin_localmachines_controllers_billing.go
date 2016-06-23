@@ -8,6 +8,34 @@ func init() {
 
 	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/billing:Controller"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/billing:Controller"],
 		beego.ControllerComments{
+			"GetAll",
+			`/monthly_earnings`,
+			[]string{"get"},
+			nil})
+
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/billing:Controller"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/billing:Controller"],
+		beego.ControllerComments{
+			"Create",
+			`/monthly_earnings`,
+			[]string{"post"},
+			nil})
+
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/billing:Controller"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/billing:Controller"],
+		beego.ControllerComments{
+			"CreateDrafts",
+			`/monthly_earnings/:iid/create_drafts`,
+			[]string{"post"},
+			nil})
+
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/billing:Controller"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/billing:Controller"],
+		beego.ControllerComments{
+			"DownloadExcelExport",
+			`/monthly_earnings/:id/download_excel`,
+			[]string{"get"},
+			nil})
+
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/billing:Controller"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/billing:Controller"],
+		beego.ControllerComments{
 			"GetInvoice",
 			`/invoices/:id`,
 			[]string{"get"},
@@ -43,8 +71,8 @@ func init() {
 
 	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/billing:Controller"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/billing:Controller"],
 		beego.ControllerComments{
-			"Send",
-			`/months/:year/:month/users/:uid/invoices/:id/send`,
+			"Complete",
+			`/invoices/:id/complete`,
 			[]string{"post"},
 			nil})
 
@@ -66,34 +94,6 @@ func init() {
 		beego.ControllerComments{
 			"Migrate",
 			`/migrate`,
-			[]string{"get"},
-			nil})
-
-	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/billing:Controller"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/billing:Controller"],
-		beego.ControllerComments{
-			"GetAll",
-			`/monthly_earnings`,
-			[]string{"get"},
-			nil})
-
-	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/billing:Controller"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/billing:Controller"],
-		beego.ControllerComments{
-			"Create",
-			`/monthly_earnings`,
-			[]string{"post"},
-			nil})
-
-	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/billing:Controller"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/billing:Controller"],
-		beego.ControllerComments{
-			"CreateDrafts",
-			`/monthly_earnings/:iid/create_drafts`,
-			[]string{"post"},
-			nil})
-
-	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/billing:Controller"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/billing:Controller"],
-		beego.ControllerComments{
-			"DownloadExcelExport",
-			`/monthly_earnings/:id/download_excel`,
 			[]string{"get"},
 			nil})
 

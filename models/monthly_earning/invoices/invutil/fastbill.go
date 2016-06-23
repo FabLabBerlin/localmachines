@@ -15,6 +15,27 @@ const (
 	IS_GROSS_NETTO  = "0"
 )
 
+// CompleteFastbill invoice. Data must be synchronized, so better to do it
+// too often than to seldomly.
+func (inv *Invoice) CompleteFastbill() (err error) {
+	_, empty, err := inv.CreateFastbillDraft(true)
+	if err != nil {
+		return fmt.Errorf("create fastbill draft: %v", err)
+	}
+	if !empty {
+		fbNumber, err := fastbill.CompleteInvoice(inv.FastbillId)
+		if err != nil {
+			return fmt.Errorf("fastbill complete invoice: %v", err)
+		}
+		inv.FastbillNo = fbNumber
+	}
+	inv.Status = "outgoing"
+	if err := inv.Save(); err != nil {
+		return fmt.Errorf("error saving invoice changes: %v", err)
+	}
+	return
+}
+
 func (inv *Invoice) CreateFastbillDraft(overwriteExisting bool) (fbDraft *fastbill.Invoice, empty bool, err error) {
 	fbDraft = &fastbill.Invoice{
 		CustomerNumber: inv.User.ClientId,

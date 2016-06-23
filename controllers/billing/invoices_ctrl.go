@@ -285,43 +285,49 @@ func (this *Controller) CreateDraft() {
 	this.ServeJSON()
 }
 
-// @Title Send user invoicing data
-// @Description Send invoicing data for a user
+// @Title Complete
+// @Description Complete draft invoice, here and in fastbill
 // @Success 200 {object}
 // @Failure	401	Not authorized
 // @Failure	500	Internal Server Error
-// @router /months/:year/:month/users/:uid/invoices/:id/send [post]
-func (this *Controller) Send() {
+// @router /invoices/:id/complete [post]
+func (this *Controller) Complete() {
 	locId, authorized := this.GetLocIdAdmin()
 	if !authorized {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	year, err := this.GetInt64(":year")
+	id, err := this.GetInt64(":id")
 	if err != nil {
-		beego.Error("Failed to get year:", err)
-		this.CustomAbort(400, "Bad request")
+		this.Abort("400")
 	}
 
-	month, err := this.GetInt64(":month")
+	inv, err := invutil.Get(id)
 	if err != nil {
-		beego.Error("Failed to get month:", err)
-		this.CustomAbort(400, "Bad request")
+		beego.Error("invutil get:", err)
+		this.Abort("500")
 	}
 
-	uid, err := this.GetInt64(":uid")
-	if err != nil {
-		beego.Error("Failed to get uid:", err)
-		this.CustomAbort(400, "Bad request")
+	if inv.LocationId != locId {
+		this.Abort("403")
 	}
-	_ = locId
-	_ = year
-	_ = month
-	_ = uid
-	//invoices.Send()
 
-	beego.Error("Not implemented")
-	this.CustomAbort(500, "Not implemented")
+	if s := inv.Status; s != "draft" {
+		beego.Error("wrong status to complete invoice:", s)
+		this.Abort("400")
+	}
+
+	if err := inv.CalculateTotals(); err != nil {
+		beego.Error("CalculateTotals:", err)
+		this.Abort("500")
+	}
+
+	if err := inv.CompleteFastbill(); err != nil {
+		beego.Error("complete fastbill:", err)
+		this.Abort("500")
+	}
+
+	this.ServeJSON()
 }
 
 // @Title Update user invoicing data
