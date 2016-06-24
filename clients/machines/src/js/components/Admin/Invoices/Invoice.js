@@ -26,6 +26,14 @@ var Invoice = React.createClass({
     };
   },
 
+  complete(e) {
+    e.stopPropagation();
+    const locId = this.state.locationId;
+    const invoice = this.state.invoice;
+
+    Invoices.actions.complete(locId);
+  },
+
   hide() {
     if (this.state.editPurchaseId) {
       /*eslint-disable no-alert */
@@ -91,6 +99,11 @@ var Invoice = React.createClass({
                           onClick={this.save}
                           title="Save">
                     <i className="fa fa-check"/>
+                  </button>
+                  <button type="button"
+                          onClick={this.complete}
+                          title="Freeze">
+                    <i className="fa fa-cart-arrow-down"/>
                   </button>
                   <button type="button"
                           title="Send">

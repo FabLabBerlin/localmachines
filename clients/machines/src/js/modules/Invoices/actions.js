@@ -5,6 +5,31 @@ var getters = require('./getters');
 var reactor = require('../../reactor');
 var toastr = require('../../toastr');
 
+function complete() {
+  /*eslint-disable no-alert */
+  if (!window.confirm('Invoice cannot be changed and will be synchronized with Fastbill.')) {
+    toastr.warning('Aborted complete invoice');
+    return;
+  }
+  /*eslint-enable no-alert */
+
+  const invoice = reactor.evaluateToJS(getters.getInvoice);
+
+  $.ajax({
+    method: 'POST',
+    url: '/api/billing/invoices/' + invoice.Id + '/complete',
+    data: {
+      location: invoice.LocationId
+    }
+  })
+  .success(function() {
+    toastr.info('Invoice completed');
+  })
+  .error(function() {
+    toastr.error('Error completing invoice.');
+  });
+}
+
 function editPurchase(id) {
   reactor.dispatch(actionTypes.EDIT_PURCHASE, id);
 }
@@ -168,6 +193,7 @@ function setSelectedMonth({month, year}) {
 }
 
 export default {
+  complete,
   editPurchase,
   editPurchaseDuration,
   fetchFastbillStatuses,
