@@ -361,6 +361,53 @@ func CompleteInvoice(id int64) (fastbillNo string, err error) {
 	return response.Response.InvoiceNumber, nil
 }
 
+type InvoiceCancelResponse struct {
+	Request struct {
+		Id int64 `json:"INVOICE_ID,string,omitempty"`
+	} `json:"REQUEST,omitempty"`
+	Response struct {
+		Status string   `json:"STATUS,omitempty"`
+		Errors []string `json:"ERRORS,omitempty"`
+	}
+}
+
+func (this *InvoiceCancelResponse) Error() error {
+	if len(this.Response.Errors) == 0 {
+		return nil
+	} else {
+		return errors.New(strings.Join(this.Response.Errors, "; "))
+	}
+}
+
+func CancelInvoice(id int64) (err error) {
+	fb := New()
+
+	if id <= 0 {
+		return fmt.Errorf("invalid id: %v", err)
+	}
+
+	request := Request{
+		SERVICE: SERVICE_INVOICE_CANCEL,
+		DATA: map[string]string{
+			"INVOICE_ID": strconv.FormatInt(id, 10),
+		},
+	}
+
+	var response InvoiceCancelResponse
+
+	if err := fb.execGetRequest(&request, &response); err != nil {
+		return fmt.Errorf("fb request: %v", err)
+	}
+
+	beego.Info("response response:", response.Response)
+
+	if err := response.Error(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 type Item struct {
 	ArticleNumber int64   `json:"ARTICLE_NUMBER,string,omitempty"`
 	Description   string  `json:"DESCRIPTION,"`

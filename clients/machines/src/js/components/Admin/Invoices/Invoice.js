@@ -26,6 +26,14 @@ var Invoice = React.createClass({
     };
   },
 
+  cancel(e) {
+    e.stopPropagation();
+
+    console.log('Invoice#cancel');
+
+    Invoices.actions.cancel();
+  },
+
   complete(e) {
     e.stopPropagation();
     const locId = this.state.locationId;
@@ -108,6 +116,11 @@ var Invoice = React.createClass({
                   <button type="button"
                           title="Send">
                     <i className="fa fa-send"/>
+                  </button>
+                  <button type="button"
+                          onClick={this.cancel}
+                          title="Cancel">
+                    <i className="fa fa-ban"/>
                   </button>
                 </div>
               </div>

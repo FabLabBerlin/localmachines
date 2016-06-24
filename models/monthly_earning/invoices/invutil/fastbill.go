@@ -15,6 +15,23 @@ const (
 	IS_GROSS_NETTO  = "0"
 )
 
+func (inv *Invoice) Cancel() (err error) {
+	if inv.Canceled {
+		return fmt.Errorf("invoice already marked as canceled in EASY LAB")
+	}
+
+	if err = fastbill.CancelInvoice(inv.FastbillId); err != nil {
+		return fmt.Errorf("fastbill cancel invoice: %v", err)
+	}
+
+	inv.Canceled = true
+	if err := inv.Save(); err != nil {
+		return fmt.Errorf("error saving invoice changes: %v", err)
+	}
+
+	return
+}
+
 // CompleteFastbill invoice. Data must be synchronized, so better to do it
 // too often than to seldomly.
 func (inv *Invoice) CompleteFastbill() (err error) {

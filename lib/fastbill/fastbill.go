@@ -19,6 +19,7 @@ const (
 	SERVICE_INVOICE_GET      = "invoice.get"
 	SERVICE_INVOICE_DELETE   = "invoice.delete"
 	SERVICE_INVOICE_COMPLETE = "invoice.complete"
+	SERVICE_INVOICE_CANCEL   = "invoice.cancel"
 )
 
 // For unit tests we need to change this here actually

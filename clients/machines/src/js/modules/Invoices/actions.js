@@ -5,6 +5,31 @@ var getters = require('./getters');
 var reactor = require('../../reactor');
 var toastr = require('../../toastr');
 
+function cancel() {
+  /*eslint-disable no-alert */
+  if (!window.confirm('Really cancel invoice?')) {
+    toastr.warning('Aborted canceling invoice');
+    return;
+  }
+  /*eslint-enable no-alert */
+
+  const invoice = reactor.evaluateToJS(getters.getInvoice);
+
+  $.ajax({
+    method: 'POST',
+    url: '/api/billing/invoices/' + invoice.Id + '/cancel',
+    data: {
+      location: invoice.LocationId
+    }
+  })
+  .success(function() {
+    toastr.info('Invoice canceled');
+  })
+  .error(function() {
+    toastr.error('Error canceling invoice.');
+  });
+}
+
 function complete() {
   /*eslint-disable no-alert */
   if (!window.confirm('Invoice cannot be changed and will be synchronized with Fastbill.')) {
@@ -193,6 +218,7 @@ function setSelectedMonth({month, year}) {
 }
 
 export default {
+  cancel,
   complete,
   editPurchase,
   editPurchaseDuration,

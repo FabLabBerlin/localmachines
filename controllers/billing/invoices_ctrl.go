@@ -285,6 +285,51 @@ func (this *Controller) CreateDraft() {
 	this.ServeJSON()
 }
 
+// @Title Cancel
+// @Description Cancel invoice, here and in fastbill
+// @Success 200 {object}
+// @Failure	401	Not authorized
+// @Failure	500	Internal Server Error
+// @router /invoices/:id/cancel [post]
+func (this *Controller) Cancel() {
+	locId, authorized := this.GetLocIdAdmin()
+	if !authorized {
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	id, err := this.GetInt64(":id")
+	if err != nil {
+		this.Abort("400")
+	}
+
+	inv, err := invutil.Get(id)
+	if err != nil {
+		beego.Error("invutil get:", err)
+		this.Abort("500")
+	}
+
+	if inv.LocationId != locId {
+		this.Abort("403")
+	}
+
+	if s := inv.Status; s != "outgoing" {
+		beego.Error("wrong status to complete invoice:", s)
+		this.Abort("400")
+	}
+
+	if inv.Canceled {
+		beego.Error("invoice already canceled")
+		this.Abort("500")
+	}
+
+	if err := inv.Cancel(); err != nil {
+		beego.Error("cancel:", err)
+		this.Abort("500")
+	}
+
+	this.ServeJSON()
+}
+
 // @Title Complete
 // @Description Complete draft invoice, here and in fastbill
 // @Success 200 {object}
