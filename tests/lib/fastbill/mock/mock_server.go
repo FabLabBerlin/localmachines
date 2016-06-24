@@ -39,7 +39,7 @@ func NewServer() (s *Server) {
 			if s.testClientId == "" && s.testCustomerId == 0 {
 				s.testCustomerId = 123
 				customers = []fastbill.Customer{
-					fastbill.Customer{
+					{
 						CUSTOMER_ID: fmt.Sprintf("%v", s.testCustomerId),
 					},
 				}
@@ -49,7 +49,7 @@ func NewServer() (s *Server) {
 					customers = []fastbill.Customer{}
 				} else {
 					customers = []fastbill.Customer{
-						fastbill.Customer{
+						{
 							CUSTOMER_ID: fmt.Sprintf("%v", s.testCustomerId),
 						},
 					}
@@ -57,7 +57,7 @@ func NewServer() (s *Server) {
 			}
 			resp = fastbill.CustomerGetResponse{
 				RESPONSE: fastbill.CustomerList{
-					Customers: customers, 
+					Customers: customers,
 				},
 			}
 
@@ -71,7 +71,11 @@ func NewServer() (s *Server) {
 			if err := json.Unmarshal(buf, &s.FbInv); err != nil {
 				panic(err.Error())
 			}
-			resp = fastbill.InvoiceCreateResponse{}
+			tmp := fastbill.InvoiceCreateResponse{}
+			tmp.Response.InvoiceId = 123
+			resp = tmp
+		} else if req.SERVICE == fastbill.SERVICE_INVOICE_COMPLETE {
+			resp = fastbill.InvoiceCompleteResponse{}
 		} else {
 			panic("unknown service")
 		}

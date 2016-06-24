@@ -22,14 +22,6 @@ type Invoice struct {
 	Sums            *Sums                           `json:",omitempty"`
 }
 
-// Send an invoice transactionally. This includes:
-// 1. Send invoice through Fastbill
-// 2. Synchronize Fastbill
-// 3. Propagate Fastbill sync changes to associated purchases
-func (inv *Invoice) Send() (err error) {
-	return fmt.Errorf("not implemented")
-}
-
 type Sums struct {
 	Memberships struct {
 		PriceInclVAT float64

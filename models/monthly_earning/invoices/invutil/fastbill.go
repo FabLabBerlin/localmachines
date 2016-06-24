@@ -18,6 +18,12 @@ const (
 // CompleteFastbill invoice. Data must be synchronized, so better to do it
 // too often than to seldomly.
 func (inv *Invoice) CompleteFastbill() (err error) {
+	if inv.Year > time.Now().Year() ||
+		(inv.Year == time.Now().Year() &&
+			int(inv.Month) >= int(time.Now().Month())) {
+		return fmt.Errorf("invoices must be from a past month")
+	}
+
 	_, empty, err := inv.CreateFastbillDraft(true)
 	if err != nil {
 		return fmt.Errorf("create fastbill draft: %v", err)
@@ -135,6 +141,7 @@ func (inv *Invoice) CreateFastbillDraft(overwriteExisting bool) (fbDraft *fastbi
 		return nil, false, fmt.Errorf("submit: %v", err)
 	} else {
 		inv.FastbillId = fbDraft.Id
+		fmt.Printf("inv.FastbillId <- %v", fbDraft.Id)
 		if err := inv.Save(); err != nil {
 			return nil, false, fmt.Errorf("invoice save fastbill db id: %v", err)
 		}

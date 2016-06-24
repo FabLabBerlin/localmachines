@@ -84,6 +84,8 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 
 			testServer := mock.NewServer()
 
+			fastbill.API_URL = testServer.URL()
+
 			_, empty, err := invs[0].CreateFastbillDraft(false)
 			So(empty, ShouldBeFalse)
 			So(err, ShouldBeNil)
@@ -165,6 +167,66 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 			So(testServer.FbInv.Items, ShouldHaveLength, 1)
 			item := testServer.FbInv.Items[0]
 			So(item.Description, ShouldEqual, "Full Flatrate Membership (unit: month)")
+		})
+
+		Convey("Testing CompleteFastbill", func() {
+			m := TIME_START.Month()
+			y := TIME_START.Year()
+
+			invs, err := invutil.GetAllOfMonthAt(1, y, m)
+			if err != nil {
+				panic(err.Error())
+			}
+			if n := len(invs); n != 1 {
+				panic(fmt.Sprintf("expected 1 but got %v", n))
+			}
+
+			invs[0].User.ClientId = 1
+
+			testServer := mock.NewServer()
+
+			fastbill.API_URL = testServer.URL()
+
+			err = invs[0].CompleteFastbill()
+			So(err, ShouldBeNil)
+			So(testServer.FbInv.Items, ShouldHaveLength, 1)
+		})
+
+		Convey("CompleteFastbill fails for current month", func() {
+			inv := &invutil.Invoice{}
+			inv.LocationId = 1
+			inv.UserId = uid
+			inv.Month = int(time.Now().Month())
+			inv.Year = time.Now().Year()
+			inv.Status = "draft"
+			if _, err = invoices.CreateOrUpdate(&inv.Invoice); err != nil {
+				panic(err.Error())
+			}
+
+			_, err := purchases.Create(&purchases.Purchase{
+				LocationId:   1,
+				UserId:       uid,
+				TimeStart:    time.Now().AddDate(0, 0, -1),
+				TimeEnd:      time.Now(),
+				Quantity:     17,
+				PricePerUnit: 1,
+				PriceUnit:    "minute",
+				InvoiceId:    inv.Id,
+			})
+
+			inv, err = invutil.Get(inv.Id)
+			if err != nil {
+				panic(err.Error())
+			}
+
+			inv.User.ClientId = 1
+
+			testServer := mock.NewServer()
+
+			fastbill.API_URL = testServer.URL()
+
+			err = inv.CompleteFastbill()
+			So(err, ShouldNotBeNil)
 		})
 	})
 }
