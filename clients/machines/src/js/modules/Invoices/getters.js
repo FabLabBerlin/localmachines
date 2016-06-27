@@ -30,8 +30,9 @@ const getInvoice = [
 ];
 
 const getInvoiceActions = [
+  getEditPurchaseId,
   getInvoice,
-  (invoice) => {
+  (editPurchaseId, invoice) => {
     var as = {};
     var m = moment().month() + 1;
     var y = moment().year();
@@ -44,7 +45,7 @@ const getInvoiceActions = [
         as.Freeze = (y > invoice.get('Year') || m > invoice.get('Month')) &&
           invoice.get('Total') >= 0.01;
         as.PushDraft = true;
-        as.Save = true;
+        as.Save = !!editPurchaseId;
         as.Send = false;
         break;
       case 'outgoing':
@@ -58,7 +59,7 @@ const getInvoiceActions = [
           as.Cancel = true;
           as.Freeze = false;
           as.PushDraft = false;
-          as.Save = true;
+          as.Save = !!editPurchaseId;
           as.Send = true;
         }
         break;
