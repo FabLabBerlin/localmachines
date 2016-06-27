@@ -34,16 +34,20 @@ const getInvoiceActions = [
   getInvoice,
   (editPurchaseId, invoice) => {
     var as = {};
-    var m = moment().month() + 1;
-    var y = moment().year();
+
+    const m = moment().month() + 1;
+    const y = moment().year();
+
+    const isPastMonth = invoice &&
+     (y > invoice.get('Year') || m > invoice.get('Month'));
+    const isPositive = invoice && invoice.get('Total') >= 0.01;
 
     if (invoice && y >= invoice.get('Year')) {
       switch (invoice.get('Status')) {
       case 'draft':
         console.log('inv=', invoice.toJS());
         as.Cancel = false;
-        as.Freeze = (y > invoice.get('Year') || m > invoice.get('Month')) &&
-          invoice.get('Total') >= 0.01;
+        as.Freeze = true;
         as.PushDraft = true;
         as.Save = !!editPurchaseId;
         as.Send = false;
@@ -74,6 +78,9 @@ const getInvoiceActions = [
       as.PushDraft = false;
       as.Send = false;
     }
+
+    as.Freeze = as.Freeze && isPastMonth && isPositive;
+    as.PushDraft = as.PushDraft && isPositive;
 
     return toImmutable(as);
   }

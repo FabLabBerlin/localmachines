@@ -2,6 +2,7 @@ var _ = require('lodash');
 var $ = require('jquery');
 var actionTypes = require('./actionTypes');
 var getters = require('./getters');
+var GlobalActions = require('../../actions/GlobalActions');
 var reactor = require('../../reactor');
 var toastr = require('../../toastr');
 
@@ -15,6 +16,8 @@ function cancel() {
 
   const invoice = reactor.evaluateToJS(getters.getInvoice);
 
+  GlobalActions.showGlobalLoader();
+
   $.ajax({
     method: 'POST',
     url: '/api/billing/invoices/' + invoice.Id + '/cancel',
@@ -22,11 +25,14 @@ function cancel() {
       location: invoice.LocationId
     }
   })
-  .success(function() {
+  .success(() => {
     toastr.info('Invoice canceled');
   })
-  .error(function() {
+  .error(() => {
     toastr.error('Error canceling invoice.');
+  })
+  .always(() => {
+    GlobalActions.hideGlobalLoader();
   });
 }
 
@@ -40,6 +46,8 @@ function complete() {
 
   const invoice = reactor.evaluateToJS(getters.getInvoice);
 
+  GlobalActions.showGlobalLoader();
+
   $.ajax({
     method: 'POST',
     url: '/api/billing/invoices/' + invoice.Id + '/complete',
@@ -47,11 +55,14 @@ function complete() {
       location: invoice.LocationId
     }
   })
-  .success(function() {
+  .success(() => {
     toastr.info('Invoice completed');
   })
-  .error(function() {
+  .error(() => {
     toastr.error('Error completing invoice.');
+  })
+  .always(() => {
+    GlobalActions.hideGlobalLoader();
   });
 }
 
@@ -124,6 +135,8 @@ function fetchMonthlySums(locId, {month, year}) {
 }
 
 function fetchInvoice(locId, {invoiceId}) {
+  GlobalActions.showGlobalLoader();
+
   $.ajax({
     method: 'GET',
     url: '/api/billing/invoices/' + invoiceId,
@@ -131,13 +144,16 @@ function fetchInvoice(locId, {invoiceId}) {
       location: locId
     }
   })
-  .success(function(invoice) {
+  .success((invoice) => {
     reactor.dispatch(actionTypes.SET_INVOICE, {
       invoice: invoice
     });
   })
-  .error(function() {
+  .error(() => {
     toastr.error('Error fetch monthly summaries.  Please try again later.');
+  })
+  .always(() => {
+    GlobalActions.hideGlobalLoader();
   });
 }
 
@@ -153,6 +169,8 @@ function makeDraft(locId) {
     /*eslint-enable no-alert */
   }
 
+  GlobalActions.showGlobalLoader();
+
   $.ajax({
     method: 'POST',
     url: '/api/billing/invoices/' + invoice.Id + '/draft',
@@ -160,11 +178,14 @@ function makeDraft(locId) {
       location: locId
     }
   })
-  .success(function() {
+  .success(() => {
     toastr.info('Draft created');
   })
-  .error(function() {
+  .error(() => {
     toastr.error('Error creating draft.');
+  })
+  .always(() => {
+    GlobalActions.hideGlobalLoader();
   });
 }
 
@@ -196,6 +217,8 @@ function save(locId, {invoiceId}) {
     });
   });
 
+  GlobalActions.showGlobalLoader();
+
   $.when(promises)
   .done(() => {
     toastr.info('Successfully saved updates');
@@ -206,6 +229,9 @@ function save(locId, {invoiceId}) {
   })
   .fail(() => {
     toastr.error('Error while saving.');
+  })
+  .always(() => {
+    GlobalActions.hideGlobalLoader();
   });
 }
 

@@ -698,25 +698,20 @@ Y888888P VP   V8P    YP     `Y88P'  Y888888P  `Y88P' Y88888P `8888Y'
   color: black;
 }
 
+#inv-header {
+  background: black;
+  color: white;
+  padding: 20px;
+}
+
+#inv-body {
+  padding: 20px;
+}
+
 .inv-invoice-container {
   height: 100%;
   left: 0;
   position: fixed;
-  top: 0;
-  width: 100%;
-}
-
-.inv-invoice-background {
-  background-color: white;
-  -webkit-filter: blur(20px);
-  -moz-filter: blur(20px);
-  -o-filter: blur(20px);
-  -ms-filter: blur(20px);
-  filter: blur(20px);
-  height: 100%;
-  left: 0;
-  opacity: 0.7;
-  position: absolute;
   top: 0;
   width: 100%;
 }
@@ -728,7 +723,6 @@ Y888888P VP   V8P    YP     `Y88P'  Y888888P  `Y88P' Y88888P `8888Y'
   .justify-content(center);
   width: 100%;
   z-index: 20;
-  opacity: 1.0;
   position: absolute;
 }
 
@@ -737,8 +731,11 @@ Y888888P VP   V8P    YP     `Y88P'  Y888888P  `Y88P' Y88888P `8888Y'
   color: black;
   height: 100%;
   overflow-y: scroll;
-  padding: 20px;
   width: 100%;
+}
+
+.inv-invoice h3 {
+  font-weight: normal;
 }
 
 .inv-invoice button {
