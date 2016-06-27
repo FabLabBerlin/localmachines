@@ -7,7 +7,7 @@ var React = require('react');
 var reactor = require('../../../reactor');
 
 
-var Summaries = React.createClass({
+var List = React.createClass({
 
   mixins: [ reactor.ReactMixin ],
 
@@ -109,4 +109,4 @@ var Summaries = React.createClass({
 
 });
 
-export default Summaries;
+export default List;

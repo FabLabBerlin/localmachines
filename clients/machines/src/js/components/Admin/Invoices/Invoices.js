@@ -1,5 +1,6 @@
 var getters = require('../../../getters');
 var Invoices = require('../../../modules/Invoices');
+var List = require('./List');
 var LoaderLocal = require('../../LoaderLocal');
 var LocationActions = require('../../../actions/LocationActions');
 var LocationGetters = require('../../../modules/Location/getters');
@@ -7,7 +8,6 @@ var moment = require('moment');
 var React = require('react');
 var reactor = require('../../../reactor');
 var SettingsActions = require('../../../modules/Settings/actions');
-var Summaries = require('./Summaries');
 
 
 var Month = React.createClass({
@@ -43,7 +43,7 @@ var Month = React.createClass({
         {
           selected ? (
             summaries ? (
-              <Summaries summaries={summaries}/>
+              <List summaries={summaries}/>
             ) : (
               <LoaderLocal/>
             )
