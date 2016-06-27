@@ -1,3 +1,4 @@
+var moment = require('moment');
 var Nuclear = require('nuclear-js');
 var toImmutable = Nuclear.toImmutable;
 
@@ -28,6 +29,48 @@ const getInvoice = [
   }
 ];
 
+const getInvoiceActions = [
+  getInvoice,
+  (invoice) => {
+    var as = {};
+    var m = moment().month() + 1;
+    var y = moment().year();
+
+    if (invoice && y >= invoice.get('Year')) {
+      switch (invoice.get('Status')) {
+      case 'draft':
+        console.log('inv=', invoice.toJS());
+        as.Cancel = false;
+        as.Freeze = (y > invoice.get('Year') || m > invoice.get('Month')) &&
+          invoice.get('Total') >= 0.01;
+        as.PushDraft = true;
+        as.Save = true;
+        as.Send = false;
+        break;
+      case 'outgoing':
+        if (invoice.get('Canceled')) {
+          as.Cancel = false;
+          as.Freeze = false;
+          as.PushDraft = false;
+          as.Save = false;
+          as.Send = true;
+        } else {
+          as.Cancel = true;
+          as.Freeze = false;
+          as.PushDraft = false;
+          as.Save = true;
+          as.Send = true;
+        }
+        break;
+      default:
+        console.error('Unhandled status', invoice.get('Status'));
+      }
+    }
+
+    return toImmutable(as);
+  }
+];
+
 const getInvoiceStatuses = [
   ['invoicesStore'],
   (invoicesStore) => {
@@ -52,6 +95,7 @@ const getUserMemberships = [
 export default {
   getEditPurchaseId,
   getInvoice,
+  getInvoiceActions,
   getInvoiceStatuses,
   getMonthlySums,
   getUserMemberships

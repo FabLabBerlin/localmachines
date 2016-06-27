@@ -17,6 +17,7 @@ var Invoice = React.createClass({
     return {
       editPurchaseId: Invoices.getters.getEditPurchaseId,
       invoice: Invoices.getters.getInvoice,
+      invoiceActions: Invoices.getters.getInvoiceActions,
       invoiceStatuses: Invoices.getters.getInvoiceStatuses,
       location: LocationGetters.getLocation,
       locationId: LocationGetters.getLocationId,
@@ -66,7 +67,7 @@ var Invoice = React.createClass({
   render() {
     const invoice = this.state.invoice;
     const invoiceStatuses = this.state.invoiceStatuses;
-
+    console.log('invoiceActions=', this.state.invoiceActions.toJS());
     if (invoice) {
       const amount = (Math.round(invoice.getIn(['Sums', 'All', 'PriceInclVAT']) * 100)
                       / 100).toFixed(2);
@@ -98,30 +99,40 @@ var Invoice = React.createClass({
                           onClick={this.hide}>
                     <i className="fa fa-close"/>
                   </button>
-                  <button type="button"
-                          onClick={this.makeDraft}
-                          title="Make Draft">
-                    <i className="fa fa-pencil"/>
-                  </button>
-                  <button type="button"
-                          onClick={this.save}
-                          title="Save">
-                    <i className="fa fa-check"/>
-                  </button>
-                  <button type="button"
-                          onClick={this.complete}
-                          title="Freeze">
-                    <i className="fa fa-cart-arrow-down"/>
-                  </button>
-                  <button type="button"
-                          title="Send">
-                    <i className="fa fa-send"/>
-                  </button>
-                  <button type="button"
-                          onClick={this.cancel}
-                          title="Cancel">
-                    <i className="fa fa-ban"/>
-                  </button>
+                  {this.state.invoiceActions.get('PushDraft') ?
+                    <button type="button"
+                            onClick={this.makeDraft}
+                            title="Make Draft">
+                      <i className="fa fa-pencil"/>
+                    </button> : null
+                  }
+                  {this.state.invoiceActions.get('Save') ?
+                    <button type="button"
+                            onClick={this.save}
+                            title="Save">
+                      <i className="fa fa-check"/>
+                    </button> : null
+                  }
+                  {this.state.invoiceActions.get('Freeze') ?
+                    <button type="button"
+                            onClick={this.complete}
+                            title="Freeze">
+                      <i className="fa fa-cart-arrow-down"/>
+                    </button> : null
+                  }
+                  {this.state.invoiceActions.get('Send') ?
+                    <button type="button"
+                            title="Send">
+                      <i className="fa fa-send"/>
+                    </button> : null
+                  }
+                  {this.state.invoiceActions.get('Cancel') ?
+                    <button type="button"
+                            onClick={this.cancel}
+                            title="Cancel">
+                      <i className="fa fa-ban"/>
+                    </button> : null
+                  }
                 </div>
               </div>
               <BillTable bill={invoice}/>
