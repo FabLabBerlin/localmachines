@@ -68,6 +68,13 @@ const getInvoiceActions = [
       }
     }
 
+    if (!invoice || !invoice.getIn(['User', 'ClientId'])) {
+      as.Cancel = false;
+      as.Freeze = false;
+      as.PushDraft = false;
+      as.Send = false;
+    }
+
     return toImmutable(as);
   }
 ];

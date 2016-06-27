@@ -103,7 +103,7 @@ var Invoice = React.createClass({
                     <button type="button"
                             onClick={this.makeDraft}
                             title="Make Draft">
-                      <i className="fa fa-pencil"/>
+                      <i className="fa fa-refresh"/>
                     </button> : null
                   }
                   {this.state.invoiceActions.get('Save') ?
