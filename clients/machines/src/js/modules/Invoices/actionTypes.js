@@ -1,6 +1,8 @@
 var keyMirror = require('react/lib/keyMirror');
 
 export default keyMirror({
+  CHECK: null,
+  CHECK_ALL: null,
   EDIT_PURCHASE: null,
   EDIT_PURCHASE_DURATION: null,
   FETCH_MONTHLY_SUMMARIES: null,

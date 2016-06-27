@@ -36,6 +36,14 @@ function cancel() {
   });
 }
 
+function check(invoiceId) {
+  reactor.dispatch(actionTypes.CHECK, invoiceId);
+}
+
+function checkAll() {
+  reactor.dispatch(actionTypes.CHECK_ALL);
+}
+
 function complete() {
   /*eslint-disable no-alert */
   if (!window.confirm('Invoice cannot be changed and will be synchronized with Fastbill.')) {
@@ -245,6 +253,8 @@ function setSelectedMonth({month, year}) {
 
 export default {
   cancel,
+  check,
+  checkAll,
   complete,
   editPurchase,
   editPurchaseDuration,

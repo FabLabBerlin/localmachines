@@ -1,7 +1,9 @@
 var _ = require('lodash');
 var actionTypes = require('../actionTypes');
+var getters = require('../getters');
 var moment = require('moment');
 var Nuclear = require('nuclear-js');
+var reactor = require('../../../reactor');
 var toImmutable = Nuclear.toImmutable;
 
 const initialState = toImmutable({
@@ -23,6 +25,8 @@ var InvoicesStore = new Nuclear.Store({
   },
 
   initialize() {
+    this.on(actionTypes.CHECK, check);
+    this.on(actionTypes.CHECK_ALL, checkAll);
     this.on(actionTypes.EDIT_PURCHASE, editPurchase);
     this.on(actionTypes.EDIT_PURCHASE_DURATION, editPurchaseDuration);
     this.on(actionTypes.FETCH_MONTHLY_SUMMARIES, fetchMonthlySums);
@@ -34,6 +38,31 @@ var InvoicesStore = new Nuclear.Store({
   }
 
 });
+
+function check(state, id) {
+  const month = state.getIn(['MonthlySums', 'selected', 'month']);
+  const year = state.getIn(['MonthlySums', 'selected', 'year']);
+  const invoices = state.getIn(['MonthlySums', year, month]).map((inv) => {
+    if (inv.get('Id') === id) {
+      return inv.set('checked', !inv.get('checked'));
+    } else {
+      return inv;
+    }
+  });
+
+  return state.setIn(['MonthlySums', year, month], invoices);
+}
+
+function checkAll(state) {
+  const checkedAll = reactor.evaluateToJS(getters.getCheckedAll);
+  const month = state.getIn(['MonthlySums', 'selected', 'month']);
+  const year = state.getIn(['MonthlySums', 'selected', 'year']);
+  const invoices = state.getIn(['MonthlySums', year, month]).map((inv) => {
+    return inv.set('checked', !checkedAll);
+  });
+
+  return state.setIn(['MonthlySums', year, month], invoices);
+}
 
 function editPurchase(state, id) {
   return state.set('editPurchaseId', id);

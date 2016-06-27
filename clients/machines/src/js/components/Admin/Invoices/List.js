@@ -13,9 +13,21 @@ var List = React.createClass({
 
   getDataBindings() {
     return {
+      checkedAll: Invoices.getters.getCheckedAll,
       locationId: LocationGetters.getLocationId,
       MonthlySums: Invoices.getters.getMonthlySums
     };
+  },
+
+  check(invoiceId, e) {
+    console.log('e=', e);
+    e.stopPropagation();
+    Invoices.actions.check(invoiceId);
+  },
+
+  checkAll(e) {
+    e.stopPropagation();
+    Invoices.actions.checkAll();
   },
 
   render() {
@@ -38,7 +50,12 @@ var List = React.createClass({
           <thead>
             <tr>
               <th>
-                <label><input type="checkbox"/> All</label>
+                <input type="checkbox"
+                       checked={this.state.checkedAll}
+                       onChange={this.checkAll}/>
+              </th>
+              <th>
+                <label>All</label>
               </th>
               <th className="text-center">
                 <label>No.</label>
@@ -64,27 +81,33 @@ var List = React.createClass({
               const amount = (Math.round(sum.get('Total') * 100)
                                  / 100)
                                  .toFixed(2);
+              const click = this.select.bind(this, sum.get('User'), sum.get('Id'));
 
               return (
-                <tr key={i} onClick={this.select.bind(this, sum.get('User'), sum.get('Id'))}>
-                  <td><input type="checkbox"/></td>
-                  <td className="text-right">
+                <tr key={i}>
+                  <td>
+                    <input type="checkbox"
+                           checked={sum.get('checked')}
+                           onChange={this.check.bind(this, sum.get('Id'))}/>
+                  </td>
+                  <td onClick={click}/>
+                  <td className="text-right" onClick={click}>
                     {sum.get('FastbillNo') || 'Draft'}
                   </td>
-                  <td className="text-center">
+                  <td className="text-center" onClick={click}>
                     {sum.get('Canceled') ?
                       <i className="fa fa-check"/> :
                       '-'
                     }
                   </td>
-                  <td>{name}</td>
-                  <td className="text-center">
+                  <td onClick={click}>{name}</td>
+                  <td className="text-center" onClick={click}>
                     {(moment(sum.get('PaidDate')).unix() > 0) ?
                       <i className="fa fa-check"/> :
                       '-'
                     }
                   </td>
-                  <td className="text-right">{amount} €</td>
+                  <td className="text-right" onClick={click}>{amount} €</td>
                 </tr>
               );
             })}

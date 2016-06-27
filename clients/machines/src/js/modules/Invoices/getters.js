@@ -29,6 +29,17 @@ const getInvoice = [
   }
 ];
 
+const getThisMonthInvoices = [
+  getMonthlySums,
+  (monthlySums) => {
+    const month = monthlySums
+                      .get('selected').get('month');
+    const year = monthlySums
+                      .get('selected').get('year');
+    return monthlySums.getIn([year, month]);
+  }
+];
+
 const getInvoiceActions = [
   getEditPurchaseId,
   getInvoice,
@@ -107,7 +118,24 @@ const getUserMemberships = [
   }
 ];
 
+const getCheckedAll = [
+  getThisMonthInvoices,
+  (invoices) => {
+    if (invoices) {
+      const checked = invoices.reduce((n, inv) => {
+        return n + (inv.get('checked') ? 1 : 0);
+      }, 0);
+      console.log('checked=', checked);
+
+      return invoices.count() === checked;
+    } else {
+      return false;
+    }
+  }
+];
+
 export default {
+  getCheckedAll,
   getEditPurchaseId,
   getInvoice,
   getInvoiceActions,
