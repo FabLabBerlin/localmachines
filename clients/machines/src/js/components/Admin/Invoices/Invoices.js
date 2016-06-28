@@ -55,11 +55,13 @@ var Month = React.createClass({
     return (
       <div className={'inv-monthly-sums ' + (selected ? 'selected' : '')}>
         <div className="row">
-          <div className="col-md-6">
+          <div className="col-xs-6">
             <h3 onClick={this.select}>{t.format('MMMM YYYY')}</h3>
           </div>
-          <div className="col-md-6 text-right">
-            {selected ? ('Sum total:' + total + ' €') : null}
+          <div className="col-xs-6 text-right">
+            <h3>
+              {selected ? ('Sum total: ' + total + ' €') : null}
+            </h3>
           </div>
         </div>
         {
