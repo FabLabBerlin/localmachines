@@ -37,9 +37,31 @@ var Month = React.createClass({
                      year === t.year();
     const summaries = this.state.MonthlySums.getIn([year, month]);
 
+    if (!summaries && selected) {
+      return <LoaderLocal/>;
+    }
+
+    var total;
+    if (selected) {
+      total = (Math.round(this.state.MonthlySums.getIn([
+        t.year(),
+        t.month() + 1
+      ]).reduce((result, monthlySum) => {
+        return result + monthlySum.get('Total');
+      }, 0) * 100) / 100).toFixed(2);
+      console.log('total=', total);
+    }
+
     return (
       <div className={'inv-monthly-sums ' + (selected ? 'selected' : '')}>
-        <h3 onClick={this.select}>{t.format('MMMM YYYY')}</h3>
+        <div className="row">
+          <div className="col-md-6">
+            <h3 onClick={this.select}>{t.format('MMMM YYYY')}</h3>
+          </div>
+          <div className="col-md-6 text-right">
+            {selected ? ('Sum total:' + total + ' €') : null}
+          </div>
+        </div>
         {
           selected ? (
             summaries ? (

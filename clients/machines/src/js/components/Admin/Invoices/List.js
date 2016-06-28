@@ -36,10 +36,6 @@ var List = React.createClass({
            + ' ' + sum.getIn(['User', 'LastName']))
            .toLowerCase();
     });
-    const total = (Math.round(summaries.reduce((result, monthlySum) => {
-      return result + monthlySum.get('Amount');
-    }, 0) * 100) / 100).toFixed(2);
-    console.log('total=', total);
 
     return (
       <div>
