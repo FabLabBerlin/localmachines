@@ -14,7 +14,8 @@ const initialState = toImmutable({
       year: moment().year(),
       userId: undefined
     }
-  }
+  },
+  checkStatus: 'all'
 });
 
 
@@ -27,6 +28,7 @@ var InvoicesStore = new Nuclear.Store({
   initialize() {
     this.on(actionTypes.CHECK, check);
     this.on(actionTypes.CHECK_ALL, checkAll);
+    this.on(actionTypes.CHECK_SET_STATUS, checkSetStatus);
     this.on(actionTypes.EDIT_PURCHASE, editPurchase);
     this.on(actionTypes.EDIT_PURCHASE_DURATION, editPurchaseDuration);
     this.on(actionTypes.FETCH_MONTHLY_SUMMARIES, fetchMonthlySums);
@@ -54,14 +56,11 @@ function check(state, id) {
 }
 
 function checkAll(state) {
-  const checkedAll = reactor.evaluateToJS(getters.getCheckedAll);
-  const month = state.getIn(['MonthlySums', 'selected', 'month']);
-  const year = state.getIn(['MonthlySums', 'selected', 'year']);
-  const invoices = state.getIn(['MonthlySums', year, month]).map((inv) => {
-    return inv.set('checked', !checkedAll);
-  });
+  return updateChecks(state, true);
+}
 
-  return state.setIn(['MonthlySums', year, month], invoices);
+function checkSetStatus(state, status) {
+  return updateChecks(state.set('checkStatus', status), false);
 }
 
 function editPurchase(state, id) {
@@ -148,6 +147,27 @@ function toTimeEnd(p, duration) {
                             .add(mm, 'minutes')
                             .add(ss, 'seconds')
                             .toDate();
+}
+
+function updateChecks(state, toggle) {
+  const checkedAll = reactor.evaluateToJS(getters.getCheckedAll);
+  const month = state.getIn(['MonthlySums', 'selected', 'month']);
+  const year = state.getIn(['MonthlySums', 'selected', 'year']);
+  const invoices = state.getIn(['MonthlySums', year, month]).map((inv) => {
+    var checked = toggle ? !checkedAll : checkedAll;
+    switch (state.get('checkStatus')) {
+    case 'all':
+      break;
+    case inv.get('Status'):
+      break;
+    default:
+      checked = false;
+      break;
+    }
+    return inv.set('checked', checked);
+  });
+
+  return state.setIn(['MonthlySums', year, month], invoices);  
 }
 
 export default InvoicesStore;

@@ -15,7 +15,8 @@ var List = React.createClass({
     return {
       checkedAll: Invoices.getters.getCheckedAll,
       locationId: LocationGetters.getLocationId,
-      MonthlySums: Invoices.getters.getMonthlySums
+      MonthlySums: Invoices.getters.getMonthlySums,
+      checkStatus: Invoices.getters.getCheckStatus
     };
   },
 
@@ -37,11 +38,12 @@ var List = React.createClass({
            .toLowerCase();
     });
 
+    if (this.state.MonthlySums.getIn(['selected', 'invoiceId'])) {
+      return <Invoice/>;
+    }
+
     return (
       <div>
-        {this.state.MonthlySums.getIn(['selected', 'invoiceId']) ? (
-          <Invoice/>
-        ) : null}
         <table className="table table-striped table-hover">
           <thead>
             <tr>
@@ -51,7 +53,12 @@ var List = React.createClass({
                        onChange={this.checkAll}/>
               </th>
               <th>
-                <label>All</label>
+                <select onChange={this.selectStatus}
+                        value={this.state.checkStatus}>
+                  <option value="all">All</option>
+                  <option value="draft">Draft</option>
+                  <option value="outgoing">Outgoing</option>
+                </select>
               </th>
               <th className="text-center">
                 <label>No.</label>
@@ -124,6 +131,11 @@ var List = React.createClass({
       invoiceId: invoiceId
     });
     Invoices.actions.selectInvoiceId(invoiceId);
+  },
+
+  selectStatus(e) {
+    console.log('e.target.value=', e.target.value);
+    Invoices.actions.checkSetStatus(e.target.value);
   }
 
 });

@@ -44,6 +44,10 @@ function checkAll() {
   reactor.dispatch(actionTypes.CHECK_ALL);
 }
 
+function checkSetStatus(status) {
+  reactor.dispatch(actionTypes.CHECK_SET_STATUS, status);
+}
+
 function complete() {
   /*eslint-disable no-alert */
   if (!window.confirm('Invoice cannot be changed and will be synchronized with Fastbill.')) {
@@ -71,6 +75,10 @@ function complete() {
   })
   .always(() => {
     GlobalActions.hideGlobalLoader();
+    editPurchase(undefined);
+    fetchInvoice(invoice.LocationId, {
+      invoiceId: invoice.Id
+    });
   });
 }
 
@@ -255,6 +263,7 @@ export default {
   cancel,
   check,
   checkAll,
+  checkSetStatus,
   complete,
   editPurchase,
   editPurchaseDuration,

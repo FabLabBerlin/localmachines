@@ -49,7 +49,6 @@ var Month = React.createClass({
       ]).reduce((result, monthlySum) => {
         return result + monthlySum.get('Total');
       }, 0) * 100) / 100).toFixed(2);
-      console.log('total=', total);
     }
 
     return (

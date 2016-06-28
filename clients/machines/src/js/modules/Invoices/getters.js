@@ -118,16 +118,29 @@ const getUserMemberships = [
   }
 ];
 
+const getCheckStatus = [
+  ['invoicesStore'],
+  (invoicesStore) => {
+    return invoicesStore.get('checkStatus');
+  }
+];
+
 const getCheckedAll = [
   getThisMonthInvoices,
-  (invoices) => {
+  getCheckStatus,
+  (invoices, checkStatus) => {
     if (invoices) {
+      var allWithStatus = 0;
       const checked = invoices.reduce((n, inv) => {
+        if (checkStatus === 'all' || checkStatus === inv.get('Status')) {
+          allWithStatus++;
+        }
         return n + (inv.get('checked') ? 1 : 0);
       }, 0);
+      console.log('allWithStatus=', allWithStatus);
       console.log('checked=', checked);
 
-      return invoices.count() === checked;
+      return allWithStatus > 0 && allWithStatus === checked;
     } else {
       return false;
     }
@@ -136,6 +149,7 @@ const getCheckedAll = [
 
 export default {
   getCheckedAll,
+  getCheckStatus,
   getEditPurchaseId,
   getInvoice,
   getInvoiceActions,

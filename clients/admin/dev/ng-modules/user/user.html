@@ -340,7 +340,7 @@
               type="button" 
               class="btn btn-danger btn-ico" 
               ng-click="deleteUserMembershipPrompt(userMembership.Id)"
-              ng-hide="!userMembership.Invoice.Current">
+              ng-show="userMembership.Invoice.Status === 'draft'">
               <i class="fa fa-close"></i>
             </button>
           </div>

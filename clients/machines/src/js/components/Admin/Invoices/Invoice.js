@@ -201,16 +201,11 @@ var Invoice = React.createClass({
 
 
       return (
-        <div className="inv-invoice-container"
-             onClick={this.hide}>
-          <div className="inv-invoice-aligner">
-            <div className="inv-invoice"
-                 onClick={this.stopPropagation}>
-              <Header/>
-              <div id="inv-body">
-                <BillTable bill={invoice}/>
-              </div>
-            </div>
+        <div className="inv-invoice"
+             onClick={this.stopPropagation}>
+          <Header/>
+          <div id="inv-body">
+            <BillTable bill={invoice}/>
           </div>
         </div>
       );
