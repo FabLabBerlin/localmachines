@@ -246,7 +246,7 @@ func (this *Controller) Complete() {
 // @Success 200 {object}
 // @Failure	401	Not authorized
 // @Failure	500	Internal Server Error
-// @router /invoices/:id/complete [post]
+// @router /invoices/:id/send [post]
 func (this *Controller) Send() {
 	locId, authorized := this.GetLocIdAdmin()
 	if !authorized {

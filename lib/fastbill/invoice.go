@@ -416,13 +416,15 @@ func SendInvoiceByEmail(id int64, user *users.User) (err error) {
 		return fmt.Errorf("invalid id: %v", id)
 	}
 
+	beego.Info("user.Email=", user.Email)
+
 	request := Request{
 		SERVICE: SERVICE_INVOICE_SEND_BY_EMAIL,
-		DATA: map[string]string{
-			"INVOICE_ID":           strconv.FormatInt(id, 10),
-			"RECIPIENT":            user.Email,
-			"SUBJECT":              "",
-			"MESSAGE":              "",
+		DATA: map[string]interface{}{
+			"INVOICE_ID": strconv.FormatInt(id, 10),
+			"RECIPIENT": map[string]string{
+				"TO": user.Email,
+			},
 			"RECEIPT_CONFIRMATION": "0",
 		},
 	}

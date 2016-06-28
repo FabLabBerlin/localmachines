@@ -115,7 +115,7 @@ func (inv *Invoice) Load() (err error) {
 }
 
 func (inv *Invoice) Send() (err error) {
-	if err := fastbill.SendInvoiceByEmail(inv.Id, inv.User); err != nil {
+	if err := fastbill.SendInvoiceByEmail(inv.FastbillId, inv.User); err != nil {
 		return fmt.Errorf("fastbill send invoice by email: %v", err)
 	}
 
