@@ -114,6 +114,20 @@ func (inv *Invoice) Load() (err error) {
 	return
 }
 
+func (inv *Invoice) Send() (err error) {
+	if err := fastbill.SendInvoiceByEmail(inv.Id, inv.User); err != nil {
+		return fmt.Errorf("fastbill send invoice by email: %v", err)
+	}
+
+	inv.Sent = true
+
+	if err := inv.Save(); err != nil {
+		return fmt.Errorf("save: %v", err)
+	}
+
+	return
+}
+
 func (inv *Invoice) SplitByMonths() (invs []*Invoice, err error) {
 	var tMin time.Time
 	invs = make([]*Invoice, 0, 10)

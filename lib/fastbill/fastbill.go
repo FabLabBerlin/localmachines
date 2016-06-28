@@ -11,15 +11,16 @@ import (
 )
 
 const (
-	SERVICE_CUSTOMER_GET     = "customer.get"
-	SERVICE_CUSTOMER_CREATE  = "customer.create"
-	SERVICE_CUSTOMER_UPDATE  = "customer.update"
-	SERVICE_CUSTOMER_DELETE  = "customer.delete"
-	SERVICE_INVOICE_CREATE   = "invoice.create"
-	SERVICE_INVOICE_GET      = "invoice.get"
-	SERVICE_INVOICE_DELETE   = "invoice.delete"
-	SERVICE_INVOICE_COMPLETE = "invoice.complete"
-	SERVICE_INVOICE_CANCEL   = "invoice.cancel"
+	SERVICE_CUSTOMER_GET          = "customer.get"
+	SERVICE_CUSTOMER_CREATE       = "customer.create"
+	SERVICE_CUSTOMER_UPDATE       = "customer.update"
+	SERVICE_CUSTOMER_DELETE       = "customer.delete"
+	SERVICE_INVOICE_CREATE        = "invoice.create"
+	SERVICE_INVOICE_GET           = "invoice.get"
+	SERVICE_INVOICE_DELETE        = "invoice.delete"
+	SERVICE_INVOICE_COMPLETE      = "invoice.complete"
+	SERVICE_INVOICE_CANCEL        = "invoice.cancel"
+	SERVICE_INVOICE_SEND_BY_EMAIL = "invoice.sendbyemail"
 )
 
 // For unit tests we need to change this here actually

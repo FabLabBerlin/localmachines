@@ -31,6 +31,7 @@ func (m *InvoicesTable_20160531_154603) Up() {
 			user_id int(11) unsigned,
 			status varchar(20),
 			canceled tinyint(1) DEFAULT 0,
+			sent tinyint(1) DEFAULT 0,
 			total real,
 			vat_percent real,
 			invoice_date DATETIME,

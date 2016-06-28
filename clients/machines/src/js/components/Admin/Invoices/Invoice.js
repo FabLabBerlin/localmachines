@@ -128,6 +128,7 @@ var Header = React.createClass({
             }
             {this.state.invoiceActions.get('Send') ?
               <button type="button"
+                      onClick={this.send}
                       title="Send">
                 <i className="fa fa-send"/>
               </button> : null
@@ -171,6 +172,12 @@ var Header = React.createClass({
                       .get('selected').get('year');
 
     Invoices.actions.save(locId, {month, year, userId});
+  },
+
+  send(e) {
+    e.stopPropagation();
+
+    Invoices.actions.send();
   }
 });
 

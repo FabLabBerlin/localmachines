@@ -241,6 +241,51 @@ func (this *Controller) Complete() {
 	this.ServeJSON()
 }
 
+// @Title Send
+// @Description Send outging invoice (through fastbill) but remember it here
+// @Success 200 {object}
+// @Failure	401	Not authorized
+// @Failure	500	Internal Server Error
+// @router /invoices/:id/complete [post]
+func (this *Controller) Send() {
+	locId, authorized := this.GetLocIdAdmin()
+	if !authorized {
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	id, err := this.GetInt64(":id")
+	if err != nil {
+		this.Abort("400")
+	}
+
+	inv, err := invutil.Get(id)
+	if err != nil {
+		beego.Error("invutil get:", err)
+		this.Abort("500")
+	}
+
+	if inv.LocationId != locId {
+		this.Abort("403")
+	}
+
+	if s := inv.Status; s != "outgoing" {
+		beego.Error("wrong status to send invoice:", s)
+		this.Abort("400")
+	}
+
+	if inv.Sent {
+		beego.Error("invoice already sent")
+		this.Abort("400")
+	}
+
+	if err := inv.Send(); err != nil {
+		beego.Error("send invoice via fastbill:", err)
+		this.Abort("500")
+	}
+
+	this.ServeJSON()
+}
+
 // @Title SyncFastbillInvoices
 // @Description SyncFastbillInvoices
 // @Success 200 {object}

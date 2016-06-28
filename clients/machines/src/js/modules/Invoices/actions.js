@@ -255,6 +255,40 @@ function selectInvoiceId(invoiceId) {
   reactor.dispatch(actionTypes.SELECT_INVOICE_ID, invoiceId);
 }
 
+function send() {
+  /*eslint-disable no-alert */
+  if (!window.confirm('Really send invoice?')) {
+    toastr.warning('Aborted send invoice');
+    return;
+  }
+  /*eslint-enable no-alert */
+
+  const invoice = reactor.evaluateToJS(getters.getInvoice);
+
+  GlobalActions.showGlobalLoader();
+
+  $.ajax({
+    method: 'POST',
+    url: '/api/billing/invoices/' + invoice.Id + '/send',
+    data: {
+      location: invoice.LocationId
+    }
+  })
+  .success(() => {
+    toastr.info('Invoice sent');
+  })
+  .error(() => {
+    toastr.error('Error sending invoice.');
+  })
+  .always(() => {
+    GlobalActions.hideGlobalLoader();
+    editPurchase(undefined);
+    fetchInvoice(invoice.LocationId, {
+      invoiceId: invoice.Id
+    });
+  });
+}
+
 function setSelectedMonth({month, year}) {
   reactor.dispatch(actionTypes.SET_SELECTED_MONTH, { month, year });
 }
@@ -274,5 +308,6 @@ export default {
   makeDraft,
   save,
   selectInvoiceId,
+  send,
   setSelectedMonth
 };

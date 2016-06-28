@@ -48,12 +48,14 @@ var List = React.createClass({
           <thead>
             <tr>
               <th>
-                <input type="checkbox"
-                       checked={this.state.checkedAll}
-                       onChange={this.checkAll}/>
+                <input checked={this.state.checkedAll}
+                       className="invs-select-all"
+                       onChange={this.checkAll}
+                       type="checkbox"/>
               </th>
               <th>
-                <select onChange={this.selectStatus}
+                <select className="invs-select-all"
+                        onChange={this.selectStatus}
                         value={this.state.checkStatus}>
                   <option value="all">All</option>
                   <option value="draft">Draft</option>

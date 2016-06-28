@@ -31,6 +31,7 @@ type Invoice struct {
 	Status      string
 	VatPercent  float64 `json:",omitempty"`
 	Canceled    bool
+	Sent        bool
 	InvoiceDate time.Time
 	PaidDate    time.Time
 	DueDate     time.Time
