@@ -66,6 +66,9 @@ var List = React.createClass({
                 <label>No.</label>
               </th>
               <th className="text-center">
+                <label>Status</label>
+              </th>
+              <th className="text-center">
                 <label>Canceled</label>
               </th>
               <th className="text-center">
@@ -97,7 +100,10 @@ var List = React.createClass({
                   </td>
                   <td onClick={click}/>
                   <td className="text-right" onClick={click}>
-                    {sum.get('FastbillNo') || 'Draft'}
+                    {sum.get('FastbillNo') || '-'}
+                  </td>
+                  <td className="text-right" onClick={click}>
+                    {sum.get('Status') + (sum.get('Sent') ? ' (sent)' : '')}
                   </td>
                   <td className="text-center" onClick={click}>
                     {sum.get('Canceled') ?
