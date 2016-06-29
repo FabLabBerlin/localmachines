@@ -3,8 +3,16 @@ var $ = require('jquery');
 var actionTypes = require('./actionTypes');
 var getters = require('./getters');
 var GlobalActions = require('../../actions/GlobalActions');
+var React = require('react');
 var reactor = require('../../reactor');
 var toastr = require('../../toastr');
+
+// https://github.com/HubSpot/vex/issues/72
+var vex = require('vex-js'),
+VexDialog = require('vex-js/js/vex.dialog.js');
+
+vex.defaultOptions.className = 'vex-theme-custom';
+
 
 function cancel() {
   /*eslint-disable no-alert */
@@ -48,44 +56,77 @@ function checkedComplete() {
 }
 
 function checkedPushDrafts(locId) {
-  var iterate = function(ids) {
-    const id = ids.shift();
+  const invs = _.filter(
+    reactor.evaluateToJS(getters.getThisMonthInvoices),
+    inv => inv.checked
+  );
+  console.log('invs=', invs);
+  const n = invs.length;
+
+  var iterate = function(invs, errors) {
+    const inv = invs.shift();
+    const i = n - invs.length;
+
+    if (i % 20 === 0) {
+      toastr.info('Processed ' + i + '/' + n + ' invoices');
+    }
 
     $.ajax({
       method: 'POST',
-      url: '/api/billing/invoices/' + id + '/draft',
+      url: '/api/billing/invoices/' + inv.Id + '/draft',
       data: {
         location: locId
       }
     })
     .success(() => {
-      toastr.info('Draft pushed');
-      if (ids.length > 0) {
-        iterate(ids);
+      console.log('Draft pushed');
+      if (invs.length > 0) {
+        iterate(invs, errors);
+      } else {
+        finish(errors);
       }
     })
     .error((jqXHR, textStatus) => {
-      console.log(jqXHR.responseText);
+      const err = jqXHR.responseText;
+      console.log(err);
       console.log('textStatus=', textStatus);
-      toastr.error('Error pushing draft, aborting.');
-      GlobalActions.hideGlobalLoader();
-    })
-    .always(() => {
-      if (ids.length === 0) {
-        GlobalActions.hideGlobalLoader();
+      console.log('Error pushing draft.');
+      errors.push({
+        message: err,
+        user: inv.User
+      });
+      if (invs.length > 0) {
+        iterate(invs, errors);
+      } else {
+        finish(errors);
       }
     });
   };
 
-  const invs = _.filter(
-    reactor.evaluateToJS(getters.getThisMonthInvoices),
-    inv => inv.checked
-  );
+  var finish = function(errors) {
+    GlobalActions.hideGlobalLoader();
+
+    var msg = $('<div></div>');
+
+    msg.append('<h2>Finished</h2>');
+
+    if (errors.length > 0) {
+      msg.append('<h4>Some errors occurred</h4>');
+      _.each(errors, (err) => {
+        const name = err.user.FirstName + ' ' + err.user.LastName;
+
+        msg.append('<h6>Invoice of ' + name + ': ' + err.message + '</h6>');
+      });
+    } else {
+      msg.append('<h4>Successfully pushed all drafts</h4>');
+    }
+    VexDialog.alert(msg.html());
+  }
 
   if (invs.length > 0) {
     toastr.info('Will Push selected invoices in draft status');
     GlobalActions.showGlobalLoader();
-    iterate(_.pluck(invs, 'Id'));
+    iterate(invs, []);
   } else {
     toastr.error('No invoices selected');
   }
