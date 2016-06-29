@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var Invoice = require('./Invoice');
 var Invoices = require('../../../modules/Invoices');
 var LoaderLocal = require('../../LoaderLocal');
@@ -5,6 +6,66 @@ var LocationGetters = require('../../../modules/Location/getters');
 var moment = require('moment');
 var React = require('react');
 var reactor = require('../../../reactor');
+
+
+var HeadColumn = React.createClass({
+
+  mixins: [ reactor.ReactMixin ],
+
+  getDataBindings() {
+    return {
+      MonthlySums: Invoices.getters.getMonthlySums
+    };
+  },
+
+  asc() {
+    var asc;
+    const sorting = this.state.MonthlySums.get('sorting');
+
+    if (sorting && sorting.get('column') === this.props.attribute) {
+      asc = sorting.get('asc');
+    }
+
+    return asc;
+  },
+
+  onClick() {
+    var asc = this.asc();
+
+    if (asc) {
+      asc = false;
+    } else if (asc === false) {
+      asc = undefined;
+    } else {
+      asc = true;
+    }
+
+    this.props.toggle(this.props.attribute, asc);
+  },
+
+  render() {
+    return (
+      <th className="text-center">
+        <label onClick={this.onClick}>
+          {this.props.label} <SortIndicator asc={this.asc()}/>
+        </label>
+      </th>
+    );
+  }
+});
+
+
+var SortIndicator = React.createClass({
+  render() {
+    if (this.props.asc) {
+      return <i className="fa fa-sort-asc"/>;
+    } else if (_.isUndefined(this.props.asc)) {
+      return <i className="fa fa-unsorted"/>;
+    } else {
+      return <i className="fa fa-sort-desc"/>;
+    }
+  }
+});
 
 
 var List = React.createClass({
@@ -21,7 +82,6 @@ var List = React.createClass({
   },
 
   check(invoiceId, e) {
-    console.log('e=', e);
     e.stopPropagation();
     Invoices.actions.check(invoiceId);
   },
@@ -40,6 +100,22 @@ var List = React.createClass({
 
     if (this.state.MonthlySums.getIn(['selected', 'invoiceId'])) {
       return <Invoice/>;
+    }
+
+    var sorted;
+
+    const sorting = this.state.MonthlySums.get('sorting');
+
+    if (sorting) {
+      console.log('sorting=', sorting.toJS());
+      sorted = summaries.sortBy((inv) => {
+        return inv.get(sorting.get('column'));
+      });
+      if (sorting.get('asc') === false) {
+        sorted = sorted.reverse();
+      }
+    } else {
+      sorted = summaries;
     }
 
     return (
@@ -62,28 +138,28 @@ var List = React.createClass({
                   <option value="outgoing">Outgoing</option>
                 </select>
               </th>
-              <th className="text-center">
-                <label>No.</label>
-              </th>
-              <th className="text-center">
-                <label>Status</label>
-              </th>
-              <th className="text-center">
-                <label>Canceled</label>
-              </th>
-              <th className="text-center">
-                <label>Users</label>
-              </th>
-              <th className="text-center">
-                <label>Paid</label>
-              </th>
-              <th className="text-center">
-                <label>Total</label>
-              </th>
+              <HeadColumn label="No."
+                          attribute="FastbillNo"
+                          toggle={this.toggleSorting}/>
+              <HeadColumn label="Status"
+                          attribute="Status"
+                          toggle={this.toggleSorting}/>
+              <HeadColumn label="Canceled"
+                          attribute="Canceled"
+                          toggle={this.toggleSorting}/>
+              <HeadColumn label="User"
+                          attribute="Name"
+                          toggle={this.toggleSorting}/>
+              <HeadColumn label="Paid"
+                          attribute="Paid"
+                          toggle={this.toggleSorting}/>
+              <HeadColumn label="Total"
+                          attribute="Total"
+                          toggle={this.toggleSorting}/>
             </tr>
           </thead>
           <tbody>
-            {summaries.map((sum, i) => {
+            {sorted.map((sum, i) => {
               const name = sum.getIn(['User', 'FirstName'])
                          + ' ' + sum.getIn(['User', 'LastName']);
               const amount = (Math.round(sum.get('Total') * 100)
@@ -142,8 +218,11 @@ var List = React.createClass({
   },
 
   selectStatus(e) {
-    console.log('e.target.value=', e.target.value);
     Invoices.actions.checkSetStatus(e.target.value);
+  },
+
+  toggleSorting(colName, asc) {
+    Invoices.actions.sortBy(colName, asc);
   }
 
 });

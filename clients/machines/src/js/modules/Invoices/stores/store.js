@@ -37,6 +37,7 @@ var InvoicesStore = new Nuclear.Store({
     this.on(actionTypes.SET_INVOICE, setInvoice);
     this.on(actionTypes.SET_INVOICE_STATUSES, setInvoiceStatuses);
     this.on(actionTypes.SET_USER_MEMBERSHIPS, setUserMemberships);
+    this.on(actionTypes.SORT_BY, sortBy);
   }
 
 });
@@ -118,6 +119,13 @@ function setInvoiceStatuses(state, { month, year, userId, invoiceStatuses }) {
 
 function setUserMemberships(state, { userId, userMemberships }) {
   return state.setIn(['userMemberships', userId], userMemberships);
+}
+
+function sortBy(state, { column, asc }) {
+  return state.setIn(['MonthlySums', 'sorting'], toImmutable({
+    column: column,
+    asc: asc
+  }));
 }
 
 // Private:

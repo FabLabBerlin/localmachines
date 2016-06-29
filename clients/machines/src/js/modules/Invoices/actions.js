@@ -392,6 +392,10 @@ function setSelectedMonth({month, year}) {
   reactor.dispatch(actionTypes.SET_SELECTED_MONTH, { month, year });
 }
 
+function sortBy(column, asc) {
+  reactor.dispatch(actionTypes.SORT_BY, {column, asc});
+}
+
 export default {
   cancel,
   check,
@@ -411,5 +415,6 @@ export default {
   save,
   selectInvoiceId,
   send,
-  setSelectedMonth
+  setSelectedMonth,
+  sortBy
 };
