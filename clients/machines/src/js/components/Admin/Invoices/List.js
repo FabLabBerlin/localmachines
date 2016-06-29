@@ -60,7 +60,7 @@ var SortIndicator = React.createClass({
     if (this.props.asc) {
       return <i className="fa fa-sort-asc"/>;
     } else if (_.isUndefined(this.props.asc)) {
-      return <i className="fa fa-unsorted"/>;
+      return <span/>;
     } else {
       return <i className="fa fa-sort-desc"/>;
     }
@@ -107,9 +107,15 @@ var List = React.createClass({
     const sorting = this.state.MonthlySums.get('sorting');
 
     if (sorting) {
-      console.log('sorting=', sorting.toJS());
       sorted = summaries.sortBy((inv) => {
-        return inv.get(sorting.get('column'));
+        const c = sorting.get('column');
+        const v = inv.get(c);
+
+        if (c === 'FastbillNo') {
+          return parseInt(v, 10) || -1;
+        } else {
+          return v;
+        }
       });
       if (sorting.get('asc') === false) {
         sorted = sorted.reverse();

@@ -137,8 +137,6 @@ const getCheckedAll = [
         }
         return n + (inv.get('checked') ? 1 : 0);
       }, 0);
-      console.log('allWithStatus=', allWithStatus);
-      console.log('checked=', checked);
 
       return allWithStatus > 0 && allWithStatus === checked;
     } else {

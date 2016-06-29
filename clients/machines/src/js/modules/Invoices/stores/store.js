@@ -8,11 +8,15 @@ var toImmutable = Nuclear.toImmutable;
 
 const initialState = toImmutable({
   MonthlySums: {
-  invoices: {},
-  selected: {
-      month: moment().month() + 1,
-      year: moment().year(),
-      userId: undefined
+    invoices: {},
+    selected: {
+        month: moment().month() + 1,
+        year: moment().year(),
+        userId: undefined
+    },
+    sorting: {
+      column: 'Name',
+      asc: true
     }
   },
   checkStatus: 'all'
