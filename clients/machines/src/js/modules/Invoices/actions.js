@@ -3,6 +3,7 @@ var $ = require('jquery');
 var actionTypes = require('./actionTypes');
 var getters = require('./getters');
 var GlobalActions = require('../../actions/GlobalActions');
+var LocationGetters = require('../../modules/Location/getters');
 var React = require('react');
 var reactor = require('../../reactor');
 var toastr = require('../../toastr');
@@ -52,16 +53,14 @@ function checkAll() {
   reactor.dispatch(actionTypes.CHECK_ALL);
 }
 
-function checkedComplete() {
-}
-
-function checkedPushDrafts(locId) {
-  const invs = _.filter(
+function checkedBatch(uriAction, verb) {
+  const locId = reactor.evaluateToJS(LocationGetters.getLocationId);
+  const ivs = _.filter(
     reactor.evaluateToJS(getters.getThisMonthInvoices),
     inv => inv.checked
   );
-  console.log('invs=', invs);
-  const n = invs.length;
+  console.log('ivs=', ivs);
+  const n = ivs.length;
 
   var iterate = function(invs, errors) {
     const inv = invs.shift();
@@ -73,13 +72,13 @@ function checkedPushDrafts(locId) {
 
     $.ajax({
       method: 'POST',
-      url: '/api/billing/invoices/' + inv.Id + '/draft',
+      url: '/api/billing/invoices/' + inv.Id + '/' + uriAction,
       data: {
         location: locId
       }
     })
     .success(() => {
-      console.log('Draft pushed');
+      console.log(verb);
       if (invs.length > 0) {
         iterate(invs, errors);
       } else {
@@ -90,7 +89,7 @@ function checkedPushDrafts(locId) {
       const err = jqXHR.responseText;
       console.log(err);
       console.log('textStatus=', textStatus);
-      console.log('Error pushing draft.');
+      console.log('Error ' + verb + '.');
       errors.push({
         message: err,
         user: inv.User
@@ -118,21 +117,30 @@ function checkedPushDrafts(locId) {
         msg.append('<h6>Invoice of ' + name + ': ' + err.message + '</h6>');
       });
     } else {
-      msg.append('<h4>Successfully pushed all drafts</h4>');
+      msg.append('<h4>Successful ' + verb + ' for all</h4>');
     }
     VexDialog.alert(msg.html());
-  }
+  };
 
-  if (invs.length > 0) {
-    toastr.info('Will Push selected invoices in draft status');
+  if (ivs.length > 0) {
+    toastr.info('Selected invoices: ' + verb);
     GlobalActions.showGlobalLoader();
-    iterate(invs, []);
+    iterate(ivs, []);
   } else {
     toastr.error('No invoices selected');
-  }
+  }  
+}
+
+function checkedComplete() {
+  checkedBatch('complete', 'freeze');
+}
+
+function checkedPushDrafts() {
+  checkedBatch('draft', 'draft-pushing');
 }
 
 function checkedSend() {
+  checkedBatch('send', 'send');
 }
 
 function checkSetStatus(status) {
@@ -388,7 +396,9 @@ export default {
   cancel,
   check,
   checkAll,
+  checkedComplete,
   checkedPushDrafts,
+  checkedSend,
   checkSetStatus,
   complete,
   editPurchase,

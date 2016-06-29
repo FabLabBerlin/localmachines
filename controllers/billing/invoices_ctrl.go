@@ -230,12 +230,12 @@ func (this *Controller) Complete() {
 
 	if err := inv.CalculateTotals(); err != nil {
 		beego.Error("CalculateTotals:", err)
-		this.Abort("500")
+		this.CustomAbort(500, err.Error())
 	}
 
 	if err := inv.CompleteFastbill(); err != nil {
 		beego.Error("complete fastbill:", err)
-		this.Abort("500")
+		this.CustomAbort(500, err.Error())
 	}
 
 	this.ServeJSON()
@@ -270,17 +270,17 @@ func (this *Controller) Send() {
 
 	if s := inv.Status; s != "outgoing" {
 		beego.Error("wrong status to send invoice:", s)
-		this.Abort("400")
+		this.CustomAbort(400, "wrong status to send invoice: "+s)
 	}
 
 	if inv.Sent {
 		beego.Error("invoice already sent")
-		this.Abort("400")
+		this.CustomAbort(500, "invoice already sent")
 	}
 
 	if err := inv.Send(); err != nil {
 		beego.Error("send invoice via fastbill:", err)
-		this.Abort("500")
+		this.CustomAbort(500, err.Error())
 	}
 
 	this.ServeJSON()

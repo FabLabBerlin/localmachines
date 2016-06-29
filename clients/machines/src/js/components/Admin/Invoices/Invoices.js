@@ -28,7 +28,7 @@ var Month = React.createClass({
   },
 
   checkedComplete() {
-    Invoices.actions.checkedComplete();
+    Invoices.actions.checkedComplete(this.state.locationId);
   },
 
   checkedPushDrafts() {
@@ -36,7 +36,7 @@ var Month = React.createClass({
   },
 
   checkedSend() {
-    Invoices.actions.checkedSend();
+    Invoices.actions.checkedSend(this.state.locationId);
   },
 
   render() {
