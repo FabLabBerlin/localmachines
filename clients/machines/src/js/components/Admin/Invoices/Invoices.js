@@ -27,6 +27,18 @@ var Month = React.createClass({
     LocationActions.loadUserLocations(this.state.uid);
   },
 
+  checkedComplete() {
+    Invoices.actions.checkedComplete();
+  },
+
+  checkedPushDrafts() {
+    Invoices.actions.checkedPushDrafts(this.state.locationId);
+  },
+
+  checkedSend() {
+    Invoices.actions.checkedSend();
+  },
+
   render() {
     const t = this.props.t;
     const month = this.state.MonthlySums
@@ -53,13 +65,38 @@ var Month = React.createClass({
 
     return (
       <div className={'inv-monthly-sums ' + (selected ? 'selected' : '')}>
+        {selected ?
+          (
+            <div className="row">
+              <div className="col-xs-6">
+              </div>
+              <div className="col-xs-6 text-right">
+                <button type="button"
+                        onClick={this.checkedSend}
+                        title="Send">
+                  <i className="fa fa-send"/>
+                </button>
+                <button type="button"
+                        onClick={this.checkedComplete}
+                        title="Freeze">
+                  <i className="fa fa-cart-arrow-down"/>
+                </button>
+                <button type="button"
+                        onClick={this.checkedPushDrafts}
+                        title="Push Drafts">
+                  <i className="fa fa-refresh"/>
+                </button>
+              </div>
+            </div>
+          ) : null
+        }
         <div className="row">
           <div className="col-xs-6">
             <h3 onClick={this.select}>{t.format('MMMM YYYY')}</h3>
           </div>
           <div className="col-xs-6 text-right">
             <h3>
-              {selected ? ('Sum total: ' + total + ' €') : null}
+              {/*selected ? ('Sum total: ' + total + ' €') : null*/}
             </h3>
           </div>
         </div>

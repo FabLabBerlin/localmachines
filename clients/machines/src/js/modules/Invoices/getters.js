@@ -155,5 +155,6 @@ export default {
   getInvoiceActions,
   getInvoiceStatuses,
   getMonthlySums,
+  getThisMonthInvoices,
   getUserMemberships
 };

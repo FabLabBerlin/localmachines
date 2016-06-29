@@ -44,6 +44,56 @@ function checkAll() {
   reactor.dispatch(actionTypes.CHECK_ALL);
 }
 
+function checkedComplete() {
+}
+
+function checkedPushDrafts(locId) {
+  var iterate = function(ids) {
+    const id = ids.shift();
+
+    $.ajax({
+      method: 'POST',
+      url: '/api/billing/invoices/' + id + '/draft',
+      data: {
+        location: locId
+      }
+    })
+    .success(() => {
+      toastr.info('Draft pushed');
+      if (ids.length > 0) {
+        iterate(ids);
+      }
+    })
+    .error((jqXHR, textStatus) => {
+      console.log(jqXHR.responseText);
+      console.log('textStatus=', textStatus);
+      toastr.error('Error pushing draft, aborting.');
+      GlobalActions.hideGlobalLoader();
+    })
+    .always(() => {
+      if (ids.length === 0) {
+        GlobalActions.hideGlobalLoader();
+      }
+    });
+  };
+
+  const invs = _.filter(
+    reactor.evaluateToJS(getters.getThisMonthInvoices),
+    inv => inv.checked
+  );
+
+  if (invs.length > 0) {
+    toastr.info('Will Push selected invoices in draft status');
+    GlobalActions.showGlobalLoader();
+    iterate(_.pluck(invs, 'Id'));
+  } else {
+    toastr.error('No invoices selected');
+  }
+}
+
+function checkedSend() {
+}
+
 function checkSetStatus(status) {
   reactor.dispatch(actionTypes.CHECK_SET_STATUS, status);
 }
@@ -297,6 +347,7 @@ export default {
   cancel,
   check,
   checkAll,
+  checkedPushDrafts,
   checkSetStatus,
   complete,
   editPurchase,

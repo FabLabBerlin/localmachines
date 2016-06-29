@@ -157,7 +157,7 @@ func getCustomerId(customerNumber string) (customerId int64, noNumberFound bool,
 		return 0, false, err
 	}
 	if customerNumberInt64 <= 0 {
-		return 0, false, fmt.Errorf("wrong customer number (a.k.a. Fastbill ID a.k.a. Client Id): %v",
+		return 0, false, fmt.Errorf("wrong Fastbill Customer No.: %v",
 			customerNumber)
 	}
 	filter := CustomerGetFilter{

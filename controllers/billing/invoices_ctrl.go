@@ -136,13 +136,13 @@ func (this *Controller) CreateDraft() {
 
 	if err := inv.CalculateTotals(); err != nil {
 		beego.Error("CalculateTotals:", err)
-		this.Abort("500")
+		this.CustomAbort(500, err.Error())
 	}
 
 	fbDraft, empty, err := inv.CreateFastbillDraft(true)
 	if err != nil {
 		beego.Error("Create fastbill draft:", err)
-		this.Abort("500")
+		this.CustomAbort(500, err.Error())
 	}
 	beego.Info("empty=", empty)
 	beego.Info("fbDraft=", fbDraft)

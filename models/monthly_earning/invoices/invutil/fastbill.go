@@ -76,7 +76,7 @@ func (inv *Invoice) CreateFastbillDraft(overwriteExisting bool) (fbDraft *fastbi
 
 	fbDraft.CustomerId, err = fastbill.GetCustomerId(*inv.User)
 	if err != nil {
-		return nil, false, fmt.Errorf("error getting fastbill customer id: %v", err)
+		return nil, false, fmt.Errorf("Fastbill customer id: %v", err)
 	}
 
 	if len(inv.Purchases) == 0 &&
