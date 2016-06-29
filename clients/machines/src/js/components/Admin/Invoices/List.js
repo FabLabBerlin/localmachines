@@ -10,17 +10,9 @@ var reactor = require('../../../reactor');
 
 var HeadColumn = React.createClass({
 
-  mixins: [ reactor.ReactMixin ],
-
-  getDataBindings() {
-    return {
-      MonthlySums: Invoices.getters.getMonthlySums
-    };
-  },
-
   asc() {
     var asc;
-    const sorting = this.state.MonthlySums.get('sorting');
+    const sorting = this.props.sorting;
 
     if (sorting && sorting.get('column') === this.props.attribute) {
       asc = sorting.get('asc');
@@ -60,7 +52,7 @@ var SortIndicator = React.createClass({
     if (this.props.asc) {
       return <i className="fa fa-sort-asc"/>;
     } else if (_.isUndefined(this.props.asc)) {
-      return <span/>;
+      return <i className="fa fa-sort"/>;
     } else {
       return <i className="fa fa-sort-desc"/>;
     }
@@ -146,21 +138,27 @@ var List = React.createClass({
               </th>
               <HeadColumn label="No."
                           attribute="FastbillNo"
+                          sorting={sorting}
                           toggle={this.toggleSorting}/>
               <HeadColumn label="Status"
                           attribute="Status"
+                          sorting={sorting}
                           toggle={this.toggleSorting}/>
               <HeadColumn label="Canceled"
                           attribute="Canceled"
+                          sorting={sorting}
                           toggle={this.toggleSorting}/>
               <HeadColumn label="User"
                           attribute="Name"
+                          sorting={sorting}
                           toggle={this.toggleSorting}/>
               <HeadColumn label="Paid"
                           attribute="Paid"
+                          sorting={sorting}
                           toggle={this.toggleSorting}/>
               <HeadColumn label="Total"
                           attribute="Total"
+                          sorting={sorting}
                           toggle={this.toggleSorting}/>
             </tr>
           </thead>
