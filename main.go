@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/database/connect"
 	_ "github.com/FabLabBerlin/localmachines/docs"
+	_ "github.com/FabLabBerlin/localmachines/lib/log"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/memberships/auto_extend"
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices/invutil"
