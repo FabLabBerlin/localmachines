@@ -6,6 +6,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
+	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
@@ -263,19 +264,17 @@ func (this *Purchase) Seconds() (seconds float64) {
 
 func Update(p *Purchase) (err error) {
 	o := orm.NewOrm()
-	s := p.InvoiceStatus
-	switch s {
-	case "":
-		// Not in any invoice yet
-		break
-	case "draft":
-		// In a draft invoice
-		break
-	case "outgoing", "credit":
-		return fmt.Errorf("cannot change invoice with status %v", s)
-	default:
-		return fmt.Errorf("unknown invoice status %v", s)
+
+	inv, err := invoices.Get(p.InvoiceId)
+	if err != nil {
+		return fmt.Errorf("get invoice: %v", err)
 	}
+
+	if inv.Status != "draft" {
+		return fmt.Errorf("invoice doesn't have status draft: %v", inv.Status)
+	}
+	p.InvoiceStatus = inv.Status
+
 	_, err = o.Update(p)
 	return
 }

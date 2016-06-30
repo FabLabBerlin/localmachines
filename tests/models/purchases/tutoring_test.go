@@ -1,11 +1,14 @@
 package purchases
 
 import (
+	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices"
+	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/tests/assert"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
 	. "github.com/smartystreets/goconvey/convey"
 	"testing"
+	"time"
 )
 
 func init() {
@@ -17,12 +20,22 @@ func TestTutoringPurchases(t *testing.T) {
 
 		Reset(setup.ResetDB)
 
+		inv := &invutil.Invoice{}
+		inv.LocationId = 1
+		inv.UserId = 123
+		inv.Month = int(time.Now().Month())
+		inv.Year = time.Now().Year()
+		inv.Status = "draft"
+		if _, err := invoices.CreateOrUpdate(&inv.Invoice); err != nil {
+			panic(err.Error())
+		}
+
 		Convey("CreateTutoring and GetTutoring", func() {
 			t := &purchases.Tutoring{
 				Purchase: purchases.Purchase{
 					UserId:     123,
 					LocationId: 1,
-					InvoiceId:  789,
+					InvoiceId:  inv.Id,
 				},
 			}
 			id, err1 := purchases.CreateTutoring(t)
@@ -36,14 +49,14 @@ func TestTutoringPurchases(t *testing.T) {
 				Purchase: purchases.Purchase{
 					UserId:     123,
 					LocationId: 1,
-					InvoiceId:  789,
+					InvoiceId:  inv.Id,
 				},
 			})
 			id2, err2 := purchases.CreateTutoring(&purchases.Tutoring{
 				Purchase: purchases.Purchase{
 					UserId:     123,
 					LocationId: 1,
-					InvoiceId:  789,
+					InvoiceId:  inv.Id,
 				},
 			})
 			ts, err := purchases.GetAllTutorings()
@@ -58,7 +71,7 @@ func TestTutoringPurchases(t *testing.T) {
 				Purchase: purchases.Purchase{
 					UserId:     123,
 					LocationId: 1,
-					InvoiceId:  789,
+					InvoiceId:  inv.Id,
 				},
 			}
 			id, err := purchases.CreateTutoring(t)

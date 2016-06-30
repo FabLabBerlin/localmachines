@@ -243,6 +243,7 @@ func (a *Activation) Update() error {
 	if a.Purchase.InvoiceId <= 0 {
 		return fmt.Errorf("undefined invoice id")
 	}
+
 	if mid := a.Purchase.MachineId; mid != 0 {
 		m, err := machine.Get(mid)
 		if err != nil {
