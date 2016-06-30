@@ -7,6 +7,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/coupons"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
+	"github.com/astaxie/beego/orm"
 	"time"
 )
 
@@ -24,9 +25,45 @@ func (inv *Invoice) Cancel() (err error) {
 		return fmt.Errorf("fastbill cancel invoice: %v", err)
 	}
 
+	o := orm.NewOrm()
+	if err := o.Begin(); err != nil {
+		return fmt.Errorf("begin tx: %v", err)
+	}
+
 	inv.Canceled = true
-	if err := inv.Save(); err != nil {
+	if err := inv.SaveOrm(o); err != nil {
 		return fmt.Errorf("error saving invoice changes: %v", err)
+	}
+
+	draft := &Invoice{}
+	draft.LocationId = inv.LocationId
+	draft.Month = inv.Month
+	draft.Year = inv.Year
+	draft.CustomerId = inv.CustomerId
+	draft.CustomerNo = inv.CustomerNo
+	draft.UserId = inv.UserId
+	draft.Total = inv.Total
+	draft.Status = "draft"
+	draft.VatPercent = inv.VatPercent
+	if _, err = o.Insert(&draft.Invoice); err != nil {
+		return fmt.Errorf("insert draft: %v", err)
+	}
+
+	for _, p := range inv.Purchases {
+		if err := p.CloneOrm(o, &draft.Invoice); err != nil {
+			return fmt.Errorf("clone purchase: %v", err)
+		}
+	}
+
+	for _, um := range inv.UserMemberships.Data {
+		err := um.UserMembership().CloneOrm(o, draft.Invoice.Id, draft.Invoice.Status)
+		if err != nil {
+			return fmt.Errorf("clone user membership: %v", err)
+		}
+	}
+
+	if err := o.Commit(); err != nil {
+		return fmt.Errorf("commit tx: %v", err)
 	}
 
 	return

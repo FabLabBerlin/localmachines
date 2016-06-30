@@ -77,13 +77,16 @@ func init() {
 }
 
 func Create(p *Purchase) (id int64, err error) {
+	return CreateOrm(orm.NewOrm(), p)
+}
+
+func CreateOrm(o orm.Ormer, p *Purchase) (id int64, err error) {
 	if p.LocationId <= 0 {
 		return 0, errors.New("LocationId must be > 0")
 	}
 	if p.InvoiceId <= 0 {
 		return 0, errors.New("InvoiceId must be > 0")
 	}
-	o := orm.NewOrm()
 	if id, err = o.Insert(p); err != nil {
 		return
 	}
@@ -188,6 +191,16 @@ func Archive(purchase *Purchase) (err error) {
 	purchase.Archived = true
 	_, err = o.Update(purchase)
 	return
+}
+
+func (this Purchase) CloneOrm(o orm.Ormer, inv *invoices.Invoice) error {
+	var clone Purchase
+	clone = this
+	clone.Id = 0
+	clone.InvoiceId = inv.Id
+	clone.InvoiceStatus = inv.Status
+	_, err := CreateOrm(o, &clone)
+	return err
 }
 
 func (this *Purchase) MembershipStr() (membershipStr string, err error) {

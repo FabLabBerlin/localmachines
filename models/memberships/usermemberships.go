@@ -20,6 +20,16 @@ type UserMembership struct {
 	InvoiceStatus string
 }
 
+func (this UserMembership) CloneOrm(o orm.Ormer, invId int64, invStatus string) error {
+	var clone UserMembership
+	clone = this
+	clone.Id = 0
+	clone.InvoiceId = invId
+	clone.InvoiceStatus = invStatus
+	_, err := o.Insert(&clone)
+	return err
+}
+
 func (this UserMembership) Interval() lib.Interval {
 	return lib.Interval{
 		MonthFrom: int(this.StartDate.Month()),

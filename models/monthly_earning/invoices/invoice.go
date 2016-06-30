@@ -256,7 +256,8 @@ func (inv *Invoice) assertDataOk() (err error) {
 			iv.UserId == inv.UserId &&
 			iv.Month == inv.Month &&
 			iv.Year == inv.Year &&
-			iv.Status == inv.Status {
+			iv.Status == inv.Status &&
+			iv.Canceled == inv.Canceled {
 			return fmt.Errorf("(id=%v) conflicting with invoice %v",
 				inv.Id, iv.Id)
 		}
@@ -319,10 +320,14 @@ func (inv *Invoice) Interval() lib.Interval {
 }
 
 func (inv *Invoice) Save() (err error) {
+	return inv.SaveOrm(orm.NewOrm())
+}
+
+func (inv *Invoice) SaveOrm(o orm.Ormer) (err error) {
 	if err := inv.assertDataOk(); err != nil {
 		return fmt.Errorf("assert data ok: %v", err)
 	}
-	_, err = orm.NewOrm().Update(inv)
+	_, err = o.Update(inv)
 	return
 }
 
