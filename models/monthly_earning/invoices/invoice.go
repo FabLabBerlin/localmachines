@@ -18,24 +18,27 @@ func init() {
 // Invoice represents an actual or future invoice. Future invoices do not
 // have a FastbillId.
 type Invoice struct {
-	Id          int64  `json:",omitempty"`
-	LocationId  int64  `json:",omitempty"`
-	FastbillId  int64  `json:",omitempty"`
-	FastbillNo  string `json:",omitempty"`
-	Month       int
-	Year        int
-	CustomerId  int64
-	CustomerNo  int64
-	UserId      int64
-	Total       float64
-	Status      string
-	VatPercent  float64 `json:",omitempty"`
-	Canceled    bool
-	Sent        bool
-	InvoiceDate time.Time
-	PaidDate    time.Time
-	DueDate     time.Time
-	Current     bool
+	Id                 int64  `json:",omitempty"`
+	LocationId         int64  `json:",omitempty"`
+	FastbillId         int64  `json:",omitempty"`
+	FastbillNo         string `json:",omitempty"`
+	CanceledFastbillId int64  `json:",omitempty"`
+	CanceledFastbillNo string `json:",omitempty"`
+	Month              int
+	Year               int
+	CustomerId         int64
+	CustomerNo         int64
+	UserId             int64
+	Total              float64
+	Status             string
+	VatPercent         float64 `json:",omitempty"`
+	Canceled           bool
+	Sent               bool
+	CanceledSent       bool
+	InvoiceDate        time.Time
+	PaidDate           time.Time
+	DueDate            time.Time
+	Current            bool
 }
 
 func (inv *Invoice) TableName() string {
