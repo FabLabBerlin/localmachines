@@ -189,6 +189,11 @@ func (this *Controller) Migrate() {
 			continue
 		}
 
+		if umOrig.StartDate.After(umOrig.EndDate) && umOrig.Id == 301 {
+			beego.Error("ignoring outdated h.m. membership with start > end")
+			continue
+		}
+
 		/* << if um.StartDate.Before(inv.Interval().TimeTo()) &&
 			um.EndDate.After(inv.Interval().TimeFrom()) {
 			>>
