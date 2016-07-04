@@ -351,50 +351,47 @@ func toUtilInvoices(locId int64, ivs []*invoices.Invoice) (invs []*Invoice, err 
 	return
 }
 
-func SyncFastbillInvoices(locId int64, year int, month time.Month) (err error) {
-	l, err := fastbill.ListInvoices(year, time.Month(month))
+func SyncFastbillInvoices(locId int64, u *users.User) (err error) {
+	fbCustId, err := fastbill.GetCustomerId(*u)
+	if err != nil {
+		return fmt.Errorf("get customer id: %v", err)
+	}
+
+	l, err := fastbill.ListInvoices(fbCustId)
 	if err != nil {
 		return fmt.Errorf("Failed to get invoice list from fastbill: %v", err)
 	}
 
-	usrs, err := users.GetAllUsersAt(locId)
+	invs, err := invoices.GetAllOfUserAt(locId, u.Id)
 	if err != nil {
-		return fmt.Errorf("Failed to get user list: %v", err)
+		return fmt.Errorf("get invoices of user at location: %v", err)
 	}
 
 	for _, fbInv := range l {
-		inv := Invoice{}
-		inv.LocationId = locId
-		inv.FastbillId = fbInv.Id
-		inv.FastbillNo = fbInv.InvoiceNumber
-		inv.CustomerId = fbInv.CustomerId
-		inv.Status = fbInv.Type
+		var inv *invoices.Invoice
+
+		for _, iv := range invs {
+			if iv.FastbillId == fbInv.Id {
+				inv = iv
+				break
+			}
+		}
+
+		if inv == nil {
+			continue
+		}
+
 		inv.Total = fbInv.Total
 		inv.VatPercent = fbInv.VatPercent
 		inv.Canceled = fbInv.Canceled()
 		inv.DueDate = fbInv.DueDate()
 		inv.InvoiceDate = fbInv.InvoiceDate()
 		inv.PaidDate = fbInv.PaidDate()
-		inv.Month, inv.Year, inv.CustomerNo, err = fbInv.ParseTitle()
-		if err != nil {
-			beego.Error("Cannot parse", fbInv.InvoiceTitle)
-			err = nil
-			continue
-		}
-		for _, u := range usrs {
-			if u.ClientId == inv.CustomerNo {
-				inv.UserId = u.Id
-				break
-			}
-		}
-		if inv.UserId == 0 {
-			beego.Error("Cannot find user for customer number", inv.CustomerNo)
-			continue
-		}
-		beego.Info("Adding invoice of user", inv.UserId)
-		if _, err := invoices.CreateOrUpdate(&inv.Invoice); err != nil {
-			return fmt.Errorf("Failed to create or update inv: %v", err)
+
+		if err = inv.Save(); err != nil {
+			return fmt.Errorf("save invoice: %v", err)
 		}
 	}
+
 	return
 }

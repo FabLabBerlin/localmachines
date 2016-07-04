@@ -5,7 +5,6 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
-	"time"
 )
 
 type MonthlySummary struct {
@@ -291,26 +290,26 @@ func (this *Controller) Send() {
 // @Success 200 {object}
 // @Failure	401	Not authorized
 // @Failure	500	Internal Server Error
-// @router /months/:year/:month/sync [get]
+// @router /users/:uid/sync [get]
 func (this *Controller) SyncFastbillInvoices() {
 	locId, authorized := this.GetLocIdAdmin()
 	if !authorized {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	year, err := this.GetInt(":year")
+	uid, err := this.GetInt64(":uid")
 	if err != nil {
-		beego.Error("Failed to get year:", err)
-		this.CustomAbort(400, "Bad request")
+		beego.Error("Failed to get uid:", err)
+		this.Abort("400")
 	}
 
-	month, err := this.GetInt64(":month")
+	u, err := users.GetUser(uid)
 	if err != nil {
-		beego.Error("Failed to get month:", err)
-		this.CustomAbort(400, "Bad request")
+		beego.Error("get user:", err)
+		this.Abort("500")
 	}
 
-	err = invutil.SyncFastbillInvoices(locId, year, time.Month(month))
+	err = invutil.SyncFastbillInvoices(locId, u)
 	if err != nil {
 		beego.Error("Failed to sync fastbill invoices:", err)
 		this.Abort("500")

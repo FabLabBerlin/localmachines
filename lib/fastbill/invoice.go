@@ -153,6 +153,7 @@ type ExistingMonth struct {
 type InvoiceFilter struct {
 	InvoiceTitle string `json:"INVOICE_TITLE,omitempty"`
 	Type         string `json:"TYPE,omitempty"`
+	CustomerId   int64  `json:"CUSTOMER_ID,string,omitempty"`
 	Month        int    `json:"MONTH,string,omitempty"`
 	Year         int    `json:"YEAR,string,omitempty"`
 }
@@ -454,11 +455,11 @@ type Item struct {
 	SortOrder     string  `json:"SORT_ORDER,"`
 }
 
-func ListInvoices(year int, month time.Month) ([]InvoiceGetResponseInvoice, error) {
+func ListInvoices(customerId int64) ([]InvoiceGetResponseInvoice, error) {
 	all := make([]InvoiceGetResponseInvoice, 0, 100)
 	limit := 100
 	for offset := 0; ; offset += limit {
-		l, err := listInvoices(year, month, offset, limit)
+		l, err := listInvoices(customerId, offset, limit)
 		if err != nil {
 			return nil, fmt.Errorf("@offset=%v: err", offset, err)
 		}
@@ -472,12 +473,11 @@ func ListInvoices(year int, month time.Month) ([]InvoiceGetResponseInvoice, erro
 	return all, nil
 }
 
-func listInvoices(year int, month time.Month, offset, limit int) ([]InvoiceGetResponseInvoice, error) {
+func listInvoices(customerId int64, offset, limit int) ([]InvoiceGetResponseInvoice, error) {
 	var err error
 	fb := New()
 	filter := InvoiceFilter{
-		Year:  year,
-		Month: int(month),
+		CustomerId: customerId,
 	}
 	request := Request{
 		SERVICE: SERVICE_INVOICE_GET,

@@ -51,7 +51,7 @@ func init() {
 	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/billing:Controller"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/billing:Controller"],
 		beego.ControllerComments{
 			"SyncFastbillInvoices",
-			`/months/:year/:month/sync`,
+			`/users/:uid/sync`,
 			[]string{"get"},
 			nil})
 
