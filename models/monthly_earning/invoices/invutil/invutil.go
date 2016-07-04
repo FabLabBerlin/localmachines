@@ -224,6 +224,9 @@ func Get(id int64) (inv *Invoice, err error) {
 	tmp, err := toUtilInvoices(iv.LocationId, []*invoices.Invoice{
 		iv,
 	})
+	if tmp[0].VatPercent < 0.01 {
+		return nil, fmt.Errorf("detected zero vat")
+	}
 
 	return tmp[0], err
 }
@@ -352,6 +355,7 @@ func toUtilInvoices(locId int64, ivs []*invoices.Invoice) (invs []*Invoice, err 
 		} else {
 			vatPercent = 19.0
 		}
+		inv.VatPercent = vatPercent
 		for _, p := range inv.Purchases {
 			p.TotalPrice = purchases.PriceTotalExclDisc(p)
 			p.DiscountedTotal, err = purchases.PriceTotalDisc(p)
