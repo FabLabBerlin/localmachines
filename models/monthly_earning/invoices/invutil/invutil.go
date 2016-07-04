@@ -387,6 +387,9 @@ func SyncFastbillInvoices(locId int64, u *users.User) (err error) {
 		inv.DueDate = fbInv.DueDate()
 		inv.InvoiceDate = fbInv.InvoiceDate()
 		inv.PaidDate = fbInv.PaidDate()
+		if fbInv.Type == "draft" || fbInv.Type == "outgoing" {
+			inv.Status = fbInv.Type
+		}
 
 		if err = inv.Save(); err != nil {
 			return fmt.Errorf("save invoice: %v", err)
