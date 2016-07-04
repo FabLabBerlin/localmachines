@@ -11,6 +11,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/settings"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
+	"strings"
 	"time"
 )
 
@@ -367,6 +368,7 @@ func SyncFastbillInvoices(locId int64, u *users.User) (err error) {
 		return fmt.Errorf("get invoices of user at location: %v", err)
 	}
 
+	// Sync draft and outgoing data
 	for _, fbInv := range l {
 		var inv *invoices.Invoice
 
@@ -390,6 +392,36 @@ func SyncFastbillInvoices(locId int64, u *users.User) (err error) {
 		if fbInv.Type == "draft" || fbInv.Type == "outgoing" {
 			inv.Status = fbInv.Type
 		}
+
+		if err = inv.Save(); err != nil {
+			return fmt.Errorf("save invoice: %v", err)
+		}
+	}
+
+	// Sync canceled/credit data
+	for _, fbInv := range l {
+		if fbInv.Type != "credit" {
+			continue
+		}
+
+		var inv *invoices.Invoice
+
+		for _, iv := range invs {
+			if len(strings.TrimSpace(iv.FastbillNo)) < 3 {
+				continue
+			}
+			if strings.Contains(fbInv.InvoiceNumber, iv.FastbillNo) {
+				inv = iv
+				break
+			}
+		}
+
+		if inv == nil {
+			continue
+		}
+
+		inv.CanceledFastbillId = fbInv.Id
+		inv.CanceledFastbillNo = fbInv.InvoiceNumber
 
 		if err = inv.Save(); err != nil {
 			return fmt.Errorf("save invoice: %v", err)
