@@ -6,6 +6,7 @@ var LocationGetters = require('../../../modules/Location/getters');
 var moment = require('moment');
 var React = require('react');
 var reactor = require('../../../reactor');
+var util = require('./util');
 
 
 var HeadColumn = React.createClass({
@@ -183,7 +184,7 @@ var List = React.createClass({
                     {sum.get('FastbillNo') || '-'}
                   </td>
                   <td className="text-right" onClick={click}>
-                    {sum.get('Status') + (sum.get('Sent') ? ' (sent)' : '')}
+                    {util.statusInfo(sum)}
                   </td>
                   <td className="text-center" onClick={click}>
                     {sum.get('Canceled') ?

@@ -9,6 +9,7 @@ var reactor = require('../../../reactor');
 var SettingsActions = require('../../../modules/Settings/actions');
 var SettingsGetters = require('../../../modules/Settings/getters');
 var toastr = require('../../../toastr');
+var util = require('./util');
 
 
 var Header = React.createClass({
@@ -154,10 +155,7 @@ var Header = React.createClass({
             Fastbill No: {invoice.getIn(['User', 'ClientId'])}
           </div>
           <div className="col-xs-3">
-            {invoice.get('FastbillNo') ?
-              'Invoice No: ' + invoice.get('FastbillNo') :
-              'Draft'
-            }
+            {this.statusInfo()}
           </div>
           <div className="col-xs-3">
             Incl. {this.state.vatPercent}% VAT
@@ -191,6 +189,12 @@ var Header = React.createClass({
     e.stopPropagation();
 
     Invoices.actions.sendCanceled();
+  },
+
+  statusInfo() {
+    const invoice = this.state.invoice;
+
+    return util.statusInfo(invoice);
   }
 });
 
