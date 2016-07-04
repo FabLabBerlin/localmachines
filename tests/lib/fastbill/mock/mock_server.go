@@ -76,6 +76,15 @@ func NewServer() (s *Server) {
 			resp = tmp
 		} else if req.SERVICE == fastbill.SERVICE_INVOICE_COMPLETE {
 			resp = fastbill.InvoiceCompleteResponse{}
+		} else if req.SERVICE == fastbill.SERVICE_TEMPLATE_GET {
+			r := fastbill.TemplateGetResponse{}
+			r.Response.Templates = []fastbill.Template{
+				{
+					Id:   889700,
+					Name: "Makea Standard Template",
+				},
+			}
+			resp = r
 		} else {
 			panic("unknown service")
 		}

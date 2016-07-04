@@ -21,6 +21,7 @@ const (
 	SERVICE_INVOICE_COMPLETE      = "invoice.complete"
 	SERVICE_INVOICE_CANCEL        = "invoice.cancel"
 	SERVICE_INVOICE_SEND_BY_EMAIL = "invoice.sendbyemail"
+	SERVICE_TEMPLATE_GET          = "template.get"
 )
 
 // For unit tests we need to change this here actually

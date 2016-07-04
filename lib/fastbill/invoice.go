@@ -216,6 +216,14 @@ func (inv *Invoice) GetTitle() (title string, err error) {
 }
 
 func (inv *Invoice) Submit(overwriteExisting bool) (id int64, err error) {
+	templateExists, err := TemplateIdExists(inv.TemplateId)
+	if err != nil {
+		return 0, fmt.Errorf("template id exist check: %v", err)
+	}
+	if !templateExists {
+		return 0, fmt.Errorf("template '%v' does not exist", inv.TemplateId)
+	}
+
 	fb := New()
 	fbInvs, err := inv.FetchExisting()
 	if err != nil {

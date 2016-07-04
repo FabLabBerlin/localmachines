@@ -260,7 +260,8 @@ func (inv *Invoice) assertDataOk() (err error) {
 			iv.Month == inv.Month &&
 			iv.Year == inv.Year &&
 			iv.Status == inv.Status &&
-			iv.Canceled == inv.Canceled {
+			iv.Canceled == inv.Canceled &&
+			iv.CanceledFastbillNo == inv.CanceledFastbillNo {
 			return fmt.Errorf("(id=%v) conflicting with invoice %v",
 				inv.Id, iv.Id)
 		}
