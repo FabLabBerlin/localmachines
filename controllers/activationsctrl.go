@@ -7,6 +7,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/FabLabBerlin/localmachines/models/machine"
+	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_permissions"
 	"github.com/astaxie/beego"
@@ -145,6 +146,17 @@ func (this *ActivationsController) Put() {
 	if err := dec.Decode(&activation.Purchase); err != nil {
 		beego.Error("Failed to decode json:", err)
 		this.CustomAbort(400, "Failed to update Activation")
+	}
+
+	inv, err := invoices.Get(activation.Purchase.InvoiceId)
+	if err != nil {
+		beego.Error("Get invoice:", err)
+		this.Abort("500")
+	}
+
+	if inv.Status != "draft" {
+		beego.Error("cannot edit because invoice in status", inv.Status)
+		this.Abort("500")
 	}
 
 	m, err := machine.Get(activation.Purchase.MachineId)

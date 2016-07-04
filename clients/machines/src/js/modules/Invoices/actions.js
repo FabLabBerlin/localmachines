@@ -377,7 +377,11 @@ function send(canceled) {
     }
   })
   .success(() => {
-    toastr.info('Cancelation invoice sent');
+    if (canceled) {
+      toastr.info('Cancelation invoice sent');
+    } else {
+      toastr.info('Invoice sent');
+    }
   })
   .error(() => {
     toastr.error('Error sending invoice.');
