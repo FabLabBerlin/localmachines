@@ -36,6 +36,7 @@ function cancel() {
   })
   .success(() => {
     toastr.info('Invoice canceled');
+    refresh();
   })
   .error(() => {
     toastr.error('Error canceling invoice.');
@@ -83,6 +84,7 @@ function checkedBatch(uriAction, verb) {
         iterate(invs, errors);
       } else {
         finish(errors);
+        refresh();
       }
     })
     .error((jqXHR, textStatus) => {
@@ -175,9 +177,7 @@ function complete() {
   .always(() => {
     GlobalActions.hideGlobalLoader();
     editPurchase(undefined);
-    fetchInvoice(invoice.LocationId, {
-      invoiceId: invoice.Id
-    });
+    refresh();
   });
 }
 
@@ -304,6 +304,24 @@ function makeDraft(locId) {
   });
 }
 
+function refresh() {
+  const inv = reactor.evaluateToJS(getters.getInvoice);
+  const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
+  const monthlySums = reactor.evaluateToJS(getters.getMonthlySums);
+  const month = monthlySums.selected.month;
+  const year = monthlySums.selected.year;
+
+  if (inv) {
+    fetchInvoice(inv.LocationId, {
+      invoiceId: inv.Id
+    });
+  }
+  fetchMonthlySums(locationId, {
+    month: month,
+    year: year
+  });
+}
+
 function save(locId, {invoiceId}) {
   var inv = reactor.evaluateToJS(getters.getInvoice);
   var falseEdits = false;
@@ -338,9 +356,7 @@ function save(locId, {invoiceId}) {
   .done(() => {
     toastr.info('Successfully saved updates');
     editPurchase(undefined);
-    fetchInvoice(inv.LocationId, {
-      invoiceId: inv.Id
-    });
+    refresh();
   })
   .fail(() => {
     toastr.error('Error while saving.');
@@ -389,9 +405,7 @@ function send(canceled) {
   .always(() => {
     GlobalActions.hideGlobalLoader();
     editPurchase(undefined);
-    fetchInvoice(invoice.LocationId, {
-      invoiceId: invoice.Id
-    });
+    refresh();
   });
 }
 
