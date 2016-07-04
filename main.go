@@ -123,8 +123,12 @@ func setupTasks() {
 	calculateInvoiceTotals := toolbox.NewTask("Calculate Invoice Totals",
 		" 0 0/50 * * * *",
 		invutil.CalculateInvoiceTotalsTask)
+	syncFastBillAttributesTask := toolbox.NewTask("Sync Fastbill attributes",
+		" 0 0/59 * * * *",
+		invutil.SyncFastBillAttributesTask)
 
 	toolbox.AddTask("Calculate Invoice Totals", calculateInvoiceTotals)
 	toolbox.AddTask("Extend User Memberships", extUsrMemberships)
 	toolbox.AddTask("Fetch Local IPs", fetchLocalIpsTask)
+	toolbox.AddTask("Sync Fastbill attributes", syncFastBillAttributesTask)
 }
