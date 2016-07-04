@@ -20,7 +20,7 @@ const (
 
 const (
 	TemplateStandardId        = 1
-	TemplateMakeaIndustriesId = 875511
+	TemplateMakeaIndustriesId = 889700
 )
 
 const (
