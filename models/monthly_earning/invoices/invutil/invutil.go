@@ -129,6 +129,24 @@ func (inv *Invoice) Send() (err error) {
 	return
 }
 
+func (inv *Invoice) SendCanceled() (err error) {
+	if err := SyncFastbillInvoices(inv.LocationId, inv.User); err != nil {
+		beego.Error("Error syncing fastbill invoices of user")
+	}
+
+	if err := fastbill.SendInvoiceByEmail(inv.CanceledFastbillId, inv.User); err != nil {
+		return fmt.Errorf("fastbill send canceled invoice by email: %v", err)
+	}
+
+	inv.CanceledSent = true
+
+	if err := inv.Save(); err != nil {
+		return fmt.Errorf("save: %v", err)
+	}
+
+	return
+}
+
 func (inv *Invoice) SplitByMonths() (invs []*Invoice, err error) {
 	var tMin time.Time
 	invs = make([]*Invoice, 0, 10)

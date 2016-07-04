@@ -133,6 +133,13 @@ var Header = React.createClass({
                 <i className="fa fa-send"/>
               </button> : null
             }
+            {this.state.invoiceActions.get('SendCanceled') ?
+              <button type="button"
+                      onClick={this.sendCanceled}
+                      title="Send Canceled">
+                <i className="fa fa-send"/>
+              </button> : null
+            }
             {this.state.invoiceActions.get('Cancel') ?
               <button type="button"
                       onClick={this.cancel}
@@ -178,6 +185,12 @@ var Header = React.createClass({
     e.stopPropagation();
 
     Invoices.actions.send();
+  },
+
+  sendCanceled(e) {
+    e.stopPropagation();
+
+    Invoices.actions.sendCanceled();
   }
 });
 

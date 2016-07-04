@@ -7,6 +7,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/coupons"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"time"
 )
@@ -64,6 +65,10 @@ func (inv *Invoice) Cancel() (err error) {
 
 	if err := o.Commit(); err != nil {
 		return fmt.Errorf("commit tx: %v", err)
+	}
+
+	if err := SyncFastbillInvoices(inv.LocationId, inv.User); err != nil {
+		beego.Error("Error syncing fastbill invoices of user")
 	}
 
 	return

@@ -354,9 +354,11 @@ function selectInvoiceId(invoiceId) {
   reactor.dispatch(actionTypes.SELECT_INVOICE_ID, invoiceId);
 }
 
-function send() {
+function send(canceled) {
+  const msg = canceled ? 'Really send cancelation invoice?' : 'Really send invoice?';
+
   /*eslint-disable no-alert */
-  if (!window.confirm('Really send invoice?')) {
+  if (!window.confirm(msg)) {
     toastr.warning('Aborted send invoice');
     return;
   }
@@ -370,11 +372,12 @@ function send() {
     method: 'POST',
     url: '/api/billing/invoices/' + invoice.Id + '/send',
     data: {
-      location: invoice.LocationId
+      location: invoice.LocationId,
+      canceled: canceled
     }
   })
   .success(() => {
-    toastr.info('Invoice sent');
+    toastr.info('Cancelation invoice sent');
   })
   .error(() => {
     toastr.error('Error sending invoice.');
@@ -386,6 +389,10 @@ function send() {
       invoiceId: invoice.Id
     });
   });
+}
+
+function sendCanceled() {
+  send(true);
 }
 
 function setSelectedMonth({month, year}) {
@@ -415,6 +422,7 @@ export default {
   save,
   selectInvoiceId,
   send,
+  sendCanceled,
   setSelectedMonth,
   sortBy
 };

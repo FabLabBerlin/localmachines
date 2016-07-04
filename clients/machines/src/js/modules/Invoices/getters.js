@@ -62,6 +62,7 @@ const getInvoiceActions = [
         as.PushDraft = true;
         as.Save = !!editPurchaseId;
         as.Send = false;
+        as.SendCanceled = false;
         break;
       case 'outgoing':
         if (invoice.get('Canceled')) {
@@ -69,13 +70,15 @@ const getInvoiceActions = [
           as.Freeze = false;
           as.PushDraft = false;
           as.Save = false;
-          as.Send = true;
+          as.Send = false;
+          as.SendCanceled = true;
         } else {
           as.Cancel = true;
           as.Freeze = false;
           as.PushDraft = false;
           as.Save = !!editPurchaseId;
           as.Send = true;
+          as.SendCanceled = false;
         }
         break;
       default:

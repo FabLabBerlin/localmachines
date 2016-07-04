@@ -257,6 +257,8 @@ func (this *Controller) Send() {
 		this.Abort("400")
 	}
 
+	canceled := this.GetString("canceled") == "true"
+
 	inv, err := invutil.Get(id)
 	if err != nil {
 		beego.Error("invutil get:", err)
@@ -272,14 +274,26 @@ func (this *Controller) Send() {
 		this.CustomAbort(400, "wrong status to send invoice: "+s)
 	}
 
-	if inv.Sent {
-		beego.Error("invoice already sent")
-		this.CustomAbort(500, "invoice already sent")
-	}
+	if canceled {
+		if inv.CanceledSent {
+			beego.Error("canceled invoice already sent")
+			this.CustomAbort(500, "canceled invoice already sent")
+		}
 
-	if err := inv.Send(); err != nil {
-		beego.Error("send invoice via fastbill:", err)
-		this.CustomAbort(500, err.Error())
+		if err := inv.SendCanceled(); err != nil {
+			beego.Error("send canceled invoice via fastbill:", err)
+			this.CustomAbort(500, err.Error())
+		}
+	} else {
+		if inv.Sent {
+			beego.Error("invoice already sent")
+			this.CustomAbort(500, "invoice already sent")
+		}
+
+		if err := inv.Send(); err != nil {
+			beego.Error("send invoice via fastbill:", err)
+			this.CustomAbort(500, err.Error())
+		}
 	}
 
 	this.ServeJSON()
