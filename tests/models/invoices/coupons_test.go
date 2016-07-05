@@ -116,7 +116,7 @@ func TestInvoiceCouponUsage(t *testing.T) {
 
 		testServer := mock.NewServer()
 
-		_, empty, err := invs[0].CreateFastbillDraft(false)
+		_, empty, err := invs[0].FastbillCreateDraft(false)
 		So(empty, ShouldBeFalse)
 		So(err, ShouldBeNil)
 		So(testServer.FbInv.Items, ShouldHaveLength, 1)

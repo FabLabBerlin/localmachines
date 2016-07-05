@@ -5,16 +5,12 @@ package invutil
 
 import (
 	"fmt"
-	"github.com/FabLabBerlin/localmachines/lib/fastbill"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
-	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/settings"
 	"github.com/FabLabBerlin/localmachines/models/users"
-	"github.com/astaxie/beego"
-	"strings"
 	"time"
 )
 
@@ -118,38 +114,6 @@ func (inv *Invoice) Load() (err error) {
 	return
 }
 
-func (inv *Invoice) Send() (err error) {
-	if err := fastbill.SendInvoiceByEmail(inv.FastbillId, inv.User); err != nil {
-		return fmt.Errorf("fastbill send invoice by email: %v", err)
-	}
-
-	inv.Sent = true
-
-	if err := inv.Save(); err != nil {
-		return fmt.Errorf("save: %v", err)
-	}
-
-	return
-}
-
-func (inv *Invoice) SendCanceled() (err error) {
-	if err := SyncFastbillInvoices(inv.LocationId, inv.User); err != nil {
-		beego.Error("Error syncing fastbill invoices of user")
-	}
-
-	if err := fastbill.SendInvoiceByEmail(inv.CanceledFastbillId, inv.User); err != nil {
-		return fmt.Errorf("fastbill send canceled invoice by email: %v", err)
-	}
-
-	inv.CanceledSent = true
-
-	if err := inv.Save(); err != nil {
-		return fmt.Errorf("save: %v", err)
-	}
-
-	return
-}
-
 func (inv *Invoice) SplitByMonths() (invs []*Invoice, err error) {
 	var tMin time.Time
 	invs = make([]*Invoice, 0, 10)
@@ -191,28 +155,6 @@ func (inv *Invoice) SplitByMonths() (invs []*Invoice, err error) {
 		}
 		if err := iv.CalculateTotals(); err != nil {
 			return nil, fmt.Errorf("CalculateTotals: %v", err)
-		}
-	}
-
-	return
-}
-
-func CalculateInvoiceTotalsTask() (err error) {
-	beego.Info("Running CalculateInvoiceTotalsTask")
-
-	ls, err := locations.GetAll()
-	if err != nil {
-		return fmt.Errorf("get all locations: %v", err)
-	}
-	for _, l := range ls {
-		invs, err := GetAllAt(l.Id)
-		if err != nil {
-			return fmt.Errorf("get all invoices @ %v: %v", l.Id, err)
-		}
-		for _, inv := range invs {
-			if err := inv.CalculateTotals(); err != nil {
-				return fmt.Errorf("calculate totals for %v: %v", inv.Id, err)
-			}
 		}
 	}
 
@@ -371,85 +313,6 @@ func toUtilInvoices(locId int64, ivs []*invoices.Invoice) (invs []*Invoice, err 
 		}
 		if err = inv.CalculateTotals(); err != nil {
 			return nil, fmt.Errorf("calculate totals: %v", err)
-		}
-	}
-
-	return
-}
-
-func SyncFastbillInvoices(locId int64, u *users.User) (err error) {
-	fbCustId, err := fastbill.GetCustomerId(*u)
-	if err != nil {
-		return fmt.Errorf("get customer id: %v", err)
-	}
-
-	l, err := fastbill.ListInvoices(fbCustId)
-	if err != nil {
-		return fmt.Errorf("Failed to get invoice list from fastbill: %v", err)
-	}
-
-	invs, err := invoices.GetAllOfUserAt(locId, u.Id)
-	if err != nil {
-		return fmt.Errorf("get invoices of user at location: %v", err)
-	}
-
-	// Sync draft and outgoing data
-	for _, fbInv := range l {
-		var inv *invoices.Invoice
-
-		for _, iv := range invs {
-			if iv.FastbillId == fbInv.Id {
-				inv = iv
-				break
-			}
-		}
-
-		if inv == nil {
-			continue
-		}
-
-		inv.Total = fbInv.Total
-		inv.VatPercent = fbInv.VatPercent
-		inv.Canceled = fbInv.Canceled()
-		inv.DueDate = fbInv.DueDate()
-		inv.InvoiceDate = fbInv.InvoiceDate()
-		inv.PaidDate = fbInv.PaidDate()
-		if fbInv.Type == "draft" || fbInv.Type == "outgoing" {
-			inv.Status = fbInv.Type
-		}
-
-		if err = inv.Save(); err != nil {
-			return fmt.Errorf("save invoice: %v", err)
-		}
-	}
-
-	// Sync canceled/credit data
-	for _, fbInv := range l {
-		if fbInv.Type != "credit" {
-			continue
-		}
-
-		var inv *invoices.Invoice
-
-		for _, iv := range invs {
-			if len(strings.TrimSpace(iv.FastbillNo)) < 3 {
-				continue
-			}
-			if strings.Contains(fbInv.InvoiceNumber, iv.FastbillNo) {
-				inv = iv
-				break
-			}
-		}
-
-		if inv == nil {
-			continue
-		}
-
-		inv.CanceledFastbillId = fbInv.Id
-		inv.CanceledFastbillNo = fbInv.InvoiceNumber
-
-		if err = inv.Save(); err != nil {
-			return fmt.Errorf("save invoice: %v", err)
 		}
 	}
 

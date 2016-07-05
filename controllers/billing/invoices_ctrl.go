@@ -138,7 +138,7 @@ func (this *Controller) CreateDraft() {
 		this.CustomAbort(500, err.Error())
 	}
 
-	fbDraft, empty, err := inv.CreateFastbillDraft(true)
+	fbDraft, empty, err := inv.FastbillCreateDraft(true)
 	if err != nil {
 		beego.Error("Create fastbill draft:", err)
 		this.CustomAbort(500, err.Error())
@@ -187,7 +187,7 @@ func (this *Controller) Cancel() {
 		this.Abort("500")
 	}
 
-	if err := inv.Cancel(); err != nil {
+	if err := inv.FastbillCancel(); err != nil {
 		beego.Error("cancel:", err)
 		this.Abort("500")
 	}
@@ -232,7 +232,7 @@ func (this *Controller) Complete() {
 		this.CustomAbort(500, err.Error())
 	}
 
-	if err := inv.CompleteFastbill(); err != nil {
+	if err := inv.FastbillComplete(); err != nil {
 		beego.Error("complete fastbill:", err)
 		this.CustomAbort(500, err.Error())
 	}
@@ -280,7 +280,7 @@ func (this *Controller) Send() {
 			this.CustomAbort(500, "canceled invoice already sent")
 		}
 
-		if err := inv.SendCanceled(); err != nil {
+		if err := inv.FastbillSendCanceled(); err != nil {
 			beego.Error("send canceled invoice via fastbill:", err)
 			this.CustomAbort(500, err.Error())
 		}
@@ -290,7 +290,7 @@ func (this *Controller) Send() {
 			this.CustomAbort(500, "invoice already sent")
 		}
 
-		if err := inv.Send(); err != nil {
+		if err := inv.FastbillSend(); err != nil {
 			beego.Error("send invoice via fastbill:", err)
 			this.CustomAbort(500, err.Error())
 		}
@@ -323,7 +323,7 @@ func (this *Controller) SyncFastbillInvoices() {
 		this.Abort("500")
 	}
 
-	err = invutil.SyncFastbillInvoices(locId, u)
+	err = invutil.FastbillSync(locId, u)
 	if err != nil {
 		beego.Error("Failed to sync fastbill invoices:", err)
 		this.Abort("500")

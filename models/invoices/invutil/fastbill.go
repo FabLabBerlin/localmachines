@@ -5,10 +5,13 @@ import (
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/lib/fastbill"
 	"github.com/FabLabBerlin/localmachines/models/coupons"
+	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
+	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"strings"
 	"time"
 )
 
@@ -17,7 +20,7 @@ const (
 	IS_GROSS_NETTO  = "0"
 )
 
-func (inv *Invoice) Cancel() (err error) {
+func (inv *Invoice) FastbillCancel() (err error) {
 	if inv.Canceled {
 		return fmt.Errorf("invoice already marked as canceled in EASY LAB")
 	}
@@ -67,23 +70,23 @@ func (inv *Invoice) Cancel() (err error) {
 		return fmt.Errorf("commit tx: %v", err)
 	}
 
-	if err := SyncFastbillInvoices(inv.LocationId, inv.User); err != nil {
+	if err := FastbillSync(inv.LocationId, inv.User); err != nil {
 		beego.Error("Error syncing fastbill invoices of user")
 	}
 
 	return
 }
 
-// CompleteFastbill invoice. Data must be synchronized, so better to do it
+// FastbillComplete invoice. Data must be synchronized, so better to do it
 // too often than to seldomly.
-func (inv *Invoice) CompleteFastbill() (err error) {
+func (inv *Invoice) FastbillComplete() (err error) {
 	if inv.Year > time.Now().Year() ||
 		(inv.Year == time.Now().Year() &&
 			int(inv.Month) >= int(time.Now().Month())) {
 		return fmt.Errorf("invoices must be from a past month")
 	}
 
-	_, empty, err := inv.CreateFastbillDraft(true)
+	_, empty, err := inv.FastbillCreateDraft(true)
 	if err != nil {
 		return fmt.Errorf("create fastbill draft: %v", err)
 	}
@@ -101,7 +104,7 @@ func (inv *Invoice) CompleteFastbill() (err error) {
 	return
 }
 
-func (inv *Invoice) CreateFastbillDraft(overwriteExisting bool) (fbDraft *fastbill.Invoice, empty bool, err error) {
+func (inv *Invoice) FastbillCreateDraft(overwriteExisting bool) (fbDraft *fastbill.Invoice, empty bool, err error) {
 	fbDraft = &fastbill.Invoice{
 		CustomerNumber: inv.User.ClientId,
 		TemplateId:     fastbill.TemplateMakeaIndustriesId,
@@ -214,4 +217,115 @@ func getFastbillMonthYear(i *lib.Interval) (month string, year int, err error) {
 		return "", 0, fmt.Errorf("2 months present")
 	}
 	return time.Month(i.MonthFrom).String(), i.YearFrom, nil
+}
+
+func (inv *Invoice) FastbillSend() (err error) {
+	if err := fastbill.SendInvoiceByEmail(inv.FastbillId, inv.User); err != nil {
+		return fmt.Errorf("fastbill send invoice by email: %v", err)
+	}
+
+	inv.Sent = true
+
+	if err := inv.Save(); err != nil {
+		return fmt.Errorf("save: %v", err)
+	}
+
+	return
+}
+
+func (inv *Invoice) FastbillSendCanceled() (err error) {
+	if err := FastbillSync(inv.LocationId, inv.User); err != nil {
+		beego.Error("Error syncing fastbill invoices of user")
+	}
+
+	if err := fastbill.SendInvoiceByEmail(inv.CanceledFastbillId, inv.User); err != nil {
+		return fmt.Errorf("fastbill send canceled invoice by email: %v", err)
+	}
+
+	inv.CanceledSent = true
+
+	if err := inv.Save(); err != nil {
+		return fmt.Errorf("save: %v", err)
+	}
+
+	return
+}
+
+func FastbillSync(locId int64, u *users.User) (err error) {
+	fbCustId, err := fastbill.GetCustomerId(*u)
+	if err != nil {
+		return fmt.Errorf("get customer id: %v", err)
+	}
+
+	l, err := fastbill.ListInvoices(fbCustId)
+	if err != nil {
+		return fmt.Errorf("Failed to get invoice list from fastbill: %v", err)
+	}
+
+	invs, err := invoices.GetAllOfUserAt(locId, u.Id)
+	if err != nil {
+		return fmt.Errorf("get invoices of user at location: %v", err)
+	}
+
+	// Sync draft and outgoing data
+	for _, fbInv := range l {
+		var inv *invoices.Invoice
+
+		for _, iv := range invs {
+			if iv.FastbillId == fbInv.Id {
+				inv = iv
+				break
+			}
+		}
+
+		if inv == nil {
+			continue
+		}
+
+		inv.Total = fbInv.Total
+		inv.VatPercent = fbInv.VatPercent
+		inv.Canceled = fbInv.Canceled()
+		inv.DueDate = fbInv.DueDate()
+		inv.InvoiceDate = fbInv.InvoiceDate()
+		inv.PaidDate = fbInv.PaidDate()
+		if fbInv.Type == "draft" || fbInv.Type == "outgoing" {
+			inv.Status = fbInv.Type
+		}
+
+		if err = inv.Save(); err != nil {
+			return fmt.Errorf("save invoice: %v", err)
+		}
+	}
+
+	// Sync canceled/credit data
+	for _, fbInv := range l {
+		if fbInv.Type != "credit" {
+			continue
+		}
+
+		var inv *invoices.Invoice
+
+		for _, iv := range invs {
+			if len(strings.TrimSpace(iv.FastbillNo)) < 3 {
+				continue
+			}
+			if strings.Contains(fbInv.InvoiceNumber, iv.FastbillNo) {
+				inv = iv
+				break
+			}
+		}
+
+		if inv == nil {
+			continue
+		}
+
+		inv.CanceledFastbillId = fbInv.Id
+		inv.CanceledFastbillNo = fbInv.InvoiceNumber
+
+		if err = inv.Save(); err != nil {
+			return fmt.Errorf("save invoice: %v", err)
+		}
+	}
+
+	return
 }

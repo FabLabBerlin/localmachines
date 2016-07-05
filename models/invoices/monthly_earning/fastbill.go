@@ -40,7 +40,7 @@ func CreateFastbillDrafts(me *MonthlyEarning, vatPercent float64) (report Drafts
 			report.Errors = append(report.Errors, e)
 			beego.Error("no draft created for user", uid, ":", e.Problem)
 		} else {
-			fbDraft, empty, err := inv.CreateFastbillDraft(false)
+			fbDraft, empty, err := inv.FastbillCreateDraft(false)
 			if err == fastbill.ErrInvoiceAlreadyExported {
 				beego.Info("draft for user", uid, "already exported")
 				report.AlreadyExportedUids = append(report.AlreadyExportedUids, uid)

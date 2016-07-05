@@ -117,18 +117,18 @@ func setupTasks() {
 	extUsrMemberships := toolbox.NewTask("Extend User Memberships",
 		"0 0/10 * * * *",
 		auto_extend.AutoExtendUserMemberships)
-	fetchLocalIpsTask := toolbox.NewTask("Fetch Local IPs",
+	fetchLocalIps := toolbox.NewTask("Fetch Local IPs",
 		"0 0/2 * * * *",
 		machine.FetchLocalIpsTask)
-	calculateInvoiceTotals := toolbox.NewTask("Calculate Invoice Totals",
+	calculateTotals := toolbox.NewTask("Calculate Invoice Totals",
 		" 0 0/50 * * * *",
-		invutil.CalculateInvoiceTotalsTask)
-	syncFastBillAttributesTask := toolbox.NewTask("Sync Fastbill attributes",
+		invutil.TaskCalculateTotals)
+	fastbillSync := toolbox.NewTask("Sync Fastbill",
 		" 0 0/59 * * * *",
-		invutil.SyncFastBillAttributesTask)
+		invutil.TaskFastbillSync)
 
-	toolbox.AddTask("Calculate Invoice Totals", calculateInvoiceTotals)
+	toolbox.AddTask("Calculate Invoice Totals", calculateTotals)
 	toolbox.AddTask("Extend User Memberships", extUsrMemberships)
-	toolbox.AddTask("Fetch Local IPs", fetchLocalIpsTask)
-	toolbox.AddTask("Sync Fastbill attributes", syncFastBillAttributesTask)
+	toolbox.AddTask("Fetch Local IPs", fetchLocalIps)
+	toolbox.AddTask("Sync Fastbill", fastbillSync)
 }

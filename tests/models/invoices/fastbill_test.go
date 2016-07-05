@@ -86,7 +86,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 
 			fastbill.API_URL = testServer.URL()
 
-			_, empty, err := invs[0].CreateFastbillDraft(false)
+			_, empty, err := invs[0].FastbillCreateDraft(false)
 			So(empty, ShouldBeFalse)
 			So(err, ShouldBeNil)
 			So(testServer.FbInv.Items, ShouldHaveLength, 1)
@@ -161,7 +161,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 
 			fastbill.API_URL = testServer.URL()
 
-			_, empty, err := drafts[0].CreateFastbillDraft(false)
+			_, empty, err := drafts[0].FastbillCreateDraft(false)
 			So(empty, ShouldBeFalse)
 			So(err, ShouldBeNil)
 			So(testServer.FbInv.Items, ShouldHaveLength, 1)
@@ -187,7 +187,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 
 			fastbill.API_URL = testServer.URL()
 
-			err = invs[0].CompleteFastbill()
+			err = invs[0].FastbillComplete()
 			So(err, ShouldBeNil)
 			So(testServer.FbInv.Items, ShouldHaveLength, 1)
 		})
@@ -225,7 +225,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 
 			fastbill.API_URL = testServer.URL()
 
-			err = inv.CompleteFastbill()
+			err = inv.FastbillComplete()
 			So(err, ShouldNotBeNil)
 		})
 	})
