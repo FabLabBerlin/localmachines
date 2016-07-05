@@ -6,12 +6,12 @@ import (
 	"time"
 
 	"github.com/FabLabBerlin/localmachines/lib"
+	"github.com/FabLabBerlin/localmachines/models/invoices"
+	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
+	"github.com/FabLabBerlin/localmachines/models/invoices/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/memberships/auto_extend"
-	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
-	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices"
-	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/user_permissions"
 	"github.com/FabLabBerlin/localmachines/models/users"
@@ -76,7 +76,7 @@ func TestUserMemberships(t *testing.T) {
 			invNow.Month = 6
 			invNow.Year = 2015
 			invNow.Status = "outgoing"
-			if _, err = invoices.CreateOrUpdate(&invNow.Invoice); err != nil {
+			if _, err = invoices.Create(&invNow.Invoice); err != nil {
 				panic(err.Error())
 			}
 
@@ -86,7 +86,7 @@ func TestUserMemberships(t *testing.T) {
 			invThen.Month = 2
 			invThen.Year = 2015
 			invThen.Status = "outgoing"
-			if _, err = invoices.CreateOrUpdate(&invThen.Invoice); err != nil {
+			if _, err = invoices.Create(&invThen.Invoice); err != nil {
 				panic(err.Error())
 			}
 
@@ -125,9 +125,6 @@ func TestUserMemberships(t *testing.T) {
 				userMembership, err := memberships.CreateUserMembership(
 					o, userId, membership.Id, invNow.Id, startDate)
 				if err != nil {
-					panic(err.Error())
-				}
-				if err := invNow.AttachUserMembership(userMembership); err != nil {
 					panic(err.Error())
 				}
 				gotUserMembership, err := memberships.GetUserMembership(userMembership.Id)
@@ -225,7 +222,7 @@ func TestUserMemberships(t *testing.T) {
 			inv.Month = int(time.Now().Month())
 			inv.Year = time.Now().Year()
 			inv.Status = "outgoing"
-			if _, err = invoices.CreateOrUpdate(&inv.Invoice); err != nil {
+			if _, err = invoices.Create(&inv.Invoice); err != nil {
 				panic(err.Error())
 			}
 
@@ -242,10 +239,6 @@ func TestUserMemberships(t *testing.T) {
 
 			So(userMembership.StartDate, ShouldHappenWithin,
 				time.Duration(1)*time.Second, startTime)
-
-			if err = inv.AttachUserMembership(userMembership); err != nil {
-				panic(err.Error())
-			}
 
 			// Call user membership auto extend function and check the new end date
 			err = auto_extend.AutoExtendUserMemberships()
@@ -291,17 +284,13 @@ func TestUserMemberships(t *testing.T) {
 			inv7_15.Month = int(time.July)
 			inv7_15.Year = 2015
 			inv7_15.Status = "outgoing"
-			if _, err = invoices.CreateOrUpdate(&inv7_15.Invoice); err != nil {
+			if _, err = invoices.Create(&inv7_15.Invoice); err != nil {
 				panic(err.Error())
 			}
 
-			userMembership, err := memberships.CreateUserMembership(
+			um, err := memberships.CreateUserMembership(
 				o, fakeUserId, m.Id, inv7_15.Id, startTime)
 			if err != nil {
-				panic(err.Error())
-			}
-
-			if err = inv7_15.AttachUserMembership(userMembership); err != nil {
 				panic(err.Error())
 			}
 
@@ -311,11 +300,12 @@ func TestUserMemberships(t *testing.T) {
 			invNow.Month = int(time.Now().Month())
 			invNow.Year = time.Now().Year()
 			invNow.Status = "outgoing"
-			if _, err = invoices.CreateOrUpdate(&invNow.Invoice); err != nil {
+			if _, err = invoices.Create(&invNow.Invoice); err != nil {
 				panic(err.Error())
 			}
 
-			if err = invNow.AttachUserMembership(userMembership); err != nil {
+			err = um.CloneOrm(orm.NewOrm(), invNow.Id, invNow.Status)
+			if err != nil {
 				panic(err.Error())
 			}
 

@@ -1,7 +1,7 @@
 package invoices
 
 import (
-	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices"
+	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
 	. "github.com/smartystreets/goconvey/convey"
 	"testing"

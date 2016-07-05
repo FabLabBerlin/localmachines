@@ -1,8 +1,8 @@
 package billing
 
 import (
-	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices"
-	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices/invutil"
+	"github.com/FabLabBerlin/localmachines/models/invoices"
+	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 )

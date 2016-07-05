@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/FabLabBerlin/localmachines/models/coupons"
+	"github.com/FabLabBerlin/localmachines/models/invoices"
+	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/machine"
-	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices"
-	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/users"
@@ -82,7 +82,7 @@ func TestInvoiceCouponUsage(t *testing.T) {
 		inv.Month = int(TIME_START.Month())
 		inv.Year = TIME_START.Year()
 		inv.Status = "outgoing"
-		if _, err = invoices.CreateOrUpdate(&inv.Invoice); err != nil {
+		if _, err = invoices.Create(&inv.Invoice); err != nil {
 			panic(err.Error())
 		}
 

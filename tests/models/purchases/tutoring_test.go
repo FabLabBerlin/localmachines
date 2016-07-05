@@ -1,8 +1,8 @@
 package purchases
 
 import (
-	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices"
-	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices/invutil"
+	"github.com/FabLabBerlin/localmachines/models/invoices"
+	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/tests/assert"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
@@ -26,7 +26,7 @@ func TestTutoringPurchases(t *testing.T) {
 		inv.Month = int(time.Now().Month())
 		inv.Year = time.Now().Year()
 		inv.Status = "draft"
-		if _, err := invoices.CreateOrUpdate(&inv.Invoice); err != nil {
+		if _, err := invoices.Create(&inv.Invoice); err != nil {
 			panic(err.Error())
 		}
 

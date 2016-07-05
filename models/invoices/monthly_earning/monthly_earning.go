@@ -3,7 +3,7 @@ package monthly_earning
 import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
-	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices/invutil"
+	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/settings"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"

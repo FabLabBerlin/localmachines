@@ -1,3 +1,9 @@
+/*
+invoices primitives.
+
+Building blocks for all invoicing functionality, mostly bsed on the
+Invoice type.
+*/
 package invoices
 
 import (
@@ -39,10 +45,6 @@ type Invoice struct {
 	PaidDate           time.Time
 	DueDate            time.Time
 	Current            bool
-}
-
-func (inv *Invoice) TableName() string {
-	return TABLE_NAME
 }
 
 func Create(inv *Invoice) (id int64, err error) {
@@ -97,38 +99,6 @@ func Create(inv *Invoice) (id int64, err error) {
 	}
 
 	return
-}
-
-// CreateOrUpdate based on LocationId and FastbillId
-func CreateOrUpdate(invOrig *Invoice) (id int64, err error) {
-	if err := invOrig.assertDataOk(); err != nil {
-		return 0, fmt.Errorf("assert data ok: %v", err)
-	}
-
-	existing, err := GetByProps(
-		invOrig.LocationId,
-		invOrig.UserId,
-		time.Month(invOrig.Month),
-		invOrig.Year,
-		invOrig.Status,
-	)
-	if err == nil {
-		invOrig.Id = existing.Id
-		if err = invOrig.Save(); err == nil {
-			return existing.Id, nil
-		} else {
-			return 0, fmt.Errorf("update: %v", err)
-		}
-	} else if err == orm.ErrNoRows {
-		id, err := Create(invOrig)
-		if err == nil {
-			return id, err
-		} else {
-			return 0, fmt.Errorf("create: %v", err)
-		}
-	} else {
-		return 0, fmt.Errorf("get by props: %v", err)
-	}
 }
 
 func ThisMonthInvoice(locId, uid int64) (*Invoice, error) {
@@ -270,7 +240,7 @@ func (inv *Invoice) assertDataOk() (err error) {
 	return
 }
 
-func (inv *Invoice) AttachUserMembership(um *memberships.UserMembership) error {
+func (inv *Invoice) attachUserMembership(um *memberships.UserMembership) error {
 	if inv.Id == 0 {
 		return errors.New("invoice Id = 0")
 	}
@@ -359,8 +329,11 @@ func (inv *Invoice) SaveTotal() (err error) {
 // To avoid expensive transactions, it does these steps:
 //
 // 1. If there is already another current invoice for user @ location:
+//
 // 1a. Get all memberships from it
+//
 // 1b. Clone them for the new invoice, if all aren't already present
+//
 // 2. Transactionally switch over current=true state
 func (inv *Invoice) SetCurrent() (err error) {
 	if inv.Current {
@@ -416,7 +389,7 @@ func (inv *Invoice) SetCurrent() (err error) {
 			if err != nil {
 				return fmt.Errorf("get user membership: %v", err)
 			}
-			if err := inv.AttachUserMembership(um); err != nil {
+			if err := inv.attachUserMembership(um); err != nil {
 				return fmt.Errorf("attach user membership: %v", err)
 			}
 		}
@@ -443,4 +416,8 @@ func (inv *Invoice) SetCurrent() (err error) {
 	}
 
 	return
+}
+
+func (inv *Invoice) TableName() string {
+	return TABLE_NAME
 }

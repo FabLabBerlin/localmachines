@@ -2,8 +2,8 @@ package userctrls
 
 import (
 	"encoding/json"
+	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
-	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"time"

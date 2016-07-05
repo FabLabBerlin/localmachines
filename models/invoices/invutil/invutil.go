@@ -1,12 +1,15 @@
+/*
+invutil package facilitates high-level invoicing functions.
+*/
 package invutil
 
 import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib/fastbill"
+	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
-	"github.com/FabLabBerlin/localmachines/models/monthly_earning/invoices"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/settings"
 	"github.com/FabLabBerlin/localmachines/models/users"

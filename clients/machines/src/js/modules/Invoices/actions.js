@@ -400,7 +400,11 @@ function send(canceled) {
     }
   })
   .error(() => {
-    toastr.error('Error sending invoice.');
+    if (canceled) {
+      toastr.error('Error sending cancelation invoice.');
+    } else {
+      toastr.error('Error sending invoice.');
+    }
   })
   .always(() => {
     GlobalActions.hideGlobalLoader();

@@ -3,7 +3,7 @@ package billing
 import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
-	"github.com/FabLabBerlin/localmachines/models/monthly_earning"
+	"github.com/FabLabBerlin/localmachines/models/invoices/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/settings"
 	"github.com/astaxie/beego"
 	"io"

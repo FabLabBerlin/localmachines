@@ -1,3 +1,4 @@
+// /{admin,machines,signup}
 package clients
 
 import (

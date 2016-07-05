@@ -1,3 +1,4 @@
+// /api/newsletters
 package newsletters
 
 import (
