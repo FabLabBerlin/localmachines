@@ -154,7 +154,7 @@ func StartActivation(m *machine.Machine, uid int64, start time.Time) (
 		return
 	}
 
-	inv, err := invoices.ThisMonthInvoice(m.LocationId, uid)
+	inv, err := invoices.GetDraft(m.LocationId, uid, time.Now())
 	if err != nil {
 		return 0, fmt.Errorf("current invoice: %v", err)
 	}

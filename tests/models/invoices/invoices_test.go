@@ -17,12 +17,10 @@ func TestInvoices(t *testing.T) {
 		Reset(setup.ResetDB)
 		Convey("InvoiceOfMonth()", func() {
 			Convey("Auto creates new invoice for current month", func() {
-				y := time.Now().Year()
-				m := time.Now().Month()
-				iv1, err := invoices.InvoiceOfMonth(1, 123, y, m)
+				iv1, err := invoices.GetDraft(1, 123, time.Now())
 				So(err, ShouldBeNil)
 
-				iv2, err := invoices.InvoiceOfMonth(1, 123, y, m)
+				iv2, err := invoices.GetDraft(1, 123, time.Now())
 				So(err, ShouldBeNil)
 
 				So(iv1.Current, ShouldBeTrue)
@@ -32,9 +30,7 @@ func TestInvoices(t *testing.T) {
 
 			Convey("Not auto creates new invoice for past month because in that case there are no purchases", func() {
 				t := time.Now().AddDate(0, -1, 0)
-				y := t.Year()
-				m := t.Month()
-				_, err := invoices.InvoiceOfMonth(1, 123, y, m)
+				_, err := invoices.GetDraft(1, 123, t)
 				So(err, ShouldNotBeNil)
 			})
 		})

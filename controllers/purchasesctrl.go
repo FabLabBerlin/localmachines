@@ -210,7 +210,7 @@ func (this *PurchasesController) Put() {
 
 		var inv *invoices.Invoice
 		if tp.InvoiceId == 0 {
-			inv, err = invoices.InvoiceOfMonth(tp.LocationId, tp.UserId, t.Year(), t.Month())
+			inv, err = invoices.GetDraft(tp.LocationId, tp.UserId, t)
 			if err != nil {
 				beego.Error("getting invoice of", t.Format("01-2006"), ":", err)
 				this.Abort("500")

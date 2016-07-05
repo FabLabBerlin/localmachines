@@ -86,7 +86,7 @@ func (this *ReservationsController) Create() {
 
 	t := req.Purchase.TimeStart
 
-	inv, err := invoices.InvoiceOfMonth(locId, req.UserId(), t.Year(), t.Month())
+	inv, err := invoices.GetDraft(locId, req.UserId(), t)
 	if err != nil {
 		beego.Error("getting invoice of", t.Format("01-2006"), ":", err)
 		this.Abort("500")

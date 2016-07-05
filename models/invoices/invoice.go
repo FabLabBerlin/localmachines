@@ -1,7 +1,7 @@
 /*
 invoices primitives.
 
-Building blocks for all invoicing functionality, mostly bsed on the
+Building blocks for all invoicing functionality, mostly based on the
 Invoice type.
 */
 package invoices
@@ -65,7 +65,7 @@ func Create(inv *Invoice) (id int64, err error) {
 	if now := time.Now(); inv.Month == int(now.Month()) &&
 		inv.Year == now.Year() {
 		lastMonth := now.AddDate(0, -1, 0)
-		lastInv, err := InvoiceOfMonth(inv.LocationId, inv.UserId, lastMonth.Year(), lastMonth.Month())
+		lastInv, err := GetDraft(inv.LocationId, inv.UserId, lastMonth)
 		if err == nil {
 			umbs, err := memberships.GetUserMembershipsForInvoice(lastInv.Id)
 			if err != nil {
@@ -101,13 +101,13 @@ func Create(inv *Invoice) (id int64, err error) {
 	return
 }
 
-func ThisMonthInvoice(locId, uid int64) (*Invoice, error) {
-	return InvoiceOfMonth(locId, uid, time.Now().Year(), time.Now().Month())
-}
-
 var ErrNoInvoiceForThatMonth = errors.New("no invoice exists for that month (and none will be auto-created)")
 
-func InvoiceOfMonth(locId, uid int64, y int, m time.Month) (*Invoice, error) {
+// GetDraft for User uid @ Location locId and time t.  If it doesn't exist, it
+// gets created insofar it doesn't violate business logic.
+func GetDraft(locId, uid int64, t time.Time) (*Invoice, error) {
+	y := t.Year()
+	m := t.Month()
 	isThisMonth := time.Now().Month() == m && time.Now().Year() == y
 
 	inv := Invoice{
@@ -118,7 +118,7 @@ func InvoiceOfMonth(locId, uid int64, y int, m time.Month) (*Invoice, error) {
 		Status:     "draft",
 	}
 
-	existing, err := GetByProps(
+	existing, err := getByProps(
 		inv.LocationId,
 		inv.UserId,
 		time.Month(inv.Month),
@@ -182,7 +182,7 @@ func GetAllOfUserAt(locId, userId int64) ([]*Invoice, error) {
 	return ivs, err
 }
 
-func GetByProps(locId, uid int64, m time.Month, y int, status string) (*Invoice, error) {
+func getByProps(locId, uid int64, m time.Month, y int, status string) (*Invoice, error) {
 	var inv Invoice
 
 	err := orm.NewOrm().

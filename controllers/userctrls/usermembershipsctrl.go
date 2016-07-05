@@ -64,7 +64,7 @@ func (this *UserMembershipsController) PostUserMemberships() {
 	invoiceIds := make([]int64, 0, 1)
 
 	for i := 0; ; i++ {
-		inv, err := invoices.InvoiceOfMonth(m.LocationId, uid, t.Year(), t.Month())
+		inv, err := invoices.GetDraft(m.LocationId, uid, t)
 		if err != nil {
 			beego.Error("error getting this month' invoice:", err)
 			this.Abort("500")
@@ -132,7 +132,7 @@ func (this *UserMembershipsController) GetUserMemberships() {
 		this.Abort("400")
 	}
 
-	inv, err := invoices.ThisMonthInvoice(locationId, uid)
+	inv, err := invoices.GetDraft(locationId, uid, time.Now())
 	if err != nil {
 		beego.Error("current invoice:", err)
 		this.Abort("500")
