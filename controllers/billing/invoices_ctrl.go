@@ -138,13 +138,11 @@ func (this *Controller) CreateDraft() {
 		this.CustomAbort(500, err.Error())
 	}
 
-	fbDraft, empty, err := inv.FastbillCreateDraft(true)
+	fbDraft, _, err := inv.FastbillCreateDraft(true)
 	if err != nil {
 		beego.Error("Create fastbill draft:", err)
 		this.CustomAbort(500, err.Error())
 	}
-	beego.Info("empty=", empty)
-	beego.Info("fbDraft=", fbDraft)
 
 	this.Data["json"] = fbDraft
 	this.ServeJSON()

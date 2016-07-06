@@ -64,21 +64,22 @@ func (this *Controller) GetAll() {
 // @Description Get machine by machine ID
 // @Param	mid		path 	int	true		"Machine ID"
 // @Success 200 machine.Machine
-// @Failure	403	Failed to get machine
+// @Failure	400	Wrong Input
 // @Failure	401	Not authorized
+// @Failure	500	Internal Server Error
 // @router /:mid [get]
 func (this *Controller) Get() {
 
 	machineId, err := this.GetInt64(":mid")
 	if err != nil {
 		beego.Error("Failed to get :mid variable")
-		this.CustomAbort(403, "Failed to get machine")
+		this.Abort("400")
 	}
 
 	machine, err := machine.Get(machineId)
 	if err != nil {
 		beego.Error("Failed to get machine", err)
-		this.CustomAbort(403, "Failed to get machine")
+		this.Abort("500")
 	}
 
 	if !this.IsStaffAt(machine.LocationId) {
@@ -87,13 +88,13 @@ func (this *Controller) Get() {
 		sessUserId, err := this.GetSessionUserId()
 		if err != nil {
 			beego.Error("Failed to get session user ID:", err)
-			this.CustomAbort(403, "Failed to get machine")
+			this.Abort("400")
 		}
 
 		permissions, err := user_permissions.Get(sessUserId)
 		if err != nil {
 			beego.Error("Failed to get machine permissions", err)
-			this.CustomAbort(401, "Not authorized")
+			this.Abort("401")
 		}
 
 		permissionFound := false
@@ -106,7 +107,7 @@ func (this *Controller) Get() {
 
 		if !permissionFound {
 			beego.Error("User not authorized to view this machine")
-			this.CustomAbort(401, "Not authorized")
+			this.Abort("401")
 		}
 	}
 
@@ -127,7 +128,7 @@ func (this *Controller) Create() {
 
 	locId, authorized := this.GetLocIdAdmin()
 	if !authorized {
-		this.CustomAbort(401, "Not authorized")
+		this.Abort("401")
 	}
 
 	m, err := machine.Create(locId, name)
