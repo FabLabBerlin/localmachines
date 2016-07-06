@@ -5,8 +5,7 @@ package metrics
 
 import (
 	"fmt"
-	"github.com/FabLabBerlin/localmachines/lib"
-	"github.com/FabLabBerlin/localmachines/models/invoices/monthly_earning"
+	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_memberships"
@@ -62,30 +61,26 @@ type Data struct {
 	LocationId      int64
 	startTime       time.Time
 	endTime         time.Time
-	monthlyEarning  *monthly_earning.MonthlyEarning
+	Invoices        []*invutil.Invoice
 	userMemberships []*user_memberships.UserMembership
 	membershipsById map[int64]*memberships.Membership
 }
 
 func FetchData(locationId int64) (data Data, err error) {
-	endTime := time.Now()
-	interval := lib.Interval{
-		MonthFrom: int(time.August),
-		YearFrom:  2015,
-		MonthTo:   int(endTime.Month()),
-		YearTo:    endTime.Year(),
-	}
-
 	data.LocationId = locationId
-	data.monthlyEarning, err = monthly_earning.New(locationId, interval)
+
+	allInvoices, err := invutil.GetAllAt(locationId)
 	if err != nil {
 		return data, fmt.Errorf("Failed to get invoice summary: %v", err)
 	}
+
+	data.Invoices = filter(allInvoices)
 
 	ms, err := memberships.GetAllAt(locationId)
 	if err != nil {
 		return data, fmt.Errorf("Failed to get memberships: %v", err)
 	}
+
 	data.membershipsById = make(map[int64]*memberships.Membership)
 	for _, m := range ms {
 		data.membershipsById[m.Id] = m
@@ -99,10 +94,41 @@ func FetchData(locationId int64) (data Data, err error) {
 	return
 }
 
+func filter(all []*invutil.Invoice) (filtered []*invutil.Invoice) {
+	byUserIdYearMonth := make(map[int64]map[int]map[time.Month]*invutil.Invoice)
+	filtered = make([]*invutil.Invoice, 0, len(all))
+
+	for _, iv := range all {
+		uid := iv.UserId
+		m := time.Month(iv.Month)
+		y := iv.Year
+
+		if _, ok := byUserIdYearMonth[uid]; !ok {
+			byUserIdYearMonth[uid] = make(map[int]map[time.Month]*invutil.Invoice)
+		}
+		if _, ok := byUserIdYearMonth[uid][y]; !ok {
+			byUserIdYearMonth[uid][y] = make(map[time.Month]*invutil.Invoice)
+		}
+		if existing, ok := byUserIdYearMonth[uid][y][m]; !ok || iv.Id > existing.Id {
+			byUserIdYearMonth[uid][y][m] = iv
+		}
+	}
+
+	for _, byUid := range byUserIdYearMonth {
+		for _, byYear := range byUid {
+			for _, iv := range byYear {
+				filtered = append(filtered, iv)
+			}
+		}
+	}
+
+	return
+}
+
 func (this Data) sumActivationsBy(timeFormat string) (sums map[string]float64, err error) {
 	sums = make(map[string]float64)
 
-	for _, inv := range this.monthlyEarning.Invoices {
+	for _, inv := range this.Invoices {
 		for _, purchase := range inv.Purchases {
 			if purchase.Type == purchases.TYPE_ACTIVATION {
 				priceTotalDisc, err := purchases.PriceTotalDisc(purchase)
@@ -122,12 +148,14 @@ func (this Data) sumActivationsBy(timeFormat string) (sums map[string]float64, e
 func (this Data) sumMembershipsBy(timeFormat string) (sums map[string]float64, err error) {
 	sums = make(map[string]float64)
 
-	for _, userMembership := range this.userMemberships {
-		membership, ok := this.membershipsById[userMembership.MembershipId]
-		if !ok {
-			return nil, fmt.Errorf("User Membership %v links to unknown Membership Id %v", userMembership.Id, userMembership.MembershipId)
-		}
-		for t := userMembership.StartDate; t.Before(userMembership.EndDate); t = t.AddDate(0, 1, 0) {
+	for _, inv := range this.Invoices {
+		for _, userMembership := range inv.UserMemberships.Data {
+			membership, ok := this.membershipsById[userMembership.MembershipId]
+			if !ok {
+				return nil, fmt.Errorf("User Membership %v links to unknown Membership Id %v", userMembership.Id, userMembership.MembershipId)
+			}
+
+			t := time.Date(inv.Year, time.Month(inv.Month), 1, 12, 12, 12, 0, time.UTC)
 			key := t.Format(timeFormat)
 			sums[key] = sums[key] + float64(membership.MonthlyPrice)
 		}
@@ -150,12 +178,13 @@ func (this Data) sumMembershipsBy(timeFormat string) (sums map[string]float64, e
 func (this Data) sumMembershipCountsBy(timeFormat string) (sums map[string]int, err error) {
 	sums = make(map[string]int)
 
-	for _, userMembership := range this.userMemberships {
-		membership, ok := this.membershipsById[userMembership.MembershipId]
-		if !ok {
-			return nil, fmt.Errorf("User Membership %v links to unknown Membership Id %v", userMembership.Id, userMembership.MembershipId)
-		}
-		for t := userMembership.StartDate; t.Before(userMembership.EndDate); t = t.AddDate(0, 1, 0) {
+	for _, inv := range this.Invoices {
+		for _, userMembership := range inv.UserMemberships.Data {
+			membership, ok := this.membershipsById[userMembership.MembershipId]
+			if !ok {
+				return nil, fmt.Errorf("User Membership %v links to unknown Membership Id %v", userMembership.Id, userMembership.MembershipId)
+			}
+			t := time.Date(inv.Year, time.Month(inv.Month), 1, 12, 12, 12, 0, time.UTC)
 			key := t.Format(timeFormat)
 			if membership.MonthlyPrice > 0 {
 				sums[key] = sums[key] + 1
@@ -169,7 +198,7 @@ func (this Data) sumMembershipCountsBy(timeFormat string) (sums map[string]int, 
 func (this Data) sumMinutesBy(timeFormat string) (sums map[string]float64, err error) {
 	sums = make(map[string]float64)
 
-	for _, inv := range this.monthlyEarning.Invoices {
+	for _, inv := range this.Invoices {
 		if inv.User.GetRole() != user_roles.STAFF && inv.User.GetRole() != user_roles.ADMIN {
 			for _, purchase := range inv.Purchases {
 				if purchase.Type == purchases.TYPE_ACTIVATION {
