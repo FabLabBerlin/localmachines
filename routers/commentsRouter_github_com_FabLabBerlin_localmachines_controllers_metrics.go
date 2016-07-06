@@ -8,6 +8,13 @@ func init() {
 
 	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/metrics:Controller"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/metrics:Controller"],
 		beego.ControllerComments{
+			"GetRealtime",
+			`/realtime`,
+			[]string{"get"},
+			nil})
+
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/metrics:Controller"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/metrics:Controller"],
+		beego.ControllerComments{
 			"GetAll",
 			`/`,
 			[]string{"get"},
@@ -24,13 +31,6 @@ func init() {
 		beego.ControllerComments{
 			"GetMachineRevenue",
 			`/machine_revenue`,
-			[]string{"get"},
-			nil})
-
-	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/metrics:Controller"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/metrics:Controller"],
-		beego.ControllerComments{
-			"GetRealtime",
-			`/realtime`,
 			[]string{"get"},
 			nil})
 

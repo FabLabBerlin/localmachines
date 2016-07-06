@@ -39,7 +39,7 @@ vex.defaultOptions.className = 'vex-theme-custom';
 
   componentWillMount() {
     const isLogged = reactor.evaluateToJS(getters.getIsLogged);
-    if (!isLogged) {
+    if (!isLogged && window.location.hash !== '#/product') {
       LoginActions.tryPassLoginForm(this.context.router, {
         loggedIn: () => {
           if (window.location.hash === '#/login') {
@@ -75,6 +75,7 @@ vex.defaultOptions.className = 'vex-theme-custom';
         <div id="main-content">
           {(this.state.isLogged ||
             window.location.hash === '#/login' ||
+            window.location.hash === '#/product' ||
             window.location.hash.indexOf('forgot_password') > 0
             ) ? 
             <RouteHandler /> :

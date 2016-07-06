@@ -17,6 +17,7 @@ var LoginStore = require('./stores/LoginStore');
 var MachinePage = require('./components/MachinePage/MachinePage');
 var Machines = require('./modules/Machines');
 var React = require('react');
+var ProductPage = require('./components/ProductPage/ProductPage');
 var reactor = require('./reactor');
 var RegisterExisting = require('./components/RegisterExisting');
 var ReservationsPage = require('./components/Reservations/ReservationsPage');
@@ -85,6 +86,7 @@ let routes = (
     </Route>
     <Route name="login" handler={LoginChooser} />
     <Route name="machine" handler={MachinePage} />
+    <Route name="product" handler={ProductPage} />
     <Route name="profile" handler={UserPage} />
     <Route name="register_existing" handler={RegisterExisting} />
     <Route name="spendings" handler={SpendingsPage} />
