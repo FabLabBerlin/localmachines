@@ -71,7 +71,7 @@ vex.defaultOptions.className = 'vex-theme-custom';
   render() {
     return (
       <div className="app">
-        <HeaderNav />
+        {window.location.hash !== '#/product' ? <HeaderNav /> : null}
         <div id="main-content">
           {(this.state.isLogged ||
             window.location.hash === '#/login' ||
