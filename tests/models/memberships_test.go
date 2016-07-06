@@ -182,26 +182,5 @@ func TestMemberships(t *testing.T) {
 			})
 		})
 
-		Convey("Testing DeleteMembership", func() {
-			name := "Super Membership"
-
-			Convey("Try to delete non-existing membership", func() {
-				err := memberships.DeleteMembership(0)
-
-				Convey("It should return an error", func() {
-					So(err, ShouldNotBeNil)
-				})
-			})
-
-			Convey("Creating a membership and delete it", func() {
-				m, _ := memberships.CreateMembership(1, name)
-				err := memberships.DeleteMembership(m.Id)
-
-				Convey("There should be no error", func() {
-					So(err, ShouldBeNil)
-				})
-			})
-		})
-
 	})
 }

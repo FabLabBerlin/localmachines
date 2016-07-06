@@ -12,6 +12,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
+	"github.com/FabLabBerlin/localmachines/models/user_memberships"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/FabLabBerlin/localmachines/tests/lib/fastbill/mock"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
@@ -135,7 +136,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 				panic(err.Error())
 			}
 			startTime := time.Now().AddDate(0, -2, 0)
-			_, err = memberships.CreateUserMembership(o, uid, ms.Id, inv.Id, startTime)
+			_, err = user_memberships.CreateUserMembership(o, uid, ms.Id, inv.Id, startTime)
 			if err != nil {
 				panic(err.Error())
 			}

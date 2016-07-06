@@ -2,8 +2,8 @@ package monthly_earning
 
 import (
 	"fmt"
-	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
+	"github.com/FabLabBerlin/localmachines/models/user_memberships"
 	"github.com/tealeg/xlsx"
 	"sort"
 	"strconv"
@@ -158,7 +158,7 @@ func createXlsxFile(filePath string, monthlyEarning *MonthlyEarning) error {
 	// Fill the xlsx sheet
 	for _, inv := range monthlyEarning.Invoices {
 
-		ms, err := memberships.GetUserMembershipsForInvoice(inv.Id)
+		ms, err := user_memberships.GetUserMembershipsForInvoice(inv.Id)
 		if err != nil {
 			return fmt.Errorf("GetUserMemberships: %v", err)
 		}

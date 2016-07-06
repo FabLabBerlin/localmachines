@@ -9,6 +9,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/invoices/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
+	"github.com/FabLabBerlin/localmachines/models/user_memberships"
 	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"github.com/astaxie/beego"
 	"time"
@@ -62,7 +63,7 @@ type Data struct {
 	startTime       time.Time
 	endTime         time.Time
 	monthlyEarning  *monthly_earning.MonthlyEarning
-	userMemberships []*memberships.UserMembership
+	userMemberships []*user_memberships.UserMembership
 	membershipsById map[int64]*memberships.Membership
 }
 
@@ -90,7 +91,7 @@ func FetchData(locationId int64) (data Data, err error) {
 		data.membershipsById[m.Id] = m
 	}
 
-	data.userMemberships, err = memberships.GetAllUserMembershipsAt(locationId)
+	data.userMemberships, err = user_memberships.GetAllUserMembershipsAt(locationId)
 	if err != nil {
 		return data, fmt.Errorf("Failed to get user memberships: %v", err)
 	}

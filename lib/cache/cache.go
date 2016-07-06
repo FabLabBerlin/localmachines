@@ -1,3 +1,4 @@
+// cache running in-memory
 package cache
 
 import (

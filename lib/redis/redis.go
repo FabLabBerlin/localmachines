@@ -1,3 +1,4 @@
+// packages redis manages a connection pool.
 package redis
 
 import (

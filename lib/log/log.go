@@ -1,3 +1,6 @@
+/*
+log adapter between beego and logrus.
+*/
 package log
 
 import (

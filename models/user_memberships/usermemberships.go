@@ -1,8 +1,9 @@
-package memberships
+package user_memberships
 
 import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
+	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/astaxie/beego/orm"
 	"time"
 )
@@ -111,7 +112,7 @@ func CreateUserMembership(o orm.Ormer, userId, membershipId, invoiceId int64, st
 		return nil, fmt.Errorf("need (valid) invoice id")
 	}
 
-	m, err := GetMembership(membershipId)
+	m, err := memberships.GetMembership(membershipId)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get membership: %v", err)
 	}
@@ -134,7 +135,7 @@ func CreateUserMembership(o orm.Ormer, userId, membershipId, invoiceId int64, st
 
 func GetAllUserMembershipsAt(locationId int64) (userMemberships []*UserMembership, err error) {
 	o := orm.NewOrm()
-	m := new(Membership)
+	m := new(memberships.Membership)
 	um := new(UserMembership)
 
 	qb, err := orm.NewQueryBuilder("mysql")
@@ -175,7 +176,7 @@ func GetUserMembershipsForInvoice(invoiceId int64) (*UserMembershipList, error) 
 	o := orm.NewOrm()
 
 	// Use these for the table names
-	m := Membership{}
+	m := memberships.Membership{}
 	um := UserMembership{}
 
 	// Joint query, select user memberships and expands them with

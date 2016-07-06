@@ -10,16 +10,17 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/settings"
+	"github.com/FabLabBerlin/localmachines/models/user_memberships"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"time"
 )
 
 type Invoice struct {
 	invoices.Invoice
-	User            *users.User                     `json:",omitempty"`
-	UserMemberships *memberships.UserMembershipList `json:",omitempty"`
-	Purchases       purchases.Purchases             `json:",omitempty"`
-	Sums            *Sums                           `json:",omitempty"`
+	User            *users.User                          `json:",omitempty"`
+	UserMemberships *user_memberships.UserMembershipList `json:",omitempty"`
+	Purchases       purchases.Purchases                  `json:",omitempty"`
+	Sums            *Sums                                `json:",omitempty"`
 }
 
 type Sums struct {
@@ -68,7 +69,7 @@ func (inv *Invoice) CalculateTotals() (err error) {
 	inv.Sums.Purchases.PriceExclVAT = inv.Sums.Purchases.PriceInclVAT / p
 	inv.Sums.Purchases.PriceVAT = inv.Sums.Purchases.PriceInclVAT - inv.Sums.Purchases.PriceExclVAT
 
-	ms, err := memberships.GetUserMembershipsForInvoice(inv.Id)
+	ms, err := user_memberships.GetUserMembershipsForInvoice(inv.Id)
 	if err != nil {
 		return fmt.Errorf("GetUserMemberships: %v", err)
 	}
@@ -103,7 +104,7 @@ func (inv *Invoice) Load() (err error) {
 	if inv.Purchases, err = purchases.GetByInvoiceId(inv.Id); err != nil {
 		return fmt.Errorf("get purchases by invoice id: %v", err)
 	}
-	inv.UserMemberships, err = memberships.GetUserMembershipsForInvoice(inv.Id)
+	inv.UserMemberships, err = user_memberships.GetUserMembershipsForInvoice(inv.Id)
 	if err != nil {
 		return fmt.Errorf("get user memberships for invoice: %v", err)
 	}
@@ -239,12 +240,12 @@ func toUtilInvoices(locId int64, ivs []*invoices.Invoice) (invs []*Invoice, err 
 		msById[m.Id] = m
 	}
 
-	umbsByUid := make(map[int64][]*memberships.UserMembership)
-	if umbs, err := memberships.GetAllUserMembershipsAt(locId); err == nil {
+	umbsByUid := make(map[int64][]*user_memberships.UserMembership)
+	if umbs, err := user_memberships.GetAllUserMembershipsAt(locId); err == nil {
 		for _, umb := range umbs {
 			uid := umb.UserId
 			if _, ok := umbsByUid[uid]; !ok {
-				umbsByUid[uid] = []*memberships.UserMembership{
+				umbsByUid[uid] = []*user_memberships.UserMembership{
 					umb,
 				}
 			} else {
@@ -272,7 +273,7 @@ func toUtilInvoices(locId int64, ivs []*invoices.Invoice) (invs []*Invoice, err 
 
 			umbs, ok := umbsByUid[p.UserId]
 			if !ok {
-				umbs = []*memberships.UserMembership{}
+				umbs = []*user_memberships.UserMembership{}
 			}
 			for _, umb := range umbs {
 				mbId := umb.MembershipId

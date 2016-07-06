@@ -7,6 +7,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
+	"github.com/FabLabBerlin/localmachines/models/user_memberships"
 	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"time"
 )
@@ -123,7 +124,7 @@ func NewTrotecStats() (t *Trotec, err error) {
 		membershipsById[m.Id] = m
 	}
 
-	userMemberships, err := memberships.GetAllUserMembershipsAt(TROTEC_LOCATION_ID)
+	userMemberships, err := user_memberships.GetAllUserMembershipsAt(TROTEC_LOCATION_ID)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get user memberships: %v", err)
 	}

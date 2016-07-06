@@ -1,3 +1,4 @@
+// mfi utility functions
 package mfi
 
 import (

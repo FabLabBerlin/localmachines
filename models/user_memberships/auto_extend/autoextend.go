@@ -5,6 +5,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
+	"github.com/FabLabBerlin/localmachines/models/user_memberships"
 	"github.com/astaxie/beego"
 	"sync"
 	"time"
@@ -52,7 +53,7 @@ func autoExtendUserMemberships() (err error) {
 }
 
 func extendUserMembershipsAt(locId int64) (err error) {
-	ums, err := memberships.GetAllUserMembershipsAt(locId)
+	ums, err := user_memberships.GetAllUserMembershipsAt(locId)
 	if err != nil {
 		return fmt.Errorf("get all user memberships: %v", err)
 	}

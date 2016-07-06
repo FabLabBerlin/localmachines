@@ -14,6 +14,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/products"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
+	"github.com/FabLabBerlin/localmachines/models/user_memberships"
 	"github.com/FabLabBerlin/localmachines/models/user_permissions"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
@@ -32,7 +33,7 @@ var dbModels = []Model{
 	&users.User{},
 	&products.Product{},
 	&purchases.Purchase{},
-	&memberships.UserMembership{},
+	&user_memberships.UserMembership{},
 	&user_locations.UserLocation{},
 }
 

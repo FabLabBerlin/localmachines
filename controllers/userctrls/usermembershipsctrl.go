@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
+	"github.com/FabLabBerlin/localmachines/models/user_memberships"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"time"
@@ -96,7 +97,7 @@ func (this *UserMembershipsController) PostUserMemberships() {
 	}
 
 	for _, invId := range invoiceIds {
-		_, err = memberships.CreateUserMembership(o, uid, mId, invId, startDate)
+		_, err = user_memberships.CreateUserMembership(o, uid, mId, invId, startDate)
 		if err != nil {
 			beego.Error("Error creating user membership:", err)
 			this.Abort("500")
@@ -140,14 +141,14 @@ func (this *UserMembershipsController) GetUserMemberships() {
 
 	beego.Info("current inv.Id=", inv.Id)
 
-	all, err := memberships.GetUserMembershipsForInvoice(inv.Id)
+	all, err := user_memberships.GetUserMembershipsForInvoice(inv.Id)
 	if err != nil {
 		beego.Error("Failed to get user machine permissions")
 		this.Abort("500")
 	}
 
-	list := &memberships.UserMembershipList{
-		Data: make([]*memberships.UserMembershipCombo, 0, len(all.Data)),
+	list := &user_memberships.UserMembershipList{
+		Data: make([]*user_memberships.UserMembershipCombo, 0, len(all.Data)),
 	}
 	for _, um := range all.Data {
 		if locationId <= 0 || locationId == um.LocationId {
@@ -170,7 +171,7 @@ func (this *UserMembershipsController) GetUserMemberships() {
 // @router /:uid/memberships/:umid [put]
 func (this *UserMembershipsController) PutUserMembership() {
 	dec := json.NewDecoder(this.Ctx.Request.Body)
-	var um memberships.UserMembership
+	var um user_memberships.UserMembership
 
 	if err := dec.Decode(&um); err != nil {
 		beego.Error("Failed to decode json", err)
@@ -216,7 +217,7 @@ func (this *UserMembershipsController) DeleteUserMembership() {
 		this.Abort("400")
 	}
 
-	um, err := memberships.GetUserMembership(umid)
+	um, err := user_memberships.GetUserMembership(umid)
 	if err != nil {
 		beego.Error("Get user membership:", err)
 		this.Abort("500")
@@ -237,7 +238,7 @@ func (this *UserMembershipsController) DeleteUserMembership() {
 		beego.Error("cannot delete user membership because it's bound to non-draft invoice")
 		this.Abort("403")
 	}
-	err = memberships.DeleteUserMembership(umid)
+	err = user_memberships.DeleteUserMembership(umid)
 	if err != nil {
 		beego.Error("delete user membership:", err)
 		this.Abort("500")

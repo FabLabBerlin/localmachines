@@ -7,7 +7,7 @@ import (
 	_ "github.com/FabLabBerlin/localmachines/lib/log"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/machine"
-	"github.com/FabLabBerlin/localmachines/models/memberships/auto_extend"
+	"github.com/FabLabBerlin/localmachines/models/user_memberships/auto_extend"
 	"github.com/FabLabBerlin/localmachines/routers"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"

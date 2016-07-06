@@ -3,9 +3,9 @@ package billing
 import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
-	"github.com/FabLabBerlin/localmachines/models/memberships"
-	"github.com/FabLabBerlin/localmachines/models/memberships/auto_extend"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
+	"github.com/FabLabBerlin/localmachines/models/user_memberships"
+	"github.com/FabLabBerlin/localmachines/models/user_memberships/auto_extend"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
@@ -45,7 +45,7 @@ func (this *Controller) Migrate() {
 		this.Abort("500")
 	}
 
-	ums, err := memberships.GetAllUserMembershipsAt(locId)
+	ums, err := user_memberships.GetAllUserMembershipsAt(locId)
 	if err != nil {
 		beego.Error("Failed to get user memberships:", err)
 		this.Abort("500")
@@ -215,7 +215,7 @@ func (this *Controller) Migrate() {
 			}
 
 			if !future {
-				newUm := &memberships.UserMembership{
+				newUm := &user_memberships.UserMembership{
 					UserId:       umOrig.UserId,
 					MembershipId: umOrig.MembershipId,
 					StartDate:    umOrig.StartDate,

@@ -6,8 +6,8 @@ import (
 	"github.com/FabLabBerlin/localmachines/lib/fastbill"
 	"github.com/FabLabBerlin/localmachines/models/coupons"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
-	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
+	"github.com/FabLabBerlin/localmachines/models/user_memberships"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
@@ -114,7 +114,7 @@ func (inv *Invoice) FastbillCreateDraft(overwriteExisting bool) (fbDraft *fastbi
 	if fbDraft.Month, fbDraft.Year, err = getFastbillMonthYear(&intv); err != nil {
 		return nil, false, fmt.Errorf("get fastbill month: %v", err)
 	}
-	ms, err := memberships.GetUserMembershipsForInvoice(inv.Id)
+	ms, err := user_memberships.GetUserMembershipsForInvoice(inv.Id)
 	if err != nil {
 		return nil, false, fmt.Errorf("GetUserMemberships: %v", err)
 	}
