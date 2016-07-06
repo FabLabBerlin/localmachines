@@ -154,6 +154,35 @@ func GetAllAt(locationId int64) (ums []*UserMembership, err error) {
 	return
 }
 
+func GetAllAtList(locationId int64) (ums *List, err error) {
+
+	o := orm.NewOrm()
+
+	// Use these for the table names
+	m := memberships.Membership{}
+	um := UserMembership{}
+
+	// Joint query, select user memberships and expands them with
+	// membership base information.
+	sql := fmt.Sprintf("SELECT um.*, m.location_id, m.title, m.short_name, m.duration_months, "+
+		"m.monthly_price, m.machine_price_deduction, m.affected_machines, m.auto_extend "+
+		"FROM %s AS um "+
+		"JOIN %s m ON um.membership_id=m.id "+
+		"WHERE m.location_id=?",
+		um.TableName(), m.TableName())
+
+	var userMemberships []*Combo
+	if _, err := o.Raw(sql, locationId).QueryRows(&userMemberships); err != nil {
+		return nil, fmt.Errorf("query rows: %v", err)
+	}
+
+	list := List{
+		Data: userMemberships,
+	}
+
+	return &list, nil
+}
+
 // Gets pointer to filled user membership store
 // by using user membership ID.
 func Get(id int64) (*UserMembership, error) {

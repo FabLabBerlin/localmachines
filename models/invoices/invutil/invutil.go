@@ -12,6 +12,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/settings"
 	"github.com/FabLabBerlin/localmachines/models/user_memberships"
 	"github.com/FabLabBerlin/localmachines/models/users"
+	"github.com/astaxie/beego"
 	"time"
 )
 
@@ -59,6 +60,15 @@ func (inv *Invoice) ByProductNameAndPricePerUnit() map[string]map[float64][]*pur
 }
 
 func (inv *Invoice) CalculateTotals() (err error) {
+	ms, err := user_memberships.GetForInvoice(inv.Id)
+	if err != nil {
+		return fmt.Errorf("GetUserMemberships: %v", err)
+	}
+
+	return inv.calculateTotals(ms)
+}
+
+func (inv *Invoice) calculateTotals(ms *user_memberships.List) (err error) {
 	inv.Sums = &Sums{}
 
 	for _, purchase := range inv.Purchases {
@@ -68,11 +78,6 @@ func (inv *Invoice) CalculateTotals() (err error) {
 	p := (100.0 + inv.VatPercent) / 100.0
 	inv.Sums.Purchases.PriceExclVAT = inv.Sums.Purchases.PriceInclVAT / p
 	inv.Sums.Purchases.PriceVAT = inv.Sums.Purchases.PriceInclVAT - inv.Sums.Purchases.PriceExclVAT
-
-	ms, err := user_memberships.GetForInvoice(inv.Id)
-	if err != nil {
-		return fmt.Errorf("GetUserMemberships: %v", err)
-	}
 
 	for _, m := range ms.Data {
 		if m.Interval().Contains(inv.Interval().TimeTo()) {
@@ -98,15 +103,45 @@ func (inv *Invoice) CalculateTotals() (err error) {
 }
 
 func (inv *Invoice) Load() (err error) {
-	if inv.User, err = users.GetUser(inv.UserId); err != nil {
+	usersById := make(map[int64]*users.User)
+	purchasesByInv := make(map[int64][]*purchases.Purchase)
+	userMembershipsByInv := make(map[int64]*user_memberships.List)
+
+	usersById[inv.UserId], err = users.GetUser(inv.UserId)
+	if err != nil {
 		return fmt.Errorf("get user(id=%v): %v", inv.UserId, err)
 	}
-	if inv.Purchases, err = purchases.GetByInvoiceId(inv.Id); err != nil {
+
+	purchasesByInv[inv.Id], err = purchases.GetByInvoiceId(inv.Id)
+	if err != nil {
 		return fmt.Errorf("get purchases by invoice id: %v", err)
 	}
-	inv.UserMemberships, err = user_memberships.GetForInvoice(inv.Id)
+
+	userMembershipsByInv[inv.Id], err = user_memberships.GetForInvoice(inv.Id)
 	if err != nil {
 		return fmt.Errorf("get user memberships for invoice: %v", err)
+	}
+
+	return inv.load(usersById, purchasesByInv, userMembershipsByInv)
+}
+
+func (inv *Invoice) load(
+	usersById map[int64]*users.User,
+	purchasesByInv map[int64][]*purchases.Purchase,
+	userMembershipsByInv map[int64]*user_memberships.List,
+) (err error) {
+	var ok bool
+
+	if inv.User, ok = usersById[inv.UserId]; !ok {
+		return fmt.Errorf("user # %v not found", inv.UserId)
+	}
+	if inv.Purchases, ok = purchasesByInv[inv.Id]; !ok {
+		inv.Purchases = []*purchases.Purchase{}
+	}
+	if inv.UserMemberships, ok = userMembershipsByInv[inv.Id]; !ok {
+		inv.UserMemberships = &user_memberships.List{
+			Data: []*user_memberships.Combo{},
+		}
 	}
 	for _, umb := range inv.UserMemberships.Data {
 		bill := umb.Interval().Contains(inv.Interval().TimeTo())
@@ -219,18 +254,57 @@ func GetAllOfMonthAt(locId int64, year int, m time.Month) ([]*Invoice, error) {
 }
 
 func toUtilInvoices(locId int64, ivs []*invoices.Invoice) (invs []*Invoice, err error) {
+	t0 := time.Now()
 	invs = make([]*Invoice, 0, len(ivs))
+
+	usersById := make(map[int64]*users.User)
+	purchasesByInv := make(map[int64][]*purchases.Purchase)
+	userMembershipsByInv := make(map[int64]*user_memberships.List)
+
+	if us, err := users.GetAllUsersAt(locId); err == nil {
+		for _, u := range us {
+			usersById[u.Id] = u
+		}
+	} else {
+		return nil, fmt.Errorf("get all users: %v", err)
+	}
+
+	if ps, err := purchases.GetAllAt(locId); err == nil {
+		for _, p := range ps {
+			if _, ok := purchasesByInv[p.InvoiceId]; !ok {
+				purchasesByInv[p.InvoiceId] = make([]*purchases.Purchase, 0, 20)
+			}
+			purchasesByInv[p.InvoiceId] = append(purchasesByInv[p.InvoiceId], p)
+		}
+	} else {
+		return nil, fmt.Errorf("get all purchases: %v", err)
+	}
+
+	if umbs, err := user_memberships.GetAllAtList(locId); err == nil {
+		for _, umb := range umbs.Data {
+			if _, ok := userMembershipsByInv[umb.InvoiceId]; !ok {
+				userMembershipsByInv[umb.InvoiceId] = &user_memberships.List{
+					Data: make([]*user_memberships.Combo, 0, 3),
+				}
+			}
+			userMembershipsByInv[umb.InvoiceId].Data = append(userMembershipsByInv[umb.InvoiceId].Data, umb)
+		}
+	} else {
+		return nil, fmt.Errorf("get all user memberships: %v", err)
+	}
 
 	for _, iv := range ivs {
 		inv := &Invoice{
 			Invoice: *iv,
 		}
-		if err = inv.Load(); err != nil {
+		err = inv.load(usersById, purchasesByInv, userMembershipsByInv)
+		if err != nil {
 			return nil, fmt.Errorf("load: %v", err)
 		}
 		invs = append(invs, inv)
 	}
-
+	beego.Info("STAGE 1:", time.Now().Sub(t0))
+	t1 := time.Now()
 	ms, err := machine.GetAllAt(locId)
 	if err != nil {
 		return nil, fmt.Errorf("get all machines at %v: %v", locId, err)
@@ -264,6 +338,18 @@ func toUtilInvoices(locId int64, ivs []*invoices.Invoice) (invs []*Invoice, err 
 	} else {
 		return nil, fmt.Errorf("Failed to get memberships: %v", err)
 	}
+	beego.Info("stage 2:", time.Now().Sub(t1))
+
+	locSettings, err := settings.GetAllAt(locId)
+	if err != nil {
+		return nil, fmt.Errorf("get settings: %v", err)
+	}
+	var vatPercent float64
+	if vat := locSettings.GetFloat(locId, settings.VAT); vat != nil {
+		vatPercent = *vat
+	} else {
+		vatPercent = 19.0
+	}
 
 	for _, inv := range invs {
 		for _, p := range inv.Purchases {
@@ -291,16 +377,6 @@ func toUtilInvoices(locId int64, ivs []*invoices.Invoice) (invs []*Invoice, err 
 			}
 		}
 
-		locSettings, err := settings.GetAllAt(inv.LocationId)
-		if err != nil {
-			return nil, fmt.Errorf("get settings: %v", err)
-		}
-		var vatPercent float64
-		if vat := locSettings.GetFloat(inv.LocationId, settings.VAT); vat != nil {
-			vatPercent = *vat
-		} else {
-			vatPercent = 19.0
-		}
 		inv.VatPercent = vatPercent
 		for _, p := range inv.Purchases {
 			p.TotalPrice = purchases.PriceTotalExclDisc(p)
@@ -312,7 +388,12 @@ func toUtilInvoices(locId int64, ivs []*invoices.Invoice) (invs []*Invoice, err 
 			p.PriceExclVAT = p.DiscountedTotal / percent
 			p.PriceVAT = p.DiscountedTotal - p.PriceExclVAT
 		}
-		if err = inv.CalculateTotals(); err != nil {
+		/*if inv.UserMemberships, ok = userMembershipsByInv[inv.Id]; !ok {
+			inv.UserMemberships = &user_memberships.List{
+				Data: []*user_memberships.Combo{},
+			}
+		}*/
+		if err = inv.calculateTotals(inv.UserMemberships); err != nil {
 			return nil, fmt.Errorf("calculate totals: %v", err)
 		}
 	}
