@@ -45,7 +45,7 @@ func (this *Controller) Migrate() {
 		this.Abort("500")
 	}
 
-	ums, err := user_memberships.GetAllUserMembershipsAt(locId)
+	ums, err := user_memberships.GetAllAt(locId)
 	if err != nil {
 		beego.Error("Failed to get user memberships:", err)
 		this.Abort("500")

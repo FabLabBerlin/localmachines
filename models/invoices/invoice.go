@@ -67,7 +67,7 @@ func Create(inv *Invoice) (id int64, err error) {
 		lastMonth := now.AddDate(0, -1, 0)
 		lastInv, err := GetDraft(inv.LocationId, inv.UserId, lastMonth)
 		if err == nil {
-			umbs, err := user_memberships.GetUserMembershipsForInvoice(lastInv.Id)
+			umbs, err := user_memberships.GetForInvoice(lastInv.Id)
 			if err != nil {
 				return 0, fmt.Errorf("get user memberships for last month: %v", err)
 			}
@@ -256,7 +256,7 @@ func (inv *Invoice) attachUserMembership(um *user_memberships.UserMembership) er
 		return nil
 	default:
 		locId := inv.LocationId
-		ums, err := user_memberships.GetAllUserMembershipsAt(locId)
+		ums, err := user_memberships.GetAllAt(locId)
 		if err != nil {
 			return fmt.Errorf("get all user memberships at %v: %v", locId, err)
 		}
@@ -268,7 +268,7 @@ func (inv *Invoice) attachUserMembership(um *user_memberships.UserMembership) er
 		}
 
 		o := orm.NewOrm()
-		newUm, err := user_memberships.CreateUserMembership(o, um.UserId, um.MembershipId, inv.Id, um.StartDate)
+		newUm, err := user_memberships.Create(o, um.UserId, um.MembershipId, inv.Id, um.StartDate)
 		if err != nil {
 			return fmt.Errorf("create user membership: %v", err)
 		}
@@ -360,17 +360,17 @@ func (inv *Invoice) SetCurrent() (err error) {
 	}
 
 	if currentInvoice != nil {
-		currentUms, err := user_memberships.GetUserMembershipsForInvoice(currentInvoice.Id)
+		currentUms, err := user_memberships.GetForInvoice(currentInvoice.Id)
 		if err != nil {
 			return fmt.Errorf("get user memberships for current inv: %v", err)
 		}
 
-		thisUms, err := user_memberships.GetUserMembershipsForInvoice(inv.Id)
+		thisUms, err := user_memberships.GetForInvoice(inv.Id)
 		if err != nil {
 			return fmt.Errorf("get user memberships for this inv: %v", err)
 		}
 
-		umsToBeCloned := make([]*user_memberships.UserMembershipCombo, 0, len(currentUms.Data))
+		umsToBeCloned := make([]*user_memberships.Combo, 0, len(currentUms.Data))
 		for _, um := range currentUms.Data {
 			alreadyCloned := false
 			for _, existing := range thisUms.Data {
@@ -385,7 +385,7 @@ func (inv *Invoice) SetCurrent() (err error) {
 		}
 
 		for _, umCombo := range umsToBeCloned {
-			um, err := user_memberships.GetUserMembership(umCombo.Id)
+			um, err := user_memberships.Get(umCombo.Id)
 			if err != nil {
 				return fmt.Errorf("get user membership: %v", err)
 			}

@@ -17,10 +17,10 @@ import (
 
 type Invoice struct {
 	invoices.Invoice
-	User            *users.User                          `json:",omitempty"`
-	UserMemberships *user_memberships.UserMembershipList `json:",omitempty"`
-	Purchases       purchases.Purchases                  `json:",omitempty"`
-	Sums            *Sums                                `json:",omitempty"`
+	User            *users.User            `json:",omitempty"`
+	UserMemberships *user_memberships.List `json:",omitempty"`
+	Purchases       purchases.Purchases    `json:",omitempty"`
+	Sums            *Sums                  `json:",omitempty"`
 }
 
 type Sums struct {
@@ -69,7 +69,7 @@ func (inv *Invoice) CalculateTotals() (err error) {
 	inv.Sums.Purchases.PriceExclVAT = inv.Sums.Purchases.PriceInclVAT / p
 	inv.Sums.Purchases.PriceVAT = inv.Sums.Purchases.PriceInclVAT - inv.Sums.Purchases.PriceExclVAT
 
-	ms, err := user_memberships.GetUserMembershipsForInvoice(inv.Id)
+	ms, err := user_memberships.GetForInvoice(inv.Id)
 	if err != nil {
 		return fmt.Errorf("GetUserMemberships: %v", err)
 	}
@@ -104,7 +104,7 @@ func (inv *Invoice) Load() (err error) {
 	if inv.Purchases, err = purchases.GetByInvoiceId(inv.Id); err != nil {
 		return fmt.Errorf("get purchases by invoice id: %v", err)
 	}
-	inv.UserMemberships, err = user_memberships.GetUserMembershipsForInvoice(inv.Id)
+	inv.UserMemberships, err = user_memberships.GetForInvoice(inv.Id)
 	if err != nil {
 		return fmt.Errorf("get user memberships for invoice: %v", err)
 	}
@@ -241,7 +241,7 @@ func toUtilInvoices(locId int64, ivs []*invoices.Invoice) (invs []*Invoice, err 
 	}
 
 	umbsByUid := make(map[int64][]*user_memberships.UserMembership)
-	if umbs, err := user_memberships.GetAllUserMembershipsAt(locId); err == nil {
+	if umbs, err := user_memberships.GetAllAt(locId); err == nil {
 		for _, umb := range umbs {
 			uid := umb.UserId
 			if _, ok := umbsByUid[uid]; !ok {
@@ -257,7 +257,7 @@ func toUtilInvoices(locId int64, ivs []*invoices.Invoice) (invs []*Invoice, err 
 	}
 
 	mbsById := make(map[int64]*memberships.Membership)
-	if mbs, err := memberships.GetAllMembershipsAt(locId); err == nil {
+	if mbs, err := memberships.GetAllAt(locId); err == nil {
 		for _, mb := range mbs {
 			mbsById[mb.Id] = mb
 		}

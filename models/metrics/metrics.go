@@ -82,7 +82,7 @@ func FetchData(locationId int64) (data Data, err error) {
 		return data, fmt.Errorf("Failed to get invoice summary: %v", err)
 	}
 
-	ms, err := memberships.GetAllMembershipsAt(locationId)
+	ms, err := memberships.GetAllAt(locationId)
 	if err != nil {
 		return data, fmt.Errorf("Failed to get memberships: %v", err)
 	}
@@ -91,7 +91,7 @@ func FetchData(locationId int64) (data Data, err error) {
 		data.membershipsById[m.Id] = m
 	}
 
-	data.userMemberships, err = user_memberships.GetAllUserMembershipsAt(locationId)
+	data.userMemberships, err = user_memberships.GetAllAt(locationId)
 	if err != nil {
 		return data, fmt.Errorf("Failed to get user memberships: %v", err)
 	}

@@ -114,7 +114,7 @@ func (inv *Invoice) FastbillCreateDraft(overwriteExisting bool) (fbDraft *fastbi
 	if fbDraft.Month, fbDraft.Year, err = getFastbillMonthYear(&intv); err != nil {
 		return nil, false, fmt.Errorf("get fastbill month: %v", err)
 	}
-	ms, err := user_memberships.GetUserMembershipsForInvoice(inv.Id)
+	ms, err := user_memberships.GetForInvoice(inv.Id)
 	if err != nil {
 		return nil, false, fmt.Errorf("GetUserMemberships: %v", err)
 	}

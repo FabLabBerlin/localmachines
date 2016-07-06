@@ -47,7 +47,7 @@ func TestMemberships(t *testing.T) {
 			name := "Membership X"
 
 			Convey("When creating a single membership", func() {
-				membership, err := memberships.CreateMembership(1, name)
+				membership, err := memberships.Create(1, name)
 				if err != nil {
 					panic(err.Error())
 				}
@@ -58,7 +58,7 @@ func TestMemberships(t *testing.T) {
 				})
 
 				Convey("When reading it back by using the ID", func() {
-					membership, err := memberships.GetMembership(membership.Id)
+					membership, err := memberships.Get(membership.Id)
 					if err != nil {
 						panic(fmt.Sprintf("%v ... membershipId: %v", err.Error(), membership.Id))
 					}
@@ -100,7 +100,7 @@ func TestMemberships(t *testing.T) {
 			name := "The Membership"
 
 			Convey("Getting all memberships with empty database", func() {
-				ms, err := memberships.GetAllMembershipsAt(1)
+				ms, err := memberships.GetAllAt(1)
 
 				Convey("Should return no error", func() {
 					So(err, ShouldBeNil)
@@ -112,9 +112,9 @@ func TestMemberships(t *testing.T) {
 			})
 
 			Convey("Getting existing memberships", func() {
-				memberships.CreateMembership(1, name)
-				memberships.CreateMembership(1, name)
-				ms, err := memberships.GetAllMembershipsAt(1)
+				memberships.Create(1, name)
+				memberships.Create(1, name)
+				ms, err := memberships.GetAllAt(1)
 
 				Convey("Shoud return no error", func() {
 					So(err, ShouldBeNil)
@@ -130,7 +130,7 @@ func TestMemberships(t *testing.T) {
 			name := "The Membership"
 
 			Convey("Getting non-existing membership", func() {
-				_, err := memberships.GetMembership(0)
+				_, err := memberships.Get(0)
 
 				Convey("Should return an error", func() {
 					So(err, ShouldNotBeNil)
@@ -138,8 +138,8 @@ func TestMemberships(t *testing.T) {
 			})
 
 			Convey("Creating a membership and getting it", func() {
-				m, _ := memberships.CreateMembership(1, name)
-				membership, err := memberships.GetMembership(m.Id)
+				m, _ := memberships.Create(1, name)
+				membership, err := memberships.Get(m.Id)
 
 				Convey("There should be no error", func() {
 					So(err, ShouldBeNil)
@@ -167,10 +167,10 @@ func TestMemberships(t *testing.T) {
 			})
 
 			Convey("Create membership and update it", func() {
-				m, _ := memberships.CreateMembership(1, name)
+				m, _ := memberships.Create(1, name)
 				m.Title = newName
 				err := m.Update()
-				nm, _ := memberships.GetMembership(m.Id)
+				nm, _ := memberships.Get(m.Id)
 
 				Convey("There should be no error", func() {
 					So(err, ShouldBeNil)

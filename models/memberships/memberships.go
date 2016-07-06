@@ -71,7 +71,7 @@ func init() {
 }
 
 // Gets all base memberships from database.
-func GetAllMembershipsAt(locationId int64) (memberships []*Membership, err error) {
+func GetAllAt(locationId int64) (memberships []*Membership, err error) {
 	m := Membership{} // Used only for the TableName() method
 	o := orm.NewOrm()
 	_, err = o.QueryTable(m.TableName()).
@@ -81,7 +81,7 @@ func GetAllMembershipsAt(locationId int64) (memberships []*Membership, err error
 }
 
 // Creates a new membership in the database with the given name.
-func CreateMembership(locationId int64, name string) (m *Membership, err error) {
+func Create(locationId int64, name string) (m *Membership, err error) {
 	m = &Membership{
 		LocationId:               locationId,
 		Title:                    name,
@@ -96,7 +96,7 @@ func CreateMembership(locationId int64, name string) (m *Membership, err error) 
 }
 
 // Gets single membership from database using membership unique ID
-func GetMembership(membershipId int64) (*Membership, error) {
+func Get(membershipId int64) (*Membership, error) {
 	membership := Membership{}
 	sql := fmt.Sprintf("SELECT * FROM %s WHERE id=?", membership.TableName())
 	o := orm.NewOrm()

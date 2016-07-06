@@ -115,7 +115,7 @@ func NewTrotecStats() (t *Trotec, err error) {
 		}
 	}
 
-	ms, err := memberships.GetAllMembershipsAt(TROTEC_LOCATION_ID)
+	ms, err := memberships.GetAllAt(TROTEC_LOCATION_ID)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get memberships: %v", err)
 	}
@@ -124,7 +124,7 @@ func NewTrotecStats() (t *Trotec, err error) {
 		membershipsById[m.Id] = m
 	}
 
-	userMemberships, err := user_memberships.GetAllUserMembershipsAt(TROTEC_LOCATION_ID)
+	userMemberships, err := user_memberships.GetAllAt(TROTEC_LOCATION_ID)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get user memberships: %v", err)
 	}

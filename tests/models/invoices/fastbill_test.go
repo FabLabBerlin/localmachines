@@ -121,7 +121,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 				panic(err.Error())
 			}
 
-			ms, err := memberships.CreateMembership(1, "Full Flatrate")
+			ms, err := memberships.Create(1, "Full Flatrate")
 			if err != nil {
 				panic(err.Error())
 			}
@@ -136,7 +136,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 				panic(err.Error())
 			}
 			startTime := time.Now().AddDate(0, -2, 0)
-			_, err = user_memberships.CreateUserMembership(o, uid, ms.Id, inv.Id, startTime)
+			_, err = user_memberships.Create(o, uid, ms.Id, inv.Id, startTime)
 			if err != nil {
 				panic(err.Error())
 			}

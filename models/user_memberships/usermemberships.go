@@ -59,7 +59,7 @@ func init() {
 
 // Extended user membership type that contains the same fields as
 // the UserMembership model and fields of the Membership model.
-type UserMembershipCombo struct {
+type Combo struct {
 	Id            int64
 	UserId        int64
 	MembershipId  int64
@@ -81,11 +81,11 @@ type UserMembershipCombo struct {
 	Bill *bool `json:",omitempty"`
 }
 
-func (umc *UserMembershipCombo) Interval() lib.Interval {
+func (umc *Combo) Interval() lib.Interval {
 	return umc.UserMembership().Interval()
 }
 
-func (umc *UserMembershipCombo) UserMembership() UserMembership {
+func (umc *Combo) UserMembership() UserMembership {
 	return UserMembership{
 		Id:           umc.Id,
 		UserId:       umc.UserId,
@@ -102,17 +102,17 @@ func (umc *UserMembershipCombo) UserMembership() UserMembership {
 // List container for the UserMembershipCombo type. Beego swagger
 // has problems with interpretting plain arrays as documentable
 // data type.
-type UserMembershipList struct {
-	Data []*UserMembershipCombo
+type List struct {
+	Data []*Combo
 }
 
 // Creates user membership from user ID, membership ID and start time.
-func CreateUserMembership(o orm.Ormer, userId, membershipId, invoiceId int64, start time.Time) (*UserMembership, error) {
+func Create(o orm.Ormer, userId, membershipId, invoiceId int64, start time.Time) (*UserMembership, error) {
 	if invoiceId <= 0 {
 		return nil, fmt.Errorf("need (valid) invoice id")
 	}
 
-	m, err := memberships.GetMembership(membershipId)
+	m, err := memberships.Get(membershipId)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get membership: %v", err)
 	}
@@ -133,7 +133,7 @@ func CreateUserMembership(o orm.Ormer, userId, membershipId, invoiceId int64, st
 	return &um, nil
 }
 
-func GetAllUserMembershipsAt(locationId int64) (userMemberships []*UserMembership, err error) {
+func GetAllAt(locationId int64) (ums []*UserMembership, err error) {
 	o := orm.NewOrm()
 	m := new(memberships.Membership)
 	um := new(UserMembership)
@@ -150,13 +150,13 @@ func GetAllUserMembershipsAt(locationId int64) (userMemberships []*UserMembershi
 		Where("location_id = ?")
 
 	_, err = o.Raw(qb.String(), locationId).
-		QueryRows(&userMemberships)
+		QueryRows(&ums)
 	return
 }
 
 // Gets pointer to filled user membership store
 // by using user membership ID.
-func GetUserMembership(id int64) (*UserMembership, error) {
+func Get(id int64) (*UserMembership, error) {
 	userMembership := UserMembership{
 		Id: id,
 	}
@@ -164,14 +164,14 @@ func GetUserMembership(id int64) (*UserMembership, error) {
 	return &userMembership, err
 }
 
-func DeleteUserMembership(id int64) (err error) {
+func Delete(id int64) (err error) {
 	o := orm.NewOrm()
 	_, err = o.Delete(&UserMembership{Id: id})
 	return
 }
 
 // Gets all user memberships for a user by consuming user ID.
-func GetUserMembershipsForInvoice(invoiceId int64) (*UserMembershipList, error) {
+func GetForInvoice(invoiceId int64) (*List, error) {
 
 	o := orm.NewOrm()
 
@@ -188,14 +188,14 @@ func GetUserMembershipsForInvoice(invoiceId int64) (*UserMembershipList, error) 
 		"WHERE um.invoice_id=?",
 		um.TableName(), m.TableName())
 
-	var userMemberships []*UserMembershipCombo
+	var userMemberships []*Combo
 	if _, err := o.Raw(sql, invoiceId).QueryRows(&userMemberships); err != nil {
 		return nil, fmt.Errorf("query rows: %v", err)
 	}
 
-	userMembershipList := UserMembershipList{
+	list := List{
 		Data: userMemberships,
 	}
 
-	return &userMembershipList, nil
+	return &list, nil
 }

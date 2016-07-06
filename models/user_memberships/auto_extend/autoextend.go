@@ -53,7 +53,7 @@ func autoExtendUserMemberships() (err error) {
 }
 
 func extendUserMembershipsAt(locId int64) (err error) {
-	ums, err := user_memberships.GetAllUserMembershipsAt(locId)
+	ums, err := user_memberships.GetAllAt(locId)
 	if err != nil {
 		return fmt.Errorf("get all user memberships: %v", err)
 	}
@@ -63,7 +63,7 @@ func extendUserMembershipsAt(locId int64) (err error) {
 			continue
 		}
 
-		m, err := memberships.GetMembership(um.MembershipId)
+		m, err := memberships.Get(um.MembershipId)
 		if err != nil {
 			return fmt.Errorf("get membership: %v", err)
 		}

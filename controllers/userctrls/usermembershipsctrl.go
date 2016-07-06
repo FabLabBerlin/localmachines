@@ -41,7 +41,7 @@ func (this *UserMembershipsController) PostUserMemberships() {
 		beego.Error("Failed to get membership ID")
 		this.Abort("400")
 	}
-	m, err := memberships.GetMembership(mId)
+	m, err := memberships.Get(mId)
 	if err != nil {
 		beego.Error("get membership:", err)
 		this.Abort("500")
@@ -97,7 +97,7 @@ func (this *UserMembershipsController) PostUserMemberships() {
 	}
 
 	for _, invId := range invoiceIds {
-		_, err = user_memberships.CreateUserMembership(o, uid, mId, invId, startDate)
+		_, err = user_memberships.Create(o, uid, mId, invId, startDate)
 		if err != nil {
 			beego.Error("Error creating user membership:", err)
 			this.Abort("500")
@@ -141,14 +141,14 @@ func (this *UserMembershipsController) GetUserMemberships() {
 
 	beego.Info("current inv.Id=", inv.Id)
 
-	all, err := user_memberships.GetUserMembershipsForInvoice(inv.Id)
+	all, err := user_memberships.GetForInvoice(inv.Id)
 	if err != nil {
 		beego.Error("Failed to get user machine permissions")
 		this.Abort("500")
 	}
 
-	list := &user_memberships.UserMembershipList{
-		Data: make([]*user_memberships.UserMembershipCombo, 0, len(all.Data)),
+	list := &user_memberships.List{
+		Data: make([]*user_memberships.Combo, 0, len(all.Data)),
 	}
 	for _, um := range all.Data {
 		if locationId <= 0 || locationId == um.LocationId {
@@ -217,7 +217,7 @@ func (this *UserMembershipsController) DeleteUserMembership() {
 		this.Abort("400")
 	}
 
-	um, err := user_memberships.GetUserMembership(umid)
+	um, err := user_memberships.Get(umid)
 	if err != nil {
 		beego.Error("Get user membership:", err)
 		this.Abort("500")
@@ -238,7 +238,7 @@ func (this *UserMembershipsController) DeleteUserMembership() {
 		beego.Error("cannot delete user membership because it's bound to non-draft invoice")
 		this.Abort("403")
 	}
-	err = user_memberships.DeleteUserMembership(umid)
+	err = user_memberships.Delete(umid)
 	if err != nil {
 		beego.Error("delete user membership:", err)
 		this.Abort("500")

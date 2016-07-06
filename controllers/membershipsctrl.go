@@ -27,7 +27,7 @@ func (this *MembershipsController) GetAll() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	ms, err := memberships.GetAllMembershipsAt(locId)
+	ms, err := memberships.GetAllAt(locId)
 	if err != nil {
 		this.CustomAbort(403, "Failed to get all memberships")
 	}
@@ -50,7 +50,7 @@ func (this *MembershipsController) Create() {
 
 	name := this.GetString("mname")
 
-	m, err := memberships.CreateMembership(locId, name)
+	m, err := memberships.Create(locId, name)
 	if err != nil {
 		beego.Error("Failed to create membership", err)
 		this.Abort("500")
@@ -74,7 +74,7 @@ func (this *MembershipsController) Get() {
 		this.Abort("400")
 	}
 
-	m, err := memberships.GetMembership(mid)
+	m, err := memberships.Get(mid)
 	if err != nil {
 		beego.Error("Could not get membership")
 		this.Abort("500")
@@ -107,7 +107,7 @@ func (this *MembershipsController) Update() {
 		this.CustomAbort(500, "Failed to update membership")
 	}
 
-	existing, err := memberships.GetMembership(mid)
+	existing, err := memberships.Get(mid)
 	if err != nil {
 		beego.Error("Get membership:", err)
 		this.CustomAbort(500, "Internal Server Error")
@@ -159,7 +159,7 @@ func (this *MembershipsController) SetArchived() {
 		this.Abort("400")
 	}
 
-	m, err := memberships.GetMembership(id)
+	m, err := memberships.Get(id)
 	if err != nil {
 		beego.Error("get", err)
 		this.Abort("500")

@@ -36,7 +36,7 @@ func TestUserMemberships(t *testing.T) {
 			machineOne, _ := machine.Create(1, "Machine One")
 			machineTwo, _ := machine.Create(1, "Machine Two")
 
-			membership, err := memberships.CreateMembership(1, "Test Membership")
+			membership, err := memberships.Create(1, "Test Membership")
 			if err != nil {
 				panic(err.Error())
 			}
@@ -48,7 +48,7 @@ func TestUserMemberships(t *testing.T) {
 			if err := membership.Update(); err != nil {
 				panic(err.Error())
 			}
-			if membership, err = memberships.GetMembership(membership.Id); err != nil {
+			if membership, err = memberships.Get(membership.Id); err != nil {
 				panic(err.Error())
 			}
 
@@ -106,7 +106,7 @@ func TestUserMemberships(t *testing.T) {
 
 				o := orm.NewOrm()
 
-				userMembership, err := user_memberships.CreateUserMembership(
+				userMembership, err := user_memberships.Create(
 					o, fakeUserId, fakeMembershipId, 123, startDate)
 
 				Convey("It should return error", func() {
@@ -123,12 +123,12 @@ func TestUserMemberships(t *testing.T) {
 
 				o := orm.NewOrm()
 
-				userMembership, err := user_memberships.CreateUserMembership(
+				userMembership, err := user_memberships.Create(
 					o, userId, membership.Id, invNow.Id, startDate)
 				if err != nil {
 					panic(err.Error())
 				}
-				gotUserMembership, err := user_memberships.GetUserMembership(userMembership.Id)
+				gotUserMembership, err := user_memberships.Get(userMembership.Id)
 				if err != nil {
 					panic(err.Error())
 				}
@@ -196,7 +196,7 @@ func TestUserMemberships(t *testing.T) {
 
 		Convey("GetUserMembership", func() {
 			Convey("Try getting a nonexistent user membership", func() {
-				_, err := user_memberships.GetUserMembership(-6)
+				_, err := user_memberships.Get(-6)
 
 				Convey("It should return error", func() {
 					So(err, ShouldNotBeNil)
@@ -208,7 +208,7 @@ func TestUserMemberships(t *testing.T) {
 			o := orm.NewOrm()
 
 			// Create empty base membership
-			m, err := memberships.CreateMembership(1, "Test Membership")
+			m, err := memberships.Create(1, "Test Membership")
 			So(m.Id, ShouldBeGreaterThan, 0)
 			So(err, ShouldBeNil)
 
@@ -227,14 +227,14 @@ func TestUserMemberships(t *testing.T) {
 				panic(err.Error())
 			}
 
-			userMembership, err := user_memberships.CreateUserMembership(
+			userMembership, err := user_memberships.Create(
 				o, fakeUserId, m.Id, inv.Id, startTime)
 
 			So(userMembership.Id, ShouldBeGreaterThan, 0)
 			So(err, ShouldBeNil)
 
 			// Get the created membership for later comparison
-			userMembership, err = user_memberships.GetUserMembership(userMembership.Id)
+			userMembership, err = user_memberships.Get(userMembership.Id)
 			So(err, ShouldBeNil)
 			So(userMembership, ShouldNotBeNil)
 
@@ -250,7 +250,7 @@ func TestUserMemberships(t *testing.T) {
 			Convey("Check if it is extended by duration specified in the base membership", func() {
 
 				// Get the now extended user membership
-				extendedUserMembership, _ := user_memberships.GetUserMembership(userMembership.Id)
+				extendedUserMembership, _ := user_memberships.Get(userMembership.Id)
 
 				validEndDate := userMembership.EndDate.AddDate(
 					0, int(m.AutoExtendDurationMonths), 0)
@@ -266,7 +266,7 @@ func TestUserMemberships(t *testing.T) {
 
 			o := orm.NewOrm()
 
-			m, err := memberships.CreateMembership(1, "Test Membership")
+			m, err := memberships.Create(1, "Test Membership")
 			if err != nil {
 				panic(err.Error())
 			}
@@ -289,7 +289,7 @@ func TestUserMemberships(t *testing.T) {
 				panic(err.Error())
 			}
 
-			um, err := user_memberships.CreateUserMembership(
+			um, err := user_memberships.Create(
 				o, fakeUserId, m.Id, inv7_15.Id, startTime)
 			if err != nil {
 				panic(err.Error())
@@ -316,7 +316,7 @@ func TestUserMemberships(t *testing.T) {
 				panic(err.Error())
 			}
 
-			ums, err := user_memberships.GetAllUserMembershipsAt(1)
+			ums, err := user_memberships.GetAllAt(1)
 			if err != nil {
 				panic(err.Error())
 			}
@@ -341,7 +341,7 @@ func TestUserMemberships(t *testing.T) {
 				}
 			}
 
-			umNow, err = user_memberships.GetUserMembership(umNow.Id)
+			umNow, err = user_memberships.Get(umNow.Id)
 			if err != nil {
 				panic(err.Error())
 			}
@@ -352,7 +352,7 @@ func TestUserMemberships(t *testing.T) {
 				So(umNow.EndDate.Format("2006-01"), ShouldEqual, time.Now().AddDate(0, 1, 0).Format("2006-01"))
 			}
 
-			ums, err = user_memberships.GetAllUserMembershipsAt(1)
+			ums, err = user_memberships.GetAllAt(1)
 			if err != nil {
 				panic(err.Error())
 			}
