@@ -103,6 +103,10 @@ func filter(all []*invutil.Invoice) (filtered []*invutil.Invoice) {
 		m := time.Month(iv.Month)
 		y := iv.Year
 
+		if y == 2015 && iv.Month < 8 {
+			continue
+		}
+
 		if _, ok := byUserIdYearMonth[uid]; !ok {
 			byUserIdYearMonth[uid] = make(map[int]map[time.Month]*invutil.Invoice)
 		}
