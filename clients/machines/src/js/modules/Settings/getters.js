@@ -5,6 +5,13 @@ const getAdminSettings = [
   }
 ];
 
+const getFastbillTemplates = [
+  ['settingsStore'],
+  (settingsStore) => {
+    return settingsStore.get('fastbillTemplates');
+  }
+];
+
 const getVatPercent = [
   ['settingsStore'],
   (settingsStore) => {
@@ -14,5 +21,6 @@ const getVatPercent = [
 
 export default {
 	getAdminSettings,
+  getFastbillTemplates,
   getVatPercent
 };

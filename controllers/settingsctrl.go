@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"github.com/FabLabBerlin/localmachines/lib/fastbill"
 	"github.com/FabLabBerlin/localmachines/models/settings"
 	"github.com/astaxie/beego"
 )
@@ -118,5 +119,32 @@ func (this *SettingsController) GetVatPercent() {
 	}
 
 	this.Data["json"] = s.GetFloat(locId, settings.VAT)
+	this.ServeJSON()
+}
+
+// @Title GetFastbillTemplates
+// @Description Get Fastbill Templates
+// @Success 200
+// @Failure	400	Bad request
+// @Failure	500	Internal Server Error
+// @router /fastbill_templates [get]
+func (this *SettingsController) GetFastbillTemplates() {
+	locId, authorized := this.GetLocIdAdmin()
+	if !authorized {
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	ts := []fastbill.Template{}
+	if locId == 1 {
+		var err error
+
+		ts, err = fastbill.ListTemplates()
+		if err != nil {
+			beego.Error("list templates:", err)
+			this.Abort("500")
+		}
+	}
+
+	this.Data["json"] = ts
 	this.ServeJSON()
 }

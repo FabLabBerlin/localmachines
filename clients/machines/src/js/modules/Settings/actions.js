@@ -18,7 +18,8 @@ var SettingsActions = {
         var h = {
           Currency: {},
           TermsUrl: {},
-          VAT: {}
+          VAT: {},
+          FastbillTemplateId: {}
         };
         _.each(adminSettings, function(setting) {
           h[setting.Name] = setting;
@@ -27,6 +28,18 @@ var SettingsActions = {
       },
       error(xhr, status, err) {
         toastr.error('Error loading admin settings');
+      }
+    });
+  },
+
+  loadFastbillTemplates({locationId}) {
+    $.ajax({
+      url: '/api/settings/fastbill_templates?location=' + locationId,
+      success(fastbillTemplates) {
+        reactor.dispatch(actionTypes.SET_FASTBILL_TEMPLATES, fastbillTemplates);
+      },
+      error(xhr, status, err) {
+        toastr.error('Error loading fastbill templates');
       }
     });
   },
@@ -46,6 +59,7 @@ var SettingsActions = {
 
   saveAdminSettings(adminSettings) {
     const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
+    console.log('dat=a', data);
     const data = JSON.stringify(_.map(adminSettings, function(setting, name) {
       return _.extend({
         Name: name
