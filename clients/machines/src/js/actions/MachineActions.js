@@ -63,7 +63,7 @@ var MachineActions = {
           window.location.href = '/logout';
         } else {
           GlobalActions.hideGlobalLoader();
-          if (xhr.status === 403 && status === 'No remote activation') {
+          if (xhr.status === 403 && xhr.responseText === 'No remote activation') {
             toastr.error('Activations only possible through Lab Wifi for safety reasons');
           } else {
             toastr.error('Can not activate the machine');
