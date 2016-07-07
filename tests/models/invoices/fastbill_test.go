@@ -11,6 +11,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
+	"github.com/FabLabBerlin/localmachines/models/settings"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/user_memberships"
 	"github.com/FabLabBerlin/localmachines/models/users"
@@ -22,6 +23,12 @@ import (
 
 func init() {
 	setup.ConfigDB()
+	var id int64 = 889700
+	settings.Create(&settings.Setting{
+		LocationId: 1,
+		Name:       "FastbillTemplateId",
+		ValueInt:   &id,
+	})
 }
 
 func TestFastbillInvoiceActivation(t *testing.T) {

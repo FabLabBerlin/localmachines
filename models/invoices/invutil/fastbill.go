@@ -21,7 +21,21 @@ const (
 	IS_GROSS_NETTO  = "0"
 )
 
+func (inv *Invoice) fastbillBeforeCheck() (err error) {
+	if inv.User == nil {
+		return fmt.Errorf("nil user")
+	}
+	if inv.User.NoAutoInvoicing {
+		return fmt.Errorf("no auto invoicing is true for user")
+	}
+	return
+}
+
 func (inv *Invoice) FastbillCancel() (err error) {
+	if err := inv.fastbillBeforeCheck(); err != nil {
+		return fmt.Errorf("fastbill before check: %v", err)
+	}
+
 	if inv.Canceled {
 		return fmt.Errorf("invoice already marked as canceled in EASY LAB")
 	}
@@ -81,6 +95,10 @@ func (inv *Invoice) FastbillCancel() (err error) {
 // FastbillComplete invoice. Data must be synchronized, so better to do it
 // too often than to seldomly.
 func (inv *Invoice) FastbillComplete() (err error) {
+	if err := inv.fastbillBeforeCheck(); err != nil {
+		return fmt.Errorf("fastbill before check: %v", err)
+	}
+
 	if inv.Year > time.Now().Year() ||
 		(inv.Year == time.Now().Year() &&
 			int(inv.Month) >= int(time.Now().Month())) {
@@ -106,6 +124,10 @@ func (inv *Invoice) FastbillComplete() (err error) {
 }
 
 func (inv *Invoice) FastbillCreateDraft(overwriteExisting bool) (fbDraft *fastbill.Invoice, empty bool, err error) {
+	if err := inv.fastbillBeforeCheck(); err != nil {
+		return nil, false, fmt.Errorf("fastbill before check: %v", err)
+	}
+
 	locSettings, err := settings.GetAllAt(inv.LocationId)
 	if err != nil {
 		beego.Error("FastbillCreateDraft: get settings:", err)
@@ -233,6 +255,10 @@ func getFastbillMonthYear(i *lib.Interval) (month string, year int, err error) {
 }
 
 func (inv *Invoice) FastbillSend() (err error) {
+	if err := inv.fastbillBeforeCheck(); err != nil {
+		return fmt.Errorf("fastbill before check: %v", err)
+	}
+
 	if err := fastbill.SendInvoiceByEmail(inv.FastbillId, inv.User); err != nil {
 		return fmt.Errorf("fastbill send invoice by email: %v", err)
 	}
@@ -247,6 +273,10 @@ func (inv *Invoice) FastbillSend() (err error) {
 }
 
 func (inv *Invoice) FastbillSendCanceled() (err error) {
+	if err := inv.fastbillBeforeCheck(); err != nil {
+		return fmt.Errorf("fastbill before check: %v", err)
+	}
+
 	if err := FastbillSync(inv.LocationId, inv.User); err != nil {
 		beego.Error("Error syncing fastbill invoices of user")
 	}

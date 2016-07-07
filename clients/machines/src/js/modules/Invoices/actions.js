@@ -38,8 +38,8 @@ function cancel() {
     toastr.info('Invoice canceled');
     refresh();
   })
-  .error(() => {
-    toastr.error('Error canceling invoice.');
+  .error((xhr) => {
+    toastr.error('Error canceling invoice:' + xhr.responseText);
   })
   .always(() => {
     GlobalActions.hideGlobalLoader();
@@ -171,8 +171,8 @@ function complete() {
   .success(() => {
     toastr.info('Invoice completed');
   })
-  .error(() => {
-    toastr.error('Error completing invoice.');
+  .error((xhr) => {
+    toastr.error('Error completing invoice:' + xhr.responseText);
   })
   .always(() => {
     GlobalActions.hideGlobalLoader();
@@ -296,8 +296,8 @@ function makeDraft(locId) {
   .success(() => {
     toastr.info('Draft created');
   })
-  .error(() => {
-    toastr.error('Error creating draft.');
+  .error((xhr) => {
+    toastr.error('Error creating draft:' + xhr.responseText);
   })
   .always(() => {
     GlobalActions.hideGlobalLoader();
@@ -358,8 +358,8 @@ function save(locId, {invoiceId}) {
     editPurchase(undefined);
     refresh();
   })
-  .fail(() => {
-    toastr.error('Error while saving.');
+  .fail((xhr) => {
+    toastr.error('Error while saving:' + xhr.responseText);
   })
   .always(() => {
     GlobalActions.hideGlobalLoader();
@@ -399,11 +399,11 @@ function send(canceled) {
       toastr.info('Invoice sent');
     }
   })
-  .error(() => {
+  .error((xhr) => {
     if (canceled) {
-      toastr.error('Error sending cancelation invoice.');
+      toastr.error('Error sending cancelation invoice:' + xhr.responseText);
     } else {
-      toastr.error('Error sending invoice.');
+      toastr.error('Error sending invoice:' + xhr.responseText);
     }
   })
   .always(() => {
