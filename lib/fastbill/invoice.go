@@ -19,17 +19,13 @@ const (
 )
 
 const (
-	TemplateStandardId        = 1
-	TemplateMakeaIndustriesId = 889700
-)
-
-const (
 	INVOICE_TYPE_DRAFT    = "draft"
 	INVOICE_TYPE_OUTGOING = "outgoing"
 	INVOICE_TYPE_CREDIT   = "credit"
 )
 
 var ErrInvoiceAlreadyExported = fmt.Errorf("invoice has already been exported")
+var ErrObtainingValidTemplateId = fmt.Errorf("error obtaining valid template id")
 
 type Invoice struct {
 	CustomerNumber int64  `json:"-"`
@@ -218,10 +214,12 @@ func (inv *Invoice) GetTitle() (title string, err error) {
 func (inv *Invoice) Submit(overwriteExisting bool) (id int64, err error) {
 	templateExists, err := TemplateIdExists(inv.TemplateId)
 	if err != nil {
-		return 0, fmt.Errorf("template id exist check: %v", err)
+		beego.Error("template id exist check:", err)
+		return 0, ErrObtainingValidTemplateId
 	}
 	if !templateExists {
-		return 0, fmt.Errorf("template '%v' does not exist", inv.TemplateId)
+		beego.Error("template does not exist:", inv.TemplateId)
+		return 0, ErrObtainingValidTemplateId
 	}
 
 	fb := New()
