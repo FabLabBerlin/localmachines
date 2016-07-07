@@ -8,15 +8,17 @@ import (
 const TABLE_NAME = "settings"
 
 const (
-	CURRENCY  = "Currency"
-	TERMS_URL = "TermsUrl"
-	VAT       = "VAT"
+	CURRENCY             = "Currency"
+	TERMS_URL            = "TermsUrl"
+	VAT                  = "VAT"
+	FASTBILL_TEMPLATE_ID = "FastbillTemplateId"
 )
 
 var validNames = []string{
 	CURRENCY,
 	TERMS_URL,
 	VAT,
+	FASTBILL_TEMPLATE_ID,
 }
 
 type Settings struct {
@@ -75,15 +77,33 @@ func (this *Setting) TableName() string {
 	return TABLE_NAME
 }
 
-func Create(setting *Setting) (int64, error) {
+func Create(setting *Setting) (id int64, err error) {
 	o := orm.NewOrm()
+
+	if err = o.Begin(); err != nil {
+		return 0, fmt.Errorf("begin tx: %v", err)
+	}
+
 	if !isValidName(setting.Name) {
 		return 0, fmt.Errorf("'%v' is not a valid name", setting.Name)
 	}
 	if setting.LocationId <= 0 {
 		return 0, fmt.Errorf("location id must be defined")
 	}
-	return o.Insert(setting)
+	query := "DELETE FROM settings WHERE location_id = ? AND name = ?"
+	_, err = o.Raw(query, setting.LocationId, setting.Name).Exec()
+	if err != nil {
+		o.Rollback()
+		return 0, fmt.Errorf("delete old: %v", err)
+	}
+	if _, err := o.Insert(setting); err != nil {
+		o.Rollback()
+		return 0, fmt.Errorf("insert: %v", err)
+	}
+	if err := o.Commit(); err != nil {
+		return 0, fmt.Errorf("commit tx: %v", err)
+	}
+	return
 }
 
 func GetAllAt(locationId int64) (settings Settings, err error) {
@@ -95,14 +115,7 @@ func GetAllAt(locationId int64) (settings Settings, err error) {
 }
 
 func (this *Setting) Update() (err error) {
-	o := orm.NewOrm()
-	if !isValidName(this.Name) {
-		return fmt.Errorf("'%v' is not a valid name", this.Name)
-	}
-	if this.LocationId <= 0 {
-		return fmt.Errorf("location id must be defined")
-	}
-	_, err = o.Update(this)
+	_, err = Create(this)
 	return
 }
 

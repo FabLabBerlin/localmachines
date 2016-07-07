@@ -7,6 +7,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/coupons"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
+	"github.com/FabLabBerlin/localmachines/models/settings"
 	"github.com/FabLabBerlin/localmachines/models/user_memberships"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
@@ -105,9 +106,21 @@ func (inv *Invoice) FastbillComplete() (err error) {
 }
 
 func (inv *Invoice) FastbillCreateDraft(overwriteExisting bool) (fbDraft *fastbill.Invoice, empty bool, err error) {
+	locSettings, err := settings.GetAllAt(inv.LocationId)
+	if err != nil {
+		beego.Error("FastbillCreateDraft: get settings:", err)
+		return nil, false, fastbill.ErrObtainingValidTemplateId
+	}
+
+	templateId := locSettings.GetInt(inv.LocationId, settings.FASTBILL_TEMPLATE_ID)
+	if templateId == nil || *templateId <= 0 {
+		beego.Error("FastbillCreateDraft: invalid template id:", templateId)
+		return nil, false, fastbill.ErrObtainingValidTemplateId
+	}
+
 	fbDraft = &fastbill.Invoice{
 		CustomerNumber: inv.User.ClientId,
-		TemplateId:     fastbill.TemplateMakeaIndustriesId,
+		TemplateId:     *templateId,
 		Items:          make([]fastbill.Item, 0, 10),
 	}
 	intv := inv.Interval()

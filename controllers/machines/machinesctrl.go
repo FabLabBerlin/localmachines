@@ -344,13 +344,13 @@ func (this *Controller) ReportBroken() {
 	machineId, err := this.GetInt64(":mid")
 	if err != nil {
 		beego.Error("Failed to get :mid variable")
-		this.CustomAbort(500, "Internal Server Error")
+		this.Abort("500")
 	}
 
 	m, err := machine.Get(machineId)
 	if err != nil {
 		beego.Error("Failed to get machine", err)
-		this.CustomAbort(403, "Failed to get machine")
+		this.Abort("500")
 	}
 
 	uid, err := this.GetSessionUserId()

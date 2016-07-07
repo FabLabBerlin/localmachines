@@ -14,12 +14,17 @@ var SettingsStore = new Nuclear.Store({
 
   initialize() {
     this.on(actionTypes.SET_ADMIN_SETTINGS, setAdminSettings);
+    this.on(actionTypes.SET_FASTBILL_TEMPLATES, setFastbillTemplates);
     this.on(actionTypes.SET_VAT_PERCENT, setVatPercent);
   }
 });
 
 function setAdminSettings(state, adminSettings) {
   return state.set('adminSettings', adminSettings);
+}
+
+function setFastbillTemplates(state, fastbillTemplates) {
+  return state.set('fastbillTemplates', toImmutable(fastbillTemplates));
 }
 
 function setVatPercent(state, vatPercent) {

@@ -17,12 +17,14 @@ var Settings = React.createClass({
     const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
     const uid = reactor.evaluateToJS(getters.getUid);
     SettingsActions.loadAdminSettings({locationId});
+    SettingsActions.loadFastbillTemplates({locationId});
     UserActions.fetchUser(uid);
   },
 
   getDataBindings() {
     return {
       adminSettings: SettingsGetters.getAdminSettings,
+      fastbillTemplates: SettingsGetters.getFastbillTemplates,
       location: LocationGetters.getLocation,
       locationId: LocationGetters.getLocationId,
       uid: getters.getUid,
@@ -72,6 +74,26 @@ var Settings = React.createClass({
                        defaultValue={this.state.adminSettings.VAT.ValueFloat}/>
               </td>
             </tr>
+            <tr>
+              <td>Fastbill Template</td>
+              <td>
+                {this.state.fastbillTemplates ?
+                  (
+                    <select ref="FastbillTemplateId"
+                            defaultValue={this.state.adminSettings.FastbillTemplateId.ValueInt}>
+                      <option value="0">Please select</option>
+                      {_.map(this.state.fastbillTemplates.toJS(), (t) => {
+                        return (
+                          <option key={t.TEMPLATE_ID}
+                                  value={t.TEMPLATE_ID}>
+                            {t.TEMPLATE_NAME}
+                          </option>
+                        );
+                      })}
+                    </select>
+                  ) : <LoaderLocal/>}
+              </td>
+            </tr>
           </tbody>
         </table>
 
@@ -94,6 +116,9 @@ var Settings = React.createClass({
       },
       Currency: {
         ValueString: $(this.refs.Currency.getDOMNode()).val()
+      },
+      FastbillTemplateId: {
+        ValueInt: parseInt($(this.refs.FastbillTemplateId.getDOMNode()).val())
       },
       VAT: {
         ValueFloat: parseFloat($(this.refs.VAT.getDOMNode()).val())
