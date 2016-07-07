@@ -81,6 +81,7 @@ var Settings = React.createClass({
                   (
                     <select ref="FastbillTemplateId"
                             defaultValue={this.state.adminSettings.FastbillTemplateId.ValueInt}>
+                      <option value="0">Please select</option>
                       {_.map(this.state.fastbillTemplates.toJS(), (t) => {
                         return (
                           <option key={t.TEMPLATE_ID}
