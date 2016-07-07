@@ -113,7 +113,7 @@ var GeneralInfo = React.createClass({
                       className="form-control" 
                       value={user.CountryCode}>
                 <option value="" selected disabled>Select Country</option>
-                {_.each(countryCodes, (country) => {
+                {_.map(countryCodes, (country) => {
                   return (
                     <option value={country.Code}>
                       {country.Name}
@@ -317,20 +317,15 @@ var Permissions = React.createClass({
               <div className="col-sm-12 form-group">
                 <div className="col-sm-12" ng-repeat="userLocation in userLocations">
                   <div ng-show="globalConfigVisible || userLocation.LocationId == locationId">
-                    <div className="col-sm-6">
-                      {userLocation.Location.Title}
-                    </div>
-                    <div className="col-sm-6">
-                      <select className="form-control"
-                              value={userLocation.UserRole}
-                              ng-change="updateUserLocation(userLocation)">
-                        <option value="archived">Archived</option>
-                        <option value="member">Member</option>
-                        <option value="staff">Staff</option>
-                        <option value="api">Api</option>
-                        <option value="admin">Admin</option>
-                      </select>
-                    </div>
+                    <select className="form-control"
+                            value={userLocation.UserRole}
+                            ng-change="updateUserLocation(userLocation)">
+                      <option value="archived">Archived</option>
+                      <option value="member">Member</option>
+                      <option value="staff">Staff</option>
+                      <option value="api">Api</option>
+                      <option value="admin">Admin</option>
+                    </select>
                   </div>
                 </div>
               </div>
@@ -408,8 +403,8 @@ var UserMemberships = React.createClass({
             </tr>
             <tr ng-repeat="userMembership in userMemberships">
               <td>{userMembership.Title}</td>
-              <td style="min-width:90px">{userMembership.StartDate}</td>
-              <td style="min-width:160px">
+              <td style={{minWidth: '90px'}}>{userMembership.StartDate}</td>
+              <td style={{minWidth: '160px'}}>
                 <div className="form-inline">
                   <div className="input-group">
                     <input
