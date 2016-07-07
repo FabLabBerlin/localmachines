@@ -55,13 +55,6 @@ func init() {
 			[]string{"post"},
 			nil})
 
-	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:ActivationsController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:ActivationsController"],
-		beego.ControllerComments{
-			"PostFeedback",
-			`/:aid/feedback`,
-			[]string{"post"},
-			nil})
-
 	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:DebugController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:DebugController"],
 		beego.ControllerComments{
 			"Get",
