@@ -46,7 +46,10 @@
     "testDirectoryName": "__test__",
     "scriptPreprocessor": "<rootDir>/preprocessor",
     "unmockedModulePathPatterns": [
-      "react"
+      "fbjs",
+      "react",
+      "<rootDir>/actionTypes.js",
+      "<rootDir>/modules/Machines/actionTypes.js"
     ]
   },
   "eslintConfig": {
@@ -92,6 +95,7 @@
     }
   },
   "dependencies": {
+    "react-addons-test-utils": "^15.2.0",
     "react-datepicker": "^0.28.0",
     "react-dom": "^15.2.0"
   }
