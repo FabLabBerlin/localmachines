@@ -1,5 +1,9 @@
 jest.dontMock('../../actionTypes');
 jest.dontMock('../../getters');
+jest.dontMock('../../modules/Machines/actionTypes');
+jest.dontMock('../../modules/Machines/index');
+jest.dontMock('../../modules/Machines');
+jest.dontMock('../../modules/Machines/stores/store');
 jest.dontMock('nuclear-js');
 jest.dontMock('../../reactor');
 jest.dontMock('../UserStore');

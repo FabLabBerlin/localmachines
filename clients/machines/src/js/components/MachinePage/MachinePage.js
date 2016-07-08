@@ -58,6 +58,7 @@ var MachinePage = React.createClass({
   },
 
   render() {
+    console.log('MachinePage#render');
     if (this.state.activations && this.state.location && this.state.machines) {
       const locationTitle = this.state.location.get('Title');
 

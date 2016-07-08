@@ -7,6 +7,7 @@ var LoaderLocal = require('./LoaderLocal');
 var LocationActions = require('../actions/LocationActions');
 var LoginActions = require('../actions/LoginActions');
 var LoginStore = require('../stores/LoginStore');
+var MachinePage = require('./MachinePage/MachinePage');
 var {Navigation} = require('react-router');
 var React = require('react');
 var toastr = require('../toastr');
@@ -68,6 +69,9 @@ vex.defaultOptions.className = 'vex-theme-custom';
    * If he's logged and there is no nfc port, can switch to user interface
    */
   render() {
+    console.log('App#render');
+    console.log('this.state.isLogged=', this.state.isLogged);
+    console.log('this.props.children=', this.props.children);
     return (
       <div className="app">
         <HeaderNav />
@@ -76,7 +80,7 @@ vex.defaultOptions.className = 'vex-theme-custom';
             window.location.hash === '#/login' ||
             window.location.hash.indexOf('forgot_password') > 0
             ) ? 
-            this.props.children :
+            (this.props.children || <MachinePage/>) :
             <LoaderLocal />
           }
         </div>
