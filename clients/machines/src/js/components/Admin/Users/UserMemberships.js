@@ -1,4 +1,5 @@
 var _ = require('lodash');
+var $ = require('jquery');
 var DatePicker = require('./DatePicker');
 var getters = require('../../../getters');
 var LoaderLocal = require('../../LoaderLocal');
@@ -8,6 +9,38 @@ var reactor = require('../../../reactor');
 var Users = require('../../../modules/Users');
 
 
+var UserMembership = React.createClass({
+  render() {
+    const userMembership = this.props.userMembership;
+
+    return (
+      <tr>
+        <td>{userMembership.Title}</td>
+        <td style={{minWidth: '90px'}}>{userMembership.StartDate}</td>
+        <td style={{minWidth: '160px'}}>
+          <div className="form-inline">
+            <DatePicker placeholder="End Date"
+                        value={userMembership.EndDate}/>
+          </div>
+        </td>
+        <td>
+          <input 
+            type="checkbox" 
+            value={userMembership.AutoExtend}
+            disabled={userMembership.Inactive}
+            ng-change="updateUserMembership(userMembership.Id)"/>
+        </td>
+        <td>
+          <div ng-show="userMembership.Active">Active</div>
+          <div ng-show="userMembership.Cancelled">Cancelled</div>
+          <div ng-show="userMembership.Inactive">Inactive</div>
+        </td>
+      </tr>
+    );
+  }
+});
+
+
 var UserMemberships = React.createClass({
 
   mixins: [ reactor.ReactMixin ],
@@ -15,18 +48,31 @@ var UserMemberships = React.createClass({
   componentWillMount() {
     const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
     const userId = reactor.evaluateToJS(getters.getUid);
+
+    Users.actions.fetchMemberships({locationId});
     Users.actions.fetchUserMemberships({locationId, userId});
   },
 
   getDataBindings() {
     return {
       location: LocationGetters.getLocation,
+      memberships: Users.getters.getMemberships,
       userMemberships: Users.getters.getUserMemberships
     };
   },
 
+  add() {
+    const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
+    const userId = reactor.evaluateToJS(getters.getUid);
+    const membershipId = parseInt(
+      $(this.refs.newMembershipId.getDOMNode()).val()
+    );
+
+    Users.actions.addUserMembership({locationId, userId, membershipId});
+  },
+
   render() {
-    const memberships = [];
+    const memberships = this.state.memberships;
     const user = this.props.user;
     console.log('user=', user);
     const userMemberships = this.state.userMemberships.get(user.Id);
@@ -38,77 +84,58 @@ var UserMemberships = React.createClass({
     return (
       <div>
         <h2>User Memberships</h2>
-        <table className="table table-striped table-hover">
-          <thead>
-            <tr>
-              <th>Membership Name</th>
-              <th>Start Date</th>
-              <th>End Date</th>
-              <th>Extends Automatically</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr ng-hide="userMemberships.length">
-              <td colspan="6">User has no memberships</td>
-            </tr>
-            {_.map(userMemberships, (userMembership) => {
-              return (
-                <tr>
-                  <td>{userMembership.Title}</td>
-                  <td style={{minWidth: '90px'}}>{userMembership.StartDate}</td>
-                  <td style={{minWidth: '160px'}}>
-                    <div className="form-inline">
-                      <DatePicker placeholder="End Date"
-                                  value={userMembership.EndDate}/>
-                    </div>
-                  </td>
-                  <td>
-                    <input 
-                      type="checkbox" 
-                      ng-model="userMembership.AutoExtend"
-                      ng-disabled="userMemberhip.Inactive"
-                      ng-change="updateUserMembership(userMembership.Id)"/>
-                  </td>
-                  <td>
-                    <div ng-show="userMembership.Active">Active</div>
-                    <div ng-show="userMembership.Cancelled">Cancelled</div>
-                    <div ng-show="userMembership.Inactive">Inactive</div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        {userMemberships.length ? (
+          <table className="table table-striped table-hover">
+            <thead>
+              <tr>
+                <th>Membership Name</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Extends Automatically</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {_.map(userMemberships, (userMembership) => {
+                return <UserMembership userMembership={userMembership}/>;
+              })}
+            </tbody>
+          </table>
+        ) : (
+          <div>User has no memberships</div>
+        )}
 
-        <div className="row">
-          <div className="col-sm-3">
-            <div className="form-group">
-              <select 
-                className="form-control" 
-                id="user-select-membership" 
-                placeholder="Membership">
-                <option value="" selected disabled>Select Membership</option>
-                {_.map(memberships, (membership) => {
-                  return (
-                    <option value={membership.Id}>
-                      {membership.Title}
-                    </option>
-                  );
-                })}
-              </select>
+        {memberships ? (
+          <div className="row">
+            <div className="col-sm-3">
+              <div className="form-group">
+                <select className="form-control" 
+                        id="user-select-membership" 
+                        placeholder="Membership"
+                        ref="newMembershipId">
+                  <option value="" selected disabled>Select Membership</option>
+                  {_.map(memberships, (membership) => {
+                    return (
+                      <option value={membership.Id}>
+                        {membership.Title}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+            </div>
+
+            <div className="col-sm-3">
+              <button 
+                className="btn btn-primary btn-block" 
+                id="user-add-membership-btn" 
+                onClick={this.add}>
+                <i className="fa fa-plus"></i>&nbsp;Add Membership
+              </button>
             </div>
           </div>
+        ) : <LoaderLocal/>}
 
-          <div className="col-sm-3">
-            <button 
-              className="btn btn-primary btn-block" 
-              id="user-add-membership-btn" 
-              ng-click="addUserMembership()">
-              <i className="fa fa-plus"></i>&nbsp;Add Membership
-            </button>
-          </div>
-        </div>
       </div>
     );
   }

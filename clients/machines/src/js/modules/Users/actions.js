@@ -1,9 +1,43 @@
 var _ = require('lodash');
 var $ = require('jquery');
 var actionTypes = require('./actionTypes');
+var moment = require('moment');
 var reactor = require('../../reactor');
 var toastr = require('../../toastr');
 
+
+function addUserMembership({locationId, userId, membershipId}) {
+  $.ajax({
+    method: 'POST',
+    url: '/api/users/' + userId + '/memberships',
+    data: {
+      membershipId: membershipId,
+      startDate: moment().format('YYYY-MM-DD')
+    }
+  })
+  .success(() => {
+    toastr.success('Membership created');
+    fetchUserMemberships({locationId, userId});
+  })
+  .error(() => {
+    toastr.error('Error while trying to create new User Membership');
+  });
+}
+
+function fetchMemberships({locationId}) {
+  $.ajax({
+    url: '/api/memberships?location=' + locationId,
+    dataType: 'json'
+  })
+  .success((memberships) => {
+    reactor.dispatch(actionTypes.SET_MEMBERSHIPS, {
+      memberships: memberships
+    });
+  })
+  .error(() => {
+    toastr.error('Error getting memberships');
+  });
+}
 
 function fetchUserMemberships({locationId, userId}) {
   $.ajax({
@@ -13,8 +47,8 @@ function fetchUserMemberships({locationId, userId}) {
   .success((invoices) => {
     var userMemberships = [];
 
-    _.each(invoices, function(invoice) {
-      _.each(invoice.UserMemberships.Data, function(umb) {
+    _.each(invoices, (invoice) => {
+      _.each(invoice.UserMemberships.Data, (umb) => {
         umb.Invoice = invoice;
         userMemberships.push(umb);
       });
@@ -44,6 +78,8 @@ function fetchUsers({locationId}) {
 }
 
 export default {
+  addUserMembership,
+  fetchMemberships,
   fetchUsers,
   fetchUserMemberships
 };

@@ -15,10 +15,15 @@ var UsersStore = new Nuclear.Store({
   },
 
   initialize() {
+    this.on(actionTypes.SET_MEMBERSHIPS, setMemberships);
     this.on(actionTypes.SET_USER_MEMBERSHIPS, setUserMemberships);
     this.on(actionTypes.SET_USERS, setUsers);
   }
 });
+
+function setMemberships(state, {memberships}) {
+  return state.set('memberships', memberships);
+}
 
 function setUserMemberships(state, {userId, userMemberships}) {
   return state.setIn(['userMemberships', userId], userMemberships);
