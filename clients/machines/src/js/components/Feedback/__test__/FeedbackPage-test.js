@@ -16,6 +16,7 @@ var FeedbackStore = require('../../../stores/FeedbackStore');
 var getters = require('../../../getters');
 var LoginStore = require('../../../stores/LoginStore');
 var Nuclear = require('nuclear-js');
+var React = require('react');
 var reactor = require('../../../reactor');
 var toImmutable = Nuclear.toImmutable;
 
@@ -29,8 +30,7 @@ reactor.registerStores({
 describe('FeedbackPage', function() {
   describe('render', function() {
     it('can submit Technical feedback', function() {
-      var React = require('react/addons');
-      var TestUtils = React.addons.TestUtils;
+      var TestUtils = require('react-addons-test-utils');
       var feedbackPage = TestUtils.renderIntoDocument(
         <FeedbackPage />
       );

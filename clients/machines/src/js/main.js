@@ -22,7 +22,6 @@ var RegisterExisting = require('./components/RegisterExisting');
 var ReservationsPage = require('./components/Reservations/ReservationsPage');
 var ReservationsStore = require('./stores/ReservationsStore');
 var ReservationRulesStore = require('./stores/ReservationRulesStore');
-var Router = require('react-router');
 var ScrollNavStore = require('./stores/ScrollNavStore');
 var Page = require('./components/UserProfile/SpendingsPage');
 var SettingsStore = require('./modules/Settings/stores/store');
@@ -33,8 +32,8 @@ var Users = require('./modules/Users');
 var UserStore = require('./stores/UserStore');
 var LocationStore = require('./stores/LocationStore');
 
-var {DefaultRoute, Route, Routes, NotFoundRoute} = require('react-router');
-
+import { render } from 'react-dom';
+import {DefaultRoute, Route, Router, hashHistory, NoRoute} from 'react-router';
 
 /*
  * Style dependencies for webpack
@@ -46,53 +45,6 @@ require('font-awesome-webpack');
 require('toastr/build/toastr.min.css');
 require('vex/css/vex.css');
 
-// Use this to simulate NFC browswer
-var debugNfc = false;
-if (debugNfc) {
-  window.libnfc = {
-    debug: true,
-    cardRead: {
-      connect() {},
-      disconnect() {}
-    },
-    cardReaderError: {
-      connect() {},
-      disconnect() {}
-    },
-    asyncScan() {}
-  };
-}
-
-/*
- * Defined all the routes of the panel
- */
-let routes = (
-  <Route name="app" path="/" handler={App} >
-    <Route name="admin" path="admin">
-      <Route path="machines" handler={AdminMachines} />
-      <Route path="machines/:machineId" handler={AdminMachine} />
-      <Route path="invoices" handler={AdminInvoices} />
-      <Route path="settings" handler={AdminSettings} />
-      <Route path="users" handler={AdminUsers} />
-      <Route path="users/:userId" handler={AdminUser} />
-    </Route>
-    <Route name="forgot_password" path="forgot_password">
-      <Route name="email_sent" handler={ForgotPassword.EmailSent} />
-      <Route name="start" handler={ForgotPassword.Start} />
-      <Route name="recover" handler={ForgotPassword.Recover} />
-      <Route name="reset" handler={ForgotPassword.Reset} />
-      <Route name="done" handler={ForgotPassword.Done} />
-    </Route>
-    <Route name="login" handler={LoginChooser} />
-    <Route name="machine" handler={MachinePage} />
-    <Route name="profile" handler={UserPage} />
-    <Route name="register_existing" handler={RegisterExisting} />
-    <Route name="spendings" handler={SpendingsPage} />
-    <Route name="reservations" handler={ReservationsPage} />
-    <Route name="feedback" handler={FeedbackPage} />
-    <DefaultRoute handler={MachinePage} />
-  </Route>
-);
 
 /*
  * Define the stores
@@ -115,9 +67,39 @@ reactor.registerStores({
   locationStore: LocationStore
 });
 
+
+var LoaderLocal = require('./components/LoaderLocal');
 /*
  * Render everything in the the body of index.html
  */
-Router.run(routes, Router.HashLocation, function(Handler) {
-  React.render(<Handler />, document.body);
-});
+
+render((
+  <Router history={hashHistory}>
+    <Route path="/" component={App} >
+      <Route path="machines" component={MachinePage}/>
+      <Route path="admin">
+        <Route path="machines" component={AdminMachines} />
+        <Route path="machines/:machineId" component={AdminMachine} />
+        <Route path="invoices" component={AdminInvoices} />
+        <Route path="settings" component={AdminSettings} />
+        <Route path="users" component={AdminUsers} />
+        <Route path="users/:userId" component={AdminUser} />
+      </Route>
+      <Route path="forgot_password">
+        <Route path="email_sent" component={ForgotPassword.EmailSent} />
+        <Route path="start" component={ForgotPassword.Start} />
+        <Route path="recover" component={ForgotPassword.Recover} />
+        <Route path="reset" component={ForgotPassword.Reset} />
+        <Route path="done" component={ForgotPassword.Done} />
+      </Route>
+      <Route path="login" component={LoginChooser} />
+      <Route path="machine" component={MachinePage} />
+      <Route path="profile" component={UserPage} />
+      <Route path="register_existing" component={RegisterExisting} />
+      <Route path="spendings" component={SpendingsPage} />
+      <Route path="reservations" component={ReservationsPage} />
+      <Route path="feedback" component={FeedbackPage} />
+      <Route path="/" component={MachinePage} />
+    </Route>
+  </Router>
+), document.getElementById('app-container'));
