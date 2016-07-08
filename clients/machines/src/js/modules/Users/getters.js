@@ -1,3 +1,10 @@
+const getUserMemberships = [
+  ['usersStore'],
+  (usersStore) => {
+    return usersStore.get('userMemberships');
+  }
+];
+
 const getUsers = [
   ['usersStore'],
   (usersStore) => {
@@ -6,5 +13,6 @@ const getUsers = [
 ];
 
 export default {
+  getUserMemberships,
   getUsers
 };

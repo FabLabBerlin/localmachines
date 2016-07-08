@@ -195,7 +195,7 @@ var BillingInfo = React.createClass({
           <div className="col-sm-3">
             <div className="form-group">
               <label>
-                <input type="checkbox" ng-model="user.NoAutoInvoicing"/> No Automatic Invoicing
+                <input type="checkbox" value={user.NoAutoInvoicing}/> No Automatic Invoicing
               </label>
             </div>
           </div>
@@ -316,11 +316,10 @@ var Permissions = React.createClass({
                 <h2>Role</h2>
               </div>
               <div className="col-sm-12 form-group">
-                <div className="col-sm-12" ng-repeat="userLocation in userLocations">
-                  <div ng-show="globalConfigVisible || userLocation.LocationId == locationId">
+                <div className="col-sm-12">
+                  <div>
                     <select className="form-control"
-                            value={userLocation.UserRole}
-                            ng-change="updateUserLocation(userLocation)">
+                            value={userLocation.UserRole}>
                       <option value="archived">Archived</option>
                       <option value="member">Member</option>
                       <option value="staff">Staff</option>
@@ -340,7 +339,7 @@ var Permissions = React.createClass({
                 <h2>Machine Permissions</h2>
               </div>
 
-              <div className="col-sm-6" ng-repeat="machine in availableMachines | machinesFilter:this">
+              <div className="col-sm-6">
                 {_.map(machines, (machine) => {
                   if (machine.Archived) {
                     return undefined;
@@ -350,9 +349,7 @@ var Permissions = React.createClass({
                     <div className="checkbox-inline">
                       <label title={machine.Description}>
                         <input 
-                          type="checkbox" 
-                          ng-model="machine['Checked']"
-                          ng-disabled="machine['Disabled']"/> 
+                          type="checkbox"/> 
                         {machine.Name}
                       </label>
                     </div>
