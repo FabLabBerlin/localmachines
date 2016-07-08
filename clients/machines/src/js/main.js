@@ -77,15 +77,7 @@ render((
   <Router history={browserHistory}>
     <Route path="/" component={App} >
       <Route path="machines" component={MachinePage}/>
-      <DefaultRoute component={NoRoute} />
-    </Route>
-  </Router>
-), document.getElementById('app-container'));
-
-/*render((
-  <Router history={browserHistory}>
-    <Route path="/" component={App} >
-      <Route name="admin" path="admin">
+      <Route name="admin" path="machines/admin">
         <Route path="machines" component={AdminMachines} />
         <Route path="machines/:machineId" component={AdminMachine} />
         <Route path="invoices" component={AdminInvoices} />
@@ -107,6 +99,16 @@ render((
       <Route name="spendings" component={SpendingsPage} />
       <Route name="reservations" component={ReservationsPage} />
       <Route name="feedback" component={FeedbackPage} />
+    </Route>
+  </Router>
+), document.getElementById('app-container'));
+/*render((
+  <Router history={browserHistory}>
+    <Route path="/" component={App} >
+
+
+
+
       <DefaultRoute component={MachinePage} />
     </Route>
   </Router>
