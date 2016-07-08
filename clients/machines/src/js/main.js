@@ -22,7 +22,6 @@ var RegisterExisting = require('./components/RegisterExisting');
 var ReservationsPage = require('./components/Reservations/ReservationsPage');
 var ReservationsStore = require('./stores/ReservationsStore');
 var ReservationRulesStore = require('./stores/ReservationRulesStore');
-var Router = require('react-router');
 var ScrollNavStore = require('./stores/ScrollNavStore');
 var Page = require('./components/UserProfile/SpendingsPage');
 var SettingsStore = require('./modules/Settings/stores/store');
@@ -33,7 +32,8 @@ var Users = require('./modules/Users');
 var UserStore = require('./stores/UserStore');
 var LocationStore = require('./stores/LocationStore');
 
-var {DefaultRoute, Route, Routes, NotFoundRoute} = require('react-router');
+import { render } from 'react-dom';
+var {DefaultRoute, Route, Router, Routes, NotFoundRoute, browserHistory} = require('react-router');
 
 
 /*
@@ -46,53 +46,6 @@ require('font-awesome-webpack');
 require('toastr/build/toastr.min.css');
 require('vex/css/vex.css');
 
-// Use this to simulate NFC browswer
-var debugNfc = false;
-if (debugNfc) {
-  window.libnfc = {
-    debug: true,
-    cardRead: {
-      connect() {},
-      disconnect() {}
-    },
-    cardReaderError: {
-      connect() {},
-      disconnect() {}
-    },
-    asyncScan() {}
-  };
-}
-
-/*
- * Defined all the routes of the panel
- */
-let routes = (
-  <Route name="app" path="/" handler={App} >
-    <Route name="admin" path="admin">
-      <Route path="machines" handler={AdminMachines} />
-      <Route path="machines/:machineId" handler={AdminMachine} />
-      <Route path="invoices" handler={AdminInvoices} />
-      <Route path="settings" handler={AdminSettings} />
-      <Route path="users" handler={AdminUsers} />
-      <Route path="users/:userId" handler={AdminUser} />
-    </Route>
-    <Route name="forgot_password" path="forgot_password">
-      <Route name="email_sent" handler={ForgotPassword.EmailSent} />
-      <Route name="start" handler={ForgotPassword.Start} />
-      <Route name="recover" handler={ForgotPassword.Recover} />
-      <Route name="reset" handler={ForgotPassword.Reset} />
-      <Route name="done" handler={ForgotPassword.Done} />
-    </Route>
-    <Route name="login" handler={LoginChooser} />
-    <Route name="machine" handler={MachinePage} />
-    <Route name="profile" handler={UserPage} />
-    <Route name="register_existing" handler={RegisterExisting} />
-    <Route name="spendings" handler={SpendingsPage} />
-    <Route name="reservations" handler={ReservationsPage} />
-    <Route name="feedback" handler={FeedbackPage} />
-    <DefaultRoute handler={MachinePage} />
-  </Route>
-);
 
 /*
  * Define the stores
@@ -118,6 +71,32 @@ reactor.registerStores({
 /*
  * Render everything in the the body of index.html
  */
-Router.run(routes, Router.HashLocation, function(Handler) {
-  React.render(<Handler />, document.body);
-});
+render((
+  <Router history={browserHistory}>
+    <Route path="/" component={App} >
+      /*<Route name="admin" path="admin">
+        <Route path="machines" component={AdminMachines} />
+        <Route path="machines/:machineId" component={AdminMachine} />
+        <Route path="invoices" component={AdminInvoices} />
+        <Route path="settings" component={AdminSettings} />
+        <Route path="users" component={AdminUsers} />
+        <Route path="users/:userId" component={AdminUser} />
+      </Route>
+      <Route name="forgot_password" path="forgot_password">
+        <Route name="email_sent" component={ForgotPassword.EmailSent} />
+        <Route name="start" component={ForgotPassword.Start} />
+        <Route name="recover" component={ForgotPassword.Recover} />
+        <Route name="reset" component={ForgotPassword.Reset} />
+        <Route name="done" component={ForgotPassword.Done} />
+      </Route>
+      <Route name="login" component={LoginChooser} />
+      <Route name="machine" component={MachinePage} />
+      <Route name="profile" component={UserPage} />
+      <Route name="register_existing" component={RegisterExisting} />
+      <Route name="spendings" component={SpendingsPage} />
+      <Route name="reservations" component={ReservationsPage} />
+      <Route name="feedback" component={FeedbackPage} />
+      <DefaultRoute component={MachinePage} />*/
+    </Route>
+  </Router>
+), document.body)

@@ -1,4 +1,4 @@
-var keyMirror = require('react/lib/keyMirror');
+var keyMirror = require('fbjs/lib/keyMirror');
 
 export default keyMirror({
   MACHINE_STORE_CLEAR_STATE: null,

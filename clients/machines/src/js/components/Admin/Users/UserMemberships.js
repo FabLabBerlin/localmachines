@@ -1,12 +1,14 @@
 var _ = require('lodash');
 var $ = require('jquery');
-var DatePicker = require('./DatePicker');
+var DatePicker = require('react-datepicker');
 var getters = require('../../../getters');
 var LoaderLocal = require('../../LoaderLocal');
 var LocationGetters = require('../../../modules/Location/getters');
 var React = require('react');
 var reactor = require('../../../reactor');
 var Users = require('../../../modules/Users');
+
+require('react-datepicker/dist/react-datepicker.css');
 
 
 var UserMembership = React.createClass({
@@ -19,7 +21,8 @@ var UserMembership = React.createClass({
         <td style={{minWidth: '90px'}}>{userMembership.StartDate}</td>
         <td style={{minWidth: '160px'}}>
           <div className="form-inline">
-            <DatePicker placeholder="End Date"
+            <DatePicker dateFormat="YYYY-MM-DD"
+                        placeholder="End Date"
                         value={userMembership.EndDate}/>
           </div>
         </td>
