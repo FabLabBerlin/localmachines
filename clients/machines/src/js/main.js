@@ -33,7 +33,7 @@ var UserStore = require('./stores/UserStore');
 var LocationStore = require('./stores/LocationStore');
 
 import { render } from 'react-dom';
-import {DefaultRoute, Route, Router, browserHistory} from 'react-router';
+import {DefaultRoute, Route, Router, browserHistory, NoRoute} from 'react-router';
 
 /*
  * Style dependencies for webpack
@@ -68,14 +68,6 @@ reactor.registerStores({
 });
 
 
-const About = React.createClass({
-  render() {
-    return (
-      <div>Aboot</div>
-    );
-  }
-});
-
 var LoaderLocal = require('./components/LoaderLocal');
 /*
  * Render everything in the the body of index.html
@@ -85,6 +77,7 @@ render((
   <Router history={browserHistory}>
     <Route path="/" component={App} >
       <Route path="machines" component={MachinePage}/>
+      <DefaultRoute component={NoRoute} />
     </Route>
   </Router>
 ), document.getElementById('app-container'));
