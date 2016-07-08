@@ -33,8 +33,7 @@ var UserStore = require('./stores/UserStore');
 var LocationStore = require('./stores/LocationStore');
 
 import { render } from 'react-dom';
-var {DefaultRoute, Route, Router, Routes, NotFoundRoute, browserHistory} = require('react-router');
-
+import {DefaultRoute, Route, Router, browserHistory} from 'react-router';
 
 /*
  * Style dependencies for webpack
@@ -68,13 +67,32 @@ reactor.registerStores({
   locationStore: LocationStore
 });
 
+
+const About = React.createClass({
+  render() {
+    return (
+      <div>Aboot</div>
+    );
+  }
+});
+
+var LoaderLocal = require('./components/LoaderLocal');
 /*
  * Render everything in the the body of index.html
  */
+
 render((
   <Router history={browserHistory}>
     <Route path="/" component={App} >
-      /*<Route name="admin" path="admin">
+      <Route path="machines" component={MachinePage}/>
+    </Route>
+  </Router>
+), document.getElementById('app-container'));
+
+/*render((
+  <Router history={browserHistory}>
+    <Route path="/" component={App} >
+      <Route name="admin" path="admin">
         <Route path="machines" component={AdminMachines} />
         <Route path="machines/:machineId" component={AdminMachine} />
         <Route path="invoices" component={AdminInvoices} />
@@ -96,7 +114,7 @@ render((
       <Route name="spendings" component={SpendingsPage} />
       <Route name="reservations" component={ReservationsPage} />
       <Route name="feedback" component={FeedbackPage} />
-      <DefaultRoute component={MachinePage} />*/
+      <DefaultRoute component={MachinePage} />
     </Route>
   </Router>
-), document.body)
+), document.getElementById('app-container'));*/

@@ -9,7 +9,6 @@ var LoginActions = require('../actions/LoginActions');
 var LoginStore = require('../stores/LoginStore');
 var {Navigation} = require('react-router');
 var React = require('react');
-var RouteHandler = require('react-router').RouteHandler;
 var toastr = require('../toastr');
 
 // https://github.com/HubSpot/vex/issues/72
@@ -77,7 +76,7 @@ vex.defaultOptions.className = 'vex-theme-custom';
             window.location.hash === '#/login' ||
             window.location.hash.indexOf('forgot_password') > 0
             ) ? 
-            <RouteHandler /> :
+            this.props.children :
             <LoaderLocal />
           }
         </div>
