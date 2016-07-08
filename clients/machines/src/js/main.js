@@ -33,7 +33,7 @@ var UserStore = require('./stores/UserStore');
 var LocationStore = require('./stores/LocationStore');
 
 import { render } from 'react-dom';
-import {DefaultRoute, Route, Router, browserHistory, NoRoute} from 'react-router';
+import {DefaultRoute, Route, Router, hashHistory, NoRoute} from 'react-router';
 
 /*
  * Style dependencies for webpack
@@ -74,10 +74,10 @@ var LoaderLocal = require('./components/LoaderLocal');
  */
 
 render((
-  <Router history={browserHistory}>
+  <Router history={hashHistory}>
     <Route path="/" component={App} >
       <Route path="machines" component={MachinePage}/>
-      <Route name="admin" path="machines/admin">
+      <Route path="admin">
         <Route path="machines" component={AdminMachines} />
         <Route path="machines/:machineId" component={AdminMachine} />
         <Route path="invoices" component={AdminInvoices} />
@@ -85,31 +85,21 @@ render((
         <Route path="users" component={AdminUsers} />
         <Route path="users/:userId" component={AdminUser} />
       </Route>
-      <Route name="forgot_password" path="forgot_password">
-        <Route name="email_sent" component={ForgotPassword.EmailSent} />
-        <Route name="start" component={ForgotPassword.Start} />
-        <Route name="recover" component={ForgotPassword.Recover} />
-        <Route name="reset" component={ForgotPassword.Reset} />
-        <Route name="done" component={ForgotPassword.Done} />
+      <Route path="forgot_password">
+        <Route path="email_sent" component={ForgotPassword.EmailSent} />
+        <Route path="start" component={ForgotPassword.Start} />
+        <Route path="recover" component={ForgotPassword.Recover} />
+        <Route path="reset" component={ForgotPassword.Reset} />
+        <Route path="done" component={ForgotPassword.Done} />
       </Route>
-      <Route name="login" component={LoginChooser} />
-      <Route name="machine" component={MachinePage} />
-      <Route name="profile" component={UserPage} />
-      <Route name="register_existing" component={RegisterExisting} />
-      <Route name="spendings" component={SpendingsPage} />
-      <Route name="reservations" component={ReservationsPage} />
-      <Route name="feedback" component={FeedbackPage} />
+      <Route path="login" component={LoginChooser} />
+      <Route path="machine" component={MachinePage} />
+      <Route path="profile" component={UserPage} />
+      <Route path="register_existing" component={RegisterExisting} />
+      <Route path="spendings" component={SpendingsPage} />
+      <Route path="reservations" component={ReservationsPage} />
+      <Route path="feedback" component={FeedbackPage} />
+      <Route path="/" component={MachinePage} />
     </Route>
   </Router>
 ), document.getElementById('app-container'));
-/*render((
-  <Router history={browserHistory}>
-    <Route path="/" component={App} >
-
-
-
-
-      <DefaultRoute component={MachinePage} />
-    </Route>
-  </Router>
-), document.getElementById('app-container'));*/
