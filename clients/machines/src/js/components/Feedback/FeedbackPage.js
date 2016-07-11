@@ -1,14 +1,13 @@
 var FeedbackActions = require('../../actions/FeedbackActions');
 var getters = require('../../getters');
 var {Navigation} = require('react-router');
-var NfcLogoutMixin = require('../Login/NfcLogoutMixin');
 var React = require('react');
 var reactor = require('../../reactor');
 var UserActions = require('../../actions/UserActions');
 
 
 var FeedbackPage = React.createClass({
-  mixins: [ Navigation, reactor.ReactMixin, NfcLogoutMixin ],
+  mixins: [ Navigation, reactor.ReactMixin ],
 
   getDataBindings() {
     return {
@@ -20,13 +19,8 @@ var FeedbackPage = React.createClass({
   },
 
   componentDidMount() {
-    this.nfcOnDidMount();
     const uid = reactor.evaluateToJS(getters.getUid);
     UserActions.fetchUser(uid);
-  },
-
-  componentWillUnmount() {
-    this.nfcOnWillUnmount();
   },
 
   handleChange(event) {

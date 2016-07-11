@@ -22,7 +22,7 @@ var HeaderNav = React.createClass({
       return (
         <div className="nav">
           <Top/>
-          <Bottom/>
+          <Bottom location={this.props.location}/>
         </div>
       );
     } else {

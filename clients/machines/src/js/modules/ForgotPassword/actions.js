@@ -4,6 +4,9 @@ var getters = require('./getters');
 var reactor = require('../../reactor');
 var toastr = require('../../toastr');
 
+import {hashHistory} from 'react-router';
+
+
 function emailReset(router, email) {
   $.ajax({
     method: 'POST',
@@ -13,7 +16,7 @@ function emailReset(router, email) {
     }
   })
   .success(function() {
-    router.transitionTo('/forgot_password/email_sent');
+    hashHistory.push('/forgot_password/email_sent');
   })
   .error(function() {
     toastr.error('An error occurred.  Please try again later.');
@@ -66,7 +69,7 @@ function submitPhone(router, phone) {
   .success(function() {
     reactor.dispatch(actionTypes.SET_KEY, key);
     reactor.dispatch(actionTypes.SET_PHONE, phone);
-    router.transitionTo('/forgot_password/reset');
+    hashHistory.push('/forgot_password/reset');
   })
   .error(function(xhr, status) {
     handleServerErrors(xhr);
@@ -87,7 +90,7 @@ function submitPassword(router, password) {
     }
   })
   .success(function() {
-    router.transitionTo('/forgot_password/done');
+    hashHistory.push('/forgot_password/done');
   })
   .error(function(xhr, status) {
     handleServerErrors(xhr);

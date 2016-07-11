@@ -5,6 +5,9 @@ var getters = require('../getters');
 var reactor = require('../reactor');
 var toastr = require('../toastr');
 
+import {hashHistory} from 'react-router';
+
+
 var LocationActions = {
 
   loadLocations() {
@@ -54,7 +57,7 @@ var LocationActions = {
       dataType: 'json',
       type: 'POST',
       success(data) {
-        router.transitionTo('/machine');
+        hashHistory.push('/machine');
       },
       error(xhr, status, err) {
         toastr.error('Error.  Please try again later.');

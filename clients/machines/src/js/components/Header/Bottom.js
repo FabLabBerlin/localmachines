@@ -4,7 +4,7 @@ var React = require('react');
 var Item = React.createClass({
   render() {
     var activeClass = '';
-    if (this.props.href === (window.location.pathname + window.location.hash)) {
+    if (this.props.href === (window.location.pathname + '#' + this.props.location.pathname)) {
       activeClass = 'active';
     }
 
@@ -26,11 +26,14 @@ var Bottom = React.createClass({
     return (
       <div className="nav-bottom row">
         <Item label={<span><i className="fa fa-plug"/> <span className="hidden-xs">Machines</span></span>}
-              href="/machines/#/machine"/>
+              href="/machines/#/machine"
+              location={this.props.location}/>
         <Item label={<span><i className="fa fa-calendar-check-o"/> <span className="hidden-xs">Reservations</span></span>}
-              href="/machines/#/reservations"/>
+              href="/machines/#/reservations"
+              location={this.props.location}/>
         <Item label={<span><i className="fa fa-money"/> <span className="hidden-xs">Spendings</span></span>}
-              href="/machines/#/spendings"/>
+              href="/machines/#/spendings"
+              location={this.props.location}/>
       </div>
     );
   }

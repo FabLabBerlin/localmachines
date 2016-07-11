@@ -11,9 +11,12 @@ var LocationActions = require('../../actions/LocationActions');
 var {Navigation} = require('react-router');
 
 var React = require('react');
+var ReactDOM = require('react-dom');
 var reactor = require('../../reactor');
 
 var _ = require('lodash');
+
+import {hashHistory} from 'react-router';
 
 
 /*
@@ -23,9 +26,6 @@ var _ = require('lodash');
  */
 var Login = React.createClass({
 
-  /*
-   * To use transitionTo/replaceWith/redirect and some function related to the router
-   */
   mixins: [ Navigation, reactor.ReactMixin ],
 
   getDataBindings() {
@@ -43,28 +43,11 @@ var Login = React.createClass({
   handleSubmit(event) {
     event.preventDefault();
     var data = {
-      username: this.refs.name.getDOMNode().value,
-      password: this.refs.password.getDOMNode().value,
-      location: parseInt(this.refs.location.getDOMNode().value)
+      username: this.refs.name.value,
+      password: this.refs.password.value,
+      location: parseInt(this.refs.location.value)
     };
     LoginActions.submitLoginForm(data, this.context.router);
-  },
-
-  /*
-   * Clear the state and input and do the focus on the name input
-   */
-  clearAndFocus() {
-    this.focus();
-  },
-
-  focus() {
-    var ref = this.refs.name;
-    if (ref) {
-      var n = $(ref.getDOMNode());
-      if (n) {
-        n.focus();
-      }
-    }
   },
 
   /*
@@ -74,12 +57,8 @@ var Login = React.createClass({
   componentDidMount() {
     LoginActions.tryPassLoginForm(this.context.router, {});
 
-    setTimeout(() => {
-      this.focus();
-    }, 1000);
-
     if (reactor.evaluateToJS(getters.getIsLogged)) {
-      this.replaceWith('/machine');
+      hashHistory.push('/machine');
     }
   },
 
@@ -111,7 +90,7 @@ var Login = React.createClass({
             className="form-control"
             placeholder="E-Mail"
             required
-            autofocus
+            autoFocus="on"
             autoCorrect="off"
             autoCapitalize="off"
           />

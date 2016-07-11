@@ -1,13 +1,15 @@
 var { Navigation } = require('react-router');
 var React = require('react');
 
+import {hashHistory} from 'react-router';
+
 
 var Done = React.createClass({
   mixins: [ Navigation ],
 
   handleSubmit(event) {
     event.preventDefault();
-    this.transitionTo('/login');
+    hashHistory.push('/login');
   },
 
   render() {

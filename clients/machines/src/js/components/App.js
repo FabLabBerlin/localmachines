@@ -12,6 +12,8 @@ var {Navigation} = require('react-router');
 var React = require('react');
 var toastr = require('../toastr');
 
+import {hashHistory} from 'react-router';
+
 // https://github.com/HubSpot/vex/issues/72
 var vex = require('vex-js'),
 VexDialog = require('vex-js/js/vex.dialog.js');
@@ -39,23 +41,24 @@ vex.defaultOptions.className = 'vex-theme-custom';
 
   componentWillMount() {
     const isLogged = reactor.evaluateToJS(getters.getIsLogged);
+
     if (!isLogged) {
       LoginActions.tryPassLoginForm(this.context.router, {
         loggedIn: () => {
-          if (window.location.hash === '#/login') {
-            this.transitionTo('/machine');
+          if (this.props.location.pathname === '/login') {
+            hashHistory.push('/machine');
           }
         },
         loggedOut: () => {
-          if (window.location.hash !== '#/login') {
-            this.transitionTo('/login');
+          if (this.props.location.pathname !== '/login') {
+            hashHistory.push('/login');
           }
         }
       });
       LocationActions.loadLocations();
     } else {
-      if (window.location.hash === '#/login') {
-        this.transitionTo('/machines');
+      if (this.props.location.pathname === '/login') {
+        hashHistory.push('/machines');
       }
     }
   },
@@ -69,16 +72,13 @@ vex.defaultOptions.className = 'vex-theme-custom';
    * If he's logged and there is no nfc port, can switch to user interface
    */
   render() {
-    console.log('App#render');
-    console.log('this.state.isLogged=', this.state.isLogged);
-    console.log('this.props.children=', this.props.children);
     return (
       <div className="app">
-        <HeaderNav />
+        <HeaderNav location={this.props.location}/>
         <div id="main-content">
           {(this.state.isLogged ||
-            window.location.hash === '#/login' ||
-            window.location.hash.indexOf('forgot_password') > 0
+            this.props.location.pathname === '/login' ||
+            this.props.location.pathname.indexOf('forgot_password') > 0
             ) ? 
             (this.props.children || <MachinePage/>) :
             <LoaderLocal />

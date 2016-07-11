@@ -5,6 +5,8 @@ var Machines = require('../modules/Machines');
 var reactor = require('../reactor');
 var toastr = require('../toastr');
 
+import {hashHistory} from 'react-router';
+
 
 /*
  * Action made by the login page
@@ -25,10 +27,10 @@ export default {
         reactor.dispatch(actionTypes.SUCCESS_LOGIN, { data });
         switch (data.Status) {
         case 'ok':
-          router.transitionTo('/machine');
+          hashHistory.push('/machine');
           break;
         case 'unregistered':
-          router.transitionTo('/register_existing');
+          hashHistory.push('/register_existing');
           break;
         default:
           console.log('unknowon status');
@@ -92,7 +94,7 @@ export default {
       success(data) {
         reactor.dispatch(actionTypes.SUCCESS_LOGIN, { data });
         LocationActions.setLocationId(1);
-        router.transitionTo('/machine');
+        hashHistory.push('/machine');
       },
       error(xhr, status, err) {
         toastr.error('Problem with NFC login.  Try again later or talk to us if the problem persists.');

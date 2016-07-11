@@ -1,6 +1,5 @@
 var LocationActions = require('../../actions/LocationActions');
 var Login = require('./Login');
-var LoginNfc = require('./LoginNfc');
 var React = require('react');
 
 
@@ -19,11 +18,7 @@ var LoginChooser = React.createClass({
       <div className="login">
         <div className="container-fluid">
 
-        { !window.libnfc ? (
           <Login />
-        ) : (
-          <LoginNfc />
-        )}
 
         </div>
       </div>

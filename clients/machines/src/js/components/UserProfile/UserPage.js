@@ -3,7 +3,6 @@ var LocationGetters = require('../../modules/Location/getters');
 var MachineActions = require('../../actions/MachineActions');
 var {Navigation} = require('react-router');
 var LoginActions = require('../../actions/LoginActions');
-var NfcLogoutMixin = require('../Login/NfcLogoutMixin');
 var React = require('react');
 var reactor = require('../../reactor');
 var UserActions = require('../../actions/UserActions');
@@ -12,7 +11,7 @@ var UserForm = require('./UserForm');
 
 var UserPage = React.createClass({
 
-  mixins: [ Navigation, reactor.ReactMixin, NfcLogoutMixin ],
+  mixins: [ Navigation, reactor.ReactMixin ],
 
   getDataBindings() {
     return {
@@ -21,17 +20,12 @@ var UserPage = React.createClass({
   },
 
   componentDidMount() {
-    this.nfcOnDidMount();
     const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
     const uid = reactor.evaluateToJS(getters.getUid);
     MachineActions.apiGetUserMachines(locationId, uid);
     UserActions.fetchUser(uid);
     UserActions.fetchBill(locationId, uid);
     UserActions.fetchMemberships(locationId, uid);
-  },
-
-  componentWillUnmount() {
-    this.nfcOnWillUnmount();
   },
 
   handleLogout() {
