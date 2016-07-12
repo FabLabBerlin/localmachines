@@ -69,11 +69,13 @@ var UnavailableMachine = React.createClass({
 
           { this.props.isStaff ? (
             <table className="machine-activation-table">
-              <tr>
-                <td rowSpan="2">
-                  {startStopButton}
-                </td>
-              </tr>
+              <tbody>
+                <tr>
+                  <td rowSpan="2">
+                    {startStopButton}
+                  </td>
+                </tr>
+              </tbody>
             </table>
           ) : (
             <div className="indicator unavailable">

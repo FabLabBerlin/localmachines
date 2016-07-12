@@ -35,15 +35,17 @@ var FreeMachine = React.createClass({
             { this.props.isStaff ? (
   
               <table className="machine-activation-table">
-                <tr>
-                  <td rowSpan="2">
-                    <button
-                      className="btn btn-lg btn-primary btn-block"
-                      onClick={this.startActivation}>
-                      Start
-                    </button>
-                  </td>
-                </tr>
+                <tbody>
+                  <tr>
+                    <td rowSpan="2">
+                      <button
+                        className="btn btn-lg btn-primary btn-block"
+                        onClick={this.startActivation}>
+                        Start
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
               </table>
   
             ) : (

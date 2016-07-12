@@ -55,15 +55,17 @@ var OccupiedMachine = React.createClass({
             <div className="col-xs-6">
   
               <table className="machine-activation-table">
-                <tr>
-                  <td rowSpan="2">
-                    <button
-                      className="btn btn-lg btn-warning btn-block"
-                      onClick={this.endActivation}>
-                      Stop
-                    </button>
-                  </td>
-                </tr>
+                <tbody>
+                  <tr>
+                    <td rowSpan="2">
+                      <button
+                        className="btn btn-lg btn-warning btn-block"
+                        onClick={this.endActivation}>
+                        Stop
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
               </table>
   
             </div>

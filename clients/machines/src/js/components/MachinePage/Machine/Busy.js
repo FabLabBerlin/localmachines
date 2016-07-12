@@ -40,15 +40,17 @@ var BusyMachine = React.createClass({
           { this.props.isStaff ? (
             
             <table className="machine-activation-table">
-              <tr>
-                <td rowSpan="2">
-                  <button
-                    className="btn btn-lg btn-danger btn-block"
-                    onClick={this.endActivation}>
-                    Stop
-                  </button>
-                </td>
-              </tr>
+              <tbody>
+                <tr>
+                  <td rowSpan="2">
+                    <button
+                      className="btn btn-lg btn-danger btn-block"
+                      onClick={this.endActivation}>
+                      Stop
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
             </table>
             
           ) : (
