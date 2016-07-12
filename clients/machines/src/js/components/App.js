@@ -69,6 +69,9 @@ vex.defaultOptions.className = 'vex-theme-custom';
    * If he's logged and there is no nfc port, can switch to user interface
    */
   render() {
+    const footerAbsoluteBottom = !this.state.isLogged &&
+      window.location.hash !== '#/product';
+
     return (
       <div className="app">
         {window.location.hash !== '#/product' ? <HeaderNav /> : null}
@@ -82,7 +85,7 @@ vex.defaultOptions.className = 'vex-theme-custom';
             <LoaderLocal />
           }
         </div>
-        <footer className={this.state.isLogged ? '' : 'absolute-bottom'}>
+        <footer className={footerAbsoluteBottom ? 'absolute-bottom' : ''}>
           <div className="container-fluid">
             <div className="col-md-4 text-center">
               <i className="fa fa-copyright"></i> Makea Industries GmbH 2016
