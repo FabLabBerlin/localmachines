@@ -1,7 +1,10 @@
 var webpack = require('webpack');
 
+const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+const IS_DEVELOPMENT = !IS_PRODUCTION;
+
 function getOutputDevOrProd() {
-  if(process.env.NODE_ENV !== 'production') {
+  if (IS_DEVELOPMENT) {
     var outputDir = '/dev';
   } else {
     var outputDir = '/prod';
@@ -9,8 +12,8 @@ function getOutputDevOrProd() {
   return outputDir;
 }
 
-module.exports = {
-  devtool: process.env.NODE_ENV !== 'production' ? 'source-map' : undefined,
+var config = {
+  devtool: IS_DEVELOPMENT ? 'source-map' : undefined,
   entry: './src/js/main.js',
   output: {
     path: __dirname + getOutputDevOrProd(),
@@ -43,3 +46,12 @@ module.exports = {
     }
   }
 };
+
+if (IS_PRODUCTION) {
+  config.resolve.alias['react'] = 'react/dist/react.min';
+  config.resolve.alias['react-dom'] = 'react-dom/dist/react-dom.min';
+  console.log('config.resolve.alias=');
+  console.log(config.resolve.alias);
+}
+
+module.exports = config;
