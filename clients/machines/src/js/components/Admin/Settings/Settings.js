@@ -1,5 +1,4 @@
 var _ = require('lodash');
-var $ = require('jquery');
 var getters = require('../../../getters');
 var LoaderLocal = require('../../LoaderLocal');
 var LocationGetters = require('../../../modules/Location/getters');
@@ -113,20 +112,18 @@ var Settings = React.createClass({
   save() {
     const adminSettings = {
       TermsUrl: {
-        ValueString: $(this.refs.TermsUrl.getDOMNode()).val()
+        ValueString: this.refs.TermsUrl.value
       },
       Currency: {
-        ValueString: $(this.refs.Currency.getDOMNode()).val()
+        ValueString: this.refs.Currency.value
       },
       FastbillTemplateId: {
-        ValueInt: parseInt($(this.refs.FastbillTemplateId.getDOMNode()).val())
+        ValueInt: parseInt(this.refs.FastbillTemplateId.value)
       },
       VAT: {
-        ValueFloat: parseFloat($(this.refs.VAT.getDOMNode()).val())
+        ValueFloat: parseFloat(this.refs.VAT.value)
       }
     };
-
-    console.log('adminSettings=', adminSettings);
 
     SettingsActions.saveAdminSettings(adminSettings);
   }

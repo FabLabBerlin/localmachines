@@ -133,11 +133,13 @@ var AvailabilityDisplay = React.createClass({
             </div> 
 
             <table className="label-bar">
-              <tr>
-                <td className="start-time">00:00</td>
-                <td className="label">Availability Today</td>
-                <td className="end-time">24:00</td>
-              </tr>
+              <tbody>
+                <tr>
+                  <td className="start-time">00:00</td>
+                  <td className="label">Availability Today</td>
+                  <td className="end-time">24:00</td>
+                </tr>
+              </tbody>
             </table>
 
           </div>
@@ -156,11 +158,13 @@ var AvailabilityDisplay = React.createClass({
             </div>
             
             <table className="label-bar">
-              <tr>
-                <td className="start-time">00:00</td>
-                <td className="label">Availability Tomorrow</td>
-                <td className="end-time">24:00</td>
-              </tr>
+              <tbody>
+                <tr>
+                  <td className="start-time">00:00</td>
+                  <td className="label">Availability Tomorrow</td>
+                  <td className="end-time">24:00</td>
+                </tr>
+              </tbody>
             </table>
 
           </div>

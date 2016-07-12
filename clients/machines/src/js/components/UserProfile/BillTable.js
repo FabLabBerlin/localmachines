@@ -60,14 +60,10 @@ function formatPrice(price) {
 
 
 var DurationEdit = React.createClass({
-  componentDidMount() {
-    $(this.refs.duration.getDOMNode()).focus()
-                                      .select();
-  },
-
   render() {
     return (
       <input type="text"
+             autoFocus="on"
              ref="duration"
              onChange={this.update}
              value={this.props.purchase.editedDuration ||

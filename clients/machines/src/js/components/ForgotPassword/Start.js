@@ -14,7 +14,7 @@ var Start = React.createClass({
 
   handleSubmit(event) {
     event.preventDefault();
-    var email = this.refs.email.getDOMNode().value;
+    var email = this.refs.email.value;
     if (email) {
       actions.emailReset(this.context.router, email);
     } else {
@@ -35,7 +35,7 @@ var Start = React.createClass({
             className="form-control"
             placeholder="E-Mail address"
             required={true}
-            autofocus
+            autoFocus="on"
             autoCorrect="off"
             autoCapitalize="off"
           />

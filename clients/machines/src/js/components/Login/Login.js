@@ -146,7 +146,7 @@ var Login = React.createClass({
   },
 
   updateLocation() {
-    var locationId = parseInt(this.refs.location.getDOMNode().value);
+    var locationId = parseInt(this.refs.location.value);
     console.log('location <-', locationId);
     LocationActions.setLocationId(locationId);
   }

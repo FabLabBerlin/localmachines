@@ -9,7 +9,7 @@ var Recover = React.createClass({
 
   handleSubmit(event) {
     event.preventDefault();
-    var phone = this.refs.phone.getDOMNode().value;
+    var phone = this.refs.phone.value;
     if (phone) {
       actions.submitPhone(this.context.router, phone);
     } else {

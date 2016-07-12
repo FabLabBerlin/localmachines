@@ -123,16 +123,18 @@ var ReservationsTable = React.createClass({
         <div className="table-responsive">
           <table className="table table-stripped table-hover">
             <thead>
-              <th>Machine</th>
-              <th>Date</th>
-              <th>From</th>
-              <th>To</th>
-              <th>Created</th>
-              <th>
-                <div className="pull-right">
-                  Options
-                </div>
-              </th>
+              <tr>
+                <th>Machine</th>
+                <th>Date</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Created</th>
+                <th>
+                  <div className="pull-right">
+                    Options
+                  </div>
+                </th>
+              </tr>
             </thead>
             <tbody>
               {_.map(this.state.reservations.toArray(), (reservation, i) => {

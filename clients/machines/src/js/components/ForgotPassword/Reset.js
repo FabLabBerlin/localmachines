@@ -9,8 +9,8 @@ var Reset = React.createClass({
 
   handleSubmit(event) {
     event.preventDefault();
-    var pass = this.refs.password.getDOMNode().value;
-    var repeat = this.refs.repeat.getDOMNode().value;
+    var pass = this.refs.password.value;
+    var repeat = this.refs.repeat.value;
     if (pass && repeat) {
       if (pass !== repeat) {
         toastr.error('Both passwords must match');

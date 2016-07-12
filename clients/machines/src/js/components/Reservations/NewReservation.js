@@ -117,7 +117,7 @@ var SelectMachine = React.createClass({
   },
 
   setMachine() {
-    var mid = this.refs.selection.getDOMNode().value;
+    var mid = this.refs.selection.value;
     if (mid) {
       mid = parseInt(mid);
       if (mid) {

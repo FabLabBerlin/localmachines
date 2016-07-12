@@ -72,7 +72,7 @@ var RegisterExisting = React.createClass({
   },
 
   submit() {
-    var acceptTerms = this.refs.acceptTerms.getDOMNode().checked;
+    var acceptTerms = this.refs.acceptTerms.checked;
     if (acceptTerms) {
       var locationId = this.state.location.get('Id');
       var userId = this.state.userId;
