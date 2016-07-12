@@ -220,10 +220,8 @@ var Invoice = React.createClass({
   render() {
     const invoice = this.state.invoice;
     const invoiceStatuses = this.state.invoiceStatuses;
-    console.log('invoiceActions=', this.state.invoiceActions.toJS());
+
     if (invoice) {
-
-
       return (
         <div className="inv-invoice"
              onClick={this.stopPropagation}>

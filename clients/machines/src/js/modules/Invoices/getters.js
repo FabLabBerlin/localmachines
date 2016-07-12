@@ -56,7 +56,6 @@ const getInvoiceActions = [
     if (invoice && y >= invoice.get('Year')) {
       switch (invoice.get('Status')) {
       case 'draft':
-        console.log('inv=', invoice.toJS());
         as.Cancel = false;
         as.Freeze = true;
         as.PushDraft = true;
