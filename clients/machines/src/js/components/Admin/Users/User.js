@@ -36,7 +36,7 @@ var GeneralInfo = React.createClass({
 
           <div className="col-sm-3">
             <div className="form-group">
-              <label for="user-first-name">First Name</label>
+              <label htmlFor="user-first-name">First Name</label>
               <input id="user-first-name" type="text" className="form-control" 
                      placeholder="Enter first name" defaultValue={user.FirstName}/>
             </div>
@@ -44,7 +44,7 @@ var GeneralInfo = React.createClass({
 
           <div className="col-sm-3">
             <div className="form-group">
-              <label for="user-last-name">Last Name</label>
+              <label htmlFor="user-last-name">Last Name</label>
               <input id="user-last-name" type="text" className="form-control" 
                      placeholder="Enter last name" defaultValue={user.LastName}/>
             </div>
@@ -52,7 +52,7 @@ var GeneralInfo = React.createClass({
 
           <div className="col-sm-3">
             <div className="form-group">
-              <label for="user-username">Username</label>
+              <label htmlFor="user-username">Username</label>
               <input id="user-username" type="text" className="form-control" 
                      placeholder="Enter Username" defaultValue={user.Username}/>
             </div>
@@ -60,7 +60,7 @@ var GeneralInfo = React.createClass({
 
           <div className="col-sm-3">
             <div className="form-group">
-              <label for="user-email">E-Mail</label>
+              <label htmlFor="user-email">E-Mail</label>
               <input id="user-email" type="text" className="form-control"
                      placeholder="Enter E-Mail" defaultValue={user.Email}/>
             </div>
@@ -70,7 +70,7 @@ var GeneralInfo = React.createClass({
 
         <div className="row">
           <div className="col-sm-3">
-            <label for="phone">Phone</label>
+            <label htmlFor="phone">Phone</label>
             <input 
               type="text" 
               className="form-control"
@@ -79,7 +79,7 @@ var GeneralInfo = React.createClass({
           </div>
           <div className="col-sm-3">
             <div className="form-group">
-              <label for="invoice-addr">Billing Address</label>
+              <label htmlFor="invoice-addr">Billing Address</label>
               <input id="invoice-addr"
                 className="form-control"
                 placeholder="Billing Address"
@@ -88,7 +88,7 @@ var GeneralInfo = React.createClass({
           </div>
           <div className="col-sm-3">
             <div className="form-group">
-              <label for="zip-code">ZIP Code</label>
+              <label htmlFor="zip-code">ZIP Code</label>
               <input id="zip-code"
                 className="form-control"
                 placeholder="ZIP"
@@ -97,7 +97,7 @@ var GeneralInfo = React.createClass({
           </div>
           <div className="col-sm-3">
             <div className="form-group">
-              <label for="city">City</label>
+              <label htmlFor="city">City</label>
               <input id="city"
                 className="form-control"
                 placeholder="City"
@@ -109,14 +109,15 @@ var GeneralInfo = React.createClass({
         <div className="row">
           <div className="col-sm-3">
             <div className="form-group">
-              <label for="country">Country</label>
+              <label htmlFor="country">Country</label>
               <select id="country"
                       className="form-control" 
                       value={user.CountryCode}>
                 <option value="" selected disabled>Select Country</option>
                 {_.map(countryCodes, (country) => {
                   return (
-                    <option value={country.Code}>
+                    <option key={country.Code}
+                            value={country.Code}>
                       {country.Name}
                     </option>
                   );
@@ -126,7 +127,7 @@ var GeneralInfo = React.createClass({
           </div>
           <div className="col-sm-3">
             <div className="form-group">
-              <label for="company">Company</label>
+              <label htmlFor="company">Company</label>
               <input id="company"
                 className="form-control"
                 placeholder="Company"
@@ -159,7 +160,7 @@ var BillingInfo = React.createClass({
         <div className="row">
           <div className="col-sm-3">
             <div className="form-group">
-              <label for="fastbill-customer-number">FastBill Customer Number</label>
+              <label htmlFor="fastbill-customer-number">FastBill Customer Number</label>
               <input 
                 id="fastbill-customer-number"
                 className="form-control"
@@ -168,7 +169,7 @@ var BillingInfo = React.createClass({
           </div>
           <div className="col-sm-3">
             <div className="form-group">
-              <label for="fastbill-action">FastBill Action</label>
+              <label htmlFor="fastbill-action">FastBill Action</label>
               <select id="fastbill-action"
                       className="form-control">
                 <option value="1">Create Fastbill customer (gets customer #)</option>
@@ -221,7 +222,7 @@ var Password = React.createClass({
     return (
       <div>
         <div>
-          <label for="user-password">User Password</label>
+          <label htmlFor="user-password">User Password</label>
         </div>
 
         <div className="row">
@@ -302,7 +303,7 @@ var Permissions = React.createClass({
     }
 
     const userLocation = this.state.userLocation.toJS();
-    const machines = this.state.machines.toJS();
+    const machines = _.filter(this.state.machines.toJS(), m => !m.Archived);
 
     console.log('Permissions: machines=', machines);
 
@@ -341,15 +342,11 @@ var Permissions = React.createClass({
 
               <div className="col-sm-6">
                 {_.map(machines, (machine) => {
-                  if (machine.Archived) {
-                    return undefined;
-                  }
-
                   return (
-                    <div className="checkbox-inline">
+                    <div key={machine.Id}
+                         className="checkbox-inline">
                       <label title={machine.Description}>
-                        <input 
-                          type="checkbox"/> 
+                        <input type="checkbox"/> 
                         {machine.Name}
                       </label>
                     </div>

@@ -101,8 +101,9 @@ var UserMemberships = React.createClass({
               </tr>
             </thead>
             <tbody>
-              {_.map(userMemberships, (userMembership) => {
-                return <UserMembership userMembership={userMembership}/>;
+              {_.map(userMemberships, (userMembership, i) => {
+                return <UserMembership key={i}
+                                       userMembership={userMembership}/>;
               })}
             </tbody>
           </table>

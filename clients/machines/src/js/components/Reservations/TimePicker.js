@@ -2,6 +2,7 @@ var _ = require('lodash');
 var $ = require('jquery');
 var getters = require('../../getters');
 var React = require('react');
+var ReactDOM = require('react-dom');
 var reactor = require('../../reactor');
 var ReservationActions = require('../../actions/ReservationActions');
 
@@ -107,7 +108,7 @@ var TimePicker = React.createClass({
     var firstIndex;
     var last = null;
     var lastIndex;
-    $(this.refs.times.getDOMNode()).find('input').each(function(i, el) {
+    $(ReactDOM.findDOMNode(this.refs.times)).find('input').each(function(i, el) {
 
       // Find first checked element
       if (first === null && el.checked) {
@@ -128,7 +129,7 @@ var TimePicker = React.createClass({
       times[firstIndex + this.state.times.count() - this.times().length].selected = true;
     } else {
       var doSelect = false;
-      $(this.refs.times.getDOMNode()).find('input').each(function(i, el) {
+      $(ReactDOM.findDOMNode(this.refs.times)).find('input').each(function(i, el) {
         if (parseInt(i) === parseInt(firstIndex)) {
           doSelect = true;
         }
