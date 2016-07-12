@@ -10,7 +10,9 @@ var Profile = React.createClass({
     const text = (
       <div className="prod-profile">
         <div className="row">
-          <h3 className={'prod-profile-title ' + (left ? '' : 'pull-right')}>
+          <h3 className={'prod-profile-title ' + 
+                         (left ? '' : 'pull-right ') +
+                         'prod-profile-title-' + direction}>
             {this.props.title}
           </h3>
         </div>
@@ -30,6 +32,20 @@ var Profile = React.createClass({
         <div className={left ? 'col-md-9' : 'col-md-3'}>
           {left ? text : img}
         </div>
+      </div>
+    );
+  }
+});
+
+
+// Footer Call-To-Action
+var FooterCTA = React.createClass({
+  render() {
+    return (
+      <div id={this.props.id}
+           className="prod-footer-cta">
+        <img src={this.props.image}/>
+              {this.props.text}
       </div>
     );
   }
@@ -58,7 +74,8 @@ var ProductPage = React.createClass({
           <h3 id="prod-subtitle">The operating system for your makerspace.</h3>
           <button id="prod-demo-button">Try the demo</button>
         </div>
-        <div className="row">
+
+        <section className="row">
           <div className="col-md-6">
             <h2 className="prod-section-title">Admin & User Webinterface</h2>
             <p>
@@ -78,8 +95,9 @@ var ProductPage = React.createClass({
           <div className="col-md-6">
             <img src="/machines/assets/img/product/PhoneLaptop.png"/>
           </div>
-        </div>
-        <div className="row">
+        </section>
+
+        <section className="row">
           <div className="col-md-6">
             <img src="/machines/assets/img/product/Plug.png"/>
           </div>
@@ -99,7 +117,7 @@ var ProductPage = React.createClass({
               Lorem ipsum dolor sit amet.
             </p>
           </div>
-        </div>
+        </section>
 
         <div className="row">
           <div className="col-xs-12">
@@ -157,36 +175,48 @@ var ProductPage = React.createClass({
 
         <div className="row">
           <div className="col-xs-12">
-            <h2 className="prod-section-title text-center">Ready to come on board?</h2>
-            <p>Ok, you’ll give us a shot? Contact us to become a free Beta Tester.</p>
+            <h2 className="prod-section-title text-center">
+              Ready to come on board?
+            </h2>
+            <p className="text-center">
+              Ok, you’ll give us a shot? Contact us to become a free Beta Tester.
+            </p>
           </div>
         </div>
         <div className="row">
-          <div className="col-md-3"/>
-          <div className="col-md-2">
-            Send us a mail.
+          <div className="col-md-1"/>
+          <div className="col-md-3 text-center">
+            <FooterCTA id="prod-footer-cta-send-mail"
+                       image="/machines/assets/img/product/send_mail.svg"
+                       text="Send us a mail."/>
           </div>
-          <div className="col-md-2">
-            Give us a call.
+          <div className="col-md-4 text-center">
+            <FooterCTA id="prod-footer-cta-call"
+                       image="/machines/assets/img/product/call.svg"
+                       text="Give us a call."/>
           </div>
-          <div className="col-md-2">
-            Drop by.
+          <div className="col-md-3 text-center">
+            <FooterCTA id="prod-footer-cta-drop-by"
+                       image="/machines/assets/img/product/drop_by.svg"
+                       text="Drop by."/>
           </div>
-          <div className="col-md-3"/>
+          <div className="col-md-1"/>
         </div>
         <div className="row">
-          <div className="col-md-3"/>
-          <div className="col-md-2">
+          <div className="col-md-1"/>
+          <div className="col-md-3 text-center">
             <a href="mailto:info@easylab.io">info@easylab.io</a>
           </div>
-          <div className="col-md-2">
-            <a href="+4917645839279">+49 176 45839279</a>
+          <div className="col-md-4 text-center">
+            <a href="tel:+4917645839279">+49 176 45839279</a>
           </div>
-          <div className="col-md-2">
-            <div>Fab Lab Berlin/Makea Industries GmbH</div>
-            <div>Prenzlauer Allee 242, 10405 Berlin</div>
+          <div className="col-md-3 text-center">
+            <a href="https://goo.gl/maps/k1ksF5AjDUD2">
+              <div>Fab Lab Berlin/Makea Industries GmbH</div>
+              <div>Prenzlauer Allee 242, 10405 Berlin</div>
+            </a>
           </div>
-          <div className="col-md-3"/>
+          <div className="col-md-1"/>
         </div>
       </div>
     );
