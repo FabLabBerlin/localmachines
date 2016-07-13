@@ -34,8 +34,8 @@ func (this *Reservation) Overlaps(other *Reservation) bool {
 		return false
 	}
 
-	return !(this.Purchase.TimeStart.After(other.Purchase.TimeEnd) ||
-		other.Purchase.TimeStart.After(this.Purchase.TimeEnd))
+	return !(this.Purchase.TimeStart.Unix() >= other.Purchase.TimeEnd.Unix() ||
+		other.Purchase.TimeStart.Unix() >= this.Purchase.TimeEnd.Unix())
 }
 
 func (this *Reservation) UserId() int64 {
