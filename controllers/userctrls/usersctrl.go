@@ -582,6 +582,18 @@ func (this *UsersController) GetUserBill() {
 		this.Abort("500")
 	}
 
+	for _, inv := range invs {
+		for _, p := range inv.Purchases.Data {
+			if m := p.Machine; m != nil {
+				m.NetswitchUrlOn = ""
+				m.NetswitchUrlOff = ""
+				m.NetswitchHost = ""
+				m.NetswitchSensorPort = 0
+				m.NetswitchType = ""
+			}
+		}
+	}
+
 	this.Data["json"] = invs
 	this.ServeJSON()
 }
