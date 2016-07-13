@@ -3,7 +3,9 @@ package purchases
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/lib/redis"
 	"github.com/FabLabBerlin/localmachines/models/products"
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"time"
 )
@@ -109,6 +111,10 @@ func StartTutoring(id int64) (err error) {
 		return fmt.Errorf("Failed to update: %v", err)
 	}
 
+	if err := redis.PublishMachinesUpdate(tp.LocationId); err != nil {
+		beego.Error("tutoring start: publish machines update:", err)
+	}
+
 	return
 }
 
@@ -157,7 +163,13 @@ func StopTutoring(id int64) (err error) {
 	tp.Purchase.Running = false
 
 	o := orm.NewOrm()
-	_, err = o.Update(&tp.Purchase)
+	if _, err = o.Update(&tp.Purchase); err != nil {
+		return fmt.Errorf("update: %v", err)
+	}
+
+	if err := redis.PublishMachinesUpdate(tp.LocationId); err != nil {
+		beego.Error("tutoring stop: publish machines update:", err)
+	}
 
 	return
 }

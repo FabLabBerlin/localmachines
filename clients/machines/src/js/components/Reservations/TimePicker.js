@@ -12,7 +12,7 @@ var Time = React.createClass({
 
   getDataBindings() {
     return {
-      newReservationPrice: getters.getNewReservationPrice,
+      newReservationPrice: getters.getNewReservationPrice
     };
   },
 
