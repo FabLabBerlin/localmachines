@@ -29,6 +29,15 @@ func (this *Reservation) LocationId() int64 {
 	return this.Purchase.LocationId
 }
 
+func (this *Reservation) Overlaps(other *Reservation) bool {
+	if this.Purchase.MachineId != other.Purchase.MachineId {
+		return false
+	}
+
+	return !(this.Purchase.TimeStart.After(other.Purchase.TimeEnd) ||
+		other.Purchase.TimeStart.After(this.Purchase.TimeEnd))
+}
+
 func (this *Reservation) UserId() int64 {
 	return this.Purchase.UserId
 }
@@ -64,23 +73,58 @@ func GetAllReservationsAt(locationId int64) (reservations []*Reservation, err er
 	return
 }
 
-func CreateReservation(reservation *Reservation) (int64, error) {
+func CreateReservation(r *Reservation) (int64, error) {
+	if err := r.assertOk(); err != nil {
+		return 0, err
+	}
 
 	// Get the reservation_price_hourly of the machine being reserved
-	machine, err := machine.Get(reservation.Purchase.MachineId)
+	m, err := machine.Get(r.Purchase.MachineId)
 	if err != nil {
 		return 0, fmt.Errorf("get machine: %v", err)
 	}
 
-	reservation.Purchase.Type = TYPE_RESERVATION
-	reservation.Purchase.PricePerUnit = *machine.ReservationPriceHourly / 2
-	reservation.Purchase.PriceUnit = "30 minutes"
-	reservation.Purchase.Quantity = reservation.Purchase.quantityFromTimes()
+	r.Purchase.Type = TYPE_RESERVATION
+	r.Purchase.PricePerUnit = *m.ReservationPriceHourly / 2
+	r.Purchase.PriceUnit = "30 minutes"
+	r.Purchase.Quantity = r.Purchase.quantityFromTimes()
 
-	return Create(&reservation.Purchase)
+	return Create(&r.Purchase)
 }
 
-func (reservation *Reservation) Update() (err error) {
-	reservation.Purchase.Quantity = reservation.Purchase.quantityFromTimes()
-	return Update(&reservation.Purchase)
+func (r *Reservation) Update() (err error) {
+	if err := r.assertOk(); err != nil {
+		return err
+	}
+
+	r.Purchase.Quantity = r.Purchase.quantityFromTimes()
+	return Update(&r.Purchase)
+}
+
+func (r *Reservation) assertOk() (err error) {
+	if r.Purchase.LocationId <= 0 {
+		return fmt.Errorf("invalid location id: %v", r.LocationId())
+	}
+
+	if mid := r.Purchase.MachineId; mid <= 0 {
+		return fmt.Errorf("invalid machine id: %v", mid)
+	}
+
+	rs, err := GetAllReservationsAt(r.LocationId())
+	if err != nil {
+		return fmt.Errorf("get all reservations at %v: %v", r.LocationId(), err)
+	}
+
+	for _, other := range rs {
+		if other.Purchase.Id == r.Purchase.Id {
+			continue
+		}
+
+		if r.Overlaps(other) {
+			return fmt.Errorf("overlapping with %v (%v - %v)", other.Id(),
+				other.Purchase.TimeStart, other.Purchase.TimeEnd)
+		}
+	}
+
+	return nil
 }
