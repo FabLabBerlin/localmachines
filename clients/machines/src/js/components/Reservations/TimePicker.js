@@ -7,13 +7,57 @@ var reactor = require('../../reactor');
 var ReservationActions = require('../../actions/ReservationActions');
 
 
+var Time = React.createClass({
+  mixins: [ reactor.ReactMixin ],
+
+  getDataBindings() {
+    return {
+      newReservationPrice: getters.getNewReservationPrice,
+    };
+  },
+
+  render() {
+    const className = this.props.className;
+    const onChange = this.props.onChange;
+    const pricing = this.props.pricing;
+    const showPrice = this.props.showPrice;
+    const t = this.props.t;
+
+    return (
+      <div className={className}>
+        <label>
+          <input
+            checked={t.selected}
+            type="checkbox"
+            onChange={onChange}
+          />
+          <div className="row">
+            <div className="col-md-3">
+            </div>
+            <div className="col-md-6">
+              {t.start.format('HH:mm')} - {t.end.format('HH:mm')}
+            </div>
+            <div className="col-md-3">
+              {showPrice ? (
+                <div className="total-price">
+                  Total price: €{(this.state.newReservationPrice).toFixed(2)}
+                </div>
+              ) : null}
+            </div>
+          </div>
+        </label>
+      </div>
+    );
+  }
+});
+
+
 var TimePicker = React.createClass({
   mixins: [ reactor.ReactMixin ],
 
   getDataBindings() {
     return {
       newReservation: getters.getNewReservation,
-      newReservationPrice: getters.getNewReservationPrice,
       times: getters.getNewReservationTimes
     };
   },
@@ -43,49 +87,25 @@ var TimePicker = React.createClass({
         <h3>Select time range</h3>
         <div className="no-select" ref="times">
           {_.map(this.times(), (t, i) => {
+            const offset = this.state.times.count() - this.times().length;
+
             var className = 'time';
             var onChange;
-            var pricing;
 
             if (!_.includes(t.availableMachineIds, machineId)) {
               className += ' unavailable';
             } else {
-              onChange = this.setTimes.bind(this, 
-                i + this.state.times.count() - this.times().length);
+              onChange = this.setTimes.bind(this, i + offset);
               if (t.selected) {
                 className += ' selected';
               }
             }
 
-            if ((i + this.state.times.count() - this.times().length) === lastIndex) {
-              pricing = (
-                <div className="total-price">
-                  Total price: €{(this.state.newReservationPrice).toFixed(2)}
-                </div>
-              );
-            }
-
-            return (
-              <div key={i} className={className}>
-                <label>
-                  <input
-                    checked={t.selected}
-                    type="checkbox"
-                    onChange={onChange}
-                  />
-                  <div className="row">
-                    <div className="col-md-3">
-                    </div>
-                    <div className="col-md-6">
-                      {t.start.format('HH:mm')} - {t.end.format('HH:mm')}
-                    </div>
-                    <div className="col-md-3">
-                      {pricing}
-                    </div>
-                  </div>
-                </label>
-              </div>
-            );
+            return <Time key={i}
+                         className={className}
+                         onChange={onChange}
+                         showPrice={(i + offset) === lastIndex}
+                         t={t}/>;
           })}
         </div>
         <hr/>
