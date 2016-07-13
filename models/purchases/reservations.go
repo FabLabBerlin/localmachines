@@ -4,9 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/models/machine"
-	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	"time"
 )
 
 type Reservation struct {
@@ -85,39 +83,4 @@ func CreateReservation(reservation *Reservation) (int64, error) {
 func (reservation *Reservation) Update() (err error) {
 	reservation.Purchase.Quantity = reservation.Purchase.quantityFromTimes()
 	return Update(&reservation.Purchase)
-}
-
-func DeleteReservation(id int64, isAdmin bool) (err error) {
-
-	// Do not allow to delete reservations
-	// if they are in the past
-	// or they are happening today
-
-	var reservation *Reservation
-	reservation, err = GetReservation(id)
-	if err != nil {
-		beego.Error("Failed to get reservation")
-		return fmt.Errorf("Failed to get reservation: %v", err)
-	}
-
-	timeNow := time.Now()
-
-	// Check if past reservation
-	if reservation.Purchase.TimeEnd.Before(timeNow) {
-		beego.Error("Can not delete reservation from the past")
-		return fmt.Errorf("Can not delete reservation from the past")
-	}
-
-	// Check if happening today
-	if timeNow.Day() == reservation.Purchase.TimeStart.Day() &&
-		timeNow.Month() == reservation.Purchase.TimeStart.Month() &&
-		timeNow.Year() == reservation.Purchase.TimeStart.Year() &&
-		!isAdmin {
-
-		beego.Error("Can not delete a reservation happening today")
-		return fmt.Errorf("Can not delete a reservation happening today")
-	}
-
-	// If we have not returned yet, then let's delete
-	return Delete(id)
 }
