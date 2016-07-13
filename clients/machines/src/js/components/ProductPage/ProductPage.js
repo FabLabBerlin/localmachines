@@ -1,3 +1,4 @@
+var $ = require('jquery');
 var React = require('react');
 
 
@@ -52,7 +53,47 @@ var FooterCTA = React.createClass({
 });
 
 
+var Footer = React.createClass({
+  render() {
+    return (
+      <div id="prod-footer" className="row">
+        <div className="col-md-6">
+          Easy Lab is a product of Makea Industries GmbH. © 2016
+        </div>
+        <div className="col-md-6 text-right">
+          <a href="https://fablab.berlin/de/content/2-Impressum">
+            Imprint
+          </a>
+        </div>
+      </div>
+    );
+  }
+});
+
+
 var ProductPage = React.createClass({
+  click(id) {
+    $('html, body').animate({
+      scrollTop: $(id).offset().top
+    }, 500);
+  },
+
+  clickAbout() {
+    this.click('#prod-about');
+  },
+
+  clickContact() {
+    this.click('#prod-contact');
+  },
+
+  clickLogin() {
+    window.location.href = 'https://easylab.io';
+  },
+
+  clickTeam() {
+    this.click('#prod-team');
+  },
+
   render() {
     return (
       <div id="prod" className="container-fluid">
@@ -62,11 +103,19 @@ var ProductPage = React.createClass({
                  src="/machines/assets/img/product/Makea_Logo.png"/>
           </div>
           <div className="col-md-10 hidden-xs hidden-sm text-right">
-            <button className="prod-nav-button" type="button">About</button>
-            <button className="prod-nav-button" type="button">Team</button>
-            <button className="prod-nav-button" type="button">Contact</button>
+            <button className="prod-nav-button"
+                    onClick={this.clickAbout}
+                    type="button">About</button>
+            <button className="prod-nav-button"
+                    onClick={this.clickTeam}
+                    type="button">Team</button>
+            <button className="prod-nav-button"
+                    onClick={this.clickContact}
+                    type="button">Contact</button>
             <button id="prod-nav-login"
-                    className="prod-nav-button" type="button">Login</button>
+                    className="prod-nav-button"
+                    onClick={this.clickLogin}
+                    type="button">Login</button>
           </div>
         </div>
         <div id="prod-head">
@@ -75,7 +124,7 @@ var ProductPage = React.createClass({
           <button id="prod-demo-button">Try the demo</button>
         </div>
 
-        <section className="row">
+        <section id="prod-about" className="row">
           <div className="col-md-6">
             <h2 className="prod-section-title">Admin & User Webinterface</h2>
             <p>
@@ -119,7 +168,7 @@ var ProductPage = React.createClass({
           </div>
         </section>
 
-        <div className="row">
+        <div id="prod-team" className="row">
           <div className="col-xs-12">
             <h2 className="prod-section-title text-center">
               <div>We are running our own Fab Lab</div>
@@ -173,7 +222,7 @@ var ProductPage = React.createClass({
         </Profile>
 
 
-        <div className="row">
+        <div id="prod-ready-to-board" className="row">
           <div className="col-xs-12">
             <h2 className="prod-section-title text-center">
               Ready to come on board?
@@ -183,7 +232,7 @@ var ProductPage = React.createClass({
             </p>
           </div>
         </div>
-        <div className="row">
+        <div id="prod-contact" className="row">
           <div className="col-md-1"/>
           <div className="col-md-3 text-center">
             <FooterCTA id="prod-footer-cta-send-mail"
@@ -218,6 +267,7 @@ var ProductPage = React.createClass({
           </div>
           <div className="col-md-1"/>
         </div>
+        <Footer/>
       </div>
     );
   }

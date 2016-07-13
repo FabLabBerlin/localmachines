@@ -85,20 +85,22 @@ vex.defaultOptions.className = 'vex-theme-custom';
             <LoaderLocal />
           }
         </div>
-        <footer className={footerAbsoluteBottom ? 'absolute-bottom' : ''}>
-          <div className="container-fluid">
-            <div className="col-md-4 text-center">
-              <i className="fa fa-copyright"></i> Makea Industries GmbH 2016
+        {window.location.hash !== '#/product' ? (
+          <footer className={footerAbsoluteBottom ? 'absolute-bottom' : ''}>
+            <div className="container-fluid">
+              <div className="col-md-4 text-center">
+                <i className="fa fa-copyright"></i> Makea Industries GmbH 2016
+              </div>
+              <div className="col-md-4 text-center">
+                In case you are interested in using EASY LAB in your own
+                Lab, <a href="javascript:void(0);" onClick={this.signupNewsletter}>signup to our newsletter</a>.
+              </div>
+              <div className="col-md-4 text-center">
+                <a href="https://fablab.berlin/en/content/2-Imprint">Imprint</a>
+              </div>
             </div>
-            <div className="col-md-4 text-center">
-              In case you are interested in using EASY LAB in your own
-              Lab, <a href="javascript:void(0);" onClick={this.signupNewsletter}>signup to our newsletter</a>.
-            </div>
-            <div className="col-md-4 text-center">
-              <a href="https://fablab.berlin/en/content/2-Imprint">Imprint</a>
-            </div>
-          </div>
-        </footer>
+          </footer>
+        ) : null}
         {
           this.state.isLoading ?
           (
