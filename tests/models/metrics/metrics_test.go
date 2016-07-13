@@ -8,11 +8,14 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/machine"
+	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/metrics"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
+	"github.com/FabLabBerlin/localmachines/models/user_memberships"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
+	"github.com/astaxie/beego/orm"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -28,16 +31,17 @@ func TestMetrics(t *testing.T) {
 		Convey("Testing results", func() {
 			s := Simulation{
 				LocationId:        1,
-				nUsers:            100,
+				nNormalUsers:      100,
+				nFlatrateUsers:    11,
 				nPurchasesPerUser: 10,
-				pricePerPurchase:  1,
+				pricePerPurchase:  2,
 			}
 			simulate(s)
 
 			// Locations mustn't interfer
 			simulate(Simulation{
 				LocationId:        2,
-				nUsers:            123,
+				nNormalUsers:      123,
 				nPurchasesPerUser: 10,
 				pricePerPurchase:  1,
 			})
@@ -58,16 +62,18 @@ func TestMetrics(t *testing.T) {
 				panic(err.Error())
 			}
 
-			activationsJune, ok := resp.ActivationsByMonth["2016-06"]
-			So(ok, ShouldBeTrue)
-			So(activationsJune, ShouldEqual, float64(s.nUsers*s.nPurchasesPerUser)*s.pricePerPurchase)
+			So(resp.MembershipsByMonth["2016-06"], ShouldEqual, s.nFlatrateUsers*17)
+			So(resp.MembershipCountsByMonth["2016-06"], ShouldEqual, s.nFlatrateUsers)
+			So(resp.ActivationsByMonth["2016-06"], ShouldEqual, float64(s.nNormalUsers*s.nPurchasesPerUser)*s.pricePerPurchase)
+			So(resp.MinutesByMonth["2016-06"], ShouldEqual, float64((s.nNormalUsers+s.nFlatrateUsers)*s.nPurchasesPerUser)*60)
 		})
 	})
 }
 
 type Simulation struct {
 	LocationId        int64
-	nUsers            int
+	nNormalUsers      int
+	nFlatrateUsers    int
 	nPurchasesPerUser int
 	pricePerPurchase  float64
 }
@@ -78,13 +84,25 @@ func simulate(s Simulation) {
 		panic(err.Error())
 	}
 
+	mb, err := memberships.Create(s.LocationId, "bar")
+	if err != nil {
+		panic(err.Error())
+	}
+	mb.AffectedMachines = fmt.Sprintf("[%v]", m.Id)
+	mb.MachinePriceDeduction = 100
+	mb.DurationMonths = 1
+	mb.MonthlyPrice = 17
+	if err := mb.Update(); err != nil {
+		panic(err.Error())
+	}
+
 	reservationPrice := 2.5
 	m.ReservationPriceHourly = &reservationPrice
 	if err := m.Update(false); err != nil {
 		panic(err.Error())
 	}
 
-	nUsers := s.nUsers
+	nUsers := s.nNormalUsers + s.nFlatrateUsers
 	nPurchasesPerUser := s.nPurchasesPerUser
 
 	for i := 0; i < nUsers; i++ {
@@ -116,11 +134,19 @@ func simulate(s Simulation) {
 			panic(err.Error())
 		}
 
+		if i < s.nFlatrateUsers {
+			_, err := user_memberships.Create(orm.NewOrm(), uid, mb.Id, iv.Id, time.Date(2016, 6, 1, 1, 1, 1, 1, time.UTC))
+			if err != nil {
+				panic(err.Error())
+			}
+		}
+
 		for j := 0; j < nPurchasesPerUser; j++ {
 			_, err := purchases.Create(&purchases.Purchase{
 				LocationId:   s.LocationId,
 				Type:         purchases.TYPE_ACTIVATION,
 				InvoiceId:    iv.Id,
+				MachineId:    m.Id,
 				UserId:       uid,
 				TimeStart:    time.Date(2016, 6, 1+j%20, 12, 13, 14, 0, time.UTC),
 				TimeEnd:      time.Date(2016, 6, 1+j%20, 13, 13, 14, 0, time.UTC),
