@@ -590,6 +590,7 @@ func (this *UsersController) GetUserBill() {
 				m.NetswitchHost = ""
 				m.NetswitchSensorPort = 0
 				m.NetswitchType = ""
+				m.Comments = ""
 			}
 		}
 	}
