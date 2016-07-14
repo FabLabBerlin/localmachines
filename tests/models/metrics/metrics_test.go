@@ -50,14 +50,8 @@ func TestMetrics(t *testing.T) {
 			if err != nil {
 				panic(err.Error())
 			}
-			if err != nil {
-				panic(err.Error())
-			}
 
 			resp, err := metrics.NewResponse(data)
-			if err != nil {
-				panic(err.Error())
-			}
 			if err != nil {
 				panic(err.Error())
 			}
