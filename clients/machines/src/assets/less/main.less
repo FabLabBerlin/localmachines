@@ -20,6 +20,7 @@ query at the bottom: @media (min-width: 768px) { ...
 @import "~bootstrap-less/bootstrap/bootstrap.less";
 @import "common.less";
 @import "prefixer.less";
+@import "responsive-text-align.less";
 @import "vex-theme.less";
 
 /* 
@@ -1576,7 +1577,7 @@ d8888b. d8888b.  .d88b.  d8888b. db    db  .o88b. d888888b
   margin-left: -15px;
   padding: 18px 0;
   text-align: center;
-  width: calc(100% + 30px);
+  width: ~"calc(100% + 30px)";
 }
 
 .prod-section-separator-link {

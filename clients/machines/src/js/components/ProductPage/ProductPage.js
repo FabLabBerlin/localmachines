@@ -96,10 +96,10 @@ var Footer = React.createClass({
   render() {
     return (
       <div id="prod-footer" className="row">
-        <div className="col-md-6">
+        <div className="col-md-6 text-md-left text-xs-center">
           Easy Lab is a product of Makea Industries GmbH. © 2016
         </div>
-        <div className="col-md-6 text-right">
+        <div className="col-md-6 text-md-right text-xs-center">
           <a href="https://fablab.berlin/de/content/2-Impressum">
             Imprint
           </a>
@@ -262,7 +262,7 @@ var ProductPage = React.createClass({
 
         <div className="prod-section-separator">
           If you want to explore all of the features of EASY LAB, why not
-          become <span className="prod-section-separator-link">a free Beta-tester</span>?
+          become <span className="prod-section-separator-link" onClick={this.clickContact}>a free Beta-tester</span>?
         </div>
 
         <div id="prod-team" className="row">
