@@ -178,21 +178,20 @@ var ProductPage = React.createClass({
               <p>
                 We think face-to-face communication still provides the most
                 bandwidth and is the fastest way to solve things. Even more
-                when you want to cater for a lively community. However,
-                EASY LAB provides useful, but therefore not overly
-                exaggerating, communicational features, too. Users can easily
+                when you want to build a lively community. However, EASY LAB
+                provides useful communicational features, too. Users can easily
                 report a machine failure and provide general feedback about
-                billing, technical issues and so on. 
+                billing and other technical issues. 
               </p>
               <p>
-                In the admin version you can of course add and delete machines,
-                change their specs and pricing, but also set them into
-                maintenance mode if they need a little rest. 
+                In the admin version you can add and delete machines, change
+                their specs and pricing, but also set them into maintenance
+                mode if they need a little rest. 
                 You can keep track of your user’s permissions to run the
                 machines, which will let you sleep assured that only trained
                 users are operating your valuable infrastructure. 
-                Of course, you can set all the rules for reservations,
-                membership models here, too. 
+                Of course, you can set rules for reservations, membership
+                models here, too. 
               </p>
               <p>
                 Our latest trick is to provide you with a neat automatic
@@ -211,24 +210,25 @@ var ProductPage = React.createClass({
               <h2 className="prod-section-subtitle">A reliable hardware setup.</h2>
               <p>
                 EASY LAB relies on wifi enabled powerswitches which turn your
-                machines on and off. At the heart of it all is the gateway
-                which comes as an easy to setup Image for a Raspberry Pi 3.
-                Connecting a new machine to your setup is a one time process of
-                round about 10 minutes. Placing the interaction outside of the
-                machine itself means more flexibility and mobility for your
-                space, making it easy to rearrange your infrastructure as you
-                are growing or moving in a new location. It even supports
-                mobile setups. Built on a Raspberry Pi, allows us to further
-                develop more advanced machine interactions in the near future.
-                Think: maintenance counters, job specific machine interactions,
-                remote monitoring etc. 
+                machines on and off. 
+                At the heart of it all is the gateway which comes as an easy to
+                setup Image for a Raspberry Pi 3. Connecting a new machine to
+                your setup is a one time process of about 10 minutes. Placing
+                the interaction outside of the machine itself means more
+                flexibility and mobility for your space, making it easy to
+                rearrange your infrastructure as you are growing or moving in a
+                new location. It even supports mobile setups. Built on a
+                Raspberry Pi, allows us to further develop more advanced
+                machine interactions in the near future. Think: maintenance
+                counters, job specific machine interactions, remote monitoring
+                etc. 
               </p>
             </div>
           </div>
         </section>
 
         <div className="prod-section-separator">
-          If you want to explore all of the features of EASY LAB, why not
+          If you want to explore all of EASY LAB’s features, why not
           become <span className="prod-section-separator-link" onClick={this.clickContact}>a free Beta-tester</span>?
         </div>
 
@@ -243,7 +243,7 @@ var ProductPage = React.createClass({
                 Try the free beta.
               </h2>
               <p className="text-center">
-                Get in contact if you want to  use EASY LAB in your Makerspace. 
+                Get in contact if you want to use EASY LAB in your Makerspace. 
               </p>
               <p className="text-center">
                 Did i mention the price point? - Zero.

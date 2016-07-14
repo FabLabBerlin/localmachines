@@ -80,46 +80,55 @@ var Profiles = React.createClass({
 
         <Profile image="/machines/assets/img/product/Wolf.jpg"
                  left={true}
-                 title="The captain">
-          Wolf Jeschonnek, founder and CEO of Fab Lab Berlin/Makea
-          Industries Gmbh, is guiding this ship through […] He’s
-          a real sailer, btw. No kidding.
+                 title="Wolf Jeschonnek">
+          Wolf is the founder and CEO of Fab Lab Berlin/Makea Industries GmbH.
+          After his diploma in Product-Design at the academy of art Berlin
+          Weißensee he went out to explore the world of makers and establish
+          the first Fab Lab in Berlin. He takes care of the project management
+          and product development. 
         </Profile>
 
         <Profile image="/machines/assets/img/product/phil.jpg"
                  left={false}
-                 title="The cook">
-          A crew is only as good as their meals. Thanks to Philip
-          Silva, who’s mixing up the finest compositions of code
-          in the seven seas, we’re good to go that extra mile.
-          Philip is the main developer in our team and makes sure
-          that even the craziest feature requests become reality.
+                 title="Philip Silva">
+          Philip is the software developer in our team. He makes sure that even
+          the craziest feature requests become reality. He is constantly aiming
+          for a more reliable, convenient and secure system. 
         </Profile>
 
         <Profile image="/machines/assets/img/product/charlie.jpg"
                  left={true}
-                 title="OC Design">
-          Charlie-Camille Thomas is our officer commanding everything
-          about the look and feel of Easy Lab. You think, well that’s
-          easy because Easy Lab is fully whitelabel. Sorry Bro, but
-          true simplicity is really hard work.
+                 title="Charlie-Camille Thomas">
+          Charlie studied applied art in Paris, and Graphic-Design in Geneva.
+          She is now taking care of all the nasty, little details that make up
+          a neat and well working interface. Even though EASY LAB is
+          whitelabeled, true simplicity is hard work.
         </Profile>
 
         <Profile image="/machines/assets/img/product/sylwes.jpg"
                  left={false}
-                 title="Hardware Guru">
-          Sylwester Sosnowski operates our engines. He makes sure that
-          the Easy Lab hardware is running as precise and inconspicuously
-          like a german u-boot.
+                 title="Sylwester Sosnowski">
+          Sylwester is Philip's closests counterpart when it comes to technical
+          development. He takes care of the hardware development and is
+          constantly trying out new ways of interacting with the machines.
         </Profile>
 
         <Profile image="/machines/assets/img/product/max.jpg"
                  left={true}
-                 title="The helmsman">
-          No cruise without a profound helmsman, who knows how to steer
-          a ship. Maximilian Mahal is rethinking every single grip in the
-          workflow of a hard working Lab Manager. He’s always up to chat
-          with you…if you can stand him spinning a yarn…
+                 title="Maximilian Mahal">
+          Max is focusing on the work of a Lab Manager and his customers and
+          tries to match them in the user experience of EASY LAB. A truly
+          iterative process. 
+          Your critique is always welcome and valuable input. 
+        </Profile>
+
+        <Profile image="/machines/assets/img/product/murat.jpg"
+                 left={false}
+                 title="Murat Vurucu">
+          Murat is a co-founder of Fab Lab Berlin/Makea Industries GmbH and a
+          true visionary. He helps other makerspaces to make the most out of
+          the features we build for our own lab. He dreams of a worldwide
+          EASY LAB network to provide easy access for everyone. 
         </Profile>
       </div>
     );
