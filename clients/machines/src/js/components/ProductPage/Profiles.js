@@ -11,14 +11,16 @@ var Profile = React.createClass({
       <div className="prod-profile">
         <div className="row">
           <h3 className={'prod-profile-title ' + 
-                         (left ? '' : 'pull-right ') +
-                         'prod-profile-text-' +
-                         'prod-profile-title-' + direction +
-                         'text-xs-center'}>
+                         ' prod-profile-title-' + direction +
+                         ' text-xs-center ' +
+                         (left ? 'text-md-left' : 'text-md-right')}>
             {this.props.title}
           </h3>
         </div>
-        <div className={'row prod-profile-text-' + direction}>
+        <div className={'row prod-profile-text ' +
+                        ' prod-profile-text-' + direction +
+                        ' text-xs-center' +
+                        ' text-md-left'}>
           <p>
             {this.props.children}
           </p>
@@ -26,18 +28,33 @@ var Profile = React.createClass({
       </div>
     );
 
-    return (
-      <div className="row">
-        <div className={(left ? 'col-md-3' : 'col-md-9') +
-                        ' text-xs-center text-md-left'}>
-          {left ? img : text}
+    if (left) {
+      return (
+        <div className="row">
+          <div className={'col-md-3 ' +
+                          'text-xs-center text-md-left'}>
+            {img}
+          </div>
+          <div className={'col-md-9 ' +
+                          'text-xs-center text-md-left'}>
+            {text}
+          </div>
         </div>
-        <div className={(left ? 'col-md-9' : 'col-md-3') +
-                        ' text-xs-center text-md-left'}>
-          {left ? text : img}
+      );
+    } else {
+      return (
+        <div className="row">
+          <div className={'col-md-3 col-md-push-9 ' +
+                          'text-xs-center text-md-left'}>
+            {img}
+          </div>
+          <div className={'col-md-9 col-md-pull-3 ' +
+                          'text-xs-center text-md-left'}>
+            {text}
+          </div>
         </div>
-      </div>
-    );
+      );
+    }
   }
 });
 
