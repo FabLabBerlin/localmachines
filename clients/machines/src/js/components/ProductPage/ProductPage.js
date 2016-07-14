@@ -262,7 +262,7 @@ var ProductPage = React.createClass({
         <div className="row">
           <div className="col-md-1"/>
           <div className="col-md-3 text-center">
-            <a href="mailto:info@easylab.io">info@easylab.io</a>
+            <a href="mailto:easylab@makea.org">easylab@makea.org</a>
           </div>
           <div className="col-md-4 text-center">
             <a href="tel:+4917645839279">+49 176 45839279</a>
