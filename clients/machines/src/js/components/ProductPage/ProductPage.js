@@ -16,7 +16,6 @@ var Subscribe = React.createClass({
           <input id="prod-subscribe-email"
                  autoCorrect="off"
                  autoCapitalize="off"
-                 autoFocus
                  ref="email"
                  type="text"/>
         </span>
@@ -235,43 +234,51 @@ var ProductPage = React.createClass({
 
         <Profiles/>
 
-        <div id="prod-ready-to-board" className="row">
-          <div className="col-xs-12">
-            <h2 className="prod-section-title text-center">
-              Ready to come on board?
-            </h2>
-            <p className="text-center">
-              Ok, you’ll give us a shot? Contact us to become a free Beta Tester.
-            </p>
+        <div id="prod-contact">
+          <div id="prod-ready-to-board" className="row">
+            <div className="col-xs-12">
+              <h2 className="prod-section-title text-center">
+                EASY LAB is work in progress.
+                <br/>
+                Try the free beta.
+              </h2>
+              <p className="text-center">
+                Get in contact if you want to  use EASY LAB in your Makerspace. 
+              </p>
+              <p className="text-center">
+                Did i mention the price point? - Zero.
+              </p>
+            </div>
           </div>
-        </div>
-        <div id="prod-contact" className="row">
-          <div className="col-md-1"/>
-          <div className="col-md-3 text-center">
-            <FooterCTA id="prod-footer-cta-send-mail"
-                       image="/machines/assets/img/product/send_mail.svg"
-                       text="Send us a mail.">
-              <a href="mailto:easylab@makea.org">easylab@makea.org</a>
-            </FooterCTA>
+
+          <div className="row">
+            <div className="col-md-1"/>
+            <div className="col-md-3 text-center">
+              <FooterCTA id="prod-footer-cta-send-mail"
+                         image="/machines/assets/img/product/send_mail.svg"
+                         text="Send us a mail.">
+                <a href="mailto:easylab@makea.org">easylab@makea.org</a>
+              </FooterCTA>
+            </div>
+            <div className="col-md-4 text-center">
+              <FooterCTA id="prod-footer-cta-call"
+                         image="/machines/assets/img/product/call.svg"
+                         text="Give us a call.">
+                <a href="tel:+4917645839279">+49 176 45839279</a>
+              </FooterCTA>
+            </div>
+            <div className="col-md-3 text-center">
+              <FooterCTA id="prod-footer-cta-drop-by"
+                         image="/machines/assets/img/product/drop_by.svg"
+                         text="Drop by.">
+                <a href="https://goo.gl/maps/k1ksF5AjDUD2">
+                  <div>Fab Lab Berlin/Makea Industries GmbH</div>
+                  <div>Prenzlauer Allee 242, 10405 Berlin</div>
+                </a>
+              </FooterCTA>
+            </div>
+            <div className="col-md-1"/>
           </div>
-          <div className="col-md-4 text-center">
-            <FooterCTA id="prod-footer-cta-call"
-                       image="/machines/assets/img/product/call.svg"
-                       text="Give us a call.">
-              <a href="tel:+4917645839279">+49 176 45839279</a>
-            </FooterCTA>
-          </div>
-          <div className="col-md-3 text-center">
-            <FooterCTA id="prod-footer-cta-drop-by"
-                       image="/machines/assets/img/product/drop_by.svg"
-                       text="Drop by.">
-              <a href="https://goo.gl/maps/k1ksF5AjDUD2">
-                <div>Fab Lab Berlin/Makea Industries GmbH</div>
-                <div>Prenzlauer Allee 242, 10405 Berlin</div>
-              </a>
-            </FooterCTA>
-          </div>
-          <div className="col-md-1"/>
         </div>
         <Footer/>
       </div>
