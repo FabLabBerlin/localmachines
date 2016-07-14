@@ -36,10 +36,11 @@ var Profile = React.createClass({
             {img}
           </div>
           <div className="col-md-9">
-            <div className={'' +
+            <div className={'col-md-9 ' +
                             'text-xs-center text-md-left'}>
               {text}
             </div>
+            <div className="col-md-3"/>
           </div>
         </div>
       );
@@ -51,7 +52,8 @@ var Profile = React.createClass({
             {img}
           </div>
           <div className="col-md-9 col-md-pull-3">
-            <div className={'' +
+            <div className="col-md-3"/>
+            <div className={'col-md-9 ' +
                             'text-xs-center text-md-left'}>
               {text}
             </div>
