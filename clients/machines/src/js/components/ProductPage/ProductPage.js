@@ -45,10 +45,15 @@ var Subscribe = React.createClass({
 var FooterCTA = React.createClass({
   render() {
     return (
-      <div id={this.props.id}
-           className="prod-footer-cta">
-        <img src={this.props.image}/>
-              {this.props.text}
+      <div className="prod-footer-cta-container">
+        <div id={this.props.id}
+             className="prod-footer-cta">
+          <img src={this.props.image}/>
+                {this.props.text}
+        </div>
+        <div>
+          {this.props.children}
+        </div>
       </div>
     );
   }
@@ -245,33 +250,26 @@ var ProductPage = React.createClass({
           <div className="col-md-3 text-center">
             <FooterCTA id="prod-footer-cta-send-mail"
                        image="/machines/assets/img/product/send_mail.svg"
-                       text="Send us a mail."/>
+                       text="Send us a mail.">
+              <a href="mailto:easylab@makea.org">easylab@makea.org</a>
+            </FooterCTA>
           </div>
           <div className="col-md-4 text-center">
             <FooterCTA id="prod-footer-cta-call"
                        image="/machines/assets/img/product/call.svg"
-                       text="Give us a call."/>
+                       text="Give us a call.">
+              <a href="tel:+4917645839279">+49 176 45839279</a>
+            </FooterCTA>
           </div>
           <div className="col-md-3 text-center">
             <FooterCTA id="prod-footer-cta-drop-by"
                        image="/machines/assets/img/product/drop_by.svg"
-                       text="Drop by."/>
-          </div>
-          <div className="col-md-1"/>
-        </div>
-        <div className="row">
-          <div className="col-md-1"/>
-          <div className="col-md-3 text-center">
-            <a href="mailto:easylab@makea.org">easylab@makea.org</a>
-          </div>
-          <div className="col-md-4 text-center">
-            <a href="tel:+4917645839279">+49 176 45839279</a>
-          </div>
-          <div className="col-md-3 text-center">
-            <a href="https://goo.gl/maps/k1ksF5AjDUD2">
-              <div>Fab Lab Berlin/Makea Industries GmbH</div>
-              <div>Prenzlauer Allee 242, 10405 Berlin</div>
-            </a>
+                       text="Drop by.">
+              <a href="https://goo.gl/maps/k1ksF5AjDUD2">
+                <div>Fab Lab Berlin/Makea Industries GmbH</div>
+                <div>Prenzlauer Allee 242, 10405 Berlin</div>
+              </a>
+            </FooterCTA>
           </div>
           <div className="col-md-1"/>
         </div>
