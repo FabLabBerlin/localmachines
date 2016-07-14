@@ -169,49 +169,101 @@ var ProductPage = React.createClass({
           <Subscribe/>
         </div>
 
-        <section id="prod-about" className="row">
-          <div className="col-md-6">
-            <h2 className="prod-section-title">Admin & User Webinterface</h2>
-            <p>
-              Easy Lab consists mainly of a webinterface which provides
-              blablabla…Lorem ipsum dolor sit amet, consetetur sadipscing
-              elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore
-              magna aliquyam erat, sed diam voluptua. At vero eos et accusam et
-              justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea
-              takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor
-              sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod
-              tempor invidunt ut labore et dolore magna aliquyam erat, sed diam
-              voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
-              Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum
-              dolor sit amet.
-            </p>
+        <section id="prod-about">
+          <div className="row">
+            <h3 className="prod-section-title">Two sides, one system.</h3>
+            <div className="col-md-6 col-md-push-6">
+              <img className="prod-section-image"
+                   src="/machines/assets/img/product/PhoneLaptop.png"/>
+            </div>
+            <div className="col-md-6 col-md-pull-6">
+              <h2 className="prod-section-subtitle">A clean web interface.</h2>
+              <p>
+                EASY LAB is built as a web application on purpose, providing
+                trouble free usage no matter what kind of operating system you
+                or your customers are working with. It is responsive, of course.
+                Depending on the type of account you use to login, you will
+                either see the standard user interface or the admin version with
+                all the managing options you need to run a makerspace.
+              </p>
+              <p>
+                The main feature for your customers is to activate the machines.
+                EASY LAB is keeping track of these activations, making it
+                convenient for you to bill them, and providing a clear overview
+                of your customer’s spendings. No bad surprises. 
+              </p>
+              <p>
+                If your members are facing serious deadlines, the reservation
+                rules come in handy. Allowing them to book machines for specific
+                timeframes in order to have privileged access. You can charge for
+                that, in order to keep a good culture. Reservations are visible
+                for all other users to plan accordingly, of course. 
+              </p>
+            </div>
           </div>
-          <div className="col-md-6">
-            <img src="/machines/assets/img/product/PhoneLaptop.png"/>
+
+          <div className="row">
+            <div className="col-md-6">
+              <img className="prod-section-image"
+                   src="/machines/assets/img/product/Screens.jpg"/>
+            </div>
+            <div className="col-md-6">
+              <p>
+                We think face-to-face communication still provides the most
+                bandwidth and is the fastest way to solve things. Even more
+                when you want to cater for a lively community. However,
+                EASY LAB provides useful, but therefore not overly
+                exaggerating, communicational features, too. Users can easily
+                report a machine failure and provide general feedback about
+                billing, technical issues and so on. 
+              </p>
+              <p>
+                In the admin version you can of course add and delete machines,
+                change their specs and pricing, but also set them into
+                maintenance mode if they need a little rest. 
+                You can keep track of your user’s permissions to run the
+                machines, which will let you sleep assured that only trained
+                users are operating your valuable infrastructure. 
+                Of course, you can set all the rules for reservations,
+                membership models here, too. 
+              </p>
+              <p>
+                Our latest trick is to provide you with a neat automatic
+                invoicing feature, which will save you a lot of time at the end
+                of the month. 
+              </p>
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="col-md-6 col-md-push-6">
+              <img className="prod-section-image"
+                   src="/machines/assets/img/product/Plug.png"/>
+            </div>
+            <div className="col-md-6 col-md-pull-6">
+              <h2 className="prod-section-subtitle">A reliable hardware setup.</h2>
+              <p>
+                EASY LAB relies on wifi enabled powerswitches which turn your
+                machines on and off. At the heart of it all is the gateway
+                which comes as an easy to setup Image for a Raspberry Pi 3.
+                Connecting a new machine to your setup is a one time process of
+                round about 10 minutes. Placing the interaction outside of the
+                machine itself means more flexibility and mobility for your
+                space, making it easy to rearrange your infrastructure as you
+                are growing or moving in a new location. It even supports
+                mobile setups. Built on a Raspberry Pi, allows us to further
+                develop more advanced machine interactions in the near future.
+                Think: maintenance counters, job specific machine interactions,
+                remote monitoring etc. 
+              </p>
+            </div>
           </div>
         </section>
 
-        <section className="row">
-          <div className="col-md-6">
-            <img src="/machines/assets/img/product/Plug.png"/>
-          </div>
-          <div className="col-md-6">
-            <h2 className="prod-section-title">The Hardware</h2>
-            <p>
-              You connect your machines via WiFi enabled power switches and a
-              Raspberry Pi 3…Lorem ipsum dolor sit amet, consetetur sadipscing
-              elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore
-              magna aliquyam erat, sed diam voluptua. At vero eos et accusam et
-              justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea
-              takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum
-              dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
-              eirmod tempor invidunt ut labore et dolore magna aliquyam erat,
-              sed diam voluptua. At vero eos et accusam et justo duo dolores et
-              ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est
-              Lorem ipsum dolor sit amet.
-            </p>
-          </div>
-        </section>
+        <div className="prod-section-separator">
+          If you want to explore all of the features of EASY LAB, why not
+          become <span className="prod-section-separator-link">a free Beta-tester</span>?
+        </div>
 
         <div id="prod-team" className="row">
           <div className="col-xs-12">

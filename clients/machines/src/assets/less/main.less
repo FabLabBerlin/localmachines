@@ -1441,8 +1441,9 @@ d8888b. d8888b.  .d88b.  d8888b. db    db  .o88b. d888888b
 */
 
 #prod {
-  background: url(/machines/assets/img/product/Header.jpg) white no-repeat;
+  background: url(/machines/assets/img/product/Header.jpg) white no-repeat 50% 0%;
   font-size: 16px;
+  max-width: 1920px;
 }
 
 #prod-nav {}
@@ -1558,6 +1559,7 @@ d8888b. d8888b.  .d88b.  d8888b. db    db  .o88b. d888888b
   font-weight: lighter;
   margin-bottom: 40px;
   margin-top: 80px;
+  text-align: center;
 }
 
 .prod-section-subtitle {
@@ -1567,10 +1569,25 @@ d8888b. d8888b.  .d88b.  d8888b. db    db  .o88b. d888888b
 }
 
 .prod-section-separator {
-  background: #337ab7;
+  background: #337AB7;
   color: white;
   font-size: 36px;
   font-weight: lighter;
+  margin-left: -15px;
+  padding: 18px 0;
+  text-align: center;
+  width: calc(100% + 30px);
+}
+
+.prod-section-separator-link {
+  text-decoration: underline;
+}
+
+.prod-section-separator-link:hover {
+  cursor: pointer;
+}
+
+.prod-section-image {
   width: 100%;
 }
 
