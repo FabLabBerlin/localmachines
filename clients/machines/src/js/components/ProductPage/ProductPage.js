@@ -1,5 +1,43 @@
 var $ = require('jquery');
+var GlobalActions = require('../../actions/GlobalActions');
 var React = require('react');
+var toastr = require('../../toastr');
+
+
+var Subscribe = React.createClass({
+  render() {
+    return (
+      <div id="prod-subscribe">
+        <span id="prod-subscribe-at">
+          @
+        </span>
+        <span id="prod-subscribe-email-container">
+          <input id="prod-subscribe-email"
+                 autoCorrect="off"
+                 autoCapitalize="off"
+                 autoFocus
+                 ref="email"
+                 type="text"/>
+        </span>
+        <button id="prod-subscribe-button"
+                onClick={this.subscribe}
+                type="button">
+          Subscribe
+        </button>
+      </div>
+    );
+  },
+
+  subscribe() {
+    const email = this.refs.email.getDOMNode().value;
+
+    if (email && email.length > 3) {
+      GlobalActions.performSubscribeNewsletter(email);
+    } else {
+      toastr.error('Please provide a valid E-Mail address.');
+    }
+  }
+});
 
 
 var Profile = React.createClass({
@@ -13,6 +51,7 @@ var Profile = React.createClass({
         <div className="row">
           <h3 className={'prod-profile-title ' + 
                          (left ? '' : 'pull-right ') +
+                         'prod-profile-text-' +
                          'prod-profile-title-' + direction}>
             {this.props.title}
           </h3>
@@ -120,8 +159,14 @@ var ProductPage = React.createClass({
         </div>
         <div id="prod-head">
           <h1 id="prod-title">EASY LAB</h1>
-          <h3 id="prod-subtitle">The operating system for your makerspace.</h3>
-          <button id="prod-demo-button">Try the demo</button>
+          <h3 id="prod-subtitle">
+            <p>The operating system for your makerspace.</p>
+            <p>Make your lab work instead of micromanaging it.</p>
+            <p id="prod-subscribe-title">
+              Subscribe to our mailing list to receive the latest info:
+            </p>
+          </h3>
+          <Subscribe/>
         </div>
 
         <section id="prod-about" className="row">

@@ -1472,8 +1472,8 @@ d8888b. d8888b.  .d88b.  d8888b. db    db  .o88b. d888888b
 }
 
 #prod-head {
-  color: #F5352A;
-  height: 800px;
+  color: white;
+  height: 1050px;
   margin-top: 50px;
   padding: 190px 68px;
   padding-top: 190px;
@@ -1482,21 +1482,70 @@ d8888b. d8888b.  .d88b.  d8888b. db    db  .o88b. d888888b
 
 #prod-title {
   font-size: 120px;
-  font-weight: normal;
+  font-weight: lighter;
+  margin-left: -8px;
 }
 
-#prod-subtitle {
+#prod #prod-subtitle p {
+  color: white;
   font-size: 18px;
-  font-weight: normal;
+  font-weight: bold;
 }
 
-#prod-demo-button {
-  background-color: white;
+#prod-subscribe-title {
+  margin-top: 25px;
+}
+
+#prod-subscribe-at {
+  float: left;
+  font-size: 34px;
+  font-weight: normal;
+  height: 35px;
+  margin-top: 22px;
+  position: absolute;
+}
+
+#prod-subscribe-email-container {
+  border-bottom: 3px solid white;
+  float: left;
+  height: 48px;
+  margin-left: 38px;
+  margin-right: 25px;
+  margin-top: 19px;
+  width: 310px;
+}
+
+#prod-subscribe-email {
+  background: transparent;
   border: none;
+  height: 100%;
+  margin-top: 7px;
+  outline: none;
+  width: 310px;
+}
+
+#prod-subscribe-button {
+  background-color: white;
+  -webkit-box-shadow: 2px 2px 4px 0px rgba(0,0,0,0.5);
+  -moz-box-shadow: 2px 2px 4px 0px rgba(0,0,0,0.5);
+  box-shadow: 2px 2px 4px 0px rgba(0,0,0,0.5);
+  color: #F5352A;
+  border: none;
+  float: left;
   font-size: 20px;
+  font-weight: bold;
   height: 55px;
   margin-top: 15px;
-  width: 213px;
+  width: 135px;
+}
+
+#prod-subscribe-button:focus {
+  outline: none;
+}
+
+#prod-subscribe-button:hover {
+  background-color: #F5352A;
+  color: white;
 }
 
 #prod section {
@@ -1506,9 +1555,23 @@ d8888b. d8888b.  .d88b.  d8888b. db    db  .o88b. d888888b
 .prod-section-title {
   color: #4A4A4A;
   font-size: 48px;
-  font-weight: normal;
+  font-weight: lighter;
   margin-bottom: 40px;
   margin-top: 80px;
+}
+
+.prod-section-subtitle {
+  color: #4A4A4A;
+  font-size: 36px;
+  font-weight: lighter;
+}
+
+.prod-section-separator {
+  background: #337ab7;
+  color: white;
+  font-size: 36px;
+  font-weight: lighter;
+  width: 100%;
 }
 
 .prod-profile {
@@ -1526,6 +1589,11 @@ d8888b. d8888b.  .d88b.  d8888b. db    db  .o88b. d888888b
   padding-right: 34px;
 }
 
+.prod-profile-text {
+  font-size: 14px;
+  font-weight: normal;
+}
+
 .prod-profile-text-left {
   padding-right: 211px;
 }
@@ -1537,7 +1605,9 @@ d8888b. d8888b.  .d88b.  d8888b. db    db  .o88b. d888888b
 
 #prod p {
   color: #4A4A4A;
-  font-size: 16px;
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 22px;
 }
 
 #prod-ready-to-board {

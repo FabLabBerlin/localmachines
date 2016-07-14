@@ -125,29 +125,10 @@ vex.defaultOptions.className = 'vex-theme-custom';
         if (value) {
           var email = value;
 
-          this.performSubscribe(email);
+          GlobalActions.performSubscribeNewsletter(email);
         } else if (value !== false) {
           toastr.error('No token');
         }
-      }
-    });
-  },
-
-  performSubscribe(email) {
-    GlobalActions.showGlobalLoader();
-    $.ajax({
-      method: 'POST',
-      url: '/api/newsletters/easylab_dev',
-      data: {
-        email: email
-      },
-      success: function() {
-        GlobalActions.hideGlobalLoader();
-        toastr.info('Please check your E-Mails to confirm the subscription.');
-      },
-      error: function() {
-        GlobalActions.hideGlobalLoader();
-        toastr.error('An error occurred, please try again later.');
       }
     });
   }
