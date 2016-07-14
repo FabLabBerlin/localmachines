@@ -246,7 +246,7 @@ var ProductPage = React.createClass({
                 Get in contact if you want to use EASY LAB in your Makerspace. 
               </p>
               <p className="text-center">
-                Did i mention the price point? - Zero.
+                Did I mention the price point? - Zero.
               </p>
             </div>
           </div>
