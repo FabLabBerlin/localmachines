@@ -1,3 +1,7 @@
+if (window.location.pathname === '/product' || window.location.pathname === '/product/') {
+  window.location.href = '/machines/#/product';
+}
+
 var $ = require('jquery');
 var reactor = require('../reactor');
 var getters = require('../getters');
