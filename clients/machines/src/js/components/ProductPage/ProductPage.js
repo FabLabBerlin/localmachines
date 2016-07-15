@@ -204,7 +204,7 @@ var ProductPage = React.createClass({
           <div className="row">
             <div className="col-md-6 col-md-push-6">
               <img className="prod-section-image"
-                   src="/machines/assets/img/product/Plug.png"/>
+                   src="/machines/assets/img/product/Plug.jpg"/>
             </div>
             <div className="col-md-6 col-md-pull-6">
               <h2 className="prod-section-subtitle">A reliable hardware setup.</h2>
