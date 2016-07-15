@@ -1,3 +1,7 @@
+if (window.location.pathname === '/product' || window.location.pathname === '/product/') {
+  window.location.href = '/machines/#/product';
+} else {
+
 var AdminInvoices = require('./components/Admin/Invoices/Invoices');
 var AdminMachine = require('./components/Admin/Machines/Machine');
 var AdminMachines = require('./components/Admin/Machines/Machines');
@@ -123,3 +127,5 @@ reactor.registerStores({
 Router.run(routes, Router.HashLocation, function(Handler) {
   React.render(<Handler />, document.body);
 });
+
+} // if ( ... /product ... )
