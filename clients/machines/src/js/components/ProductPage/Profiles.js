@@ -10,18 +10,22 @@ var Profile = React.createClass({
     const text = (
       <div className="prod-profile">
         <div className="row">
-          <h3 className={'prod-profile-title ' + 
+          <div className={'prod-profile-title ' + 
                          ' prod-profile-title-' + direction +
                          ' text-xs-center ' +
                          (left ? 'text-md-left' : 'text-md-right')}>
-            {this.props.title}
-          </h3>
+            <span>
+              {this.props.title}
+            </span>
+          </div>
         </div>
         <div className={'row prod-profile-text ' +
                         ' prod-profile-text-' + direction +
                         ' text-xs-center' +
-                        ' text-md-left'}>
-          <p>
+                        ' text-md-' + direction}>
+          <p className={'text-xs-center ' + 
+                        'text-md-' + direction +
+                        ' pull-' + direction + '-md'}>
             {this.props.children}
           </p>
         </div>
@@ -32,7 +36,7 @@ var Profile = React.createClass({
       return (
         <div className="row">
           <div className={'col-md-3 ' +
-                          'text-xs-center text-md-left'}>
+                          'text-xs-center text-md-right'}>
             {img}
           </div>
           <div className="col-md-9">

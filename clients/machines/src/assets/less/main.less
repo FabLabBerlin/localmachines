@@ -1601,10 +1601,6 @@ d8888b. d8888b.  .d88b.  d8888b. db    db  .o88b. d888888b
   margin: -16px 0 28px;
 }
 
-.prod-profile-title-right {
-  padding-right: 34px;
-}
-
 .prod-profile-text {
   font-size: 14px;
   font-weight: normal;
@@ -1622,7 +1618,7 @@ d8888b. d8888b.  .d88b.  d8888b. db    db  .o88b. d888888b
   color: white;
   height: 1200px;
   margin-left: -15px;
-  padding-top: 265px;
+  padding-top: 20px;
   width: ~"calc(100% + 30px)";
 }
 
@@ -1795,12 +1791,12 @@ This is for the big screens. Remember: "Mobile First"
     width: 310px;
   }
 
-  .prod-profile-text-left {
+  /*.prod-profile-text-left {
     padding-left: 34px;
-  }
+  }*/
 
-  .prod-profile-text-right {
-    padding-right: 34px;
+  .prod-profile-title-right {
+    margin-right: -34px;
   }
 
   .prod-footer-cta-container {
@@ -1808,3 +1804,17 @@ This is for the big screens. Remember: "Mobile First"
   }
 
 } /* @media (min-width: @mobile-screen-breakpoint) */
+
+@media (min-width: @screen-md-min) {
+  #prod-contact {
+    padding-top: 265px;
+  }
+
+  .prod-profile-text p {
+    max-width: 580px;
+  }
+
+  .prod-profile-title-right {
+    padding-right: 34px;
+  }
+} /* @media (min-width: @screen-md-min) */
