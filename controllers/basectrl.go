@@ -177,7 +177,7 @@ func (this *Controller) SetSessionLocationId(locId int64) {
 		Value:   strconv.FormatInt(locId, 10),
 		Path:    "/",
 		Expires: time.Now().Add(COOKIE_LIFETIME_SECONDS * time.Second),
-		Secure:  beego.AppConfig.String("runmode") == "prod",
+		Secure:  beego.AppConfig.String("runmode") == "prod" && beego.AppConfig.String("insecuretest") != "true",
 	}
 	http.SetCookie(this.Ctx.ResponseWriter, c)
 }
