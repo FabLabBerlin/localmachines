@@ -96,7 +96,7 @@ var Month = React.createClass({
           </div>
           <div className="col-xs-6 text-right">
             <h3>
-              {/*selected ? ('Sum total: ' + total + ' €') : null*/}
+              {selected ? ('Sum total: ' + total + ' €') : null}
             </h3>
           </div>
         </div>
