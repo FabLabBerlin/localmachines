@@ -3,6 +3,7 @@ package auto_extend
 import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
+	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/user_memberships"
@@ -53,6 +54,14 @@ func autoExtendUserMemberships() (err error) {
 }
 
 func extendUserMembershipsAt(locId int64) (err error) {
+	beego.Info("invutil.AssureUsersHaveInvoiceFor", locId, "begin")
+	y := time.Now().Year()
+	m := time.Now().Month()
+	if err := invutil.AssureUsersHaveInvoiceFor(locId, y, m); err != nil {
+		return fmt.Errorf("AssureUsersHaveInvoiceFor loc %v: %v", locId, err)
+	}
+	beego.Info("invutil.AssureUsersHaveInvoiceFor done")
+
 	ums, err := user_memberships.GetAllAt(locId)
 	if err != nil {
 		return fmt.Errorf("get all user memberships: %v", err)
