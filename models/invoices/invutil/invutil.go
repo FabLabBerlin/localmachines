@@ -418,12 +418,14 @@ func AssureUsersHaveInvoiceFor(locId int64, year int, month time.Month) error {
 	}
 
 	for _, u := range us {
-		if iv, ok := ivsByUserId[u.Id]; !ok {
+		if _, ok := ivsByUserId[u.Id]; !ok {
 			var newIv invoices.Invoice
 
-			newIv = iv
 			newIv.Year = year
 			newIv.Month = int(month)
+			newIv.Status = "draft"
+			newIv.UserId = u.Id
+			newIv.LocationId = locId
 
 			if _, err := invoices.Create(&newIv); err != nil {
 				return fmt.Errorf("invoices.Create for user %v: %v", u.Id, err)
