@@ -30,59 +30,11 @@ func TestInvutilInvoices(t *testing.T) {
 				panic("Expected clean state to test in.")
 			}
 
-			o := orm.NewOrm()
 			mNow := time.Now().Month()
 			yNow := time.Now().Year()
 			mLast := time.Now().AddDate(0, -1, 0).Month()
 			yLast := time.Now().AddDate(0, -1, 0).Year()
-			loc, _ := time.LoadLocation("Europe/Berlin")
-			startTimeLast := time.Date(yLast, mLast, 1, 14, 0, 0, 0, loc)
-
-			user := users.User{
-				FirstName: "Amen",
-				LastName:  "Hesus",
-				Email:     "amen@example.com",
-			}
-			userId, err := users.CreateUser(&user)
-			if err != nil {
-				panic(err.Error())
-			}
-			_, err = user_locations.Create(&user_locations.UserLocation{
-				UserId:     user.Id,
-				LocationId: 1,
-			})
-			if err != nil {
-				panic(err.Error())
-			}
-
-			invLast := &invutil.Invoice{}
-			invLast.LocationId = locId
-			invLast.UserId = userId
-			invLast.Month = int(mLast)
-			invLast.Year = yLast
-			invLast.Status = "draft"
-			if _, err := invoices.Create(&invLast.Invoice); err != nil {
-				panic(err.Error())
-			}
-
-			m, err := memberships.Create(1, "Test Membership")
-			if err != nil {
-				panic(err.Error())
-			}
-			m.DurationMonths = 1
-			m.MachinePriceDeduction = 50
-			m.AutoExtend = true
-			m.AutoExtendDurationMonths = 30
-			m.AffectedMachines = fmt.Sprintf("[1,2,3]")
-			if err := m.Update(); err != nil {
-				panic(err.Error())
-			}
-
-			_, err = user_memberships.Create(
-				o, userId, m.Id, invLast.Id, startTimeLast)
-			if err != nil {
-				panic(err.Error())
-			}
+			user, _, _ := createInvoiceWithMembership(yLast, mLast)
 
 			if l := lenInvoicesDB(); l != 1 {
 				panic(strconv.Itoa(l))
@@ -114,16 +66,73 @@ func TestInvutilInvoices(t *testing.T) {
 
 			So(existingIvs[0].Month, ShouldEqual, mLast)
 			So(existingIvs[0].Year, ShouldEqual, yLast)
+			So(existingIvs[0].Current, ShouldBeFalse)
 
 			So(existingIvs[1].Month, ShouldEqual, mNow)
 			So(existingIvs[1].Year, ShouldEqual, yNow)
+			So(existingIvs[1].Current, ShouldBeTrue)
 
-			So(existingUms[0].UserId, ShouldEqual, userId)
+			So(existingUms[0].UserId, ShouldEqual, user.Id)
 			So(existingUms[0].StartDate.Month(), ShouldEqual, mLast)
-			So(existingUms[1].UserId, ShouldEqual, userId)
+			So(existingUms[1].UserId, ShouldEqual, user.Id)
 			So(existingUms[1].StartDate.Month(), ShouldEqual, mLast)
 		})
 	})
+}
+
+func createInvoiceWithMembership(year int, month time.Month) (
+	user *users.User,
+	iv *invutil.Invoice,
+	um *user_memberships.UserMembership) {
+	o := orm.NewOrm()
+	loc, _ := time.LoadLocation("Europe/Berlin")
+	startTimeLast := time.Date(year, month, 1, 14, 0, 0, 0, loc)
+
+	user = &users.User{
+		FirstName: "Amen",
+		LastName:  "Hesus",
+		Email:     "amen@example.com",
+	}
+	userId, err := users.CreateUser(user)
+	if err != nil {
+		panic(err.Error())
+	}
+	_, err = user_locations.Create(&user_locations.UserLocation{
+		UserId:     user.Id,
+		LocationId: 1,
+	})
+	if err != nil {
+		panic(err.Error())
+	}
+
+	iv = &invutil.Invoice{}
+	iv.LocationId = locId
+	iv.UserId = userId
+	iv.Month = int(month)
+	iv.Year = year
+	iv.Status = "draft"
+	if _, err := invoices.Create(&iv.Invoice); err != nil {
+		panic(err.Error())
+	}
+
+	m, err := memberships.Create(1, "Test Membership")
+	if err != nil {
+		panic(err.Error())
+	}
+	m.DurationMonths = 1
+	m.MachinePriceDeduction = 50
+	m.AutoExtend = true
+	m.AutoExtendDurationMonths = 30
+	m.AffectedMachines = fmt.Sprintf("[1,2,3]")
+	if err := m.Update(); err != nil {
+		panic(err.Error())
+	}
+
+	um, err = user_memberships.Create(o, userId, m.Id, iv.Id, startTimeLast)
+	if err != nil {
+		panic(err.Error())
+	}
+	return
 }
 
 func lenInvoicesDB() int {
