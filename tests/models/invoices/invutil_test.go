@@ -81,7 +81,7 @@ func TestInvutilInvoices(t *testing.T) {
 		})
 
 		Convey("Memberships in 1st month half affect 1st half", func() {
-			testInvoiceWithMembershipAndTestPurchase(false)
+			testInvoiceWithMembershipAndTestPurchase(true)
 		})
 
 		Convey("Memberships in 1st month half don't affect 2nd half", func() {
