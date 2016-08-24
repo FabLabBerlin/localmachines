@@ -6,8 +6,6 @@ import:
   - package: github.com/azr/backoff
     ref:     53511d3
     vcs:     git
-  - package: github.com/FabLabBerlin/localmachines
-    vcs:     git
   - package: github.com/ChimeraCoder/anaconda
     ref:     afffdba
     vcs:     git
