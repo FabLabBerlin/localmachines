@@ -15,8 +15,9 @@ import:
     ref:     f9ab0d
     vcs:     git
   - package: golang.org/x/crypto 
+    subpackages:
+    - scrypt
     ref:     9e7f5d
-    vcs:     git
   - package: github.com/go-sql-driver/mysql
     ref:     1421ca
     vcs:     git
@@ -36,6 +37,6 @@ import:
     ref:     2e71ec9
     vcs:     git
   - package: github.com/tealeg/xlsx
-    ref:     a616453
+    ref:     da1d296
     vcs:     git
 

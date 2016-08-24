@@ -1,0 +1,108 @@
+hash: fabebcd91aa29ad1295929ae30d440aab9202f5e4a9b4a33e93599c69a627664
+updated: 2016-08-24T11:07:04.284272521+02:00
+imports:
+- name: github.com/astaxie/beego
+  version: 92d0b9ae95662d04e1d32eeffa52b4697b01ae37
+  vcs: git
+  subpackages:
+  - config
+  - context
+  - grace
+  - logs
+  - migration
+  - orm
+  - session
+  - session/memcache
+  - swagger
+  - toolbox
+  - utils
+- name: github.com/azr/backoff
+  version: 53511d3c733003985b0b76f733df1f4d0095ee6a
+  vcs: git
+- name: github.com/boj/redistore
+  version: fc113767cd6b051980f260d6dbe84b2740c46ab0
+- name: github.com/bradfitz/gomemcache
+  version: fb1f79c6b65acda83063cbc69f6bba1522558bfc
+  subpackages:
+  - memcache
+- name: github.com/ChimeraCoder/anaconda
+  version: afffdbac178c0e78746ea42d7c1af963cb7ef28e
+  vcs: git
+- name: github.com/ChimeraCoder/tokenbucket
+  version: c5a927568de7aad8a58127d80bcd36ca4e71e454
+  vcs: git
+- name: github.com/dustin/go-jsonpointer
+  version: 2efc9fef1d9421a8d252a32e20beb10cecd2bbca
+  vcs: git
+- name: github.com/dustin/gojson
+  version: 2e71ec9dd5adce3b168cd0dbde03b5cc04951c30
+  vcs: git
+- name: github.com/FabLabBerlin/localmachines
+  version: 4cae1fc281725dfed976c7d144cc50c43c8b9a5b
+  vcs: git
+- name: github.com/garyburd/go-oauth
+  version: 719b069913e1151a73ea30d2ea4f90deda3ce234
+  subpackages:
+  - oauth
+- name: github.com/garyburd/redigo
+  version: ffa8d46ada782d81cfda81a0fbd9f45ceae448e8
+  subpackages:
+  - internal
+  - redis
+- name: github.com/go-sql-driver/mysql
+  version: 1421caf44f6464fd2ee8de694c7508ee13f92964
+  vcs: git
+- name: github.com/gorilla/context
+  version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
+- name: github.com/gorilla/securecookie
+  version: c13558c2b1c44da35e0eb043053609a5ba3a1f19
+- name: github.com/gorilla/sessions
+  version: 1bbba13ba476e132b5a0739b18f1653c3e57d3c1
+- name: github.com/gorilla/websocket
+  version: a69d25be2fe2923a97c2af6849b2f52426f68fc0
+- name: github.com/mattn/go-xmpp
+  version: 54cdc207271aaac6b929245612a2a05f5f7d38a3
+  vcs: git
+- name: github.com/satori/go.uuid
+  version: f9ab0dce87d815821e221626b772e3475a0d2749
+  vcs: git
+- name: github.com/Sirupsen/logrus
+  version: 08a8a7c27e3d058a8989316a850daad1c10bf4ab
+- name: github.com/tealeg/xlsx
+  version: da1d296f9780af84bd86bc4a61f47ebd25af1a8c
+  vcs: git
+- name: golang.org/x/crypto
+  version: 9e7f5dc375abeb9619ea3c5c58502c428f457aa2
+  subpackages:
+  - pbkdf2
+  - scrypt
+- name: golang.org/x/sys
+  version: a646d33e2ee3172a661fc09bca23bb4889a41bc8
+  subpackages:
+  - unix
+- name: gopkg.in/gcfg.v1
+  version: 27e4946190b4a327b539185f2b5b1f7c84730728
+  subpackages:
+  - scanner
+  - token
+  - types
+- name: gopkg.in/warnings.v0
+  version: 8a331561fe74dadba6edfc59f3be66c22c3b065d
+testImports:
+- name: github.com/gopherjs/gopherjs
+  version: 45518c130e5bd1525f20110830a4986365a153de
+  subpackages:
+  - js
+- name: github.com/jtolds/gls
+  version: 8ddce2a84170772b95dd5d576c48d517b22cac63
+- name: github.com/smartystreets/assertions
+  version: 2063fd1cc7c975db70502811a34b06ad034ccdf2
+  subpackages:
+  - internal/go-render/render
+  - internal/oglematchers
+- name: github.com/smartystreets/goconvey
+  version: 5db88ed452e937f2fd557de6f4f1af7f2eabed0b
+  subpackages:
+  - convey
+  - convey/gotest
+  - convey/reporting
