@@ -22,4 +22,4 @@ UPDATE user SET first_name = concat('f', '-', id),
                 last_name = concat('l', '-', id),
                 username = concat('f', '-', id, '.', 'l', '-', id),
                 email = concat('f', '-', id, '.', 'l', '-', id, '@example.com')
-            WHERE (id > 20 OR id = 11 OR id = 14) AND username <> 'testuser';
+            WHERE id NOT IN (6, 10, 19, 237, 336, 521) AND username <> 'testuser';

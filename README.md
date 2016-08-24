@@ -25,6 +25,8 @@ Quickly install Localmachines to get it running on Linux or OS X. For more
 2. Set Go environment variables:
    `export GOROOT=/usr/local/go` and
    `export GOPATH=$HOME/go` (you may need `mkdir $HOME/go` beforehands)
+
+   Most users add both lines to their `$HOME/.bash_profile` file.
 3. Clone the repository:
 
    ```
@@ -32,11 +34,20 @@ Quickly install Localmachines to get it running on Linux or OS X. For more
    cd $GOPATH/src/github.com/FabLabBerlin
    git clone git@github.com:FabLabBerlin/localmachines.git
    ```
-4. Install the Go dependencies:
+4a. Install Glide (optional)
+   ```
+   curl https://glide.sh/get | sh
+   ```
+
+   The [Glide Github page](https://github.com/Masterminds/glide#install) shows alternative installation methods.
+
+4b. Install the Go dependencies *either* using Glide:
    ```
    cd localmachines
-   go get
+   glide install
    ```
+
+   But you can also install them manually if you wish.
 
 5. Initialize database
    ```
