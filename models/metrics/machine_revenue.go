@@ -133,7 +133,9 @@ func NewTrotecStats() (t *Trotec, err error) {
 	for ; midMonth.Month() != time.April; midMonth = midMonth.AddDate(0, 1, 0) {
 		month := midMonth.Month()
 		for _, um := range userMemberships {
-			if um.Interval().Contains(midMonth) && membershipIdHasTrotecRebate(um.MembershipId) {
+			if um.StartDate.Unix() <= midMonth.Unix() &&
+				midMonth.Unix() <= um.EndDate.Unix() &&
+				membershipIdHasTrotecRebate(um.MembershipId) {
 				m := membershipsById[um.MembershipId]
 				t.AllPlusMembershipsEurByMonth[month.String()] = t.AllPlusMembershipsEurByMonth[month.String()] + m.MonthlyPrice
 			}

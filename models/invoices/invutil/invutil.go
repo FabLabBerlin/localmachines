@@ -80,7 +80,7 @@ func (inv *Invoice) calculateTotals(ms *user_memberships.List) (err error) {
 	inv.Sums.Purchases.PriceVAT = inv.Sums.Purchases.PriceInclVAT - inv.Sums.Purchases.PriceExclVAT
 
 	for _, m := range ms.Data {
-		if m.Interval().Contains(inv.Interval().TimeTo()) {
+		if inv.Interval().Contains(m.StartDate) {
 			inv.Sums.Memberships.Undiscounted += m.MonthlyPrice
 			inv.Sums.Memberships.PriceInclVAT += m.MonthlyPrice
 		}
@@ -144,7 +144,7 @@ func (inv *Invoice) load(
 		}
 	}
 	for _, umb := range inv.UserMemberships.Data {
-		bill := umb.Interval().Contains(inv.Interval().TimeTo())
+		bill := inv.Interval().Contains(umb.StartDate)
 		umb.Bill = &bill
 	}
 	return
@@ -195,6 +195,21 @@ func (inv *Invoice) SplitByMonths() (invs []*Invoice, err error) {
 	}
 
 	return
+}
+
+func GetDraft(locId, uid int64, t time.Time) (inv *Invoice, err error) {
+	iv, err := invoices.GetDraft(locId, uid, t)
+	if err != nil {
+		return nil, fmt.Errorf("get invoice draft entity: %v", err)
+	}
+	tmp, err := toUtilInvoices(iv.LocationId, []*invoices.Invoice{
+		iv,
+	})
+	if tmp[0].VatPercent < 0.01 {
+		return nil, fmt.Errorf("detected zero vat")
+	}
+
+	return tmp[0], err
 }
 
 func Get(id int64) (inv *Invoice, err error) {
@@ -370,7 +385,8 @@ func toUtilInvoices(locId int64, ivs []*invoices.Invoice) (invs []*Invoice, err 
 				if umb.EndDate.IsZero() {
 					return nil, fmt.Errorf("end date is zero")
 				}
-				if umb.Interval().Contains(p.TimeStart) &&
+				if umb.StartDate.Unix() <= p.TimeStart.Unix() &&
+					p.TimeStart.Unix() <= umb.EndDate.Unix() &&
 					umb.InvoiceId == inv.Id {
 					p.Memberships = append(p.Memberships, mb)
 				}

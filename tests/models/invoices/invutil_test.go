@@ -5,12 +5,14 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
+	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/user_memberships"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
 	"github.com/astaxie/beego/orm"
 	. "github.com/smartystreets/goconvey/convey"
+	"math"
 	"strconv"
 	"testing"
 	"time"
@@ -34,7 +36,7 @@ func TestInvutilInvoices(t *testing.T) {
 			yNow := time.Now().Year()
 			mLast := time.Now().AddDate(0, -1, 0).Month()
 			yLast := time.Now().AddDate(0, -1, 0).Year()
-			user, _, _ := createInvoiceWithMembership(yLast, mLast)
+			user, _, _ := createInvoiceWithMembership(yLast, mLast, 1)
 
 			if l := lenInvoicesDB(); l != 1 {
 				panic(strconv.Itoa(l))
@@ -77,16 +79,84 @@ func TestInvutilInvoices(t *testing.T) {
 			So(existingUms[1].UserId, ShouldEqual, user.Id)
 			So(existingUms[1].StartDate.Month(), ShouldEqual, mLast)
 		})
+
+		Convey("Memberships in 1st month half don't affect 2nd half", func() {
+			if lenInvoicesDB() > 0 || lenUserMembershipsDB() > 0 {
+				panic("Expected clean state to test in.")
+			}
+
+			mNow := time.Now().Month()
+			yNow := time.Now().Year()
+			mLast := time.Now().AddDate(0, -1, 0).Month()
+			yLast := time.Now().AddDate(0, -1, 0).Year()
+			user, iv, userMembership := createInvoiceWithMembership(yLast, mLast, 15)
+
+			So(userMembership.EndDate.Year(), ShouldEqual, yNow)
+			So(userMembership.EndDate.Month(), ShouldEqual, mNow)
+			So(userMembership.EndDate.Day(), ShouldEqual, 15)
+
+			loc, _ := time.LoadLocation("Europe/Berlin")
+
+			timeStart := time.Date(yNow, mNow, 16, 14, 10, 0, 0, loc)
+			timeEnd := timeStart.Add(2 * time.Minute)
+
+			iv, err := invutil.GetDraft(1, user.Id, timeStart)
+			if err != nil {
+				panic(err.Error())
+			}
+
+			purchase := purchases.Purchase{
+				LocationId:   1,
+				Type:         purchases.TYPE_ACTIVATION,
+				InvoiceId:    iv.Id,
+				MachineId:    1,
+				Created:      time.Now(),
+				UserId:       user.Id,
+				TimeStart:    timeStart,
+				TimeEnd:      timeEnd,
+				Quantity:     2,
+				PricePerUnit: 23,
+				PriceUnit:    "minute",
+				Vat:          19,
+			}
+
+			_, err = purchases.Create(&purchase)
+			if err != nil {
+				panic(err.Error())
+			}
+
+			iv, err = invutil.GetDraft(1, user.Id, timeStart)
+			if err != nil {
+				panic(err.Error())
+			}
+
+			if l := len(iv.Purchases); l != 1 {
+				panic(strconv.Itoa(l))
+			}
+
+			if l := len(iv.UserMemberships.Data); l != 1 {
+				panic(strconv.Itoa(l))
+			}
+
+			if err = iv.CalculateTotals(); err != nil {
+				panic(err.Error())
+			}
+
+			fmt.Printf("iv.Purchases.PriceInclVAT=%v\n", iv.Sums.Purchases.PriceInclVAT)
+			fmt.Printf("iv.Purchases.Undiscounted=%v\n", iv.Sums.Purchases.Undiscounted)
+
+			So(math.Abs(iv.Sums.Purchases.PriceInclVAT-46) < 0.01, ShouldBeTrue)
+		})
 	})
 }
 
-func createInvoiceWithMembership(year int, month time.Month) (
+func createInvoiceWithMembership(year int, month time.Month, dayStart int) (
 	user *users.User,
 	iv *invutil.Invoice,
 	um *user_memberships.UserMembership) {
 	o := orm.NewOrm()
 	loc, _ := time.LoadLocation("Europe/Berlin")
-	startTimeLast := time.Date(year, month, 1, 14, 0, 0, 0, loc)
+	membershipStart := time.Date(year, month, dayStart, 14, 0, 0, 0, loc)
 
 	user = &users.User{
 		FirstName: "Amen",
@@ -120,7 +190,7 @@ func createInvoiceWithMembership(year int, month time.Month) (
 		panic(err.Error())
 	}
 	m.DurationMonths = 1
-	m.MachinePriceDeduction = 50
+	m.MachinePriceDeduction = 100
 	m.AutoExtend = true
 	m.AutoExtendDurationMonths = 30
 	m.AffectedMachines = fmt.Sprintf("[1,2,3]")
@@ -128,7 +198,7 @@ func createInvoiceWithMembership(year int, month time.Month) (
 		panic(err.Error())
 	}
 
-	um, err = user_memberships.Create(o, userId, m.Id, iv.Id, startTimeLast)
+	um, err = user_memberships.Create(o, userId, m.Id, iv.Id, membershipStart)
 	if err != nil {
 		panic(err.Error())
 	}

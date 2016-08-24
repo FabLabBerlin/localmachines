@@ -2,7 +2,6 @@ package user_memberships
 
 import (
 	"fmt"
-	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/astaxie/beego/orm"
 	"time"
@@ -31,14 +30,14 @@ func (this UserMembership) CloneOrm(o orm.Ormer, invId int64, invStatus string) 
 	return err
 }
 
-func (this UserMembership) Interval() lib.Interval {
+/*func (this UserMembership) Interval() lib.Interval {
 	return lib.Interval{
 		MonthFrom: int(this.StartDate.Month()),
 		YearFrom:  this.StartDate.Year(),
 		MonthTo:   int(this.EndDate.Month()),
 		YearTo:    this.EndDate.Year(),
 	}
-}
+}*/
 
 // Returns the database table name of the UserMembership model.
 func (this *UserMembership) TableName() string {
@@ -79,10 +78,6 @@ type Combo struct {
 	AffectedMachines      string
 
 	Bill *bool `json:",omitempty"`
-}
-
-func (umc *Combo) Interval() lib.Interval {
-	return umc.UserMembership().Interval()
 }
 
 func (umc *Combo) UserMembership() UserMembership {
