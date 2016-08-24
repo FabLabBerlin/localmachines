@@ -1,5 +1,5 @@
 # Glide YAML configuration file for localmachines
-package: main
+package: github.com/FabLabBerlin/localmachines
 
 # Declare your project's dependencies.
 import:
