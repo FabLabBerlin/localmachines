@@ -165,12 +165,19 @@ app.controller('ActivationsCtrl',
 
   // Creates invoice on the server side and returns link
   $scope.exportSpreadsheet = function() {
+    var params = getExportParams();
+
+    if (params.startDate !== params.endDate) {
+      toastr.error('Start month and end month must match for Excel invoices export.');
+      return;
+    }
+
     $scope.loading = true;
 
     $http({
       method: 'POST',
       url: '/api/billing/monthly_earnings',
-      params: getExportParams()
+      params: params
     })
     .success(function(invoiceData) {
       $scope.loading = false;
