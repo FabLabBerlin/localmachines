@@ -80,74 +80,93 @@ func TestInvutilInvoices(t *testing.T) {
 			So(existingUms[1].StartDate.Month(), ShouldEqual, mLast)
 		})
 
+		Convey("Memberships in 1st month half affect 1st half", func() {
+			testInvoiceWithMembershipAndTestPurchase(false)
+		})
+
 		Convey("Memberships in 1st month half don't affect 2nd half", func() {
-			if lenInvoicesDB() > 0 || lenUserMembershipsDB() > 0 {
-				panic("Expected clean state to test in.")
-			}
-
-			mNow := time.Now().Month()
-			yNow := time.Now().Year()
-			mLast := time.Now().AddDate(0, -1, 0).Month()
-			yLast := time.Now().AddDate(0, -1, 0).Year()
-			user, iv, userMembership := createInvoiceWithMembership(yLast, mLast, 15)
-
-			So(userMembership.EndDate.Year(), ShouldEqual, yNow)
-			So(userMembership.EndDate.Month(), ShouldEqual, mNow)
-			So(userMembership.EndDate.Day(), ShouldEqual, 15)
-
-			loc, _ := time.LoadLocation("Europe/Berlin")
-
-			timeStart := time.Date(yNow, mNow, 16, 14, 10, 0, 0, loc)
-			timeEnd := timeStart.Add(2 * time.Minute)
-
-			iv, err := invutil.GetDraft(1, user.Id, timeStart)
-			if err != nil {
-				panic(err.Error())
-			}
-
-			purchase := purchases.Purchase{
-				LocationId:   1,
-				Type:         purchases.TYPE_ACTIVATION,
-				InvoiceId:    iv.Id,
-				MachineId:    1,
-				Created:      time.Now(),
-				UserId:       user.Id,
-				TimeStart:    timeStart,
-				TimeEnd:      timeEnd,
-				Quantity:     2,
-				PricePerUnit: 23,
-				PriceUnit:    "minute",
-				Vat:          19,
-			}
-
-			_, err = purchases.Create(&purchase)
-			if err != nil {
-				panic(err.Error())
-			}
-
-			iv, err = invutil.GetDraft(1, user.Id, timeStart)
-			if err != nil {
-				panic(err.Error())
-			}
-
-			if l := len(iv.Purchases); l != 1 {
-				panic(strconv.Itoa(l))
-			}
-
-			if l := len(iv.UserMemberships.Data); l != 1 {
-				panic(strconv.Itoa(l))
-			}
-
-			if err = iv.CalculateTotals(); err != nil {
-				panic(err.Error())
-			}
-
-			fmt.Printf("iv.Purchases.PriceInclVAT=%v\n", iv.Sums.Purchases.PriceInclVAT)
-			fmt.Printf("iv.Purchases.Undiscounted=%v\n", iv.Sums.Purchases.Undiscounted)
-
-			So(math.Abs(iv.Sums.Purchases.PriceInclVAT-46) < 0.01, ShouldBeTrue)
+			testInvoiceWithMembershipAndTestPurchase(false)
 		})
 	})
+}
+
+func testInvoiceWithMembershipAndTestPurchase(purchaseInsideMembershipInterval bool) {
+	if lenInvoicesDB() > 0 || lenUserMembershipsDB() > 0 {
+		panic("Expected clean state to test in.")
+	}
+
+	mNow := time.Now().Month()
+	yNow := time.Now().Year()
+	mLast := time.Now().AddDate(0, -1, 0).Month()
+	yLast := time.Now().AddDate(0, -1, 0).Year()
+	user, iv, userMembership := createInvoiceWithMembership(yLast, mLast, 15)
+
+	So(userMembership.EndDate.Year(), ShouldEqual, yNow)
+	So(userMembership.EndDate.Month(), ShouldEqual, mNow)
+	So(userMembership.EndDate.Day(), ShouldEqual, 15)
+
+	loc, _ := time.LoadLocation("Europe/Berlin")
+
+	var timeStart time.Time
+	if purchaseInsideMembershipInterval {
+		timeStart = time.Date(yNow, mNow, 2, 14, 10, 0, 0, loc)
+	} else {
+		timeStart = time.Date(yNow, mNow, 16, 14, 10, 0, 0, loc)
+	}
+	timeEnd := timeStart.Add(2 * time.Minute)
+
+	iv, err := invutil.GetDraft(1, user.Id, timeStart)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	purchase := purchases.Purchase{
+		LocationId:   1,
+		Type:         purchases.TYPE_ACTIVATION,
+		InvoiceId:    iv.Id,
+		MachineId:    1,
+		Created:      time.Now(),
+		UserId:       user.Id,
+		TimeStart:    timeStart,
+		TimeEnd:      timeEnd,
+		Quantity:     2,
+		PricePerUnit: 23,
+		PriceUnit:    "minute",
+		Vat:          19,
+	}
+
+	_, err = purchases.Create(&purchase)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	iv, err = invutil.GetDraft(1, user.Id, timeStart)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	if l := len(iv.Purchases); l != 1 {
+		panic(strconv.Itoa(l))
+	}
+
+	if l := len(iv.UserMemberships.Data); l != 1 {
+		panic(strconv.Itoa(l))
+	}
+
+	if err = iv.CalculateTotals(); err != nil {
+		panic(err.Error())
+	}
+
+	fmt.Printf("iv.Purchases.PriceInclVAT=%v\n", iv.Sums.Purchases.PriceInclVAT)
+	fmt.Printf("iv.Purchases.Undiscounted=%v\n", iv.Sums.Purchases.Undiscounted)
+	So(math.Abs(iv.Sums.Purchases.Undiscounted-46) < 0.01, ShouldBeTrue)
+
+	if purchaseInsideMembershipInterval {
+		So(math.Abs(iv.Sums.Purchases.PriceInclVAT) < 0.01, ShouldBeTrue)
+	} else {
+		So(math.Abs(iv.Sums.Purchases.PriceInclVAT-46) < 0.01, ShouldBeTrue)
+	}
+
 }
 
 func createInvoiceWithMembership(year int, month time.Month, dayStart int) (
