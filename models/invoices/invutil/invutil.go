@@ -386,7 +386,7 @@ func toUtilInvoices(locId int64, ivs []*invoices.Invoice) (invs []*Invoice, err 
 					return nil, fmt.Errorf("end date is zero")
 				}
 				if umb.StartDate.Unix() <= p.TimeStart.Unix() &&
-					p.TimeStart.Unix() <= umb.EndDate.Unix() &&
+					p.TimeStart.Unix() <= umb.EndDate.Unix()+86400 &&
 					umb.InvoiceId == inv.Id {
 					p.Memberships = append(p.Memberships, mb)
 				}
