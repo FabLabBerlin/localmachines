@@ -39,8 +39,6 @@ var Header = React.createClass({
   cancel(e) {
     e.stopPropagation();
 
-    console.log('Invoice#cancel');
-
     Invoices.actions.cancel();
   },
 

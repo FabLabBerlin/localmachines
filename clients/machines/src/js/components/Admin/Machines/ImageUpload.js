@@ -24,7 +24,6 @@ var ImageUpload = React.createClass({
       var f = files[0];
       var reader = new window.FileReader();
       reader.onloadend = function() {
-        console.log('calling upload action...');
         MachineActions.uploadMachineImage(mid, {
           dataUri: reader.result,
           fileName: f.name,
@@ -127,7 +126,6 @@ var ImageUpload = React.createClass({
 
   update(name, e) {
     const id = this.props.machine.get('Id');
-    console.log('updating', name, 'with', e.target.value);
     MachineActions.updateMachineField(id, name, e.target.value);
   }
 });

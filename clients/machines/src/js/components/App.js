@@ -62,14 +62,6 @@ vex.defaultOptions.className = 'vex-theme-custom';
     }
   },
 
-  /*
-   * Render:
-   *  - navBar
-   *  - all the component which are under the router control
-   *  - footer
-   * If user is logged, display a exit button
-   * If he's logged and there is no nfc port, can switch to user interface
-   */
   render() {
     const footerAbsoluteBottom = !this.state.isLogged &&
       this.props.location.pathname !== '/product';

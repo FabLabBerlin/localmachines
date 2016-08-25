@@ -45,6 +45,7 @@ app.controller('MachineCtrl',
     })
     .success(function(data) {
       $scope.machine = data;
+      $scope.machine.TypeId = String($scope.machine.TypeId);
       $scope.machine.Price = $filter('currency')($scope.machine.Price,'',2);
       if ($scope.machine.Image) {
         $scope.machineImageFile = "/files/" + $scope.machine.Image;

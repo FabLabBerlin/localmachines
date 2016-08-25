@@ -23,6 +23,7 @@ var LoginChooser = require('./components/Login/LoginChooser');
 var LoginStore = require('./stores/LoginStore');
 var MachinePage = require('./components/MachinePage/MachinePage');
 var Machines = require('./modules/Machines');
+var MachinesNewPage = require('./components/MachinesNew/Machines');
 var React = require('react');
 var ProductPage = require('./components/ProductPage/ProductPage');
 var reactor = require('./reactor');
@@ -80,7 +81,6 @@ var LoaderLocal = require('./components/LoaderLocal');
 render((
   <Router history={hashHistory}>
     <Route path="/" component={App} >
-      <Route path="machines" component={MachinePage}/>
       <Route path="admin">
         <Route path="machines" component={AdminMachines} />
         <Route path="machines/:machineId" component={AdminMachine} />
@@ -98,6 +98,7 @@ render((
       </Route>
       <Route path="login" component={LoginChooser} />
       <Route path="machine" component={MachinePage} />
+      <Route path="machines" component={MachinesNewPage} />
       <Route path="product" component={ProductPage} />
       <Route path="profile" component={UserPage} />
       <Route path="register_existing" component={RegisterExisting} />

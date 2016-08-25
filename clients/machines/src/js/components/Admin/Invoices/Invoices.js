@@ -123,7 +123,6 @@ var Month = React.createClass({
   },
 
   select() {
-    console.log('select()');
     if (this.isSelected()) {
       Invoices.actions.setSelectedMonth({
         month: undefined,
