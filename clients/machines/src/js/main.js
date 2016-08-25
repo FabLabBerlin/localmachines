@@ -1,3 +1,10 @@
+import { render } from 'react-dom';
+import {DefaultRoute, Route, Router, hashHistory, NoRoute} from 'react-router';
+
+if (window.location.pathname === '/product' || window.location.pathname === '/product/') {
+  window.location.href = '/machines/#/product';
+} else {
+
 var AdminInvoices = require('./components/Admin/Invoices/Invoices');
 var AdminMachine = require('./components/Admin/Machines/Machine');
 var AdminMachines = require('./components/Admin/Machines/Machines');
@@ -17,6 +24,7 @@ var LoginStore = require('./stores/LoginStore');
 var MachinePage = require('./components/MachinePage/MachinePage');
 var Machines = require('./modules/Machines');
 var React = require('react');
+var ProductPage = require('./components/ProductPage/ProductPage');
 var reactor = require('./reactor');
 var RegisterExisting = require('./components/RegisterExisting');
 var ReservationsPage = require('./components/Reservations/ReservationsPage');
@@ -32,9 +40,6 @@ var Users = require('./modules/Users');
 var UserStore = require('./stores/UserStore');
 var LocationStore = require('./stores/LocationStore');
 
-import { render } from 'react-dom';
-import {DefaultRoute, Route, Router, hashHistory, NoRoute} from 'react-router';
-
 /*
  * Style dependencies for webpack
  */
@@ -44,7 +49,6 @@ require('../assets/less/common.less');
 require('font-awesome-webpack');
 require('toastr/build/toastr.min.css');
 require('vex/css/vex.css');
-
 
 /*
  * Define the stores
@@ -94,6 +98,7 @@ render((
       </Route>
       <Route path="login" component={LoginChooser} />
       <Route path="machine" component={MachinePage} />
+      <Route path="product" component={ProductPage} />
       <Route path="profile" component={UserPage} />
       <Route path="register_existing" component={RegisterExisting} />
       <Route path="spendings" component={SpendingsPage} />
@@ -103,3 +108,5 @@ render((
     </Route>
   </Router>
 ), document.getElementById('app-container'));
+
+} // if ( ... /product ... )

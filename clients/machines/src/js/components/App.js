@@ -41,8 +41,8 @@ vex.defaultOptions.className = 'vex-theme-custom';
 
   componentWillMount() {
     const isLogged = reactor.evaluateToJS(getters.getIsLogged);
-
-    if (!isLogged) {
+    console.log('this.props.location=', this.props.location);
+    if (!isLogged && this.props.location.pathname !== '/product') {
       LoginActions.tryPassLoginForm(this.context.router, {
         loggedIn: () => {
           if (this.props.location.pathname === '/login') {
@@ -72,32 +72,38 @@ vex.defaultOptions.className = 'vex-theme-custom';
    * If he's logged and there is no nfc port, can switch to user interface
    */
   render() {
+    const footerAbsoluteBottom = !this.state.isLogged &&
+      this.props.location.pathname !== '/product';
+
     return (
       <div className="app">
-        <HeaderNav location={this.props.location}/>
+        {this.props.location.pathname !== '/product' ? <HeaderNav location={this.props.location}/> : null}
         <div id="main-content">
           {(this.state.isLogged ||
             this.props.location.pathname === '/login' ||
+            this.props.location.pathname === '/product' ||
             this.props.location.pathname.indexOf('forgot_password') > 0
             ) ? 
             (this.props.children || <MachinePage/>) :
             <LoaderLocal />
           }
         </div>
-        <footer className={this.state.isLogged ? '' : 'absolute-bottom'}>
-          <div className="container-fluid">
-            <div className="col-md-4 text-center">
-              <i className="fa fa-copyright"></i> Makea Industries GmbH 2016
+        {this.props.location.pathname !== '/product' ? (
+          <footer className={footerAbsoluteBottom ? 'absolute-bottom' : ''}>
+            <div className="container-fluid">
+              <div className="col-md-4 text-center">
+                <i className="fa fa-copyright"></i> Makea Industries GmbH 2016
+              </div>
+              <div className="col-md-4 text-center">
+                In case you are interested in using EASY LAB in your own
+                Lab, <a href="/machines/#/product">visit the Product Page</a>.
+              </div>
+              <div className="col-md-4 text-center">
+                <a href="https://fablab.berlin/en/content/2-Imprint">Imprint</a>
+              </div>
             </div>
-            <div className="col-md-4 text-center">
-              In case you are interested in using EASY LAB in your own
-              Lab, <a href="javascript:void(0);" onClick={this.signupNewsletter}>signup to our newsletter</a>.
-            </div>
-            <div className="col-md-4 text-center">
-              <a href="https://fablab.berlin/en/content/2-Imprint">Imprint</a>
-            </div>
-          </div>
-        </footer>
+          </footer>
+        ) : null}
         {
           this.state.isLoading ?
           (
@@ -122,29 +128,10 @@ vex.defaultOptions.className = 'vex-theme-custom';
         if (value) {
           var email = value;
 
-          this.performSubscribe(email);
+          GlobalActions.performSubscribeNewsletter(email);
         } else if (value !== false) {
           toastr.error('No token');
         }
-      }
-    });
-  },
-
-  performSubscribe(email) {
-    GlobalActions.showGlobalLoader();
-    $.ajax({
-      method: 'POST',
-      url: '/api/newsletters/easylab_dev',
-      data: {
-        email: email
-      },
-      success: function() {
-        GlobalActions.hideGlobalLoader();
-        toastr.info('Please check your E-Mails to confirm the subscription.');
-      },
-      error: function() {
-        GlobalActions.hideGlobalLoader();
-        toastr.error('An error occurred, please try again later.');
       }
     });
   }

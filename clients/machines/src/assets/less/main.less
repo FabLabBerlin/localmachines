@@ -20,6 +20,7 @@ query at the bottom: @media (min-width: 768px) { ...
 @import "~bootstrap-less/bootstrap/bootstrap.less";
 @import "common.less";
 @import "prefixer.less";
+@import "responsive-text-align.less";
 @import "vex-theme.less";
 
 /* 
@@ -1420,6 +1421,249 @@ Reservations related components
   }
 }
 
+
+
+/* 
+
+http://www.network-science.de/ascii/ 
+font: basic
+
+d8888b. d8888b.  .d88b.  d8888b. db    db  .o88b. d888888b 
+88  `8D 88  `8D .8P  Y8. 88  `8D 88    88 d8P  Y8 `~~88~~' 
+88oodD' 88oobY' 88    88 88   88 88    88 8P         88    
+88~~~   88`8b   88    88 88   88 88    88 8b         88    
+88      88 `88. `8b  d8' 88  .8D 88b  d88 Y8b  d8    88    
+88      88   YD  `Y88P'  Y8888D' ~Y8888P'  `Y88P'    YP    
+
+*/
+
+#prod {
+  background: url(/machines/assets/img/product/Header.jpg) white no-repeat 50% 0%;
+  font-size: 16px;
+  max-width: 1920px;
+  overflow: hidden;
+}
+
+#prod-nav {}
+
+.prod-nav-button {
+  background: transparent;
+  border: none;
+  box-sizing: content-box;
+  color: white;
+  font-size: 20px;
+  font-weight: normal;
+  height: 27px;
+  margin-top: 60px;
+  width: 119px;
+}
+
+.prod-nav-button:focus {
+  outline: none;
+}
+
+#prod-nav-login {
+  border: 2px solid white;
+}
+
+#prod-makea-logo {
+  margin: 30px 0 0 15px;
+}
+
+#prod-head {
+  color: white;
+  height: 1050px;
+  margin-top: 50px;
+  padding: 190px 2px;
+  width: 100%;
+}
+
+#prod-title {
+  font-size: 120px;
+  font-weight: lighter;
+  margin-left: -8px;
+}
+
+#prod #prod-subtitle p {
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+#prod-subscribe-title {
+  margin-top: 25px;
+}
+
+#prod-subscribe-at {
+  float: left;
+  font-size: 34px;
+  font-weight: normal;
+  height: 35px;
+  margin-top: 22px;
+}
+
+#prod-subscribe-email-container {
+  border-bottom: 3px solid white;
+  float: left;
+  height: 48px;
+  margin-left: 15px;
+  margin-right: 25px;
+  margin-top: 19px;
+  width: 250px;
+}
+
+#prod-subscribe-email {
+  background: transparent;
+  border: none;
+  height: 100%;
+  margin-top: 7px;
+  outline: none;
+  width: 250px;
+}
+
+#prod-subscribe-button {
+  background-color: white;
+  -webkit-box-shadow: 2px 2px 4px 0px rgba(0,0,0,0.5);
+  -moz-box-shadow: 2px 2px 4px 0px rgba(0,0,0,0.5);
+  box-shadow: 2px 2px 4px 0px rgba(0,0,0,0.5);
+  color: #F5352A;
+  border: none;
+  float: left;
+  font-size: 20px;
+  font-weight: bold;
+  height: 55px;
+  margin-top: 15px;
+  width: 135px;
+}
+
+#prod-subscribe-button:focus {
+  outline: none;
+}
+
+#prod-subscribe-button:hover {
+  background-color: #F5352A;
+  color: white;
+}
+
+#prod section {
+  margin: 160px 0;
+}
+
+.prod-section-title {
+  color: #4A4A4A;
+  font-size: 48px;
+  font-weight: lighter;
+  margin-bottom: 40px;
+  margin-top: 80px;
+  text-align: center;
+}
+
+.prod-section-subtitle {
+  color: #4A4A4A;
+  font-size: 36px;
+  font-weight: lighter;
+}
+
+.prod-section-separator {
+  background: #337AB7;
+  color: white;
+  font-size: 29px;
+  font-weight: lighter;
+  margin-left: -15px;
+  padding: 18px 0;
+  text-align: center;
+  width: ~"calc(100% + 30px)";
+}
+
+.prod-section-separator-link {
+  text-decoration: underline;
+}
+
+.prod-section-separator-link:hover {
+  cursor: pointer;
+}
+
+.prod-section-image {
+  width: 100%;
+}
+
+.prod-profile {
+  margin: 52px 0;
+}
+
+.prod-profile-title {
+  color: #4A4A4A;
+  font-size: 36px;
+  font-weight: normal;
+  margin: -16px 0 28px;
+}
+
+.prod-profile-text {
+  font-size: 14px;
+  font-weight: normal;
+}
+
+#prod p {
+  color: #4A4A4A;
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 22px;
+}
+
+#prod-contact {
+  background: url(/machines/assets/img/product/Footer.jpg) white no-repeat 50% 0%;
+  color: white;
+  height: 1200px;
+  margin-left: -15px;
+  padding-top: 20px;
+  width: ~"calc(100% + 30px)";
+}
+
+#prod-contact .prod-section-title {
+  color: white;
+}
+
+#prod #prod-contact p {
+  color: white;
+}
+
+#prod-ready-to-board {
+  margin-bottom: 50px;
+  margin-top: 50px;
+}
+
+.prod-footer-cta-container {
+  margin-top: 50px;
+}
+
+.prod-footer-cta {
+  font-size: 16px;
+  height: 68px;
+}
+
+.prod-footer-cta-container a {
+  color: white;
+}
+
+.prod-footer-cta-container img {
+  margin-right: 24px;
+}
+
+#prod-footer-cta-call {
+  margin-top: 6px;
+}
+
+#prod-footer-cta-drop-by {
+  margin-top: 11px;
+}
+
+#prod-footer {
+  border-top: 1px solid #979797;
+  color: #4A4A4A;
+  font-size: 12px;
+  padding: 10px 2px;
+}
+
 /* 
 
 http://www.network-science.de/ascii/ 
@@ -1527,4 +1771,47 @@ This is for the big screens. Remember: "Mobile First"
     height: 60px;
   }
 
+  /*
+   * Product page
+   */
+
+
+  #prod-head {
+    padding: 190px 68px;
+  }
+
+  #prod-subscribe-email-container {
+    width: 310px;
+  }
+
+  #prod-subscribe-email {
+    width: 310px;
+  }
+
+  /*.prod-profile-text-left {
+    padding-left: 34px;
+  }*/
+
+  .prod-profile-title-right {
+    margin-right: -34px;
+  }
+
+  .prod-footer-cta-container {
+    margin-top: 0;
+  }
+
 } /* @media (min-width: @mobile-screen-breakpoint) */
+
+@media (min-width: @screen-md-min) {
+  #prod-contact {
+    padding-top: 265px;
+  }
+
+  .prod-profile-text p {
+    max-width: 580px;
+  }
+
+  .prod-profile-title-right {
+    padding-right: 34px;
+  }
+} /* @media (min-width: @screen-md-min) */
