@@ -39,14 +39,23 @@ var Month = React.createClass({
     Invoices.actions.checkedSend(this.state.locationId);
   },
 
+  isSelected() {
+    const t = this.props.t;
+    const month = this.state.MonthlySums
+                      .get('selected').get('month');
+    const year = this.state.MonthlySums
+                      .get('selected').get('year');
+    return month === t.month() + 1 &&
+           year === t.year();
+  },
+
   render() {
     const t = this.props.t;
     const month = this.state.MonthlySums
                       .get('selected').get('month');
     const year = this.state.MonthlySums
                       .get('selected').get('year');
-    const selected = month === t.month() + 1 &&
-                     year === t.year();
+    const selected = this.isSelected();
     const summaries = this.state.MonthlySums.getIn([year, month]);
 
     if (!summaries && selected) {
@@ -114,19 +123,27 @@ var Month = React.createClass({
   },
 
   select() {
-    const t = this.props.t;
-    const summaries = this.state.MonthlySums.getIn([t.year(), t.month() + 1]);
+    console.log('select()');
+    if (this.isSelected()) {
+      Invoices.actions.setSelectedMonth({
+        month: undefined,
+        year: undefined
+      });
+    } else {
+      const t = this.props.t;
+      const summaries = this.state.MonthlySums.getIn([t.year(), t.month() + 1]);
 
-    Invoices.actions.setSelectedMonth({
-      month: t.month() + 1,
-      year: t.year()
-    });
-
-    if (!summaries) {
-      Invoices.actions.fetchMonthlySums(this.state.locationId, {
+      Invoices.actions.setSelectedMonth({
         month: t.month() + 1,
         year: t.year()
       });
+
+      if (!summaries) {
+        Invoices.actions.fetchMonthlySums(this.state.locationId, {
+          month: t.month() + 1,
+          year: t.year()
+        });
+      }
     }
   }
 
