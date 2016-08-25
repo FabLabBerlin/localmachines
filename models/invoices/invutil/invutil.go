@@ -404,11 +404,6 @@ func toUtilInvoices(locId int64, ivs []*invoices.Invoice) (invs []*Invoice, err 
 			p.PriceExclVAT = p.DiscountedTotal / percent
 			p.PriceVAT = p.DiscountedTotal - p.PriceExclVAT
 		}
-		/*if inv.UserMemberships, ok = userMembershipsByInv[inv.Id]; !ok {
-			inv.UserMemberships = &user_memberships.List{
-				Data: []*user_memberships.Combo{},
-			}
-		}*/
 		if err = inv.calculateTotals(inv.UserMemberships); err != nil {
 			return nil, fmt.Errorf("calculate totals: %v", err)
 		}
