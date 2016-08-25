@@ -40,7 +40,7 @@ vex.defaultOptions.className = 'vex-theme-custom';
 
   componentWillMount() {
     const isLogged = reactor.evaluateToJS(getters.getIsLogged);
-    console.log('this.props.location=', this.props.location);
+
     if (!isLogged && this.props.location.pathname !== '/product') {
       LoginActions.tryPassLoginForm(this.context.router, {
         loggedIn: () => {
