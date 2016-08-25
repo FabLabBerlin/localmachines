@@ -85,7 +85,7 @@ var Header = React.createClass({
                     / 100).toFixed(2);
     const name = invoice.getIn(['User', 'FirstName']) +
                  ' ' + invoice.getIn(['User', 'LastName']);
-    const timeFrame = '' + invoice.get('Month') + '/' +
+    const timeFrame = '' + moment().month(invoice.get('Month')).format('MMM') + '/' +
                            invoice.get('Year');
 
     return (
