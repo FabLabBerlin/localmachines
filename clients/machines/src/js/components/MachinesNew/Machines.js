@@ -35,6 +35,39 @@ var Machine = React.createClass({
 });
 
 
+var Section = React.createClass({
+  render() {
+    const machines = this.props.machines.sortBy(m => m.get('Name'));
+
+    return (
+      <div>
+        <div className="ms-section-title">
+          {this.title()}
+        </div>
+        <div>
+          {machines.map((m, i) => <Machine key={i} machine={m}/>)}
+        </div>
+      </div>
+    );
+  },
+
+  title() {
+    var tid = this.props.typeId;
+    var t = {
+      0: 'Other',
+      1: '3D Printers',
+      2: 'CNC Mill',
+      3: 'Heatpress',
+      4: 'Knitting Machine',
+      5: 'Lasercutters',
+      6: 'Vinylcutter'
+    }[tid];
+
+    return t || tid;
+  }
+});
+
+
 var MachinesPage = React.createClass({
 
   mixins: [ reactor.ReactMixin ],
@@ -57,21 +90,28 @@ var MachinesPage = React.createClass({
   },
 
   render() {
-    if (!this.state.locationId || !this.state.machines) {
+    if (!this.state.locationId || !this.state.machines ||
+        this.state.machines.toList().count() === 0) {
       return <LoaderLocal/>;
     }
 
-    var machines = this.state.machines
+    const machinesByType = this.state.machines
     .toList()
     .filter(m => {
       return m.get('LocationId') === this.state.locationId &&
         !m.get('Archived');
     })
-    .sortBy(m => m.get('Name'));
+    .groupBy(m => m.get('TypeId'));
 
     return (
       <div id="ms" className="container-fluid">
-        {machines.map((m, i) => <Machine key={i} machine={m}/>)}
+        <Section typeId={1} machines={machinesByType.get(1)}/>
+        <Section typeId={2} machines={machinesByType.get(2)}/>
+        <Section typeId={3} machines={machinesByType.get(3)}/>
+        <Section typeId={4} machines={machinesByType.get(4)}/>
+        <Section typeId={5} machines={machinesByType.get(5)}/>
+        <Section typeId={6} machines={machinesByType.get(6)}/>
+        <Section typeId={0} machines={machinesByType.get(0)}/>
       </div>
     );
   }
