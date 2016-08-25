@@ -1,13 +1,12 @@
 var FeedbackActions = require('../../actions/FeedbackActions');
 var getters = require('../../getters');
-var {Navigation} = require('react-router');
 var React = require('react');
 var reactor = require('../../reactor');
 var UserActions = require('../../actions/UserActions');
 
 
 var FeedbackPage = React.createClass({
-  mixins: [ Navigation, reactor.ReactMixin ],
+  mixins: [ reactor.ReactMixin ],
 
   getDataBindings() {
     return {

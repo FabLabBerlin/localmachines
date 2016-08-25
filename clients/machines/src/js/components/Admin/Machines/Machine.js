@@ -8,7 +8,6 @@ var LocationGetters = require('../../../modules/Location/getters');
 var Machines = require('../../../modules/Machines');
 var MachineActions = require('../../../actions/MachineActions');
 var MachineProperties = require('./MachineProperties');
-var Navigation = require('react-router').Navigation;
 var NetswitchConfig = require('./NetswitchConfig');
 var React = require('react');
 var reactor = require('../../../reactor');
@@ -17,7 +16,7 @@ var toastr = require('../../../toastr');
 
 var Machine = React.createClass({
 
-  mixins: [ Navigation, reactor.ReactMixin ],
+  mixins: [ reactor.ReactMixin ],
 
   getDataBindings() {
     return {

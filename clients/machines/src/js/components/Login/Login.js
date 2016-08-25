@@ -8,8 +8,6 @@ var LocationStore = require('../../stores/LocationStore');
 var LoginActions = require('../../actions/LoginActions');
 var LocationActions = require('../../actions/LocationActions');
 
-var {Navigation} = require('react-router');
-
 var React = require('react');
 var ReactDOM = require('react-dom');
 var reactor = require('../../reactor');
@@ -26,7 +24,7 @@ import {hashHistory} from 'react-router';
  */
 var Login = React.createClass({
 
-  mixins: [ Navigation, reactor.ReactMixin ],
+  mixins: [ reactor.ReactMixin ],
 
   getDataBindings() {
     return {

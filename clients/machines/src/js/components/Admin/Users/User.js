@@ -5,7 +5,6 @@ var LocationActions = require('../../../actions/LocationActions');
 var LocationGetters = require('../../../modules/Location/getters');
 var MachineActions = require('../../../actions/MachineActions');
 var Machines = require('../../../modules/Machines');
-var Navigation = require('react-router').Navigation;
 var React = require('react');
 var reactor = require('../../../reactor');
 var UserActions = require('../../../actions/UserActions');
@@ -387,7 +386,7 @@ var Buttons = React.createClass({
 
 var UserView = React.createClass({
 
-  mixins: [ Navigation, reactor.ReactMixin ],
+  mixins: [ reactor.ReactMixin ],
 
   componentWillMount() {
     const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);

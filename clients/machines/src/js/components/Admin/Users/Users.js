@@ -37,9 +37,10 @@ var User = React.createClass({
   }
 });
 
+
 var UsersView = React.createClass({
 
-  mixins: [ Navigation, reactor.ReactMixin ],
+  mixins: [ reactor.ReactMixin ],
 
   getDataBindings() {
     return {

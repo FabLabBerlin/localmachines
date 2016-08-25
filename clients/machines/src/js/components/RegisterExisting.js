@@ -4,14 +4,13 @@ var LoaderLocal = require('./LoaderLocal');
 var LocationActions = require('../actions/LocationActions');
 var LocationGetters = require('../modules/Location/getters');
 var LoginActions = require('../actions/LoginActions');
-var {Navigation} = require('react-router');
 var React = require('react');
 var reactor = require('../reactor');
 var toastr = require('toastr');
 
 
 var RegisterExisting = React.createClass({
-  mixins: [ Navigation, reactor.ReactMixin ],
+  mixins: [ reactor.ReactMixin ],
 
   cancel() {
     LoginActions.logout(this.context.router);

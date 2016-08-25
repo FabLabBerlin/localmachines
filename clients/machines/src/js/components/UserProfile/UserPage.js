@@ -1,7 +1,6 @@
 var getters = require('../../getters');
 var LocationGetters = require('../../modules/Location/getters');
 var MachineActions = require('../../actions/MachineActions');
-var {Navigation} = require('react-router');
 var LoginActions = require('../../actions/LoginActions');
 var React = require('react');
 var reactor = require('../../reactor');
@@ -11,7 +10,7 @@ var UserForm = require('./UserForm');
 
 var UserPage = React.createClass({
 
-  mixins: [ Navigation, reactor.ReactMixin ],
+  mixins: [ reactor.ReactMixin ],
 
   getDataBindings() {
     return {

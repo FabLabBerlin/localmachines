@@ -5,7 +5,6 @@ var LocationGetters = require('../../modules/Location/getters');
 var LoginActions = require('../../actions/LoginActions');
 var MachineActions = require('../../actions/MachineActions');
 var Machines = require('../../modules/Machines');
-var {Navigation} = require('react-router');
 var React = require('react');
 var reactor = require('../../reactor');
 var SettingsActions = require('../../modules/Settings/actions');
@@ -14,7 +13,7 @@ var UserActions = require('../../actions/UserActions');
 
 var SpendingsPage = React.createClass({
 
-  mixins: [ Navigation, reactor.ReactMixin ],
+  mixins: [ reactor.ReactMixin ],
 
   getDataBindings() {
     return {

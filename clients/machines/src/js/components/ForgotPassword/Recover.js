@@ -1,12 +1,9 @@
 var actions = require('../../modules/ForgotPassword/actions');
-var { Navigation } = require('react-router');
 var React = require('react');
 var toastr = require('../../toastr');
 
 
 var Recover = React.createClass({
-  mixins: [ Navigation ],
-
   handleSubmit(event) {
     event.preventDefault();
     var phone = this.refs.phone.value;

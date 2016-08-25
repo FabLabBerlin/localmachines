@@ -9,7 +9,6 @@ var MachineList = require('./MachineList');
 var MachineActions = require('../../actions/MachineActions');
 var Machines = require('../../modules/Machines');
 var LoginActions = require('../../actions/LoginActions');
-var Navigation = require('react-router').Navigation;
 var React = require('react');
 var reactor = require('../../reactor');
 var ReservationRulesActions = require('../../actions/ReservationRulesActions');
@@ -21,7 +20,7 @@ var TutoringList = require('./TutoringList');
 
 var MachinePage = React.createClass({
 
-  mixins: [ Navigation, reactor.ReactMixin ],
+  mixins: [ reactor.ReactMixin ],
 
   getDataBindings() {
     return {

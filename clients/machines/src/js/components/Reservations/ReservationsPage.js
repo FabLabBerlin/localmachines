@@ -7,7 +7,6 @@ var LocationGetters = require('../../modules/Location/getters');
 var MachineActions = require('../../actions/MachineActions');
 var Machines = require('../../modules/Machines');
 var moment = require('moment');
-var Navigation = require('react-router').Navigation;
 var NewReservation = require('./NewReservation');
 var Nuclear = require('nuclear-js');
 var React = require('react');
@@ -159,7 +158,7 @@ var ReservationsTable = React.createClass({
 
 
 var ReservationsPage = React.createClass({
-  mixins: [ Navigation, reactor.ReactMixin ],
+  mixins: [ reactor.ReactMixin ],
 
   componentWillUnmount() {
     ReservationActions.newReservation.done();

@@ -8,7 +8,6 @@ var LocationActions = require('../actions/LocationActions');
 var LoginActions = require('../actions/LoginActions');
 var LoginStore = require('../stores/LoginStore');
 var MachinePage = require('./MachinePage/MachinePage');
-var {Navigation} = require('react-router');
 var React = require('react');
 var toastr = require('../toastr');
 
@@ -30,7 +29,7 @@ vex.defaultOptions.className = 'vex-theme-custom';
  */
  var App = React.createClass({
 
-  mixins: [ Navigation, reactor.ReactMixin ],
+  mixins: [ reactor.ReactMixin ],
 
   getDataBindings() {
     return {

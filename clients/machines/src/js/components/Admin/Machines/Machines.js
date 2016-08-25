@@ -3,14 +3,13 @@ var getters = require('../../../getters');
 var LocationGetters = require('../../../modules/Location/getters');
 var MachineActions = require('../../../actions/MachineActions');
 var Machines = require('../../../modules/Machines');
-var Navigation = require('react-router').Navigation;
 var React = require('react');
 var reactor = require('../../../reactor');
 
 
 var MachinesView = React.createClass({
 
-  mixins: [ Navigation, reactor.ReactMixin ],
+  mixins: [ reactor.ReactMixin ],
 
   getDataBindings() {
     return {

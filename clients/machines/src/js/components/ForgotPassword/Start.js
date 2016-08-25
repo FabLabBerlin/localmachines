@@ -1,13 +1,10 @@
 var actions = require('../../modules/ForgotPassword/actions');
-var { Navigation } = require('react-router');
 var React = require('react');
 var reactor = require('../../reactor');
 var toastr = require('../../toastr');
 
 
 var Start = React.createClass({
-  mixins: [ Navigation ],
-
   cancel() {
     this.replaceWith('/login');
   },
