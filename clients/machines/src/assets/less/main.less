@@ -1236,19 +1236,60 @@ td .force-switch-off:hover {
 }
 
 .ms-machine:hover {
-  border: 2px solid #2977E4;
   text-decoration: none;
 }
 
+.ms-machine.ms-available:hover {
+  border-color: @ms-hover-color-available;
+}
+
+.ms-machine.ms-maintenance:hover {
+  border-color: @ms-hover-color-maintenance;
+}
+
+.ms-machine.ms-occupied:hover {
+  border-color: @ms-hover-color-occupied;
+}
+
+.ms-machine.ms-running:hover {
+  border-color: @ms-hover-color-running;
+}
+
 .ms-machine-label {
-  background: #2977E4;
-  color: white;
   font-size: 24px;
   height: 77px;
   overflow: hidden;
   margin-bottom: 27px;
   padding: 8px 0 0 30px;
   width: 100%;
+}
+
+.ms-available .ms-machine-label {
+  background-color: #2977E4;
+  color: white;
+}
+
+/*
+https://css-tricks.com/stripes-css/
+http://codepen.io/anon/pen/QEXBEp
+*/
+.ms-maintenance .ms-machine-label {
+  background: repeating-linear-gradient(
+    -35deg,
+    #8e8e8e,
+    #8e8e8e 40px,
+    #EBE44D 30px,
+    #EBE44D 70px
+  );
+  color: white;
+}
+
+.ms-occupied .ms-machine-label {
+  color: @ms-hover-color-occupied;
+}
+
+.ms-running .ms-machine-label {
+  color: @ms-hover-color-running;
 }
 
 .ms-machine-brand {
