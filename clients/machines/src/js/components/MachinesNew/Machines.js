@@ -1,38 +1,11 @@
 var LoaderLocal = require('../LoaderLocal');
 var LocationGetters = require('../../modules/Location/getters');
 var MachineActions = require('../../actions/MachineActions');
+var Machine = require('./Machine');
 var Machines = require('../../modules/Machines');
 var React = require('react');
 var reactor = require('../../reactor');
 var toastr = require('../../toastr');
-
-
-var Machine = React.createClass({
-  imgUrl() {
-    if (this.props.machine.get('Image')) {
-      return '/files/' + this.props.machine.get('Image');
-    } else {
-      return '/machines/img/img-machine-placeholder.svg';
-    }
-  },
-
-  render() {
-    const m = this.props.machine;
-    const style = {
-      backgroundImage: 'url(' + this.imgUrl() + ')'
-    };
-
-    return (
-      <div className="ms-machine">
-        <div className="ms-machine-label">
-          {m.get('Name')}
-        </div>
-        <div className="ms-machine-icon" style={style}>
-        </div>
-      </div>
-    );
-  }
-});
 
 
 var Section = React.createClass({

@@ -1213,32 +1213,46 @@ td .force-switch-off:hover {
   background: #D8D8D8;
   clear: both;
   color: white;
-  font-size: 25px;
-  font-weight: bold;
+  font-size: 23px;
+  font-weight: 500;
   margin-bottom: 5px;
-  padding: 3px 30px;
+  padding: 0px 30px;
   text-transform: uppercase;
   width: 100%;
 }
 
 .ms-machine {
   background-repeat: no-repeat;
+  border: 2px solid transparent;
   float: left;
-  height: 260px;
+  height: 285px;
   margin-bottom: 35px;
   margin-right: 7px;
   width: 221px;
 }
 
+.ms-machine:focus {
+  text-decoration: none;
+}
+
+.ms-machine:hover {
+  border: 2px solid #2977E4;
+  text-decoration: none;
+}
+
 .ms-machine-label {
   background: #2977E4;
   color: white;
-  font-size: 19px;
+  font-size: 24px;
   height: 77px;
   overflow: hidden;
   margin-bottom: 27px;
-  padding: 16px 0 0 30px;
+  padding: 8px 0 0 30px;
   width: 100%;
+}
+
+.ms-machine-brand {
+  font-size: 19px;
 }
 
 .ms-machine-icon {

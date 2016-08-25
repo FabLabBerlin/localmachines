@@ -21,6 +21,7 @@ var GlobalStore = require('./stores/GlobalStore');
 var Invoices = require('./modules/Invoices');
 var LoginChooser = require('./components/Login/LoginChooser');
 var LoginStore = require('./stores/LoginStore');
+var MachineNewPage = require('./components/MachinesNew/MachinePage');
 var MachinePage = require('./components/MachinePage/MachinePage');
 var Machines = require('./modules/Machines');
 var MachinesNewPage = require('./components/MachinesNew/Machines');
@@ -99,6 +100,7 @@ render((
       <Route path="login" component={LoginChooser} />
       <Route path="machine" component={MachinePage} />
       <Route path="machines" component={MachinesNewPage} />
+      <Route path="machines/:machineId" component={MachineNewPage} />
       <Route path="product" component={ProductPage} />
       <Route path="profile" component={UserPage} />
       <Route path="register_existing" component={RegisterExisting} />
