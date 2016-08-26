@@ -41,7 +41,7 @@ var Right = React.createClass({
                 <li><a href="/machines/#/profile">Info</a></li>
                 {this.state.isAdmin ? (
                   <li>
-                    <a href="/machines/#/admin/invoices">Finance</a>
+                    <a href="/machines/#/admin/invoices">Invoices</a>
                   </li>
                 ) : null}
                 {this.state.isAdmin ? (
