@@ -155,6 +155,7 @@ func (this *Controller) CreateDraft() {
 // @Failure	500	Internal Server Error
 // @router /invoices/:id/cancel [post]
 func (this *Controller) Cancel() {
+	this.assertFinanceUser()
 	locId, authorized := this.GetLocIdAdmin()
 	if !authorized {
 		this.CustomAbort(401, "Not authorized")
@@ -200,6 +201,7 @@ func (this *Controller) Cancel() {
 // @Failure	500	Internal Server Error
 // @router /invoices/:id/complete [post]
 func (this *Controller) Complete() {
+	this.assertFinanceUser()
 	locId, authorized := this.GetLocIdAdmin()
 	if !authorized {
 		this.CustomAbort(401, "Not authorized")
@@ -245,6 +247,7 @@ func (this *Controller) Complete() {
 // @Failure	500	Internal Server Error
 // @router /invoices/:id/send [post]
 func (this *Controller) Send() {
+	this.assertFinanceUser()
 	locId, authorized := this.GetLocIdAdmin()
 	if !authorized {
 		this.CustomAbort(401, "Not authorized")
@@ -328,4 +331,19 @@ func (this *Controller) SyncFastbillInvoices() {
 	}
 
 	this.ServeJSON()
+}
+
+func (this *Controller) assertFinanceUser() {
+	uid, err := this.GetSessionUserId()
+	if err != nil {
+		beego.Error(err.Error())
+		this.Abort("500")
+	}
+
+	switch uid {
+	case 6, 19, 28, 336:
+		return
+	default:
+		this.Abort("403")
+	}
 }
