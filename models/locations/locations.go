@@ -8,6 +8,7 @@ import (
 	"github.com/astaxie/beego/orm"
 	"net"
 	"strings"
+	"time"
 )
 
 const TABLE_NAME = "locations"
@@ -30,6 +31,7 @@ type Location struct {
 	FeatureSpaces    bool   `json:",omitempty"`
 	FeatureTutoring  bool   `json:",omitempty"`
 	FeatureCoupons   bool   `json:",omitempty"`
+	Timezone         string `orm:"size(100)"`
 }
 
 func init() {
@@ -98,6 +100,18 @@ func (l *Location) emailAnnounce() (err error) {
 
 func (l *Location) TableName() string {
 	return TABLE_NAME
+}
+
+func (l *Location) TZ() *time.Location {
+	if l.Timezone != "" {
+		tl, err := time.LoadLocation(l.Timezone)
+		if err == nil {
+			return tl
+		} else {
+			beego.Error("error loading time zone for location", l.Id)
+		}
+	}
+	return time.UTC
 }
 
 func Get(id int64) (l *Location, err error) {

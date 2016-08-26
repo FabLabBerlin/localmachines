@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
+	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/FabLabBerlin/localmachines/models/settings"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
@@ -146,7 +147,12 @@ func Create(locationId int64, interval lib.Interval) (me *MonthlyEarning, err er
 
 	me.FilePath = dirName + "/" + fileName + ".xlsx"
 
-	err = createXlsxFile(me.FilePath, me)
+	loc, err := locations.Get(locationId)
+	if err != nil {
+		return nil, fmt.Errorf("get location: %v", err)
+	}
+
+	err = createXlsxFile(loc, me.FilePath, me)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to create *.xlsx file: %v", err)
 	}

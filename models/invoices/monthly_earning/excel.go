@@ -2,6 +2,7 @@ package monthly_earning
 
 import (
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_memberships"
 	"github.com/tealeg/xlsx"
@@ -45,7 +46,11 @@ func (this PurchasesXlsx) Swap(i, j int) {
 
 // Adds a row to xlsx sheet by consuming a pointer to
 // InvoiceActivation model based store.
-func AddRowXlsx(sheet *xlsx.Sheet, purchase *purchases.Purchase) (err error) {
+func AddRowXlsx(
+	loc *locations.Location,
+	sheet *xlsx.Sheet,
+	purchase *purchases.Purchase) (err error) {
+
 	timeStart := purchase.TimeStart
 	totalPrice := purchase.TotalPrice
 	discountedTotal := purchase.DiscountedTotal
@@ -62,7 +67,7 @@ func AddRowXlsx(sheet *xlsx.Sheet, purchase *purchases.Purchase) (err error) {
 
 	cell = row.AddCell()
 	if timeStart.Unix() > 0 {
-		cell.Value = timeStart.Format(time.RFC1123)
+		cell.Value = timeStart.In(loc.TZ()).Format(time.RFC1123)
 	}
 
 	cell = row.AddCell()
@@ -123,7 +128,11 @@ func addSeparationRowXlsx(sheet *xlsx.Sheet) {
 }
 
 // Creates a xlsx file.
-func createXlsxFile(filePath string, monthlyEarning *MonthlyEarning) error {
+func createXlsxFile(
+	loc *locations.Location,
+	filePath string,
+	monthlyEarning *MonthlyEarning) error {
+
 	sort.Sort(monthlyEarning)
 
 	// Create a xlsx file if there
@@ -271,9 +280,9 @@ func createXlsxFile(filePath string, monthlyEarning *MonthlyEarning) error {
 					cell.SetStyle(colorStyle(BLUE))
 					cell.Value = m.Title
 					cell = row.AddCell()
-					cell.Value = m.StartDate.Format(time.RFC1123)
+					cell.Value = m.StartDate.In(loc.TZ()).Format(time.RFC1123)
 					cell = row.AddCell()
-					cell.Value = m.EndDate.Format(time.RFC1123)
+					cell.Value = m.EndDate.In(loc.TZ()).Format(time.RFC1123)
 					cell = row.AddCell()
 					cell.SetFloatWithFormat(float64(m.MonthlyPrice), FORMAT_2_DIGIT)
 					cell.SetStyle(colorStyle(GREEN))
@@ -364,7 +373,7 @@ func createXlsxFile(filePath string, monthlyEarning *MonthlyEarning) error {
 		AddRowActivationsHeaderXlsx(sheet)
 
 		for _, purchase := range ps {
-			if err := AddRowXlsx(sheet, purchase); err != nil {
+			if err := AddRowXlsx(loc, sheet, purchase); err != nil {
 				return fmt.Errorf("AddRowXlsx: %v", err)
 			}
 		}
