@@ -40,7 +40,9 @@ func (this *Controller) migrateFbNos(locId int64) (err error) {
 		if u.ClientId > 0 {
 			fbId, err := fastbill.GetCustomerId(*u)
 			if err != nil {
-				return fmt.Errorf("get customer id: %v", err)
+				beego.Error("get customer id: %v", err)
+				beego.Error("Skipping", u.Email)
+				continue
 			}
 			l, err := fastbill.ListInvoices(fbId)
 			if err != nil {
@@ -61,7 +63,7 @@ func (this *Controller) migrateFbNos(locId int64) (err error) {
 							} else {
 								beego.Error("Failed syncing", fbIv.InvoiceTitle)
 							}
-							if err = invutil.FastbillSync(locId, u); err != nil {
+							if err = invutil.FastbillSyncFast(locId, u, l); err != nil {
 								beego.Error("Failing to sync rest of the fields")
 							}
 						}

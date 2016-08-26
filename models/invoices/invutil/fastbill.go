@@ -305,6 +305,14 @@ func FastbillSync(locId int64, u *users.User) (err error) {
 		return fmt.Errorf("Failed to get invoice list from fastbill: %v", err)
 	}
 
+	return FastbillSyncFast(locId, u, l)
+}
+
+func FastbillSyncFast(
+	locId int64,
+	u *users.User,
+	l []fastbill.InvoiceGetResponseInvoice) (err error) {
+
 	invs, err := invoices.GetAllOfUserAt(locId, u.Id)
 	if err != nil {
 		return fmt.Errorf("get invoices of user at location: %v", err)
