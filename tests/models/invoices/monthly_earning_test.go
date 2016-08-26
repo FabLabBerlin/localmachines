@@ -8,6 +8,7 @@ import (
 
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models/invoices/monthly_earning"
+	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
@@ -103,7 +104,10 @@ func TestInvoiceActivation(t *testing.T) {
 			file := xlsx.NewFile()
 			sheet, _ := file.AddSheet("User Summaries")
 			monthly_earning.AddRowActivationsHeaderXlsx(sheet)
-			monthly_earning.AddRowXlsx(sheet, invAct)
+			loc := &locations.Location{
+				Timezone: "Europe/Berlin",
+			}
+			monthly_earning.AddRowXlsx(loc, sheet, invAct)
 			numRows := 2
 
 			Convey("Number of rows in xlsx sheed should be correct", func() {

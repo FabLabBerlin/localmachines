@@ -24,19 +24,21 @@ type User struct {
 	InvoiceAddr string `orm:"type(text)"`
 	ShipAddr    string `orm:"type(text)"`
 	// ClientId is the Fastbill User Id
-	ClientId        int64
-	B2b             bool
-	Company         string `orm:"size(100)"`
-	VatUserId       string `orm:"size(100)"`
-	VatRate         int
-	UserRole        string    `orm:"size(100)"`
-	Created         time.Time `orm:"type(datetime)"`
-	Comments        string    `orm:"type(text)"`
-	Phone           string    `orm:"size(50)"`
-	ZipCode         string    `orm:"size(100)"`
-	City            string    `orm:"size(100)"`
-	CountryCode     string    `orm:"size(2)"`
-	NoAutoInvoicing bool
+	ClientId           int64
+	B2b                bool
+	Company            string `orm:"size(100)"`
+	VatUserId          string `orm:"size(100)"`
+	VatRate            int
+	UserRole           string    `orm:"size(100)"`
+	Created            time.Time `orm:"type(datetime)"`
+	Comments           string    `orm:"type(text)"`
+	Phone              string    `orm:"size(50)"`
+	ZipCode            string    `orm:"size(100)"`
+	City               string    `orm:"size(100)"`
+	CountryCode        string    `orm:"size(2)"`
+	NoAutoInvoicing    bool
+	FastbillTemplateId int64
+	EuDelivery         bool
 }
 
 func (this *User) TableName() string {

@@ -32,6 +32,23 @@ app.controller('UserCtrl',
   $scope.userMachines = [];
   $scope.userMemberships = [];
 
+  $scope.loadFastbillTemplates = function() {
+    $http({
+      method: 'GET',
+      url: '/api/settings/fastbill_templates',
+      params: {
+        ac: new Date().getTime(),
+        location: $cookies.get('location')
+      }
+    })
+    .success(function(fastbillTemplates) {
+      $scope.fastbillTemplates = fastbillTemplates;
+    })
+    .error(function(data, status) {
+      toastr.error('Failed to load fastbill templates');
+    });
+  };
+
   $scope.loadLocations = function() {
     $http({
       method: 'GET',
@@ -75,6 +92,7 @@ app.controller('UserCtrl',
       if (user.ClientId <= 0) {
         user.ClientId = '';
       }
+      user.FastbillTemplateId = String(user.FastbillTemplateId);
       $scope.user = user;
       $scope.loadAvailableMachines();
       $scope.getUserMemberships(); // This part can happen assync
@@ -92,6 +110,7 @@ app.controller('UserCtrl',
   // 4. Load available memberships
   // 5. Load user memberships
 
+  $scope.loadFastbillTemplates();
   $scope.loadLocations();
   $scope.loadUserLocations();
   $scope.loadUserData();
@@ -396,7 +415,7 @@ app.controller('UserCtrl',
         var transformed = {
           User: _.extend({}, data.User)
         };
-        _.each(['ClientId', 'VatRate'], function(field) {
+        _.each(['ClientId', 'FastbillTemplateId' ,'VatRate'], function(field) {
           transformed.User[field] = parseInt(transformed.User[field]);
           if (_.isNaN(transformed.User[field])) {
             transformed.User[field] = 0;

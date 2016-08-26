@@ -140,11 +140,21 @@ func (inv *Invoice) FastbillCreateDraft(overwriteExisting bool) (fbDraft *fastbi
 		return nil, false, fastbill.ErrObtainingValidTemplateId
 	}
 
+	if inv.User.FastbillTemplateId > 0 {
+		tid := inv.User.FastbillTemplateId
+		templateId = &tid
+	}
+
 	fbDraft = &fastbill.Invoice{
 		CustomerNumber: inv.User.ClientId,
 		TemplateId:     *templateId,
 		Items:          make([]fastbill.Item, 0, 10),
 	}
+
+	if inv.User.EuDelivery {
+		fbDraft.EuDelivery = "1"
+	}
+
 	intv := inv.Interval()
 	if fbDraft.Month, fbDraft.Year, err = getFastbillMonthYear(&intv); err != nil {
 		return nil, false, fmt.Errorf("get fastbill month: %v", err)
