@@ -44,9 +44,21 @@ func (this *Controller) migrateFbNos(locId int64) (err error) {
 				beego.Error("Skipping", u.Email)
 				continue
 			}
-			l, err := fastbill.ListInvoices(fbId)
-			if err != nil {
-				return fmt.Errorf("list invoices: %v", err)
+			var l []fastbill.InvoiceGetResponseInvoice
+			for tries := 0; tries < 5; tries++ {
+				var err error
+				l, err = fastbill.ListInvoices(fbId)
+				if err == nil {
+					break
+				} else {
+					beego.Error("list invoices: %v", err)
+					continue
+				}
+				if tries == 4 {
+					return fmt.Errorf("Giving up to list invoices")
+				}
+				beego.Info("Wait 10 seconds for retry...")
+				<-time.After(10 * time.Second)
 			}
 			invs, err := invoices.GetAllOfUserAt(locId, u.Id)
 			if err != nil {
