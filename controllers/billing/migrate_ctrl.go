@@ -2,7 +2,9 @@ package billing
 
 import (
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/lib/fastbill"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
+	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_memberships"
 	"github.com/FabLabBerlin/localmachines/models/user_memberships/auto_extend"
@@ -11,6 +13,65 @@ import (
 	"github.com/astaxie/beego/orm"
 	"time"
 )
+
+// @Title MigrateFbNos
+// @Description Migrate fastbill numbers for invoices
+// @Success 200 Success
+// @Failure	500	Internal Server Error
+// @router /migrate_fb_nos [get]
+func (this *Controller) MigrateFbNos() {
+	locId, authorized := this.GetLocIdAdmin()
+	if !authorized {
+		this.CustomAbort(401, "Not authorized")
+	}
+	if err := this.migrateFbNos(locId); err != nil {
+		beego.Error(err.Error())
+		this.Abort("500")
+	}
+	this.ServeJSON()
+}
+
+func (this *Controller) migrateFbNos(locId int64) (err error) {
+	us, err := users.GetAllUsersAt(locId)
+	if err != nil {
+		return
+	}
+	for _, u := range us {
+		if u.ClientId > 0 {
+			fbId, err := fastbill.GetCustomerId(*u)
+			if err != nil {
+				return fmt.Errorf("get customer id: %v", err)
+			}
+			l, err := fastbill.ListInvoices(fbId)
+			if err != nil {
+				return fmt.Errorf("list invoices: %v", err)
+			}
+			invs, err := invoices.GetAllOfUserAt(locId, u.Id)
+			if err != nil {
+				return fmt.Errorf("get invoices of user at location: %v", err)
+			}
+			for _, inv := range invs {
+				for _, fbIv := range l {
+					if m, y, _, err := fbIv.ParseTitle(); err == nil {
+						if inv.Month == m && inv.Year == y && inv.Status == fbIv.Type {
+							inv.FastbillId = fbIv.Id
+							inv.FastbillNo = fbIv.InvoiceNumber
+							if err := inv.Save(); err == nil {
+								beego.Info("Successfully update inv", inv.Id)
+							} else {
+								beego.Error("Failed syncing", fbIv.InvoiceTitle)
+							}
+							if err = invutil.FastbillSync(locId, u); err != nil {
+								beego.Error("Failing to sync rest of the fields")
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return nil
+}
 
 // @Title Migrate
 // @Description Migrate purchases/memberships to non-null invoice IDs
