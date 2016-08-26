@@ -80,7 +80,8 @@ func (inv *Invoice) calculateTotals(ms *user_memberships.List) (err error) {
 	inv.Sums.Purchases.PriceVAT = inv.Sums.Purchases.PriceInclVAT - inv.Sums.Purchases.PriceExclVAT
 
 	for _, m := range ms.Data {
-		if inv.Interval().Contains(m.StartDate) {
+		if m.StartDate.Unix() <= inv.Interval().TimeTo().Unix() &&
+			inv.Interval().TimeTo().Unix() <= m.EndDate.Unix() {
 			inv.Sums.Memberships.Undiscounted += m.MonthlyPrice
 			inv.Sums.Memberships.PriceInclVAT += m.MonthlyPrice
 		}
