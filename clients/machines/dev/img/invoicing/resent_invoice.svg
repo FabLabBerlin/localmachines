@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="61px" height="61px" viewBox="0 0 61 61" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 3.8.2 (29753) - http://www.bohemiancoding.com/sketch -->
+    <title>RESEND INVOICE Copy 2</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M26.5,53 C41.1355459,53 53,41.1355459 53,26.5 C53,11.8644541 41.1355459,0 26.5,0 C11.8644541,0 0,11.8644541 0,26.5 C0,41.1355459 11.8644541,53 26.5,53 Z" id="path-1"></path>
+        <filter x="-50%" y="-50%" width="200%" height="200%" filterUnits="objectBoundingBox" id="filter-2">
+            <feOffset dx="0" dy="2" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="2" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.5 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="Button-States" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="INVOICE-EDIT-NEW" transform="translate(-532.000000, -222.000000)">
+            <g id="RESEND-INVOICE-Copy-2" transform="translate(536.000000, 224.000000)">
+                <g id="Resend">
+                    <g id="Oval-93">
+                        <use fill="black" fill-opacity="1" filter="url(#filter-2)" xlink:href="#path-1"></use>
+                        <use fill="#4A4A4A" fill-rule="evenodd" xlink:href="#path-1"></use>
+                    </g>
+                    <g id="Group-3" transform="translate(9.600000, 4.650000)" stroke-width="2" stroke="#FFFFFF">
+                        <g id="Group" transform="translate(15.250000, 0.000000)">
+                            <polyline id="Path-75" transform="translate(4.300000, 5.950000) rotate(17.000000) translate(-4.300000, -5.950000) " points="6.95 0.65 1.65 5.95 6.95 11.25"></polyline>
+                            <path d="M7.42709218,36.6679264 C13.3521292,34.3562193 17.55,28.5933423 17.55,21.85 C17.55,13.0686725 10.4313275,5.95 1.65,5.95" id="Oval-28"></path>
+                        </g>
+                        <g id="Group" transform="translate(9.550000, 25.200000) rotate(-180.000000) translate(-9.550000, -25.200000) translate(0.550000, 6.700000)">
+                            <polyline id="Path-75" transform="translate(4.300000, 5.950000) rotate(17.000000) translate(-4.300000, -5.950000) " points="6.95 0.65 1.65 5.95 6.95 11.25"></polyline>
+                            <path d="M7.42709218,36.6679264 C13.3521292,34.3562193 17.55,28.5933423 17.55,21.85 C17.55,13.0686725 10.4313275,5.95 1.65,5.95" id="Oval-28"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
