@@ -67,8 +67,6 @@ vex.defaultOptions.className = 'vex-theme-custom';
     const footerAbsoluteBottom = !this.state.isLogged &&
       this.props.location.pathname !== '/product';
 
-    // TODO: wait for ajax promise or something similar
-    //       ... until then this below is just a quick fix:
     if (!this.state.isLogged &&
         this.state.autoLoginSuccess === false &&
         !(this.props.location.pathname === '/login' ||
