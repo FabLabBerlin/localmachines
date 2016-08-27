@@ -1,6 +1,8 @@
 var keyMirror = require('fbjs/lib/keyMirror');
 
 export default keyMirror({
+  SUCCESS_AUTO_LOGIN: null,
+  FAIL_AUTO_LOGIN: null,
   API_GET_LOGOUT: null,
   SUCCESS_LOGIN: null,
   ERROR_LOGIN: null,

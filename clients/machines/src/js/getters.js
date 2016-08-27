@@ -42,6 +42,13 @@ const getFirstTry = [
   }
 ];
 
+const getAutoLoginSuccess = [
+  ['loginStore'],
+  (loginStore) => {
+    return loginStore.get('autoLoginSuccess');
+  }
+];
+
 const getLoginSuccess = [
   ['loginStore'],
   (loginStore) => {

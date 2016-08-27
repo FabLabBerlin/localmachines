@@ -63,17 +63,19 @@ export default {
           var data = {
             UserId: user.Id
           };
-          reactor.dispatch(actionTypes.SUCCESS_LOGIN, { data });
+          reactor.dispatch(actionTypes.SUCCESS_AUTO_LOGIN, { data });
           if (loggedIn) {
             loggedIn();
           }
         } else {
+          reactor.dispatch(actionTypes.FAIL_AUTO_LOGIN);
           if (loggedOut) {
             loggedOut();
           }
         }
       },
       error(xhr, status, err) {
+        reactor.dispatch(actionTypes.FAIL_AUTO_LOGIN);
         console.error('/users/login', status, err);
       }
     });

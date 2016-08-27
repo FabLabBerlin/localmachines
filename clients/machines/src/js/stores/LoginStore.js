@@ -6,6 +6,7 @@ var toastr = require('../toastr');
 
 
 const initialState = toImmutable({
+  autoLoginSuccess: undefined,
   firstTry: true,
   isLogged: false,
   loginSuccess: true,
@@ -29,6 +30,8 @@ var LoginStore = new Nuclear.Store({
   },
 
   initialize() {
+    this.on(actionTypes.SUCCESS_AUTO_LOGIN, successAutoLogin);
+    this.on(actionTypes.FAIL_AUTO_LOGIN, failAutoLogin);
     this.on(actionTypes.SUCCESS_LOGIN, successLogin);
     this.on(actionTypes.ERROR_LOGIN, errorLogin);
     this.on(actionTypes.SUCCESS_LOGOUT, successLogout);
@@ -36,6 +39,16 @@ var LoginStore = new Nuclear.Store({
     this.on(actionTypes.KEEP_ALIVE, keepAlive);
   }
 });
+
+function successAutoLogin(state, { data }) {
+  const s = state.set('autoLoginSuccess', true);
+  return successLogin(s, { data });
+}
+
+function failAutoLogin(state) {
+  const s = state.set('autoLoginSuccess', false);
+  return errorLogin(s);
+}
 
 /*
  * Success to the login functions
