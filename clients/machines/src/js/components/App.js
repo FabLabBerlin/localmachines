@@ -66,6 +66,15 @@ vex.defaultOptions.className = 'vex-theme-custom';
     const footerAbsoluteBottom = !this.state.isLogged &&
       this.props.location.pathname !== '/product';
 
+    // TODO: wait for ajax promise or something similar
+    //       ... until then this below is just a quick fix:
+    if (!this.state.isLogged && !(
+        this.props.location.pathname === '/login' ||
+        this.props.location.pathname === '/product')) {
+      window.location.href = '/machines/#/login';
+      return <LoaderLocal/>;
+    }
+
     return (
       <div className="app">
         {this.props.location.pathname !== '/product' ? <HeaderNav location={this.props.location}/> : null}
