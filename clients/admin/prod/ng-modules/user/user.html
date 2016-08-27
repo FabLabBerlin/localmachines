@@ -152,6 +152,31 @@
     </div>
   </div>
 
+  <div class="row">
+    <div class="col-sm-3">
+      <div class="form-group">
+        <label for="machine-type">Custom Fastbill Template</label>
+        <select class="form-control"
+                ng-model="user.FastbillTemplateId">
+          <option value="0" selected>Use standard template</option>
+          <option ng-repeat="t in fastbillTemplates"
+                  value="{{t.TEMPLATE_ID}}">
+            {{t.TEMPLATE_NAME}}
+          </option>
+        </select>
+      </div>
+    </div>
+
+  <div class="row">
+    <div class="col-sm-3">
+      <div class="form-group">
+        <label>
+          <input type="checkbox" ng-model="user.EuDelivery"> Inner EU delivery
+        </label>
+      </div>
+    </div>
+  </div>
+
   <div>
     <label for="user-password">User Password</label>
   </div>
