@@ -33,6 +33,7 @@ vex.defaultOptions.className = 'vex-theme-custom';
 
   getDataBindings() {
     return {
+      autoLoginSuccess: getters.getAutoLoginSuccess,
       isLoading: getters.getIsLoading,
       isLogged: getters.getIsLogged
     };
@@ -68,8 +69,9 @@ vex.defaultOptions.className = 'vex-theme-custom';
 
     // TODO: wait for ajax promise or something similar
     //       ... until then this below is just a quick fix:
-    if (!this.state.isLogged && !(
-        this.props.location.pathname === '/login' ||
+    if (!this.state.isLogged &&
+        this.state.autoLoginSuccess === false &&
+        !(this.props.location.pathname === '/login' ||
         this.props.location.pathname === '/product')) {
       window.location.href = '/machines/#/login';
       return <LoaderLocal/>;

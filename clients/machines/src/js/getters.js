@@ -528,7 +528,7 @@ const getTutorings = [
 ];
 
 export default {
-  getIsLogged, getUid, getFirstTry, getLoginSuccess, getLastActivity,
+  getIsLogged, getUid, getFirstTry, getAutoLoginSuccess, getLoginSuccess, getLastActivity,
   getUser,
   getIsLoading, getBill, getBillMonths, getMonthlyBills, getMemberships, getMembershipsByMonth,
   getFeedbackSubject, getFeedbackSubjectDropdown, getFeedbackSubjectOtherText, getFeedbackMessage,
