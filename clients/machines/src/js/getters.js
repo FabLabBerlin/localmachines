@@ -35,6 +35,13 @@ const getUid = [
   }
 ];
 
+const getFirstTry = [
+  ['loginStore'],
+  (loginStore) => {
+    return loginStore.get('firstTry');
+  }
+];
+
 const getLoginSuccess = [
   ['loginStore'],
   (loginStore) => {
@@ -514,7 +521,7 @@ const getTutorings = [
 ];
 
 export default {
-  getIsLogged, getUid, getLoginSuccess, getLastActivity,
+  getIsLogged, getUid, getFirstTry, getLoginSuccess, getLastActivity,
   getUser,
   getIsLoading, getBill, getBillMonths, getMonthlyBills, getMemberships, getMembershipsByMonth,
   getFeedbackSubject, getFeedbackSubjectDropdown, getFeedbackSubjectOtherText, getFeedbackMessage,
