@@ -35,12 +35,4 @@ describe('LoginStore', function() {
       expect(uid).toBe(123);
     });
   });
-
-  describe('ERROR_LOGIN', function() {
-    it('sets firstTry to false', function() {
-      reactor.dispatch(actionTypes.ERROR_LOGIN);
-      const firstTry = reactor.evaluateToJS(getters.getFirstTry);
-      expect(firstTry).toBe(false);
-    });
-  });
 });
