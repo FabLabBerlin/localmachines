@@ -42,7 +42,7 @@ vex.defaultOptions.className = 'vex-theme-custom';
     const isLogged = reactor.evaluateToJS(getters.getIsLogged);
 
     if (!isLogged && this.props.location.pathname !== '/product') {
-      LoginActions.tryPassLoginForm(this.context.router, {
+      LoginActions.tryAutoLogin(this.context.router, {
         loggedIn: () => {
           if (this.props.location.pathname === '/login') {
             hashHistory.push('/machine');

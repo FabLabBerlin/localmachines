@@ -53,7 +53,7 @@ var Login = React.createClass({
    * listen to the onChange event from the UserStore
    */
   componentDidMount() {
-    LoginActions.tryPassLoginForm(this.context.router, {});
+    LoginActions.tryAutoLogin(this.context.router, {});
 
     if (reactor.evaluateToJS(getters.getIsLogged)) {
       hashHistory.push('/machine');

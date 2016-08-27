@@ -50,7 +50,7 @@ export default {
   /*
    * Maybe the user is already logged in
    */
-  tryPassLoginForm(router, {loggedIn, loggedOut}) {
+  tryAutoLogin(router, {loggedIn, loggedOut}) {
     $.ajax({
       url: '/api/users/current',
       dataType: 'json',
