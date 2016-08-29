@@ -2,6 +2,7 @@ import {hashHistory} from 'react-router';
 var getters = require('../../getters');
 var React = require('react');
 var reactor = require('../../reactor');
+var Timer = require('../MachinePage/Machine/Timer');
 
 
 const AVAILABLE = 'available';
@@ -35,6 +36,18 @@ var Machine = React.createClass({
     }
   },
 
+  overlayText() {
+    switch (this.status()) {
+    case RUNNING:
+      return (
+        <div>
+          <div>Running for</div>
+          <Timer activation={this.props.machine.get('activation').toJS()}/>
+        </div>
+      );
+    }
+  },
+
   render() {
     const m = this.props.machine;
     const style = {
@@ -56,6 +69,9 @@ var Machine = React.createClass({
           </div>
         </div>
         <div className="ms-machine-icon" style={style}>
+          <div className="ms-machine-overlay">
+            {this.overlayText()}
+          </div>
         </div>
       </a>
     );
