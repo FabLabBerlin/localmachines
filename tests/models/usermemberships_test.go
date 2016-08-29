@@ -128,16 +128,32 @@ func TestUserMemberships(t *testing.T) {
 				if err != nil {
 					panic(err.Error())
 				}
+				So(userMembership.AutoExtend, ShouldEqual, membership.AutoExtend)
+				userMembership.AutoExtend = false
+				if err := userMembership.Update(); err != nil {
+					panic(err.Error())
+				}
+				So(userMembership.AutoExtend, ShouldBeFalse)
 				gotUserMembership, err := user_memberships.Get(userMembership.Id)
 				if err != nil {
 					panic(err.Error())
 				}
+				So(gotUserMembership.AutoExtend, ShouldBeFalse)
 				Convey("There should be no error", func() {
 					So(err, ShouldBeNil)
 				})
 
 				Convey("The user membership ID should be returned", func() {
 					So(userMembership.Id, ShouldBeGreaterThan, 0)
+				})
+
+				Convey("The combo type should work normally", func() {
+					ums, err := user_memberships.GetAllAt(1)
+					if err != nil {
+						panic(err.Error())
+					}
+					So(len(ums), ShouldEqual, 1)
+					So(ums[0].AutoExtend, ShouldBeFalse)
 				})
 
 				Convey("It should be possible to read it back again", func() {
@@ -154,10 +170,6 @@ func TestUserMemberships(t *testing.T) {
 					validEndDate := gotUserMembership.StartDate.AddDate(
 						0, int(membership.DurationMonths), 0)
 					So(gotUserMembership.EndDate.Equal(validEndDate), ShouldBeTrue)
-				})
-
-				Convey("The auto_extend flag should be set to the one in the base membership", func() {
-					So(gotUserMembership.AutoExtend, ShouldEqual, membership.AutoExtend)
 				})
 
 				Convey("The activations made during the user membership period should be affected by the base membership discount rules", func() {
