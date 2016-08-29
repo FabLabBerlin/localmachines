@@ -1265,7 +1265,7 @@ td .force-switch-off:hover {
 }
 
 .ms-available .ms-machine-label {
-  background-color: #2977E4;
+  background-color: @ms-hover-color-available;
   color: white;
 }
 
@@ -1327,6 +1327,10 @@ http://codepen.io/anon/pen/QEXBEp
 .ms-machine-overlay .machine-time-value {
   font-size: 20px;
   text-align: center;
+}
+
+.ms-occupied .ms-machine-overlay {
+  background-color: @ms-hover-color-occupied;
 }
 
 .ms-running .ms-machine-overlay {

@@ -38,6 +38,8 @@ var Machine = React.createClass({
 
   overlayText() {
     switch (this.status()) {
+    case OCCUPIED:
+      return 'Occupied';
     case RUNNING:
       return (
         <div>
