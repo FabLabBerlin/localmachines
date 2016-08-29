@@ -287,7 +287,7 @@ func createXlsxFile(
 					cell.SetFloatWithFormat(float64(m.MonthlyPrice), FORMAT_2_DIGIT)
 					cell.SetStyle(colorStyle(GREEN))
 					cell = row.AddCell()
-					cell.Value = m.Unit
+					cell.Value = ""
 					cell = row.AddCell()
 					cell.Value = strconv.Itoa(m.MachinePriceDeduction) + "%"
 

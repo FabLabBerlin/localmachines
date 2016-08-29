@@ -71,8 +71,7 @@ type Combo struct {
 	LocationId            int64
 	Title                 string
 	ShortName             string
-	DurationMonths        int
-	Unit                  string
+	DurationMonths        int64
 	MonthlyPrice          float64
 	MachinePriceDeduction int
 	AffectedMachines      string
@@ -149,33 +148,55 @@ func GetAllAt(locationId int64) (ums []*UserMembership, err error) {
 	return
 }
 
-func GetAllAtList(locationId int64) (ums *List, err error) {
-
-	o := orm.NewOrm()
-
-	// Use these for the table names
-	m := memberships.Membership{}
-	um := UserMembership{}
-
-	// Joint query, select user memberships and expands them with
-	// membership base information.
-	sql := fmt.Sprintf("SELECT um.*, m.location_id, m.title, m.short_name, m.duration_months, "+
-		"m.monthly_price, m.machine_price_deduction, m.affected_machines, m.auto_extend "+
-		"FROM %s AS um "+
-		"JOIN %s m ON um.membership_id=m.id "+
-		"WHERE m.location_id=?",
-		um.TableName(), m.TableName())
-
-	var userMemberships []*Combo
-	if _, err := o.Raw(sql, locationId).QueryRows(&userMemberships); err != nil {
-		return nil, fmt.Errorf("query rows: %v", err)
+func GetAllAtList(locId int64) (list *List, err error) {
+	ms, err := memberships.GetAllAt(locId)
+	if err != nil {
+		return nil, fmt.Errorf("get all at: %v", err)
+	}
+	msbyId := make(map[int64]*memberships.Membership)
+	for _, m := range ms {
+		msbyId[m.Id] = m
 	}
 
-	list := List{
+	ums, err := GetAllAt(locId)
+	if err != nil {
+		return nil, fmt.Errorf("GetAllAt: %v", err)
+	}
+
+	userMemberships := make([]*Combo, 0, len(ums))
+	for _, um := range ums {
+		c := Combo{}
+
+		c.Id = um.Id
+		c.UserId = um.UserId
+		c.MembershipId = um.MembershipId
+		c.StartDate = um.StartDate
+		c.EndDate = um.EndDate
+		c.AutoExtend = um.AutoExtend
+		c.InvoiceId = um.InvoiceId
+		c.InvoiceStatus = um.InvoiceStatus
+
+		m, ok := msbyId[um.MembershipId]
+		if !ok {
+			return nil, fmt.Errorf("cannot find membership with id %v", um.MembershipId)
+		}
+
+		c.LocationId = m.LocationId
+		c.Title = m.Title
+		c.ShortName = m.ShortName
+		c.DurationMonths = m.DurationMonths
+		c.MonthlyPrice = m.MonthlyPrice
+		c.MachinePriceDeduction = m.MachinePriceDeduction
+		c.AffectedMachines = m.AffectedMachines
+
+		userMemberships = append(userMemberships, &c)
+	}
+
+	list = &List{
 		Data: userMemberships,
 	}
 
-	return &list, nil
+	return list, nil
 }
 
 // Gets pointer to filled user membership store
