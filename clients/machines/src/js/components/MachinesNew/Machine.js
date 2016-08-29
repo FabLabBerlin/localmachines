@@ -20,6 +20,7 @@ var Machine = React.createClass({
 
   getDataBindings() {
     return {
+      reservationsByMachineId: getters.getActiveReservationsByMachineId,
       user: getters.getUser
     };
   },
@@ -42,6 +43,8 @@ var Machine = React.createClass({
       return 'Maintenance';
     case OCCUPIED:
       return 'Occupied';
+    case RESERVED:
+      return 'Reserved';
     case RUNNING:
       return (
         <div>
@@ -81,9 +84,18 @@ var Machine = React.createClass({
     );
   },
 
+  reservation() {
+    const mid = this.props.machine.get('Id');
+
+    if (this.state.reservationsByMachineId) {
+      return this.state.reservationsByMachineId.toObject()[mid];
+    }
+  },
+
   status() {
     const m = this.props.machine;
     const a = m.get('activation');
+    const r = this.reservation();
 
     if (m.get('UnderMaintenance')) {
       return MAINTENANCE;
@@ -99,6 +111,8 @@ var Machine = React.createClass({
         } else {
           return OCCUPIED;
         }
+      } else if (r && !r.get('ReservationDisabled') && !r.get('Cancelled')) {
+        return RESERVED;
       } else {
         return AVAILABLE;
       }
