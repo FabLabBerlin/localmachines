@@ -30,6 +30,22 @@ const getMachineUsers = [
   }
 ];
 
+const getMyMachines = [
+  ['machineStore'],
+  getActivations,
+  getMachinesById,
+  ['loginStore'],
+  (machineStore, activations, machinesById, loginStore) => {
+    const uid = loginStore.get('uid');
+
+    if (activations && machinesById) {
+      return activations
+        .filter(a => a.get('UserId') === uid)
+        .map(a => machinesById.get(a.get('MachineId')));
+    }
+  }
+];
+
 const getNewMachineImages = [
   ['machineStore'],
   (machineStore) => {
@@ -42,5 +58,6 @@ export default {
   getMachinesById,
   getMachines,
   getMachineUsers,
+  getMyMachines,
   getNewMachineImages
 };

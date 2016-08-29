@@ -18,28 +18,13 @@ var Section = React.createClass({
     return (
       <div>
         <div className="ms-section-title">
-          {this.title()}
+          {this.props.title}
         </div>
         <div>
           {machines.map((m, i) => <Machine key={i} machine={m}/>)}
         </div>
       </div>
     );
-  },
-
-  title() {
-    var tid = this.props.typeId;
-    var t = {
-      0: 'Other',
-      1: '3D Printers',
-      2: 'CNC Mill',
-      3: 'Heatpress',
-      4: 'Knitting Machine',
-      5: 'Lasercutters',
-      6: 'Vinylcutter'
-    }[tid];
-
-    return t || tid;
   }
 });
 
@@ -52,7 +37,8 @@ var MachinesPage = React.createClass({
     return {
       activations: Machines.getters.getActivations,
       locationId: LocationGetters.getLocationId,
-      machines: Machines.getters.getMachines
+      machines: Machines.getters.getMachines,
+      myMachines: Machines.getters.getMyMachines
     };
   },
 
@@ -71,6 +57,7 @@ var MachinesPage = React.createClass({
   },
 
   render() {
+    console.log('myMachines=', this.state.myMachines);
     if (!this.state.locationId || !this.state.machines ||
         this.state.machines.toList().count() === 0 ||
         !this.state.activations) {
@@ -92,19 +79,28 @@ var MachinesPage = React.createClass({
     })
     .groupBy(m => m.get('TypeId'));
 
+    const myMachines = this.state.myMachines &&
+      this.state.myMachines
+      .map(m => {
+        const as = activationsByMachine.get(m.get('Id'));
+        return as ? m.set('activation', as.get(0)) : m;
+      });
+
     return (
       <div id="ms" className="container-fluid">
-        <Section typeId={1} machines={machinesByType.get(1)}/>
-        <Section typeId={2} machines={machinesByType.get(2)}/>
-        <Section typeId={3} machines={machinesByType.get(3)}/>
-        <Section typeId={4} machines={machinesByType.get(4)}/>
-        <Section typeId={5} machines={machinesByType.get(5)}/>
-        <Section typeId={6} machines={machinesByType.get(6)}/>
-        <Section typeId={0} machines={machinesByType.get(0)}/>
+        {myMachines
+          ? <Section title="My Machines" machines={myMachines}/>
+          : null}
+        <Section title="3D Printers" machines={machinesByType.get(1)}/>
+        <Section title="CNC Mill" machines={machinesByType.get(2)}/>
+        <Section title="Heatpress" machines={machinesByType.get(3)}/>
+        <Section title="Knitting Machine" machines={machinesByType.get(4)}/>
+        <Section title="Lasercutters" machines={machinesByType.get(5)}/>
+        <Section title="Vinylcutter" machines={machinesByType.get(6)}/>
+        <Section title="Other" machines={machinesByType.get(0)}/>
       </div>
     );
   }
-
 });
 
 export default MachinesPage;
