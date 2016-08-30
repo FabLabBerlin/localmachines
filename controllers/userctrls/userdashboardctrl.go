@@ -59,13 +59,15 @@ func (this *DashboardData) loadMachines(isStaff bool, uid, locationId int64) (er
 		if err != nil {
 			return fmt.Errorf("Failed to get user machine permissions: %v", err)
 		}
-		for _, permission := range *permissions {
-			for _, machine := range allMachines {
+		for _, machine := range allMachines {
+			machine.Locked = true
+			for _, permission := range *permissions {
 				if machine.Id == permission.MachineId {
-					this.Machines = append(this.Machines, machine)
+					machine.Locked = false
 					break
 				}
 			}
+			this.Machines = append(this.Machines, machine)
 		}
 	} else {
 		this.Machines = allMachines

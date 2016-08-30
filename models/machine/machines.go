@@ -70,6 +70,8 @@ type Machine struct {
 	NetswitchHost       string `orm:"size(255)"`
 	NetswitchSensorPort int
 	NetswitchType       string `orm:"size(255)"`
+	// Parameters that are not persisted
+	Locked bool `orm:"-"`
 }
 
 // Define custom table name as for SQL table with a name "machines"

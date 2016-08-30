@@ -40,14 +40,16 @@ var MachineList = React.createClass({
               }
             }.bind(this));
           }
-          return (
-            <Machine
-              key={machine.Id}
-              machine={machine}
-              user={this.props.user}
-              activation={activationProps}
-            />
-          );
+          if (!machine.Locked) {
+            return (
+              <Machine
+                key={machine.Id}
+                machine={machine}
+                user={this.props.user}
+                activation={activationProps}
+              />
+            );
+          }
         }
       }.bind(this));
     } else {

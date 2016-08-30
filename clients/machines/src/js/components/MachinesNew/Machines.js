@@ -16,6 +16,10 @@ var UserActions = require('../../actions/UserActions');
 
 var Section = React.createClass({
   render() {
+    if (!this.props.machines || this.props.machines.count() === 0) {
+      return <div/>;
+    }
+
     const machines = this.props.machines.sortBy(m => m.get('Name'));
 
     return (

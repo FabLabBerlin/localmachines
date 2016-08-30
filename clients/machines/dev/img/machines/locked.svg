@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="42px" height="42px" viewBox="0 0 42 42" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 39.1 (31720) - http://www.bohemiancoding.com/sketch -->
+    <title>Icone</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Machine's-page" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="FABLAB-BERLIN" transform="translate(-357.000000, -2880.000000)">
+            <g id="TEXTILE-LAB" transform="translate(40.000000, 2328.000000)">
+                <g id="Punchcard" transform="translate(258.000000, 362.000000)">
+                    <g id="Icone" transform="translate(60.000000, 191.000000)">
+                        <circle id="Contour" stroke="#FFFFFF" cx="20" cy="20" r="20"></circle>
+                        <path d="M14.4637248,15.0871857 C14.4637248,11.8170293 16.9958334,9.15656026 20.1084002,9.15656026 C23.2208832,9.15656026 25.7529918,11.8170293 25.7529918,15.0871857 L25.7529918,19.1308208 L14.4637248,19.1308208 L14.4637248,15.0871857 Z M27.8056315,19.1308208 L27.8056315,15.0871857 C27.8056315,10.6278893 24.3526343,7 20.1084002,7 C15.8640823,7 12.411085,10.6278893 12.411085,15.0871857 L12.411085,19.1308208 L11,19.1308208 L11,33 L29.2168004,33 L29.2168004,19.1308208 L27.8056315,19.1308208 Z" id="Fill-1-Copy" fill="#FFFFFF"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

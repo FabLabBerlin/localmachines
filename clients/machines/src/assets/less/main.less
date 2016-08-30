@@ -1308,6 +1308,7 @@ http://codepen.io/anon/pen/QEXBEp
 .ms-machine-icon {
   background-repeat: no-repeat;
   background-position: 50%;
+  background-size: 150%;
   border-radius: 50%;
   height: 160px;
   margin-left: 34px;
@@ -1340,6 +1341,14 @@ http://codepen.io/anon/pen/QEXBEp
 .ms-machine-overlay .machine-time-value {
   font-size: 20px;
   text-align: center;
+}
+
+.ms-locked .ms-machine-overlay {
+  background-color: @ms-hover-color-locked;
+  background-image: url(/machines/assets/img/machines/locked.svg);
+  background-position: 50% 102px;
+  background-repeat: no-repeat;
+  color: white;
 }
 
 .ms-maintenance .ms-machine-overlay {

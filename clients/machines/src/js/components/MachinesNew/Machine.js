@@ -41,6 +41,8 @@ var Machine = React.createClass({
 
   overlayText() {
     switch (this.status()) {
+    case LOCKED:
+      return 'Unlock ?';
     case MAINTENANCE:
       return 'Maintenance';
     case OCCUPIED:
@@ -114,7 +116,10 @@ var Machine = React.createClass({
     const r = this.reservation();
     const upcoming = this.upcomingReservation();
 
-    if (m.get('UnderMaintenance')) {
+    if (m.get('Locked')) {
+      console.log('SOMETHING IS LOCKED!!!');
+      return LOCKED;
+    } else if (m.get('UnderMaintenance')) {
       return MAINTENANCE;
     } else {
       if (a) {
