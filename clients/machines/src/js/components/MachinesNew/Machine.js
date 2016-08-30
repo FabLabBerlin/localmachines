@@ -60,9 +60,6 @@ var Machine = React.createClass({
     const style = {
       backgroundImage: 'url(' + this.imgUrl() + ')'
     };
-    if (m.get('activation')) {
-      console.log('machine with activation:', m.toJS());
-    }
 
     return (
       <a className={'ms-machine ' + this.statusClass()}
@@ -101,11 +98,6 @@ var Machine = React.createClass({
       return MAINTENANCE;
     } else {
       if (a) {
-        console.log('machine ' + m.get('Name'));
-        console.log('a=', a);
-        console.log('a.UserId=', a.get('UserId'));
-        console.log('userId=', this.state.user.get('Id'));
-        console.log('this.state.user=', this.state.user);
         if (a.get('UserId') === this.state.user.get('Id')) {
           return RUNNING;
         } else {

@@ -1,9 +1,12 @@
+var _ = require('lodash');
 var getters = require('../../getters');
 var LoaderLocal = require('../LoaderLocal');
 var LocationGetters = require('../../modules/Location/getters');
 var MachineActions = require('../../actions/MachineActions');
 var Machine = require('./Machine');
 var Machines = require('../../modules/Machines');
+var Nuclear = require('nuclear-js');
+var toImmutable = Nuclear.toImmutable;
 var React = require('react');
 var ReservationActions = require('../../actions/ReservationActions');
 var reactor = require('../../reactor');
@@ -38,7 +41,9 @@ var MachinesPage = React.createClass({
       activations: Machines.getters.getActivations,
       locationId: LocationGetters.getLocationId,
       machines: Machines.getters.getMachines,
-      myMachines: Machines.getters.getMyMachines
+      machinesById: Machines.getters.getMachinesById,
+      myMachines: Machines.getters.getMyMachines,
+      upcomingReservations: getters.getUpcomingReservationsByMachineId
     };
   },
 
@@ -57,7 +62,24 @@ var MachinesPage = React.createClass({
   },
 
   render() {
-    console.log('myMachines=', this.state.myMachines);
+    const uid = reactor.evaluateToJS(getters.getUid);
+    var myMachinesList;
+    if (this.state.myMachines && this.state.upcomingReservations) {
+      myMachinesList = [];
+      const myMachineIds = this.state.myMachines.map(m => m.get('Id')).toJS();
+
+      _.each(this.state.myMachines.toJS(), m => {
+        myMachinesList.push(m);
+      });
+
+      _.each(this.state.upcomingReservations.toList().toJS(), r => {
+        if (!_.includes(myMachineIds, r.MachineId) && r.UserId === uid) {
+          const m = this.state.machinesById.get(r.MachineId);
+          myMachinesList.push(m);
+        }
+      });
+      myMachinesList = toImmutable(myMachinesList);
+    }
     if (!this.state.locationId || !this.state.machines ||
         this.state.machines.toList().count() === 0 ||
         !this.state.activations) {
@@ -79,17 +101,18 @@ var MachinesPage = React.createClass({
     })
     .groupBy(m => m.get('TypeId'));
 
-    const myMachines = this.state.myMachines &&
-      this.state.myMachines
-      .map(m => {
-        const as = activationsByMachine.get(m.get('Id'));
-        return as ? m.set('activation', as.get(0)) : m;
-      });
+    if (myMachinesList) {
+      myMachinesList = myMachinesList
+        .map(m => {
+          const as = activationsByMachine.get(m.get('Id'));
+          return as ? m.set('activation', as.get(0)) : m;
+        });
+    }
 
     return (
       <div id="ms" className="container-fluid">
-        {myMachines
-          ? <Section title="My Machines" machines={myMachines}/>
+        {myMachinesList
+          ? <Section title="My Machines" machines={myMachinesList}/>
           : null}
         <Section title="3D Printers" machines={machinesByType.get(1)}/>
         <Section title="CNC Mill" machines={machinesByType.get(2)}/>

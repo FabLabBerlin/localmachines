@@ -373,6 +373,28 @@ const getActiveReservationsByMachineId = [
   }
 ];
 
+const getUpcomingReservationsByMachineId = [
+  getReservationsByDay,
+  (reservationsByDay) => {
+    if (reservationsByDay) {
+      var m = moment();
+      var u = m.unix();
+      var rs = reservationsByDay.get(m.format('YYYY-MM-DD'));
+      var reservationsByMachineId = {};
+      if (rs) {
+        _.each(rs.toObject(), (r) => {
+          var start = moment(r.get('TimeStart')).unix();
+          var end = moment(r.get('TimeEnd')).unix();
+          if (start > u && start - u < 12 * 3600 && u <= end) {
+            reservationsByMachineId[r.get('MachineId')] = r;
+          }
+        });
+        return toImmutable(reservationsByMachineId);
+      }
+    }
+  }
+];
+
 const getNewReservationTimes = [
   Machines.getters.getMachinesById,
   ['reservationsStore'],
@@ -532,7 +554,7 @@ export default {
   getUser,
   getIsLoading, getBill, getBillMonths, getMonthlyBills, getMemberships, getMembershipsByMonth,
   getFeedbackSubject, getFeedbackSubjectDropdown, getFeedbackSubjectOtherText, getFeedbackMessage,
-  getNewReservation, getNewReservationPrice, getNewReservationTimes, getNewReservationFrom, getNewReservationTo, getReservations, getReservationsByDay, getActiveReservationsByMachineId, getSlotAvailabilities48h,
+  getNewReservation, getNewReservationPrice, getNewReservationTimes, getNewReservationFrom, getNewReservationTo, getReservations, getReservationsByDay, getActiveReservationsByMachineId, getUpcomingReservationsByMachineId, getSlotAvailabilities48h,
   getScrollUpEnabled, getScrollDownEnabled, getScrollPosition,
   getTutorings
 };
