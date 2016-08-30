@@ -1255,6 +1255,10 @@ td .force-switch-off:hover {
   border-color: @ms-hover-color-running;
 }
 
+.ms-machine.ms-upcoming-reservation:hover {
+  border-color: @ms-hover-color-reserved;
+}
+
 .ms-machine-label {
   font-size: 24px;
   height: 77px;
@@ -1288,6 +1292,11 @@ http://codepen.io/anon/pen/QEXBEp
   color: @ms-hover-color-occupied;
 }
 
+.ms-upcoming-reservation .ms-machine-label {
+  background: @ms-hover-color-reserved;
+  color: white;
+}
+
 .ms-running .ms-machine-label {
   color: @ms-hover-color-running;
 }
@@ -1305,6 +1314,11 @@ http://codepen.io/anon/pen/QEXBEp
   width: 160px;
 }
 
+.ms-machine-overlay-container {
+  overflow: hidden;
+  position: absolute;
+}
+
 .ms-machine-overlay {
   .align-items(center);
   .flex-block();
@@ -1316,7 +1330,6 @@ http://codepen.io/anon/pen/QEXBEp
   font-weight: bold;
   height: 160px;
   opacity: 0.6;
-  position: absolute;
   width: 160px;
 }
 
@@ -1347,6 +1360,17 @@ http://codepen.io/anon/pen/QEXBEp
 
 .ms-running .ms-machine-overlay {
   background-color: @ms-hover-color-running;
+}
+
+.ms-upcoming-reservation .ms-machine-overlay-container {
+  height: 59px;
+  margin-top: 48px;
+}
+
+.ms-upcoming-reservation .ms-machine-overlay {
+  background-color: @ms-hover-color-reserved;
+  margin-top: -52px;
+  opacity: 1;
 }
 
 

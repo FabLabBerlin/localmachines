@@ -10,6 +10,7 @@ const LOCKED = 'locked';
 const MAINTENANCE = 'maintenance';
 const OCCUPIED = 'occupied';
 const RESERVED = 'reserved';
+const UPCOMING_RESERVATION = 'upcoming-reservation';
 const RUNNING = 'running';
 const STAFF = 'staff';
 
@@ -21,6 +22,7 @@ var Machine = React.createClass({
   getDataBindings() {
     return {
       reservationsByMachineId: getters.getActiveReservationsByMachineId,
+      upcomingReservationsByMachineId: getters.getUpcomingReservationsByMachineId,
       user: getters.getUser
     };
   },
@@ -52,6 +54,13 @@ var Machine = React.createClass({
           <Timer activation={this.props.machine.get('activation').toJS()}/>
         </div>
       );
+    case UPCOMING_RESERVATION:
+      return (
+        <div>
+          <div>Reserved in</div>
+          <Timer activation={this.upcomingReservation().toJS()}/>
+        </div>
+      );
     }
   },
 
@@ -73,8 +82,10 @@ var Machine = React.createClass({
           </div>
         </div>
         <div className="ms-machine-icon" style={style}>
-          <div className="ms-machine-overlay">
-            {this.overlayText()}
+          <div className="ms-machine-overlay-container">
+            <div className="ms-machine-overlay">
+              {this.overlayText()}
+            </div>
           </div>
         </div>
       </a>
@@ -89,10 +100,19 @@ var Machine = React.createClass({
     }
   },
 
+  upcomingReservation() {
+    const mid = this.props.machine.get('Id');
+
+    if (this.state.upcomingReservationsByMachineId) {
+      return this.state.upcomingReservationsByMachineId.toObject()[mid];
+    }
+  },
+
   status() {
     const m = this.props.machine;
     const a = m.get('activation');
     const r = this.reservation();
+    const upcoming = this.upcomingReservation();
 
     if (m.get('UnderMaintenance')) {
       return MAINTENANCE;
@@ -105,6 +125,9 @@ var Machine = React.createClass({
         }
       } else if (r && !r.get('ReservationDisabled') && !r.get('Cancelled')) {
         return RESERVED;
+      } else if (upcoming && !upcoming.get('ReservationDisabled') &&
+                !upcoming.get('Cancelled')) {
+        return UPCOMING_RESERVATION;
       } else {
         return AVAILABLE;
       }

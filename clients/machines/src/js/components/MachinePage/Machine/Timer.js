@@ -37,11 +37,14 @@ var Timer = React.createClass({
   },
 
   multiplier() {
+    console.log('this.props.activation.PriceUnit=', this.props.activation.PriceUnit);
     switch (this.props.activation.PriceUnit) {
     case 'day':
       return 86400;
     case 'hour':
       return 3600;
+    case '30 minutes':
+      return 1800;
     case 'minute':
       return 60;
     case 'second':
