@@ -117,7 +117,6 @@ var Machine = React.createClass({
     const upcoming = this.upcomingReservation();
 
     if (m.get('Locked')) {
-      console.log('SOMETHING IS LOCKED!!!');
       return LOCKED;
     } else if (m.get('UnderMaintenance')) {
       return MAINTENANCE;
