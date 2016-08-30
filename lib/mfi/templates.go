@@ -153,6 +153,12 @@ wpasupplicant.profile.1.name=WPA-PSK
 wpasupplicant.profile.1.network.1.key_mgmt.1.name=WPA-PSK
 wpasupplicant.profile.1.network.1.psk={{.WifiPassword}}
 wpasupplicant.profile.1.network.1.eap.1.status=disabled
+cron.1.job.1.cmd=test $(cat /proc/uptime | awk '{print int($1)}') -gt 259200 && test $(cat /proc/power/relay1) -eq 0 && reboot
+cron.1.job.1.schedule=*/1 * * * *
+cron.1.job.1.status=enabled
+cron.1.status=enabled
+cron.1.user=ubnt
+cron.status=enabled
 `
 
 const WLAN_OVERWRITE = `
