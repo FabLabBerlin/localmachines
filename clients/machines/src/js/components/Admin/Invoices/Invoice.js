@@ -129,14 +129,14 @@ var Header = React.createClass({
               <button type="button"
                       onClick={this.send}
                       title="Send">
-                <i className="fa fa-send"/>
+                <img src="/machines/assets/img/invoicing/send_invoice_white.svg"/>
               </button> : null
             }
             {this.state.invoiceActions.get('SendCanceled') ?
               <button type="button"
                       onClick={this.sendCanceled}
                       title="Send Canceled">
-                <i className="fa fa-send"/>
+                <img src="/machines/assets/img/invoicing/send_invoice_white.svg"/>
               </button> : null
             }
             {this.state.invoiceActions.get('Cancel') ?
