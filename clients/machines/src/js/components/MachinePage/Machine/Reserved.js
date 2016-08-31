@@ -89,7 +89,7 @@ var ReservedMachine = React.createClass({
   
           <div className="col-xs-6">
 
-          { (isReservator && !this.props.isStaff) ? ( {startStopButton} ) : '' }
+          { (isReservator && !this.props.isStaff) ? ( startStopButton ) : '' }
 
           { (this.props.isStaff) ? (
             <table className="machine-activation-table">
