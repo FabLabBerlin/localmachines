@@ -40,10 +40,12 @@ app.controller('DashboardCtrl',
       return month;
     }).sort();
     var byMonth = months.map(function(month) {
-      var memberships = $scope.metrics.MembershipCountsByMonth[month];
+      var membershipsRnD = $scope.metrics.MembershipCountsByMonthRnD[month];
+      var memberships = $scope.metrics.MembershipCountsByMonth[month] - membershipsRnD;
       var minutes = Math.round($scope.metrics.MinutesByMonth[month]);
       var activationsRevenue = Math.round($scope.metrics.ActivationsByMonth[month]);
-      var membershipsRevenue = Math.round($scope.metrics.MembershipsByMonth[month]);
+      var membershipsRevenueRnd = Math.round($scope.metrics.MembershipsByMonthRnD[month] || 0);
+      var membershipsRevenue = Math.round($scope.metrics.MembershipsByMonth[month]) - membershipsRevenueRnd;
       return [
         {
           v: month,
@@ -52,7 +54,9 @@ app.controller('DashboardCtrl',
         membershipsRevenue,
         'Memberships (€): <b>' + membershipsRevenue + '</b><br>' + memberships + ' non-free Memberships',
         activationsRevenue,
-        'Activations (€): <b>' + activationsRevenue + '</b><br>' + minutes + ' minutes for non-Admins'
+        'Activations (€): <b>' + activationsRevenue + '</b><br>' + minutes + ' minutes for non-Admins',
+        membershipsRevenueRnd,
+        'R&D Center (€): <b>' + membershipsRevenueRnd + '</b><br>' + membershipsRnD + ' R&D Center Tables'
       ];
     });
 
@@ -62,6 +66,8 @@ app.controller('DashboardCtrl',
     data.addColumn('number', 'Memberships (€)');
     data.addColumn({'type': 'string', 'role': 'tooltip', 'p': {'html': true}});
     data.addColumn('number', 'Activations (€)');
+    data.addColumn({'type': 'string', 'role': 'tooltip', 'p': {'html': true}});
+    data.addColumn('number', 'R&D Center (€)');
     data.addColumn({'type': 'string', 'role': 'tooltip', 'p': {'html': true}});
     data.addRows(byMonth);
 

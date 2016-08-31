@@ -15,25 +15,40 @@ import (
 )
 
 type Response struct {
-	MembershipsByDay        map[string]float64
-	MembershipsByMonth      map[string]float64
-	MembershipCountsByMonth map[string]int
-	ActivationsByDay        map[string]float64
-	ActivationsByMonth      map[string]float64
-	MinutesByDay            map[string]float64
-	MinutesByMonth          map[string]float64
+	MembershipsByDay           map[string]float64
+	MembershipsByMonth         map[string]float64
+	MembershipsByDayRnD        map[string]float64
+	MembershipsByMonthRnD      map[string]float64
+	MembershipCountsByMonth    map[string]int
+	MembershipCountsByMonthRnD map[string]int
+	ActivationsByDay           map[string]float64
+	ActivationsByMonth         map[string]float64
+	MinutesByDay               map[string]float64
+	MinutesByMonth             map[string]float64
 }
 
 func NewResponse(data Data) (resp Response, err error) {
-	resp.MembershipsByDay, err = data.sumMembershipsBy("2006-01-02")
+	resp.MembershipsByDay, err = data.sumMembershipsBy("2006-01-02", false)
 	if err != nil {
 		return
 	}
-	resp.MembershipsByMonth, err = data.sumMembershipsBy("2006-01")
+	resp.MembershipsByMonth, err = data.sumMembershipsBy("2006-01", false)
 	if err != nil {
 		return
 	}
-	resp.MembershipCountsByMonth, err = data.sumMembershipCountsBy("2006-01")
+	resp.MembershipsByDayRnD, err = data.sumMembershipsBy("2006-01-02", true)
+	if err != nil {
+		return
+	}
+	resp.MembershipsByMonthRnD, err = data.sumMembershipsBy("2006-01", true)
+	if err != nil {
+		return
+	}
+	resp.MembershipCountsByMonth, err = data.sumMembershipCountsBy("2006-01", false)
+	if err != nil {
+		return
+	}
+	resp.MembershipCountsByMonthRnD, err = data.sumMembershipCountsBy("2006-01", true)
 	if err != nil {
 		return
 	}
@@ -149,7 +164,7 @@ func (this Data) sumActivationsBy(timeFormat string) (sums map[string]float64, e
 	return
 }
 
-func (this Data) sumMembershipsBy(timeFormat string) (sums map[string]float64, err error) {
+func (this Data) sumMembershipsBy(timeFormat string, rndOnly bool) (sums map[string]float64, err error) {
 	sums = make(map[string]float64)
 
 	for _, inv := range this.Invoices {
@@ -159,9 +174,11 @@ func (this Data) sumMembershipsBy(timeFormat string) (sums map[string]float64, e
 				return nil, fmt.Errorf("User Membership %v links to unknown Membership Id %v", userMembership.Id, userMembership.MembershipId)
 			}
 
-			t := time.Date(inv.Year, time.Month(inv.Month), 1, 12, 12, 12, 0, time.UTC)
-			key := t.Format(timeFormat)
-			sums[key] = sums[key] + float64(membership.MonthlyPrice)
+			if !rndOnly || membership.IsRndCentre() {
+				t := time.Date(inv.Year, time.Month(inv.Month), 1, 12, 12, 12, 0, time.UTC)
+				key := t.Format(timeFormat)
+				sums[key] = sums[key] + float64(membership.MonthlyPrice)
+			}
 		}
 	}
 
@@ -179,7 +196,7 @@ func (this Data) sumMembershipsBy(timeFormat string) (sums map[string]float64, e
 	return
 }
 
-func (this Data) sumMembershipCountsBy(timeFormat string) (sums map[string]int, err error) {
+func (this Data) sumMembershipCountsBy(timeFormat string, rndOnly bool) (sums map[string]int, err error) {
 	sums = make(map[string]int)
 
 	for _, inv := range this.Invoices {
@@ -188,10 +205,12 @@ func (this Data) sumMembershipCountsBy(timeFormat string) (sums map[string]int, 
 			if !ok {
 				return nil, fmt.Errorf("User Membership %v links to unknown Membership Id %v", userMembership.Id, userMembership.MembershipId)
 			}
-			t := time.Date(inv.Year, time.Month(inv.Month), 1, 12, 12, 12, 0, time.UTC)
-			key := t.Format(timeFormat)
-			if membership.MonthlyPrice > 0 {
-				sums[key] = sums[key] + 1
+			if !rndOnly || membership.IsRndCentre() {
+				t := time.Date(inv.Year, time.Month(inv.Month), 1, 12, 12, 12, 0, time.UTC)
+				key := t.Format(timeFormat)
+				if membership.MonthlyPrice > 0 {
+					sums[key] = sums[key] + 1
+				}
 			}
 		}
 	}

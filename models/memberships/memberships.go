@@ -46,6 +46,10 @@ func (this *Membership) AffectedMachineIds() ([]int64, error) {
 	return ids, nil
 }
 
+func (this *Membership) IsRndCentre() bool {
+	return strings.Contains(this.Title, "R&D Centre")
+}
+
 // Returns whether the membership is affecting a machine
 // with the given machine ID.
 func (this *Membership) IsMachineAffected(machineId int64) (bool, error) {
