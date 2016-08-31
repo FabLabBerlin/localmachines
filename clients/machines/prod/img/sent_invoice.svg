@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="53px" height="53px" viewBox="0 0 53 53" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 39.1 (31720) - http://www.bohemiancoding.com/sketch -->
+    <title>SENT INVOICE NEW</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Button-States" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="INVOICE-EDIT-NEW" transform="translate(-378.000000, -224.000000)">
+            <g id="SENT-INVOICE-NEW" transform="translate(378.000000, 224.000000)">
+                <g id="SEND-INVOICE-WHITE-Copy-2">
+                    <g id="Paper-plane">
+                        <path d="M26.4386456,52.8772913 C41.0403064,52.8772913 52.8772913,41.0403064 52.8772913,26.4386456 C52.8772913,11.8369848 41.0403064,0 26.4386456,0 C11.8369848,0 0,11.8369848 0,26.4386456 C0,41.0403064 11.8369848,52.8772913 26.4386456,52.8772913 Z" id="Oval-93" fill="#4A4A4A"></path>
+                        <g transform="translate(11.209986, 14.012482)" stroke-width="2" stroke="#FFFFFF">
+                            <polygon id="Path-773" fill="#4A4A4A" points="0 10.1908961 28.0249644 0 17.8340682 28.0249644 12.7386202 15.2863442"></polygon>
+                            <path d="M12.7386202,15.2863442 L28.0249644,0" id="Path-774"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
