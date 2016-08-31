@@ -83,7 +83,7 @@ var Month = React.createClass({
                 <button type="button"
                         onClick={this.checkedSend}
                         title="Send">
-                  <i className="fa fa-send"/>
+                  <img src="/machines/assets/img/invoicing/send_invoice_white.svg"/>
                 </button>
                 <button type="button"
                         onClick={this.checkedComplete}
