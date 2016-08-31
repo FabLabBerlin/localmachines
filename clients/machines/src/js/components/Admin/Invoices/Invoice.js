@@ -102,7 +102,7 @@ var Header = React.createClass({
             <button type="button"
                     title="Close"
                     onClick={this.hide}>
-              <i className="fa fa-close"/>
+              <img src="/machines/assets/img/invoicing/CANCEL.svg"/>
             </button>
             {this.state.invoiceActions.get('PushDraft') ?
               <button type="button"
@@ -115,7 +115,7 @@ var Header = React.createClass({
               <button type="button"
                       onClick={this.save}
                       title="Save">
-                <i className="fa fa-check"/>
+                <img src="/machines/assets/img/invoicing/SAVE_INVOICE.svg"/>
               </button> : null
             }
             {this.state.invoiceActions.get('Freeze') ?
