@@ -157,6 +157,10 @@ var List = React.createClass({
                           attribute="Paid"
                           sorting={sorting}
                           toggle={this.toggleSorting}/>
+              <HeadColumn label="No Auto Invoicing"
+                          attribute="NoAutoInvoicing"
+                          sorting={sorting}
+                          toggle={this.toggleSorting}/>
               <HeadColumn label="Total"
                           attribute="Total"
                           sorting={sorting}
@@ -199,6 +203,12 @@ var List = React.createClass({
                   <td onClick={click}>{name}</td>
                   <td className="text-center" onClick={click}>
                     {(moment(sum.get('PaidDate')).unix() > 0) ?
+                      <i className="fa fa-check"/> :
+                      '-'
+                    }
+                  </td>
+                  <td className="text-center">
+                    {sum.getIn(['User', 'NoAutoInvoicing']) ?
                       <i className="fa fa-check"/> :
                       '-'
                     }
