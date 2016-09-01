@@ -210,6 +210,7 @@ var BillTable = React.createClass({
     );
 
     _.each(bill.UserMemberships.Data, (um) => {
+      console.log('um=', um);
       tbody.push(
         <tr key={i++}>
           <td>{um.Title}</td>
@@ -217,7 +218,7 @@ var BillTable = React.createClass({
           <td>{formatDate(moment(um.EndDate))}</td>
           <td></td>
           <td></td>
-          <td>{um.Bill ? (formatPrice(um.MonthlyPrice) + '€') : '-'}</td>
+          <td>{um.MonthlyPrice ? (formatPrice(um.MonthlyPrice) + '€') : '-'}</td>
         </tr>
       );
     });
