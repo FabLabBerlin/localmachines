@@ -9,10 +9,11 @@ import (
 )
 
 type Server struct {
-	testServer     *httptest.Server
-	FbInv          fastbill.Invoice
-	testClientId   string
-	testCustomerId int64
+	testServer      *httptest.Server
+	FbInv           fastbill.Invoice
+	testClientId    string
+	testCustomerId  int64
+	testClientEmail string
 }
 
 func (s *Server) SetPairClientIdCustomerId(clientId string, customerId int64) {
@@ -24,8 +25,10 @@ func (s *Server) URL() string {
 	return s.testServer.URL
 }
 
-func NewServer() (s *Server) {
-	s = &Server{}
+func NewServer(testClientEmail string) (s *Server) {
+	s = &Server{
+		testClientEmail: testClientEmail,
+	}
 	s.testServer = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var req fastbill.Request
 		dec := json.NewDecoder(r.Body)
@@ -41,6 +44,7 @@ func NewServer() (s *Server) {
 				customers = []fastbill.Customer{
 					{
 						CUSTOMER_ID: fmt.Sprintf("%v", s.testCustomerId),
+						EMAIL:       testClientEmail,
 					},
 				}
 			} else {
