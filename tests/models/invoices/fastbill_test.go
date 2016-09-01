@@ -90,7 +90,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 
 			invs[0].User.ClientId = 1
 
-			testServer := mock.NewServer()
+			testServer := mock.NewServer("foo@bar.com")
 
 			fastbill.API_URL = testServer.URL()
 
@@ -165,7 +165,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 
 			drafts[0].User.ClientId = 1
 
-			testServer := mock.NewServer()
+			testServer := mock.NewServer("foo@bar.com")
 
 			fastbill.API_URL = testServer.URL()
 
@@ -191,7 +191,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 
 			invs[0].User.ClientId = 1
 
-			testServer := mock.NewServer()
+			testServer := mock.NewServer("foo@bar.com")
 
 			fastbill.API_URL = testServer.URL()
 
@@ -229,7 +229,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 
 			inv.User.ClientId = 1
 
-			testServer := mock.NewServer()
+			testServer := mock.NewServer("foo@bar.com")
 
 			fastbill.API_URL = testServer.URL()
 

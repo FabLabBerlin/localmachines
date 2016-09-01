@@ -141,23 +141,27 @@ func (this *FastBill) GetCustomers(filter *CustomerGetFilter,
 
 func GetCustomerId(user users.User) (customerId int64, err error) {
 	cn := strconv.FormatInt(user.ClientId, 10)
-	customerId, noNumberFound, err := getCustomerId(cn)
+	var email string
+	customerId, email, noNumberFound, err := getCustomerId(cn)
 	if noNumberFound {
 		cn = fmt.Sprintf("%04d", user.ClientId)
-		customerId, noNumberFound, err = getCustomerId(cn)
+		customerId, email, noNumberFound, err = getCustomerId(cn)
+	}
+	if strings.TrimSpace(email) != strings.TrimSpace(user.Email) {
+		return 0, fmt.Errorf("EASY LAB mail address %v doesn't match Fastbill's", user.Email)
 	}
 	return
 }
 
-func getCustomerId(customerNumber string) (customerId int64, noNumberFound bool, err error) {
+func getCustomerId(customerNumber string) (customerId int64, email string, noNumberFound bool, err error) {
 	fb := New()
 
 	customerNumberInt64, err := strconv.ParseInt(customerNumber, 10, 64)
 	if err != nil {
-		return 0, false, err
+		return 0, "", false, err
 	}
 	if customerNumberInt64 <= 0 {
-		return 0, false, fmt.Errorf("wrong Fastbill Customer No.: %v",
+		return 0, "", false, fmt.Errorf("wrong Fastbill Customer No.: %v",
 			customerNumber)
 	}
 	filter := CustomerGetFilter{
@@ -165,17 +169,18 @@ func getCustomerId(customerNumber string) (customerId int64, noNumberFound bool,
 	}
 	list, err := fb.GetCustomers(&filter, 10, 0)
 	if err != nil {
-		return 0, false, fmt.Errorf("get customers: %v", err)
+		return 0, "", false, fmt.Errorf("get customers: %v", err)
 	}
 	if len(list.Customers) == 0 {
-		return 0, true, fmt.Errorf("no customer found for customer number %v",
+		return 0, "", true, fmt.Errorf("no customer found for customer number %v",
 			customerNumber)
 	}
 	if n := len(list.Customers); n > 1 {
-		return 0, false, fmt.Errorf("%v matches found for customer number %v",
+		return 0, "", false, fmt.Errorf("%v matches found for customer number %v",
 			n, customerNumber)
 	}
 	customerId, err = strconv.ParseInt(list.Customers[0].CUSTOMER_ID, 10, 64)
+	email = list.Customers[0].EMAIL
 	return
 }
 

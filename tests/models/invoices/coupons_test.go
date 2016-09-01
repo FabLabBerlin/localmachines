@@ -114,7 +114,7 @@ func TestInvoiceCouponUsage(t *testing.T) {
 		}
 		invs[0].User.ClientId = 1
 
-		testServer := mock.NewServer()
+		testServer := mock.NewServer("foo@bar.com")
 
 		_, empty, err := invs[0].FastbillCreateDraft(false)
 		So(empty, ShouldBeFalse)
