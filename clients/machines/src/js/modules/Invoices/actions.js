@@ -55,6 +55,13 @@ function checkAll() {
 }
 
 function checkedBatch(uriAction, verb) {
+  /*eslint-disable no-alert */
+  if (!window.confirm('Really ' + verb + ' selected invoices?')) {
+    toastr.warning('Aborted action');
+    return;
+  }
+  /*eslint-enable no-alert */
+
   const locId = reactor.evaluateToJS(LocationGetters.getLocationId);
   const ivs = _.filter(
     reactor.evaluateToJS(getters.getThisMonthInvoices),
