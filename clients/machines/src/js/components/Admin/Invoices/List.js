@@ -157,6 +157,10 @@ var List = React.createClass({
                           attribute="Paid"
                           sorting={sorting}
                           toggle={this.toggleSorting}/>
+              <HeadColumn label="No Auto Invoicing"
+                          attribute="NoAutoInvoicing"
+                          sorting={sorting}
+                          toggle={this.toggleSorting}/>
               <HeadColumn label="Total"
                           attribute="Total"
                           sorting={sorting}
@@ -171,6 +175,10 @@ var List = React.createClass({
                                  / 100)
                                  .toFixed(2);
               const click = this.select.bind(this, sum.get('User'), sum.get('Id'));
+
+              if (sum.get('Total') < 0.01) {
+                return undefined;
+              }
 
               return (
                 <tr key={i}>
@@ -195,6 +203,12 @@ var List = React.createClass({
                   <td onClick={click}>{name}</td>
                   <td className="text-center" onClick={click}>
                     {(moment(sum.get('PaidDate')).unix() > 0) ?
+                      <i className="fa fa-check"/> :
+                      '-'
+                    }
+                  </td>
+                  <td className="text-center">
+                    {sum.getIn(['User', 'NoAutoInvoicing']) ?
                       <i className="fa fa-check"/> :
                       '-'
                     }

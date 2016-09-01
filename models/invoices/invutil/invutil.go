@@ -80,8 +80,7 @@ func (inv *Invoice) calculateTotals(ms *user_memberships.List) (err error) {
 	inv.Sums.Purchases.PriceVAT = inv.Sums.Purchases.PriceInclVAT - inv.Sums.Purchases.PriceExclVAT
 
 	for _, m := range ms.Data {
-		if m.StartDate.Unix() <= inv.Interval().TimeTo().Unix() &&
-			inv.Interval().TimeTo().Unix() <= m.EndDate.Unix() {
+		if inv.membershipGetsBilledHere(m) {
 			inv.Sums.Memberships.Undiscounted += m.MonthlyPrice
 			inv.Sums.Memberships.PriceInclVAT += m.MonthlyPrice
 		}
@@ -101,6 +100,11 @@ func (inv *Invoice) calculateTotals(ms *user_memberships.List) (err error) {
 	}
 
 	return
+}
+
+func (inv *Invoice) membershipGetsBilledHere(m *user_memberships.Combo) bool {
+	return m.StartDate.Unix() <= inv.Interval().TimeTo().Unix() &&
+		inv.Interval().TimeTo().Unix() <= m.EndDate.Unix()
 }
 
 func (inv *Invoice) Load() (err error) {
@@ -145,7 +149,7 @@ func (inv *Invoice) load(
 		}
 	}
 	for _, umb := range inv.UserMemberships.Data {
-		bill := inv.Interval().Contains(umb.StartDate)
+		bill := inv.membershipGetsBilledHere(umb)
 		umb.Bill = &bill
 	}
 	return
