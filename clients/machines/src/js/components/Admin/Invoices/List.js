@@ -91,10 +91,6 @@ var List = React.createClass({
            .toLowerCase();
     });
 
-    if (this.state.MonthlySums.getIn(['selected', 'invoiceId'])) {
-      return <Invoice/>;
-    }
-
     var sorted;
 
     const sorting = this.state.MonthlySums.get('sorting');
@@ -119,6 +115,8 @@ var List = React.createClass({
 
     return (
       <div>
+        {this.state.MonthlySums.getIn(['selected', 'invoiceId']) ?
+          <Invoice/> : null}
         <table className="table table-striped table-hover">
           <thead>
             <tr>
