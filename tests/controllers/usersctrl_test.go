@@ -354,7 +354,7 @@ func TestUsersAPI(t *testing.T) {
 			Convey("Try to modify self user as a regular user, should return 200", func() {
 				cookie := LoginAsRegular()
 				uid := strconv.FormatInt(RegularUID, 10)
-				var jsonStr = []byte(`{"User": {"Id": ` + uid + `, "Email": "raaaaaaaaaaaaaaaaadom@easylab.io", "UserRole": "member"}}`)
+				var jsonStr = []byte(`{"User": {"Id": ` + uid + `, "FirstName": "Jo", "LastName": "Ho", "Email": "raaaaaaaaaaaaaaaaadom@easylab.io", "UserRole": "member"}}`)
 				r, _ := http.NewRequest("PUT", "/api/users/"+uid, bytes.NewBuffer(jsonStr))
 				r.AddCookie(cookie)
 				r.Header.Set("Content-Type", "application/json")
@@ -374,7 +374,7 @@ func TestUsersAPI(t *testing.T) {
 					UserId:     uid,
 					LocationId: 1,
 				})
-				var jsonStr = []byte(`{"User": {"Id": ` + strconv.FormatInt(uid, 10) + `, "Email": "raaaaaaaaaaaaaaaaadom@easylab.io"}}`)
+				var jsonStr = []byte(`{"User": {"Id": ` + strconv.FormatInt(uid, 10) + `, "FirstName": "Ha", "LastName": "Jo", "Email": "raaaaaaaaaaaaaaaaadom@easylab.io"}}`)
 				r, _ := http.NewRequest("PUT", "/api/users/"+strconv.FormatInt(uid, 10), bytes.NewBuffer(jsonStr))
 				r.AddCookie(LoginAsAdmin())
 				r.Header.Set("Content-Type", "application/json")

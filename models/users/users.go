@@ -166,6 +166,11 @@ func (user *User) Update() error {
 		return err
 	}
 
+	if len(strings.TrimSpace(user.FirstName)) == 0 ||
+		len(strings.TrimSpace(user.LastName)) == 0 {
+		return fmt.Errorf("First/last name mustn't be empty")
+	}
+
 	// Check for duplicate username and email entries
 	var query string
 	query = fmt.Sprintf("SELECT id FROM %s WHERE username=? AND id!=?",
