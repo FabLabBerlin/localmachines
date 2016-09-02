@@ -42,7 +42,8 @@ vex.defaultOptions.className = 'vex-theme-custom';
   componentWillMount() {
     const isLogged = reactor.evaluateToJS(getters.getIsLogged);
 
-    if (!isLogged && this.props.location.pathname !== '/product') {
+    if (!isLogged && this.props.location.pathname !== '/product' &&
+      this.props.location.pathname.indexOf('forgot_password') < 0) {
       LoginActions.tryAutoLogin(this.context.router, {
         loggedIn: () => {
           if (this.props.location.pathname === '/login') {
