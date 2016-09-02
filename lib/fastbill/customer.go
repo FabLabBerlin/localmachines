@@ -148,7 +148,8 @@ func GetCustomerId(user users.User) (customerId int64, err error) {
 		customerId, email, noNumberFound, err = getCustomerId(cn)
 	}
 	if strings.TrimSpace(email) != strings.TrimSpace(user.Email) {
-		return 0, fmt.Errorf("EASY LAB mail address %v doesn't match Fastbill's", user.Email)
+		return 0, fmt.Errorf("EASY LAB mail address %v doesn't match Fastbill's %v",
+			user.Email, email)
 	}
 	return
 }
