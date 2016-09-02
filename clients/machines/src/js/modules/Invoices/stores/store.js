@@ -165,7 +165,9 @@ function updateChecks(state, toggle) {
   const checkedAll = reactor.evaluateToJS(getters.getCheckedAll);
   const month = state.getIn(['MonthlySums', 'selected', 'month']);
   const year = state.getIn(['MonthlySums', 'selected', 'year']);
-  const invoices = state.getIn(['MonthlySums', year, month]).map((inv) => {
+  const invoices = state.getIn(['MonthlySums', year, month])
+  .filter(inv => inv.get('Total') >= 0.01)
+  .map(inv => {
     var checked = toggle ? !checkedAll : checkedAll;
     switch (state.get('checkStatus')) {
     case 'all':
