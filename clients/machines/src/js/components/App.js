@@ -70,7 +70,8 @@ vex.defaultOptions.className = 'vex-theme-custom';
     if (!this.state.isLogged &&
         this.state.autoLoginSuccess === false &&
         !(this.props.location.pathname === '/login' ||
-        this.props.location.pathname === '/product')) {
+        this.props.location.pathname === '/product' ||
+        this.props.location.pathname.indexOf('forgot_password') > 0)) {
       window.location.href = '/machines/#/login';
       return <LoaderLocal/>;
     }
