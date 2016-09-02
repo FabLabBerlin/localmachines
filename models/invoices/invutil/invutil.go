@@ -18,10 +18,10 @@ import (
 
 type Invoice struct {
 	invoices.Invoice
-	User            *users.User            `json:",omitempty"`
-	UserMemberships *user_memberships.List `json:",omitempty"`
-	Purchases       purchases.Purchases    `json:",omitempty"`
-	Sums            *Sums                  `json:",omitempty"`
+	User            *users.User                        `json:",omitempty"`
+	UserMemberships []*user_memberships.UserMembership `json:",omitempty"`
+	Purchases       purchases.Purchases                `json:",omitempty"`
+	Sums            *Sums                              `json:",omitempty"`
 }
 
 type Sums struct {

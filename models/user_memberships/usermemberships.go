@@ -12,8 +12,9 @@ type UserMembership struct {
 	Id           int64
 	UserId       int64
 	MembershipId int64
-	StartDate    time.Time `orm:"type(datetime)"`
-	EndDate      time.Time `orm:"type(datetime)"`
+	Membership   *memberships.Membership `orm:"-"`
+	StartDate    time.Time               `orm:"type(datetime)"`
+	EndDate      time.Time               `orm:"type(datetime)"`
 	AutoExtend   bool
 
 	InvoiceId     int64
@@ -54,50 +55,6 @@ func (this *UserMembership) Update() (err error) {
 
 func init() {
 	orm.RegisterModel(new(UserMembership))
-}
-
-// Extended user membership type that contains the same fields as
-// the UserMembership model and fields of the Membership model.
-type Combo struct {
-	Id            int64
-	UserId        int64
-	MembershipId  int64
-	StartDate     time.Time
-	EndDate       time.Time
-	AutoExtend    bool
-	InvoiceId     int64
-	InvoiceStatus string
-
-	LocationId            int64
-	Title                 string
-	ShortName             string
-	DurationMonths        int64
-	MonthlyPrice          float64
-	MachinePriceDeduction int
-	AffectedMachines      string
-
-	Bill *bool `json:",omitempty"`
-}
-
-func (umc *Combo) UserMembership() UserMembership {
-	return UserMembership{
-		Id:           umc.Id,
-		UserId:       umc.UserId,
-		MembershipId: umc.MembershipId,
-		StartDate:    umc.StartDate,
-		EndDate:      umc.EndDate,
-		AutoExtend:   umc.AutoExtend,
-
-		InvoiceId:     umc.InvoiceId,
-		InvoiceStatus: umc.InvoiceStatus,
-	}
-}
-
-// List container for the UserMembershipCombo type. Beego swagger
-// has problems with interpretting plain arrays as documentable
-// data type.
-type List struct {
-	Data []*Combo
 }
 
 // Creates user membership from user ID, membership ID and start time.
@@ -148,7 +105,7 @@ func GetAllAt(locationId int64) (ums []*UserMembership, err error) {
 	return
 }
 
-func GetAllAtList(locId int64) (list *List, err error) {
+func GetAllAtDeepQuery(locId int64) (ums []*UserMembership, err error) {
 	ms, err := memberships.GetAllAt(locId)
 	if err != nil {
 		return nil, fmt.Errorf("get all at: %v", err)
@@ -158,45 +115,21 @@ func GetAllAtList(locId int64) (list *List, err error) {
 		msbyId[m.Id] = m
 	}
 
-	ums, err := GetAllAt(locId)
+	ums, err = GetAllAt(locId)
 	if err != nil {
 		return nil, fmt.Errorf("GetAllAt: %v", err)
 	}
 
-	userMemberships := make([]*Combo, 0, len(ums))
 	for _, um := range ums {
-		c := Combo{}
-
-		c.Id = um.Id
-		c.UserId = um.UserId
-		c.MembershipId = um.MembershipId
-		c.StartDate = um.StartDate
-		c.EndDate = um.EndDate
-		c.AutoExtend = um.AutoExtend
-		c.InvoiceId = um.InvoiceId
-		c.InvoiceStatus = um.InvoiceStatus
-
 		m, ok := msbyId[um.MembershipId]
 		if !ok {
 			return nil, fmt.Errorf("cannot find membership with id %v", um.MembershipId)
 		}
 
-		c.LocationId = m.LocationId
-		c.Title = m.Title
-		c.ShortName = m.ShortName
-		c.DurationMonths = m.DurationMonths
-		c.MonthlyPrice = m.MonthlyPrice
-		c.MachinePriceDeduction = m.MachinePriceDeduction
-		c.AffectedMachines = m.AffectedMachines
-
-		userMemberships = append(userMemberships, &c)
+		um.Membership = m
 	}
 
-	list = &List{
-		Data: userMemberships,
-	}
-
-	return list, nil
+	return
 }
 
 // Gets pointer to filled user membership store
@@ -216,31 +149,46 @@ func Delete(id int64) (err error) {
 }
 
 // Gets all user memberships for a user by consuming user ID.
-func GetForInvoice(invoiceId int64) (*List, error) {
+func GetForInvoice(locId, invoiceId int64) (ums []*UserMembership, err error) {
 
 	o := orm.NewOrm()
 
+	ms, err := memberships.GetAllAt(locId)
+	if err != nil {
+		return nil, fmt.Errorf("get all at: %v", err)
+	}
+	msbyId := make(map[int64]*memberships.Membership)
+	for _, m := range ms {
+		msbyId[m.Id] = m
+	}
+
 	// Use these for the table names
-	m := memberships.Membership{}
 	um := UserMembership{}
 
-	// Joint query, select user memberships and expands them with
-	// membership base information.
-	sql := fmt.Sprintf("SELECT um.*, m.location_id, m.title, m.short_name, m.duration_months, "+
-		"m.monthly_price, m.machine_price_deduction, m.affected_machines, m.auto_extend "+
-		"FROM %s AS um "+
-		"JOIN %s m ON um.membership_id=m.id "+
-		"WHERE um.invoice_id=?",
-		um.TableName(), m.TableName())
-
-	var userMemberships []*Combo
-	if _, err := o.Raw(sql, invoiceId).QueryRows(&userMemberships); err != nil {
-		return nil, fmt.Errorf("query rows: %v", err)
+	qb, err := orm.NewQueryBuilder("mysql")
+	if err != nil {
+		return nil, fmt.Errorf("new query builder: %v", err)
 	}
 
-	list := List{
-		Data: userMemberships,
+	qb.Select(um.TableName() + ".*").
+		From(um.TableName()).
+		Where("invoice_id = ?")
+
+	_, err = o.Raw(qb.String(), invoiceId).
+		QueryRows(&ums)
+
+	if err != nil {
+		return nil, fmt.Errorf("query: %v", err)
 	}
 
-	return &list, nil
+	for _, um := range ums {
+		m, ok := msbyId[um.MembershipId]
+		if !ok {
+			return nil, fmt.Errorf("cannot find membership with id %v", um.MembershipId)
+		}
+
+		um.Membership = m
+	}
+
+	return
 }

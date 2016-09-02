@@ -67,17 +67,18 @@ func Create(inv *Invoice) (id int64, err error) {
 		lastMonth := now.AddDate(0, -1, 0)
 		lastInv, err := GetDraft(inv.LocationId, inv.UserId, lastMonth)
 		if err == nil {
-			umbs, err := user_memberships.GetForInvoice(lastInv.Id)
+			umbs, err := user_memberships.GetForInvoice(inv.LocationId, lastInv.Id)
 			if err != nil {
 				return 0, fmt.Errorf("get user memberships for last month: %v", err)
 			}
-			for _, umb := range umbs.Data {
+			for _, umb := range umbs {
 				if !umb.AutoExtend &&
 					umb.EndDate.Before(inv.Interval().TimeFrom()) {
 					continue
 				}
 
-				clone := umb.UserMembership()
+				var clone user_memberships.UserMembership
+				clone = *umb
 				clone.Id = 0
 				clone.InvoiceId = inv.Id
 				clone.InvoiceStatus = inv.Status
@@ -360,20 +361,20 @@ func (inv *Invoice) SetCurrent() (err error) {
 	}
 
 	if currentInvoice != nil {
-		currentUms, err := user_memberships.GetForInvoice(currentInvoice.Id)
+		currentUms, err := user_memberships.GetForInvoice(inv.LocationId, currentInvoice.Id)
 		if err != nil {
 			return fmt.Errorf("get user memberships for current inv: %v", err)
 		}
 
-		thisUms, err := user_memberships.GetForInvoice(inv.Id)
+		thisUms, err := user_memberships.GetForInvoice(inv.LocationId, inv.Id)
 		if err != nil {
 			return fmt.Errorf("get user memberships for this inv: %v", err)
 		}
 
-		umsToBeCloned := make([]*user_memberships.Combo, 0, len(currentUms.Data))
-		for _, um := range currentUms.Data {
+		umsToBeCloned := make([]*user_memberships.UserMembership, 0, len(currentUms))
+		for _, um := range currentUms {
 			alreadyCloned := false
-			for _, existing := range thisUms.Data {
+			for _, existing := range thisUms {
 				if um.Id == existing.Id {
 					alreadyCloned = true
 					break
