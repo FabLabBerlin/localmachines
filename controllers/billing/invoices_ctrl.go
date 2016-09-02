@@ -1,6 +1,7 @@
 package billing
 
 import (
+	"fmt"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/users"
@@ -223,8 +224,9 @@ func (this *Controller) Complete() {
 	}
 
 	if s := inv.Status; s != "draft" {
-		beego.Error("wrong status to complete invoice:", s)
-		this.Abort("400")
+		msg := fmt.Sprintf("wrong status to complete invoice: %v", s)
+		beego.Error(msg)
+		this.CustomAbort(400, msg)
 	}
 
 	if err := inv.CalculateTotals(); err != nil {
