@@ -27,15 +27,18 @@ var Month = React.createClass({
     LocationActions.loadUserLocations(this.state.uid);
   },
 
-  checkedComplete() {
+  checkedComplete(e) {
+    e.stopPropagation();
     Invoices.actions.checkedComplete(this.state.locationId);
   },
 
-  checkedPushDrafts() {
+  checkedPushDrafts(e) {
+    e.stopPropagation();
     Invoices.actions.checkedPushDrafts(this.state.locationId);
   },
 
-  checkedSend() {
+  checkedSend(e) {
+    e.stopPropagation();
     Invoices.actions.checkedSend(this.state.locationId);
   },
 
@@ -76,7 +79,7 @@ var Month = React.createClass({
       <div className={'inv-monthly-sums ' + (selected ? 'selected' : '')}>
         {selected ?
           (
-            <div className="row">
+            <div className="row" onClick={this.select}>
               <div className="col-xs-6">
               </div>
               <div className="col-xs-6 text-right">
@@ -99,9 +102,9 @@ var Month = React.createClass({
             </div>
           ) : null
         }
-        <div className="row">
+        <div className="row" onClick={this.select}>
           <div className="col-xs-6">
-            <h3 onClick={this.select}>{t.format('MMMM YYYY')}</h3>
+            <h3>{t.format('MMMM YYYY')}</h3>
           </div>
           <div className="col-xs-6 text-right">
             <h3>
