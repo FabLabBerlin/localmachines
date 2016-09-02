@@ -357,7 +357,7 @@
             ng-show="userMembership.Invoice.Current">
         </td>
         <td>
-          {{userMembership.Invoice.Month}}/{{userMembership.Invoice.Year}}
+          {{userMembership.Invoice.Month}}/{{userMembership.Invoice.Year}} {{userMembership.Invoice.Canceled ? '(Canceled)' : ''}}
         </td>
         <td>
           <div class="pull-right">
