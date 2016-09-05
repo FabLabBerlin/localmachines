@@ -174,10 +174,6 @@ var List = React.createClass({
                                  .toFixed(2);
               const click = this.select.bind(this, sum.get('User'), sum.get('Id'));
 
-              if (sum.get('Total') < 0.01) {
-                return undefined;
-              }
-
               return (
                 <tr key={i}>
                   <td>

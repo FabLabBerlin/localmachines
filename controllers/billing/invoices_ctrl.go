@@ -89,12 +89,15 @@ func (this *Controller) GetMonth() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	list := make([]invutil.Invoice, len(ivs))
+	list := make([]invutil.Invoice, 0, len(ivs))
 
-	for i, iv := range ivs {
-		list[i] = invutil.Invoice{
+	for _, iv := range ivs {
+		inv := invutil.Invoice{
 			Invoice: *iv,
 			User:    usrsById[iv.UserId],
+		}
+		if inv.Total >= 0.01 || inv.FastbillNo != "" {
+			list = append(list, inv)
 		}
 	}
 
