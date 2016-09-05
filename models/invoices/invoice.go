@@ -101,7 +101,7 @@ func Create(inv *Invoice) (id int64, err error) {
 	return
 }
 
-var ErrNoInvoiceForThatMonth = errors.New("no invoice exists for that month (and none will be auto-created)")
+var ErrNoInvoiceForThatMonth = errors.New("no draft invoice exists for that month (and none will be auto-created)")
 
 // GetDraft for User uid @ Location locId and time t.  If it doesn't exist, it
 // gets created insofar it doesn't violate business logic.

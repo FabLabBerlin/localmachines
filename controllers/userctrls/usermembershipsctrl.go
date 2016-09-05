@@ -2,6 +2,7 @@ package userctrls
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/user_memberships"
@@ -67,8 +68,9 @@ func (this *UserMembershipsController) PostUserMemberships() {
 	for i := 0; ; i++ {
 		inv, err := invoices.GetDraft(m.LocationId, uid, t)
 		if err != nil {
-			beego.Error("error getting this month' invoice:", err)
-			this.Abort("500")
+			msg := fmt.Sprintf("error getting this month' invoice: %v", err)
+			beego.Error(msg)
+			this.CustomAbort(500, msg)
 		}
 
 		invoiceIds = append(invoiceIds, inv.Id)
