@@ -24,28 +24,28 @@ func Unlock() {
 
 // Automatically extend user membership end date if auto_extend for the specific
 // membership is true and the end_date is before current date.
-func AutoExtendUserMemberships() (err error) {
+func RunTask() (err error) {
 
 	mu.Lock()
 	defer mu.Unlock()
 
 	beego.Info("Running AutoExtendUserMemberships Task")
 
-	if err = autoExtendUserMemberships(); err != nil {
+	if err = AutoExtendUserMemberships(time.Now()); err != nil {
 		beego.Error("Failed to get all user memberships:", err)
 	}
 
 	return
 }
 
-func autoExtendUserMemberships() (err error) {
+func AutoExtendUserMemberships(minimumTime time.Time) (err error) {
 	ls, err := locations.GetAll()
 	if err != nil {
 		return fmt.Errorf("get all locations: %v", err)
 	}
 
 	for _, l := range ls {
-		if err := extendUserMembershipsAt(l.Id); err != nil {
+		if err := extendUserMembershipsAt(l.Id, minimumTime); err != nil {
 			return fmt.Errorf("extend userMemberships at %v: %v", l.Id, err)
 		}
 	}
@@ -53,10 +53,10 @@ func autoExtendUserMemberships() (err error) {
 	return
 }
 
-func extendUserMembershipsAt(locId int64) (err error) {
+func extendUserMembershipsAt(locId int64, minimumTime time.Time) (err error) {
 	beego.Info("invutil.AssureUsersHaveInvoiceFor", locId, "begin")
-	y := time.Now().Year()
-	m := time.Now().Month()
+	y := minimumTime.Year()
+	m := minimumTime.Month()
 	if err := invutil.AssureUsersHaveInvoiceFor(locId, y, m); err != nil {
 		return fmt.Errorf("AssureUsersHaveInvoiceFor loc %v: %v", locId, err)
 	}
@@ -68,7 +68,7 @@ func extendUserMembershipsAt(locId int64) (err error) {
 	}
 
 	for _, um := range ums {
-		if !um.AutoExtend || um.EndDate.After(time.Now()) {
+		if !um.AutoExtend || um.EndDate.After(minimumTime) {
 			continue
 		}
 
@@ -82,8 +82,8 @@ func extendUserMembershipsAt(locId int64) (err error) {
 			return fmt.Errorf("get invoice: %v", err)
 		}
 
-		if inv.Month != int(time.Now().Month()) ||
-			inv.Year != time.Now().Year() {
+		if inv.Month != int(minimumTime.Month()) ||
+			inv.Year != minimumTime.Year() {
 			continue
 		}
 		beego.Trace("Extending user membership with Id", um.Id)

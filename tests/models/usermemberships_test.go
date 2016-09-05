@@ -254,7 +254,7 @@ func TestUserMemberships(t *testing.T) {
 				time.Duration(1)*time.Second, startTime)
 
 			// Call user membership auto extend function and check the new end date
-			err = auto_extend.AutoExtendUserMemberships()
+			err = auto_extend.AutoExtendUserMemberships(time.Now())
 			if err != nil {
 				panic(err.Error())
 			}
@@ -323,7 +323,7 @@ func TestUserMemberships(t *testing.T) {
 			}
 
 			// Call user membership auto extend function and check the new end date
-			err = auto_extend.AutoExtendUserMemberships()
+			err = auto_extend.AutoExtendUserMemberships(time.Now())
 			if err != nil {
 				panic(err.Error())
 			}
@@ -347,7 +347,7 @@ func TestUserMemberships(t *testing.T) {
 			// Call auto extend user membership often enough, so it extends
 			// until today
 			for i := 0; i < 100; i++ {
-				err = auto_extend.AutoExtendUserMemberships()
+				err = auto_extend.AutoExtendUserMemberships(time.Now())
 				if err != nil {
 					panic(err.Error())
 				}

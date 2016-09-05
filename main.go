@@ -116,7 +116,7 @@ func setupTasks() {
 	fmt.Println("Starting tasks")
 	extUsrMemberships := toolbox.NewTask("Extend User Memberships",
 		"0 0/10 * * * *",
-		auto_extend.AutoExtendUserMemberships)
+		auto_extend.RunTask)
 	fetchLocalIps := toolbox.NewTask("Fetch Local IPs",
 		"0 0/2 * * * *",
 		machine.FetchLocalIpsTask)
