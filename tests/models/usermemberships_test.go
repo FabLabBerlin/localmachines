@@ -367,5 +367,62 @@ func TestUserMemberships(t *testing.T) {
 			So(len(ums), ShouldEqual, 2)
 		})
 
+		Convey("User memberships without autoextend are not affected", func() {
+			o := orm.NewOrm()
+
+			// Create empty base membership
+			m, err := memberships.Create(1, "Test Membership 2")
+			So(m.Id, ShouldBeGreaterThan, 0)
+			So(err, ShouldBeNil)
+			m.AutoExtend = false
+			if err := m.Update(); err != nil {
+				panic(err.Error())
+			}
+
+			// Create user membership with a start and end date some time in the past
+			fakeUserId := int64(123)
+			loc, _ := time.LoadLocation("Europe/Berlin")
+			startTime := time.Date(2015, time.July, 10, 23, 0, 0, 0, loc)
+
+			inv := &invutil.Invoice{}
+			inv.LocationId = 1
+			inv.UserId = fakeUserId
+			inv.Month = int(time.Now().Month())
+			inv.Year = time.Now().Year()
+			inv.Status = "outgoing"
+			if _, err = invoices.Create(&inv.Invoice); err != nil {
+				panic(err.Error())
+			}
+
+			userMembership, err := user_memberships.Create(
+				o, fakeUserId, m.Id, inv.Id, startTime)
+
+			So(userMembership.Id, ShouldBeGreaterThan, 0)
+			So(err, ShouldBeNil)
+
+			// Get the created membership for later comparison
+			userMembership, err = user_memberships.Get(userMembership.Id)
+			So(err, ShouldBeNil)
+			So(userMembership, ShouldNotBeNil)
+
+			So(userMembership.StartDate, ShouldHappenWithin,
+				time.Duration(1)*time.Second, startTime)
+
+			// Call user membership auto extend function and check the new end date
+			err = auto_extend.AutoExtendUserMemberships(time.Now())
+			if err != nil {
+				panic(err.Error())
+			}
+
+			// Get the now extended user membership
+			extendedUserMembership, _ := user_memberships.Get(userMembership.Id)
+
+			validEndDate := userMembership.EndDate
+
+			So(extendedUserMembership.EndDate, ShouldHappenWithin,
+				time.Duration(1)*time.Second, validEndDate)
+
+		})
+
 	})
 }
