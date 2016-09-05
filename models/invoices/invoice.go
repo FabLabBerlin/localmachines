@@ -86,6 +86,9 @@ func GetDraft(locId, uid int64, t time.Time) (*Invoice, error) {
 	m := t.Month()
 	isThisMonth := time.Now().Month() == m && time.Now().Year() == y
 
+	timeNextMonth := time.Now().AddDate(0, 1, 0)
+	isNextMonth := timeNextMonth.Month() == m && timeNextMonth.Year() == y
+
 	inv := Invoice{
 		LocationId: locId,
 		UserId:     uid,
@@ -105,10 +108,12 @@ func GetDraft(locId, uid int64, t time.Time) (*Invoice, error) {
 	if err == nil {
 		return existing, nil
 	} else if err == orm.ErrNoRows {
-		if isThisMonth {
+		if isThisMonth || isNextMonth {
 			if _, err := Create(&inv); err == nil {
-				if err := inv.SetCurrent(); err != nil {
-					return nil, fmt.Errorf("set current: %v", err)
+				if isThisMonth {
+					if err := inv.SetCurrent(); err != nil {
+						return nil, fmt.Errorf("set current: %v", err)
+					}
 				}
 				return &inv, nil
 			} else {
