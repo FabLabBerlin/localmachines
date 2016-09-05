@@ -7,6 +7,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/user_memberships"
+	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 	"sync"
 	"time"
@@ -54,13 +55,21 @@ func AutoExtendUserMemberships(minimumTime time.Time) (err error) {
 }
 
 func extendUserMembershipsAt(locId int64, minimumTime time.Time) (err error) {
-	beego.Info("invutil.AssureUsersHaveInvoiceFor", locId, "begin")
+	beego.Info("for all users invutil.AssureUserHasDraftFor", locId, "begin")
 	y := minimumTime.Year()
 	m := minimumTime.Month()
-	if err := invutil.AssureUsersHaveInvoiceFor(locId, y, m); err != nil {
-		return fmt.Errorf("AssureUsersHaveInvoiceFor loc %v: %v", locId, err)
+
+	us, err := users.GetAllUsersAt(locId)
+	if err != nil {
+		return fmt.Errorf("GetAllUsersAt: %v", err)
 	}
-	beego.Info("invutil.AssureUsersHaveInvoiceFor done")
+
+	for _, u := range us {
+		if err := invutil.AssureUserHasDraftFor(locId, u, y, m); err != nil {
+			return fmt.Errorf("AssureUserHasDraftFor loc %v: %v", locId, err)
+		}
+	}
+	beego.Info("invutil.AssureUserHasDraftFor done")
 
 	ums, err := user_memberships.GetAllAt(locId)
 	if err != nil {

@@ -64,33 +64,9 @@ func Create(inv *Invoice) (id int64, err error) {
 
 	if now := time.Now(); inv.Month == int(now.Month()) &&
 		inv.Year == now.Year() {
-		lastMonth := now.AddDate(0, -1, 0)
-		lastInv, err := GetDraft(inv.LocationId, inv.UserId, lastMonth)
-		if err == nil {
-			umbs, err := user_memberships.GetForInvoice(lastInv.Id)
-			if err != nil {
-				return 0, fmt.Errorf("get user memberships for last month: %v", err)
-			}
-			for _, umb := range umbs.Data {
-				if !umb.AutoExtend &&
-					umb.EndDate.Before(inv.Interval().TimeFrom()) {
-					continue
-				}
-
-				clone := umb.UserMembership()
-				clone.Id = 0
-				clone.InvoiceId = inv.Id
-				clone.InvoiceStatus = inv.Status
-
-				if _, err := o.Insert(&clone); err != nil {
-					return 0, fmt.Errorf("inserting cloned membership: %v", err)
-				}
-			}
-		} else if err == ErrNoInvoiceForThatMonth {
-			// Nothing to do:
-			err = nil
-		} else {
-			return 0, fmt.Errorf("getting in inv of last month: %v", err)
+		if inv.setCurrent(o); err != nil {
+			o.Rollback()
+			return 0, fmt.Errorf("set current: %v", err)
 		}
 	}
 
@@ -336,13 +312,30 @@ func (inv *Invoice) SaveTotal() (err error) {
 //
 // 2. Transactionally switch over current=true state
 func (inv *Invoice) SetCurrent() (err error) {
+	o := orm.NewOrm()
+
+	if err := o.Begin(); err != nil {
+		return fmt.Errorf("begin tx: %v", err)
+	}
+
+	if err := inv.setCurrent(o); err != nil {
+		o.Rollback()
+		return err
+	}
+
+	if err := o.Commit(); err != nil {
+		return fmt.Errorf("commit tx: %v", err)
+	}
+
+	return
+}
+
+func (inv *Invoice) setCurrent(o orm.Ormer) (err error) {
 	if inv.Current {
 		return nil
 	}
 
 	var currentInvoice *Invoice
-
-	o := orm.NewOrm()
 
 	var tmp Invoice
 	err = o.QueryTable(TABLE_NAME).
@@ -395,10 +388,6 @@ func (inv *Invoice) SetCurrent() (err error) {
 		}
 	}
 
-	if err := o.Begin(); err != nil {
-		return fmt.Errorf("begin tx: %v", err)
-	}
-
 	if currentInvoice != nil {
 		currentInvoice.Current = false
 		if _, err := o.Update(currentInvoice); err != nil {
@@ -409,10 +398,6 @@ func (inv *Invoice) SetCurrent() (err error) {
 	inv.Current = true
 	if _, err := o.Update(inv); err != nil {
 		return fmt.Errorf("update this invoice: %v", err)
-	}
-
-	if err := o.Commit(); err != nil {
-		return fmt.Errorf("commit tx: %v", err)
 	}
 
 	return
