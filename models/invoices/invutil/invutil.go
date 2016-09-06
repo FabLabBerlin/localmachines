@@ -417,40 +417,41 @@ func toUtilInvoices(locId int64, ivs []*invoices.Invoice) (invs []*Invoice, err 
 	return
 }
 
-func AssureUsersHaveInvoiceFor(locId int64, year int, month time.Month) error {
-	us, err := users.GetAllUsersAt(locId)
+func AssureUserHasDraftFor(locId int64, u *users.User, year int, month time.Month) error {
+	ivs, err := invoices.GetAllOfUserAt(locId, u.Id)
 	if err != nil {
-		return fmt.Errorf("get all users: %v", err)
+		return fmt.Errorf("invoices.GetAllOfUserAt: %v", err)
 	}
+	var draft *invoices.Invoice
 
-	ivs, err := invoices.GetAllInvoicesBetween(locId, year, int(month))
-	if err != nil {
-		return fmt.Errorf("invoices.GetAllInvoicesBetween: %v", err)
-	}
-
-	ivsByUserId := make(map[int64]invoices.Invoice)
 	for _, iv := range ivs {
-		ivsByUserId[iv.UserId] = *iv
+		if iv.Year == year && iv.Month == int(month) {
+			draft = iv
+		}
 	}
 
-	for _, u := range us {
-		if _, ok := ivsByUserId[u.Id]; !ok {
-			var newIv invoices.Invoice
+	if draft == nil {
+		var newIv invoices.Invoice
 
-			newIv.Year = year
-			newIv.Month = int(month)
-			newIv.Status = "draft"
-			newIv.UserId = u.Id
-			newIv.LocationId = locId
+		newIv.Year = year
+		newIv.Month = int(month)
+		newIv.Status = "draft"
+		newIv.UserId = u.Id
+		newIv.LocationId = locId
 
-			if _, err := invoices.Create(&newIv); err != nil {
-				return fmt.Errorf("invoices.Create for user %v: %v", u.Id, err)
+		if _, err := invoices.Create(&newIv); err != nil {
+			return fmt.Errorf("invoices.Create for user %v: %v", u.Id, err)
+		}
+
+		if year == time.Now().Year() && month == time.Now().Month() {
+			if err := newIv.SetCurrent(); err != nil {
+				return fmt.Errorf("set current: %v", err)
 			}
-
-			if year == time.Now().Year() && month == time.Now().Month() {
-				if err := newIv.SetCurrent(); err != nil {
-					return fmt.Errorf("set current: %v", err)
-				}
+		}
+	} else {
+		if year == time.Now().Year() && month == time.Now().Month() {
+			if err := draft.SetCurrent(); err != nil {
+				return fmt.Errorf("set current: %v", err)
 			}
 		}
 	}

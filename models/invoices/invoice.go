@@ -64,33 +64,9 @@ func Create(inv *Invoice) (id int64, err error) {
 
 	if now := time.Now(); inv.Month == int(now.Month()) &&
 		inv.Year == now.Year() {
-		lastMonth := now.AddDate(0, -1, 0)
-		lastInv, err := GetDraft(inv.LocationId, inv.UserId, lastMonth)
-		if err == nil {
-			umbs, err := user_memberships.GetForInvoice(lastInv.Id)
-			if err != nil {
-				return 0, fmt.Errorf("get user memberships for last month: %v", err)
-			}
-			for _, umb := range umbs.Data {
-				if !umb.AutoExtend &&
-					umb.EndDate.Before(inv.Interval().TimeFrom()) {
-					continue
-				}
-
-				clone := umb.UserMembership()
-				clone.Id = 0
-				clone.InvoiceId = inv.Id
-				clone.InvoiceStatus = inv.Status
-
-				if _, err := o.Insert(&clone); err != nil {
-					return 0, fmt.Errorf("inserting cloned membership: %v", err)
-				}
-			}
-		} else if err == ErrNoInvoiceForThatMonth {
-			// Nothing to do:
-			err = nil
-		} else {
-			return 0, fmt.Errorf("getting in inv of last month: %v", err)
+		if inv.setCurrent(o); err != nil {
+			o.Rollback()
+			return 0, fmt.Errorf("set current: %v", err)
 		}
 	}
 
@@ -101,7 +77,7 @@ func Create(inv *Invoice) (id int64, err error) {
 	return
 }
 
-var ErrNoInvoiceForThatMonth = errors.New("no invoice exists for that month (and none will be auto-created)")
+var ErrNoInvoiceForThatMonth = errors.New("no draft invoice exists for that month (and none will be auto-created)")
 
 // GetDraft for User uid @ Location locId and time t.  If it doesn't exist, it
 // gets created insofar it doesn't violate business logic.
@@ -109,6 +85,9 @@ func GetDraft(locId, uid int64, t time.Time) (*Invoice, error) {
 	y := t.Year()
 	m := t.Month()
 	isThisMonth := time.Now().Month() == m && time.Now().Year() == y
+
+	timeNextMonth := time.Now().AddDate(0, 1, 0)
+	isNextMonth := timeNextMonth.Month() == m && timeNextMonth.Year() == y
 
 	inv := Invoice{
 		LocationId: locId,
@@ -129,10 +108,12 @@ func GetDraft(locId, uid int64, t time.Time) (*Invoice, error) {
 	if err == nil {
 		return existing, nil
 	} else if err == orm.ErrNoRows {
-		if isThisMonth {
+		if isThisMonth || isNextMonth {
 			if _, err := Create(&inv); err == nil {
-				if err := inv.SetCurrent(); err != nil {
-					return nil, fmt.Errorf("set current: %v", err)
+				if isThisMonth {
+					if err := inv.SetCurrent(); err != nil {
+						return nil, fmt.Errorf("set current: %v", err)
+					}
 				}
 				return &inv, nil
 			} else {
@@ -272,6 +253,8 @@ func (inv *Invoice) attachUserMembership(um *user_memberships.UserMembership) er
 		if err != nil {
 			return fmt.Errorf("create user membership: %v", err)
 		}
+		newUm.AutoExtend = um.AutoExtend
+		newUm.EndDate = um.EndDate
 		newUm.InvoiceStatus = inv.Status
 		if newUm.Update(); err != nil {
 			return fmt.Errorf("update user membership: %v", err)
@@ -336,13 +319,30 @@ func (inv *Invoice) SaveTotal() (err error) {
 //
 // 2. Transactionally switch over current=true state
 func (inv *Invoice) SetCurrent() (err error) {
+	o := orm.NewOrm()
+
+	if err := o.Begin(); err != nil {
+		return fmt.Errorf("begin tx: %v", err)
+	}
+
+	if err := inv.setCurrent(o); err != nil {
+		o.Rollback()
+		return err
+	}
+
+	if err := o.Commit(); err != nil {
+		return fmt.Errorf("commit tx: %v", err)
+	}
+
+	return
+}
+
+func (inv *Invoice) setCurrent(o orm.Ormer) (err error) {
 	if inv.Current {
 		return nil
 	}
 
 	var currentInvoice *Invoice
-
-	o := orm.NewOrm()
 
 	var tmp Invoice
 	err = o.QueryTable(TABLE_NAME).
@@ -389,14 +389,16 @@ func (inv *Invoice) SetCurrent() (err error) {
 			if err != nil {
 				return fmt.Errorf("get user membership: %v", err)
 			}
+
+			if !um.AutoExtend &&
+				um.EndDate.Before(inv.Interval().TimeFrom()) {
+				continue
+			}
+
 			if err := inv.attachUserMembership(um); err != nil {
 				return fmt.Errorf("attach user membership: %v", err)
 			}
 		}
-	}
-
-	if err := o.Begin(); err != nil {
-		return fmt.Errorf("begin tx: %v", err)
 	}
 
 	if currentInvoice != nil {
@@ -409,10 +411,6 @@ func (inv *Invoice) SetCurrent() (err error) {
 	inv.Current = true
 	if _, err := o.Update(inv); err != nil {
 		return fmt.Errorf("update this invoice: %v", err)
-	}
-
-	if err := o.Commit(); err != nil {
-		return fmt.Errorf("commit tx: %v", err)
 	}
 
 	return

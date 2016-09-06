@@ -89,12 +89,15 @@ func (this *Controller) GetMonth() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	list := make([]invutil.Invoice, len(ivs))
+	list := make([]invutil.Invoice, 0, len(ivs))
 
-	for i, iv := range ivs {
-		list[i] = invutil.Invoice{
+	for _, iv := range ivs {
+		inv := invutil.Invoice{
 			Invoice: *iv,
 			User:    usrsById[iv.UserId],
+		}
+		if inv.Total >= 0.01 || inv.FastbillNo != "" {
+			list = append(list, inv)
 		}
 	}
 
@@ -178,18 +181,20 @@ func (this *Controller) Cancel() {
 	}
 
 	if s := inv.Status; s != "outgoing" {
-		beego.Error("wrong status to complete invoice:", s)
-		this.Abort("400")
+		msg := fmt.Sprintf("wrong status to complete invoice: %v", s)
+		beego.Error(msg)
+		this.CustomAbort(400, msg)
 	}
 
 	if inv.Canceled {
-		beego.Error("invoice already canceled")
-		this.Abort("500")
+		msg := "invoice already canceled"
+		beego.Error(msg)
+		this.CustomAbort(500, msg)
 	}
 
 	if err := inv.FastbillCancel(); err != nil {
 		beego.Error("cancel:", err)
-		this.Abort("500")
+		this.CustomAbort(500, err.Error())
 	}
 
 	this.ServeJSON()

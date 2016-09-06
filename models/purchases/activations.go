@@ -9,6 +9,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"math"
 	"strings"
 	"time"
 )
@@ -252,7 +253,11 @@ func (a *Activation) Update() error {
 		a.Purchase.PriceUnit = m.PriceUnit
 		a.Purchase.PricePerUnit = m.Price
 	}
-	a.Purchase.Quantity = a.Purchase.quantityFromTimes()
+	a.Purchase.Quantity = floor10(a.Purchase.quantityFromTimes())
 
 	return Update(&a.Purchase)
+}
+
+func floor10(x float64) float64 {
+	return math.Floor(x*10) / 10
 }

@@ -297,8 +297,8 @@ app.controller('UserCtrl',
       toastr.success('Membership created');
       $scope.getUserMemberships();
     })
-    .error(function() {
-      toastr.error('Error while trying to create new User Membership');
+    .error(function(text) {
+      toastr.error(text);
     });
   };
 

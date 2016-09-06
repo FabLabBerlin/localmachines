@@ -27,7 +27,7 @@ func init() {
 func TestInvutilInvoices(t *testing.T) {
 	Convey("Testing invutil.Invoice model", t, func() {
 		Reset(setup.ResetDB)
-		Convey("AssureUsersHaveInvoiceFor creates invoice for month", func() {
+		Convey("AssureUserHasDraftFor creates invoice for month", func() {
 			if lenInvoicesDB() > 0 || lenUserMembershipsDB() > 0 {
 				panic("Expected clean state to test in.")
 			}
@@ -36,7 +36,11 @@ func TestInvutilInvoices(t *testing.T) {
 			yNow := time.Now().Year()
 			mLast := time.Now().AddDate(0, -1, 0).Month()
 			yLast := time.Now().AddDate(0, -1, 0).Year()
-			user, _, _ := createInvoiceWithMembership(yLast, mLast, 1)
+			user, iv, _ := createInvoiceWithMembership(yLast, mLast, 1)
+			iv.Invoice.Current = true
+			if err := iv.Invoice.Save(); err != nil {
+				panic(err.Error())
+			}
 
 			if l := lenInvoicesDB(); l != 1 {
 				panic(strconv.Itoa(l))
@@ -45,7 +49,7 @@ func TestInvutilInvoices(t *testing.T) {
 				panic(strconv.Itoa(l))
 			}
 
-			if err := invutil.AssureUsersHaveInvoiceFor(locId, yNow, mNow); err != nil {
+			if err := invutil.AssureUserHasDraftFor(locId, user, yNow, mNow); err != nil {
 				panic(err.Error())
 			}
 
@@ -100,6 +104,10 @@ func testInvoiceWithMembershipAndTestPurchase(purchaseInsideMembershipInterval b
 	mLast := time.Now().AddDate(0, -1, 0).Month()
 	yLast := time.Now().AddDate(0, -1, 0).Year()
 	user, iv, userMembership := createInvoiceWithMembership(yLast, mLast, 15)
+	iv.Invoice.Current = true
+	if err := iv.Invoice.Save(); err != nil {
+		panic(err.Error())
+	}
 
 	So(userMembership.EndDate.Year(), ShouldEqual, yNow)
 	So(userMembership.EndDate.Month(), ShouldEqual, mNow)
