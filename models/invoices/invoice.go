@@ -253,6 +253,8 @@ func (inv *Invoice) attachUserMembership(um *user_memberships.UserMembership) er
 		if err != nil {
 			return fmt.Errorf("create user membership: %v", err)
 		}
+		newUm.AutoExtend = um.AutoExtend
+		newUm.EndDate = um.EndDate
 		newUm.InvoiceStatus = inv.Status
 		if newUm.Update(); err != nil {
 			return fmt.Errorf("update user membership: %v", err)
