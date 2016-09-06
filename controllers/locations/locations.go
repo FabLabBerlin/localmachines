@@ -94,3 +94,16 @@ func (c *Controller) MyIp() {
 	c.Ctx.WriteString(c.ClientIp())
 	c.Finish()
 }
+
+// @Title Jabber Connect
+// @Description Return server's Jabber ID
+// @Param	lid	path 	int	true	"Location"
+// @Success 200 {object}
+// @Failure	401	Not authorized
+// @Failure	500	Internal Server Error
+// @router /jabber_connect [get]
+func (c *Controller) JabberConnect() {
+	beego.Info("Requesting Server Jabber ID: location=", c.GetString("location"))
+	c.Ctx.WriteString(beego.AppConfig.String("XmppUser"))
+	c.Finish()
+}

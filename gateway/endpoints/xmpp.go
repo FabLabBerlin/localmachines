@@ -33,10 +33,9 @@ func NewXmpp(ns *netswitches.NetSwitches) *Xmpp {
 	for {
 		select {
 		case msg := <-x.client.Recv():
-			if msg.Data.IsRequest {
-				if err := x.dispatch(msg); err != nil {
-					log.Printf("error dispatching %v", msg)
-				}
+			log.Printf("gateway: incoming msg")
+			if err := x.dispatch(msg); err != nil {
+				log.Printf("error dispatching %v", msg)
 			}
 		}
 	}
@@ -57,6 +56,7 @@ func (x *Xmpp) initMachinesList(retries int) (err error) {
 		}
 
 		if err == nil {
+			log.Printf("initMachinesList: trigger Load machine list successfully.")
 			break
 		}
 	}
@@ -72,7 +72,7 @@ func (x *Xmpp) reinitMachinesList() (err error) {
 }
 
 func (x *Xmpp) dispatch(msg xmpp.Message) (err error) {
-	log.Printf("dispatch(%v)", msg)
+	log.Printf("dispatch(%v)", msg.Data.Command)
 	cmd := msg.Data.Command
 	switch cmd {
 	case "on", "off":
@@ -87,7 +87,7 @@ func (x *Xmpp) dispatch(msg xmpp.Message) (err error) {
 		return err
 	case commands.FETCH_LOCAL_IP:
 		var resp *http.Response
-		resp, err = http.Get("https://easylab.io/locations/my_ip")
+		resp, err = http.Get(*global.ServerPrefix + "/api/locations/my_ip")
 		if err != nil {
 			return
 		}
@@ -102,7 +102,7 @@ func (x *Xmpp) dispatch(msg xmpp.Message) (err error) {
 		ipAddress := string(buf)
 
 		if err = x.client.Send(xmpp.Message{
-			Remote: global.Cfg.XMPP.Server,
+			Remote: global.ServerJabberId,
 			Data: xmpp.Data{
 				Command:    commands.GATEWAY_ALLOWS_USERS_FROM_IP,
 				LocationId: global.Cfg.Main.LocationId,
@@ -112,6 +112,8 @@ func (x *Xmpp) dispatch(msg xmpp.Message) (err error) {
 			return fmt.Errorf("xmpp command GATEWAY_ALLOWS_USERS_FROM_IP: %v", err)
 		}
 		return
+	case commands.SERVER_SENDS_MACHINE_LIST:
+		return x.ns.UseFromJson([]byte(msg.Data.Raw))
 	}
 	return fmt.Errorf("invalid cmd: %v", cmd)
 }

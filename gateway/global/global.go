@@ -13,7 +13,9 @@ const (
 )
 
 var (
-	Cfg Config
+	Cfg            Config
+	ServerPrefix   *string
+	ServerJabberId string
 )
 
 type Config struct {

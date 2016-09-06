@@ -40,11 +40,11 @@ type Message struct {
 }
 
 type Data struct {
-	IsRequest    bool
 	Command      string
 	MachineId    int64
 	LocationId   int64
 	IpAddress    string
+	Raw          string
 	Error        bool
 	ErrorMessage string `json:",omitempty"`
 }

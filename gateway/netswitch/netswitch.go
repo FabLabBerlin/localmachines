@@ -11,7 +11,6 @@ package netswitch
 import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib/mfi"
-	"github.com/FabLabBerlin/localmachines/models/machine"
 	"log"
 	"net/http"
 	"net/url"
@@ -20,11 +19,19 @@ import (
 	"sync"
 )
 
+const NETSWITCH_TYPE_MFI = "mfi"
+
 type NetSwitch struct {
 	muChInit sync.Mutex
 	chSingle chan int
-	machine.Machine
-	On bool
+	On       bool `json:"-"`
+	// We're using this without Beego ORM attached
+	Id                  int64
+	NetswitchUrlOn      string
+	NetswitchUrlOff     string
+	NetswitchHost       string
+	NetswitchSensorPort int
+	NetswitchType       string
 }
 
 func (ns *NetSwitch) SetOn(on bool) (err error) {
@@ -38,7 +45,7 @@ func (ns *NetSwitch) SetOn(on bool) (err error) {
 func (ns *NetSwitch) turnOn() (err error) {
 	log.Printf("turn on %v", ns.UrlOn())
 	var resp *http.Response
-	if ns.NetswitchType == machine.NETSWITCH_TYPE_MFI {
+	if ns.NetswitchType == NETSWITCH_TYPE_MFI {
 		resp, err = http.PostForm(ns.UrlOn(), url.Values{"output": {"1"}})
 	} else {
 		resp, err = http.Get(ns.UrlOn())
@@ -65,7 +72,7 @@ func (ns *NetSwitch) turnOn() (err error) {
 
 func (ns *NetSwitch) turnOff() (err error) {
 	var resp *http.Response
-	if ns.NetswitchType == machine.NETSWITCH_TYPE_MFI {
+	if ns.NetswitchType == NETSWITCH_TYPE_MFI {
 		log.Printf("turn off %v", ns.UrlOn())
 		resp, err = http.PostForm(ns.UrlOn(), url.Values{"output": {"0"}})
 	} else {
@@ -102,7 +109,7 @@ func (ns *NetSwitch) isIgnorableAhmaError(err error) bool {
 }
 
 func (ns *NetSwitch) UrlOn() string {
-	if ns.NetswitchType == machine.NETSWITCH_TYPE_MFI {
+	if ns.NetswitchType == NETSWITCH_TYPE_MFI {
 		return "http://" + ns.NetswitchHost + "/sensors/" + strconv.Itoa(ns.NetswitchSensorPort)
 	} else {
 		return ns.NetswitchUrlOn
@@ -110,7 +117,7 @@ func (ns *NetSwitch) UrlOn() string {
 }
 
 func (ns *NetSwitch) UrlOff() string {
-	if ns.NetswitchType == machine.NETSWITCH_TYPE_MFI {
+	if ns.NetswitchType == NETSWITCH_TYPE_MFI {
 		return "http://" + ns.NetswitchHost + "/sensors/" + strconv.Itoa(ns.NetswitchSensorPort)
 	} else {
 		return ns.NetswitchUrlOff

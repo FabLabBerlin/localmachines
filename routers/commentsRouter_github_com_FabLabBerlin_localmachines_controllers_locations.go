@@ -34,4 +34,11 @@ func init() {
 			[]string{"get"},
 			nil})
 
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/locations:Controller"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/locations:Controller"],
+		beego.ControllerComments{
+			"JabberConnect",
+			`/jabber_connect`,
+			[]string{"get"},
+			nil})
+
 }

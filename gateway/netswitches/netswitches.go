@@ -4,17 +4,14 @@ netswitches helper functions.
 package netswitches
 
 import (
-	//"encoding/json"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/gateway/global"
 	"github.com/FabLabBerlin/localmachines/gateway/netswitch"
 	"github.com/FabLabBerlin/localmachines/lib/xmpp"
 	"github.com/FabLabBerlin/localmachines/lib/xmpp/commands"
-	//"github.com/FabLabBerlin/localmachines/models/machine"
 	"log"
-	//"net/http"
-	//"strconv"
 )
 
 var (
@@ -33,9 +30,8 @@ func New() (nss *NetSwitches) {
 // Load netswitches from EASY LAB API.  client should be logged in.
 func (nss *NetSwitches) Load(xmppClient *xmpp.Xmpp) (err error) {
 	if err = xmppClient.Send(xmpp.Message{
-		Remote: global.Cfg.XMPP.Server,
+		Remote: global.ServerJabberId,
 		Data: xmpp.Data{
-			IsRequest:  true,
 			Command:    commands.GATEWAY_REQUESTS_MACHINE_LIST,
 			LocationId: global.Cfg.Main.LocationId,
 		},
@@ -46,27 +42,16 @@ func (nss *NetSwitches) Load(xmppClient *xmpp.Xmpp) (err error) {
 	return
 }
 
-/*// fetch netswitch data from EASY LAB API.
+// fetch netswitch data from EASY LAB API.
 //
 // Each type NetSwitch runs its own dispatch loop.  Make sure no additional
 // loop is started.
-func (nss *NetSwitches) fetch(client *http.Client) (err error) {
-	locationId := strconv.FormatInt(global.Cfg.Main.LocationId, 10)
-	url := global.Cfg.API.Url + "/machines?location=" + locationId + "&archived=false"
-	resp, err := client.Get(url)
-	if err != nil {
-		return fmt.Errorf("GET: %v", err)
+func (nss *NetSwitches) UseFromJson(raw []byte) (err error) {
+	all := []netswitch.NetSwitch{}
+	if err := json.Unmarshal(raw, &all); err != nil {
+		return fmt.Errorf("json unmarshal: %v", err)
 	}
-	defer resp.Body.Close()
-	if code := resp.StatusCode; code != http.StatusOK {
-		return fmt.Errorf("unexpected status code: %v", code)
-	}
-	dec := json.NewDecoder(resp.Body)
-	all := []machine.Machine{}
-	if err := dec.Decode(&all); err != nil {
-		return fmt.Errorf("json decode: %v", err)
-	}
-	mappings := make([]machine.Machine, 0, len(all))
+	mappings := make([]netswitch.NetSwitch, 0, len(all))
 	for _, mapping := range all {
 		mappings = append(mappings, mapping)
 	}
@@ -74,14 +59,20 @@ func (nss *NetSwitches) fetch(client *http.Client) (err error) {
 		nss.nss = make(map[int64]*netswitch.NetSwitch)
 	}
 	for _, mapping := range mappings {
-		if existing, exists := nss.nss[mapping.Id]; exists {
-			existing.Machine = mapping
-		} else {
-			nss.nss[mapping.Id] = &netswitch.NetSwitch{
-				Machine: mapping,
-			}
+		log.Printf("adding mapping with id %v", mapping.Id)
+		log.Printf("host: %v", mapping.NetswitchHost)
+		if _, exists := nss.nss[mapping.Id]; !exists {
+			nss.nss[mapping.Id] = &netswitch.NetSwitch{}
 		}
+		existing := nss.nss[mapping.Id]
+		log.Printf("exists")
+		existing.NetswitchUrlOn = mapping.NetswitchUrlOn
+		existing.NetswitchUrlOff = mapping.NetswitchUrlOff
+		existing.NetswitchHost = mapping.NetswitchHost
+		existing.NetswitchSensorPort = mapping.NetswitchSensorPort
+		existing.NetswitchType = mapping.NetswitchType
 	}
+	log.Printf("now mappings nss[2]=%v", nss.nss[2])
 	// Removed unused IDs
 	unusedIDs := make([]int64, 0, 3)
 	for _, ns := range nss.nss {
@@ -101,7 +92,7 @@ func (nss *NetSwitches) fetch(client *http.Client) (err error) {
 	// Make sure there are no duplicate combinations Netswitch Host + SensorPort
 	hostsSensorPorts := make(map[string]bool)
 	for _, ns := range nss.nss {
-		if ns.NetswitchType != machine.NETSWITCH_TYPE_CUSTOM && len(ns.NetswitchHost) > 0 {
+		if ns.NetswitchType != "" && len(ns.NetswitchHost) > 0 {
 			key := fmt.Sprintf("%v -> %v", ns.NetswitchHost, ns.NetswitchSensorPort)
 			if _, ok := hostsSensorPorts[key]; ok {
 				log.Printf("duplicate combination host sensor port: %v",
@@ -112,7 +103,7 @@ func (nss *NetSwitches) fetch(client *http.Client) (err error) {
 		}
 	}
 	return
-}*/
+}
 
 func (nss *NetSwitches) SetOn(machineId int64, on bool) (err error) {
 	for retries := 0; retries < global.MAX_SYNC_RETRIES; retries++ {
