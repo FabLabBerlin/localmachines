@@ -76,7 +76,34 @@ func (x *Xmpp) dispatch(msg xmpp.Message) (err error) {
 	cmd := msg.Data.Command
 	switch cmd {
 	case "on", "off":
-		return x.ns.SetOn(msg.Data.MachineId, cmd == "on")
+		resp := xmpp.Message{
+			Remote: global.ServerJabberId,
+			Data: xmpp.Data{
+				LocationId: global.Cfg.Main.LocationId,
+				MachineId:  msg.Data.MachineId,
+				UserId:     msg.Data.UserId,
+			},
+		}
+		err = x.ns.SetOn(msg.Data.MachineId, cmd == "on")
+		if err == nil {
+			if cmd == "on" {
+				resp.Data.Command = commands.GATEWAY_SUCCESS_ON
+			} else {
+				resp.Data.Command = commands.GATEWAY_SUCCESS_OFF
+			}
+		} else {
+			if cmd == "on" {
+				resp.Data.Command = commands.GATEWAY_FAIL_ON
+			} else {
+				resp.Data.Command = commands.GATEWAY_FAIL_OFF
+			}
+		}
+
+		if err = x.client.Send(resp); err != nil {
+			return fmt.Errorf("xmpp command GATEWAY_ALLOWS_USERS_FROM_IP: %v", err)
+		}
+
+		return
 	case commands.REINIT:
 		return x.reinitMachinesList()
 	case commands.APPLY_CONFIG:

@@ -21,13 +21,18 @@ type UserDashboardController struct {
 	Controller
 }
 
-type DashboardData struct {
+type PushData struct {
 	Activations []*purchases.Activation
 	Machines    []*machine.Machine
 	Tutorings   *purchases.TutoringList
+	UserMessage struct {
+		Error   string
+		Info    string
+		Warning string
+	}
 }
 
-func (this *DashboardData) load(isStaff bool, uid, locId int64) (err error) {
+func (this *PushData) load(isStaff bool, uid, locId int64) (err error) {
 	if err = this.loadActivations(); err != nil {
 		return
 	}
@@ -40,12 +45,12 @@ func (this *DashboardData) load(isStaff bool, uid, locId int64) (err error) {
 	return
 }
 
-func (this *DashboardData) loadActivations() (err error) {
+func (this *PushData) loadActivations() (err error) {
 	this.Activations, err = purchases.GetActiveActivations()
 	return
 }
 
-func (this *DashboardData) loadMachines(isStaff bool, uid, locationId int64) (err error) {
+func (this *PushData) loadMachines(isStaff bool, uid, locationId int64) (err error) {
 	// List all machines if the requested user is admin
 	allMachines, err := machine.GetAllAt(locationId)
 	if err != nil {
@@ -75,7 +80,7 @@ func (this *DashboardData) loadMachines(isStaff bool, uid, locationId int64) (er
 	return
 }
 
-func (this *DashboardData) loadTutorings(uid int64) (err error) {
+func (this *PushData) loadTutorings(uid int64) (err error) {
 	tutors, err := products.GetAllTutors()
 	if err != nil {
 		return fmt.Errorf("get all tutors: %v", err)
@@ -112,7 +117,7 @@ func (this *DashboardData) loadTutorings(uid int64) (err error) {
 // @Failure	500	Internal Server Error
 // @router /:uid/dashboard [get]
 func (this *UserDashboardController) GetDashboard() {
-	data := DashboardData{}
+	data := PushData{}
 	locId, isStaff := this.GetLocIdStaff()
 
 	uid, authorized := this.GetRouteUid()
@@ -176,7 +181,7 @@ func (this *UserDashboardController) LP() {
 
 	done = true
 
-	data := DashboardData{}
+	data := PushData{}
 
 	if err := data.load(isStaff, uid, locId); err != nil {
 		beego.Error("Failed to load dashboard data:", err)
@@ -243,11 +248,35 @@ func (this *UserDashboardController) WS() {
 		}
 	}()
 
-	for !done {
-		var data DashboardData
+	for firstIteration := true; !done; firstIteration = false {
+		var data PushData
+
 		if err := data.load(isStaff, uid, locId); err != nil {
 			beego.Error("Failed to load dashboard data:", err)
 		}
+
+		if !firstIteration {
+			msg := psc.Receive()
+			beego.Info("psc.Receive()")
+
+			switch v := msg.(type) {
+			case redigo.Message:
+				var update redis.MachinesUpdate
+				if err := json.Unmarshal(v.Data, &update); err == nil {
+					beego.Info("user", uid, "get update", update)
+				} else {
+					beego.Info("json unmarshal:", msg)
+				}
+				if update.UserId == uid {
+					data.UserMessage.Error = update.Error
+					data.UserMessage.Info = update.Info
+					data.UserMessage.Warning = update.Warning
+				}
+			default:
+				beego.Info("user", uid, "receives", msg)
+			}
+		}
+
 		buf, err := json.Marshal(data)
 		if err != nil {
 			beego.Error("ws marshal for", uid, ":", err)
@@ -258,8 +287,6 @@ func (this *UserDashboardController) WS() {
 			beego.Error("Write text message:", err)
 			return
 		}
-		psc.Receive()
-		beego.Info("user", uid, "receives")
 	}
 
 	this.Finish()

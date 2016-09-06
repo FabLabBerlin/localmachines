@@ -43,6 +43,7 @@ type Data struct {
 	Command      string
 	MachineId    int64
 	LocationId   int64
+	UserId       int64
 	IpAddress    string
 	Raw          string
 	Error        bool

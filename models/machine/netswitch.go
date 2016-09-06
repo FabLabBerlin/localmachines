@@ -3,6 +3,7 @@ package machine
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/lib/redis"
 	"github.com/FabLabBerlin/localmachines/lib/xmpp"
 	"github.com/FabLabBerlin/localmachines/lib/xmpp/commands"
 	"github.com/FabLabBerlin/localmachines/models/locations"
@@ -86,6 +87,18 @@ func xmppDispatch(msg xmpp.Message) (err error) {
 			return fmt.Errorf("SERVER_SENDS_MACHINE_LIST: %v", err)
 		}
 		return nil
+	case commands.GATEWAY_SUCCESS_ON:
+	case commands.GATEWAY_SUCCESS_OFF:
+	case commands.GATEWAY_FAIL_ON:
+	case commands.GATEWAY_FAIL_OFF:
+		if err := redis.PublishMachinesUpdate(redis.MachinesUpdate{
+			LocationId: msg.Data.LocationId,
+			MachineId:  msg.Data.MachineId,
+			UserId:     msg.Data.UserId,
+			Error:      "Failed to turn off machine",
+		}); err != nil {
+			beego.Error("publish machines update:", err)
+		}
 	default:
 		return fmt.Errorf("unknown command '%v'", err)
 	}
@@ -107,12 +120,12 @@ func xmppReinit(location *locations.Location) (err error) {
 	return
 }
 
-func (this *Machine) On() error {
-	return this.turn(ON)
+func (this *Machine) On(userId int64) error {
+	return this.turn(ON, userId)
 }
 
-func (this *Machine) Off() error {
-	return this.turn(OFF)
+func (this *Machine) Off(userId int64) error {
+	return this.turn(OFF, userId)
 }
 
 func (this *Machine) NetswitchConfigured() bool {
@@ -130,13 +143,13 @@ func (this *Machine) NetswitchMfiConfigured() bool {
 		len(this.NetswitchHost) > 0
 }
 
-func (this *Machine) turn(onOrOff ON_OR_OFF) (err error) {
+func (this *Machine) turn(onOrOff ON_OR_OFF, userId int64) (err error) {
 	beego.Info("Attempt to turn NetSwitch ", onOrOff, ", machine ID", this.Id,
 		", NetswitchHost: ", this.NetswitchHost)
 
 	if this.NetswitchConfigured() {
 		if xmppClient != nil {
-			return this.turnXmpp(onOrOff)
+			return this.turnXmpp(onOrOff, userId)
 		} else {
 			return fmt.Errorf("xmpp client is nil!")
 		}
@@ -144,7 +157,7 @@ func (this *Machine) turn(onOrOff ON_OR_OFF) (err error) {
 	return
 }
 
-func (this *Machine) turnXmpp(onOrOff ON_OR_OFF) (err error) {
+func (this *Machine) turnXmpp(onOrOff ON_OR_OFF, userId int64) (err error) {
 	location, err := locations.Get(this.LocationId)
 	if err != nil {
 		return fmt.Errorf("get location %v: %v", this.LocationId, err)
@@ -155,6 +168,7 @@ func (this *Machine) turnXmpp(onOrOff ON_OR_OFF) (err error) {
 			Command:    string(onOrOff),
 			LocationId: location.Id,
 			MachineId:  this.Id,
+			UserId:     userId,
 		},
 	})
 	return

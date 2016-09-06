@@ -2,6 +2,8 @@
 package redis
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/astaxie/beego"
 	"github.com/garyburd/redigo/redis"
@@ -42,7 +44,9 @@ func init() {
 				continue
 			}
 			for _, loc := range locs {
-				PublishMachinesUpdate(loc.Id)
+				PublishMachinesUpdate(MachinesUpdate{
+					LocationId: loc.Id,
+				})
 			}
 		}
 	}()
@@ -60,11 +64,24 @@ func MachinesUpdateCh(locationId int64) string {
 	return machinesUpdateChPrefix + "-" + strconv.FormatInt(locationId, 10)
 }
 
-func PublishMachinesUpdate(locationId int64) (err error) {
+type MachinesUpdate struct {
+	LocationId int64
+	MachineId  int64
+	UserId     int64
+	Error      string
+	Info       string
+	Warning    string
+}
+
+func PublishMachinesUpdate(update MachinesUpdate) (err error) {
 	beego.Info("PublishMachinesUpdate()")
-	ch := MachinesUpdateCh(locationId)
+	ch := MachinesUpdateCh(update.LocationId)
 	conn := pool.Get()
 	defer conn.Close()
-	_, err = conn.Do("PUBLISH", ch, "")
+	data, err := json.Marshal(update)
+	if err != nil {
+		return fmt.Errorf("json marshal: %v", err)
+	}
+	_, err = conn.Do("PUBLISH", ch, string(data))
 	return
 }

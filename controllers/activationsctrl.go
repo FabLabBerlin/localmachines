@@ -260,7 +260,7 @@ func (this *ActivationsController) Start() {
 		this.CustomAbort(500, "Unable to get machine")
 	}
 
-	if err = machine.On(); err != nil {
+	if err = machine.On(userId); err != nil {
 		beego.Error("Failed to turn on machine:", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
@@ -299,6 +299,12 @@ func (this *ActivationsController) Close() {
 		this.CustomAbort(500, "Unable to get activation")
 	}
 
+	userId, err := this.GetSessionUserId()
+	if err != nil {
+		beego.Error("Failed to get session user ID:", err)
+		this.CustomAbort(403, "Failed to create activation")
+	}
+
 	// Attempt to switch off the machine first. This is a way to detect
 	// network errors early as the users won't be able to end their activation
 	// unless the error in the network is fixed.
@@ -307,7 +313,7 @@ func (this *ActivationsController) Close() {
 		beego.Error("Unable to get machine:", err)
 		this.CustomAbort(500, "Unable to get machine")
 	}
-	if err = machine.Off(); err != nil {
+	if err = machine.Off(userId); err != nil {
 		beego.Error("Failed to switch off machine")
 		if !this.IsAdminAt(machine.LocationId) {
 			this.CustomAbort(500, "Internal Server Error")

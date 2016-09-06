@@ -111,7 +111,9 @@ func StartTutoring(id int64) (err error) {
 		return fmt.Errorf("Failed to update: %v", err)
 	}
 
-	if err := redis.PublishMachinesUpdate(tp.LocationId); err != nil {
+	if err := redis.PublishMachinesUpdate(redis.MachinesUpdate{
+		LocationId: tp.LocationId,
+	}); err != nil {
 		beego.Error("tutoring start: publish machines update:", err)
 	}
 
@@ -167,7 +169,9 @@ func StopTutoring(id int64) (err error) {
 		return fmt.Errorf("update: %v", err)
 	}
 
-	if err := redis.PublishMachinesUpdate(tp.LocationId); err != nil {
+	if err := redis.PublishMachinesUpdate(redis.MachinesUpdate{
+		LocationId: tp.LocationId,
+	}); err != nil {
 		beego.Error("tutoring stop: publish machines update:", err)
 	}
 

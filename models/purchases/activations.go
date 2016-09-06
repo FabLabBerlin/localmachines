@@ -231,7 +231,9 @@ func (a *Activation) Close(endTime time.Time) error {
 		return fmt.Errorf("Failed to update machine: %v", err)
 	}
 
-	if err := redis.PublishMachinesUpdate(m.LocationId); err != nil {
+	if err := redis.PublishMachinesUpdate(redis.MachinesUpdate{
+		LocationId: m.LocationId,
+	}); err != nil {
 		beego.Error("publish machines update:", err)
 	}
 

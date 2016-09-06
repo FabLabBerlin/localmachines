@@ -176,7 +176,10 @@ func (m *Machine) Update(updateGateway bool) (err error) {
 		}
 	}
 
-	if err := redis.PublishMachinesUpdate(m.LocationId); err != nil {
+	if err := redis.PublishMachinesUpdate(redis.MachinesUpdate{
+		LocationId: m.LocationId,
+		MachineId:  m.Id,
+	}); err != nil {
 		beego.Error("publish machines update:", err)
 	}
 

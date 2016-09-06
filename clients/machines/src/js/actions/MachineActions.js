@@ -17,25 +17,35 @@ var socket;
 function dashboardDispatch(data) {
   var userIds = [];
 
-  reactor.batch(() => {
-    reactor.dispatch(Machines.actionTypes.SET_ACTIVATIONS, {
-      activations: data.Activations
-    });
-    if (data.Activations) {
-      userIds = _.pluck(data.Activations, 'UserId');
-    }
-    reactor.dispatch(Machines.actionTypes.SET_MACHINES, {
-      machines: data.Machines
-    });
-    if (data.Tutorings) {
-      reactor.dispatch(actionTypes.SET_TUTORINGS, data.Tutorings.Data);
-      userIds = _.union(userIds, _.pluck(data.Tutorings.Data, 'UserId'));
-      userIds = _.filter(userIds, (userId) => {
-        return userId;
+  console.log('data=', data);
+
+  if (data.UserMessage && data.UserMessage.Error) {
+    toastr.error(data.UserMessage.Error);
+  } else if (data.UserMessage && data.UserMessage.Info) {
+    toastr.info(data.UserMessage.Info);
+  } else if (data.UserMessage && data.UserMessage.Warning) {
+    toastr.warn(data.UserMessage.Warning);
+  } else {
+    reactor.batch(() => {
+      reactor.dispatch(Machines.actionTypes.SET_ACTIVATIONS, {
+        activations: data.Activations
       });
-    }
-    fetchUserNames(userIds);
-  });
+      if (data.Activations) {
+        userIds = _.pluck(data.Activations, 'UserId');
+      }
+      reactor.dispatch(Machines.actionTypes.SET_MACHINES, {
+        machines: data.Machines
+      });
+      if (data.Tutorings) {
+        reactor.dispatch(actionTypes.SET_TUTORINGS, data.Tutorings.Data);
+        userIds = _.union(userIds, _.pluck(data.Tutorings.Data, 'UserId'));
+        userIds = _.filter(userIds, (userId) => {
+          return userId;
+        });
+      }
+      fetchUserNames(userIds);
+    });
+  }
 }
 
 
