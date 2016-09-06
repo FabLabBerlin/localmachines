@@ -43,7 +43,6 @@ type Data struct {
 	IsRequest    bool
 	Command      string
 	MachineId    int64
-	TrackingId   string
 	LocationId   int64
 	IpAddress    string
 	Error        bool

@@ -20,11 +20,6 @@ type Config struct {
 	Main struct {
 		LocationId int64
 	}
-	API struct {
-		Id  string
-		Key string
-		Url string
-	}
 	XMPP struct {
 		Server string
 		User   string

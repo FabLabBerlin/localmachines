@@ -6,57 +6,112 @@ import (
 	"github.com/FabLabBerlin/localmachines/gateway/netswitches"
 	"github.com/FabLabBerlin/localmachines/lib/xmpp"
 	"github.com/FabLabBerlin/localmachines/lib/xmpp/commands"
-	"github.com/FabLabBerlin/localmachines/lib/xmpp/request_response"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 )
 
 type Xmpp struct {
-	ns            *netswitches.NetSwitches
-	dispatcher    *request_response.Dispatcher
-	reinitGateway func() error
+	ns     *netswitches.NetSwitches
+	client *xmpp.Xmpp
 }
 
-func NewXmpp(ns *netswitches.NetSwitches, reinitGateway func() error) *Xmpp {
+func NewXmpp(ns *netswitches.NetSwitches) *Xmpp {
 	x := &Xmpp{
-		ns:            ns,
-		reinitGateway: reinitGateway,
+		ns: ns,
+		client: xmpp.NewXmpp(
+			global.Cfg.XMPP.Server,
+			global.Cfg.XMPP.User,
+			global.Cfg.XMPP.Pass,
+		),
 	}
-	x.dispatcher = request_response.NewDispatcher(global.Cfg.XMPP.Server, global.Cfg.XMPP.User, global.Cfg.XMPP.Pass, x.dispatch)
+	x.client.Run()
+	if err := x.initMachinesList(-1); err != nil {
+		log.Printf("init machines list: %v", err)
+	}
+	for {
+		select {
+		case msg := <-x.client.Recv():
+			if msg.Data.IsRequest {
+				if err := x.dispatch(msg); err != nil {
+					log.Printf("error dispatching %v", msg)
+				}
+			}
+		}
+	}
 	return x
 }
 
-func (x *Xmpp) dispatch(msg xmpp.Message) (ipAddress string, err error) {
+func (x *Xmpp) initMachinesList(retries int) (err error) {
+	for i := 0; retries <= 0 || i < retries; i++ {
+		if err != nil {
+			log.Printf("gateway: Init: %v", err)
+			log.Printf("gateway: Init: retrying in 5 seconds")
+			<-time.After(5 * time.Second)
+			err = nil
+		}
+		if err = x.ns.Load(x.client); err != nil {
+			err = fmt.Errorf("netswitches load: %v", err)
+			continue
+		}
+
+		if err == nil {
+			break
+		}
+	}
+
+	return
+}
+
+func (x *Xmpp) reinitMachinesList() (err error) {
+	if err = x.initMachinesList(2); err != nil {
+		return fmt.Errorf("Init: %v", err)
+	}
+	return
+}
+
+func (x *Xmpp) dispatch(msg xmpp.Message) (err error) {
 	log.Printf("dispatch(%v)", msg)
 	cmd := msg.Data.Command
 	switch cmd {
 	case "on", "off":
-		return "", x.ns.SetOn(msg.Data.MachineId, cmd == "on")
+		return x.ns.SetOn(msg.Data.MachineId, cmd == "on")
 	case commands.REINIT:
-		return "", x.reinitGateway()
+		return x.reinitMachinesList()
 	case commands.APPLY_CONFIG:
 		log.Printf("apply_config!!!")
 		updates := make(chan string, 10)
 		err := x.ns.ApplyConfig(msg.Data.MachineId, updates)
 		log.Printf("dispatch:returning err=%v", err)
-		return "", err
+		return err
 	case commands.FETCH_LOCAL_IP:
 		var resp *http.Response
-		resp, err = http.Get(global.Cfg.API.Url + "/locations/my_ip")
+		resp, err = http.Get("https://easylab.io/locations/my_ip")
 		if err != nil {
 			return
 		}
 		defer resp.Body.Close()
 		if resp.StatusCode > 299 {
-			return "", fmt.Errorf("status code %v", resp.StatusCode)
+			return fmt.Errorf("status code %v", resp.StatusCode)
 		}
 		var buf []byte
 		if buf, err = ioutil.ReadAll(resp.Body); err != nil {
 			return
 		}
-		ipAddress = string(buf)
+		ipAddress := string(buf)
+
+		if err = x.client.Send(xmpp.Message{
+			Remote: global.Cfg.XMPP.Server,
+			Data: xmpp.Data{
+				Command:    commands.GATEWAY_ALLOWS_USERS_FROM_IP,
+				LocationId: global.Cfg.Main.LocationId,
+				IpAddress:  ipAddress,
+			},
+		}); err != nil {
+			return fmt.Errorf("xmpp command GATEWAY_ALLOWS_USERS_FROM_IP: %v", err)
+		}
 		return
 	}
-	return "", fmt.Errorf("invalid cmd: %v", cmd)
+	return fmt.Errorf("invalid cmd: %v", cmd)
 }

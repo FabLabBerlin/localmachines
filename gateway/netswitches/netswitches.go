@@ -4,15 +4,17 @@ netswitches helper functions.
 package netswitches
 
 import (
-	"encoding/json"
+	//"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/gateway/global"
 	"github.com/FabLabBerlin/localmachines/gateway/netswitch"
-	"github.com/FabLabBerlin/localmachines/models/machine"
+	"github.com/FabLabBerlin/localmachines/lib/xmpp"
+	"github.com/FabLabBerlin/localmachines/lib/xmpp/commands"
+	//"github.com/FabLabBerlin/localmachines/models/machine"
 	"log"
-	"net/http"
-	"strconv"
+	//"net/http"
+	//"strconv"
 )
 
 var (
@@ -29,15 +31,22 @@ func New() (nss *NetSwitches) {
 }
 
 // Load netswitches from EASY LAB API.  client should be logged in.
-func (nss *NetSwitches) Load(client *http.Client) (err error) {
-	if err = nss.fetch(client); err != nil {
-		return fmt.Errorf("fetch: %v", err)
+func (nss *NetSwitches) Load(xmppClient *xmpp.Xmpp) (err error) {
+	if err = xmppClient.Send(xmpp.Message{
+		Remote: global.Cfg.XMPP.Server,
+		Data: xmpp.Data{
+			IsRequest:  true,
+			Command:    commands.GATEWAY_REQUESTS_MACHINE_LIST,
+			LocationId: global.Cfg.Main.LocationId,
+		},
+	}); err != nil {
+		return fmt.Errorf("xmpp command GATEWAY_REQUESTS_MACHINE_LIST: %v", err)
 	}
 	log.Printf("netswitches: %v", nss.nss)
 	return
 }
 
-// fetch netswitch data from EASY LAB API.
+/*// fetch netswitch data from EASY LAB API.
 //
 // Each type NetSwitch runs its own dispatch loop.  Make sure no additional
 // loop is started.
@@ -103,7 +112,7 @@ func (nss *NetSwitches) fetch(client *http.Client) (err error) {
 		}
 	}
 	return
-}
+}*/
 
 func (nss *NetSwitches) SetOn(machineId int64, on bool) (err error) {
 	for retries := 0; retries < global.MAX_SYNC_RETRIES; retries++ {

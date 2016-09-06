@@ -2,8 +2,8 @@ package machine
 
 import (
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/lib/xmpp"
 	"github.com/FabLabBerlin/localmachines/lib/xmpp/commands"
-	"github.com/FabLabBerlin/localmachines/lib/xmpp/request_response"
 	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/astaxie/beego"
 	"strings"
@@ -17,7 +17,7 @@ const (
 
 var (
 	xmppServerConfigured bool
-	dispatcher           *request_response.Dispatcher
+	xmppClient           *xmpp.Xmpp
 )
 
 func init() {
@@ -26,7 +26,17 @@ func init() {
 	if xmppServerConfigured {
 		user := beego.AppConfig.String("XmppUser")
 		pass := beego.AppConfig.String("XmppPass")
-		dispatcher = request_response.NewDispatcher(server, user, pass, nil)
+		xmppClient = xmpp.NewXmpp(server, user, pass)
+		xmppClient.Run()
+		go func() {
+			for {
+				select {
+				case msg := <-xmppClient.Recv():
+					beego.Info("INCOMING PKG!!!!:", msg)
+					break
+				}
+			}
+		}()
 	}
 }
 
@@ -39,7 +49,14 @@ const (
 
 func xmppReinit(location *locations.Location) (err error) {
 	if xmppServerConfigured {
-		if _, err = dispatcher.SendXmppCommand(location, "reinit", 0); err != nil {
+		if err = xmppClient.Send(xmpp.Message{
+			Remote: location.XmppId,
+			Data: xmpp.Data{
+				IsRequest:  true,
+				Command:    commands.REINIT,
+				LocationId: location.Id,
+			},
+		}); err != nil {
 			return fmt.Errorf("send xmpp cmd: %v", err)
 		}
 	}
@@ -74,7 +91,7 @@ func (this *Machine) turn(onOrOff ON_OR_OFF) (err error) {
 		", NetswitchHost: ", this.NetswitchHost)
 
 	if this.NetswitchConfigured() {
-		if dispatcher != nil {
+		if xmppClient != nil {
 			return this.turnXmpp(onOrOff)
 		} else {
 			return fmt.Errorf("xmpp client is nil!")
@@ -88,7 +105,15 @@ func (this *Machine) turnXmpp(onOrOff ON_OR_OFF) (err error) {
 	if err != nil {
 		return fmt.Errorf("get location %v: %v", this.LocationId, err)
 	}
-	_, err = dispatcher.SendXmppCommand(location, string(onOrOff), this.Id)
+	err = xmppClient.Send(xmpp.Message{
+		Remote: location.XmppId,
+		Data: xmpp.Data{
+			IsRequest:  true,
+			Command:    string(onOrOff),
+			LocationId: location.Id,
+			MachineId:  this.Id,
+		},
+	})
 	return
 }
 
@@ -97,7 +122,15 @@ func (this *Machine) NetswitchApplyConfig() (err error) {
 	if err != nil {
 		return fmt.Errorf("get location %v: %v", this.LocationId, err)
 	}
-	_, err = dispatcher.SendXmppCommand(location, commands.APPLY_CONFIG, this.Id)
+	err = xmppClient.Send(xmpp.Message{
+		Remote: location.XmppId,
+		Data: xmpp.Data{
+			IsRequest:  true,
+			Command:    commands.APPLY_CONFIG,
+			LocationId: location.Id,
+			MachineId:  this.Id,
+		},
+	})
 	return
 }
 
@@ -113,7 +146,18 @@ func FetchLocalIpsTask() error {
 		if l.XmppId == "" {
 			continue
 		}
-		ipAddress, err := dispatcher.SendXmppCommand(l, commands.FETCH_LOCAL_IP, 0)
+		if err = xmppClient.Send(xmpp.Message{
+			Remote: l.XmppId,
+			Data: xmpp.Data{
+				IsRequest:  true,
+				Command:    commands.FETCH_LOCAL_IP,
+				LocationId: l.Id,
+			},
+		}); err != nil {
+			beego.Error("FetchLocalIpsTask: location=", l.Id, ":", err)
+		}
+	}
+	/*ipAddress, err := dispatcher.SendXmppCommand(l, commands.FETCH_LOCAL_IP, 0)
 		if err != nil {
 			beego.Error("FetchLocalIpsTask: location=", l.Id, ":", err)
 		}
@@ -125,8 +169,8 @@ func FetchLocalIpsTask() error {
 			}
 		} else {
 			beego.Error("FetchLocalIpsTask: location=", l.Id, ": empty ip")
-		}
-	}
+		}&/
+	}*/
 
 	// We return always nil.  If things fail, we log them.
 	return nil
