@@ -389,6 +389,12 @@ func (inv *Invoice) setCurrent(o orm.Ormer) (err error) {
 			if err != nil {
 				return fmt.Errorf("get user membership: %v", err)
 			}
+
+			if !um.AutoExtend &&
+				um.EndDate.Before(inv.Interval().TimeFrom()) {
+				continue
+			}
+
 			if err := inv.attachUserMembership(um); err != nil {
 				return fmt.Errorf("attach user membership: %v", err)
 			}
