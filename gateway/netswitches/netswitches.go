@@ -62,7 +62,9 @@ func (nss *NetSwitches) UseFromJson(raw []byte) (err error) {
 		log.Printf("adding mapping with id %v", mapping.Id)
 		log.Printf("host: %v", mapping.NetswitchHost)
 		if _, exists := nss.nss[mapping.Id]; !exists {
-			nss.nss[mapping.Id] = &netswitch.NetSwitch{}
+			nss.nss[mapping.Id] = &netswitch.NetSwitch{
+				Id: mapping.Id,
+			}
 		}
 		existing := nss.nss[mapping.Id]
 		log.Printf("exists")
@@ -86,6 +88,7 @@ func (nss *NetSwitches) UseFromJson(raw []byte) (err error) {
 			unusedIDs = append(unusedIDs, ns.Id)
 		}
 	}
+	log.Printf("unusedIds=%v", unusedIDs)
 	for _, unusedID := range unusedIDs {
 		delete(nss.nss, unusedID)
 	}

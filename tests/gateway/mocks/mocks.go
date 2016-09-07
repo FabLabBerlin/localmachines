@@ -54,11 +54,9 @@ func NewNetSwitch(desired DesiredState, relay RelayState) *NetSwitch {
 		panic(err.Error())
 	}
 	mock.NetSwitch = &netswitch.NetSwitch{
-		Machine: machine.Machine{
-			NetswitchHost:       url.Host,
-			NetswitchSensorPort: 1,
-		},
-		On: bool(desired),
+		NetswitchHost:       url.Host,
+		NetswitchSensorPort: 1,
+		On:                  bool(desired),
 	}
 	return mock
 }
@@ -86,13 +84,8 @@ func NewLmApi() (api *LmApi) {
 		mappings: make(map[int64]machine.Machine),
 	}
 	api.server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		state := make([]machine.Machine, 0, len(api.mappings))
-		for _, mapping := range api.mappings {
-			state = append(state, mapping)
-		}
-		enc := json.NewEncoder(w)
 		w.WriteHeader(http.StatusOK)
-		enc.Encode(state)
+		w.Write(api.MachinesJson())
 	}))
 	return
 }
@@ -110,6 +103,18 @@ func (api *LmApi) DeleteMapping(machineId int64) {
 	api.mu.Lock()
 	defer api.mu.Unlock()
 	delete(api.mappings, machineId)
+}
+
+func (api *LmApi) MachinesJson() []byte {
+	state := make([]machine.Machine, 0, len(api.mappings))
+	for _, mapping := range api.mappings {
+		state = append(state, mapping)
+	}
+	raw, err := json.Marshal(state)
+	if err != nil {
+		panic(err.Error())
+	}
+	return raw
 }
 
 func (api *LmApi) UpdateMapping(machineId int64, mapping machine.Machine) {

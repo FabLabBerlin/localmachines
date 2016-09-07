@@ -83,8 +83,8 @@ func TestMachine(t *testing.T) {
 				NetswitchUrlOn:  ts.URL + "?method=on",
 				NetswitchUrlOff: ts.URL + "?method=off",
 			}
-			So(ns.On(), ShouldNotBeNil)
-			So(ns.Off(), ShouldNotBeNil)
+			So(ns.On(0), ShouldNotBeNil)
+			So(ns.Off(0), ShouldNotBeNil)
 		})
 		Convey("Creating same netswitch mapping for two machines", func() {
 			m1, err := machine.Create(1, "foo")

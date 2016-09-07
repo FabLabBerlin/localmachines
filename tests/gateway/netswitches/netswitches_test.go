@@ -1,11 +1,11 @@
 package gatewayNetswitchesTest
 
 import (
+	"fmt"
 	"github.com/FabLabBerlin/localmachines/gateway/global"
 	"github.com/FabLabBerlin/localmachines/gateway/netswitches"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/tests/gateway/mocks"
-	"net/http"
 	"strings"
 	"testing"
 	"time"
@@ -35,26 +35,27 @@ func TestNetswitches(t *testing.T) {
 		NetswitchType: machine.NETSWITCH_TYPE_CUSTOM,
 	})
 
-	global.Cfg.API.Url = lmApi.URL()
+	prefix := lmApi.URL()
+	global.ServerPrefix = &prefix
 
 	netSwitches := netswitches.New()
 
-	Convey("Testing Load", t, func() {
-		client := &http.Client{}
-		err := netSwitches.Load(client)
+	Convey("Testing UseFromJson", t, func() {
+		err := netSwitches.UseFromJson(lmApi.MachinesJson())
 		So(err, ShouldBeNil)
-		Convey("It fails when there are duplicate combinations hosts+sensor port that could lead to contradictory state which in turn could lead to switches turning on and off every 30 seconds", func() {
+		Convey("It fails when there are duplicate combinations hosts+sensor port", func() {
 			lmApi.AddMapping(machine.Machine{
 				Id:                  44,
 				NetswitchHost:       netSwitch1.Host(),
 				NetswitchSensorPort: 1,
 				NetswitchType:       machine.NETSWITCH_TYPE_MFI,
 			})
-			err := netSwitches.Load(client)
+			err := netSwitches.UseFromJson(lmApi.MachinesJson())
 			So(err, ShouldNotBeNil)
 			So(strings.Contains(err.Error(), netswitches.ErrDuplicateCombinationHostSensorPort.Error()), ShouldBeTrue)
 			lmApi.DeleteMapping(44)
-			err = netSwitches.Load(client)
+			err = netSwitches.UseFromJson(lmApi.MachinesJson())
+			fmt.Printf("lmApi.MachinesJson()=%v\n", string(lmApi.MachinesJson()))
 			So(err, ShouldBeNil)
 		})
 	})
