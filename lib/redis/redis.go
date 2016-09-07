@@ -71,6 +71,7 @@ type MachinesUpdate struct {
 	Error      string
 	Info       string
 	Warning    string
+	Command    string
 }
 
 func PublishMachinesUpdate(update MachinesUpdate) (err error) {

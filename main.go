@@ -7,6 +7,7 @@ import (
 	_ "github.com/FabLabBerlin/localmachines/lib/log"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/machine"
+	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_memberships/auto_extend"
 	"github.com/FabLabBerlin/localmachines/routers"
 	"github.com/astaxie/beego"
@@ -109,6 +110,7 @@ func configDatabase() {
 	}
 
 	connect.Connect(mysqlUser, mysqlPass, mysqlHost, mysqlPort, mysqlDb)
+	purchases.InitActivations()
 }
 
 // Setup Beego toolbox tasks. They are kind of cron jobs.

@@ -66,7 +66,7 @@ var MachineActions = {
       },
       success(data) {
         GlobalActions.hideGlobalLoader();
-        toastr.info('Machine activated');
+        toastr.info('Sent On Request');
       },
       error(xhr, status, err) {
         if (xhr.responseText === 'Not logged in') {
@@ -94,7 +94,7 @@ var MachineActions = {
       },
       success(data) {
         GlobalActions.hideGlobalLoader();
-        toastr.info('Machine deactivated');
+        toastr.info('Sent Off Request');
         if (cb) {
           cb();
         }

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/FabLabBerlin/localmachines/lib"
-	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/FabLabBerlin/localmachines/models/machine"
@@ -12,7 +11,6 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/user_permissions"
 	"github.com/astaxie/beego"
 	"io/ioutil"
-	"time"
 )
 
 type ActivationsController struct {
@@ -265,17 +263,6 @@ func (this *ActivationsController) Start() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	// Continue with creating activation
-	var startTime time.Time = time.Now()
-	activationId, err := purchases.StartActivation(machine, userId, startTime)
-	if err != nil {
-		beego.Error("Failed to create activation:", err)
-		this.CustomAbort(403, "Failed to create activation")
-	}
-
-	this.Data["json"] = models.ActivationCreateResponse{
-		ActivationId: activationId,
-	}
 	this.ServeJSON()
 }
 
@@ -320,14 +307,5 @@ func (this *ActivationsController) Close() {
 		}
 	}
 
-	err = a.Close(time.Now())
-	if err != nil {
-		beego.Error("Failed to close activation")
-		this.CustomAbort(403, "Failed to close activation")
-	}
-
-	this.Data["json"] = models.StatusResponse{
-		Status: "ok",
-	}
 	this.ServeJSON()
 }
