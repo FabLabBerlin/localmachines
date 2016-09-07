@@ -188,12 +188,6 @@ func StartActivation(m *machine.Machine, uid int64, start time.Time) (
 		beego.Error("Failed to update activated machine")
 	}
 
-	if err := redis.PublishMachinesUpdate(redis.MachinesUpdate{
-		LocationId: m.LocationId,
-	}); err != nil {
-		beego.Error("publish machines update:", err)
-	}
-
 	return activationId, nil
 }
 
