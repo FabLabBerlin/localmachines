@@ -23,27 +23,20 @@ var (
 )
 
 func init() {
-	fmt.Printf("netswitch.go#init\n")
-	beego.Info("netswitch.go#init")
 	server := beego.AppConfig.String("XmppServer")
 	xmppServerConfigured = server != ""
 	if xmppServerConfigured {
-		beego.Info("Initializing XMPP Client...")
-		fmt.Printf("initializing xmpp client...\n")
 		user := beego.AppConfig.String("XmppUser")
 		pass := beego.AppConfig.String("XmppPass")
 		xmppClient = xmpp.NewXmpp(server, user, pass)
 		xmppClient.Run()
 		go func() {
 			for {
-				fmt.Printf("bla123543543534\n")
 				select {
 				case msg := <-xmppClient.Recv():
 					if err := xmppDispatch(msg); err != nil {
 						beego.Info("xmpp dispatch:", err)
 					}
-					beego.Info("INCOMING PKG!!!!:", msg)
-					fmt.Printf("INC PKG!!\n")
 					break
 				}
 			}
@@ -60,6 +53,17 @@ const (
 
 func xmppDispatch(msg xmpp.Message) (err error) {
 	switch msg.Data.Command {
+	case commands.GATEWAY_ALLOWS_USERS_FROM_IP:
+		if msg.Data.IpAddress != "" {
+			if err := locations.SetLocalIp(
+				msg.Data.LocationId,
+				msg.Data.IpAddress,
+			); err != nil {
+				beego.Error("FetchLocalIpsTask: location=", msg.Data.LocationId, ": could not save local ip: ", err)
+			}
+		} else {
+			beego.Error("FetchLocalIpsTask: location=", msg.Data.LocationId, ": empty ip")
+		}
 	case commands.GATEWAY_REQUESTS_MACHINE_LIST:
 		ms, err := GetAllAt(msg.Data.LocationId)
 		if err != nil {
@@ -261,20 +265,6 @@ func FetchLocalIpsTask() error {
 			beego.Error("FetchLocalIpsTask: location=", l.Id, ":", err)
 		}
 	}
-	/*ipAddress, err := dispatcher.SendXmppCommand(l, commands.FETCH_LOCAL_IP, 0)
-		if err != nil {
-			beego.Error("FetchLocalIpsTask: location=", l.Id, ":", err)
-		}
-		beego.Info("received ip", ipAddress, "for location", l.Id)
-		if ipAddress != "" {
-			l.LocalIp = ipAddress
-			if err := locations.SetLocalIp(l.Id, ipAddress); err != nil {
-				beego.Error("FetchLocalIpsTask: location=", l.Id, ": could not save local ip: ", err)
-			}
-		} else {
-			beego.Error("FetchLocalIpsTask: location=", l.Id, ": empty ip")
-		}&/
-	}*/
 
 	// We return always nil.  If things fail, we log them.
 	return nil

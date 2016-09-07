@@ -17,8 +17,6 @@ var socket;
 function dashboardDispatch(data) {
   var userIds = [];
 
-  console.log('data=', data);
-
   if (data.UserMessage && data.UserMessage.Error) {
     toastr.error(data.UserMessage.Error);
   }
