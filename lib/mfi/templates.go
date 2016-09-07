@@ -49,6 +49,7 @@ upnp.status=enabled
 upnp.1.status=enabled
 upnp.1.devname=ath0
 tshaper.status=disabled
+sshd.status=disabled
 telnetd.status=disabled
 system.cfg.version=65537
 syslog.status=enabled
