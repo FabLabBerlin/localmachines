@@ -477,7 +477,13 @@ func (this *Controller) ApplyConfig() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	if err := m.NetswitchApplyConfig(); err != nil {
+	uid, err := this.GetSessionUserId()
+	if err != nil {
+		beego.Info("Not logged in:", err)
+		this.CustomAbort(401, "Not logged in")
+	}
+
+	if err := m.NetswitchApplyConfig(uid); err != nil {
 		beego.Error("Error configuring:", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}

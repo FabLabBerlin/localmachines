@@ -64,6 +64,27 @@ func xmppDispatch(msg xmpp.Message) (err error) {
 		} else {
 			beego.Error("FetchLocalIpsTask: location=", msg.Data.LocationId, ": empty ip")
 		}
+	case commands.GATEWAY_APPLIED_CONFIG_1, commands.GATEWAY_APPLIED_CONFIG_2:
+		update := redis.MachinesUpdate{
+			LocationId: msg.Data.LocationId,
+			MachineId:  msg.Data.MachineId,
+			UserId:     msg.Data.UserId,
+			Info:       "Successfully turned on machine",
+			Command:    msg.Data.Command,
+		}
+		if msg.Data.Error {
+			update.Error = msg.Data.ErrorMessage
+		} else {
+			switch msg.Data.Command {
+			case commands.GATEWAY_APPLIED_CONFIG_1:
+				update.Info = "Wifi is configured on switch ✔"
+			case commands.GATEWAY_APPLIED_CONFIG_2:
+				update.Info = "Switch is reconfigured and rebooting now..."
+			}
+		}
+		if err := redis.PublishMachinesUpdate(update); err != nil {
+			beego.Error("publish machines update:", err)
+		}
 	case commands.GATEWAY_REQUESTS_MACHINE_LIST:
 		ms, err := GetAllAt(msg.Data.LocationId)
 		if err != nil {
@@ -227,7 +248,7 @@ func (this *Machine) turnXmpp(onOrOff ON_OR_OFF, userId int64) (err error) {
 	return
 }
 
-func (this *Machine) NetswitchApplyConfig() (err error) {
+func (this *Machine) NetswitchApplyConfig(userId int64) (err error) {
 	location, err := locations.Get(this.LocationId)
 	if err != nil {
 		return fmt.Errorf("get location %v: %v", this.LocationId, err)
@@ -238,6 +259,7 @@ func (this *Machine) NetswitchApplyConfig() (err error) {
 			Command:    commands.APPLY_CONFIG,
 			LocationId: location.Id,
 			MachineId:  this.Id,
+			UserId:     userId,
 		},
 	})
 	return

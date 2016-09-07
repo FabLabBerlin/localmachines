@@ -132,7 +132,7 @@ func (ns *NetSwitch) String() string {
 		ns.Id, ns.On)
 }
 
-func (ns *NetSwitch) ApplyConfig(updates chan<- string, xmppClient *xmpp.Xmpp) (err error) {
+func (ns *NetSwitch) ApplyConfig(updates chan<- string, xmppClient *xmpp.Xmpp, userId int64) (err error) {
 	ns.muChInit.Lock()
 	if ns.chSingle == nil {
 		log.Printf("make(chan int, 1)")
@@ -159,6 +159,7 @@ func (ns *NetSwitch) ApplyConfig(updates chan<- string, xmppClient *xmpp.Xmpp) (
 			Command:    commands.GATEWAY_APPLIED_CONFIG_1,
 			LocationId: global.Cfg.Main.LocationId,
 			MachineId:  ns.Id,
+			UserId:     userId,
 		},
 	}
 	if err := cfg.RunStep1WifiCredentials(); err != nil {
@@ -181,6 +182,7 @@ func (ns *NetSwitch) ApplyConfig(updates chan<- string, xmppClient *xmpp.Xmpp) (
 				Command:    commands.GATEWAY_APPLIED_CONFIG_2,
 				LocationId: global.Cfg.Main.LocationId,
 				MachineId:  ns.Id,
+				UserId:     userId,
 			},
 		}
 		if err := cfg.RunStep2PushConfig(); err != nil {

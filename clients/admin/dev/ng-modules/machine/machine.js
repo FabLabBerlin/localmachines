@@ -29,6 +29,7 @@ app.controller('MachineCtrl',
   $scope.netswitchConfigStatus = undefined;
   $scope.unsavedChanges = false;
   $scope.loading = false;
+  $scope.user = undefined;
 
   $scope.registerUnsavedChange = function() {
     $scope.unsavedChanges = true;
@@ -224,6 +225,65 @@ app.controller('MachineCtrl',
       });
     });
   };
+
+  var socket;
+
+  function wsConnect() {
+    var locationId = $cookies.get('location');
+    var t0 = new Date();
+
+    if (socket) {
+      socket.onclose = function () {}; // disable onclose handler first
+      socket.close();
+      socket = undefined;
+    }
+
+    //const uid = reactor.evaluateToJS(getters.getUid);
+    const host = window.location.host;
+    const protocol = host === 'easylab.io' ? 'wss' : 'ws';
+    socket = new WebSocket(protocol + '://' + host + '/api/users/' + $scope.user.Id + '/dashboard/ws?location=' + locationId);
+    socket.onmessage = function(e) {
+      var data = JSON.parse(e.data);
+      console.log(data);
+      if (data.UserMessage && data.UserMessage.Error) {
+        toastr.error(data.UserMessage.Error);
+      }
+      if (data.UserMessage && data.UserMessage.Info) {
+        toastr.info(data.UserMessage.Info);
+      }
+      if (data.UserMessage && data.UserMessage.Warning) {
+        toastr.warn(data.UserMessage.Warning);
+      }
+    };
+    socket.onclose = function(e) {
+      console.log('WebSocket closed, e=', e);
+      var duration = new Date() - t0;
+      socket = null;
+      console.log('reconnecting in 5 s...');
+      window.setTimeout(function() {
+        wsConnect();
+      }, 5000);
+    };
+    socket.onerror = function(e) {
+      console.log('websocket error:', e);
+    };
+  }
+
+  $http({
+    method: 'GET',
+    url: '/api/users/current',
+    params: {
+      ac: new Date().getTime()
+    }
+  })
+  .success(function(user) {
+    $scope.user = user;
+    console.log('$scope.user=', $scope.user);
+    wsConnect();
+  })
+  .error(function() {
+    toastr.error('Error obtaining user.  Please refresh.');
+  });
 
 }]); // app.controller
 
