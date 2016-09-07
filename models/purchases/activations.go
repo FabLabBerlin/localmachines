@@ -5,90 +5,14 @@ import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/lib/redis"
-	"github.com/FabLabBerlin/localmachines/lib/xmpp/commands"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
-	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	redigo "github.com/garyburd/redigo/redis"
 	"math"
 	"strings"
 	"time"
 )
-
-func InitActivations() {
-	ls, err := locations.GetAll()
-	if err != nil {
-		fmt.Printf("ofdsijosfijisfo:%v", err.Error())
-		panic(err.Error())
-	}
-
-	for _, l := range ls {
-		go handleOnOffs(l.Id)
-	}
-}
-
-func handleOnOffs(locId int64) {
-	conn := redis.GetPoolConn()
-	defer conn.Close()
-	psc := &redigo.PubSubConn{
-		Conn: conn,
-	}
-	defer func() {
-		psc.Conn.Send("QUIT")
-		psc.Conn.Flush()
-	}()
-
-	chName := redis.MachinesUpdateCh(locId)
-	if err := psc.Subscribe(chName); err != nil {
-		panic(err.Error())
-	}
-	defer psc.Unsubscribe(chName)
-
-	for {
-		msg := psc.Receive()
-
-		switch v := msg.(type) {
-		case redigo.Message:
-			var update redis.MachinesUpdate
-			if err := json.Unmarshal(v.Data, &update); err != nil {
-				beego.Info("json unmarshal:", msg)
-			}
-
-			switch update.Command {
-			case commands.GATEWAY_SUCCESS_ON:
-				// Continue with creating activation
-				startTime := time.Now()
-				m, err := machine.Get(update.MachineId)
-				if err != nil {
-					beego.Error(err.Error())
-					continue
-				}
-				if _, err = StartActivation(
-					m,
-					update.UserId,
-					startTime,
-				); err != nil {
-					beego.Error("Failed to create activation:", err)
-				}
-			case commands.GATEWAY_SUCCESS_OFF:
-				as, err := GetActiveActivations()
-				if err != nil {
-					beego.Error(err.Error())
-				}
-				for _, a := range as {
-					if a.Purchase.LocationId == update.LocationId &&
-						a.Purchase.MachineId == update.MachineId {
-						if err = a.Close(time.Now()); err != nil {
-							beego.Error(err.Error())
-						}
-					}
-				}
-			}
-		}
-	}
-}
 
 type Activation struct {
 	json.Marshaler

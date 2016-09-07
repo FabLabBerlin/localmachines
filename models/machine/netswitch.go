@@ -200,7 +200,7 @@ func (this *Machine) turn(onOrOff ON_OR_OFF, userId int64) (err error) {
 			})
 		}
 		if err != nil {
-			return fmt.Errorf("publish machines update:", err)
+			return fmt.Errorf("publish machines update: %v", err)
 		}
 	}
 	return
