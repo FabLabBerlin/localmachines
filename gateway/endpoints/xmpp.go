@@ -109,7 +109,7 @@ func (x *Xmpp) dispatch(msg xmpp.Message) (err error) {
 	case commands.APPLY_CONFIG:
 		log.Printf("apply_config!!!")
 		updates := make(chan string, 10)
-		err := x.ns.ApplyConfig(msg.Data.MachineId, updates)
+		err := x.ns.ApplyConfig(msg.Data.MachineId, updates, x.client)
 		log.Printf("dispatch:returning err=%v", err)
 		return err
 	case commands.FETCH_LOCAL_IP:

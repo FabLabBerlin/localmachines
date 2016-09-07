@@ -10,7 +10,10 @@ package netswitch
 
 import (
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/gateway/global"
 	"github.com/FabLabBerlin/localmachines/lib/mfi"
+	"github.com/FabLabBerlin/localmachines/lib/xmpp"
+	"github.com/FabLabBerlin/localmachines/lib/xmpp/commands"
 	"log"
 	"net/http"
 	"net/url"
@@ -129,7 +132,7 @@ func (ns *NetSwitch) String() string {
 		ns.Id, ns.On)
 }
 
-func (ns *NetSwitch) ApplyConfig(updates chan<- string) (err error) {
+func (ns *NetSwitch) ApplyConfig(updates chan<- string, xmppClient *xmpp.Xmpp) (err error) {
 	ns.muChInit.Lock()
 	if ns.chSingle == nil {
 		log.Printf("make(chan int, 1)")
@@ -150,13 +153,43 @@ func (ns *NetSwitch) ApplyConfig(updates chan<- string) (err error) {
 	cfg := mfi.Config{
 		Host: ns.NetswitchHost,
 	}
+	statusMsg := xmpp.Message{
+		Remote: global.ServerJabberId,
+		Data: xmpp.Data{
+			Command:    commands.GATEWAY_APPLIED_CONFIG_1,
+			LocationId: global.Cfg.Main.LocationId,
+			MachineId:  ns.Id,
+		},
+	}
 	if err := cfg.RunStep1WifiCredentials(); err != nil {
 		ns.chSingle <- 1
-		return fmt.Errorf("step 1: error getting wifi: %v", err)
+		statusMsg.Data.Error = true
+		statusMsg.Data.ErrorMessage = fmt.Sprintf("step 1: error getting wifi: %v", err)
+		if err := xmppClient.Send(statusMsg); err != nil {
+			log.Printf("xmpp command send: %v", err)
+		}
+		return fmt.Errorf(statusMsg.Data.ErrorMessage)
 	}
+	if err = xmppClient.Send(statusMsg); err != nil {
+		log.Printf("xmpp command send: %v", err)
+	}
+
 	go func() {
+		statusMsg := xmpp.Message{
+			Remote: global.ServerJabberId,
+			Data: xmpp.Data{
+				Command:    commands.GATEWAY_APPLIED_CONFIG_2,
+				LocationId: global.Cfg.Main.LocationId,
+				MachineId:  ns.Id,
+			},
+		}
 		if err := cfg.RunStep2PushConfig(); err != nil {
+			statusMsg.Data.Error = true
+			statusMsg.Data.ErrorMessage = err.Error()
 			updates <- err.Error()
+		}
+		if err = xmppClient.Send(statusMsg); err != nil {
+			log.Printf("xmpp command send: %v", err)
 		}
 		ns.chSingle <- 1
 	}()

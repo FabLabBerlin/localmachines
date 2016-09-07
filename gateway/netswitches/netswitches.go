@@ -129,11 +129,11 @@ func (nss *NetSwitches) setOn(machineId int64, on bool) (err error) {
 	return ns.SetOn(on)
 }
 
-func (nss *NetSwitches) ApplyConfig(machineId int64, updates chan<- string) (err error) {
+func (nss *NetSwitches) ApplyConfig(machineId int64, updates chan<- string, xmppClient *xmpp.Xmpp) (err error) {
 	ns, ok := nss.nss[machineId]
 	if !ok {
 		return fmt.Errorf("no netswitch for machine id %v present",
 			machineId)
 	}
-	return ns.ApplyConfig(updates)
+	return ns.ApplyConfig(updates, xmppClient)
 }
