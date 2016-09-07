@@ -231,7 +231,7 @@ app.controller('MachineCtrl',
 
   var socket;
 
-  function wsConnect() {
+  function wsConnect(reconnectAttempt) {
     var locationId = $cookies.get('location');
     var t0 = new Date();
 
@@ -259,13 +259,19 @@ app.controller('MachineCtrl',
         toastr.warn(data.UserMessage.Warning);
       }
     };
+    socket.onopen = function() {
+      if (reconnectAttempt) {
+        toastr.info('Successfully reconnected to EASY LAB server.');
+      }
+    };
     socket.onclose = function(e) {
       console.log('WebSocket closed, e=', e);
       var duration = new Date() - t0;
       socket = null;
+      toastr.error('Connection error.  Reconnecting in 5 s...');
       console.log('reconnecting in 5 s...');
       window.setTimeout(function() {
-        wsConnect();
+        wsConnect(true);
       }, 5000);
     };
     socket.onerror = function(e) {
