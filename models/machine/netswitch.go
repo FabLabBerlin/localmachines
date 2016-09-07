@@ -18,6 +18,7 @@ const (
 )
 
 var (
+	ApplyToBilling       func(update redis.MachinesUpdate)
 	xmppServerConfigured bool
 	xmppClient           *xmpp.Xmpp
 )
@@ -112,23 +113,27 @@ func xmppDispatch(msg xmpp.Message) (err error) {
 		}
 		return nil
 	case commands.GATEWAY_SUCCESS_ON:
-		if err := redis.PublishMachinesUpdate(redis.MachinesUpdate{
+		update := redis.MachinesUpdate{
 			LocationId: msg.Data.LocationId,
 			MachineId:  msg.Data.MachineId,
 			UserId:     msg.Data.UserId,
 			Info:       "Successfully turned on machine",
 			Command:    commands.GATEWAY_SUCCESS_ON,
-		}); err != nil {
+		}
+		ApplyToBilling(update)
+		if err := redis.PublishMachinesUpdate(update); err != nil {
 			beego.Error("publish machines update:", err)
 		}
 	case commands.GATEWAY_SUCCESS_OFF:
-		if err := redis.PublishMachinesUpdate(redis.MachinesUpdate{
+		update := redis.MachinesUpdate{
 			LocationId: msg.Data.LocationId,
 			MachineId:  msg.Data.MachineId,
 			UserId:     msg.Data.UserId,
 			Info:       "Successfully turned off machine",
 			Command:    commands.GATEWAY_SUCCESS_OFF,
-		}); err != nil {
+		}
+		ApplyToBilling(update)
+		if err := redis.PublishMachinesUpdate(update); err != nil {
 			beego.Error("publish machines update:", err)
 		}
 	case commands.GATEWAY_FAIL_ON:
@@ -142,13 +147,15 @@ func xmppDispatch(msg xmpp.Message) (err error) {
 			beego.Error("publish machines update:", err)
 		}
 	case commands.GATEWAY_FAIL_OFF:
-		if err := redis.PublishMachinesUpdate(redis.MachinesUpdate{
+		update := redis.MachinesUpdate{
 			LocationId: msg.Data.LocationId,
 			MachineId:  msg.Data.MachineId,
 			UserId:     msg.Data.UserId,
 			Error:      "Failed to turn off machine",
 			Command:    commands.GATEWAY_FAIL_OFF,
-		}); err != nil {
+		}
+		ApplyToBilling(update)
+		if err := redis.PublishMachinesUpdate(update); err != nil {
 			beego.Error("publish machines update:", err)
 		}
 	default:
