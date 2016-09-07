@@ -186,11 +186,14 @@ app.controller('MachineCtrl',
     });
   };
 
-  function configCountdown(seconds, cb) {
+  function configCountdown(seconds, cb, chainedCall) {
     if (seconds >= 0) {
       $timeout(function() {
+        if (chainedCall && !$scope.netswitchConfigStatus) {
+          return;
+        }
         $scope.netswitchConfigStatus = 'Updating config... (' + seconds + ' s)';
-        configCountdown(seconds - 1, cb);
+        configCountdown(seconds - 1, cb, true);
       }, 1000);
     } else {
       cb();
@@ -247,6 +250,7 @@ app.controller('MachineCtrl',
       console.log(data);
       if (data.UserMessage && data.UserMessage.Error) {
         toastr.error(data.UserMessage.Error);
+        $scope.netswitchConfigStatus = undefined;
       }
       if (data.UserMessage && data.UserMessage.Info) {
         toastr.info(data.UserMessage.Info);

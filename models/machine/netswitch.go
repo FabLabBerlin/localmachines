@@ -69,7 +69,6 @@ func xmppDispatch(msg xmpp.Message) (err error) {
 			LocationId: msg.Data.LocationId,
 			MachineId:  msg.Data.MachineId,
 			UserId:     msg.Data.UserId,
-			Info:       "Successfully turned on machine",
 			Command:    msg.Data.Command,
 		}
 		if msg.Data.Error {
