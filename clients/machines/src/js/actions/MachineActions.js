@@ -65,7 +65,9 @@ var MachineActions = {
         mid: mid
       },
       success(data) {
-        GlobalActions.hideGlobalLoader();
+        window.setTimeout(() => {
+          GlobalActions.hideGlobalLoader();
+        }, 1000);
         toastr.info('Sent On Request');
       },
       error(xhr, status, err) {
@@ -76,7 +78,7 @@ var MachineActions = {
           if (xhr.status === 403 && xhr.responseText === 'No remote activation') {
             toastr.error('Activations only possible through Lab Wifi for safety reasons');
           } else {
-            toastr.error('Can not activate the machine');
+            toastr.error('Cannot request turn on');
             console.error(status, err);
           }
         }
@@ -93,7 +95,9 @@ var MachineActions = {
         ac: new Date().getTime()
       },
       success(data) {
-        GlobalActions.hideGlobalLoader();
+        window.setTimeout(() => {
+          GlobalActions.hideGlobalLoader();
+        }, 1000);
         toastr.info('Sent Off Request');
         if (cb) {
           cb();

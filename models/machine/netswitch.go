@@ -181,6 +181,27 @@ func (this *Machine) turn(onOrOff ON_OR_OFF, userId int64) (err error) {
 		} else {
 			return fmt.Errorf("xmpp client is nil!")
 		}
+	} else {
+		if onOrOff == ON {
+			err = redis.PublishMachinesUpdate(redis.MachinesUpdate{
+				LocationId: this.LocationId,
+				MachineId:  this.Id,
+				UserId:     userId,
+				Info:       "Successfully turned on machine",
+				Command:    commands.GATEWAY_SUCCESS_ON,
+			})
+		} else {
+			err = redis.PublishMachinesUpdate(redis.MachinesUpdate{
+				LocationId: this.LocationId,
+				MachineId:  this.Id,
+				UserId:     userId,
+				Info:       "Successfully turned off machine",
+				Command:    commands.GATEWAY_SUCCESS_OFF,
+			})
+		}
+		if err != nil {
+			return fmt.Errorf("publish machines update:", err)
+		}
 	}
 	return
 }
