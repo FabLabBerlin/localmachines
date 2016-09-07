@@ -21,11 +21,14 @@ function dashboardDispatch(data) {
 
   if (data.UserMessage && data.UserMessage.Error) {
     toastr.error(data.UserMessage.Error);
-  } else if (data.UserMessage && data.UserMessage.Info) {
+  }
+  if (data.UserMessage && data.UserMessage.Info) {
     toastr.info(data.UserMessage.Info);
-  } else if (data.UserMessage && data.UserMessage.Warning) {
+  }
+  if (data.UserMessage && data.UserMessage.Warning) {
     toastr.warn(data.UserMessage.Warning);
-  } else {
+  }
+  if (data.Activations || data.Machines) {
     reactor.batch(() => {
       reactor.dispatch(Machines.actionTypes.SET_ACTIVATIONS, {
         activations: data.Activations
