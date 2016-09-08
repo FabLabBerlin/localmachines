@@ -108,6 +108,17 @@ func (x *Xmpp) dispatch(msg xmpp.Message) (err error) {
 		return x.reinitMachinesList()
 	case commands.APPLY_CONFIG:
 		log.Printf("apply_config!!!")
+		if err = x.client.Send(xmpp.Message{
+			Remote: global.ServerJabberId,
+			Data: xmpp.Data{
+				Command:    commands.GATEWAY_APPLIED_CONFIG_0,
+				LocationId: global.Cfg.Main.LocationId,
+				UserId:     msg.Data.UserId,
+				MachineId:  msg.Data.MachineId,
+			},
+		}); err != nil {
+			return fmt.Errorf("xmpp command GATEWAY_APPLIED_CONFIG_0: %v", err)
+		}
 		updates := make(chan string, 10)
 		err := x.ns.ApplyConfig(msg.Data.MachineId, updates, x.client, msg.Data.UserId)
 		log.Printf("dispatch:returning err=%v", err)
