@@ -27,6 +27,13 @@ func init() {
 			[]string{"post"},
 			nil})
 
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:OAuth2Controller"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:OAuth2Controller"],
+		beego.ControllerComments{
+			"Login",
+			`/login`,
+			[]string{"post"},
+			nil})
+
 	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UserDashboardController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UserDashboardController"],
 		beego.ControllerComments{
 			"GetDashboard",
@@ -143,13 +150,6 @@ func init() {
 		beego.ControllerComments{
 			"Login",
 			`/login`,
-			[]string{"post"},
-			nil})
-
-	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UsersController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UsersController"],
-		beego.ControllerComments{
-			"LoginUid",
-			`/loginuid`,
 			[]string{"post"},
 			nil})
 

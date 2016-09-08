@@ -157,42 +157,6 @@ func (this *UsersController) Login() {
 	this.ServeJSON()
 }
 
-// @Title LoginUid
-// @Description Logs user into the system by using NFC UID
-// @Param	uid			query 	string	true		"The NFC UID"
-// @Param 	location	query	int	  	true		"Location ID"
-// @Success 200 {object} models.LoginResponse
-// @Failure 401 Failed to authenticate
-// @router /loginuid [post]
-func (this *UsersController) LoginUid() {
-	locationId, _ := this.GetInt64("location")
-
-	if sessUserId, err := this.GetSessionUserId(); err != nil {
-		uid := this.GetString("uid")
-		username, userId, err := users.AuthenticateUserUid(uid)
-		if err != nil {
-			beego.Error(err)
-			this.CustomAbort(401, "Failed to authenticate")
-		} else {
-			this.SetLogged(username, userId, locationId)
-			this.Data["json"] = models.LoginResponse{
-				Status:     "ok",
-				UserId:     userId,
-				LocationId: locationId,
-			}
-		}
-	} else {
-		locationId, _ = this.GetSessionLocationId()
-		this.Data["json"] = models.LoginResponse{
-			Status:     "logged",
-			UserId:     sessUserId,
-			LocationId: locationId,
-		}
-	}
-
-	this.ServeJSON()
-}
-
 // @Title logout
 // @Description Logs out current logged in user session
 // @Success 200 {object} models.StatusResponse
