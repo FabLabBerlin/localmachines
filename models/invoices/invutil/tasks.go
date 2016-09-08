@@ -8,6 +8,8 @@ import (
 )
 
 func TaskFastbillSync() (err error) {
+	beego.Info("Running TaskFastbillSync")
+
 	var locId int64 = 1
 
 	us, err := users.GetAllUsersAt(locId)
@@ -25,7 +27,7 @@ func TaskFastbillSync() (err error) {
 }
 
 func TaskCalculateTotals() (err error) {
-	beego.Info("Running CalculateInvoiceTotalsTask")
+	beego.Info("Running TaskCalculateTotals")
 
 	ls, err := locations.GetAll()
 	if err != nil {
