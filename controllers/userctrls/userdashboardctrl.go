@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib/redis"
-	"github.com/FabLabBerlin/localmachines/lib/xmpp/commands"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/products"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
@@ -170,15 +169,13 @@ func (this *UserDashboardController) LP() {
 			obj := psc.Receive()
 			beego.Info("LP: psc.Receive :)")
 			if v, ok := obj.(redigo.Message); ok {
-				beego.Info("LP: it's a redigo.Message!")
-				beego.Info("received smth on the lp, uid", uid)
 				var update redis.MachinesUpdate
 				if err := json.Unmarshal(v.Data, &update); err == nil {
 					beego.Info("user", uid, "get update", update)
 				} else {
 					beego.Info("json unmarshal:", err)
 				}
-				applyToBilling(update)
+				beego.Info("update.Command=", update.Command)
 				beego.Info("unmarshal the update=", update)
 				if update.UserId == uid {
 					data.UserMessage.Error = update.Error
@@ -285,7 +282,6 @@ func (this *UserDashboardController) WS() {
 				} else {
 					beego.Info("json unmarshal:", msg)
 				}
-				applyToBilling(update)
 				if update.UserId == uid {
 					data.UserMessage.Error = update.Error
 					data.UserMessage.Info = update.Info
@@ -309,38 +305,4 @@ func (this *UserDashboardController) WS() {
 	}
 
 	this.Finish()
-}
-
-func applyToBilling(update redis.MachinesUpdate) {
-	switch update.Command {
-	case commands.GATEWAY_SUCCESS_ON:
-		// Continue with creating activation
-		startTime := time.Now()
-		m, err := machine.Get(update.MachineId)
-		if err != nil {
-			beego.Error(err.Error())
-			return
-		}
-		if _, err = purchases.StartActivation(
-			m,
-			update.UserId,
-			startTime,
-		); err != nil {
-			beego.Error("Failed to create activation:", err)
-		}
-	case commands.GATEWAY_SUCCESS_OFF:
-		as, err := purchases.GetActiveActivations()
-		if err != nil {
-			beego.Error(err.Error())
-			return
-		}
-		for _, a := range as {
-			if a.Purchase.LocationId == update.LocationId &&
-				a.Purchase.MachineId == update.MachineId {
-				if err = a.Close(time.Now()); err != nil {
-					beego.Error(err.Error())
-				}
-			}
-		}
-	}
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/lib/redis"
+	"github.com/FabLabBerlin/localmachines/lib/xmpp/commands"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/astaxie/beego"
@@ -262,4 +263,42 @@ func (a *Activation) Update() error {
 
 func floor10(x float64) float64 {
 	return math.Floor(x*10) / 10
+}
+
+func applyToBilling(update redis.MachinesUpdate) {
+	switch update.Command {
+	case commands.GATEWAY_SUCCESS_ON:
+		// Continue with creating activation
+		startTime := time.Now()
+		m, err := machine.Get(update.MachineId)
+		if err != nil {
+			beego.Error(err.Error())
+			return
+		}
+		if _, err = StartActivation(
+			m,
+			update.UserId,
+			startTime,
+		); err != nil {
+			beego.Error("Failed to create activation:", err)
+		}
+	case commands.GATEWAY_SUCCESS_OFF:
+		as, err := GetActiveActivations()
+		if err != nil {
+			beego.Error(err.Error())
+			return
+		}
+		for _, a := range as {
+			if a.Purchase.LocationId == update.LocationId &&
+				a.Purchase.MachineId == update.MachineId {
+				if err = a.Close(time.Now()); err != nil {
+					beego.Error(err.Error())
+				}
+			}
+		}
+	}
+}
+
+func init() {
+	machine.ApplyToBilling = applyToBilling
 }
