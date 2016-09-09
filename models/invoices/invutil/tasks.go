@@ -19,7 +19,7 @@ func TaskFastbillSync() (err error) {
 
 	for _, u := range us {
 		if err := FastbillSync(locId, u); err != nil {
-			return fmt.Errorf("sync invoice of user %v", u.Id)
+			beego.Error("sync invoice of user %v: %v", u.Id, err)
 		}
 	}
 
