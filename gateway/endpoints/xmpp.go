@@ -97,6 +97,8 @@ func (x *Xmpp) dispatch(msg xmpp.Message) (err error) {
 				resp.Data.Command = commands.GATEWAY_SUCCESS_OFF
 			}
 		} else {
+			resp.Data.Error = true
+			resp.Data.ErrorMessage = err.Error()
 			if cmd == "on" {
 				resp.Data.Command = commands.GATEWAY_FAIL_ON
 			} else {
