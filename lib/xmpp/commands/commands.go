@@ -8,6 +8,7 @@ const (
 	SERVER_SENDS_MACHINE_LIST = "server_sends_machine_list"
 
 	GATEWAY_ALLOWS_USERS_FROM_IP  = "gateway_allows_users_from_ip"
+	GATEWAY_APPLIED_CONFIG_0      = "gateway_applied_config_0"
 	GATEWAY_APPLIED_CONFIG_1      = "gateway_applied_config_1"
 	GATEWAY_APPLIED_CONFIG_2      = "gateway_applied_config_2"
 	GATEWAY_APPLIED_CONFIG_3      = "gateway_applied_config_3"

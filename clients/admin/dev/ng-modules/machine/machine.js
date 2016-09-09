@@ -31,6 +31,8 @@ app.controller('MachineCtrl',
   $scope.loading = false;
   $scope.user = undefined;
 
+  var NETSWITCH_CONFIG_WAIT_CONNECTION = 'Connecting...';
+
   $scope.registerUnsavedChange = function() {
     $scope.unsavedChanges = true;
   };
@@ -217,10 +219,15 @@ app.controller('MachineCtrl',
       .success(function(){
         $scope.loading = false;
         toastr.success('Updating config...');
-        configCountdown(180, function() {
-          toastr.success('Configuration pushed.  Switch will be usable in about 5 minutes!');
-          $scope.netswitchConfigStatus = undefined;
-        });
+        $scope.netswitchConfigStatus = NETSWITCH_CONFIG_WAIT_CONNECTION;
+        window.setTimeout(function() {
+          if ($scope.netswitchConfigStatus === NETSWITCH_CONFIG_WAIT_CONNECTION) {
+            $scope.$apply(function() {
+              $scope.netswitchConfigStatus = undefined;
+            });
+            toastr.error('Cannot establish connection to Gateway.');
+          }
+        }, 30000);
       })
       .error(function(){
         $scope.loading = false;
@@ -254,6 +261,12 @@ app.controller('MachineCtrl',
       }
       if (data.UserMessage && data.UserMessage.Info) {
         toastr.info(data.UserMessage.Info);
+        if (data.UserMessage.Info.indexOf('Connected') >= 0) {
+          configCountdown(180, function() {
+            toastr.success('Configuration pushed.  Switch will be usable in about 5 minutes!');
+            $scope.netswitchConfigStatus = undefined;
+          });
+        }
       }
       if (data.UserMessage && data.UserMessage.Warning) {
         toastr.warn(data.UserMessage.Warning);

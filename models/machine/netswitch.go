@@ -29,7 +29,10 @@ func init() {
 	if xmppServerConfigured {
 		user := beego.AppConfig.String("XmppUser")
 		pass := beego.AppConfig.String("XmppPass")
-		xmppClient = xmpp.NewXmpp(server, user, pass)
+		debugPrint := func(f string, argv ...interface{}) {
+			beego.Info(fmt.Sprintf(f, argv...))
+		}
+		xmppClient = xmpp.NewXmpp(server, user, pass, debugPrint)
 		xmppClient.Run()
 		go func() {
 			for {
@@ -65,7 +68,7 @@ func xmppDispatch(msg xmpp.Message) (err error) {
 		} else {
 			beego.Error("FetchLocalIpsTask: location=", msg.Data.LocationId, ": empty ip")
 		}
-	case commands.GATEWAY_APPLIED_CONFIG_1, commands.GATEWAY_APPLIED_CONFIG_2:
+	case commands.GATEWAY_APPLIED_CONFIG_0, commands.GATEWAY_APPLIED_CONFIG_1, commands.GATEWAY_APPLIED_CONFIG_2:
 		update := redis.MachinesUpdate{
 			LocationId: msg.Data.LocationId,
 			MachineId:  msg.Data.MachineId,
@@ -76,6 +79,8 @@ func xmppDispatch(msg xmpp.Message) (err error) {
 			update.Error = msg.Data.ErrorMessage
 		} else {
 			switch msg.Data.Command {
+			case commands.GATEWAY_APPLIED_CONFIG_0:
+				update.Info = "Connected with Gateway ✔"
 			case commands.GATEWAY_APPLIED_CONFIG_1:
 				update.Info = "Wifi is configured on switch ✔"
 			case commands.GATEWAY_APPLIED_CONFIG_2:

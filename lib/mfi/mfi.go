@@ -40,17 +40,17 @@ type Config struct {
 
 func (c *Config) RunStep1WifiCredentials() (err error) {
 	if c.WifiSSID == "" {
-		if c.WifiSSID, err = c.getWifiSsid(); err == nil {
+		if c.WifiSSID, err = c.getWifi(); err == nil {
 			log.Printf("Wifi (%v) found", c.WifiSSID)
 		} else {
-			return ErrWifiSsidNotPresent
+			return fmt.Errorf("get wifi: %v", err)
 		}
 	}
 	if c.WifiPassword == "" {
-		if c.WifiPassword, err = c.getWifiPw(); err == nil {
+		if c.WifiPassword, err = c.getWifiLogin(); err == nil {
 			log.Printf("Wifi completely configured")
 		} else {
-			return ErrWifiPasswordNotPresent
+			return fmt.Errorf("wifi login incomplete: %v", err)
 		}
 	}
 	return
@@ -74,14 +74,16 @@ func (c *Config) RunStep2PushConfig() (err error) {
 	return
 }
 
-func (c *Config) getWifiSsid() (hwAddr string, err error) {
+func (c *Config) getWifi() (hwAddr string, err error) {
 	cmd := exec.Command("sshpass", "-p", "ubnt", "ssh", "-o", "UserKnownHostsFile=/dev/null", "-o", "StrictHostKeyChecking=no", "ubnt@"+c.Host, "cat /etc/wpasupplicant_WPA-PSK.conf | grep ssid | grep -v scan_ssid")
 	buf := bytes.NewBufferString("")
+	bufErr := bytes.NewBufferString("")
 	cmd.Stdout = buf
-	cmd.Stderr = os.Stderr
+	cmd.Stderr = bufErr
 	if err = cmd.Run(); err != nil {
-		return "", fmt.Errorf("ifconfig: %v", err)
+		return "", fmt.Errorf("ssh: %v / %v", err, bufErr.String())
 	}
+	log.Printf("cmd.Run: %v", bufErr.String())
 	s := strings.TrimSpace(buf.String())
 	if len(s) < 8 {
 		return "", fmt.Errorf("unexpected ifconfig output: '%v'", s)
@@ -91,13 +93,13 @@ func (c *Config) getWifiSsid() (hwAddr string, err error) {
 	return s, nil
 }
 
-func (c *Config) getWifiPw() (hwAddr string, err error) {
+func (c *Config) getWifiLogin() (hwAddr string, err error) {
 	cmd := exec.Command("sshpass", "-p", "ubnt", "ssh", "-o", "UserKnownHostsFile=/dev/null", "-o", "StrictHostKeyChecking=no", "ubnt@"+c.Host, "cat /etc/wpasupplicant_WPA-PSK.conf | grep psk")
 	buf := bytes.NewBufferString("")
 	cmd.Stdout = buf
 	cmd.Stderr = os.Stderr
 	if err = cmd.Run(); err != nil {
-		return "", fmt.Errorf("ifconfig: %v", err)
+		return "", fmt.Errorf("ssh: %v", err)
 	}
 	s := strings.TrimSpace(buf.String())
 	if len(s) < 8 {

@@ -18,12 +18,17 @@ type Xmpp struct {
 }
 
 func NewXmpp(ns *netswitches.NetSwitches) *Xmpp {
+	debugPrint := func(f string, v ...interface{}) {
+		log.Printf(f, v...)
+		global.DebugHttp(fmt.Sprintf(f, v...))
+	}
 	x := &Xmpp{
 		ns: ns,
 		client: xmpp.NewXmpp(
 			global.Cfg.XMPP.Server,
 			global.Cfg.XMPP.User,
 			global.Cfg.XMPP.Pass,
+			debugPrint,
 		),
 	}
 	x.client.Run()
@@ -92,6 +97,8 @@ func (x *Xmpp) dispatch(msg xmpp.Message) (err error) {
 				resp.Data.Command = commands.GATEWAY_SUCCESS_OFF
 			}
 		} else {
+			resp.Data.Error = true
+			resp.Data.ErrorMessage = err.Error()
 			if cmd == "on" {
 				resp.Data.Command = commands.GATEWAY_FAIL_ON
 			} else {
@@ -108,6 +115,17 @@ func (x *Xmpp) dispatch(msg xmpp.Message) (err error) {
 		return x.reinitMachinesList()
 	case commands.APPLY_CONFIG:
 		log.Printf("apply_config!!!")
+		if err = x.client.Send(xmpp.Message{
+			Remote: global.ServerJabberId,
+			Data: xmpp.Data{
+				Command:    commands.GATEWAY_APPLIED_CONFIG_0,
+				LocationId: global.Cfg.Main.LocationId,
+				UserId:     msg.Data.UserId,
+				MachineId:  msg.Data.MachineId,
+			},
+		}); err != nil {
+			return fmt.Errorf("xmpp command GATEWAY_APPLIED_CONFIG_0: %v", err)
+		}
 		updates := make(chan string, 10)
 		err := x.ns.ApplyConfig(msg.Data.MachineId, updates, x.client, msg.Data.UserId)
 		log.Printf("dispatch:returning err=%v", err)

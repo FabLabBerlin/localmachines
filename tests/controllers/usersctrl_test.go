@@ -71,69 +71,6 @@ func TestUsersAPI(t *testing.T) {
 			})
 		})
 
-		Convey("Testing POST /users/loginuid/", func() {
-
-			Convey("Try to log in without uid parameter, should return 401", func() {
-				r, _ := http.NewRequest("POST", "/api/users/loginuid", empty)
-				w := httptest.NewRecorder()
-				beego.BeeApp.Handlers.ServeHTTP(w, r)
-
-				So(w.Code, ShouldEqual, 401)
-			})
-
-			Convey("Try to log in with wrong parameters, should return 401", func() {
-				r, _ := http.NewRequest("POST", "/api/users/loginuid?uid=a", empty)
-				w := httptest.NewRecorder()
-				beego.BeeApp.Handlers.ServeHTTP(w, r)
-
-				So(w.Code, ShouldEqual, 401)
-			})
-
-			Convey("Try to login with good parameters, should return 200", func() {
-				u := users.User{
-					Username: "aze",
-					Email:    "aze@easylab.io",
-				}
-				uid, _ := users.CreateUser(&u)
-				users.AuthSetPassword(uid, "aze")
-				users.AuthUpdateNfcUid(uid, "123456")
-
-				r, _ := http.NewRequest("POST", "/api/users/loginuid?uid=123456", nil)
-				w := httptest.NewRecorder()
-				beego.BeeApp.Handlers.ServeHTTP(w, r)
-
-				So(w.Code, ShouldEqual, 200)
-			})
-
-			Convey("Try to login with 14 white spaces, should return 401", func() {
-				names := []string{"bar", "foo", "foobar"}
-				for _, name := range names {
-					u := users.User{
-						Username: name,
-						Email:    name + "@easylab.io",
-					}
-					uid, err := users.CreateUser(&u)
-					if err != nil {
-						panic(err.Error())
-					}
-					users.AuthSetPassword(uid, name)
-					if name == "bar" {
-						users.AuthUpdateNfcUid(uid, "123456")
-					}
-				}
-
-				spaces14 := ""
-				for i := 0; i < 5; i++ {
-					spaces14 += " "
-				}
-				r, _ := http.NewRequest("POST", "/api/users/loginuid?uid="+spaces14, empty)
-				w := httptest.NewRecorder()
-				beego.BeeApp.Handlers.ServeHTTP(w, r)
-
-				So(w.Code, ShouldEqual, 401)
-			})
-		})
-
 		Convey("Testing GET /users/logout", func() {
 
 			Convey("Try to logout without being logged in, should return 200", func() {

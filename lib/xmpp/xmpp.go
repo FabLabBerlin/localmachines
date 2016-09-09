@@ -26,12 +26,13 @@ const (
 )
 
 type Xmpp struct {
-	ch       chan Message
-	talk     *xmpp.Client
-	user     string
-	server   string
-	options  xmpp.Options
-	lastPong time.Time
+	ch         chan Message
+	talk       *xmpp.Client
+	user       string
+	server     string
+	options    xmpp.Options
+	lastPong   time.Time
+	debugPrint func(string, ...interface{})
 }
 
 type Message struct {
@@ -50,11 +51,12 @@ type Data struct {
 	ErrorMessage string `json:",omitempty"`
 }
 
-func NewXmpp(server, user, pass string) (x *Xmpp) {
+func NewXmpp(server, user, pass string, debugPrint func(string, ...interface{})) (x *Xmpp) {
 	x = &Xmpp{
-		ch:     make(chan Message, 10),
-		user:   user,
-		server: server,
+		ch:         make(chan Message, 10),
+		user:       user,
+		server:     server,
+		debugPrint: debugPrint,
 	}
 	xmpp.DefaultConfig = tls.Config{
 		ServerName:         serverName(server),
@@ -78,19 +80,19 @@ func (x *Xmpp) connect() {
 	waitTime := RECONNECT_INIT_WAIT_TIME
 	for {
 		var err error
-		log.Printf("Xmpp: connecting to Server...")
+		x.debugPrint("Xmpp: connecting to Server...")
 		x.talk, err = x.options.NewClient()
 		if err == nil {
-			log.Printf("Xmpp: connected to Server.")
+			x.debugPrint("Xmpp: connected to Server.")
 			x.lastPong = time.Now()
 			waitTime = RECONNECT_INIT_WAIT_TIME
 			for {
 				if err := x.Ping(); err != nil {
-					log.Printf("ping errrrrr: %v", err)
+					x.debugPrint("ping errrrrr: %v", err)
 					break
 				}
 				if time.Now().Sub(x.lastPong) > 20*time.Second {
-					log.Printf("No Pong since 20 seconds, reconnecting!")
+					x.debugPrint("No Pong since 20 seconds, reconnecting!")
 					break
 				}
 				pingWait(0.3, 3)
@@ -98,7 +100,7 @@ func (x *Xmpp) connect() {
 			x.talk.Close()
 			x.talk = nil
 		} else {
-			log.Printf("Xmpp: error connecting to server: %v", err)
+			x.debugPrint("Xmpp: error connecting to server: %v", err)
 			waitTime *= 2
 			if waitTime > 30*time.Second {
 				waitTime = 30 * time.Second
