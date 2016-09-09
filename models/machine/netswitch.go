@@ -28,7 +28,10 @@ func init() {
 	if xmppServerConfigured {
 		user := beego.AppConfig.String("XmppUser")
 		pass := beego.AppConfig.String("XmppPass")
-		xmppClient = xmpp.NewXmpp(server, user, pass)
+		debugPrint := func(f string, argv ...interface{}) {
+			beego.Info(fmt.Sprintf(f, argv...))
+		}
+		xmppClient = xmpp.NewXmpp(server, user, pass, debugPrint)
 		xmppClient.Run()
 		go func() {
 			for {

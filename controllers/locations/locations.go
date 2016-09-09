@@ -82,6 +82,23 @@ func (c *Controller) Get() {
 	c.ServeJSON()
 }
 
+// @Title Debug
+// @Description Post debug infos, everybody can do it
+// @Param	location 	query 	int		true	"Location"
+// @Param	message		body 	string	true	"Message"
+// @Success 200 {object}
+// @Failure	401	Not authorized
+// @Failure	500	Internal Server Error
+// @router /debug [post]
+func (c *Controller) Debug() {
+	locId := c.GetString("location")
+	ip := c.ClientIp()
+	msg := c.GetString("message")
+	beego.Info("[locId="+locId, "ip=", ip, "]:", msg)
+	c.Ctx.WriteString("")
+	c.Finish()
+}
+
 // @Title MyIp
 // @Description Returns client's IP address as string
 // @Param	lid	path 	int	true	"Location"

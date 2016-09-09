@@ -18,12 +18,17 @@ type Xmpp struct {
 }
 
 func NewXmpp(ns *netswitches.NetSwitches) *Xmpp {
+	debugPrint := func(f string, v ...interface{}) {
+		log.Printf(f, v...)
+		global.DebugHttp(fmt.Sprintf(f, v...))
+	}
 	x := &Xmpp{
 		ns: ns,
 		client: xmpp.NewXmpp(
 			global.Cfg.XMPP.Server,
 			global.Cfg.XMPP.User,
 			global.Cfg.XMPP.Pass,
+			debugPrint,
 		),
 	}
 	x.client.Run()
