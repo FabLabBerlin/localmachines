@@ -83,7 +83,8 @@ func main() {
 		if len(tmp) != 2 {
 			panic("expected jabberid to contain exactly one '@'")
 		}
-		global.Cfg.XMPP.Server = tmp[1]
+		global.Cfg.XMPP.Server = tmp[1] + ":5223"
+		global.DebugHttp("desired xmpp server='" + global.Cfg.XMPP.Server + "'")
 	} else {
 		err := gcfg.ReadFileInto(&global.Cfg, "conf/gateway.conf")
 		if err != nil {
