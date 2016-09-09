@@ -141,25 +141,24 @@ func xmppDispatch(msg xmpp.Message) (err error) {
 		if err := redis.PublishMachinesUpdate(update); err != nil {
 			beego.Error("publish machines update:", err)
 		}
-	case commands.GATEWAY_FAIL_ON:
-		if err := redis.PublishMachinesUpdate(redis.MachinesUpdate{
-			LocationId: msg.Data.LocationId,
-			MachineId:  msg.Data.MachineId,
-			UserId:     msg.Data.UserId,
-			Error:      "Failed to turn on machine",
-			Command:    commands.GATEWAY_FAIL_ON,
-		}); err != nil {
-			beego.Error("publish machines update:", err)
-		}
-	case commands.GATEWAY_FAIL_OFF:
+	case commands.GATEWAY_FAIL_ON, commands.GATEWAY_FAIL_OFF:
 		update := redis.MachinesUpdate{
 			LocationId: msg.Data.LocationId,
 			MachineId:  msg.Data.MachineId,
 			UserId:     msg.Data.UserId,
-			Error:      "Failed to turn off machine",
-			Command:    commands.GATEWAY_FAIL_OFF,
+			Command:    msg.Data.Command,
 		}
-		ApplyToBilling(update)
+		if msg.Data.Command == commands.GATEWAY_FAIL_ON {
+			update.Error = "Failed to turn on machine"
+		} else {
+			update.Error = "Failed to turn off machine"
+		}
+		if strings.Contains(msg.Data.ErrorMessage, "unreachable") {
+			update.Error += " (host unreachable)"
+		}
+		if msg.Data.Command == commands.GATEWAY_FAIL_OFF {
+			ApplyToBilling(update)
+		}
 		if err := redis.PublishMachinesUpdate(update); err != nil {
 			beego.Error("publish machines update:", err)
 		}
