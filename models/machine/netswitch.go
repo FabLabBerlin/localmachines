@@ -156,6 +156,9 @@ func xmppDispatch(msg xmpp.Message) (err error) {
 		if strings.Contains(msg.Data.ErrorMessage, "unreachable") {
 			update.Error += " (host unreachable)"
 		}
+		if strings.Contains(msg.Data.ErrorMessage, "no route to host") {
+			update.Error += " (no route to host)"
+		}
 		if msg.Data.Command == commands.GATEWAY_FAIL_OFF {
 			ApplyToBilling(update)
 		}
