@@ -157,6 +157,36 @@ func (x *Xmpp) dispatch(msg xmpp.Message) (err error) {
 			return fmt.Errorf("xmpp command GATEWAY_ALLOWS_USERS_FROM_IP: %v", err)
 		}
 		return
+	case commands.FETCH_NETSWITCH_STATUS:
+		for _, id := range x.ns.MachineIds() {
+			if mid := msg.Data.MachineId; mid == 0 || mid == id {
+				yes, err := x.ns.HasStatusCheck(id)
+				if err != nil {
+					log.Printf("HasStatusCheck: %v", err)
+					continue
+				}
+				if !yes {
+					continue
+				}
+				relayState, current, err := x.ns.FetchNetswitchStatus(id)
+				if err == nil {
+					if err = x.client.Send(xmpp.Message{
+						Remote: global.ServerJabberId,
+						Data: xmpp.Data{
+							Command:             commands.GATEWAY_SENDS_NETSWITCH_STATUS,
+							LocationId:          global.Cfg.Main.LocationId,
+							MachineId:           id,
+							NetswitchRelayState: relayState,
+							NetswitchCurrent:    current,
+						},
+					}); err != nil {
+						return fmt.Errorf("xmpp command GATEWAY_SENDS_NETSWITCH_STATUS: %v", err)
+					}
+				} else {
+					log.Printf("fetchNetswitchStatus: %v", err)
+				}
+			}
+		}
 	case commands.SERVER_SENDS_MACHINE_LIST:
 		return x.ns.UseFromJson([]byte(msg.Data.Raw))
 	}

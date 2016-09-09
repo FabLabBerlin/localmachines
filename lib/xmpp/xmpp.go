@@ -41,14 +41,16 @@ type Message struct {
 }
 
 type Data struct {
-	Command      string
-	MachineId    int64
-	LocationId   int64
-	UserId       int64
-	IpAddress    string
-	Raw          string
-	Error        bool
-	ErrorMessage string `json:",omitempty"`
+	Command             string
+	MachineId           int64
+	LocationId          int64
+	UserId              int64
+	IpAddress           string
+	NetswitchRelayState string
+	NetswitchCurrent    float64
+	Raw                 string
+	Error               bool
+	ErrorMessage        string `json:",omitempty"`
 }
 
 func NewXmpp(server, user, pass string, debugPrint func(string, ...interface{})) (x *Xmpp) {

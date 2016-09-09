@@ -137,3 +137,33 @@ func (nss *NetSwitches) ApplyConfig(machineId int64, updates chan<- string, xmpp
 	}
 	return ns.ApplyConfig(updates, xmppClient, userId)
 }
+
+func (nss *NetSwitches) FetchNetswitchStatus(machineId int64) (
+	relayState string,
+	current float64,
+	err error,
+) {
+	ns, ok := nss.nss[machineId]
+	if !ok {
+		return "", 0, fmt.Errorf("no netswitch for machine id %v present",
+			machineId)
+	}
+	return ns.FetchNetswitchStatus()
+}
+
+func (nss *NetSwitches) HasStatusCheck(machineId int64) (yes bool, err error) {
+	ns, ok := nss.nss[machineId]
+	if !ok {
+		return false, fmt.Errorf("no netswitch for machine id %v present",
+			machineId)
+	}
+	return netswitch.NETSWITCH_TYPE_MFI == ns.NetswitchType, nil
+}
+
+func (nss *NetSwitches) MachineIds() (ids []int64) {
+	ids = make([]int64, 0, len(nss.nss))
+	for _, ns := range nss.nss {
+		ids = append(ids, ns.Id)
+	}
+	return
+}

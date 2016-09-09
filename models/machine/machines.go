@@ -70,6 +70,7 @@ type Machine struct {
 	NetswitchHost       string `orm:"size(255)"`
 	NetswitchSensorPort int
 	NetswitchType       string `orm:"size(255)"`
+	NetswitchLastPing   time.Time
 	// Parameters that are not persisted
 	Locked bool `orm:"-"`
 }

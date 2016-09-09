@@ -9,6 +9,7 @@ plugged in.
 package netswitch
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/gateway/global"
 	"github.com/FabLabBerlin/localmachines/lib/mfi"
@@ -20,6 +21,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 )
 
 const NETSWITCH_TYPE_MFI = "mfi"
@@ -195,6 +197,42 @@ func (ns *NetSwitch) ApplyConfig(updates chan<- string, xmppClient *xmpp.Xmpp, u
 		}
 		ns.chSingle <- 1
 	}()
+	return
+}
+
+func (ns *NetSwitch) FetchNetswitchStatus() (
+	relayState string,
+	current float64,
+	err error,
+) {
+	urlStatus := ns.UrlOn()
+	log.Printf("urlStatus = %v", urlStatus)
+	if urlStatus == "" {
+		return "", 0, fmt.Errorf("NetSwitch status url for Machine %v empty", ns.Id)
+	}
+	client := http.Client{
+		Timeout: 10 * time.Second,
+	}
+	resp, err := client.Get(urlStatus)
+	if err != nil {
+		return "", 0, fmt.Errorf("http get url status: %v", err)
+	}
+	defer resp.Body.Close()
+	mfi := MfiSwitch{}
+	dec := json.NewDecoder(resp.Body)
+	if err := dec.Decode(&mfi); err != nil {
+		return "", 0, fmt.Errorf("json decode:", err)
+	}
+	if len(mfi.Sensors) < 1 {
+		return "", 0, fmt.Errorf("0 sensors in list")
+	}
+	sensor := mfi.Sensors[0]
+	if sensor.Relay == 0 {
+		relayState = commands.NETSWITCH_RELAY_OFF
+	} else if sensor.Relay == 1 {
+		relayState = commands.NETSWITCH_RELAY_ON
+	}
+	current = sensor.Current
 	return
 }
 

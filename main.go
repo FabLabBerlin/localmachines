@@ -126,9 +126,13 @@ func setupTasks() {
 	fastbillSync := toolbox.NewTask("Sync Fastbill",
 		" 0 0/59 * * * *",
 		invutil.TaskFastbillSync)
+	pingNetswitches := toolbox.NewTask("Ping Netswitches",
+		" 0 0/10 * * * *",
+		machine.TaskPingNetswitches)
 
 	toolbox.AddTask("Calculate Invoice Totals", calculateTotals)
 	toolbox.AddTask("Extend User Memberships", extUsrMemberships)
 	toolbox.AddTask("Fetch Local IPs", fetchLocalIps)
 	toolbox.AddTask("Sync Fastbill", fastbillSync)
+	toolbox.AddTask("Ping Netswitches", pingNetswitches)
 }
