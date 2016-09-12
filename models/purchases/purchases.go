@@ -287,6 +287,7 @@ func Update(p *Purchase) (err error) {
 		return fmt.Errorf("invoice doesn't have status draft: %v", inv.Status)
 	}
 	p.InvoiceStatus = inv.Status
+	p.Quantity = floor10(p.quantityFromTimes())
 
 	_, err = o.Update(p)
 	return

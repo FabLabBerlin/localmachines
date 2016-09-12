@@ -346,10 +346,20 @@ function save(locId, {invoiceId}) {
   }
 
   var promises = _.map(mutated, (p) => {
+    var url;
+
+    switch (p.Type) {
+    case 'activations':
+      url = '/api/activations/' + p.Id;
+      break;
+    default:
+      url = '/api/purchases/' + p.Id + '?type=' + p.Type;
+    }
+
     return $.ajax({
       headers: {'Content-Type': 'application/json'},
       method: 'PUT',
-      url: '/api/activations/' + p.Id,
+      url: url,
       data: JSON.stringify(p),
       params: {
         location: locId
