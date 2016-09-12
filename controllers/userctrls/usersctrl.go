@@ -137,7 +137,7 @@ func login(locId int64, reqAdmin bool, username, password string) (
 	} else {
 		userLocations, err := user_locations.GetAllForUser(userId)
 		if err != nil {
-			return 0, false, fmt.Errorf("Failed to get user locations:", err)
+			return 0, false, fmt.Errorf("Failed to get user locations: %v", err)
 		}
 		var userLocation *user_locations.UserLocation
 		for _, ul := range userLocations {
