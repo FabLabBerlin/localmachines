@@ -3,6 +3,7 @@ package userctrls
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/FabLabBerlin/localmachines/controllers"
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
@@ -85,76 +86,80 @@ func (this *UsersController) Prepare() {
 // @Failure 401 Failed to authenticate
 // @router /login [post]
 func (this *UsersController) Login() {
-	locationId, err := this.GetInt64("location")
+	locId, err := this.GetInt64("location")
 	if err != nil {
 		beego.Error("get location:", err)
 		this.CustomAbort(400, "Bad Request")
 	}
 
-	beego.Info("Login(): locationId=", locationId)
+	username := this.GetString("username")
+	pw := this.GetString("password")
 
-	if sessUserId, err := this.GetSessionUserId(); err != nil {
-		beego.Info("succeeded to get session user id")
-		username := this.GetString("username")
-		password := this.GetString("password")
+	resp := models.LoginResponse{
+		LocationId: locId,
+	}
 
-		userId, err := users.AuthenticateUser(username, password)
-		if err != nil {
-			beego.Error(username, "failed to authenticate @ location = ", locationId)
-			this.CustomAbort(401, "Failed to authenticate")
-		} else {
-			userLocations, err := user_locations.GetAllForUser(userId)
-			if err != nil {
-				beego.Error("Failed to get user locations:", err, "location=", locationId)
-				this.CustomAbort(500, "Internal Server Error")
-			}
-			var userLocation *user_locations.UserLocation
-			for _, ul := range userLocations {
-				if ul.LocationId == locationId {
-					userLocation = ul
-					break
-				}
-			}
-			if this.GetString("admin") != "" {
-				if userLocation == nil || userLocation.GetRole() != user_roles.ADMIN {
-					u, err := users.GetUser(userId)
-					if err != nil {
-						beego.Error("Failed to get user:", err, ", location=", locationId)
-						this.CustomAbort(401, "Not authorized")
-					}
-					if u.UserRole != user_roles.SUPER_ADMIN.String() {
-						beego.Error("User is not admin at location", locationId)
-						this.CustomAbort(401, "Not authorized")
-					}
-				}
-			}
-			this.SetLogged(username, userId, locationId)
-			if userLocation == nil {
-				this.Data["json"] = models.LoginResponse{
-					Status:     "unregistered",
-					UserId:     userId,
-					LocationId: locationId,
-				}
-			} else {
-				this.SetLogged(username, userId, locationId)
-				this.Data["json"] = models.LoginResponse{
-					Status:     "ok",
-					UserId:     userId,
-					LocationId: locationId,
-				}
-			}
+	if resp.UserId, err = this.GetSessionUserId(); err == nil {
+		sessionLocationId, _ := this.GetSessionLocationId()
+		if sessionLocationId != locId {
+			beego.Error("sessionLocationId=", sessionLocationId, "locId=", locId)
+			this.CustomAbort(500, "session location id not matching with requested location id")
 		}
+		resp.Status = "logged"
 	} else {
-		beego.Info("failed to get session user id, location=", locationId)
-		locationId, _ = this.GetSessionLocationId()
-		this.Data["json"] = models.LoginResponse{
-			Status:     "logged",
-			UserId:     sessUserId,
-			LocationId: locationId,
+		reqAdmin := this.GetString("admin") != ""
+		userId, unregisteredAtLocation, err := login(locId, reqAdmin, username, pw)
+		if err != nil {
+			beego.Error("login:", err, ", location=", locId)
+			this.CustomAbort(401, "Not authorized")
+		}
+		this.SetLogged(username, userId, locId)
+		resp.UserId = userId
+		if unregisteredAtLocation {
+			resp.Status = "unregistered"
+		} else {
+			resp.Status = "ok"
 		}
 	}
 
+	this.Data["json"] = resp
 	this.ServeJSON()
+}
+
+func login(locId int64, reqAdmin bool, username, password string) (
+	userId int64,
+	unregisteredAtLocation bool,
+	err error,
+) {
+	userId, err = users.AuthenticateUser(username, password)
+	if err != nil {
+		return 0, false, fmt.Errorf("Failed to authenticate: %v", err)
+	} else {
+		userLocations, err := user_locations.GetAllForUser(userId)
+		if err != nil {
+			return 0, false, fmt.Errorf("Failed to get user locations:", err)
+		}
+		var userLocation *user_locations.UserLocation
+		for _, ul := range userLocations {
+			if ul.LocationId == locId {
+				userLocation = ul
+				break
+			}
+		}
+		if reqAdmin {
+			if userLocation == nil || userLocation.GetRole() != user_roles.ADMIN {
+				u, err := users.GetUser(userId)
+				if err != nil {
+					return 0, false, fmt.Errorf("Failed to get user: %v", err)
+				}
+				if u.UserRole != user_roles.SUPER_ADMIN.String() {
+					return 0, false, fmt.Errorf("User is not admin at this location")
+				}
+			}
+		}
+
+		return userId, userLocation == nil, nil
+	}
 }
 
 // @Title logout
