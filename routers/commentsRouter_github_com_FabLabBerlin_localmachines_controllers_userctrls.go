@@ -30,7 +30,7 @@ func init() {
 	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:OAuth2Controller"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:OAuth2Controller"],
 		beego.ControllerComments{
 			"Login",
-			`/login`,
+			`/oauth2/login`,
 			[]string{"post"},
 			nil})
 

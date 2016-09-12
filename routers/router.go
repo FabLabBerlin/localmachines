@@ -72,6 +72,7 @@ func Init() {
 		beego.NSNamespace("/users",
 			beego.NSInclude(
 				&userctrls.ForgotPassword{},
+				&userctrls.OAuth2Controller{},
 				&userctrls.UsersController{},
 				&userctrls.UserDashboardController{},
 				&userctrls.UserLocationsController{},

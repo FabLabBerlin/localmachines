@@ -1,6 +1,7 @@
 package userctrls
 
 import (
+	"github.com/FabLabBerlin/localmachines/models/tokens"
 	"github.com/astaxie/beego"
 )
 
@@ -26,7 +27,7 @@ type AccessTokenResponse struct {
 // @Param	location		body 	int 	true 		"Location Id"
 // @Success 200 {object} models.LoginResponse
 // @Failure 401 Failed to authenticate
-// @router /login [post]
+// @router /oauth2/login [post]
 func (this *OAuth2Controller) Login() {
 	locId, err := this.GetInt64("location")
 	if err != nil {
@@ -44,14 +45,15 @@ func (this *OAuth2Controller) Login() {
 	_, unregisteredAtLocation, err := login(locId, false, username, pw)
 	if err != nil {
 		beego.Error("login:", err)
-		this.Abort("401")
+		this.CustomAbort(401, "Unauthorized")
 	}
 	if unregisteredAtLocation {
 		this.CustomAbort(400, "EASY LAB user but not registered (accepted terms) at requested location")
 	}
 
 	this.Data["json"] = AccessTokenResponse{
-		AccessToken: "foo",
+		AccessToken: tokens.New(),
+		TokenType:   "easylab",
 		ExpiresIn:   3600,
 	}
 	this.ServeJSON()
