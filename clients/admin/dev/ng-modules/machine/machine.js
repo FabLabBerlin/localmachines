@@ -249,8 +249,8 @@ app.controller('MachineCtrl',
     }
 
     //const uid = reactor.evaluateToJS(getters.getUid);
-    const host = window.location.host;
-    const protocol = host === 'easylab.io' ? 'wss' : 'ws';
+    var host = window.location.host;
+    var protocol = host === 'easylab.io' ? 'wss' : 'ws';
     socket = new WebSocket(protocol + '://' + host + '/api/users/' + $scope.user.Id + '/dashboard/ws?location=' + locationId);
     socket.onmessage = function(e) {
       var data = JSON.parse(e.data);
