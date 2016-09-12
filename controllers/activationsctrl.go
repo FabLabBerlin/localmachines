@@ -157,19 +157,24 @@ func (this *ActivationsController) Put() {
 		this.Abort("500")
 	}
 
-	m, err := machine.Get(activation.Purchase.MachineId)
-	if err != nil {
-		beego.Error("Failed to get machine:", err)
-		this.CustomAbort(500, "Internal Server Error")
-	}
-	if !this.IsAdminAt(m.LocationId) {
-		beego.Error("Unauthorized attempt to update activation")
-		this.CustomAbort(401, "Unauthorized")
-	}
+	if activation.Purchase.Type == purchases.TYPE_ACTIVATION {
+		m, err := machine.Get(activation.Purchase.MachineId)
+		if err != nil {
+			beego.Error("Failed to get machine:", err)
+			this.CustomAbort(500, "Internal Server Error")
+		}
+		if !this.IsAdminAt(m.LocationId) {
+			beego.Error("Unauthorized attempt to update activation")
+			this.CustomAbort(401, "Unauthorized")
+		}
 
-	if err := activation.Update(); err != nil {
-		beego.Error("Failed to update activation:", err)
-		this.CustomAbort(500, "Failed to update Activation")
+		if err := activation.Update(); err != nil {
+			beego.Error("Failed to update activation:", err)
+			this.CustomAbort(500, "Failed to update Activation")
+		}
+	} else {
+		beego.Error("Only activations updates here")
+		this.CustomAbort(500, "Only activations updates here")
 	}
 
 	this.Data["json"] = activation
