@@ -1224,6 +1224,8 @@ td .force-switch-off:hover {
 //////////////////////////////////////////////////////////
 
 #ms {
+  letter-spacing: 0.3px;
+  /*-webkit-font-smoothing: antialiased;*/
 }
 
 .ms-section-title {
@@ -1285,6 +1287,10 @@ td .force-switch-off:hover {
   width: 100%;
 }
 
+.ms-machine-name {
+  font-weight: bold;
+}
+
 .ms-available .ms-machine-label {
   background-color: @ms-hover-color-available;
   color: white;
@@ -1344,11 +1350,15 @@ http://codepen.io/anon/pen/QEXBEp
 
   border-radius: 50%;
   color: white;
-  font-size: 17px;
+  font-size: 18px;
   font-weight: bold;
   height: 160px;
   opacity: 0.6;
   width: 160px;
+}
+
+.ms-machine-overlay-start {
+  margin-top: 10px;
 }
 
 .ms-machine-overlay .machine-time-label {
@@ -1357,6 +1367,7 @@ http://codepen.io/anon/pen/QEXBEp
 
 .ms-machine-overlay .machine-time-value {
   font-size: 20px;
+  margin-top: -3px;
   text-align: center;
 }
 

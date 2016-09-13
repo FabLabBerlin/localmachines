@@ -59,7 +59,7 @@ var Machine = React.createClass({
     case UPCOMING_RESERVATION:
       return (
         <div>
-          <div>Reserved in</div>
+          <div className="ms-machine-overlay-start">Reserved in</div>
           <Timer activation={this.upcomingReservation().toJS()}/>
         </div>
       );
