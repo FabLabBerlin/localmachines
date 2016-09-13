@@ -43,7 +43,7 @@ html {
 }
 
 body {
-  background-color: #f6f7f8;
+  background-color: white;
   color: black;
   font-family: 'Open Sans', 'Helvetica', 'Arial', sans-serif;
   font-weight: normal;
@@ -61,7 +61,7 @@ ul, li {
 }
 
 #main-content {
-  background: #f6f7f8;
+  background: white;
 }
 
 /*
@@ -380,7 +380,7 @@ nav.navbar a.sign-out {
 
 .nav {
   background: white;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 .nav-top {
@@ -619,7 +619,7 @@ Dashboard/Main View
 
 */
 footer {
-  background: #f6f7f8;
+  background: white;
   border-top: 2px solid darken(@bg-color-default, 10%);
   margin-top: 20px;
   margin-bottom: 0;
@@ -1233,8 +1233,8 @@ td .force-switch-off:hover {
   clear: both;
   color: white;
   font-size: 23px;
-  font-weight: 500;
-  margin-bottom: 5px;
+  font-weight: bold;
+  margin-bottom: 3px;
   padding: 0px 30px;
   text-transform: uppercase;
   width: 100%;
@@ -1245,8 +1245,8 @@ td .force-switch-off:hover {
   border: 2px solid transparent;
   float: left;
   height: 285px;
-  margin-bottom: 35px;
-  margin-right: 7px;
+  margin-bottom: 36px;
+  margin-right: 2px;
   width: 221px;
 }
 
@@ -1338,6 +1338,10 @@ http://codepen.io/anon/pen/QEXBEp
   width: 160px;
 }
 
+.ms-upcoming-reservation:hover .ms-machine-icon {
+  .box-shadow(0px 4px 15px 2px @ms-hover-color-reserved);
+}
+
 .ms-machine-overlay-container {
   overflow: hidden;
   position: absolute;
@@ -1358,6 +1362,7 @@ http://codepen.io/anon/pen/QEXBEp
 }
 
 .ms-machine-overlay-start {
+  font-weight: normal;
   margin-top: 10px;
 }
 
@@ -1764,7 +1769,7 @@ d8888b. d8888b.  .d88b.  d8888b. db    db  .o88b. d888888b
 .prod-section-title {
   color: #4A4A4A;
   font-size: 48px;
-  font-weight: lighter;
+  font-weight: bold;
   margin-bottom: 40px;
   margin-top: 80px;
   text-align: center;
