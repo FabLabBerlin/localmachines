@@ -23,11 +23,22 @@ var MachineList = React.createClass({
     let activation = this.props.activation;
     var MachineNode;
     if (this.state.locationId && this.props.machines) {
-      var machines = this.props.machines.filter((machine) => {
+      var machines = this.props.machines.toList().filter((machine) => {
         return machine.get('Visible') && !machine.get('Archived');
       });
-      machines = _.sortBy(machines.toJS(), (m) => {
-        return m.Name;
+
+      machines = _.sortBy(machines.toJS(), m => {
+        const typeName = {
+          0: 'Other',
+          1: '3D Printer',
+          2: 'CNC mill',
+          3: 'Heatpress',
+          4: 'Knitting Machine',
+          5: 'Lasercutters',
+          6: 'Vinylcutter'
+        }[m.TypeId];
+
+        return (typeName + m.Name).toLowerCase();
       });
       MachineNode = _.map(machines, function(machine) {
         if (machine.LocationId === this.state.locationId) {
