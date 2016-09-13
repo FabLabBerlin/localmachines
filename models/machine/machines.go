@@ -243,6 +243,13 @@ func (this *Machine) SetUnderMaintenance(underMaintenance bool) error {
 		return err
 	}
 
+	if err := redis.PublishMachinesUpdate(redis.MachinesUpdate{
+		LocationId: this.LocationId,
+		MachineId:  this.Id,
+	}); err != nil {
+		beego.Error("publish machines update:", err)
+	}
+
 	if this.LocationId != 1 {
 		return nil
 	}
