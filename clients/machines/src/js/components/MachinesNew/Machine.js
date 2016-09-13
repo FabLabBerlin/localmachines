@@ -52,7 +52,7 @@ var Machine = React.createClass({
     case RUNNING:
       return (
         <div>
-          <div>Running for</div>
+          <div className="ms-machine-overlay-start">Running for</div>
           <Timer activation={this.props.machine.get('activation').toJS()}/>
         </div>
       );

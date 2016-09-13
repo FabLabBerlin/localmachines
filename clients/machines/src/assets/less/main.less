@@ -1338,6 +1338,14 @@ http://codepen.io/anon/pen/QEXBEp
   width: 160px;
 }
 
+.ms-occupied:hover .ms-machine-icon {
+  .box-shadow(0px 4px 15px 2px @ms-hover-color-occupied);
+}
+
+.ms-running:hover .ms-machine-icon {
+  .box-shadow(0px 4px 15px 2px @ms-hover-color-running);
+}
+
 .ms-upcoming-reservation:hover .ms-machine-icon {
   .box-shadow(0px 4px 15px 2px @ms-hover-color-reserved);
 }
@@ -1348,22 +1356,20 @@ http://codepen.io/anon/pen/QEXBEp
 }
 
 .ms-machine-overlay {
-  .align-items(center);
-  .flex-block();
-  .justify-content(center);
-
   border-radius: 50%;
   color: white;
   font-size: 18px;
   font-weight: bold;
   height: 160px;
   opacity: 0.6;
+  padding-top: 62px;
+  text-align: center;
   width: 160px;
 }
 
 .ms-machine-overlay-start {
   font-weight: normal;
-  margin-top: 10px;
+  margin-top: 1px;
 }
 
 .ms-machine-overlay .machine-time-label {
@@ -1379,7 +1385,7 @@ http://codepen.io/anon/pen/QEXBEp
 .ms-locked .ms-machine-overlay {
   background-color: @ms-hover-color-locked;
   background-image: url(/machines/assets/img/machines/locked.svg);
-  background-position: 50% 102px;
+  background-position: 50% 103px;
   background-repeat: no-repeat;
   color: white;
 }
@@ -1387,7 +1393,7 @@ http://codepen.io/anon/pen/QEXBEp
 .ms-maintenance .ms-machine-overlay {
   background-color: @ms-bg-color-maintenance;
   background-image: url(/machines/assets/img/machines/maintenance.svg);
-  background-position: 50% 102px;
+  background-position: 50% 103px;
   background-repeat: no-repeat;
   color: #ADADAD;
 }
@@ -1406,12 +1412,12 @@ http://codepen.io/anon/pen/QEXBEp
 
 .ms-upcoming-reservation .ms-machine-overlay-container {
   height: 59px;
-  margin-top: 48px;
+  margin-top: 56px;
 }
 
 .ms-upcoming-reservation .ms-machine-overlay {
   background-color: @ms-hover-color-reserved;
-  margin-top: -52px;
+  margin-top: -57px;
   opacity: 1;
 }
 
