@@ -233,6 +233,7 @@ func (this *Machine) ReportBroken(user users.User) error {
 	message += "--\n"
 	message += "E-Mail: " + user.Email + "\n"
 	message += "Phone: " + user.Phone + "\n"
+	beego.Info("Machine#ReportBroken: message=", message)
 	return email.Send(to, subject, message)
 }
 

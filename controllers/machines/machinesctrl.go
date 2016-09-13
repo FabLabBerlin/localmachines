@@ -341,6 +341,7 @@ func (this *Controller) underMaintenanceOnOrOff(onOrOff int) error {
 // @Failure	500 Internal Server Error
 // @router /:mid/report_broken [post]
 func (this *Controller) ReportBroken() {
+	beego.Info("/api/machines/:id/report_broken")
 	machineId, err := this.GetInt64(":mid")
 	if err != nil {
 		beego.Error("Failed to get :mid variable")
