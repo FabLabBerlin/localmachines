@@ -1351,8 +1351,13 @@ http://codepen.io/anon/pen/QEXBEp
 }
 
 .ms-machine-overlay-container {
+  background-color: #ADADAD;
+  border-radius: 50%;
+  height: 160px;
+  opacity: 0.6;
   overflow: hidden;
   position: absolute;
+  width: 160px;
 }
 
 .ms-machine-overlay {
@@ -1361,8 +1366,8 @@ http://codepen.io/anon/pen/QEXBEp
   font-size: 18px;
   font-weight: bold;
   height: 160px;
-  opacity: 0.6;
   padding-top: 62px;
+  position: absolute;
   text-align: center;
   width: 160px;
 }
@@ -1382,8 +1387,15 @@ http://codepen.io/anon/pen/QEXBEp
   text-align: center;
 }
 
-.ms-locked .ms-machine-overlay {
+.ms-available .ms-machine-overlay-container {
+  opacity: 0;
+}
+
+.ms-locked .ms-machine-overlay-container {
   background-color: @ms-hover-color-locked;
+}
+
+.ms-locked .ms-machine-overlay {
   background-image: url(/machines/assets/img/machines/locked.svg);
   background-position: 50% 103px;
   background-repeat: no-repeat;
@@ -1398,15 +1410,15 @@ http://codepen.io/anon/pen/QEXBEp
   color: #ADADAD;
 }
 
-.ms-occupied .ms-machine-overlay {
+.ms-occupied .ms-machine-overlay-container {
   background-color: @ms-hover-color-occupied;
 }
 
-.ms-reserved .ms-machine-overlay {
+.ms-reserved .ms-machine-overlay-container {
   background-color: @ms-hover-color-reserved;
 }
 
-.ms-running .ms-machine-overlay {
+.ms-running .ms-machine-overlay-container {
   background-color: @ms-hover-color-running;
 }
 
