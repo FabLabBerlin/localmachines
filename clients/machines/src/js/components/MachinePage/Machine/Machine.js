@@ -178,7 +178,10 @@ var MachineChooser = React.createClass({
       <div className="machine-container">
         <div className="container-fluid">
           <div className="machine-header">
-            <div className="machine-title pull-left">{this.props.machine.Name} {price}</div>
+            <div className="machine-title pull-left">
+              <div>{this.props.machine.Name} {price}</div>
+              <div className="machine-brand">{this.props.machine.Brand}</div>
+            </div>
             <div className="clearfix"></div>
           </div>
           <div className="machine-body">
