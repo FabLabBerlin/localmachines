@@ -186,7 +186,7 @@ var InvoicesView = React.createClass({
     }
     return (
       <div className="container-fluid">
-        <h2>Invoices EXPERIMENTAL</h2>
+        <h2>Invoices</h2>
         {nodes}
       </div>
     );
