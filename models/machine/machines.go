@@ -136,6 +136,15 @@ func Create(locationId int64, machineName string) (m *Machine, err error) {
 	return
 }
 
+func (m *Machine) HideSensitiveData() {
+	m.NetswitchUrlOn = ""
+	m.NetswitchUrlOff = ""
+	m.NetswitchHost = ""
+	m.NetswitchSensorPort = 0
+	m.NetswitchType = ""
+	m.Comments = ""
+}
+
 func (m *Machine) Update(updateGateway bool) (err error) {
 	o := orm.NewOrm()
 	if _, err = parseDimensions(m.Dimensions); err != nil {

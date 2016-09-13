@@ -77,6 +77,11 @@ func (this *PushData) loadMachines(isStaff bool, uid, locationId int64) (err err
 	} else {
 		this.Machines = allMachines
 	}
+
+	for _, m := range this.Machines {
+		m.HideSensitiveData()
+	}
+
 	return
 }
 
