@@ -12,7 +12,7 @@ var RepairButton = React.createClass({
       <div className="machine-service-repair">
         <a
           className="danger" 
-          href="#" 
+          href="javascript:void(0)" 
           onClick={this.handleClick}>
           <i className="fa fa-wrench"></i>
         </a>Report a machine fault
