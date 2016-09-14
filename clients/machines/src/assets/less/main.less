@@ -1360,13 +1360,16 @@ http://codepen.io/anon/pen/QEXBEp
   width: 160px;
 }
 
+.ms-machine-overlay-container {
+}
+
 .ms-machine-overlay {
   border-radius: 50%;
   color: white;
   font-size: 18px;
   font-weight: bold;
   height: 160px;
-  padding-top: 62px;
+  padding-top: 55px;
   position: absolute;
   text-align: center;
   width: 160px;
@@ -1422,14 +1425,24 @@ http://codepen.io/anon/pen/QEXBEp
   background-color: @ms-hover-color-running;
 }
 
+.ms-upcoming-reservation .ms-machine-overlay-background-container {
+  border-radius: 50%;
+  height: 160px;
+  overflow: hidden;
+  width: 160px;
+}
+
 .ms-upcoming-reservation .ms-machine-overlay-background {
-  height: 59px;
-  margin-top: 56px;
+  background-color: @ms-hover-color-reserved;
+  border-radius: 0;
+  height: 61px;
+  margin-top: 52px;
+  opacity: 1;
+  position: relative;
 }
 
 .ms-upcoming-reservation .ms-machine-overlay {
-  background-color: @ms-hover-color-reserved;
-  opacity: 1;
+  margin-top: -160px;
 }
 
 
