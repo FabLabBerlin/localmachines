@@ -101,7 +101,7 @@ var MachinesPage = React.createClass({
     })
     .filter(m => {
       return m.get('LocationId') === this.state.locationId &&
-        !m.get('Archived');
+        m.get('Visible') && !m.get('Archived');
     })
     .groupBy(m => m.get('TypeId'));
 

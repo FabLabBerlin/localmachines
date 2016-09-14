@@ -3,7 +3,7 @@ var MachineActions = require('../../../actions/MachineActions');
 var Machines = require('../../../modules/Machines');
 var React = require('react');
 var reactor = require('../../../reactor');
-var Timer = require('./Timer');
+var Timer = require('./ActivationTimer');
 
 
 var OccupiedMachine = React.createClass({

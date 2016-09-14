@@ -1,6 +1,6 @@
 var React = require('react');
 var RepairButton = require('../../Feedback/RepairButton');
-var Timer = require('./Timer');
+var Timer = require('./ActivationTimer');
 
 /*
  * Div displayed when a machine is busy
