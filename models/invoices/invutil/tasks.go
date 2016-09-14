@@ -18,6 +18,10 @@ func TaskFastbillSync() (err error) {
 	}
 
 	for _, u := range us {
+		if u.ClientId == 0 {
+			continue
+		}
+
 		if err := FastbillSync(locId, u); err != nil {
 			beego.Error("sync invoice of user %v: %v", u.Id, err)
 		}
