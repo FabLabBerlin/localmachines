@@ -43,7 +43,7 @@ html {
 }
 
 body {
-  background-color: #f6f7f8;
+  background-color: white;
   color: black;
   font-family: 'Open Sans', 'Helvetica', 'Arial', sans-serif;
   font-weight: normal;
@@ -61,7 +61,7 @@ ul, li {
 }
 
 #main-content {
-  background: #f6f7f8;
+  background: white;
 }
 
 /*
@@ -380,7 +380,7 @@ nav.navbar a.sign-out {
 
 .nav {
   background: white;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 .nav-top {
@@ -619,7 +619,7 @@ Dashboard/Main View
 
 */
 footer {
-  background: #f6f7f8;
+  background: white;
   border-top: 2px solid darken(@bg-color-default, 10%);
   margin-top: 20px;
   margin-bottom: 0;
@@ -828,6 +828,13 @@ YP  YP  YP YP   YP  `Y88P' YP   YP Y888888P VP   V8P Y88888P
   font-size: 18px;
   line-height: 1;
   font-weight: bold;
+}
+
+.machine-title {
+}
+
+.machine-brand {
+  font-weight: normal;
 }
 
 .machine-body {
@@ -1217,6 +1224,8 @@ td .force-switch-off:hover {
 //////////////////////////////////////////////////////////
 
 #ms {
+  letter-spacing: 0.3px;
+  /*-webkit-font-smoothing: antialiased;*/
 }
 
 .ms-section-title {
@@ -1224,8 +1233,8 @@ td .force-switch-off:hover {
   clear: both;
   color: white;
   font-size: 23px;
-  font-weight: 500;
-  margin-bottom: 5px;
+  font-weight: bold;
+  margin-bottom: 3px;
   padding: 0px 30px;
   text-transform: uppercase;
   width: 100%;
@@ -1236,8 +1245,8 @@ td .force-switch-off:hover {
   border: 2px solid transparent;
   float: left;
   height: 285px;
-  margin-bottom: 35px;
-  margin-right: 7px;
+  margin-bottom: 36px;
+  margin-right: 2px;
   width: 221px;
 }
 
@@ -1276,6 +1285,10 @@ td .force-switch-off:hover {
   margin-bottom: 27px;
   padding: 8px 0 0 30px;
   width: 100%;
+}
+
+.ms-machine-name {
+  font-weight: bold;
 }
 
 .ms-available .ms-machine-label {
@@ -1325,23 +1338,46 @@ http://codepen.io/anon/pen/QEXBEp
   width: 160px;
 }
 
-.ms-machine-overlay-container {
+.ms-occupied:hover .ms-machine-icon {
+  .box-shadow(0px 4px 15px 2px @ms-hover-color-occupied);
+}
+
+.ms-running:hover .ms-machine-icon {
+  .box-shadow(0px 4px 15px 2px @ms-hover-color-running);
+}
+
+.ms-upcoming-reservation:hover .ms-machine-icon {
+  .box-shadow(0px 4px 15px 2px @ms-hover-color-reserved);
+}
+
+.ms-machine-overlay-background {
+  background-color: #ADADAD;
+  border-radius: 50%;
+  height: 160px;
+  opacity: 0.6;
   overflow: hidden;
   position: absolute;
+  width: 160px;
+}
+
+.ms-machine-overlay-container {
 }
 
 .ms-machine-overlay {
-  .align-items(center);
-  .flex-block();
-  .justify-content(center);
-
   border-radius: 50%;
   color: white;
-  font-size: 17px;
+  font-size: 18px;
   font-weight: bold;
   height: 160px;
-  opacity: 0.6;
+  padding-top: 55px;
+  position: absolute;
+  text-align: center;
   width: 160px;
+}
+
+.ms-machine-overlay-start {
+  font-weight: normal;
+  margin-top: 1px;
 }
 
 .ms-machine-overlay .machine-time-label {
@@ -1350,13 +1386,21 @@ http://codepen.io/anon/pen/QEXBEp
 
 .ms-machine-overlay .machine-time-value {
   font-size: 20px;
+  margin-top: -3px;
   text-align: center;
 }
 
-.ms-locked .ms-machine-overlay {
+.ms-available .ms-machine-overlay-background {
+  opacity: 0;
+}
+
+.ms-locked .ms-machine-overlay-background {
   background-color: @ms-hover-color-locked;
+}
+
+.ms-locked .ms-machine-overlay {
   background-image: url(/machines/assets/img/machines/locked.svg);
-  background-position: 50% 102px;
+  background-position: 50% 103px;
   background-repeat: no-repeat;
   color: white;
 }
@@ -1364,32 +1408,41 @@ http://codepen.io/anon/pen/QEXBEp
 .ms-maintenance .ms-machine-overlay {
   background-color: @ms-bg-color-maintenance;
   background-image: url(/machines/assets/img/machines/maintenance.svg);
-  background-position: 50% 102px;
+  background-position: 50% 103px;
   background-repeat: no-repeat;
   color: #ADADAD;
 }
 
-.ms-occupied .ms-machine-overlay {
+.ms-occupied .ms-machine-overlay-background {
   background-color: @ms-hover-color-occupied;
 }
 
-.ms-reserved .ms-machine-overlay {
+.ms-reserved .ms-machine-overlay-background {
   background-color: @ms-hover-color-reserved;
 }
 
-.ms-running .ms-machine-overlay {
+.ms-running .ms-machine-overlay-background {
   background-color: @ms-hover-color-running;
 }
 
-.ms-upcoming-reservation .ms-machine-overlay-container {
-  height: 59px;
-  margin-top: 48px;
+.ms-upcoming-reservation .ms-machine-overlay-background-container {
+  border-radius: 50%;
+  height: 160px;
+  overflow: hidden;
+  width: 160px;
+}
+
+.ms-upcoming-reservation .ms-machine-overlay-background {
+  background-color: @ms-hover-color-reserved;
+  border-radius: 0;
+  height: 61px;
+  margin-top: 52px;
+  opacity: 1;
+  position: relative;
 }
 
 .ms-upcoming-reservation .ms-machine-overlay {
-  background-color: @ms-hover-color-reserved;
-  margin-top: -52px;
-  opacity: 1;
+  margin-top: -160px;
 }
 
 
@@ -1746,7 +1799,7 @@ d8888b. d8888b.  .d88b.  d8888b. db    db  .o88b. d888888b
 .prod-section-title {
   color: #4A4A4A;
   font-size: 48px;
-  font-weight: lighter;
+  font-weight: bold;
   margin-bottom: 40px;
   margin-top: 80px;
   text-align: center;

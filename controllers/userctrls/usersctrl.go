@@ -490,6 +490,7 @@ func (this *UsersController) GetUserMachines() {
 	filteredByLocation := make([]*machine.Machine, 0, len(machines))
 	for _, m := range machines {
 		if locationId <= 0 || locationId == m.LocationId {
+			m.HideSensitiveData()
 			filteredByLocation = append(filteredByLocation, m)
 		}
 	}
@@ -524,12 +525,7 @@ func (this *UsersController) GetUserBill() {
 	for _, inv := range invs {
 		for _, p := range inv.Purchases {
 			if m := p.Machine; m != nil {
-				m.NetswitchUrlOn = ""
-				m.NetswitchUrlOff = ""
-				m.NetswitchHost = ""
-				m.NetswitchSensorPort = 0
-				m.NetswitchType = ""
-				m.Comments = ""
+				m.HideSensitiveData()
 			}
 		}
 	}

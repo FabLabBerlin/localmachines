@@ -155,7 +155,7 @@ var MachineChooser = React.createClass({
     }
     var price;
     if (this.props.machine.Name.indexOf('Tutor') < 0) {
-      price = ' [€';
+      price = ' €';
       price += this.props.machine.Price.toFixed(2);
       price += '/';
       switch (this.props.machine.PriceUnit) {
@@ -168,7 +168,7 @@ var MachineChooser = React.createClass({
         default:
           price += this.props.machine.PriceUnit;
       }
-      price += ']';
+      price += '';
     }
     var availabilityDisplay;
     if (_.isNumber(this.props.machine.ReservationPriceHourly)) {
@@ -178,7 +178,12 @@ var MachineChooser = React.createClass({
       <div className="machine-container">
         <div className="container-fluid">
           <div className="machine-header">
-            <div className="machine-title pull-left">{this.props.machine.Name} {price}</div>
+            <div className="machine-title pull-left">
+              <div>{this.props.machine.Name}</div>
+              <div className="machine-brand">
+                {this.title() ? (this.title() + ' - ') : null} {this.props.machine.Brand} - {price}
+              </div>
+            </div>
             <div className="clearfix"></div>
           </div>
           <div className="machine-body">
@@ -198,6 +203,23 @@ var MachineChooser = React.createClass({
         </div>
       </div>
     );
+  },
+
+  title() {
+    switch (this.props.machine.TypeId) {
+    case 1:
+      return '3D Printer';
+    case 2:
+      return 'CNC Mill';
+    case 3:
+      return 'Heatpress';
+    case 4:
+      return 'Knitting Machine';
+    case 5:
+      return 'Lasercutters';
+    case 6:
+      return 'Vinylcutter';
+    }
   }
 });
 

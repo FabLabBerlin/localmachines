@@ -52,14 +52,14 @@ var Machine = React.createClass({
     case RUNNING:
       return (
         <div>
-          <div>Running for</div>
+          <div className="ms-machine-overlay-start">Running for</div>
           <Timer activation={this.props.machine.get('activation').toJS()}/>
         </div>
       );
     case UPCOMING_RESERVATION:
       return (
         <div>
-          <div>Reserved in</div>
+          <div className="ms-machine-overlay-start">Reserved in</div>
           <Timer activation={this.upcomingReservation().toJS()}/>
         </div>
       );
@@ -84,6 +84,9 @@ var Machine = React.createClass({
           </div>
         </div>
         <div className="ms-machine-icon" style={style}>
+          <div className="ms-machine-overlay-background-container">
+            <div className="ms-machine-overlay-background"/>
+          </div>
           <div className="ms-machine-overlay-container">
             <div className="ms-machine-overlay">
               {this.overlayText()}

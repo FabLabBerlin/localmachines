@@ -27,7 +27,7 @@ var Right = React.createClass({
               <button className="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                 <div className="nav-user">
                   <div className="nav-user-name">
-                    {this.state.user.get('FirstName')} {this.state.user.get('LastName')}
+                    {(this.state.user.get('FirstName') || '') + ' ' + (this.state.user.get('LastName') || '')}
                   </div>
                   <div className="nav-user-role">
                     {this.userRole()}

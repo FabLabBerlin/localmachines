@@ -97,8 +97,8 @@ var List = React.createClass({
 
     if (sorting) {
       sorted = summaries.sortBy((inv) => {
-        const c = sorting.get('column');
-        const v = inv.get(c);
+        const c = sorting.get('column').split('.');
+        const v = inv.getIn(c);
 
         if (c === 'FastbillNo') {
           return parseInt(v, 10) || -1;
@@ -152,11 +152,11 @@ var List = React.createClass({
                           sorting={sorting}
                           toggle={this.toggleSorting}/>
               <HeadColumn label="Paid"
-                          attribute="Paid"
+                          attribute="PaidDate"
                           sorting={sorting}
                           toggle={this.toggleSorting}/>
               <HeadColumn label="No Auto Invoicing"
-                          attribute="NoAutoInvoicing"
+                          attribute="User.NoAutoInvoicing"
                           sorting={sorting}
                           toggle={this.toggleSorting}/>
               <HeadColumn label="Total"
