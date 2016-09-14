@@ -2,7 +2,8 @@ import {hashHistory} from 'react-router';
 var getters = require('../../getters');
 var React = require('react');
 var reactor = require('../../reactor');
-var Timer = require('../MachinePage/Machine/Timer');
+var ActivationTimer = require('../MachinePage/Machine/ActivationTimer');
+var ReservationTimer = require('../MachinePage/Machine/ReservationTimer');
 
 
 const AVAILABLE = 'available';
@@ -53,14 +54,14 @@ var Machine = React.createClass({
       return (
         <div>
           <div className="ms-machine-overlay-start">Running for</div>
-          <Timer activation={this.props.machine.get('activation').toJS()}/>
+          <ActivationTimer activation={this.props.machine.get('activation').toJS()}/>
         </div>
       );
     case UPCOMING_RESERVATION:
       return (
         <div>
           <div className="ms-machine-overlay-start">Reserved in</div>
-          <Timer activation={this.upcomingReservation().toJS()}/>
+          <ReservationTimer reservation={this.upcomingReservation().toJS()}/>
         </div>
       );
     }
