@@ -329,7 +329,6 @@ nav.navbar a.sign-out {
 
 .nav-item {
   .align-items(center);
-  border-top: 4px solid black;
   cursor: pointer;
   .flex-block();
   font-size: 19px;
@@ -340,7 +339,9 @@ nav.navbar a.sign-out {
 }
 
 .nav-item img {
+  margin-top: 9px;
   width: 32px;
+  .transition-duration(200ms)
 }
 
 .nav-item.nav-item-reservations img {
@@ -348,7 +349,14 @@ nav.navbar a.sign-out {
 }
 
 .nav-item span {
-  display: none;
+  background: black;
+  color: white;
+  display: block;
+  height: 4px;
+  margin-top: -6px;
+  overflow: hidden;
+  width: 100%;
+  .transition-duration(200ms)
 }
 
 .nav-item-container:nth-child(1) {
@@ -365,8 +373,14 @@ nav.navbar a.sign-out {
 }
 
 .nav-item:hover {
-  background: black;
   color: white;
+}
+
+.nav-item:hover span {
+  display: block;
+  height: 50px;
+  margin-top: 25px;
+  padding-top: 12px;
 }
 
 .nav-item:hover a {
@@ -374,24 +388,24 @@ nav.navbar a.sign-out {
 }
 
 .nav-item:hover img {
-  display: none;
-}
-
-.nav-item:hover span {
-  display: block;
+  width: 0px;
+  height: 0px;
 }
 
 .nav-item.active {
-  background: black;
   color: white;
 }
 
 .nav-item.active img {
-  display: none;
+  width: 0px;
+  height: 0px;
 }
 
 .nav-item.active span {
   display: block;
+  height: 50px;
+  margin-top: 25px;
+  padding-top: 12px;
 }
 
 .nav-item.active a {
