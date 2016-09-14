@@ -4,7 +4,9 @@ var React = require('react');
 var Item = React.createClass({
   render() {
     var activeClass = '';
-    if (this.props.href === (window.location.pathname + '#' + this.props.location.pathname)) {
+    if (this.props.href === (window.location.pathname + '#' + this.props.location.pathname) ||
+      /* TODO: remove, just for ongoing works */
+      this.props.href + 's' === (window.location.pathname + '#' + this.props.location.pathname)) {
       activeClass = 'active';
     }
 
