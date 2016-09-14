@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="31px" height="32px" viewBox="0 0 31 32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 39.1 (31720) - http://www.bohemiancoding.com/sketch -->
+    <title>Machine icone</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Menu" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="FABLAB-BERLIN-CLICK-Copy" transform="translate(-218.000000, -190.000000)" fill="#000000">
+            <g id="MENU-2" transform="translate(-1.000000, 184.000000)">
+                <g id="Machines">
+                    <g id="Machine-icone" transform="translate(219.000000, 6.000000)">
+                        <g id="Flash">
+                            <g id="Page-1">
+                                <path d="M15.4900861,29.1715232 C8.11472574,29.1715232 2.13577723,23.1376092 2.13577723,15.6944458 C2.13577723,8.25128247 8.11472574,2.21736846 15.4900861,2.21736846 C22.8654465,2.21736846 28.844395,8.25128247 28.844395,15.6944458 C28.844395,23.1376092 22.8654465,29.1715232 15.4900861,29.1715232 M15.4900861,0.0619256917 C6.9351297,0.0619256917 3.06930697e-05,7.0608422 3.06930697e-05,15.6944458 C3.06930697e-05,24.3280494 6.9351297,31.326904 15.4900861,31.326904 C24.0450426,31.326904 30.9801416,24.3280494 30.9801416,15.6944458 C30.9801416,7.0608422 24.0450426,0.0619256917 15.4900861,0.0619256917" id="Fill-1"></path>
+                            </g>
+                            <polygon id="Page-1" points="9 6 13.0242744 20.0716304 16.0268531 17.0607899 22.3864665 26.1142857 18.362152 12.0426151 15.0259936 15.3880382"></polygon>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
