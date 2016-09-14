@@ -42,9 +42,10 @@ func (this *ReservationRule) TableName() string {
 	return "reservation_rules"
 }
 
-func GetReservationRule(id int64) (reservationRule *ReservationRule, err error) {
-	err = orm.NewOrm().Read(reservationRule)
-	return
+func GetReservationRule(id int64) (*ReservationRule, error) {
+	rule := ReservationRule{Id: id}
+	err := orm.NewOrm().Read(&rule)
+	return &rule, err
 }
 
 func GetAllReservationRulesAt(locId int64) (rules []ReservationRule, err error) {
