@@ -84,10 +84,11 @@ var Machine = React.createClass({
           </div>
         </div>
         <div className="ms-machine-icon" style={style}>
+          <div className="ms-machine-overlay-background"/>
           <div className="ms-machine-overlay-container">
-          </div>
-          <div className="ms-machine-overlay">
-            {this.overlayText()}
+            <div className="ms-machine-overlay">
+              {this.overlayText()}
+            </div>
           </div>
         </div>
       </a>

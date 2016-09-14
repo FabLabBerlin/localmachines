@@ -1350,7 +1350,7 @@ http://codepen.io/anon/pen/QEXBEp
   .box-shadow(0px 4px 15px 2px @ms-hover-color-reserved);
 }
 
-.ms-machine-overlay-container {
+.ms-machine-overlay-background {
   background-color: #ADADAD;
   border-radius: 50%;
   height: 160px;
@@ -1387,11 +1387,11 @@ http://codepen.io/anon/pen/QEXBEp
   text-align: center;
 }
 
-.ms-available .ms-machine-overlay-container {
+.ms-available .ms-machine-overlay-background {
   opacity: 0;
 }
 
-.ms-locked .ms-machine-overlay-container {
+.ms-locked .ms-machine-overlay-background {
   background-color: @ms-hover-color-locked;
 }
 
@@ -1410,26 +1410,25 @@ http://codepen.io/anon/pen/QEXBEp
   color: #ADADAD;
 }
 
-.ms-occupied .ms-machine-overlay-container {
+.ms-occupied .ms-machine-overlay-background {
   background-color: @ms-hover-color-occupied;
 }
 
-.ms-reserved .ms-machine-overlay-container {
+.ms-reserved .ms-machine-overlay-background {
   background-color: @ms-hover-color-reserved;
 }
 
-.ms-running .ms-machine-overlay-container {
+.ms-running .ms-machine-overlay-background {
   background-color: @ms-hover-color-running;
 }
 
-.ms-upcoming-reservation .ms-machine-overlay-container {
+.ms-upcoming-reservation .ms-machine-overlay-background {
   height: 59px;
   margin-top: 56px;
 }
 
 .ms-upcoming-reservation .ms-machine-overlay {
   background-color: @ms-hover-color-reserved;
-  margin-top: -57px;
   opacity: 1;
 }
 
