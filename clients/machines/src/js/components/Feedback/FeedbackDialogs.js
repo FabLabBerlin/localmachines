@@ -4,6 +4,7 @@ var getters = require('../../getters');
 var LoginActions = require('../../actions/LoginActions');
 var Machines = require('../../modules/Machines');
 var reactor = require('../../reactor');
+var toastr = require('../../toastr');
 
 // https://github.com/HubSpot/vex/issues/72
 var vex = require('vex-js'),
@@ -68,7 +69,18 @@ export default {
     VexDialog.buttons.YES.text = 'Yes';
     VexDialog.buttons.NO.text = 'No';
 
-    VexDialog.confirm({
+    VexDialog.prompt({
+      message: 'What happened?',
+      placeholder: 'I saw...',
+      callback: function(text) {
+        if (text) {
+          FeedbackActions.reportMachineBroken({ machineId, text });
+        } else if (text !== false) {
+          toastr.error('Please give us some information.');
+        }
+      }
+    });
+    /*VexDialog.confirm({
       message: 'Do you really want to report machine <b>' +
         machine.Name + '</b> as broken?',
       callback(confirmed) {
@@ -78,6 +90,6 @@ export default {
         $('.vex').remove();
         $('body').removeClass('vex-open');
       }
-    });
+    });*/
   }
 };
