@@ -13,34 +13,12 @@ app.config(['$routeProvider', function($routeProvider) {
 }]); // app.config
 
 app.controller('SettingsCtrl',
- ['$scope', '$http', '$location', '$cookies', 'randomToken',
- function($scope, $http, $location, $cookies, randomToken) {
+ ['$scope', '$http', '$location', '$cookies', 'randomToken', 'api',
+ function($scope, $http, $location, $cookies, randomToken, api) {
 
-  $scope.loadSettings = function() {
-    $http({
-      method: 'GET',
-      url: '/api/settings',
-      params: {
-        location: $cookies.get('location'),
-        ac: new Date().getTime()
-      }
-    })
-    .success(function(settings) {
-      $scope.settings = {
-        Currency: {},
-        TermsUrl: {},
-        VAT: {}
-      };
-      _.each(settings, function(setting) {
-        $scope.settings[setting.Name] = setting;
-      });
-    })
-    .error(function() {
-      toastr.error('Failed to get global config');
-    });
-  };
-
-  $scope.loadSettings();
+  api.loadSettings(function(settings) {
+    $scope.settings = settings;
+  });
 
   $scope.save = function() {
     $http({

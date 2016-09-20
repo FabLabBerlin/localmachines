@@ -58,6 +58,33 @@ mod.service('api',
     });
   };
 
+  this.loadSettings = function(cb) {
+    $http({
+      method: 'GET',
+      url: '/api/settings',
+      params: {
+        location: $cookies.get('location'),
+        ac: new Date().getTime()
+      }
+    })
+    .success(function(settings) {
+      var h = {
+        Currency: {},
+        TermsUrl: {},
+        VAT: {}
+      };
+
+      _.each(settings, function(setting) {
+        h[setting.Name] = setting;
+      });
+
+      cb(h);
+    })
+    .error(function() {
+      toastr.error('Failed to get global config');
+    });
+  };
+
   this.loadTutoringPurchase = function(id, cb) {
     if (id === 'create') {
       var tp = {

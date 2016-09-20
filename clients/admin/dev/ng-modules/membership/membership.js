@@ -66,6 +66,10 @@ app.controller('MembershipCtrl',
     });
   };
 
+  api.loadSettings(function(settings) {
+    $scope.settings = settings;
+  });
+
   $scope.updateMembership = function() {
 
     // Add the machine.Checked's into membership.AffectedMachines array

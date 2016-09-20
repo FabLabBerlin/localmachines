@@ -10,7 +10,7 @@
         <th>Membership Title</th>
         <th>Short Name</th>
         <th>Duration</th>
-        <th>Monthly Price / €</th>
+        <th>Monthly Price / {{settings && settings.Currency && settings.Currency.ValueString || '€'}}</th>
         <th>&nbsp;</th>
       </tr>
     </thead>

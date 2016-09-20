@@ -12,10 +12,16 @@ app.config(['$routeProvider', function($routeProvider) {
 }]); // app.config
 
 app.controller('DashboardCtrl',
- ['$scope', '$http', '$location', '$cookies',
- function($scope, $http, $location, $cookies) {
+ ['$scope', '$http', '$location', '$cookies', 'api',
+ function($scope, $http, $location, $cookies, api) {
 
   $scope.metrics = [];
+  var currency = '';
+
+  api.loadSettings(function(settings) {
+    $scope.settings = settings;
+    currency = $scope.settings.Currency.ValueString;
+  });
 
   $scope.loadMetricsData = function() {
     $http({
@@ -52,22 +58,22 @@ app.controller('DashboardCtrl',
           f: month
         },
         membershipsRevenue,
-        'Memberships (€): <b>' + membershipsRevenue + '</b><br>' + memberships + ' non-free Memberships',
+        'Memberships (' + currency + '): <b>' + membershipsRevenue + '</b><br>' + memberships + ' non-free Memberships',
         activationsRevenue,
-        'Activations (€): <b>' + activationsRevenue + '</b><br>' + minutes + ' minutes for non-Admins',
+        'Activations (' + currency + '): <b>' + activationsRevenue + '</b><br>' + minutes + ' minutes for non-Admins',
         membershipsRevenueRnd,
-        'R&D Center (€): <b>' + membershipsRevenueRnd + '</b><br>' + membershipsRnD + ' R&D Center Tables'
+        'R&D Center (' + currency + '): <b>' + membershipsRevenueRnd + '</b><br>' + membershipsRnD + ' R&D Center Tables'
       ];
     });
 
 
     var data = new google.visualization.DataTable();
     data.addColumn('string', 'Month');
-    data.addColumn('number', 'Memberships (€)');
+    data.addColumn('number', 'Memberships (' + currency + ')');
     data.addColumn({'type': 'string', 'role': 'tooltip', 'p': {'html': true}});
-    data.addColumn('number', 'Activations (€)');
+    data.addColumn('number', 'Activations (' + currency + ')');
     data.addColumn({'type': 'string', 'role': 'tooltip', 'p': {'html': true}});
-    data.addColumn('number', 'R&D Center (€)');
+    data.addColumn('number', 'R&D Center (' + currency + ')');
     data.addColumn({'type': 'string', 'role': 'tooltip', 'p': {'html': true}});
     data.addRows(byMonth);
 
@@ -77,7 +83,7 @@ app.controller('DashboardCtrl',
         title: 'Month',
       },
       vAxis: {
-        title: 'Revenue / €'
+        title: 'Revenue / ' + currency
       },
       tooltip: {isHtml: true},
       isStacked: true
@@ -102,14 +108,14 @@ app.controller('DashboardCtrl',
           f: day
         },
         activationsRevenue,
-        moment(day).format('D MMM YYYY') + '<br>Activations (€): <b>' + activationsRevenue + '</b><br>' + minutes + ' minutes for non-Admins'
+        moment(day).format('D MMM YYYY') + '<br>Activations (' + currency + '): <b>' + activationsRevenue + '</b><br>' + minutes + ' minutes for non-Admins'
       ];
     });
 
 
     var data = new google.visualization.DataTable();
     data.addColumn('date', 'Day');
-    data.addColumn('number', 'Activations (€)');
+    data.addColumn('number', 'Activations (' + currency + ')');
     data.addColumn({'type': 'string', 'role': 'tooltip', 'p': {'html': true}});
     data.addRows(byDay);
 
@@ -119,7 +125,7 @@ app.controller('DashboardCtrl',
         title: 'Day',
       },
       vAxis: {
-        title: 'Revenue / €'
+        title: 'Revenue / ' + currency
       },
       tooltip: {isHtml: true}
     };

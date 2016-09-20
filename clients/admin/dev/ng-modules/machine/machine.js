@@ -72,6 +72,10 @@ app.controller('MachineCtrl',
     });
   };
 
+  api.loadSettings(function(settings) {
+    $scope.settings = settings;
+  });
+
   $scope.loadMachineTypes();
   $scope.loadMachine();
 
