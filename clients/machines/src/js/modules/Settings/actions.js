@@ -10,7 +10,7 @@ var toastr = require('../../toastr');
 
 var SettingsActions = {
 
-  loadAdminSettings({locationId}) {
+  loadSettings({locationId}) {
     $.ajax({
       url: '/api/settings?location=' + locationId,
       dataType: 'json',
@@ -24,7 +24,7 @@ var SettingsActions = {
         _.each(adminSettings, function(setting) {
           h[setting.Name] = setting;
         });
-        reactor.dispatch(actionTypes.SET_ADMIN_SETTINGS, h);
+        reactor.dispatch(actionTypes.SET_SETTINGS, h);
       },
       error(xhr, status, err) {
         toastr.error('Error loading admin settings');
@@ -40,19 +40,6 @@ var SettingsActions = {
       },
       error(xhr, status, err) {
         toastr.error('Error loading fastbill templates');
-      }
-    });
-  },
-
-  loadSettings({locationId}) {
-    $.ajax({
-      url: '/api/settings/vat_percent?location=' + locationId,
-      dataType: 'json',
-      success(vatPercent) {
-        reactor.dispatch(actionTypes.SET_VAT_PERCENT, vatPercent);
-      },
-      error(xhr, status, err) {
-        toastr.error('Error loading settings');
       }
     });
   },

@@ -21,6 +21,10 @@ app.controller('MachinesCtrl',
     $scope.machines = resp.machines;
   });
 
+  api.loadSettings(function(settings) {
+    $scope.settings = settings;
+  });
+
   $scope.addMachinePrompt = function() {
     vex.dialog.prompt({
       message: 'Enter machine name',

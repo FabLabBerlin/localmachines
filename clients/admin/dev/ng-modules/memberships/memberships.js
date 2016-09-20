@@ -12,8 +12,8 @@ app.config(['$routeProvider', function($routeProvider) {
 }]); // app.config
 
 app.controller('MembershipsCtrl',
- ['$scope', '$http', '$location', '$cookies',
- function($scope, $http, $location, $cookies) {
+ ['$scope', '$http', '$location', '$cookies', 'api',
+ function($scope, $http, $location, $cookies, api) {
 
   // Load all memberships
   $http({
@@ -29,6 +29,10 @@ app.controller('MembershipsCtrl',
   })
   .error(function() {
     toastr.error('Failed to load memberships');
+  });
+
+  api.loadSettings(function(settings) {
+    $scope.settings = settings;
   });
 
   $scope.addMembershipPrompt = function() {

@@ -173,52 +173,6 @@ func TestUsers(t *testing.T) {
 				So(err, ShouldNotBeNil)
 			})
 		})
-		Convey("Testing AuthUpdateNfcUid", func() {
-			Convey("Creating a user and setting him a NFC UID", func() {
-				user := users.User{}
-				user.Username = "test"
-				user.Email = "user@example.com"
-				uid, _ := users.CreateUser(&user)
-				_ = users.AuthSetPassword(uid, "test")
-				err := users.AuthUpdateNfcUid(uid, "123456")
-				So(err, ShouldBeNil)
-			})
-			Convey("Creating a user and setting him a NFC UID without setting a password", func() {
-				user := users.User{}
-				user.Username = "test"
-				user.Email = "user@example.com"
-				uid, _ := users.CreateUser(&user)
-				err := users.AuthUpdateNfcUid(uid, "123456")
-				So(err, ShouldBeNil)
-			})
-			Convey("Setting NFC UID to non-existing user", func() {
-				err := users.AuthUpdateNfcUid(0, "123456")
-				So(err, ShouldNotBeNil)
-			})
-		})
-		Convey("Testing AuthenticateUserUid", func() {
-			Convey("Creating a user with a NFC UID and try to authenticate him", func() {
-				user := users.User{}
-				user.Email = "user@example.com"
-				uid, err := users.CreateUser(&user)
-				err = users.AuthUpdateNfcUid(uid, "123456")
-				_, authUID, err := users.AuthenticateUserUid("123456")
-
-				So(authUID, ShouldEqual, uid)
-				So(err, ShouldBeNil)
-			})
-			Convey("Creating a user with a NFC UID and try to authenticate him with wrong UID", func() {
-				user := users.User{}
-				user.Email = "user@example.com"
-				uid, err := users.CreateUser(&user)
-				err = users.AuthSetPassword(uid, "test")
-				err = users.AuthUpdateNfcUid(uid, "123456")
-				_, authUID, err := users.AuthenticateUserUid("654321")
-
-				So(authUID, ShouldEqual, 0)
-				So(err, ShouldNotBeNil)
-			})
-		})
 		Convey("Testing GetUser", func() {
 			Convey("Creating user and get it", func() {
 				u := users.User{}

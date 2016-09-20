@@ -5,6 +5,7 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 var reactor = require('../../reactor');
 var ReservationActions = require('../../actions/ReservationActions');
+var Settings = require('../../modules/Settings');
 
 
 var Time = React.createClass({
@@ -12,6 +13,7 @@ var Time = React.createClass({
 
   getDataBindings() {
     return {
+      currency: Settings.getters.getCurrency,
       newReservationPrice: getters.getNewReservationPrice
     };
   },
@@ -40,7 +42,7 @@ var Time = React.createClass({
             <div className="col-md-3">
               {showPrice ? (
                 <div className="total-price">
-                  Total price: €{(this.state.newReservationPrice).toFixed(2)}
+                  Total price: {this.state.currency}{(this.state.newReservationPrice).toFixed(2)}
                 </div>
               ) : null}
             </div>

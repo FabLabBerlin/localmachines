@@ -7,6 +7,7 @@ var LocationGetters = require('../../../modules/Location/getters');
 var moment = require('moment');
 var React = require('react');
 var reactor = require('../../../reactor');
+var Settings = require('../../../modules/Settings');
 var SettingsActions = require('../../../modules/Settings/actions');
 
 
@@ -16,6 +17,7 @@ var Month = React.createClass({
 
   getDataBindings() {
     return {
+      currency: Settings.getters.getCurrency,
       location: LocationGetters.getLocation,
       locationId: LocationGetters.getLocationId,
       MonthlySums: Invoices.getters.getMonthlySums,
@@ -108,7 +110,7 @@ var Month = React.createClass({
           </div>
           <div className="col-xs-6 text-right">
             <h3>
-              {selected ? ('Sum total: ' + total + ' €') : null}
+              {selected ? ('Sum total: ' + total + ' ' + this.state.currency) : null}
             </h3>
           </div>
         </div>

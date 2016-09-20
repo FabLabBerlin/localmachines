@@ -16,14 +16,14 @@ var Settings = React.createClass({
   componentWillMount() {
     const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
     const uid = reactor.evaluateToJS(getters.getUid);
-    SettingsActions.loadAdminSettings({locationId});
+    SettingsActions.loadSettings({locationId});
     SettingsActions.loadFastbillTemplates({locationId});
     UserActions.fetchUser(uid);
   },
 
   getDataBindings() {
     return {
-      adminSettings: SettingsGetters.getAdminSettings,
+      settings: SettingsGetters.getAdminSettings,
       fastbillTemplates: SettingsGetters.getFastbillTemplates,
       location: LocationGetters.getLocation,
       locationId: LocationGetters.getLocationId,
@@ -33,7 +33,7 @@ var Settings = React.createClass({
   },
 
   render() {
-    if (!this.state.adminSettings) {
+    if (!this.state.settings) {
       return <LoaderLocal/>;
     }
 
@@ -55,7 +55,7 @@ var Settings = React.createClass({
               <td>
                 <input type="text"
                        ref="TermsUrl"
-                       defaultValue={this.state.adminSettings.TermsUrl.ValueString}/>
+                       defaultValue={this.state.settings.getIn(['TermsUrl', 'ValueString'])}/>
               </td>
             </tr>
             <tr>
@@ -63,7 +63,7 @@ var Settings = React.createClass({
               <td>
                 <input type="text"
                        ref="Currency"
-                       defaultValue={this.state.adminSettings.Currency.ValueString}/>
+                       defaultValue={this.state.settings.getIn(['Currency', 'ValueString'])}/>
               </td>
             </tr>
             <tr>
@@ -71,7 +71,7 @@ var Settings = React.createClass({
               <td>
                 <input type="number"
                        ref="VAT"
-                       defaultValue={this.state.adminSettings.VAT.ValueFloat}/>
+                       defaultValue={this.state.settings.getIn(['VAT', 'ValueFloat'])}/>
               </td>
             </tr>
             <tr>
@@ -80,7 +80,7 @@ var Settings = React.createClass({
                 {this.state.fastbillTemplates ?
                   (
                     <select ref="FastbillTemplateId"
-                            defaultValue={this.state.adminSettings.FastbillTemplateId.ValueInt}>
+                            defaultValue={this.state.settings.getIn(['FastbillTemplateId', 'ValueInt'])}>
                       <option value="0">Please select</option>
                       {_.map(this.state.fastbillTemplates.toJS(), (t) => {
                         return (
@@ -110,7 +110,7 @@ var Settings = React.createClass({
   },
 
   save() {
-    const adminSettings = {
+    const settings = {
       TermsUrl: {
         ValueString: this.refs.TermsUrl.value
       },
@@ -125,7 +125,7 @@ var Settings = React.createClass({
       }
     };
 
-    SettingsActions.saveAdminSettings(adminSettings);
+    SettingsActions.saveAdminSettings(settings);
   }
 
 });

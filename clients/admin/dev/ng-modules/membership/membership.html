@@ -37,7 +37,7 @@
           <input type="text" id="membership-price" class="form-control"
                  placeholder="Monthly Price" ng-model="membership.MonthlyPrice">
           <div class="input-group-addon">
-            <i class="fa fa-euro"></i>
+            {{settings && settings.Currency && settings.Currency.ValueString || '€'}}
           </div>
         </div>
       </div>

@@ -83,6 +83,7 @@ var BillTable = React.createClass({
 
   getDataBindings() {
     return {
+      currency: SettingsGetters.getCurrency,
       editPurchaseId: Invoices.getters.getEditPurchaseId,
       isAdmin: LocationGetters.getIsAdmin,
       vatPercent: SettingsGetters.getVatPercent
@@ -114,7 +115,7 @@ var BillTable = React.createClass({
         <h4 className="text-left">{bill.Month} / {bill.Year}</h4>
         <h5 className="text-left">
           ({formatPrice(bill.Sums.All.PriceInclVAT)} 
-          <i className="fa fa-eur"/> total incl. VAT)
+          {this.state.currency} total incl. VAT)
         </h5>
       </div>
     );
@@ -180,9 +181,9 @@ var BillTable = React.createClass({
               formatDuration(purchase))
             }
           </td>
-          <td>{formatPrice(purchase.PriceExclVAT)}€</td>
-          <td>{formatPrice(purchase.PriceVAT)}€</td>
-          <td>{formatPrice(purchase.DiscountedTotal)}€</td>
+          <td>{formatPrice(purchase.PriceExclVAT)}{this.state.currency}</td>
+          <td>{formatPrice(purchase.PriceVAT)}{this.state.currency}</td>
+          <td>{formatPrice(purchase.DiscountedTotal)}{this.state.currency}</td>
         </tr>
       );
     });
@@ -210,7 +211,6 @@ var BillTable = React.createClass({
     );
 
     _.each(bill.UserMemberships.Data, (um) => {
-      console.log('um=', um);
       tbody.push(
         <tr key={i++}>
           <td>{um.Title}</td>
@@ -218,7 +218,7 @@ var BillTable = React.createClass({
           <td>{formatDate(moment(um.EndDate))}</td>
           <td></td>
           <td></td>
-          <td>{um.MonthlyPrice ? (formatPrice(um.MonthlyPrice) + '€') : '-'}</td>
+          <td>{um.MonthlyPrice ? (formatPrice(um.MonthlyPrice) + this.state.currency) : '-'}</td>
         </tr>
       );
     });
@@ -228,9 +228,9 @@ var BillTable = React.createClass({
         <td><b>Total Pay-As-You-Go</b></td>
         <td>&nbsp;</td>
         <td></td>
-        <td><b>{formatPrice(bill.Sums.Purchases.PriceExclVAT)}€</b></td>
-        <td><b>{formatPrice(bill.Sums.Purchases.PriceVAT)}€</b></td>
-        <td><b>{formatPrice(bill.Sums.Purchases.PriceInclVAT)}€</b></td>
+        <td><b>{formatPrice(bill.Sums.Purchases.PriceExclVAT)}{this.state.currency}</b></td>
+        <td><b>{formatPrice(bill.Sums.Purchases.PriceVAT)}{this.state.currency}</b></td>
+        <td><b>{formatPrice(bill.Sums.Purchases.PriceInclVAT)}{this.state.currency}</b></td>
       </tr>
     );
 
@@ -239,9 +239,9 @@ var BillTable = React.createClass({
         <td><b>Total Memberships</b></td>
         <td>&nbsp;</td>
         <td>&nbsp;</td>
-        <td><b>{formatPrice(bill.Sums.Memberships.PriceExclVAT)}€</b></td>
-        <td><b>{formatPrice(bill.Sums.Memberships.PriceVAT)}€</b></td>
-        <td><b>{formatPrice(bill.Sums.Memberships.PriceInclVAT)}€</b></td>
+        <td><b>{formatPrice(bill.Sums.Memberships.PriceExclVAT)}{this.state.currency}</b></td>
+        <td><b>{formatPrice(bill.Sums.Memberships.PriceVAT)}{this.state.currency}</b></td>
+        <td><b>{formatPrice(bill.Sums.Memberships.PriceInclVAT)}{this.state.currency}</b></td>
       </tr>
     );
 
@@ -250,9 +250,9 @@ var BillTable = React.createClass({
         <td><b>Total</b></td>
         <td>&nbsp;</td>
         <td>&nbsp;</td>
-        <td><b>{formatPrice(bill.Sums.All.PriceExclVAT)}€</b></td>
-        <td><b>{formatPrice(bill.Sums.All.PriceVAT)}€</b></td>
-        <td><b>{formatPrice(bill.Sums.All.PriceInclVAT)}€</b></td>
+        <td><b>{formatPrice(bill.Sums.All.PriceExclVAT)}{this.state.currency}</b></td>
+        <td><b>{formatPrice(bill.Sums.All.PriceVAT)}{this.state.currency}</b></td>
+        <td><b>{formatPrice(bill.Sums.All.PriceInclVAT)}{this.state.currency}</b></td>
       </tr>
     );
 

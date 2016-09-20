@@ -18,6 +18,7 @@ var Header = React.createClass({
 
   getDataBindings() {
     return {
+      currency: SettingsGetters.getCurrency,
       editPurchaseId: Invoices.getters.getEditPurchaseId,
       invoice: Invoices.getters.getInvoice,
       invoiceActions: Invoices.getters.getInvoiceActions,
@@ -96,7 +97,7 @@ var Header = React.createClass({
             <h3>Invoice {timeFrame}</h3>
           </div>
           <div className="col-xs-3 inv-amount">
-            <h3>Amount {amount} €</h3>
+            <h3>Amount {amount} {this.state.currency}</h3>
           </div>
           <div className="col-xs-3">
             <button type="button"
