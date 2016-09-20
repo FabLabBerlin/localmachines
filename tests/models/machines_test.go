@@ -102,5 +102,21 @@ func TestMachine(t *testing.T) {
 			err = m2.Update(false)
 			So(err, ShouldNotBeNil)
 		})
+		Convey("Creating same netswitch mapping for two machines at different locations", func() {
+			m1, err := machine.Create(1, "foo")
+			if err != nil {
+				panic(err.Error())
+			}
+			m2, err := machine.Create(2, "bar")
+			if err != nil {
+				panic(err.Error())
+			}
+			m1.NetswitchHost = "example.com"
+			err = m1.Update(false)
+			So(err, ShouldBeNil)
+			m2.NetswitchHost = "example.com"
+			err = m2.Update(false)
+			So(err, ShouldBeNil)
+		})
 	})
 }

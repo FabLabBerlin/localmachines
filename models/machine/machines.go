@@ -158,10 +158,10 @@ func (m *Machine) Update(updateGateway bool) (err error) {
 	m.NetswitchHost = strings.TrimSpace(m.NetswitchHost)
 	if m.NetswitchHost != "" {
 		machine := Machine{}
-		query := fmt.Sprintf("SELECT * FROM %v WHERE netswitch_host=? AND netswitch_sensor_port=? AND id<>?",
+		query := fmt.Sprintf("SELECT * FROM %v WHERE netswitch_host=? AND netswitch_sensor_port=? AND location_id=? AND id<>?",
 			machine.TableName())
 		var ms []Machine
-		num, err := o.Raw(query, m.NetswitchHost, m.NetswitchSensorPort, m.Id).
+		num, err := o.Raw(query, m.NetswitchHost, m.NetswitchSensorPort, m.LocationId, m.Id).
 			QueryRows(&ms)
 		if err != nil {
 			return fmt.Errorf("failed to query db: %v", err)
