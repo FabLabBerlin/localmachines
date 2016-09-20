@@ -94,7 +94,7 @@ func AddRowXlsx(
 }
 
 // Adds header row to existing xlsx sheet.
-func AddRowActivationsHeaderXlsx(sheet *xlsx.Sheet) {
+func AddRowActivationsHeaderXlsx(me *MonthlyEarning, sheet *xlsx.Sheet) {
 	row := sheet.AddRow()
 	row.AddCell()
 	cell := row.AddCell()
@@ -108,13 +108,13 @@ func AddRowActivationsHeaderXlsx(sheet *xlsx.Sheet) {
 	cell = row.AddCell()
 	cell.Value = "Usage Unit"
 	cell = row.AddCell()
-	cell.Value = "€ per Unit"
+	cell.Value = me.Currency + " per Unit"
 	cell = row.AddCell()
-	cell.Value = "Total €"
+	cell.Value = "Total " + me.Currency
 	cell = row.AddCell()
 	cell.Value = "Memberships"
 	cell = row.AddCell()
-	cell.Value = "Discounted €"
+	cell.Value = "Discounted " + me.Currency
 }
 
 // Adds an empty row.
@@ -264,7 +264,7 @@ func createXlsxFile(
 			cell.Value = "End Date"
 			cell = row.AddCell()
 			cell.SetStyle(boldStyle())
-			cell.Value = "Monthly Price / €"
+			cell.Value = "Monthly Price / " + monthlyEarning.Currency
 			cell = row.AddCell()
 			cell.Value = "Duration Unit"
 			cell = row.AddCell()
@@ -307,7 +307,7 @@ func createXlsxFile(
 		row = sheet.AddRow()
 		cell = row.AddCell()
 		cell.Value = "Activations By Machine"
-		AddRowActivationsHeaderXlsx(sheet)
+		AddRowActivationsHeaderXlsx(monthlyEarning, sheet)
 
 		byProductNameAndPricePerUnit := inv.ByProductNameAndPricePerUnit()
 
@@ -354,12 +354,12 @@ func createXlsxFile(
 			row.AddCell()
 			row.AddCell()
 			cell = row.AddCell()
-			cell.Value = "Subtotal €"
+			cell.Value = "Subtotal " + monthlyEarning.Currency
 			cell = row.AddCell()
 			cell.SetFloatWithFormat(inv.Sums.Purchases.Undiscounted, FORMAT_2_DIGIT)
 			cell = row.AddCell()
 			cell.SetStyle(boldStyle())
-			cell.Value = "Discounted €"
+			cell.Value = "Discounted " + monthlyEarning.Currency
 			cell = row.AddCell()
 			cell.SetFloatWithFormat(inv.Sums.Purchases.PriceInclVAT, FORMAT_2_DIGIT)
 			cell.SetStyle(colorStyle(totalColor))
@@ -370,7 +370,7 @@ func createXlsxFile(
 		row = sheet.AddRow()
 		cell = row.AddCell()
 		cell.Value = "Activations"
-		AddRowActivationsHeaderXlsx(sheet)
+		AddRowActivationsHeaderXlsx(monthlyEarning, sheet)
 
 		for _, purchase := range ps {
 			if err := AddRowXlsx(loc, sheet, purchase); err != nil {

@@ -12,6 +12,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
+	"github.com/FabLabBerlin/localmachines/models/settings"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/tealeg/xlsx"
@@ -91,20 +92,33 @@ func TestInvoiceActivation(t *testing.T) {
 		Convey("Testing AddRowXlsx", func() {
 			testTable := [][]interface{}{
 				{"", "Machine Name", "Product ID",
-					"Start Time", "Usage", "Usage Unit", "€ per Unit",
-					"Total €", "Memberships", "Discounted €"},
+					"Start Time", "Usage", "Usage Unit", "$ per Unit",
+					"Total $", "Memberships", "Discounted $"},
 
 				{"", "Lasercutter", "Undefined",
 					TIME_START.Format(time.RFC1123), "12", "minute",
 					"0.50", "6.00", "HP (50%)", "3.00"},
 			}
 
+			currency := "$"
+			if _, err := settings.Create(&settings.Setting{
+				LocationId:  1,
+				Name:        settings.CURRENCY,
+				ValueString: &currency,
+			}); err != nil {
+				panic(err.Error())
+			}
+
 			invAct := CreateTestPurchase(22, "Lasercutter",
 				time.Duration(12)*time.Minute, 0.5)
 			file := xlsx.NewFile()
 			sheet, _ := file.AddSheet("User Summaries")
-			monthly_earning.AddRowActivationsHeaderXlsx(sheet)
+			monthly_earning.AddRowActivationsHeaderXlsx(&monthly_earning.MonthlyEarning{
+				LocationId: 1,
+				Currency:   "$",
+			}, sheet)
 			loc := &locations.Location{
+				Id:       1,
 				Timezone: "Europe/Berlin",
 			}
 			monthly_earning.AddRowXlsx(loc, sheet, invAct)

@@ -29,6 +29,7 @@ type MonthlyEarning struct {
 	YearFrom    int
 	MonthTo     int
 	YearTo      int
+	Currency    string `orm:"-"`
 	Activations string `orm:"type(text)"`
 	FilePath    string `orm:"size(255)"`
 	Created     time.Time
@@ -105,6 +106,12 @@ func New(locationId int64, interval lib.Interval) (me *MonthlyEarning, err error
 		vatPercent = 19.0
 	}
 	beego.Info("vatPercent=", vatPercent)
+
+	if currency := locSettings.GetString(locationId, settings.CURRENCY); currency != nil {
+		me.Currency = *currency
+	} else {
+		me.Currency = "€"
+	}
 
 	if !interval.OneMonth() {
 		return nil, fmt.Errorf("expected one month")
