@@ -84,37 +84,6 @@ func AuthenticateUser(username, password string) (int64, error) {
 	}
 }
 
-// Authenticate user by using NFC uid
-// TODO: provide some kind of basic crypto
-func AuthenticateUserUid(uid string) (string, int64, error) {
-	uid = strings.TrimSpace(uid)
-
-	// uid can not be empty or less than 4 chars
-	if uid == "" || len(uid) < 4 {
-		return "", 0, errors.New("Invalid NFC UID")
-	}
-
-	auth := Auth{}
-	auth.NfcKey = uid
-	o := orm.NewOrm()
-
-	// Get user ID
-	if err := o.Read(&auth, "NfcKey"); err != nil {
-		return "", 0, fmt.Errorf("Failed to read auth table: %v", err)
-	}
-
-	// Get user name
-	user := User{
-		Id: auth.UserId,
-	}
-
-	if err := o.Read(&user, "Id"); err != nil {
-		return "", 0, fmt.Errorf("Failed to read user table: %v", err)
-	}
-
-	return user.Username, user.Id, nil
-}
-
 func AuthSetPassword(userId int64, password string) error {
 	o := orm.NewOrm()
 	auth := Auth{UserId: userId}
@@ -141,49 +110,6 @@ func AuthSetPassword(userId int64, password string) error {
 		_, err = o.Update(&auth)
 	}
 	return err
-}
-
-func AuthUpdateNfcUid(userId int64, nfcUid string) error {
-	var err error
-	var num int64
-	o := orm.NewOrm()
-	auth := Auth{UserId: userId}
-	err = o.Read(&auth)
-	authRecordMissing := err == orm.ErrNoRows
-	if err != nil && !authRecordMissing {
-		return fmt.Errorf("Failure while checking for auth record: %v", err)
-	}
-
-	// No update required if the UIDs already match
-	if auth.NfcKey == nfcUid {
-		beego.Warning("This UID is already assigned to the user")
-		return nil
-	}
-
-	// Check if another user uses the same UID
-	num, err = o.QueryTable(auth.TableName()).Filter("NfcKey", nfcUid).Count()
-	if err != nil {
-		beego.Warning("Failed to get matching auth records")
-	}
-	if num > 0 {
-		return errors.New("Auth records with the UID exist")
-	}
-
-	auth.NfcKey = nfcUid
-	if authRecordMissing {
-		beego.Trace("Insert auth")
-		_, err = o.Insert(&auth)
-	} else {
-		beego.Trace("Update auth")
-		num, err = o.Update(&auth, "NfcKey")
-		if num != 1 {
-			return fmt.Errorf("Updated %v rows (expected 1)", num)
-		}
-	}
-	if err != nil {
-		return fmt.Errorf("Failed to update: %v", err)
-	}
-	return nil
 }
 
 func DeleteUserAuth(userId int64) error {
