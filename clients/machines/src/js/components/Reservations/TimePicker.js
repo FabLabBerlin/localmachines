@@ -42,7 +42,7 @@ var Time = React.createClass({
             <div className="col-md-3">
               {showPrice ? (
                 <div className="total-price">
-                  Total price: {this.state.currency}{(this.state.newReservationPrice).toFixed(2)}
+                  Total price: {this.state.currency} {(this.state.newReservationPrice).toFixed(2)}
                 </div>
               ) : null}
             </div>

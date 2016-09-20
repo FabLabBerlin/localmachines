@@ -114,8 +114,7 @@ var BillTable = React.createClass({
       <div key={i++}>
         <h4 className="text-left">{bill.Month} / {bill.Year}</h4>
         <h5 className="text-left">
-          ({formatPrice(bill.Sums.All.PriceInclVAT)} 
-          {this.state.currency} total incl. VAT)
+          ({formatPrice(bill.Sums.All.PriceInclVAT)} {this.state.currency} total incl. VAT)
         </h5>
       </div>
     );
@@ -181,9 +180,9 @@ var BillTable = React.createClass({
               formatDuration(purchase))
             }
           </td>
-          <td>{formatPrice(purchase.PriceExclVAT)}{this.state.currency}</td>
-          <td>{formatPrice(purchase.PriceVAT)}{this.state.currency}</td>
-          <td>{formatPrice(purchase.DiscountedTotal)}{this.state.currency}</td>
+          <td>{formatPrice(purchase.PriceExclVAT)} {this.state.currency}</td>
+          <td>{formatPrice(purchase.PriceVAT)} {this.state.currency}</td>
+          <td>{formatPrice(purchase.DiscountedTotal)} {this.state.currency}</td>
         </tr>
       );
     });
@@ -228,9 +227,9 @@ var BillTable = React.createClass({
         <td><b>Total Pay-As-You-Go</b></td>
         <td>&nbsp;</td>
         <td></td>
-        <td><b>{formatPrice(bill.Sums.Purchases.PriceExclVAT)}{this.state.currency}</b></td>
-        <td><b>{formatPrice(bill.Sums.Purchases.PriceVAT)}{this.state.currency}</b></td>
-        <td><b>{formatPrice(bill.Sums.Purchases.PriceInclVAT)}{this.state.currency}</b></td>
+        <td><b>{formatPrice(bill.Sums.Purchases.PriceExclVAT)} {this.state.currency}</b></td>
+        <td><b>{formatPrice(bill.Sums.Purchases.PriceVAT)} {this.state.currency}</b></td>
+        <td><b>{formatPrice(bill.Sums.Purchases.PriceInclVAT)} {this.state.currency}</b></td>
       </tr>
     );
 
@@ -239,9 +238,9 @@ var BillTable = React.createClass({
         <td><b>Total Memberships</b></td>
         <td>&nbsp;</td>
         <td>&nbsp;</td>
-        <td><b>{formatPrice(bill.Sums.Memberships.PriceExclVAT)}{this.state.currency}</b></td>
-        <td><b>{formatPrice(bill.Sums.Memberships.PriceVAT)}{this.state.currency}</b></td>
-        <td><b>{formatPrice(bill.Sums.Memberships.PriceInclVAT)}{this.state.currency}</b></td>
+        <td><b>{formatPrice(bill.Sums.Memberships.PriceExclVAT)} {this.state.currency}</b></td>
+        <td><b>{formatPrice(bill.Sums.Memberships.PriceVAT)} {this.state.currency}</b></td>
+        <td><b>{formatPrice(bill.Sums.Memberships.PriceInclVAT)} {this.state.currency}</b></td>
       </tr>
     );
 
@@ -250,9 +249,9 @@ var BillTable = React.createClass({
         <td><b>Total</b></td>
         <td>&nbsp;</td>
         <td>&nbsp;</td>
-        <td><b>{formatPrice(bill.Sums.All.PriceExclVAT)}{this.state.currency}</b></td>
-        <td><b>{formatPrice(bill.Sums.All.PriceVAT)}{this.state.currency}</b></td>
-        <td><b>{formatPrice(bill.Sums.All.PriceInclVAT)}{this.state.currency}</b></td>
+        <td><b>{formatPrice(bill.Sums.All.PriceExclVAT)} {this.state.currency}</b></td>
+        <td><b>{formatPrice(bill.Sums.All.PriceVAT)} {this.state.currency}</b></td>
+        <td><b>{formatPrice(bill.Sums.All.PriceInclVAT)} {this.state.currency}</b></td>
       </tr>
     );
 
