@@ -40,7 +40,7 @@ func NewXmpp(ns *netswitches.NetSwitches) *Xmpp {
 		case msg := <-x.client.Recv():
 			log.Printf("gateway: incoming msg")
 			if err := x.dispatch(msg); err != nil {
-				log.Printf("error dispatching %v", msg)
+				log.Printf("error dispatching %v: %v", msg, err)
 			}
 		}
 	}
