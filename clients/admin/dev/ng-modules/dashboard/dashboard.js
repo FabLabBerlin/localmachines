@@ -67,7 +67,7 @@ app.controller('DashboardCtrl',
     data.addColumn({'type': 'string', 'role': 'tooltip', 'p': {'html': true}});
     data.addColumn('number', 'Activations (€)');
     data.addColumn({'type': 'string', 'role': 'tooltip', 'p': {'html': true}});
-    data.addColumn('number', 'R&D Center (€)');
+    data.addColumn('number', 'Co-Working (€)');
     data.addColumn({'type': 'string', 'role': 'tooltip', 'p': {'html': true}});
     data.addRows(byMonth);
 
