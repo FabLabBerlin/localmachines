@@ -14,6 +14,7 @@ var reactor = require('../../reactor');
 var ReservationRulesActions = require('../../actions/ReservationRulesActions');
 var ReservationActions = require('../../actions/ReservationActions');
 var ScrollNav = require('../ScrollNav');
+var Settings = require('../../modules/Settings');
 var toastr = require('../../toastr');
 var UserActions = require('../../actions/UserActions');
 var TutoringList = require('./TutoringList');
@@ -39,6 +40,7 @@ var MachinePage = React.createClass({
     ReservationActions.load();
     ReservationRulesActions.load(locationId);
     LocationActions.loadUserLocations(uid);
+    Settings.actions.loadSettings({locationId});
   },
 
   handleLogout() {

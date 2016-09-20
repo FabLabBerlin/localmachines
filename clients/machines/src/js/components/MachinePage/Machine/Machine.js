@@ -15,6 +15,7 @@ var MaintenanceSwitch = require('./MaintenanceSwitch');
 var reactor = require('../../../reactor');
 var RepairButton = require('../../Feedback/RepairButton');
 var ReservedMachine = require('./Reserved');
+var Settings = require('../../../modules/Settings');
 var UnavailableMachine = require('./Unavailable');
 
 // https://github.com/HubSpot/vex/issues/72
@@ -34,6 +35,7 @@ var MachineChooser = React.createClass({
 
   getDataBindings() {
     return {
+      currency: Settings.getters.getCurrency,
       isStaff: LocationGetters.getIsStaff,
       machines: Machines.getters.getMachines,
       reservationsByMachineId: getters.getActiveReservationsByMachineId
@@ -155,7 +157,7 @@ var MachineChooser = React.createClass({
     }
     var price;
     if (this.props.machine.Name.indexOf('Tutor') < 0) {
-      price = ' €';
+      price = ' ' + (this.state.currency || '€');
       price += this.props.machine.Price.toFixed(2);
       price += '/';
       switch (this.props.machine.PriceUnit) {

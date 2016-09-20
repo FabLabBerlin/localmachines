@@ -13,6 +13,7 @@ var React = require('react');
 var reactor = require('../../reactor');
 var ReservationRulesActions = require('../../actions/ReservationRulesActions');
 var ReservationActions = require('../../actions/ReservationActions');
+var Settings = require('../../modules/Settings');
 var toImmutable = Nuclear.toImmutable;
 
 // https://github.com/HubSpot/vex/issues/72
@@ -159,6 +160,11 @@ var ReservationsTable = React.createClass({
 
 var ReservationsPage = React.createClass({
   mixins: [ reactor.ReactMixin ],
+
+  componentWillMount() {
+    const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
+    Settings.actions.loadSettings({locationId});
+  },
 
   componentWillUnmount() {
     ReservationActions.newReservation.done();

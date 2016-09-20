@@ -6,6 +6,7 @@ var LocationGetters = require('../../../modules/Location/getters');
 var moment = require('moment');
 var React = require('react');
 var reactor = require('../../../reactor');
+var Settings = require('../../../modules/Settings');
 var util = require('./util');
 
 
@@ -68,6 +69,7 @@ var List = React.createClass({
   getDataBindings() {
     return {
       checkedAll: Invoices.getters.getCheckedAll,
+      currency: Settings.getters.getCurrency,
       locationId: LocationGetters.getLocationId,
       MonthlySums: Invoices.getters.getMonthlySums,
       checkStatus: Invoices.getters.getCheckStatus
@@ -207,7 +209,7 @@ var List = React.createClass({
                       '-'
                     }
                   </td>
-                  <td className="text-right" onClick={click}>{amount} €</td>
+                  <td className="text-right" onClick={click}>{amount} {this.state.currency}</td>
                 </tr>
               );
             })}

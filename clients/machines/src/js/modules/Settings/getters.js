@@ -1,7 +1,14 @@
 const getAdminSettings = [
   ['settingsStore'],
   (settingsStore) => {
-    return settingsStore.get('adminSettings');
+    return settingsStore.get('settings');
+  }
+];
+
+const getCurrency = [
+  ['settingsStore'],
+  (settingsStore) => {
+    return settingsStore.getIn(['settings', 'Currency', 'ValueString']);
   }
 ];
 
@@ -15,12 +22,13 @@ const getFastbillTemplates = [
 const getVatPercent = [
   ['settingsStore'],
   (settingsStore) => {
-    return settingsStore.get('VatPercent');
+    return settingsStore.getIn(['settings', 'VAT', 'ValueFloat']);
   }
 ];
 
 export default {
 	getAdminSettings,
+  getCurrency,
   getFastbillTemplates,
   getVatPercent
 };

@@ -15,14 +15,8 @@ type SettingsController struct {
 // @Description Get all settings
 // @Success 200
 // @Failure	500	Failed to get settings
-// @Failure	401	Not authorized
 // @router / [get]
 func (this *SettingsController) GetAll() {
-	locId, authorized := this.GetLocIdAdmin()
-	if !authorized {
-		this.CustomAbort(401, "Not authorized")
-	}
-
 	settings, err := settings.GetAllAt(locId)
 	if err != nil {
 		beego.Error("Failed to get all settings:", err)
