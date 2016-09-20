@@ -17,6 +17,12 @@ type SettingsController struct {
 // @Failure	500	Failed to get settings
 // @router / [get]
 func (this *SettingsController) GetAll() {
+	locId, err := this.GetInt64("location")
+	if err != nil {
+		beego.Error("parse int location:", err)
+		this.CustomAbort(400, "Bad request")
+	}
+
 	settings, err := settings.GetAllAt(locId)
 	if err != nil {
 		beego.Error("Failed to get all settings:", err)

@@ -211,7 +211,7 @@ func GetDraft(locId, uid int64, t time.Time) (inv *Invoice, err error) {
 		iv,
 	})
 	if tmp[0].VatPercent < 0.01 {
-		return nil, fmt.Errorf("detected zero vat")
+		beego.Error("detected zero vat")
 	}
 
 	return tmp[0], err
@@ -226,7 +226,7 @@ func Get(id int64) (inv *Invoice, err error) {
 		iv,
 	})
 	if tmp[0].VatPercent < 0.01 {
-		return nil, fmt.Errorf("detected zero vat")
+		beego.Error("detected zero vat")
 	}
 
 	return tmp[0], err
