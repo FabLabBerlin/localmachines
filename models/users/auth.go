@@ -51,7 +51,9 @@ func AuthenticateUser(username, password string) (int64, error) {
 		err = o.Raw(query+" WHERE user.username = ?", username).QueryRow(&authModel)
 	}
 
-	if err != nil {
+	if err == orm.ErrNoRows {
+		return 0, fmt.Errorf("no user '%v' found", username)
+	} else if err != nil {
 		return 0, fmt.Errorf("Could not read into AuthModel: %v", err)
 	}
 	authModelSalt, err := hex.DecodeString(authModel.Salt)
@@ -62,8 +64,8 @@ func AuthenticateUser(username, password string) (int64, error) {
 	if err != nil {
 		return 0, fmt.Errorf("Could not calculate hash: %v", err)
 	}
-	isAuthSuccessful := hex.EncodeToString(hash) == authModel.Hash
-	if isAuthSuccessful {
+
+	if hex.EncodeToString(hash) == authModel.Hash {
 		user := User{}
 		var err error
 		query := o.QueryTable("user")
@@ -78,7 +80,7 @@ func AuthenticateUser(username, password string) (int64, error) {
 		}
 		return user.Id, nil
 	} else {
-		return 0, errors.New("Failed to authenticate")
+		return 0, errors.New("Wrong password")
 	}
 }
 
