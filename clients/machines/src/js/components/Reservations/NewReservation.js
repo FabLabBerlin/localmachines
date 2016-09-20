@@ -28,7 +28,7 @@ var MachinePricing = React.createClass({
     var hourlyPrice = this.props.machine.get('ReservationPriceHourly');
     if (_.isNumber(hourlyPrice)) {
       hourlyPrice = (
-        <p><b>Price:</b> {this.state.currency}{(hourlyPrice / 2).toFixed(2)} per 30 minutes</p>
+        <p><b>Price:</b> {this.state.currency} {(hourlyPrice / 2).toFixed(2)} per 30 minutes</p>
       );
     }
     return (
@@ -174,7 +174,7 @@ var SuccessMsg = React.createClass({
           <p><b>Machine:</b> {machine && machine.get('Name')}</p>
           <p><b>Date:</b> {date}</p>
           <p><b>Time:</b> {timeFrom}—{timeTo}</p>
-          <p><b>Total price:</b> {this.state.currency}{(this.state.newReservationPrice || 0).toFixed(2)}</p>
+          <p><b>Total price:</b> {this.state.currency} {(this.state.newReservationPrice || 0).toFixed(2)}</p>
         </div>
         <div>
           The reservation price is on top of the Machine Time.
