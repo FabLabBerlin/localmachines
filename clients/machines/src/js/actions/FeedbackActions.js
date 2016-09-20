@@ -11,20 +11,22 @@ var toastr = require('../toastr');
 
 var FeedbackActions = {
 
-  reportMachineBroken({ machineId }) {
+  reportMachineBroken({ machineId, text }) {
     LoginActions.keepAlive();
     const machinesById = reactor.evaluateToJS(Machines.getters.getMachinesById);
     const machine = machinesById[machineId] || {};
     var user = reactor.evaluateToJS(getters.getUser);
     var fullName = user.FirstName + ' ' + user.LastName;
     GlobalActions.showGlobalLoader();
+    console.log('text=', text);
     $.ajax({
       url: '/api/machines/' + machine.Id + '/report_broken',
       dataType: 'json',
       type: 'POST',
       data: {
         subject: 'Machine Broken',
-        message: 'Hi friends,\n\nThe following machine seems broken: ' + machine.Name + '\n\nEasyLab on behalf of ' + fullName,
+        message: 'Hi friends,\n\nThe following machine seems broken: ' + machine.Name + '\n\nThe user wrote:' + text + '\n\nEASY LAB on behalf of ' + fullName,
+        text: text,
         email: user.Email,
         name: fullName
       },

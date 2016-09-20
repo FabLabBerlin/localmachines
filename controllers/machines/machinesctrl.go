@@ -334,7 +334,8 @@ func (this *Controller) underMaintenanceOnOrOff(onOrOff int) error {
 
 // @Title ReportBroken
 // @Description Report machine as broken
-// @Param	mid	path	int	true	"Machine ID"
+// @Param	mid		path	int		true	"Machine ID"
+// @Param	text	body	string	true	"Text"
 // @Success 200 string ok
 // @Failure	400	Bad Request
 // @Failure	401	Not authorized
@@ -347,6 +348,8 @@ func (this *Controller) ReportBroken() {
 		beego.Error("Failed to get :mid variable")
 		this.Abort("500")
 	}
+
+	text := this.GetString("text")
 
 	m, err := machine.Get(machineId)
 	if err != nil {
@@ -365,7 +368,7 @@ func (this *Controller) ReportBroken() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	err = m.ReportBroken(*user)
+	err = m.ReportBroken(*user, text)
 	if err != nil {
 		beego.Error("Failed to report machine", err)
 		this.CustomAbort(500, "Failed to report machine")
