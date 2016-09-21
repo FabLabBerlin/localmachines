@@ -18,7 +18,7 @@ var FeedbackActions = {
     var user = reactor.evaluateToJS(getters.getUser);
     var fullName = user.FirstName + ' ' + user.LastName;
     GlobalActions.showGlobalLoader();
-    console.log('text=', text);
+
     $.ajax({
       url: '/api/machines/' + machine.Id + '/report_broken',
       dataType: 'json',

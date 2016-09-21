@@ -66,8 +66,8 @@ export default {
     LoginActions.keepAlive();
     const machinesById = reactor.evaluateToJS(Machines.getters.getMachinesById);
     const machine = machinesById[machineId] || {};
-    VexDialog.buttons.YES.text = 'Yes';
-    VexDialog.buttons.NO.text = 'No';
+    VexDialog.buttons.YES.text = 'Please fix it';
+    VexDialog.buttons.NO.text = 'Nevermind';
 
     VexDialog.prompt({
       message: 'What happened?',
