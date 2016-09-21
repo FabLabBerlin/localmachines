@@ -90,19 +90,7 @@ var Header = React.createClass({
     return (
       <div id="inv-header">
         <div className="row">
-          <div className="col-sm-3">
-            <h3>{name}</h3>
-          </div>
-          <div className="col-sm-3">
-            <h3>
-              {invoice.getIn(['User', 'NoAutoInvoicing']) ?
-                'Manual Invoicing' : 'Automatic Invoicing'}
-            </h3>
-          </div>
-          <div className="col-sm-3 inv-amount">
-            <h3>Sum: {amount} {this.state.currency}</h3>
-          </div>
-          <div className="col-sm-3">
+          <div className="col-sm-3 col-sm-push-9" style={{overflow: 'hidden'}}>
             <button type="button"
                     title="Close"
                     onClick={this.hide}>
@@ -150,6 +138,18 @@ var Header = React.createClass({
                 <i className="fa fa-ban"/>
               </button> : null
             }
+          </div>
+          <div className="col-sm-3 col-sm-pull-3">
+            <h3>{name}</h3>
+          </div>
+          <div className="col-sm-3 col-sm-pull-3">
+            <h3>
+              {invoice.getIn(['User', 'NoAutoInvoicing']) ?
+                'Manual Invoicing' : 'Automatic Invoicing'}
+            </h3>
+          </div>
+          <div className="col-sm-3 col-sm-pull-3 inv-amount">
+            <h3>Sum: {amount} {this.state.currency}</h3>
           </div>
         </div>
         <div className="row">
