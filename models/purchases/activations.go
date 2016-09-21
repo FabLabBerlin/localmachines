@@ -24,13 +24,6 @@ func (this *Activation) MarshalJSON() ([]byte, error) {
 	return json.Marshal(this.Purchase)
 }
 
-func CreateActivation(locationId int64) (activation Activation, err error) {
-	activation.Purchase.Type = TYPE_ACTIVATION
-	activation.Purchase.LocationId = locationId
-	_, err = Create(&activation.Purchase)
-	return
-}
-
 // Gets filtered activations in a paged manner between start and end time.
 // Items per page and page number can be specified. Already invoiced
 // activations can be excluded.
@@ -177,8 +170,7 @@ func StartActivation(m *machine.Machine, uid int64, start time.Time) (
 		},
 	}
 
-	activationId, err = Create(&newActivation.Purchase)
-	if err != nil {
+	if err = Create(&newActivation.Purchase); err != nil {
 		beego.Error("Failed to insert activation:", err)
 		return 0, fmt.Errorf("Failed to insert activation %v", err)
 	}
@@ -189,7 +181,7 @@ func StartActivation(m *machine.Machine, uid int64, start time.Time) (
 		beego.Error("Failed to update activated machine")
 	}
 
-	return activationId, nil
+	return newActivation.Purchase.Id, nil
 }
 
 // Gets pointer to activation store by activation ID.

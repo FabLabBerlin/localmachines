@@ -20,7 +20,7 @@ func init() {
 
 func CreateMembershipsActivation(userId, machineId, invoiceId int64, startTime time.Time, minutes float64) (id int64) {
 
-	activation := purchases.Activation{
+	a := purchases.Activation{
 		Purchase: purchases.Purchase{
 			LocationId: 1,
 			TimeStart:  startTime,
@@ -29,10 +29,9 @@ func CreateMembershipsActivation(userId, machineId, invoiceId int64, startTime t
 			InvoiceId:  invoiceId,
 		},
 	}
-	activation.Purchase.TimeEnd = activation.Purchase.TimeStart.Add(time.Duration(minutes) * time.Minute)
+	a.Purchase.TimeEnd = a.Purchase.TimeStart.Add(time.Duration(minutes) * time.Minute)
 
-	id, err := purchases.Create(&activation.Purchase)
-	if err != nil {
+	if err := purchases.Create(&a.Purchase); err != nil {
 		panic(err.Error())
 	}
 	return

@@ -90,16 +90,19 @@ var Header = React.createClass({
     return (
       <div id="inv-header">
         <div className="row">
-          <div className="col-xs-3">
+          <div className="col-sm-3">
             <h3>{name}</h3>
           </div>
-          <div className="col-xs-3 inv-time-frame">
-            <h3>Invoice {timeFrame}</h3>
+          <div className="col-sm-3">
+            <h3>
+              {invoice.getIn(['User', 'NoAutoInvoicing']) ?
+                'Manual Invoicing' : 'Automatic Invoicing'}
+            </h3>
           </div>
-          <div className="col-xs-3 inv-amount">
-            <h3>Amount {amount} {this.state.currency}</h3>
+          <div className="col-sm-3 inv-amount">
+            <h3>Sum: {amount} {this.state.currency}</h3>
           </div>
-          <div className="col-xs-3">
+          <div className="col-sm-3">
             <button type="button"
                     title="Close"
                     onClick={this.hide}>
@@ -150,16 +153,16 @@ var Header = React.createClass({
           </div>
         </div>
         <div className="row">
-          <div className="col-xs-3">
-            Fastbill No: {invoice.getIn(['User', 'ClientId'])}
+          <div className="col-sm-3">
+            Fastbill Customer No: {invoice.getIn(['User', 'ClientId'])}
           </div>
-          <div className="col-xs-3">
+          <div className="col-sm-3">
             {this.statusInfo()}
           </div>
-          <div className="col-xs-3">
+          <div className="col-sm-3">
             Incl. {this.state.vatPercent}% VAT
           </div>
-          <div className="col-xs-3">
+          <div className="col-sm-3">
           </div>
         </div>
       </div>

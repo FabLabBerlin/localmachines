@@ -231,7 +231,7 @@ func (this *PurchasesController) Put() {
 
 		if this.GetString(":id") == "create" {
 			tp.Purchase.Type = purchases.TYPE_TUTOR
-			if _, err = purchases.Create(&tp.Purchase); err == nil {
+			if err = purchases.Create(&tp.Purchase); err == nil {
 				response = tp.Purchase
 			}
 		} else {

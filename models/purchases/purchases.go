@@ -76,8 +76,9 @@ func init() {
 	orm.RegisterModel(new(Purchase))
 }
 
-func Create(p *Purchase) (id int64, err error) {
-	return CreateOrm(orm.NewOrm(), p)
+func Create(p *Purchase) (err error) {
+	p.Id, err = CreateOrm(orm.NewOrm(), p)
+	return
 }
 
 func CreateOrm(o orm.Ormer, p *Purchase) (id int64, err error) {

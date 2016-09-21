@@ -92,7 +92,7 @@ func TestInvoiceCouponUsage(t *testing.T) {
 		p.InvoiceId = inv.Id
 		p.UserId = uid
 
-		if _, err := purchases.Create(p); err != nil {
+		if err := purchases.Create(p); err != nil {
 			panic(err.Error())
 		}
 		cs, err := coupons.Generate(1, "foo", 10, 10)

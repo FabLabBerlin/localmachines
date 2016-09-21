@@ -11,6 +11,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/user_permissions"
 	"github.com/astaxie/beego"
 	"io/ioutil"
+	"time"
 )
 
 type ActivationsController struct {
@@ -83,13 +84,33 @@ func (this *ActivationsController) Post() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	a, err := purchases.CreateActivation(locId)
+	uid, err := this.GetSessionUserId()
 	if err != nil {
+		beego.Info("Not logged in:", err)
+		this.CustomAbort(401, "Not logged in")
+	}
+
+	inv, err := invoices.GetDraft(locId, uid, time.Now())
+	if err != nil {
+		beego.Info("get invoice draft:", err)
+		this.CustomAbort(400, "Get invoice draft")
+	}
+
+	p := &purchases.Purchase{
+		LocationId: locId,
+		TimeStart:  time.Now(),
+		TimeEnd:    time.Now().Add(time.Hour),
+		InvoiceId:  inv.Id,
+		UserId:     uid,
+		Type:       purchases.TYPE_ACTIVATION,
+	}
+
+	if err := purchases.Create(p); err != nil {
 		beego.Error("Create activation:", err)
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	this.Data["json"] = a.Purchase
+	this.Data["json"] = p
 	this.ServeJSON()
 }
 
@@ -129,6 +150,12 @@ func (this *ActivationsController) Get() {
 // @Failure 500 Internal Server Error
 // @router /:rid [put]
 func (this *ActivationsController) Put() {
+	locId, isAdmin := this.GetLocIdAdmin()
+	if !isAdmin {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
 	activation := &purchases.Activation{}
 
 	buf, err := ioutil.ReadAll(this.Ctx.Request.Body)
@@ -146,7 +173,7 @@ func (this *ActivationsController) Put() {
 		this.CustomAbort(400, "Failed to update Activation")
 	}
 
-	inv, err := invoices.Get(activation.Purchase.InvoiceId)
+	inv, err := invoices.GetDraft(locId, activation.Purchase.UserId, activation.Purchase.TimeStart)
 	if err != nil {
 		beego.Error("Get invoice:", err)
 		this.Abort("500")
@@ -156,6 +183,8 @@ func (this *ActivationsController) Put() {
 		beego.Error("cannot edit because invoice in status", inv.Status)
 		this.Abort("500")
 	}
+
+	activation.Purchase.InvoiceId = inv.Id
 
 	if activation.Purchase.Type == purchases.TYPE_ACTIVATION {
 		m, err := machine.Get(activation.Purchase.MachineId)

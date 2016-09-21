@@ -143,8 +143,7 @@ func testInvoiceWithMembershipAndTestPurchase(purchaseInsideMembershipInterval b
 		Vat:          19,
 	}
 
-	_, err = purchases.Create(&purchase)
-	if err != nil {
+	if err = purchases.Create(&purchase); err != nil {
 		panic(err.Error())
 	}
 

@@ -22,15 +22,12 @@ func TestPurchases(t *testing.T) {
 				LocationId: 1,
 				InvoiceId:  11,
 			}
-			id, err := purchases.Create(&purchase)
+			err := purchases.Create(&purchase)
 			Convey("should return no error", func() {
 				So(err, ShouldBeNil)
 			})
 			Convey("should return a valid id", func() {
-				So(id, ShouldBeGreaterThan, 0)
-			})
-			Convey("should set the purchase id equal to the returned id", func() {
-				So(purchase.Id, ShouldEqual, id)
+				So(purchase.Id, ShouldBeGreaterThan, 0)
 			})
 		})
 
@@ -54,12 +51,11 @@ func TestPurchases(t *testing.T) {
 				Cancelled:    false,
 			}
 
-			id, err := purchases.Create(&purchase)
-			if err != nil {
+			if err := purchases.Create(&purchase); err != nil {
 				panic(err.Error())
 			}
-			err = purchases.Archive(&purchase) // Archive purchase
-			ap, aperr := purchases.Get(id)     // Get archived purchase
+			err := purchases.Archive(&purchase)     // Archive purchase
+			ap, aperr := purchases.Get(purchase.Id) // Get archived purchase
 			Convey("should not result in an error", func() {
 				So(err, ShouldBeNil)
 			})

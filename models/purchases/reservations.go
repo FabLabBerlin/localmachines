@@ -73,7 +73,7 @@ func GetAllReservationsAt(locationId int64) (reservations []*Reservation, err er
 	return
 }
 
-func CreateReservation(r *Reservation) (int64, error) {
+func CreateReservation(r *Reservation) (id int64, err error) {
 	if err := r.assertOk(); err != nil {
 		return 0, err
 	}
@@ -89,7 +89,10 @@ func CreateReservation(r *Reservation) (int64, error) {
 	r.Purchase.PriceUnit = "30 minutes"
 	r.Purchase.Quantity = r.Purchase.quantityFromTimes()
 
-	return Create(&r.Purchase)
+	err = Create(&r.Purchase)
+	id = r.Purchase.Id
+
+	return
 }
 
 func (r *Reservation) Update() (err error) {

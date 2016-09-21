@@ -112,7 +112,7 @@ var BillTable = React.createClass({
 
     caption.push( 
       <div key={i++}>
-        <h4 className="text-left">{bill.Month} / {bill.Year}</h4>
+        <h4 className="text-left">{moment().month(bill.Month - 1).format('MMMM')} / {bill.Year}</h4>
         <h5 className="text-left">
           ({formatPrice(bill.Sums.All.PriceInclVAT)} {this.state.currency} total incl. VAT)
         </h5>

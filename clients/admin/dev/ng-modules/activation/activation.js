@@ -101,7 +101,8 @@ app.controller('ActivationCtrl',
         return JSON.stringify(transformed);
       },
       params: {
-        ac: new Date().getTime()
+        ac: new Date().getTime(),
+        location: $cookies.get('location')
       }
     })
     .success(function() {

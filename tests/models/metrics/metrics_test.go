@@ -136,7 +136,7 @@ func simulate(s Simulation) {
 		}
 
 		for j := 0; j < nPurchasesPerUser; j++ {
-			_, err := purchases.Create(&purchases.Purchase{
+			if err := purchases.Create(&purchases.Purchase{
 				LocationId:   s.LocationId,
 				Type:         purchases.TYPE_ACTIVATION,
 				InvoiceId:    iv.Id,
@@ -147,8 +147,7 @@ func simulate(s Simulation) {
 				Quantity:     1,
 				PricePerUnit: s.pricePerPurchase,
 				PriceUnit:    "hour",
-			})
-			if err != nil {
+			}); err != nil {
 				panic(err.Error())
 			}
 		}

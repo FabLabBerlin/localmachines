@@ -211,7 +211,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 				panic(err.Error())
 			}
 
-			_, err := purchases.Create(&purchases.Purchase{
+			if err := purchases.Create(&purchases.Purchase{
 				LocationId:   1,
 				UserId:       uid,
 				TimeStart:    time.Now().AddDate(0, 0, -1),
@@ -220,7 +220,9 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 				PricePerUnit: 1,
 				PriceUnit:    "minute",
 				InvoiceId:    inv.Id,
-			})
+			}); err != nil {
+				panic(err.Error())
+			}
 
 			inv, err = invutil.Get(inv.Id)
 			if err != nil {
