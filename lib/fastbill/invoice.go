@@ -254,7 +254,9 @@ func (inv *Invoice) Submit(overwriteExisting bool) (id int64, err error) {
 	inv.DeliveryDate = fmt.Sprintf("%v %v", inv.Month, inv.Year)
 
 	for _, item := range inv.Items {
-		if item.VatPercent < 0.01 {
+		if inv.EuDelivery {
+			item.VatPercent = 0
+		} else if item.VatPercent < 0.01 {
 			return 0, fmt.Errorf("VAT seems to be zero for an item")
 		}
 	}
