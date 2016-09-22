@@ -25,7 +25,17 @@ var MachinePage = React.createClass({
     MachineActions.apiGetUserMachines(locationId, uid);
   },
 
-  render() {
+  imgUrl() {
+    const m = this.machine();
+
+    if (m.get('Image')) {
+      return '/files/' + m.get('Image');
+    } else {
+      return '/machines/img/img-machine-placeholder.svg';
+    }
+  },
+
+  machine() {
     const machineId = parseInt(this.props.params.machineId);
     var m;
 
@@ -34,13 +44,28 @@ var MachinePage = React.createClass({
         return mm.get('Id') === machineId;
       });
     }
+
+    return m;
+  },
+
+  render() {
+    const m = this.machine();
+
     if (!m) {
       return <LoaderLocal/>;
     }
 
     return (
       <div className="container-fluid">
-        Individual machine page for {m.get('Name')} ({m.get('Brand')}) here...
+        <div id="m-header">
+          <h2>{m.get('Name')} ({m.get('Brand')})</h2>
+          <img src={this.imgUrl()}/>
+          <div id="m-header-panel">
+            <div id="m-start-stop">
+              START
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

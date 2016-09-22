@@ -3,9 +3,9 @@ package purchases
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/FabLabBerlin/easylab-lib/xmpp/commands"
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/lib/redis"
-	"github.com/FabLabBerlin/localmachines/lib/xmpp/commands"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/astaxie/beego"

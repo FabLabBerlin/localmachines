@@ -3,9 +3,9 @@ package machine
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/FabLabBerlin/easylab-lib/xmpp"
+	"github.com/FabLabBerlin/easylab-lib/xmpp/commands"
 	"github.com/FabLabBerlin/localmachines/lib/redis"
-	"github.com/FabLabBerlin/localmachines/lib/xmpp"
-	"github.com/FabLabBerlin/localmachines/lib/xmpp/commands"
 	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/astaxie/beego"
 	"strings"
