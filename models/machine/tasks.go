@@ -2,8 +2,8 @@ package machine
 
 import (
 	"fmt"
-	"github.com/FabLabBerlin/localmachines/lib/xmpp"
-	"github.com/FabLabBerlin/localmachines/lib/xmpp/commands"
+	"github.com/FabLabBerlin/easylab-lib/xmpp"
+	"github.com/FabLabBerlin/easylab-lib/xmpp/commands"
 	"github.com/FabLabBerlin/localmachines/models/locations"
 )
 
