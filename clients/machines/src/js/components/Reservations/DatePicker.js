@@ -96,7 +96,6 @@ var MonthView = React.createClass({
                  day={day.date()}
                  moment={day}
                  selected={selectedDate && !selectedDate.diff(day, 'days')}
-                 notAvailable={day.day() === 0}
         />
       );
     }
