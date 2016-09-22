@@ -1299,6 +1299,10 @@ td .force-switch-off:hover {
   border-color: @ms-hover-color-available;
 }
 
+.ms-machine.ms-locked:hover {
+  border-color: @ms-hover-color-locked;
+}
+
 .ms-machine.ms-maintenance:hover {
   border-color: @ms-hover-color-maintenance;
 }
@@ -1331,6 +1335,10 @@ td .force-switch-off:hover {
 .ms-available .ms-machine-label {
   background-color: @ms-hover-color-available;
   color: white;
+}
+
+.ms-locked .ms-machine-label {
+  color: @ms-hover-color-locked;
 }
 
 /*
@@ -1375,6 +1383,18 @@ http://codepen.io/anon/pen/QEXBEp
   width: 160px;
 }
 
+.ms-available:hover .ms-machine-icon {
+  .box-shadow(0px 4px 10px -1px @ms-hover-color-available);
+}
+
+.ms-locked:hover .ms-machine-icon {
+  .box-shadow(0px 4px 10px -1px @ms-hover-color-locked);
+}
+
+.ms-maintenance:hover .ms-machine-icon {
+  .box-shadow(0px 4px 10px -1px @ms-hover-color-maintenance);
+}
+
 .ms-occupied:hover .ms-machine-icon {
   .box-shadow(0px 4px 10px -1px @ms-hover-color-occupied);
 }
@@ -1406,7 +1426,7 @@ http://codepen.io/anon/pen/QEXBEp
   font-size: 18px;
   font-weight: bold;
   height: 160px;
-  padding-top: 55px;
+  padding-top: 64px;
   position: absolute;
   text-align: center;
   width: 160px;
