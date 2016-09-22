@@ -154,11 +154,11 @@ function buildGateway {
 
 	# Gateway Configuration
 	mkdir -p $PKG_ROOT/opt/localmachines-gateway/conf
-	cp $__dir/../gateway/conf/gateway.example.conf $PKG_ROOT/opt/localmachines-gateway/conf/gateway.example.conf
-	cp $__dir/../gateway/conf/gateway.example.conf $PKG_ROOT/opt/localmachines-gateway/conf/gateway.conf
+	cp $__dir/../../easylab-gw/conf/gateway.example.conf $PKG_ROOT/opt/localmachines-gateway/conf/gateway.example.conf
+	cp $__dir/../../easylab-gw/conf/gateway.example.conf $PKG_ROOT/opt/localmachines-gateway/conf/gateway.conf
 	cp $__dir/init/localmachines-gateway_run $PKG_ROOT/etc/service/localmachines-gateway/run
 
-	compile $__dir/../gateway $PKG_ROOT/opt/localmachines-gateway $buildArch localmachines-gateway
+	compile $__dir/../../easylab-gw $PKG_ROOT/opt/localmachines-gateway $buildArch localmachines-gateway
 
 	finalize $PKG_TMP_DIR $PKG_ROOT $PKG_NAME $buildArch
 }
