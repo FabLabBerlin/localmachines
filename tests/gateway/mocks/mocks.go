@@ -3,7 +3,7 @@ package mocks
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/FabLabBerlin/localmachines/gateway/netswitch"
+	"github.com/FabLabBerlin/easylab-gw/netswitch"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"net/http"
 	"net/http/httptest"

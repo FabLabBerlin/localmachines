@@ -2,8 +2,8 @@ package gatewayNetswitchesTest
 
 import (
 	"fmt"
-	"github.com/FabLabBerlin/localmachines/gateway/global"
-	"github.com/FabLabBerlin/localmachines/gateway/netswitches"
+	"github.com/FabLabBerlin/easylab-gw/global"
+	"github.com/FabLabBerlin/easylab-gw/netswitches"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/tests/gateway/mocks"
 	"strings"
