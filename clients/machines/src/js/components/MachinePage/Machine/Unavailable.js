@@ -1,4 +1,5 @@
 var getters = require('../../../getters');
+var LocationGetters = require('../../../modules/Location/getters');
 var MachineActions = require('../../../actions/MachineActions');
 var Machines = require('../../../modules/Machines');
 var React = require('react');
@@ -34,7 +35,9 @@ var UnavailableMachine = React.createClass({
   render() {
     var users = this.state.machineUsers;
     var user = this.props.activation ? users.get(this.props.activation.UserId, {}) : {};
+    const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
     var startStopButton;
+
     if (this.props.busy) {
       startStopButton = (
         <button 
@@ -59,7 +62,10 @@ var UnavailableMachine = React.createClass({
   
             <div className="machine-action-info">
               <div className="machine-info-content">
-                Undergoing maintenance. Check <a target="_blank" href="https://twitter.com/FabLabBLNAI">@FabLabBLNAI</a> for updates.
+                Undergoing maintenance.
+                {locationId === 1 ?
+                  <span>Check <a target="_blank" href="https://twitter.com/FabLabBLNAI">@FabLabBLNAI</a> for updates.</span>
+                  : null}
               </div>
             </div>
   
