@@ -475,13 +475,15 @@ func (this *UsersController) GetUserMachines() {
 			beego.Error("Failed to get user machine permissions: ", err)
 			this.CustomAbort(500, "Internal Server Error")
 		}
-		for _, permission := range *permissions {
-			for _, machine := range allMachines {
+		for _, machine := range allMachines {
+			for _, permission := range *permissions {
+				machine.Locked = true
 				if machine.Id == permission.MachineId {
-					machines = append(machines, machine)
+					machine.Locked = false
 					break
 				}
 			}
+			machines = append(machines, machine)
 		}
 	} else {
 		machines = allMachines
