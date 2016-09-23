@@ -1,24 +1,16 @@
+var constants = require('./constants');
 import {hashHistory} from 'react-router';
 var getters = require('../../getters');
+var MachineMixin = require('./MachineMixin');
 var React = require('react');
 var reactor = require('../../reactor');
 var ActivationTimer = require('../MachinePage/Machine/ActivationTimer');
 var ReservationTimer = require('../MachinePage/Machine/ReservationTimer');
 
 
-const AVAILABLE = 'available';
-const LOCKED = 'locked';
-const MAINTENANCE = 'maintenance';
-const OCCUPIED = 'occupied';
-const RESERVED = 'reserved';
-const UPCOMING_RESERVATION = 'upcoming-reservation';
-const RUNNING = 'running';
-const STAFF = 'staff';
-
-
 var Machine = React.createClass({
 
-  mixins: [ reactor.ReactMixin ],
+  mixins: [ MachineMixin, reactor.ReactMixin ],
 
   getDataBindings() {
     return {
@@ -32,39 +24,8 @@ var Machine = React.createClass({
     hashHistory.push();
   },
 
-  imgUrl() {
-    if (this.props.machine.get('Image')) {
-      return '/files/' + this.props.machine.get('Image');
-    } else {
-      return '/machines/img/img-machine-placeholder.svg';
-    }
-  },
-
-  overlayText() {
-    switch (this.status()) {
-    case LOCKED:
-      return 'Unlock ?';
-    case MAINTENANCE:
-      return 'Maintenance';
-    case OCCUPIED:
-      return 'Occupied';
-    case RESERVED:
-      return 'Reserved';
-    case RUNNING:
-      return (
-        <div>
-          <div className="ms-machine-overlay-start">Running for</div>
-          <ActivationTimer activation={this.props.machine.get('activation').toJS()}/>
-        </div>
-      );
-    case UPCOMING_RESERVATION:
-      return (
-        <div>
-          <div className="ms-machine-overlay-start">Reserved in</div>
-          <ReservationTimer reservation={this.upcomingReservation().toJS()}/>
-        </div>
-      );
-    }
+  machine() {
+    return this.props.machine;
   },
 
   render() {
@@ -112,38 +73,6 @@ var Machine = React.createClass({
     if (this.state.upcomingReservationsByMachineId) {
       return this.state.upcomingReservationsByMachineId.toObject()[mid];
     }
-  },
-
-  status() {
-    const m = this.props.machine;
-    const a = m.get('activation');
-    const r = this.reservation();
-    const upcoming = this.upcomingReservation();
-
-    if (m.get('Locked')) {
-      return LOCKED;
-    } else if (m.get('UnderMaintenance')) {
-      return MAINTENANCE;
-    } else {
-      if (a) {
-        if (a.get('UserId') === this.state.user.get('Id')) {
-          return RUNNING;
-        } else {
-          return OCCUPIED;
-        }
-      } else if (r && !r.get('ReservationDisabled') && !r.get('Cancelled')) {
-        return RESERVED;
-      } else if (upcoming && !upcoming.get('ReservationDisabled') &&
-                !upcoming.get('Cancelled')) {
-        return UPCOMING_RESERVATION;
-      } else {
-        return AVAILABLE;
-      }
-    }
-  },
-
-  statusClass() {
-    return 'ms-' + this.status();
   }
 });
 

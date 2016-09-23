@@ -1,7 +1,9 @@
+var constants = require('../constants');
 var getters = require('../../../getters');
 var LoaderLocal = require('../../LoaderLocal');
 var LocationGetters = require('../../../modules/Location/getters');
 var MachineActions = require('../../../actions/MachineActions');
+var MachineMixin = require('../MachineMixin');
 var Machines = require('../../../modules/Machines');
 var React = require('react');
 var reactor = require('../../../reactor');
@@ -10,7 +12,7 @@ var toastr = require('../../../toastr');
 
 var MachinePage = React.createClass({
 
-  mixins: [ reactor.ReactMixin ],
+  mixins: [ MachineMixin, reactor.ReactMixin ],
 
   getDataBindings() {
     return {
@@ -23,16 +25,6 @@ var MachinePage = React.createClass({
     const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
     const uid = reactor.evaluateToJS(getters.getUid);
     MachineActions.apiGetUserMachines(locationId, uid);
-  },
-
-  imgUrl() {
-    const m = this.machine();
-
-    if (m.get('Image')) {
-      return '/files/' + m.get('Image');
-    } else {
-      return '/machines/img/img-machine-placeholder.svg';
-    }
   },
 
   machine() {
@@ -50,9 +42,27 @@ var MachinePage = React.createClass({
 
   render() {
     const m = this.machine();
+    var button;
 
     if (!m) {
       return <LoaderLocal/>;
+    }
+
+    switch (this.status()) {
+      case constants.AVAILABLE:
+        button = (
+          <div className="m-action m-start">
+            START
+          </div>
+        );
+        break;
+      case constants.RUNNING:
+        button = (
+          <div className="m-action m-stop">
+            STOP
+          </div>
+        );
+        break;
     }
 
     return (
@@ -61,9 +71,7 @@ var MachinePage = React.createClass({
           <h2>{m.get('Name')} ({m.get('Brand')})</h2>
           <img src={this.imgUrl()}/>
           <div id="m-header-panel">
-            <div id="m-start-stop">
-              START
-            </div>
+            {button}
           </div>
         </div>
       </div>
