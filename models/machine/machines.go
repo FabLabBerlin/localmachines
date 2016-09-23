@@ -72,7 +72,8 @@ type Machine struct {
 	NetswitchType       string `orm:"size(255)"`
 	NetswitchLastPing   time.Time
 	// Parameters that are not persisted
-	Locked bool `orm:"-"`
+	Locked bool   `orm:"-"`
+	Status string `orm:"-"`
 }
 
 // Define custom table name as for SQL table with a name "machines"
