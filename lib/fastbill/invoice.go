@@ -255,6 +255,7 @@ func (inv *Invoice) Submit(overwriteExisting bool) (id int64, err error) {
 
 	for _, item := range inv.Items {
 		if inv.EuDelivery == "1" {
+			item.UnitPrice /= (100.0 + item.VatPercent) / 100.0
 			item.VatPercent = 0
 			item.IsGross = "1"
 		} else if item.VatPercent < 0.01 {
