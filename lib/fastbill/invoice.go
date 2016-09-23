@@ -253,11 +253,15 @@ func (inv *Invoice) Submit(overwriteExisting bool) (id int64, err error) {
 	}
 	inv.DeliveryDate = fmt.Sprintf("%v %v", inv.Month, inv.Year)
 
-	for _, item := range inv.Items {
+	for i, item := range inv.Items {
 		if inv.EuDelivery == "1" {
+			beego.Info("before: item.UnitPrice=", item.UnitPrice)
+			beego.Info("before: item.VatPercent=", item.VatPercent)
 			item.UnitPrice /= (100.0 + item.VatPercent) / 100.0
+			beego.Info("after: item.UnitPrice=", item.UnitPrice)
 			item.VatPercent = 0
 			item.IsGross = "1"
+			inv.Items[i] = item
 		} else if item.VatPercent < 0.01 {
 			return 0, fmt.Errorf("VAT seems to be zero for an item")
 		}
