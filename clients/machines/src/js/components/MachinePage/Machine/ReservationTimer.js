@@ -29,7 +29,6 @@ var Timer = React.createClass({
    * Take the Quantity from activation json
    */
   getInitialState() {
-    console.log('this.props.reservation=', this.props.reservation);
     this.startShow = moment().unix();
     return {
       timeNow: moment().unix(),
@@ -38,7 +37,6 @@ var Timer = React.createClass({
   },
 
   multiplier() {
-    console.log('this.props.activation.PriceUnit=', this.props.activation.PriceUnit);
     switch (this.props.activation.PriceUnit) {
     case 'day':
       return 86400;

@@ -1,6 +1,7 @@
 var BillTables = require('./BillTables');
 var getters = require('../../getters');
 var LoaderLocal = require('../LoaderLocal');
+var LocationActions = require('../../actions/LocationActions');
 var LocationGetters = require('../../modules/Location/getters');
 var LoginActions = require('../../actions/LoginActions');
 var MachineActions = require('../../actions/MachineActions');
@@ -30,6 +31,7 @@ var SpendingsPage = React.createClass({
     MachineActions.apiGetUserMachines(locationId, uid);
     UserActions.fetchUser(uid);
     UserActions.fetchBill(locationId, uid);
+    LocationActions.loadUserLocations(uid);
     SettingsActions.loadSettings({locationId});
   },
 

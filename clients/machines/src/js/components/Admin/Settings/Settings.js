@@ -1,6 +1,7 @@
 var _ = require('lodash');
 var getters = require('../../../getters');
 var LoaderLocal = require('../../LoaderLocal');
+var LocationActions = require('../../../actions/LocationActions');
 var LocationGetters = require('../../../modules/Location/getters');
 var React = require('react');
 var reactor = require('../../../reactor');
@@ -19,6 +20,7 @@ var Settings = React.createClass({
     SettingsActions.loadSettings({locationId});
     SettingsActions.loadFastbillTemplates({locationId});
     UserActions.fetchUser(uid);
+    LocationActions.loadUserLocations(uid);
   },
 
   getDataBindings() {
