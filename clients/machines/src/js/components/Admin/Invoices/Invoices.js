@@ -9,6 +9,7 @@ var React = require('react');
 var reactor = require('../../../reactor');
 var Settings = require('../../../modules/Settings');
 var SettingsActions = require('../../../modules/Settings/actions');
+var UserActions = require('../../../actions/UserActions');
 
 
 var Month = React.createClass({
@@ -26,7 +27,9 @@ var Month = React.createClass({
   },
 
   componentWillMount() {
-    LocationActions.loadUserLocations(this.state.uid);
+    const uid = reactor.evaluateToJS(getters.getUid);
+    UserActions.fetchUser(uid);
+    LocationActions.loadUserLocations(uid);
   },
 
   checkedComplete(e) {

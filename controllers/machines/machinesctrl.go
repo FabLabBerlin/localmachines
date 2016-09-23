@@ -12,6 +12,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 	"strings"
+	"time"
 )
 
 type Controller struct {
@@ -50,6 +51,14 @@ func (this *Controller) GetAll() {
 	for _, m := range allMachines {
 		if !includeArchived {
 			continue
+		}
+
+		if m.NetswitchLastPing.Unix() > 0 {
+			if time.Since(m.NetswitchLastPing).Minutes() > 30 {
+				m.Status = "Offline"
+			} else {
+				m.Status = "Online"
+			}
 		}
 		if locId == 0 || locId == m.LocationId {
 			machines = append(machines, m)

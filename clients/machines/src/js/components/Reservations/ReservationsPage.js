@@ -15,6 +15,7 @@ var ReservationRulesActions = require('../../actions/ReservationRulesActions');
 var ReservationActions = require('../../actions/ReservationActions');
 var Settings = require('../../modules/Settings');
 var toImmutable = Nuclear.toImmutable;
+var UserActions = require('../../actions/UserActions');
 
 // https://github.com/HubSpot/vex/issues/72
 var vex = require('vex-js'),
@@ -100,6 +101,7 @@ var ReservationsTable = React.createClass({
   componentWillMount() {
     const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
     const uid = reactor.evaluateToJS(getters.getUid);
+    UserActions.fetchUser(uid);
     MachineActions.apiGetUserMachines(locationId, uid);
     ReservationActions.load();
     ReservationRulesActions.load(locationId);

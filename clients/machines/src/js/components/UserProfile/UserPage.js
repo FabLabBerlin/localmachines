@@ -1,4 +1,5 @@
 var getters = require('../../getters');
+var LocationActions = require('../../actions/LocationActions');
 var LocationGetters = require('../../modules/Location/getters');
 var MachineActions = require('../../actions/MachineActions');
 var LoginActions = require('../../actions/LoginActions');
@@ -25,6 +26,7 @@ var UserPage = React.createClass({
     UserActions.fetchUser(uid);
     UserActions.fetchBill(locationId, uid);
     UserActions.fetchMemberships(locationId, uid);
+    LocationActions.loadUserLocations(uid);
   },
 
   handleLogout() {

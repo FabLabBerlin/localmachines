@@ -8,7 +8,9 @@ import (
 	"github.com/FabLabBerlin/localmachines/lib/redis"
 	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/orm"
 	"strings"
+	"time"
 )
 
 const (
@@ -117,6 +119,11 @@ func xmppDispatch(msg xmpp.Message) (err error) {
 			return fmt.Errorf("SERVER_SENDS_MACHINE_LIST: %v", err)
 		}
 		return nil
+	case commands.GATEWAY_SENDS_NETSWITCH_STATUS:
+		beego.Info("GATEWAY_SENDS_NETSWITCH_STATUS:", msg.Data)
+		if err := SetNetswitchLastPing(msg.Data.MachineId, time.Now()); err != nil {
+			beego.Error("SetNetswitchLastPing(", msg.Data.MachineId, "):", err)
+		}
 	case commands.GATEWAY_SUCCESS_ON:
 		update := redis.MachinesUpdate{
 			LocationId: msg.Data.LocationId,
@@ -207,6 +214,17 @@ func (this *Machine) NetswitchCustomConfigured() bool {
 func (this *Machine) NetswitchMfiConfigured() bool {
 	return this.NetswitchType == NETSWITCH_TYPE_MFI &&
 		len(this.NetswitchHost) > 0
+}
+
+func SetNetswitchLastPing(id int64, last time.Time) (err error) {
+	query := `
+	UPDATE machines
+	SET netswitch_last_ping = ?
+	WHERE id = ?
+	`
+	o := orm.NewOrm()
+	_, err = o.Raw(query, last.UTC().Format("2006-01-02 15:04:05"), id).Exec()
+	return
 }
 
 func (this *Machine) turn(onOrOff ON_OR_OFF, userId int64) (err error) {
