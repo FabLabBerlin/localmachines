@@ -6,5 +6,5 @@ export default {
   RESERVED: 'reserved',
   UPCOMING_RESERVATION: 'upcoming-reservation',
   RUNNING: 'running',
-  STAFF: 'staff',
+  STAFF: 'staff'
 };

@@ -1,4 +1,7 @@
 var constants = require('./constants');
+var React = require('react');
+var ActivationTimer = require('../MachinePage/Machine/ActivationTimer');
+var ReservationTimer = require('../MachinePage/Machine/ReservationTimer');
 
 
 var MachineMixin = {
@@ -43,7 +46,7 @@ var MachineMixin = {
     const m = this.props.machine;
 
     if (!m) {
-      return;
+      return undefined;
     }
 
     const a = m.get('activation');

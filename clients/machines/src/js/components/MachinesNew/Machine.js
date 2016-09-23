@@ -4,8 +4,6 @@ var getters = require('../../getters');
 var MachineMixin = require('./MachineMixin');
 var React = require('react');
 var reactor = require('../../reactor');
-var ActivationTimer = require('../MachinePage/Machine/ActivationTimer');
-var ReservationTimer = require('../MachinePage/Machine/ReservationTimer');
 
 
 var Machine = React.createClass({
