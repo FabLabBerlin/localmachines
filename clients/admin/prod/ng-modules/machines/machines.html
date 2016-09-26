@@ -16,7 +16,7 @@
     <tbody>
 
       <tr ng-repeat="machine in machines | machinesFilter:this">
-        <td>{{machine.Name}}</td>
+        <td>{{machine.Name}} {{machine.Status ? ('(' + machine.Status + ')') : ''}}</td>
         <td>{{machine.Price | currency:''}}</td>
         <td>{{machine.PriceUnit}}</td>
         <td>
