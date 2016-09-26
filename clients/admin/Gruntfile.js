@@ -255,21 +255,6 @@ module.exports = function (grunt) {
 					expand: true,
 					flatten: true
 				}, {
-					src: 'dev/ng-modules/tutoring/purchase.html', 
-					dest: 'prod/ng-modules/tutoring/',
-					expand: true,
-					flatten: true
-				}, {
-					src: 'dev/ng-modules/tutoring/tutor.html', 
-					dest: 'prod/ng-modules/tutoring/',
-					expand: true,
-					flatten: true
-				}, {
-					src: 'dev/ng-modules/tutoring/tutoring.html', 
-					dest: 'prod/ng-modules/tutoring/',
-					expand: true,
-					flatten: true
-				}, {
 					src: 'dev/assets/img/*',
 					dest: 'prod/assets/img/',
 					filter: 'isFile',

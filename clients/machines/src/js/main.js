@@ -36,7 +36,6 @@ var ScrollNavStore = require('./stores/ScrollNavStore');
 var Page = require('./components/UserProfile/SpendingsPage');
 var SettingsStore = require('./modules/Settings/stores/store');
 var SpendingsPage = require('./components/UserProfile/SpendingsPage');
-var TutoringsStore = require('./stores/TutoringsStore');
 var UserPage = require('./components/UserProfile/UserPage');
 var Users = require('./modules/Users');
 var UserStore = require('./stores/UserStore');
@@ -67,7 +66,6 @@ reactor.registerStores({
   reservationRulesStore: ReservationRulesStore,
   scrollNavStore: ScrollNavStore,
   settingsStore: SettingsStore,
-  tutoringsStore: TutoringsStore,
   userStore: UserStore,
   usersStore: Users.store,
   locationStore: LocationStore

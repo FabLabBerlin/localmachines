@@ -17,7 +17,6 @@ var ScrollNav = require('../ScrollNav');
 var Settings = require('../../modules/Settings');
 var toastr = require('../../toastr');
 var UserActions = require('../../actions/UserActions');
-var TutoringList = require('./TutoringList');
 
 var MachinePage = React.createClass({
 
@@ -63,7 +62,6 @@ var MachinePage = React.createClass({
 
       return (
         <div>
-          <TutoringList />
           <MachineList
             user={this.state.user}
             machines={this.state.machines}

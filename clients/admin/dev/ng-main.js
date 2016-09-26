@@ -26,9 +26,6 @@ var app = angular.module('fabsmith', [
   'fabsmith.admin.users',
   'fabsmith.admin.randomtoken',
   'fabsmith.version',
-  'fabsmith.admin.tutoring',
-  'fabsmith.admin.tutoring.tutor',
-  'fabsmith.admin.tutoring.purchase',
   'fabsmith.version'
 ]);
 
