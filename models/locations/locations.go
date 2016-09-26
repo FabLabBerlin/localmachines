@@ -26,10 +26,7 @@ type Location struct {
 	Approved         bool
 	XmppId           string `orm:"size(255)" json:",omitempty"`
 	LocalIp          string `orm:"size(255)" json:",omitempty"`
-	FeatureCoworking bool   `json:",omitempty"`
 	FeatureSetupTime bool   `json:",omitempty"`
-	FeatureSpaces    bool   `json:",omitempty"`
-	FeatureTutoring  bool   `json:",omitempty"`
 	FeatureCoupons   bool   `json:",omitempty"`
 	Timezone         string `orm:"size(100)"`
 	Logo             string `orm:"size(255)"`
@@ -42,10 +39,7 @@ func init() {
 func (l *Location) ClearPrivateData() {
 	l.LocalIp = ""
 	l.XmppId = ""
-	l.FeatureCoworking = false
 	l.FeatureSetupTime = false
-	l.FeatureSpaces = false
-	l.FeatureTutoring = false
 	l.FeatureCoupons = false
 }
 

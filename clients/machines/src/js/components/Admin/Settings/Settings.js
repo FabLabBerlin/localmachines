@@ -1,5 +1,6 @@
 var _ = require('lodash');
 var getters = require('../../../getters');
+var ImageUploader = require('../ImageUploader');
 var LoaderLocal = require('../../LoaderLocal');
 var LocationActions = require('../../../actions/LocationActions');
 var LocationGetters = require('../../../modules/Location/getters');
@@ -35,6 +36,8 @@ var Settings = React.createClass({
   },
 
   render() {
+    const locationId = this.state.locationId;
+    console.log('this.state.location=', this.state.location);
     if (!this.state.settings) {
       return <LoaderLocal/>;
     }
@@ -94,6 +97,15 @@ var Settings = React.createClass({
                       })}
                     </select>
                   ) : <LoaderLocal/>}
+              </td>
+            </tr>
+            <tr>
+              <td>Logo</td>
+              <td>
+                <ImageUploader existingImage={(this.state.location && this.state.location.get('Logo'))
+                                               ? '/files/' + this.state.location.get('Logo')
+                                               : '/machines/assets/img/logo-small.svg'}
+                               uploadUrl={'/api/locations/' + locationId + '/image?location=' + locationId}/>
               </td>
             </tr>
           </tbody>

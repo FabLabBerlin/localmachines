@@ -2,6 +2,7 @@
 package locations
 
 import (
+	"fmt"
 	"github.com/FabLabBerlin/localmachines/controllers"
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/locations"
@@ -98,6 +99,10 @@ func (c *Controller) PostImage() {
 		c.CustomAbort(401, "Unauthorized")
 	}
 
+	if fmt.Sprintf("%v", locId) != c.GetString(":lid") {
+		c.CustomAbort(400, "Client error")
+	}
+
 	dataUri := c.GetString("Image")
 
 	i := strings.LastIndex(c.GetString("Filename"), ".")
@@ -108,7 +113,7 @@ func (c *Controller) PostImage() {
 		c.CustomAbort(500, "File name has no proper extension")
 	}
 
-	fn := imageFilename(c.GetString(":mid"), fileExt)
+	fn := imageFilename(c.GetString(":lid"), fileExt)
 	if err := models.UploadImage(fn, dataUri); err != nil {
 		beego.Error("upload image:", err)
 		c.CustomAbort(500, "Internal Server Error")
@@ -130,7 +135,7 @@ func (c *Controller) PostImage() {
 }
 
 func imageFilename(locationId string, fileExt string) string {
-	return "location-" + locationId + fileExt
+	return "location-logo-" + locationId + fileExt
 }
 
 // @Title Debug

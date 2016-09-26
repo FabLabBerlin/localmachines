@@ -96,10 +96,11 @@ var Top = React.createClass({
         <div className="nav-left" style={{overflow: 'hidden'}}>
           <a className="nav-logo" 
              href="/machines/#/machine">
-            {this.state.locationId === 1 ?
-              <img src="/machines/assets/img/logo-small.svg"/> :
-              <img src="/machines/assets/img/logo-easylab.svg"/>
-            }
+            {this.state.location ? (
+              this.state.location.get('Logo') ?
+                <img src={('/files/' + this.state.location.get('Logo'))}/> :
+                <img src="/machines/assets/img/logo-easylab.svg"/>
+            ) : null}
           </a>
           <div className="nav-title hidden-xs">
             {this.state.location ? (
