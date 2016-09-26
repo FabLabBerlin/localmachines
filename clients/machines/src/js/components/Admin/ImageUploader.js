@@ -45,8 +45,9 @@ var ImageUploader = React.createClass({
         <div className="col-sm-6">
           <div className="form-group">
             <img id="machine-image"
-              src={machineImageNewFile || this.props.existingImage || 'assets/img/img-machine-placeholder.svg'}
-              alt="Machine image"/>
+                 height={this.props.height}
+                 src={machineImageNewFile || this.props.existingImage || 'assets/img/img-machine-placeholder.svg'}
+                 alt="Machine image"/>
           </div>
         </div>
         <div className="col-sm-6">

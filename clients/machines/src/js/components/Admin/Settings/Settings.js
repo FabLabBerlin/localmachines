@@ -104,7 +104,8 @@ var Settings = React.createClass({
               <td>
                 <ImageUploader existingImage={(this.state.location && this.state.location.get('Logo'))
                                                ? '/files/' + this.state.location.get('Logo')
-                                               : '/machines/assets/img/logo-small.svg'}
+                                               : '/machines/assets/img/logo-easylab.svg'}
+                               height="48"
                                uploadUrl={'/api/locations/' + locationId + '/image?location=' + locationId}/>
               </td>
             </tr>
