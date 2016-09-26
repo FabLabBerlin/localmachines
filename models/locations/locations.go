@@ -32,6 +32,7 @@ type Location struct {
 	FeatureTutoring  bool   `json:",omitempty"`
 	FeatureCoupons   bool   `json:",omitempty"`
 	Timezone         string `orm:"size(100)"`
+	Logo             string `orm:"size(255)"`
 }
 
 func init() {
@@ -138,5 +139,11 @@ func SetLocalIp(locId int64, ip string) (err error) {
 	`
 	o := orm.NewOrm()
 	_, err = o.Raw(query, ip, locId).Exec()
+	return
+}
+
+func (l *Location) Update() (err error) {
+	o := orm.NewOrm()
+	_, err = o.Update(l)
 	return
 }

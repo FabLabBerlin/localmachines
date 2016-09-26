@@ -1,12 +1,13 @@
 package models
 
 import (
+	"encoding/base64"
 	"fmt"
 	"os"
 	"strings"
 )
 
-func UploadImage(name string, data []byte) (err error) {
+func UploadImage(name string, dataUri string) (err error) {
 	if err = checkFilename(name); err != nil {
 		return
 	}
@@ -14,9 +15,25 @@ func UploadImage(name string, data []byte) (err error) {
 	if err != nil {
 		return
 	}
+
+	data, err := decodeDataUri(dataUri)
+	if err != nil {
+		return fmt.Errorf("decode data uri: %v", err)
+	}
+
 	_, err = f.Write(data)
 	defer f.Close()
 	return
+}
+
+func decodeDataUri(dataUri string) ([]byte, error) {
+	sep := "base64,"
+	i := strings.Index(dataUri, sep)
+	if i < 0 {
+		return nil, fmt.Errorf("cannot remove prefix from data uri")
+	}
+	dataUri = dataUri[i+len(sep):]
+	return base64.StdEncoding.DecodeString(dataUri)
 }
 
 func FileExtensionFor(mimeType string) (t string, err error) {

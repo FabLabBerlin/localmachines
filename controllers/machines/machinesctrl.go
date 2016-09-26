@@ -2,9 +2,7 @@
 package machines
 
 import (
-	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"github.com/FabLabBerlin/localmachines/controllers"
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/machine"
@@ -252,16 +250,6 @@ func (this *Controller) SetArchived() {
 	this.Finish()
 }
 
-func decodeDataUri(dataUri string) ([]byte, error) {
-	sep := "base64,"
-	i := strings.Index(dataUri, sep)
-	if i < 0 {
-		return nil, fmt.Errorf("cannot remove prefix from data uri")
-	}
-	dataUri = dataUri[i+len(sep):]
-	return base64.StdEncoding.DecodeString(dataUri)
-}
-
 // @Title PostImage
 // @Description Post machine image
 // @Param	mid	path	int	true	"Machine ID"
@@ -276,11 +264,8 @@ func (this *Controller) PostImage() {
 		beego.Error("Failed to get mid:", err)
 		this.CustomAbort(403, "Failed to delete machine")
 	}
-	img, err := decodeDataUri(this.GetString("Image"))
-	if err != nil {
-		beego.Error("decode data uri:", err)
-		this.CustomAbort(400, "Bad Request")
-	}
+	dataUri := this.GetString("Image")
+
 	i := strings.LastIndex(this.GetString("Filename"), ".")
 	var fileExt string
 	if i >= 0 {
@@ -289,14 +274,14 @@ func (this *Controller) PostImage() {
 		this.CustomAbort(500, "File name has no proper extension")
 	}
 	fn := imageFilename(this.GetString(":mid"), fileExt)
-	if err = models.UploadImage(fn, img); err != nil {
+	if err = models.UploadImage(fn, dataUri); err != nil {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
 	m, err := machine.Get(mid)
 	if err != nil {
-		beego.Error("Failed to get :mid variable")
-		this.CustomAbort(403, "Failed to get machine")
+		beego.Error("Failed to get machine:", err)
+		this.CustomAbort(500, "Failed to get machine")
 	}
 
 	if !this.IsAdminAt(m.LocationId) {
@@ -307,7 +292,7 @@ func (this *Controller) PostImage() {
 	m.Image = fn
 	if err = m.Update(false); err != nil {
 		beego.Error("Failed updating machine:", err)
-		this.CustomAbort(403, "Failed to update machine")
+		this.CustomAbort(500, "Failed to update machine")
 	}
 }
 

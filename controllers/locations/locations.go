@@ -3,8 +3,10 @@ package locations
 
 import (
 	"github.com/FabLabBerlin/localmachines/controllers"
+	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/astaxie/beego"
+	"strings"
 )
 
 var runMode = beego.AppConfig.String("RunMode")
@@ -80,6 +82,55 @@ func (c *Controller) Get() {
 	}
 	c.Data["json"] = l
 	c.ServeJSON()
+}
+
+// @Title PostImage
+// @Description Post machine image
+// @Param	mid	path	int	true	"Machine ID"
+// @Success 200 string ok
+// @Failure	400	Bad Request
+// @Failure	401	Not authorized
+// @Failure	500 Internal Server Error
+// @router /:lid([0-9]+)/image [post]
+func (c *Controller) PostImage() {
+	locId, isLocAdmin := c.GetLocIdAdmin()
+	if !isLocAdmin {
+		c.CustomAbort(401, "Unauthorized")
+	}
+
+	dataUri := c.GetString("Image")
+
+	i := strings.LastIndex(c.GetString("Filename"), ".")
+	var fileExt string
+	if i >= 0 {
+		fileExt = c.GetString("Filename")[i:]
+	} else {
+		c.CustomAbort(500, "File name has no proper extension")
+	}
+
+	fn := imageFilename(c.GetString(":mid"), fileExt)
+	if err := models.UploadImage(fn, dataUri); err != nil {
+		beego.Error("upload image:", err)
+		c.CustomAbort(500, "Internal Server Error")
+	}
+
+	l, err := locations.Get(locId)
+	if err != nil {
+		beego.Error("get location:", err)
+		c.CustomAbort(500, "Internal Server Error")
+	}
+
+	l.Logo = fn
+	if err = l.Update(); err != nil {
+		beego.Error("Failed updating location:", err)
+		c.CustomAbort(500, "Failed to update location")
+	}
+
+	c.ServeJSON()
+}
+
+func imageFilename(locationId string, fileExt string) string {
+	return "location-" + locationId + fileExt
 }
 
 // @Title Debug
