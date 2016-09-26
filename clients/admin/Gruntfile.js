@@ -105,7 +105,6 @@ module.exports = function (grunt) {
 						'dev/ng-modules/reservations/reservations.js',
 						'dev/ng-modules/reservations/toggle.js',
 						'dev/ng-modules/tutoring/purchase.js',
-						'dev/ng-modules/settings/settings.js',
 						'dev/ng-modules/tutoring/tutor.js',
 						'dev/ng-modules/tutoring/tutoring.js',
 						'dev/ng-modules/user/user.js',
@@ -253,11 +252,6 @@ module.exports = function (grunt) {
 				}, {
 					src: 'dev/ng-modules/reservations/toggle.html', 
 					dest: 'prod/ng-modules/reservations/',
-					expand: true,
-					flatten: true
-				}, {
-					src: 'dev/ng-modules/settings/settings.html', 
-					dest: 'prod/ng-modules/settings/',
 					expand: true,
 					flatten: true
 				}, {

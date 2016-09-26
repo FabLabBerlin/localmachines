@@ -25,7 +25,6 @@ var app = angular.module('fabsmith', [
   'fabsmith.admin.invoices',
   'fabsmith.admin.users',
   'fabsmith.admin.randomtoken',
-  'fabsmith.admin.settings',
   'fabsmith.version',
   'fabsmith.admin.tutoring',
   'fabsmith.admin.tutoring.tutor',
