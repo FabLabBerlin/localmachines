@@ -11,6 +11,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"github.com/astaxie/beego"
 	"io/ioutil"
+	"time"
 )
 
 type ReservationsController struct {
@@ -30,11 +31,22 @@ func (this *ReservationsController) GetAll() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	reservations, err := purchases.GetAllReservationsAt(locId)
+	all, err := purchases.GetAllReservationsAt(locId)
 	if err != nil {
 		this.CustomAbort(403, "Failed to get all reservations")
 	}
-	this.Data["json"] = reservations
+
+	filtered := make([]*purchases.Reservation, 0, len(all))
+
+	for _, r := range all {
+		if r.Purchase.TimeStart.After(time.Now().AddDate(0, -1, 0)) &&
+			r.LocationId() == locId {
+
+			filtered = append(filtered, r)
+		}
+	}
+
+	this.Data["json"] = filtered
 	this.ServeJSON()
 }
 
