@@ -159,8 +159,8 @@ var MachinePage = React.createClass({
             <Button machine={this.machine()}
                     status={this.status()}/>
           </div>
-          <div id="m-report" onClick={this.repair}>
-            <span>Report a machine failure</span>
+          <div id="m-report">
+            <span onClick={this.repair}>Report a machine failure</span>
           </div>
         </div>
       </div>
