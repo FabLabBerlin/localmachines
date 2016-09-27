@@ -5,11 +5,12 @@ var ReservationTimer = require('../MachinePage/Machine/ReservationTimer');
 
 
 var MachineMixin = {
-  imgUrl() {
+  imgUrl(small) {
     const m = this.machine();
+    const key = small ? 'ImageSmall' : 'Image';
 
-    if (m.get('ImageSmall')) {
-      return '/files/' + m.get('ImageSmall');
+    if (m.get(key)) {
+      return '/files/' + m.get(key);
     } else {
       return '/machines/img/img-machine-placeholder.svg';
     }
@@ -29,7 +30,7 @@ var MachineMixin = {
       return (
         <div>
           <div className="ms-machine-overlay-start">Running for</div>
-          <ActivationTimer activation={this.props.machine.get('activation').toJS()}/>
+          <ActivationTimer activation={this.machine().get('activation').toJS()}/>
         </div>
       );
     case constants.UPCOMING_RESERVATION:
@@ -43,9 +44,10 @@ var MachineMixin = {
   },
 
   status() {
-    const m = this.props.machine;
+    const m = this.machine();
 
     if (!m) {
+      console.log('!m');
       return undefined;
     }
 
@@ -58,7 +60,11 @@ var MachineMixin = {
     } else if (m.get('UnderMaintenance')) {
       return constants.MAINTENANCE;
     } else {
-      if (a) {
+      console.log('a=', a);
+      console.log('this.state.user=', this.state.user);
+      if (a && this.state.user) {
+        console.log('a.get(UserId)=', a.get('UserId'));
+        console.log('this.state.user.get(Id)=', this.state.user.get('Id'));
         if (a.get('UserId') === this.state.user.get('Id')) {
           return constants.RUNNING;
         } else {
@@ -72,6 +78,22 @@ var MachineMixin = {
       } else {
         return constants.AVAILABLE;
       }
+    }
+  },
+
+  reservation() {
+    const mid = this.machine().get('Id');
+
+    if (this.state.reservationsByMachineId) {
+      return this.state.reservationsByMachineId.toObject()[mid];
+    }
+  },
+
+  upcomingReservation() {
+    const mid = this.machine().get('Id');
+
+    if (this.state.upcomingReservationsByMachineId) {
+      return this.state.upcomingReservationsByMachineId.toObject()[mid];
     }
   },
 

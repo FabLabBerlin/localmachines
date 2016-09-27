@@ -29,7 +29,7 @@ var Machine = React.createClass({
   render() {
     const m = this.props.machine;
     const style = {
-      backgroundImage: 'url(' + this.imgUrl() + ')'
+      backgroundImage: 'url(' + this.imgUrl(true) + ')'
     };
 
     return (
@@ -55,22 +55,6 @@ var Machine = React.createClass({
         </div>
       </a>
     );
-  },
-
-  reservation() {
-    const mid = this.props.machine.get('Id');
-
-    if (this.state.reservationsByMachineId) {
-      return this.state.reservationsByMachineId.toObject()[mid];
-    }
-  },
-
-  upcomingReservation() {
-    const mid = this.props.machine.get('Id');
-
-    if (this.state.upcomingReservationsByMachineId) {
-      return this.state.upcomingReservationsByMachineId.toObject()[mid];
-    }
   }
 });
 

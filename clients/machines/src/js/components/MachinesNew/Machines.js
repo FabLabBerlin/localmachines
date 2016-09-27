@@ -1,6 +1,7 @@
 var _ = require('lodash');
 var getters = require('../../getters');
 var LoaderLocal = require('../LoaderLocal');
+var LocationActions = require('../../actions/LocationActions');
 var LocationGetters = require('../../modules/Location/getters');
 var MachineActions = require('../../actions/MachineActions');
 var Machine = require('./Machine');
@@ -57,6 +58,7 @@ var MachinesPage = React.createClass({
 
     ReservationActions.load();
     UserActions.fetchUser(uid);
+    LocationActions.loadUserLocations(uid);
 
     if (window.WebSocket) {
       MachineActions.wsDashboard(this.context.router, locationId);
