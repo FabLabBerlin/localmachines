@@ -1520,16 +1520,23 @@ http://codepen.io/anon/pen/QEXBEp
   width: 100%;
 }
 
+#m-img {
+  background-size: 100% auto;
+  background-position: 50%;
+  background-repeat: no-repeat;
+  height: 396px;
+  width: 100%;
+}
+
 #m-header-panel {
   background: #DCFFF1;
   padding: 27px 0 36px;
   text-align: center;
 }
 
-.m-action.m-start {
+.m-action {
   background: white;
   border-radius: 50%;
-  color: #00ED90;
   cursor: pointer;
   display: inline-block;
   font-size: 36px;
@@ -1539,8 +1546,26 @@ http://codepen.io/anon/pen/QEXBEp
   width: 223px;
 }
 
-#m-start-stop:hover {
-  .box-shadow(0px 4px 10px -1px #00ED90);
+.m-action.m-start {
+  color: @ms-hover-color-available;
+}
+
+.m-action.m-start:hover {
+  .box-shadow(0px 4px 10px -1px @ms-hover-color-available);
+}
+
+#m-report {
+  color: #888888;
+  font-size: 24px;
+  height: 185px;
+  padding-top: 95px;
+  text-align: center;
+  text-decoration: underline;
+  width: 100%;
+}
+
+#m-report span {
+  cursor: pointer;
 }
 
 /*

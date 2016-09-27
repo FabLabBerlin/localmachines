@@ -237,7 +237,16 @@ func parseDimensions(s string) (lMM []Millimeters, err error) {
 
 func (this *Machine) ReportBroken(user users.User, text string) error {
 	email := email.New()
-	to := beego.AppConfig.String("trelloemail")
+	var to string
+	if lid := this.LocationId; lid == 1 || lid == 2 || lid == 6 {
+		to = beego.AppConfig.String("trelloemail")
+	} else {
+		l, err := locations.Get(lid)
+		if err != nil {
+			return fmt.Errorf("get location %v: %v", lid, err)
+		}
+		to = l.Email
+	}
 	subject := this.Name + " reported as broken"
 	message := "The machine " + this.Name + " seems to be broken.\n\nSome more info:\n\n"
 	message += text + "\n\n"
