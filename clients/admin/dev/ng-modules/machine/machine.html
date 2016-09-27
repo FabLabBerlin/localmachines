@@ -114,11 +114,11 @@
         <label for="machine-type">Machine Type</label>
         <select class="form-control" id="machine-type" 
                 ng-model="machine.TypeId">
-          <option value="0" selected disabled>Select type</option>
           <option ng-repeat="machineType in machineTypes"
                   value="{{machineType.Id}}">
             {{machineType.Name}}
           </option>
+          <option value="0" selected>Other</option>
         </select>
       </div>
     </div>
