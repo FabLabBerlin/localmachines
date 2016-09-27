@@ -70,7 +70,7 @@ var MachineActions = {
         } else {
           GlobalActions.hideGlobalLoader();
           if (xhr.status === 403 && xhr.responseText === 'No remote activation') {
-            toastr.error('Activations only possible through Lab Wifi for safety reasons');
+            toastr.error('Must start in Lab Wifi for safety (VPN won\'t work either)');
           } else {
             toastr.error('Cannot request turn on');
             console.error(status, err);
