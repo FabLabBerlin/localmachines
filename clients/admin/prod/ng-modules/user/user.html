@@ -246,26 +246,6 @@
             </div>
           </div>
         </div>
-        <div class="col-sm-12 form-group add-user-location">
-          <div class="col-sm-6">
-            <select class="form-control">
-              <option value="">Select new location</option>
-              <option ng-repeat="location in locations"
-                      ng-show="location.Id == locationId"
-                      value="{{location.Id}}">
-                {{location.Title}}
-              </option>
-            </select>
-          </div>
-          <div class="col-sm-6">
-            <button 
-              class="btn btn-primary btn-block" 
-              id="user-add-user-location-btn" 
-              ng-click="addUserLocation()">
-              <i class="fa fa-plus"></i>&nbsp;Add User Location
-            </button>
-          </div>
-        </div>
       </div>
     </div>
 
