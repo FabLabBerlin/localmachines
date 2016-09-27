@@ -22,10 +22,6 @@ vex.defaultOptions.className = 'vex-theme-custom';
 
 
 var Button = React.createClass({
-  /*
-   * Function pass by props to children
-   * End an activation
-   */
   activationEnd() {
     let aid = this.props.machine.getIn(['activation', 'Id']);
 
@@ -49,10 +45,6 @@ var Button = React.createClass({
     LoginActions.keepAlive();
   },
 
-  /*
-   * Function pass by props to children
-   * Start an activation
-   */
   activationStart() {
     const mid = this.props.machine.get('Id');
     MachineActions.startActivation(mid);
@@ -110,19 +102,16 @@ var MachinePage = React.createClass({
     var m;
 
     if (this.state.machines) {
-      console.log('this.state.machines=', this.state.machines);
       m = this.state.machines.find((mm) => {
         return mm.get('Id') === machineId;
       });
 
       if (this.state.activations) {
-        console.log('this.state.activations->true');
         const as = this.state.activations
         .groupBy(a => a.get('MachineId'))
         .get(m.get('Id'));
 
         if (as) {
-          console.log('as->true');
           m = m.set('activation', as.get(0));
         }
       }
