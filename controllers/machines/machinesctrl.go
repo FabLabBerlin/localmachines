@@ -9,6 +9,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/user_permissions"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
+	"os/exec"
 	"strings"
 	"time"
 )
@@ -273,7 +274,7 @@ func (this *Controller) PostImage() {
 	} else {
 		this.CustomAbort(500, "File name has no proper extension")
 	}
-	fn := imageFilename(this.GetString(":mid"), fileExt)
+	fn, fnSmall := imageFilename(this.GetString(":mid"), fileExt)
 	if err = models.UploadImage(fn, dataUri); err != nil {
 		this.CustomAbort(500, "Internal Server Error")
 	}
@@ -284,20 +285,76 @@ func (this *Controller) PostImage() {
 		this.CustomAbort(500, "Failed to get machine")
 	}
 
+	if ext := strings.ToLower(fileExt); ext != ".svg" {
+		args := make([]string, 0, 5)
+
+		args = append(args, imageMagickCompressArgs(ext)...)
+
+		args = append(args,
+			"-resize", "x400",
+			"files/"+fn,
+			"files/"+fnSmall,
+		)
+		cmd := exec.Command("convert", args...)
+		if out, err := cmd.CombinedOutput(); err != nil {
+			beego.Error("convert:", err, string(out))
+			this.CustomAbort(500, "Internal Server Error")
+		}
+		m.ImageSmall = fnSmall
+	} else {
+		m.ImageSmall = fn
+	}
+
+	m.Image = fn
+	if ext := strings.ToLower(fileExt); ext != ".svg" {
+		args := make([]string, 0, 5)
+		args = append(args, imageMagickCompressArgs(ext)...)
+		args = append(args,
+			"-resize", "2000x2000>",
+			"files/"+fn,
+		)
+		cmd := exec.Command("mogrify", args...)
+		if out, err := cmd.CombinedOutput(); err != nil {
+			beego.Error("mogrify:", err, string(out), "(skip extra compression)")
+		}
+	}
+
 	if !this.IsAdminAt(m.LocationId) {
 		beego.Error("Not authorized to set machine image")
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	m.Image = fn
 	if err = m.Update(false); err != nil {
 		beego.Error("Failed updating machine:", err)
 		this.CustomAbort(500, "Failed to update machine")
 	}
 }
 
-func imageFilename(machineId string, fileExt string) string {
-	return "machine-" + machineId + fileExt
+func imageFilename(machineId string, fileExt string) (normal, small string) {
+	normal = "machine-" + machineId + fileExt
+	small = "machine-" + machineId + "-small" + fileExt
+	return
+}
+
+func imageMagickCompressArgs(fileExt string) (args []string) {
+	args = make([]string, 0, 5)
+	ext := strings.ToLower(fileExt)
+	switch ext {
+	case ".jpg":
+		args = append(args, "-quality", "75%")
+		break
+	case ".png":
+		args = append(args,
+			"-define",
+			"png:compression-filter=5",
+			"-define",
+			"png:compression-level=9",
+			"-define",
+			"png:compression-strategy=1",
+		)
+		break
+	}
+	return
 }
 
 const (

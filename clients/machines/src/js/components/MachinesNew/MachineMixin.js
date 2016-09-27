@@ -8,8 +8,8 @@ var MachineMixin = {
   imgUrl() {
     const m = this.machine();
 
-    if (m.get('Image')) {
-      return '/files/' + m.get('Image');
+    if (m.get('ImageSmall')) {
+      return '/files/' + m.get('ImageSmall');
     } else {
       return '/machines/img/img-machine-placeholder.svg';
     }
