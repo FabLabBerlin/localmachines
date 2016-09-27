@@ -49,6 +49,8 @@ Quickly install Localmachines to get it running on Linux or OS X. For more
 
    But you can also install them manually if you wish.
 
+   ImageMagick is also needed.
+
 5. Initialize database
    ```
    mysql -u user -p fabsmith < fabsmith.sql
