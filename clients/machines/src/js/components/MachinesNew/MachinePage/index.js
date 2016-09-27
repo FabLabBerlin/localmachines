@@ -27,14 +27,14 @@ var Button = React.createClass({
    * End an activation
    */
   activationEnd() {
-    let aid = this.props.activation.Id;
+    let aid = this.props.machine.getIn(['activation', 'Id']);
 
     VexDialog.buttons.YES.text = 'Yes';
     VexDialog.buttons.NO.text = 'No';
 
     VexDialog.confirm({
       message: 'Do you really want to stop the activation for <b>' +
-        this.props.machine.Name + '</b>?',
+        this.props.machine.get('Name') + '</b>?',
       callback(confirmed) {
         if (confirmed) {
           MachineActions.endActivation(aid, function() {
@@ -102,6 +102,7 @@ var MachinePage = React.createClass({
     MachineActions.apiGetUserMachines(locationId, uid);
     UserActions.fetchUser(uid);
     LocationActions.loadUserLocations(uid);
+    MachineActions.wsDashboard(null, locationId);
   },
 
   machine() {
