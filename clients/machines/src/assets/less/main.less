@@ -1570,8 +1570,18 @@ http://codepen.io/anon/pen/QEXBEp
 
 .m-action.m-clock {
   background-image: url(/machines/assets/img/machines/machine/m_clock.svg);
-  background-position: 50% 159px;
+  background-position: 50% 170px;
   background-repeat: no-repeat;
+}
+
+.m-action .machine-time-label {
+  display: none;
+}
+
+.m-action .machine-time-value {
+  font-size: 24px;
+  font-weight: bold;
+  margin-top: -6px;
 }
 
 .m-start .m-action {
@@ -1617,6 +1627,9 @@ http://codepen.io/anon/pen/QEXBEp
 
 .m-stop .m-action {
   background-color: @ms-hover-color-running;
+  color: @ms-hover-color-available;
+  .box-shadow(4px 6px 3px 0px #000000);
+  .box-shadow(-10px 0px 9px 0px #5E5E5E);
   color: white;
   cursor: pointer;
 }

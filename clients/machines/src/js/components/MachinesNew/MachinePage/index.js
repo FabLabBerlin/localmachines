@@ -1,4 +1,5 @@
 var $ = require('jquery');
+var ActivationTimer = require('../../MachinePage/Machine/ActivationTimer');
 var constants = require('../constants');
 var FeedbackDialogs = require('../../Feedback/FeedbackDialogs');
 var getters = require('../../../getters');
@@ -53,6 +54,7 @@ var Button = React.createClass({
   },
 
   render() {
+    console.log('this.props.status=', this.props.status);
     switch (this.props.status) {
     case constants.AVAILABLE:
       return (
@@ -80,9 +82,11 @@ var Button = React.createClass({
         </div>
       );
     case constants.RESERVED:
+      console.log('this.props.reservation=', this.props.reservation);
       return (
         <div className="m-action m-clock">
           RESERVED
+          <ActivationTimer activation={this.props.reservation.toJS()}/>
         </div>
       );
     case constants.RUNNING:
@@ -90,6 +94,7 @@ var Button = React.createClass({
         <div className="m-action m-clock"
              onClick={this.activationEnd}>
           STOP
+          <ActivationTimer activation={this.props.machine.get('activation').toJS()}/>
         </div>
       );
     default:
@@ -191,6 +196,7 @@ var MachinePage = React.createClass({
           <div id="m-img" style={style}/>
           <div className={'m-header-panel ' + className}>
             <Button machine={this.machine()}
+                    reservation={this.reservation()}
                     status={this.status()}/>
           </div>
           <div id="m-report">
