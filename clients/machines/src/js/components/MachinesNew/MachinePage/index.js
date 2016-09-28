@@ -81,13 +81,13 @@ var Button = React.createClass({
       );
     case constants.RESERVED:
       return (
-        <div className="m-action">
+        <div className="m-action m-clock">
           RESERVED
         </div>
       );
     case constants.RUNNING:
       return (
-        <div className="m-action"
+        <div className="m-action m-clock"
              onClick={this.activationEnd}>
           STOP
         </div>
@@ -153,10 +153,8 @@ var MachinePage = React.createClass({
     const m = this.machine();
 
     if (!m) {
-      console.log('!m');
       return <LoaderLocal/>;
     }
-    console.log('ooookkk');
 
     var className;
 
