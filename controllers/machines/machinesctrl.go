@@ -342,6 +342,9 @@ func imageMagickCompressArgs(fileExt string) (args []string) {
 	switch ext {
 	case ".jpg":
 		args = append(args, "-quality", "75%")
+		// Browsers have problems with EXIF data based rotations,
+		// let's get rid of them.
+		args = append(args, "-auto-orient")
 		break
 	case ".png":
 		args = append(args,
