@@ -47,7 +47,6 @@ var MachineMixin = {
     const m = this.machine();
 
     if (!m) {
-      console.log('!m');
       return undefined;
     }
 
@@ -60,11 +59,7 @@ var MachineMixin = {
     } else if (m.get('UnderMaintenance')) {
       return constants.MAINTENANCE;
     } else {
-      console.log('a=', a);
-      console.log('this.state.user=', this.state.user);
       if (a && this.state.user) {
-        console.log('a.get(UserId)=', a.get('UserId'));
-        console.log('this.state.user.get(Id)=', this.state.user.get('Id'));
         if (a.get('UserId') === this.state.user.get('Id')) {
           return constants.RUNNING;
         } else {
