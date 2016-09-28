@@ -10,6 +10,7 @@ var MachineActions = require('../../../actions/MachineActions');
 var MachineMixin = require('../MachineMixin');
 var Machines = require('../../../modules/Machines');
 var React = require('react');
+var ReservationActions = require('../../../actions/ReservationActions');
 var reactor = require('../../../reactor');
 var toastr = require('../../../toastr');
 var UserActions = require('../../../actions/UserActions');
@@ -55,14 +56,38 @@ var Button = React.createClass({
     switch (this.props.status) {
     case constants.AVAILABLE:
       return (
-        <div className="m-action m-start"
+        <div className="m-action"
              onClick={this.activationStart}>
           START
         </div>
       );
+    case constants.LOCKED:
+      return (
+        <div className="m-action">
+          LOCKED
+        </div>
+      );
+    case constants.MAINTENANCE:
+      return (
+        <div className="m-action">
+          <span>MAINTENANCE</span>
+        </div>
+      );
+    case constants.OCCUPIED:
+      return (
+        <div className="m-action">
+          <span>OCCUPIED</span>
+        </div>
+      );
+    case constants.RESERVED:
+      return (
+        <div className="m-action">
+          RESERVED
+        </div>
+      );
     case constants.RUNNING:
       return (
-        <div className="m-action m-stop"
+        <div className="m-action"
              onClick={this.activationEnd}>
           STOP
         </div>
@@ -84,6 +109,8 @@ var MachinePage = React.createClass({
       activations: Machines.getters.getActivations,
       locationId: LocationGetters.getLocationId,
       machines: Machines.getters.getMachines,
+      reservationsByMachineId: getters.getActiveReservationsByMachineId,
+      upcomingReservationsByMachineId: getters.getUpcomingReservationsByMachineId,
       user: getters.getUser
     };
   },
@@ -94,6 +121,7 @@ var MachinePage = React.createClass({
     MachineActions.apiGetUserMachines(locationId, uid);
     UserActions.fetchUser(uid);
     LocationActions.loadUserLocations(uid);
+    ReservationActions.load();
     MachineActions.wsDashboard(null, locationId);
   },
 
@@ -121,27 +149,35 @@ var MachinePage = React.createClass({
   },
 
   render() {
+    console.log('MachinePage#render');
     const m = this.machine();
-    var button;
 
     if (!m) {
+      console.log('!m');
       return <LoaderLocal/>;
     }
+    console.log('ooookkk');
+
+    var className;
 
     switch (this.status()) {
       case constants.AVAILABLE:
-        button = (
-          <div className="m-action m-start">
-            START
-          </div>
-        );
+        className = 'm-start';
+        break;
+      case constants.LOCKED:
+        className = 'm-locked';
+        break;
+      case constants.MAINTENANCE:
+        className = 'm-maintenance';
+        break;
+      case constants.OCCUPIED:
+        className = 'm-occupied';
+        break;
+      case constants.RESERVED:
+        className = 'm-reserved';
         break;
       case constants.RUNNING:
-        button = (
-          <div className="m-action m-stop">
-            STOP
-          </div>
-        );
+        className = 'm-stop';
         break;
     }
 
@@ -155,7 +191,7 @@ var MachinePage = React.createClass({
         <div id="m-header">
           <h2>{m.get('Name')} ({m.get('Brand')})</h2>
           <div id="m-img" style={style}/>
-          <div id="m-header-panel">
+          <div className={'m-header-panel ' + className}>
             <Button machine={this.machine()}
                     status={this.status()}/>
           </div>

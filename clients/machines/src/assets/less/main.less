@@ -1528,16 +1528,38 @@ http://codepen.io/anon/pen/QEXBEp
   width: 100%;
 }
 
-#m-header-panel {
-  background: #DCFFF1;
+.m-header-panel {
   padding: 27px 0 36px;
   text-align: center;
+}
+
+.m-start.m-header-panel {
+  background: #DCFFF1;
+}
+
+.m-locked.m-header-panel {
+  background: @ms-hover-color-locked;
+}
+
+.m-maintenance.m-header-panel {
+  background: repeating-linear-gradient(-35deg, #8e8e8e, #8e8e8e 109px, #EBE44D 112px, #EBE44D 200px);
+}
+
+.m-occupied.m-header-panel {
+  background: @ms-hover-color-occupied;
+}
+
+.m-reserved.m-header-panel {
+  background: @ms-hover-color-reserved;
+}
+
+.m-stop.m-header-panel {
+  background: #FFFFDC;
 }
 
 .m-action {
   background: white;
   border-radius: 50%;
-  cursor: pointer;
   display: inline-block;
   font-size: 36px;
   font-weight: bold;
@@ -1546,12 +1568,51 @@ http://codepen.io/anon/pen/QEXBEp
   width: 223px;
 }
 
-.m-action.m-start {
+.m-start .m-action {
   color: @ms-hover-color-available;
+  .box-shadow(0px 4px 10px -1px @ms-hover-color-available);
+  cursor: pointer;
 }
 
-.m-action.m-start:hover {
-  .box-shadow(0px 4px 10px -1px @ms-hover-color-available);
+.m-locked .m-action {
+  background: @ms-hover-color-locked;
+  border: 2px solid white;
+  color: white;
+  cursor: default;
+}
+
+.m-maintenance .m-action {
+  background: @ms-hover-color-maintenance;
+  border: 2px solid #EBE44D;
+  color: white;
+  cursor: default;
+}
+
+.m-maintenance .m-action span {
+  background: white;
+  color: @ms-hover-color-maintenance;
+  margin-left: -33px;
+  padding: 0 15px;
+}
+
+.m-occupied .m-action {
+  background: @ms-hover-color-occupied;
+  border: 2px solid white;
+  color: white;
+  cursor: default;
+}
+
+.m-reserved .m-action {
+  background: @ms-hover-color-reserved;
+  border: 2px solid white;
+  color: white;
+  cursor: default;
+}
+
+.m-stop .m-action {
+  background: @ms-hover-color-running;
+  color: white;
+  cursor: pointer;
 }
 
 #m-report {
