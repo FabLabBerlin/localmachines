@@ -121,9 +121,11 @@ var MachinePage = React.createClass({
             </div>
             <div className="col-sm-4"/>
           </div>
-          <div id="m-report" className="m-maintenance">
-            <span onClick={this.repair}>Report a machine failure</span>
-          </div>
+          {this.status() !== constants.MAINTENANCE ?
+            <div id="m-report" className="m-maintenance">
+              <span onClick={this.repair}>Report a machine failure</span>
+            </div> : null
+          }
         </div>
       </div>
     );
