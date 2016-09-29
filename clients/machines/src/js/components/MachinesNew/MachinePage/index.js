@@ -11,6 +11,7 @@ var Machines = require('../../../modules/Machines');
 var OccupiedBy = require('./OccupiedBy');
 var React = require('react');
 var ReservationActions = require('../../../actions/ReservationActions');
+var ReservedBy = require('./ReservedBy');
 var reactor = require('../../../reactor');
 var UpcomingReservation = require('./UpcomingReservation');
 var UserActions = require('../../../actions/UserActions');
@@ -112,6 +113,7 @@ var MachinePage = React.createClass({
             <div className="col-sm-4">
               <UpcomingReservation upcomingReservation={this.upcomingReservation()}/>
               <OccupiedBy activation={this.machine().get('activation')}/>
+              <ReservedBy reservation={this.reservation()}/>
             </div>
             <div className="col-sm-4">
               <Button isStaff={this.state.isStaff}

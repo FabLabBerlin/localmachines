@@ -1,3 +1,4 @@
+var getters = require('../../../getters');
 var LoaderLocal = require('../../LoaderLocal');
 var Machines = require('../../../modules/Machines');
 var React = require('react');
@@ -9,15 +10,21 @@ var OccupiedBy = React.createClass({
 
   getDataBindings() {
     return {
-      machineUsers: Machines.getters.getMachineUsers
+      machineUsers: Machines.getters.getMachineUsers,
+      uid: getters.getUid
     };
   },
 
   render() {
     if (this.props.activation) {
+      const uid = this.props.activation.get('UserId');
+      if (uid === this.state.uid) {
+        return <div/>;
+      }
+
       if (this.state.machineUsers) {
         var users = this.state.machineUsers;
-        var user = users.get(this.props.activation.get('UserId')) || {};
+        var user = users.get(uid) || {};
 
         return (
           <div className="m-indicator m-occupied-by">
