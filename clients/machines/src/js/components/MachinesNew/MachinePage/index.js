@@ -12,6 +12,7 @@ var MachineMixin = require('../MachineMixin');
 var Machines = require('../../../modules/Machines');
 var React = require('react');
 var ReservationActions = require('../../../actions/ReservationActions');
+var ReservationTimer = require('../../MachinePage/Machine/ReservationTimer');
 var reactor = require('../../../reactor');
 var toastr = require('../../../toastr');
 var UserActions = require('../../../actions/UserActions');
@@ -75,6 +76,14 @@ var Button = React.createClass({
         </div>
       );
     case constants.OCCUPIED:
+      if (this.props.isStaff) {
+        return (
+          <div className="m-action"
+               onClick={this.activationEnd}>
+            <span>STOP</span>
+          </div>
+        );
+      }
       return (
         <div className="m-action">
           <span>OCCUPIED</span>
@@ -85,7 +94,7 @@ var Button = React.createClass({
       return (
         <div className="m-action m-clock">
           RESERVED
-          <ActivationTimer activation={this.props.reservation.toJS()}/>
+          <ReservationTimer reservation={this.props.reservation.toJS()}/>
         </div>
       );
     case constants.RUNNING:
@@ -111,6 +120,7 @@ var MachinePage = React.createClass({
   getDataBindings() {
     return {
       activations: Machines.getters.getActivations,
+      isStaff: LocationGetters.getIsStaff,
       locationId: LocationGetters.getLocationId,
       machines: Machines.getters.getMachines,
       reservationsByMachineId: getters.getActiveReservationsByMachineId,
@@ -161,7 +171,7 @@ var MachinePage = React.createClass({
 
     var className;
 
-    switch (this.status()) {
+    switch (this.status(true)) {
       case constants.AVAILABLE:
         className = 'm-start';
         break;
@@ -173,6 +183,9 @@ var MachinePage = React.createClass({
         break;
       case constants.OCCUPIED:
         className = 'm-occupied';
+        if (this.state.isStaff) {
+          className += ' m-stop';
+        }
         break;
       case constants.RESERVED:
         className = 'm-reserved';
@@ -193,9 +206,10 @@ var MachinePage = React.createClass({
           <h2>{m.get('Name')} ({m.get('Brand')})</h2>
           <div id="m-img" style={style}/>
           <div className={'m-header-panel ' + className}>
-            <Button machine={this.machine()}
+            <Button isStaff={this.state.isStaff}
+                    machine={this.machine()}
                     reservation={this.reservation()}
-                    status={this.status()}/>
+                    status={this.status(true)}/>
           </div>
           <div id="m-report">
             <span onClick={this.repair}>Report a machine failure</span>

@@ -43,7 +43,7 @@ var MachineMixin = {
     }
   },
 
-  status() {
+  status(ignoreUpcoming) {
     const m = this.machine();
 
     if (!m) {
@@ -68,7 +68,8 @@ var MachineMixin = {
       } else if (r && !r.get('ReservationDisabled') && !r.get('Cancelled')) {
         return constants.RESERVED;
       } else if (upcoming && !upcoming.get('ReservationDisabled') &&
-                !upcoming.get('Cancelled')) {
+                !upcoming.get('Cancelled') &&
+                !ignoreUpcoming) {
         return constants.UPCOMING_RESERVATION;
       } else {
         return constants.AVAILABLE;
