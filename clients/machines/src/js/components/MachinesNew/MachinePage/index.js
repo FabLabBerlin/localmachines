@@ -1,116 +1,17 @@
-var $ = require('jquery');
-var ActivationTimer = require('../../MachinePage/Machine/ActivationTimer');
+var Button = require('./Button');
 var constants = require('../constants');
 var FeedbackDialogs = require('../../Feedback/FeedbackDialogs');
 var getters = require('../../../getters');
 var LoaderLocal = require('../../LoaderLocal');
 var LocationActions = require('../../../actions/LocationActions');
 var LocationGetters = require('../../../modules/Location/getters');
-var LoginActions = require('../../../actions/LoginActions');
 var MachineActions = require('../../../actions/MachineActions');
 var MachineMixin = require('../MachineMixin');
 var Machines = require('../../../modules/Machines');
 var React = require('react');
 var ReservationActions = require('../../../actions/ReservationActions');
-var ReservationTimer = require('../../MachinePage/Machine/ReservationTimer');
 var reactor = require('../../../reactor');
-var toastr = require('../../../toastr');
 var UserActions = require('../../../actions/UserActions');
-
-// https://github.com/HubSpot/vex/issues/72
-var vex = require('vex-js'),
-VexDialog = require('vex-js/js/vex.dialog.js');
-
-vex.defaultOptions.className = 'vex-theme-custom';
-
-
-var Button = React.createClass({
-  activationEnd() {
-    let aid = this.props.machine.getIn(['activation', 'Id']);
-
-    VexDialog.buttons.YES.text = 'Yes';
-    VexDialog.buttons.NO.text = 'No';
-
-    VexDialog.confirm({
-      message: 'Do you really want to stop the activation for <b>' +
-        this.props.machine.get('Name') + '</b>?',
-      callback(confirmed) {
-        if (confirmed) {
-          MachineActions.endActivation(aid, function() {
-            //FeedbackDialogs.checkSatisfaction(aid);
-          });
-        }
-        $('.vex').remove();
-        $('body').removeClass('vex-open');
-      }
-    });
-
-    LoginActions.keepAlive();
-  },
-
-  activationStart() {
-    const mid = this.props.machine.get('Id');
-    MachineActions.startActivation(mid);
-    LoginActions.keepAlive();
-  },
-
-  render() {
-    switch (this.props.status) {
-    case constants.AVAILABLE:
-      return (
-        <div className="m-action"
-             onClick={this.activationStart}>
-          START
-        </div>
-      );
-    case constants.LOCKED:
-      return (
-        <div className="m-action">
-          LOCKED
-        </div>
-      );
-    case constants.MAINTENANCE:
-      return (
-        <div className="m-action">
-          <span>MAINTENANCE</span>
-        </div>
-      );
-    case constants.OCCUPIED:
-      if (this.props.isStaff) {
-        return (
-          <div className="m-action"
-               onClick={this.activationEnd}>
-            <span>STOP</span>
-          </div>
-        );
-      }
-      return (
-        <div className="m-action">
-          <span>OCCUPIED</span>
-        </div>
-      );
-    case constants.RESERVED:
-      console.log('this.props.reservation=', this.props.reservation);
-      return (
-        <div className="m-action m-clock">
-          RESERVED
-          <ReservationTimer reservation={this.props.reservation.toJS()}/>
-        </div>
-      );
-    case constants.RUNNING:
-      return (
-        <div className="m-action m-clock"
-             onClick={this.activationEnd}>
-          STOP
-          <ActivationTimer activation={this.props.machine.get('activation').toJS()}/>
-        </div>
-      );
-    default:
-      console.log('this.props.status=', this.props.status);
-      return <LoaderLocal/>;
-    }
-  }
-});
 
 
 var MachinePage = React.createClass({
