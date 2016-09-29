@@ -54,7 +54,6 @@ var Button = React.createClass({
   },
 
   render() {
-    console.log('this.props.status=', this.props.status);
     switch (this.props.status) {
     case constants.AVAILABLE:
       return (
@@ -154,7 +153,6 @@ var MachinePage = React.createClass({
   },
 
   render() {
-    console.log('MachinePage#render');
     const m = this.machine();
 
     if (!m) {

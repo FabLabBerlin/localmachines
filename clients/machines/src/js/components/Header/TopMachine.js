@@ -1,6 +1,61 @@
 var Machines = require('../../modules/Machines');
 var React = require('react');
 var reactor = require('../../reactor');
+var Settings = require('../../modules/Settings');
+
+
+var MachineType = React.createClass({
+  render() {
+    const tId = this.props.machine.get('TypeId');
+    const t = {
+      1: '3D Printer',
+      2: 'CNC Mill',
+      3: 'Heatpress',
+      4: 'Knitting Machine',
+      5: 'Laser Cutter',
+      6: 'Vinylcutter'
+    }[tId];
+
+    return (
+      <div className="nav-machine-type">
+        {t}
+      </div>
+    );
+  }
+});
+
+
+var Price = React.createClass({
+  mixins: [ reactor.ReactMixin ],
+
+  getDataBindings() {
+    return {
+      currency: Settings.getters.getCurrency
+    };
+  },
+
+  render() {
+    var price;
+    price = this.props.machine.get('Price').toFixed(2);
+    price += ' ' + (this.state.currency || '€') + ' / ';
+    switch (this.props.machine.get('PriceUnit')) {
+      case 'hour':
+        price += 'h';
+        break;
+      case 'minute':
+        price += 'min';
+        break;
+      default:
+        price += this.props.machine.get('PriceUnit');
+    }
+
+    return (
+      <div>
+        {price} pay-as-you-go
+      </div>
+    );
+  }
+});
 
 
 var TopMachine = React.createClass({
@@ -30,15 +85,17 @@ var TopMachine = React.createClass({
   },
 
   render() {
-    console.log('machineId=', this.props.machineId);
     const m = this.machine();
 
     return (
       <div className="nav-top row">
         {m ? (
           <div className="nav-machine-top-panel">
-            <div className="nav-machine-name">{m.get('Name')}</div>
-            <div></div>
+            <div className="nav-machine-info">
+              <div className="nav-machine-name">{m.get('Name')}</div>
+              <MachineType machine={m}/>
+              <Price machine={m}/>
+            </div>
             <button type="button"
                     title="Close"
                     onClick={this.hide}>

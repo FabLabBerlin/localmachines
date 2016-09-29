@@ -157,9 +157,9 @@ var MachineChooser = React.createClass({
     }
     var price;
     if (this.props.machine.Name.indexOf('Tutor') < 0) {
-      price = ' ' + (this.state.currency || '€') + ' ';
-      price += this.props.machine.Price.toFixed(2);
-      price += '/';
+      price = this.props.machine.Price.toFixed(2);
+      price += ' ' + (this.state.currency || '€') + ' ';
+      price += '/ ';
       switch (this.props.machine.PriceUnit) {
         case 'hour':
           price += 'h';

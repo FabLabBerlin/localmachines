@@ -20,19 +20,20 @@ var HeaderNav = React.createClass({
   },
 
   render() {
-    console.log('this.props.location=', this.props.location);
     if (this.state.isLogged) {
       const pathMatch = this.props.location.pathname.match(/.machines.(\d+)/);
       const className = pathMatch ? 'nav-machine' : '';
+      const machineId = pathMatch ? parseInt(pathMatch[1]) : undefined;
 
       return (
         <div className={'nav ' + className}>
           {pathMatch ?
-            <TopMachine machineId={parseInt(pathMatch[1])}/> :
+            <TopMachine machineId={machineId}/> :
             <Top/>
           }
           {pathMatch ?
-            <BottomMachine location={this.props.location}/> :
+            <BottomMachine location={this.props.location}
+                           machineId={machineId}/> :
             <Bottom location={this.props.location}/>
           }
         </div>

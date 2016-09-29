@@ -450,6 +450,10 @@ nav.navbar a.sign-out {
   width: 100%;
 }
 
+.nav-machine .nav-top {
+  height: 103px;
+}
+
 .nav-machine .nav-top button {
   background: transparent;
   border: none;
@@ -461,16 +465,33 @@ nav.navbar a.sign-out {
 }
 
 .nav-machine .nav-item span {
+  border-top: 3px solid white;
   display: block;
   height: 50px;
   padding-top: 12px;
 }
 
-.nav-machine-name {
+.nav-machine .nav-item.active span {
+  background: white;
+  color: black;
+  font-weight: normal;
+}
+
+.nav-machine .nav-item span:hover {
+  background: white;
+  color: black;
+  font-weight: normal;
+}
+
+.nav-machine-info {
   float: left;
+  font-size: 18px;
+  margin-left: 93px;
+}
+
+.nav-machine-name {
   font-size: 33.74px;
   font-weight: bolder;
-  margin-left: 93px;
 }
 
 .nav-left {
