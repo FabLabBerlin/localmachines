@@ -1763,6 +1763,53 @@ http://codepen.io/anon/pen/QEXBEp
   color: white;
 }
 
+//////////////////////////////////////////////////////////
+////                                                  ////
+////             NEW RESERVATION CALENDAR             ////
+////                                                  ////
+//////////////////////////////////////////////////////////
+
+.r-calendar {
+  width: 100%;
+}
+
+.r-day {
+  border: 1px solid @ms-hover-color-reserved;
+  float: left;
+  width: 14.28571%;
+}
+
+.r-day-header {
+  background: @ms-hover-color-reserved;
+  color: white;
+  font-size: 14px;
+  text-align: center;
+}
+
+.r-day-header-weekday {
+  padding-top: 8px;
+}
+
+.r-day-header-number {
+  border: 1px solid white;
+  border-radius: 50%;
+  font-size: 20px;
+  font-weight: bold;
+  height: 37px;
+  padding: 3px 0px 0 0;
+  width: 37px;
+}
+
+.r-day-header-number.r-day-current {
+  background: white;
+  color: @ms-hover-color-reserved;
+}
+
+.r-slot {
+  border-bottom: 1px solid @ms-hover-color-reserved;
+  height: 41px;
+}
+
 /*
 
 http://www.network-science.de/ascii/ 
