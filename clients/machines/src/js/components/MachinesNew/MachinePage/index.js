@@ -11,6 +11,7 @@ var Machines = require('../../../modules/Machines');
 var React = require('react');
 var ReservationActions = require('../../../actions/ReservationActions');
 var reactor = require('../../../reactor');
+var UpcomingReservation = require('./UpcomingReservation');
 var UserActions = require('../../../actions/UserActions');
 
 
@@ -106,11 +107,17 @@ var MachinePage = React.createClass({
         <div id="m-header">
           <h2>{m.get('Name')} ({m.get('Brand')})</h2>
           <div id="m-img" style={style}/>
-          <div className={'m-header-panel ' + className}>
-            <Button isStaff={this.state.isStaff}
-                    machine={this.machine()}
-                    reservation={this.reservation()}
-                    status={this.status(true)}/>
+          <div className={'row m-header-panel ' + className}>
+            <div className="col-sm-4">
+              <UpcomingReservation upcomingReservation={this.upcomingReservation()}/>
+            </div>
+            <div className="col-sm-4">
+              <Button isStaff={this.state.isStaff}
+                      machine={this.machine()}
+                      reservation={this.reservation()}
+                      status={this.status(true)}/>
+            </div>
+            <div className="col-sm-4"/>
           </div>
           <div id="m-report">
             <span onClick={this.repair}>Report a machine failure</span>
