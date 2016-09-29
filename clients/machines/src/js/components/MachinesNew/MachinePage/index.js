@@ -8,6 +8,7 @@ var LocationGetters = require('../../../modules/Location/getters');
 var MachineActions = require('../../../actions/MachineActions');
 var MachineMixin = require('../MachineMixin');
 var Machines = require('../../../modules/Machines');
+var OccupiedBy = require('./OccupiedBy');
 var React = require('react');
 var ReservationActions = require('../../../actions/ReservationActions');
 var reactor = require('../../../reactor');
@@ -110,6 +111,7 @@ var MachinePage = React.createClass({
           <div className={'row m-header-panel ' + className}>
             <div className="col-sm-4">
               <UpcomingReservation upcomingReservation={this.upcomingReservation()}/>
+              <OccupiedBy activation={this.machine().get('activation')}/>
             </div>
             <div className="col-sm-4">
               <Button isStaff={this.state.isStaff}
@@ -119,7 +121,7 @@ var MachinePage = React.createClass({
             </div>
             <div className="col-sm-4"/>
           </div>
-          <div id="m-report">
+          <div id="m-report" className="m-maintenance">
             <span onClick={this.repair}>Report a machine failure</span>
           </div>
         </div>

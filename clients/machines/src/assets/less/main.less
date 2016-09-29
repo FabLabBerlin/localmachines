@@ -457,7 +457,9 @@ nav.navbar a.sign-out {
 .nav-machine .nav-top button {
   background: transparent;
   border: none;
-  float: right;
+  position: absolute;
+  right: 25px;
+  top: 17px;
 }
 
 .nav-machine .nav-item img {
@@ -1607,11 +1609,15 @@ http://codepen.io/anon/pen/QEXBEp
 }
 
 .m-maintenance.m-header-panel {
-  background: repeating-linear-gradient(-35deg, #8e8e8e, #8e8e8e 109px, #EBE44D 112px, #EBE44D 200px);
+  background: repeating-linear-gradient(-35deg, @m-ms-maintenance-grey, @m-ms-maintenance-grey 109px, @m-ms-maintenance-yellow 112px, @m-ms-maintenance-yellow 200px);
 }
 
 .m-occupied.m-header-panel {
-  background: @ms-hover-color-occupied;
+  background: @m-color-occupied;
+}
+
+.m-occupied.m-stop.m-header-panel {
+  background: @m-color-occupied;
 }
 
 .m-reserved.m-header-panel {
@@ -1677,7 +1683,7 @@ http://codepen.io/anon/pen/QEXBEp
 }
 
 .m-occupied .m-action {
-  background: @ms-hover-color-occupied;
+  background: @m-color-occupied;
   border: 2px solid white;
   color: white;
   cursor: default;
@@ -1685,7 +1691,7 @@ http://codepen.io/anon/pen/QEXBEp
 
 /* Occupied but stoppable because staff.. */
 .m-occupied.m-stop .m-action {
-  background-color: @ms-hover-color-occupied;
+  background-color: @m-color-occupied;
   border: none;
   color: @ms-hover-color-running;
 }
@@ -1706,24 +1712,31 @@ http://codepen.io/anon/pen/QEXBEp
 }
 
 #m-report {
+  background: repeating-linear-gradient(-35deg, @m-ms-maintenance-light-grey, @m-ms-maintenance-light-grey 109px, @m-ms-maintenance-light-yellow 112px, @m-ms-maintenance-light-yellow 200px);
   color: #888888;
-  font-size: 24px;
-  height: 185px;
-  padding-top: 95px;
+  height: 123px;
+  padding-top: 45px;
   text-align: center;
-  text-decoration: underline;
   width: 100%;
 }
 
 #m-report span {
+  background: white;
+  color: #A1A1A1;
   cursor: pointer;
+  font-size: 24px;
+  font-weight: normal;
+  padding: 6px 25px;
+}
+
+.m-indicator {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 63px 0;
 }
 
 #m-upcoming-reservation {
   color: @ms-hover-color-reserved;
-  font-size: 16px;
-  font-weight: bold;
-  margin: 63px 0;
   text-align: center;
 }
 
@@ -1740,6 +1753,10 @@ http://codepen.io/anon/pen/QEXBEp
   display: inline-block;
   height: 44px;
   width: 44px;
+}
+
+.m-occupied-by {
+  color: white;
 }
 
 /*

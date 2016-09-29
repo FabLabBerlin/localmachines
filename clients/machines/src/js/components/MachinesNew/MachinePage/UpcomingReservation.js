@@ -6,7 +6,7 @@ var UpcomingReservation = React.createClass({
   render() {
     if (this.props.upcomingReservation) {
       return (
-        <div id="m-upcoming-reservation">
+        <div id="m-upcoming-reservation" className="m-indicator">
           <div id="m-upcoming-reservation-icon"/>
           <div>Next</div>
           <div>Reservation:</div>
