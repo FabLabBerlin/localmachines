@@ -1,6 +1,7 @@
 var _ = require('lodash');
 var getters = require('../../../../getters');
 var LoaderLocal = require('../../../LoaderLocal');
+var MachineActions = require('../../../../actions/MachineActions');
 var Machines = require('../../../../modules/Machines');
 var moment = require('moment');
 var React = require('react');
@@ -113,7 +114,6 @@ var Event = React.createClass({
     const uid = this.props.reservation.get('UserId');
     const users = this.state.machineUsers;
     const user = users.get(uid) || {};
-    console.log('this.state.machineUsers=', this.state.machineUsers);
     const r = this.props.reservation;
     const i = toInt(r.get('TimeStart'));
     const j = toInt(r.get('TimeEnd'));
@@ -192,6 +192,16 @@ var Week = React.createClass({
   render() {
     const start = '9:00';
     const end = '22:00';
+
+    if (!this.state.reservations) {
+      return <LoaderLocal/>;
+    }
+
+    const userIds = this.state.reservations
+        .filter(r => r.get('MachineId') === this.props.machineId)
+        .map(r => r.get('UserId'));
+
+    MachineActions.fetchUserNames(userIds.toJS());
 
     return (
       <div className="r-week">

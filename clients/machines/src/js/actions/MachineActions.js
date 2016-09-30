@@ -37,7 +37,7 @@ function dashboardDispatch(data) {
       reactor.dispatch(Machines.actionTypes.SET_MACHINES, {
         machines: data.Machines
       });
-      fetchUserNames(userIds);
+      MachineActions.fetchUserNames(userIds);
     });
   }
 }
@@ -125,6 +125,28 @@ var MachineActions = {
    */
   clearState() {
     reactor.dispatch(Machines.actionTypes.MACHINE_STORE_CLEAR_STATE);
+  },
+
+  fetchUserNames(userIds) {
+    var fetchedUserIds = _.keys(reactor.evaluateToJS(Machines.getters.getMachineUsers));
+    fetchedUserIds = _.map(fetchedUserIds, function(id) {
+      return parseInt(id, 10);
+    });
+    userIds = _.difference(userIds, fetchedUserIds);
+
+    if (userIds.length > 0) {
+      $.ajax({
+        url: '/api/users/names?uids=' + userIds.join(','),
+        dataType: 'json',
+        type: 'GET',
+        success(response) {
+          reactor.dispatch(Machines.actionTypes.REGISTER_MACHINE_USERS, response.Users);
+        },
+        error() {
+          console.log('Error loading names');
+        }
+      });
+    }
   },
 
   lpDashboard(router, locationId, chained) {
@@ -247,28 +269,6 @@ var MachineActions = {
  */
 function endActivation(aid, cb) {
 
-}
-
-function fetchUserNames(userIds) {
-  var fetchedUserIds = _.keys(reactor.evaluateToJS(Machines.getters.getMachineUsers));
-  fetchedUserIds = _.map(fetchedUserIds, function(id) {
-    return parseInt(id, 10);
-  });
-  userIds = _.difference(userIds, fetchedUserIds);
-
-  if (userIds.length > 0) {
-    $.ajax({
-      url: '/api/users/names?uids=' + userIds.join(','),
-      dataType: 'json',
-      type: 'GET',
-      success(response) {
-        reactor.dispatch(Machines.actionTypes.REGISTER_MACHINE_USERS, response.Users);
-      },
-      error() {
-        console.log('Error loading names');
-      }
-    });
-  }
 }
 
 export default MachineActions;
