@@ -395,6 +395,13 @@ const getUpcomingReservationsByMachineId = [
   }
 ];
 
+const getReservationRules = [
+  ['reservationRulesStore'],
+  (reservationRulesStore) => {
+    return reservationRulesStore.get('reservationRules');
+  }
+];
+
 const getNewReservationTimes = [
   Machines.getters.getMachinesById,
   ['reservationsStore'],
@@ -555,6 +562,7 @@ export default {
   getIsLoading, getBill, getBillMonths, getMonthlyBills, getMemberships, getMembershipsByMonth,
   getFeedbackSubject, getFeedbackSubjectDropdown, getFeedbackSubjectOtherText, getFeedbackMessage,
   getNewReservation, getNewReservationPrice, getNewReservationTimes, getNewReservationFrom, getNewReservationTo, getReservations, getReservationsByDay, getActiveReservationsByMachineId, getUpcomingReservationsByMachineId, getSlotAvailabilities48h,
+  getReservationRules,
   getScrollUpEnabled, getScrollDownEnabled, getScrollPosition,
   getTutorings
 };

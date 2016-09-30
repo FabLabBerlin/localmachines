@@ -6,6 +6,7 @@ var MachineActions = require('../../../../actions/MachineActions');
 var React = require('react');
 var reactor = require('../../../../reactor');
 var ReservationActions = require('../../../../actions/ReservationActions');
+var ReservationRulesActions = require('../../../../actions/ReservationRulesActions');
 var UserActions = require('../../../../actions/UserActions');
 
 
@@ -17,6 +18,7 @@ var ReservationPage = React.createClass({
     UserActions.fetchUser(uid);
     LocationActions.loadUserLocations(uid);
     ReservationActions.load();
+    ReservationRulesActions.load(locationId);
     MachineActions.wsDashboard(null, locationId);
   },
 

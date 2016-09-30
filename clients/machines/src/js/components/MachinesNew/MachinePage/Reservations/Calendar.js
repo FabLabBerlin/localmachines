@@ -136,6 +136,24 @@ var Day = React.createClass({
       return <LoaderLocal/>;
     }
 
+    console.log('reservationRules=', this.props.reservationRules);
+    const availableSlots = this.props.reservationRules
+      .filter(rr => rr.get('Available'))
+      .reduce((result, rr) => {
+
+      console.log('result=', result);
+      console.log('rr=', rr);
+
+      for (var i = toInt(rr.get('TimeStart')); i < toInt(rr.get('TimeEnd')); i++) {
+        console.log('i=', i);
+        result[i] = true;
+      }
+
+      return result;
+    }, {});
+
+    console.log('availableSlots=', availableSlots);
+
     var rows = [];
     var key = 0;
     var r;
@@ -185,6 +203,7 @@ var Week = React.createClass({
   getDataBindings() {
     return {
       reservations: getters.getReservations,
+      reservationRules: getters.getReservationRules,
       userId: getters.getUid
     };
   },
@@ -193,9 +212,11 @@ var Week = React.createClass({
     const start = '9:00';
     const end = '22:00';
 
-    if (!this.state.reservations) {
+    if (!this.state.reservations || !this.state.reservationRules) {
       return <LoaderLocal/>;
     }
+
+    console.log('this.state.reservationRules=', this.state.reservationRules);
 
     const userIds = this.state.reservations
         .filter(r => r.get('MachineId') === this.props.machineId)
@@ -208,18 +229,22 @@ var Week = React.createClass({
         <Times start={start} end={end}/>
         {_.map(Array(7), (v, i) => {
           const day = this.props.startDay.clone().add(i, 'day');
-          var reservations;
+          const weekDayName = day.format('dddd');
+          const reservations = this.state.reservations.filter((r) => {
+            return areSameDay(day, moment(r.get('TimeStart')));
+          });
+          const reservationRules = this.state.reservationRules.filter((rr) => {
+            const a = moment(rr.get('DateStart') + ' 00:00').unix();
+            const b = moment(rr.get('DateEnd') + ' 00:00').add(1, 'day').unix();
 
-          if (this.state.reservations) {
-            reservations = this.state.reservations.filter((r) => {
-              return areSameDay(day, moment(r.get('TimeStart')));
-            });
-          }
+            return a <= day.unix() && day.unix() <= b && rr.get(weekDayName);
+          });
 
           return <Day key={i}
                       day={day}
                       machineId={this.props.machineId}
                       reservations={reservations}
+                      reservationRules={reservationRules}
                       start={start}
                       end={end}/>;
         })}
