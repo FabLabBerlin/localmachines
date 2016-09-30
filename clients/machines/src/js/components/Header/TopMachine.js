@@ -1,3 +1,4 @@
+import {hashHistory} from 'react-router';
 var Machines = require('../../modules/Machines');
 var React = require('react');
 var reactor = require('../../reactor');
@@ -69,7 +70,7 @@ var TopMachine = React.createClass({
   },
 
   hide() {
-    window.history.back();
+    hashHistory.push('/machines');
   },
 
   machine() {

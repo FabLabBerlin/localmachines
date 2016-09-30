@@ -1,6 +1,7 @@
 var _ = require('lodash');
 var getters = require('../../../../getters');
 var LoaderLocal = require('../../../LoaderLocal');
+var Machines = require('../../../../modules/Machines');
 var moment = require('moment');
 var React = require('react');
 var reactor = require('../../../../reactor');
@@ -99,6 +100,36 @@ var Slot = React.createClass({
 });
 
 
+var Event = React.createClass({
+  mixins: [ reactor.ReactMixin ],
+
+  getDataBindings() {
+    return {
+      machineUsers: Machines.getters.getMachineUsers
+    };
+  },
+
+  render() {
+    const uid = this.props.reservation.get('UserId');
+    const users = this.state.machineUsers;
+    const user = users.get(uid) || {};
+    console.log('this.state.machineUsers=', this.state.machineUsers);
+    const r = this.props.reservation;
+    const i = toInt(r.get('TimeStart'));
+    const j = toInt(r.get('TimeEnd'));
+    const style = {
+      height: (j - i) * 41
+    };
+
+    return (
+      <div className="r-reservation" style={style}>
+        {user.FirstName} {user.LastName}
+      </div>
+    );
+  }
+});
+
+
 var Day = React.createClass({
   render() {
     if (!this.props.reservations) {
@@ -131,12 +162,7 @@ var Day = React.createClass({
       }
 
       if (r && toInt(r.get('TimeStart')) === i) {
-        const j = toInt(r.get('TimeEnd'));
-        const style = {
-          height: (j - i) * 41
-        };
-
-        rows.push(<div className="r-reservation" key={++key} style={style}/>);
+        rows.push(<Event key={++key} reservation={r}/>);
       } else if (!r) {
         rows.push(<Slot key={++key}/>);
       }
