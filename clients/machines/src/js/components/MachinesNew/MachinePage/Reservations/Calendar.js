@@ -130,11 +130,23 @@ var Event = React.createClass({
       height: (j - i) * 41
     };
 
-    return (
-      <div className="r-reservation" style={style}>
-        {user.FirstName} {user.LastName}
-      </div>
-    );
+    if (r.get('Name')) {
+      return (
+        <div className="r-reservation r-rule" style={style}>
+          <div className="r-label">
+            {r.get('Name')}
+          </div>
+        </div>
+      );
+    } else {
+      return (
+        <div className="r-reservation" style={style}>
+          <div className="r-label">
+            {user.FirstName} {user.LastName}
+          </div>
+        </div>
+      );
+    }
   }
 });
 
@@ -161,32 +173,55 @@ var Day = React.createClass({
 
     var rows = [];
     var key = 0;
-    var r;
+    var res;
+    var rule;
     var findReservation = (ii) => {
-      return this.props.reservations.find(rr => {
-        const j = toInt(rr.get('TimeStart'));
+      return this.props.reservations.find(r => {
+        const j = toInt(r.get('TimeStart'));
 
-        return ii === j && this.props.machineId === rr.get('MachineId');
+        return ii === j && this.props.machineId === r.get('MachineId');
+      });
+    };
+
+    var findReservationRule = (ii) => {
+      console.log('findReservationRule(', ii, ')');
+      return this.props.reservationRules.find(rr => {
+        if (rr.get('Unavailable')) {
+          const j = toInt(rr.get('TimeStart'));
+
+          console.log('j=', j);
+          console.log('this.props.machineId=', this.props.machineId);
+          console.log('rr.get(MachineId)=', rr.get('MachineId'));
+
+          return ii === j && (this.props.machineId === rr.get('MachineId')
+                          || !rr.get('MachineId'));
+        }
       });
     };
 
     for (var i = toInt(this.props.start); i < toInt(this.props.end); i++) {
-      if (r) {
-        const j = toInt(r.get('TimeStart'));
-        const k = toInt(r.get('TimeEnd'));
+      if (res) {
+        const j = toInt(res.get('TimeStart'));
+        const k = toInt(res.get('TimeEnd'));
 
         if (i < j || k <= i) {
-          r = null;
+          res = null;
         }
       }
 
-      if (!r) {
-        r = findReservation(i);
+      if (!res) {
+        res = findReservation(i);
+      }
+      if (!res) {
+        res = findReservationRule(i);
+        if (res) {
+          console.log('found res rule!!');
+        }
       }
 
-      if (r && toInt(r.get('TimeStart')) === i) {
-        rows.push(<Event key={++key} reservation={r}/>);
-      } else if (!r) {
+      if (res && toInt(res.get('TimeStart')) === i) {
+        rows.push(<Event key={++key} reservation={res}/>);
+      } else if (!res) {
         if (availableSlots[i]) {
           rows.push(<Slot key={++key}/>);
         } else {
