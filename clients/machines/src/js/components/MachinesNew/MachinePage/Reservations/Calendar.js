@@ -92,6 +92,15 @@ var DayHeader = React.createClass({
 });
 
 
+var Placeholder = React.createClass({
+  render() {
+    return (
+      <div className="r-placeholder"/>
+    );
+  }
+});
+
+
 var Slot = React.createClass({
   render() {
     return (
@@ -141,11 +150,7 @@ var Day = React.createClass({
       .filter(rr => rr.get('Available'))
       .reduce((result, rr) => {
 
-      console.log('result=', result);
-      console.log('rr=', rr);
-
       for (var i = toInt(rr.get('TimeStart')); i < toInt(rr.get('TimeEnd')); i++) {
-        console.log('i=', i);
         result[i] = true;
       }
 
@@ -182,7 +187,11 @@ var Day = React.createClass({
       if (r && toInt(r.get('TimeStart')) === i) {
         rows.push(<Event key={++key} reservation={r}/>);
       } else if (!r) {
-        rows.push(<Slot key={++key}/>);
+        if (availableSlots[i]) {
+          rows.push(<Slot key={++key}/>);
+        } else {
+          rows.push(<Placeholder key={++key}/>);
+        }
       }
     }
 

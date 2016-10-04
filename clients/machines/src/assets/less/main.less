@@ -1769,7 +1769,15 @@ http://codepen.io/anon/pen/QEXBEp
 ////                                                  ////
 //////////////////////////////////////////////////////////
 
-.r-calendar {
+#r-calendar {
+  background: repeating-linear-gradient(
+    -35deg,
+    #E5ECF5,
+    #E5ECF5 80px,
+    white 60px,
+    white 140px
+  );
+  display: inline-block;
   width: 100%;
 }
 
@@ -1824,7 +1832,12 @@ http://codepen.io/anon/pen/QEXBEp
 }
 
 .r-slot {
+  background: white;
   border-bottom: 1px solid @ms-hover-color-reserved;
+  height: 41px;
+}
+
+.r-placeholder {
   height: 41px;
 }
 
