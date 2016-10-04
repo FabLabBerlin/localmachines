@@ -218,8 +218,8 @@ var Week = React.createClass({
   },
 
   render() {
-    const start = '9:00';
-    const end = '22:00';
+    var start = '14:00';
+    var end = '17:00';
 
     if (!this.state.reservations || !this.state.reservationRules) {
       return <LoaderLocal/>;
@@ -232,6 +232,18 @@ var Week = React.createClass({
         .map(r => r.get('UserId'));
 
     MachineActions.fetchUserNames(userIds.toJS());
+
+    this.state.reservationRules.forEach(rr => {
+      if (rr.get('Available')) {
+        if (toInt(rr.get('TimeStart')) < toInt(start)) {
+          start = rr.get('TimeStart');
+        }
+
+        if (toInt(rr.get('TimeEnd')) > toInt(end)) {
+          end = rr.get('TimeEnd');
+        }
+      }
+    });
 
     return (
       <div className="r-week">
