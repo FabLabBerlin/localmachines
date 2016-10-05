@@ -65,7 +65,7 @@ var Times = React.createClass({
     }
 
     return (
-      <div className="r-times">
+      <div className="r-times visible-md-block visible-lg-block">
         {rows}
       </div>
     );
@@ -95,7 +95,7 @@ var DayHeader = React.createClass({
 var Placeholder = React.createClass({
   render() {
     return (
-      <div className="r-placeholder"/>
+      <div className="r-placeholder visible-md-block visible-lg-block"/>
     );
   }
 });
@@ -104,7 +104,7 @@ var Placeholder = React.createClass({
 var Slot = React.createClass({
   render() {
     return (
-      <div className="r-slot"/>
+      <div className="r-slot visible-md-block visible-lg-block"/>
     );
   }
 });
@@ -136,6 +136,10 @@ var Event = React.createClass({
           <div className="r-label">
             {r.get('Name')}
           </div>
+
+          <div className="text-center visible-xs-block visible-sm-block">
+            {r.get('TimeStart')} - {r.get('TimeEnd')}
+          </div>
         </div>
       );
     } else {
@@ -143,6 +147,10 @@ var Event = React.createClass({
         <div className="r-reservation" style={style}>
           <div className="r-label">
             {user.FirstName} {user.LastName}
+          </div>
+
+          <div className="text-center visible-xs-block visible-sm-block">
+            {moment(r.get('TimeStart')).format('HH:mm')} - {moment(r.get('TimeEnd')).format('HH:mm')}
           </div>
         </div>
       );
@@ -322,6 +330,10 @@ var Calendar = React.createClass({
     });
   },
 
+  clickCreate() {
+    this.props.clickCreate();
+  },
+
   render() {
     const endDay = this.state.startDay.clone().add(6, 'day');
 
@@ -334,6 +346,13 @@ var Calendar = React.createClass({
             {this.state.startDay.format('MMM DD')} - {endDay.format('MMM DD, YYYY')}
           </span>
         </div>
+        <div id="r-add-container" className="row">
+          <div className="col-sm-6">
+            <button id="r-add" onClick={this.clickCreate}/>
+          </div>
+          <div className="col-sm-6"/>
+        </div>
+        <div id="r-header-border"/>
         <Week machineId={this.props.machineId} startDay={this.state.startDay}/>
       </div>
     );

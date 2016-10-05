@@ -1784,22 +1784,30 @@ http://codepen.io/anon/pen/QEXBEp
 #r-header {
   background: #488BE9;
   color: white;
-  font-size: 26px;
-  font-weight: bold;
+  height: 81px;
   margin-top: -20px;
-  padding-left: 7%;
+}
+
+#r-header-border {
+  background: #2977E4;
+  border-bottom: 2px solid white;
+  height: 60px;
+  width: 100%;
 }
 
 .r-nav {
   background-color: white;
   background-position: 50%;
   background-repeat: no-repeat;
+  background-size: 40%;
   border: none;
-  border-radius: 8px;
+  border-radius: 2px;
   color: #488BE9;
-  height: 44px;
-  margin: 10px 4px;
-  width: 44px;
+  font-size: 26px;
+  font-weight: bold;
+  height: 24px;
+  margin: 7px 4px;
+  width: 24px;
 }
 
 .r-back {
@@ -1811,8 +1819,31 @@ http://codepen.io/anon/pen/QEXBEp
 }
 
 #r-range {
-  margin: 14px;
+  margin: 8px;
   position: absolute;
+}
+
+#r-add-container {
+  margin: 0;
+}
+
+#r-add-container button {
+  background-image: url(/machines/assets/img/machines/machine/r_add.svg);
+  background-position: 50%;
+  background-repeat: no-repeat;
+  position: absolute;
+  top: -32px;
+  z-index: 1;
+}
+
+#r-add {
+  background-color: #FF0000;
+  background-size: 40%;
+  border-radius: 50%;
+  color: white;
+  font-size: 36px;
+  height: 64px;
+  width: 64px;
 }
 
 .r-times {
@@ -1832,8 +1863,9 @@ http://codepen.io/anon/pen/QEXBEp
 
 .r-day {
   border: 1px solid @ms-hover-color-reserved;
+  clear: both;
   float: left;
-  width: 13.33333%;
+  width: 100%;
 }
 
 .r-day-header {
@@ -1841,7 +1873,7 @@ http://codepen.io/anon/pen/QEXBEp
   color: white;
   font-size: 14px;
   height: 57px;
-  margin: 0;
+  margin: 0 0 10px;
   padding-top: 9px;
   text-align: center;
 }
@@ -1888,6 +1920,7 @@ http://codepen.io/anon/pen/QEXBEp
 
 .r-reservation.r-rule {
   background: #F9FF00;
+  color: #488BE9;
 }
 
 .r-reservation .r-label {
@@ -1900,8 +1933,49 @@ http://codepen.io/anon/pen/QEXBEp
 .r-reservation.r-rule .r-label {
   background: white;
   .box-shadow(0px 2px 4px 0px #cddde6);
-  color: #488BE9;
   display: inline-block;
+}
+
+//////////////////////////////////////////////////////////
+////                                                  ////
+////             NEW MACHINE INFO PAGE                ////
+////                                                  ////
+//////////////////////////////////////////////////////////
+
+.m-info-section {
+  width: 50%;
+}
+
+.m-info-section-title {
+  background-repeat: no-repeat;
+  font-size: 22px;
+  font-weight: bold;
+  padding: 16px 0 0 100px;
+}
+
+#m-info-specs .m-info-section-title {
+  background-image: url(/machines/assets/img/machines/machine/m_info_specs.svg);
+}
+
+.m-info-section hr {
+  margin: 7px 0 16px;
+}
+
+.m-info-section-content {
+  color: #4A4A4A;
+  font-size: 17px;
+}
+
+.m-info-section-content table {
+  width: 100%;
+}
+
+.m-info-section-content tr {
+  width: 50%;
+}
+
+.m-info-section-content td:first-child {
+  font-weight: bold;
 }
 
 /*
@@ -2518,5 +2592,43 @@ This is for the big screens. Remember: "Mobile First"
 
   .prod-profile-title-right {
     padding-right: 34px;
+  }
+
+  #r-header {
+    padding-left: 7%;
+  }
+
+  .r-day {
+    clear: none;
+    width: 13.33333%;
+  }
+
+  .r-day-header {
+    margin: 0;
+  }
+
+  .r-nav {
+    background-size: 50%;
+    border-radius: 8px;
+    font-size: 26px;
+    font-weight: bold;
+    height: 44px;
+    margin: 20px 4px;
+    width: 44px;
+  }
+
+  #r-range {
+    font-size: 26px;
+    margin: 23px 8px;
+  }
+
+  #r-add-container button {
+    right: -63px;
+    top: -70px;
+  }
+
+  #r-add {
+    height: 116px;
+    width: 116px;
   }
 } /* @media (min-width: @screen-md-min) */
