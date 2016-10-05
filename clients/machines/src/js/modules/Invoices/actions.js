@@ -349,8 +349,8 @@ function save(locId, {invoiceId}) {
     var url;
 
     switch (p.Type) {
-    case 'activations':
-      url = '/api/activations/' + p.Id;
+    case 'activation':
+      url = '/api/activations/' + p.Id + '?location=' + locId;
       break;
     default:
       url = '/api/purchases/' + p.Id + '?type=' + p.Type;

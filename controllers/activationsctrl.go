@@ -175,7 +175,7 @@ func (this *ActivationsController) Put() {
 
 	inv, err := invoices.GetDraft(locId, activation.Purchase.UserId, activation.Purchase.TimeStart)
 	if err != nil {
-		beego.Error("Get invoice:", err)
+		beego.Error("Get draft:", err)
 		this.Abort("500")
 	}
 
