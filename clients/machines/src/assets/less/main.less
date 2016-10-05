@@ -1863,8 +1863,9 @@ http://codepen.io/anon/pen/QEXBEp
 
 .r-day {
   border: 1px solid @ms-hover-color-reserved;
+  clear: both;
   float: left;
-  width: 13.33333%;
+  width: 100%;
 }
 
 .r-day-header {
@@ -1872,7 +1873,7 @@ http://codepen.io/anon/pen/QEXBEp
   color: white;
   font-size: 14px;
   height: 57px;
-  margin: 0;
+  margin: 0 0 10px;
   padding-top: 9px;
   text-align: center;
 }
@@ -1919,6 +1920,7 @@ http://codepen.io/anon/pen/QEXBEp
 
 .r-reservation.r-rule {
   background: #F9FF00;
+  color: #488BE9;
 }
 
 .r-reservation .r-label {
@@ -1931,7 +1933,6 @@ http://codepen.io/anon/pen/QEXBEp
 .r-reservation.r-rule .r-label {
   background: white;
   .box-shadow(0px 2px 4px 0px #cddde6);
-  color: #488BE9;
   display: inline-block;
 }
 
@@ -2591,5 +2592,14 @@ This is for the big screens. Remember: "Mobile First"
 
   .prod-profile-title-right {
     padding-right: 34px;
+  }
+
+  .r-day {
+    clear: none;
+    width: 13.33333%;
+  }
+
+  .r-day-header {
+    margin: 0;
   }
 } /* @media (min-width: @screen-md-min) */
