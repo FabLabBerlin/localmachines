@@ -157,7 +157,6 @@ var Day = React.createClass({
       return <LoaderLocal/>;
     }
 
-    console.log('reservationRules=', this.props.reservationRules);
     const availableSlots = this.props.reservationRules
       .filter(rr => rr.get('Available'))
       .reduce((result, rr) => {
@@ -168,8 +167,6 @@ var Day = React.createClass({
 
       return result;
     }, {});
-
-    console.log('availableSlots=', availableSlots);
 
     var rows = [];
     var key = 0;
@@ -184,14 +181,9 @@ var Day = React.createClass({
     };
 
     var findReservationRule = (ii) => {
-      console.log('findReservationRule(', ii, ')');
       return this.props.reservationRules.find(rr => {
         if (rr.get('Unavailable')) {
           const j = toInt(rr.get('TimeStart'));
-
-          console.log('j=', j);
-          console.log('this.props.machineId=', this.props.machineId);
-          console.log('rr.get(MachineId)=', rr.get('MachineId'));
 
           return ii === j && (this.props.machineId === rr.get('MachineId')
                           || !rr.get('MachineId'));
@@ -214,9 +206,6 @@ var Day = React.createClass({
       }
       if (!res) {
         res = findReservationRule(i);
-        if (res) {
-          console.log('found res rule!!');
-        }
       }
 
       if (res && toInt(res.get('TimeStart')) === i) {
@@ -259,8 +248,6 @@ var Week = React.createClass({
     if (!this.state.reservations || !this.state.reservationRules) {
       return <LoaderLocal/>;
     }
-
-    console.log('this.state.reservationRules=', this.state.reservationRules);
 
     const userIds = this.state.reservations
         .filter(r => r.get('MachineId') === this.props.machineId)
@@ -311,16 +298,43 @@ var Week = React.createClass({
 
 
 var Calendar = React.createClass({
-  render() {
+  getInitialState() {
     const startDay = moment();
 
     while (startDay.weekday() !== MONDAY) {
       startDay.subtract(1, 'day');
     }
 
+    return {
+      startDay: startDay
+    };
+  },
+
+  back() {
+    this.setState({
+      startDay: this.state.startDay.subtract(1, 'week')
+    });
+  },
+
+  forward() {
+    this.setState({
+      startDay: this.state.startDay.add(1, 'week')
+    });
+  },
+
+  render() {
+    const endDay = this.state.startDay.clone().add(6, 'day');
+
     return (
       <div id="r-calendar">
-        <Week machineId={this.props.machineId} startDay={startDay}/>
+        <div id="r-header">
+          <button className="r-nav r-back" onClick={this.back}/>
+          <button className="r-nav r-forward" onClick={this.forward}/>
+          <span id="r-range">
+            {this.state.startDay.format('MMM DD')} - {endDay.format('MMM DD, YYYY')}
+          </span>
+        </div>
+        <Week machineId={this.props.machineId} startDay={this.state.startDay}/>
       </div>
     );
   }
