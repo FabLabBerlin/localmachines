@@ -334,6 +334,13 @@ var Calendar = React.createClass({
             {this.state.startDay.format('MMM DD')} - {endDay.format('MMM DD, YYYY')}
           </span>
         </div>
+        <div id="r-add-container" className="row">
+          <div className="col-sm-6">
+            <button id="r-add"/>
+          </div>
+          <div className="col-sm-6"/>
+        </div>
+        <div id="r-header-border"/>
         <Week machineId={this.props.machineId} startDay={this.state.startDay}/>
       </div>
     );
