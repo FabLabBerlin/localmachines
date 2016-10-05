@@ -274,7 +274,7 @@ func applyToBilling(update redis.MachinesUpdate) {
 		); err != nil {
 			beego.Error("Failed to create activation:", err)
 		}
-	case commands.GATEWAY_SUCCESS_OFF:
+	case commands.GATEWAY_SUCCESS_OFF, commands.GATEWAY_FAIL_OFF:
 		as, err := GetActiveActivations()
 		if err != nil {
 			beego.Error(err.Error())
