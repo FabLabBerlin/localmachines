@@ -330,6 +330,10 @@ var Calendar = React.createClass({
     });
   },
 
+  clickCreate() {
+    this.props.clickCreate();
+  },
+
   render() {
     const endDay = this.state.startDay.clone().add(6, 'day');
 
@@ -344,7 +348,7 @@ var Calendar = React.createClass({
         </div>
         <div id="r-add-container" className="row">
           <div className="col-sm-6">
-            <button id="r-add"/>
+            <button id="r-add" onClick={this.clickCreate}/>
           </div>
           <div className="col-sm-6"/>
         </div>

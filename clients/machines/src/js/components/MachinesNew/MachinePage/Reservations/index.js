@@ -3,14 +3,35 @@ var getters = require('../../../../getters');
 var LocationActions = require('../../../../actions/LocationActions');
 var LocationGetters = require('../../../../modules/Location/getters');
 var MachineActions = require('../../../../actions/MachineActions');
+var NewReservation = require('../../../Reservations/NewReservation');
 var React = require('react');
 var reactor = require('../../../../reactor');
 var ReservationActions = require('../../../../actions/ReservationActions');
 var ReservationRulesActions = require('../../../../actions/ReservationRulesActions');
+var Settings = require('../../../../modules/Settings');
 var UserActions = require('../../../../actions/UserActions');
 
 
 var ReservationPage = React.createClass({
+  mixins: [ reactor.ReactMixin ],
+
+  componentWillUnmount() {
+    ReservationActions.newReservation.done();
+  },
+
+  clickCreate() {
+    const mid = parseInt(this.props.params.machineId);
+    ReservationActions.newReservation.create();
+    ReservationActions.newReservation.setMachine({ mid });
+    ReservationActions.newReservation.nextStep();
+  },
+
+  getDataBindings() {
+    return {
+      newReservation: getters.getNewReservation
+    };
+  },
+
   componentWillMount() {
     const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
     const uid = reactor.evaluateToJS(getters.getUid);
@@ -20,16 +41,22 @@ var ReservationPage = React.createClass({
     ReservationActions.load();
     ReservationRulesActions.load(locationId);
     MachineActions.wsDashboard(null, locationId);
+    Settings.actions.loadSettings({locationId});
   },
 
   render() {
     const machineId = parseInt(this.props.params.machineId);
 
-    return (
-      <div>
-        <Calendar machineId={machineId}/>
-      </div>
-    );
+    if (this.state.newReservation) {
+      return <NewReservation/>;
+    } else {
+      return (
+        <div>
+          <Calendar machineId={machineId}
+                    clickCreate={this.clickCreate}/>
+        </div>
+      );
+    }
   }
 });
 
