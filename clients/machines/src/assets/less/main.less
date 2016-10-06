@@ -1721,19 +1721,25 @@ http://codepen.io/anon/pen/QEXBEp
 #m-report {
   background: repeating-linear-gradient(-35deg, @m-ms-maintenance-light-grey, @m-ms-maintenance-light-grey 109px, @m-ms-maintenance-light-yellow 112px, @m-ms-maintenance-light-yellow 200px);
   color: #888888;
-  height: 123px;
-  padding-top: 45px;
+  padding: 45px 0;
   text-align: center;
   width: 100%;
 }
 
-#m-report span {
+.m-maintenance .m-maintenance-action {
+  margin-top: 40px;
+}
+
+.m-maintenance-action {
   background: white;
   color: #A1A1A1;
   cursor: pointer;
+  display: inline-block;
   font-size: 24px;
   font-weight: normal;
+  margin: 10px 0;
   padding: 6px 25px;
+  white-space: nowrap;
 }
 
 .m-indicator {

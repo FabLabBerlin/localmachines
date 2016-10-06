@@ -34,69 +34,35 @@ function handleClick(machine, onOrOff) {
 
 var On = React.createClass({
   render() {
-    return (
-      <div className="m-maintenance-switch">
-        Turn on maintenance mode (currently off)
-      </div>
-    );
-  }
-});
-
-
-var Off = React.createClass({
-  render() {
-    return (
-      <div className="m-maintenance-switch">
-        Turn off maintenance mode
-      </div>
-    );
-  }
-});
-
-
-/*var MaintenanceSwitch = React.createClass({
-
-  mixins: [ reactor.ReactMixin ],
-
-  getDataBindings() {
-    return {
-      machinesById: Machines.getters.getMachinesById,
-      user: getters.getUser,
-      isStaff: LocationGetters.getIsStaff
-    };
-  },
-
-  render() {
-    if (this.state.isStaff) {
-      const machine = this.state.machinesById.get(this.props.machineId);
+    if (this.props.machine && !this.props.machine.get('UnderMaintenance')) {
       return (
-        <div className="machine-maintenance-switch">
-          {machine.get('UnderMaintenance') ? (
-            <a 
-              className="danger" 
-              href="javascript:void(0)" 
-              onClick={this.handleClick.bind(this, 'off')}>
-              <i className="fa fa-toggle-on"></i>
-            </a>
-          ) : (
-            <a 
-              className="primary" 
-              href="javascript:void(0)" 
-              onClick={this.handleClick.bind(this, 'on')}>
-              <i className="fa fa-toggle-off"></i>
-            </a>
-          )}Maintenance Mode ({
-            machine.get('UnderMaintenance') ? 
-            'currently on' : 
-            'currently off'
-          })
+        <div className="m-maintenance-switch m-maintenance-action"
+             onClick={handleClick.bind(this, this.props.machine, 'on')}>
+          Turn on maintenance mode (currently off)
         </div>
       );
     } else {
       return <div/>;
     }
   }
-});*/
+});
+
+
+var Off = React.createClass({
+  render() {
+    if (this.props.machine && this.props.machine.get('UnderMaintenance')) {
+      return (
+        <div className="m-maintenance-switch m-maintenance-action"
+             onClick={handleClick.bind(this, this.props.machine, 'off')}>
+          Turn off maintenance mode
+        </div>
+      );
+    } else {
+      return <div/>;
+    }
+  }
+});
+
 
 export default {
   On,

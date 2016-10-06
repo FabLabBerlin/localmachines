@@ -121,14 +121,18 @@ var MachinePage = React.createClass({
                       machine={this.machine()}
                       reservation={this.reservation()}
                       status={this.status(true)}/>
-              <MaintenanceSwitch.Off/>
+              <br/>
+              <MaintenanceSwitch.Off machine={m}/>
             </div>
             <div className="col-sm-4"/>
           </div>
           {this.status() !== constants.MAINTENANCE ?
             <div id="m-report" className="m-maintenance">
-              <span onClick={this.repair}>Report a machine failure</span>
-              <MaintenanceSwitch.On/>
+              <div className="m-maintenance-action" onClick={this.repair}>
+                Report a machine failure
+              </div>
+              <br/>
+              <MaintenanceSwitch.On machine={m}/>
             </div> : null
           }
         </div>
