@@ -70,7 +70,8 @@ var MachinesPage = React.createClass({
   render() {
     const uid = reactor.evaluateToJS(getters.getUid);
     var myMachinesList;
-    if (this.state.myMachines && this.state.upcomingReservations) {
+
+    if (this.state.myMachines) {
       myMachinesList = [];
       const myMachineIds = this.state.myMachines.map(m => m.get('Id')).toJS();
 
@@ -78,12 +79,15 @@ var MachinesPage = React.createClass({
         myMachinesList.push(m);
       });
 
-      _.each(this.state.upcomingReservations.toList().toJS(), r => {
-        if (!_.includes(myMachineIds, r.MachineId) && r.UserId === uid) {
-          const m = this.state.machinesById.get(r.MachineId);
-          myMachinesList.push(m);
-        }
-      });
+      if (this.state.upcomingReservations) {
+        _.each(this.state.upcomingReservations.toList().toJS(), r => {
+          if (!_.includes(myMachineIds, r.MachineId) && r.UserId === uid) {
+            const m = this.state.machinesById.get(r.MachineId);
+            myMachinesList.push(m);
+          }
+        });
+      }
+
       myMachinesList = toImmutable(myMachinesList);
     }
     if (!this.state.locationId || !this.state.machines ||

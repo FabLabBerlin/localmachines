@@ -1857,23 +1857,22 @@ http://codepen.io/anon/pen/QEXBEp
 
 .r-time {
   border-top: 1px solid white;
-  height: 41px;
-  padding: 10px 15% 0 0;
+  height: 31px;
+  padding: 1px 15% 0 0;
 }
 
 .r-day {
-  border: 1px solid @ms-hover-color-reserved;
   clear: both;
   float: left;
   width: 100%;
 }
 
 .r-day-header {
-  background: @ms-hover-color-reserved;
+  background: black;
   color: white;
   font-size: 14px;
   height: 57px;
-  margin: 0 0 10px;
+  margin: 10px 0 10px;
   padding-top: 9px;
   text-align: center;
 }
@@ -1902,11 +1901,11 @@ http://codepen.io/anon/pen/QEXBEp
 .r-slot {
   background: white;
   border-bottom: 1px solid @ms-hover-color-reserved;
-  height: 41px;
+  height: 31px;
 }
 
 .r-placeholder {
-  height: 41px;
+  height: 31px;
 }
 
 .r-reservation {
@@ -2091,7 +2090,7 @@ Reservations related components
       color: white;
     }
     &:hover { 
-      background: darken(@color-neutral, 30%);
+      background: black;
       color: white;
     }
     &.selected:hover {
@@ -2599,6 +2598,7 @@ This is for the big screens. Remember: "Mobile First"
   }
 
   .r-day {
+    border: 1px solid @ms-hover-color-reserved;
     clear: none;
     width: 13.33333%;
   }

@@ -1,3 +1,4 @@
+var LocationGetters = require('../Location/getters');
 var Nuclear = require('nuclear-js');
 var toImmutable = Nuclear.toImmutable;
 
@@ -35,12 +36,12 @@ const getMyMachines = [
   getActivations,
   getMachinesById,
   ['loginStore'],
-  (machineStore, activations, machinesById, loginStore) => {
+  LocationGetters.getLocationId,
+  (machineStore, activations, machinesById, loginStore, locationId) => {
     const uid = loginStore.get('uid');
-
     if (activations && machinesById) {
       return activations
-        .filter(a => a.get('UserId') === uid)
+        .filter(a => a.get('UserId') === uid && a.get('LocationId') === locationId)
         .map(a => machinesById.get(a.get('MachineId')));
     }
   }
