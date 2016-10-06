@@ -115,7 +115,8 @@ var Event = React.createClass({
 
   getDataBindings() {
     return {
-      machineUsers: Machines.getters.getMachineUsers
+      machineUsers: Machines.getters.getMachineUsers,
+      uid: getters.getUid
     };
   },
 
@@ -143,8 +144,10 @@ var Event = React.createClass({
         </div>
       );
     } else {
+      const className = uid === this.state.uid ? 'r-my' : '';
+
       return (
-        <div className="r-reservation" style={style}>
+        <div className={'r-reservation ' + className} style={style}>
           <div className="r-label">
             {user.FirstName} {user.LastName}
           </div>
