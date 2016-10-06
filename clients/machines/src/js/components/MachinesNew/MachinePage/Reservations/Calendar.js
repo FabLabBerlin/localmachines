@@ -127,7 +127,7 @@ var Event = React.createClass({
     const i = toInt(r.get('TimeStart'));
     const j = toInt(r.get('TimeEnd'));
     const style = {
-      height: (j - i) * 41
+      height: (j - i) * 31
     };
 
     if (r.get('Name')) {

@@ -486,7 +486,6 @@ const getSlotAvailabilities48h = [
   ['reservationsStore'],
   getReservations,
   (machinesById, reservationsStore, reservations) => {
-    //console.log('fgsdfgdfgdf reservations=', reservations);
     var todayStart = moment().hours(0);
     var todayEnd = todayStart.clone().add(1, 'day');
     var tomorrowStart = todayEnd.clone();
