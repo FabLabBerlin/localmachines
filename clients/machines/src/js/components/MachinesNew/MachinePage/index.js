@@ -8,6 +8,7 @@ var LocationGetters = require('../../../modules/Location/getters');
 var MachineActions = require('../../../actions/MachineActions');
 var MachineMixin = require('../MachineMixin');
 var Machines = require('../../../modules/Machines');
+var MaintenanceSwitch = require('./MaintenanceSwitch');
 var OccupiedBy = require('./OccupiedBy');
 var React = require('react');
 var ReservationActions = require('../../../actions/ReservationActions');
@@ -120,12 +121,14 @@ var MachinePage = React.createClass({
                       machine={this.machine()}
                       reservation={this.reservation()}
                       status={this.status(true)}/>
+              <MaintenanceSwitch.Off/>
             </div>
             <div className="col-sm-4"/>
           </div>
           {this.status() !== constants.MAINTENANCE ?
             <div id="m-report" className="m-maintenance">
               <span onClick={this.repair}>Report a machine failure</span>
+              <MaintenanceSwitch.On/>
             </div> : null
           }
         </div>
