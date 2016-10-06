@@ -144,12 +144,19 @@ var Event = React.createClass({
         </div>
       );
     } else {
-      const className = uid === this.state.uid ? 'r-my' : '';
+      const my = uid === this.state.uid;
+      const className = my ? 'r-my' : '';
 
       return (
         <div className={'r-reservation ' + className} style={style}>
-          <div className="r-label">
-            {user.FirstName} {user.LastName}
+          <div className="r-label row">
+            <div className="col-xs-1"/>
+            <div className="col-xs-10 text-center">
+              {user.FirstName} {user.LastName}
+            </div>
+            <div className="col-xs-1">
+              {my ? <div className="r-remove"/> : null}
+            </div>
           </div>
 
           <div className="text-center visible-xs-block visible-sm-block">

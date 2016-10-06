@@ -1937,6 +1937,12 @@ http://codepen.io/anon/pen/QEXBEp
   &.r-my {
     background: #ff0000;
   }
+
+  &.r-my .fa-close {
+    float: right;
+    font-size: 34px;
+    margin-right: 5px;
+  }
 }
 
 .r-reservation.r-rule {
@@ -1947,8 +1953,24 @@ http://codepen.io/anon/pen/QEXBEp
 .r-reservation .r-label {
   font-size: 13px;
   font-weight: normal;
-  margin-top: -1px;
+  margin-top: -1px 0 0 0;
   padding: 1px 4px;
+
+  .col-xs-1 {
+    padding: 0;
+  }
+
+  .col-xs-10 {
+    padding: 0;
+  }
+}
+
+.r-remove {
+  background: url(/machines/assets/img/machines/machine/r_remove.svg);
+  cursor: pointer;
+  height: 16px;
+  margin: 1px 0 0 -17px;
+  width: 16px;
 }
 
 .r-reservation.r-rule .r-label {
