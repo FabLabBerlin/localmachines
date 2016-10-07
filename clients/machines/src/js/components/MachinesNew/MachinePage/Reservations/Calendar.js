@@ -6,6 +6,13 @@ var Machines = require('../../../../modules/Machines');
 var moment = require('moment');
 var React = require('react');
 var reactor = require('../../../../reactor');
+var ReservationActions = require('../../../../actions/ReservationActions');
+
+
+// https://github.com/HubSpot/vex/issues/72
+var vex = require('vex-js'),
+VexDialog = require('vex-js/js/vex.dialog.js');
+vex.defaultOptions.className = 'vex-theme-custom';
 
 
 const MONDAY = 1;
@@ -156,7 +163,8 @@ var Event = React.createClass({
                   : (user.FirstName + ' ' + user.LastName)}
             </div>
             <div className="col-xs-1">
-              {my ? <div className="r-remove"/> : null}
+              {my ? <div className="r-remove" onClick={this.removeReservation}/>
+                  : null}
             </div>
           </div>
 
@@ -166,6 +174,23 @@ var Event = React.createClass({
         </div>
       );
     }
+  },
+
+  removeReservation() {
+    const reservationId = this.props.reservation.get('Id');
+    VexDialog.buttons.YES.text = 'Yes';
+    VexDialog.buttons.NO.text = 'No';
+
+    VexDialog.confirm({
+      message: 'Do you really want to cancel this reservation?',
+      callback(confirmed) {
+        if (confirmed) {
+          ReservationActions.cancelReservation(reservationId);
+        }
+        $('.vex').remove();
+        $('body').removeClass('vex-open');
+      }
+    });
   }
 });
 
@@ -292,8 +317,10 @@ var Week = React.createClass({
         {_.map(Array(7), (v, i) => {
           const day = this.props.startDay.clone().add(i, 'day');
           const weekDayName = day.format('dddd');
-          const reservations = this.state.reservations.filter((r) => {
-            return areSameDay(day, moment(r.get('TimeStart')));
+          const reservations = this.state.reservations
+          .filter(r => {
+            return areSameDay(day, moment(r.get('TimeStart'))) &&
+              !r.get('Cancelled') && !r.get('ReservationDisabled');
           });
           const reservationRules = this.state.reservationRules.filter((rr) => {
             const a = moment(rr.get('DateStart') + ' 00:00').unix();
