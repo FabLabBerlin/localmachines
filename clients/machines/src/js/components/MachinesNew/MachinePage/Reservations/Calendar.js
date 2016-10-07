@@ -152,8 +152,8 @@ var Event = React.createClass({
           <div className="r-label row">
             <div className="col-xs-1"/>
             <div className="col-xs-10 text-center">
-              {my ? (user.FirstName + ' ' + user.LastName)
-                  : 'My reservation'}
+              {my ? 'My reservation'
+                  : (user.FirstName + ' ' + user.LastName)}
             </div>
             <div className="col-xs-1">
               {my ? <div className="r-remove"/> : null}
