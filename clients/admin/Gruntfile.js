@@ -91,7 +91,6 @@ module.exports = function (grunt) {
 						'dev/ng-modules/bookings/bookings.js',
 						'dev/ng-modules/coupons/coupons.js',
 						'dev/ng-modules/dashboard/dashboard.js',
-						'dev/ng-modules/invoices/invoices.js',
 						'dev/ng-modules/login/login.js',
 						'dev/ng-modules/mainmenu/mainmenu.js',
 						'dev/ng-modules/machines/machines.js',
@@ -217,11 +216,6 @@ module.exports = function (grunt) {
 				}, {
 					src: 'dev/ng-modules/bookings/bookings.html', 
 					dest: 'prod/ng-modules/bookings/',
-					expand: true,
-					flatten: true
-				}, {
-					src: 'dev/ng-modules/invoices/invoices.html', 
-					dest: 'prod/ng-modules/invoices/',
 					expand: true,
 					flatten: true
 				}, {
