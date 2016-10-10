@@ -124,7 +124,8 @@ var Event = React.createClass({
   getDataBindings() {
     return {
       machineUsers: Machines.getters.getMachineUsers,
-      uid: getters.getUid
+      uid: getters.getUid,
+      width: getters.getWidth
     };
   },
 
@@ -139,7 +140,7 @@ var Event = React.createClass({
       height: (j - i) * 31
     };
 
-    if (window.innerWidth < 992) {
+    if (this.state.width < 992) {
       style.height = 82;
     }
 

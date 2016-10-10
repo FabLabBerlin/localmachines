@@ -10,6 +10,20 @@ var toImmutable = Nuclear.toImmutable;
 /*
  * Global state related getters
  */
+const getWidth = [
+  ['globalStore'],
+  (globalStore) => {
+    return globalStore.get('width');
+  }
+];
+
+const getHeight = [
+  ['globalStore'],
+  (globalStore) => {
+    return globalStore.get('height');
+  }
+];
+
 const getIsLoading = [
   ['globalStore'],
   (globalStore) => {
@@ -558,7 +572,7 @@ const getTutorings = [
 export default {
   getIsLogged, getUid, getFirstTry, getAutoLoginSuccess, getLoginSuccess, getLastActivity,
   getUser,
-  getIsLoading, getBill, getBillMonths, getMonthlyBills, getMemberships, getMembershipsByMonth,
+  getWidth, getHeight, getIsLoading, getBill, getBillMonths, getMonthlyBills, getMemberships, getMembershipsByMonth,
   getFeedbackSubject, getFeedbackSubjectDropdown, getFeedbackSubjectOtherText, getFeedbackMessage,
   getNewReservation, getNewReservationPrice, getNewReservationTimes, getNewReservationFrom, getNewReservationTo, getReservations, getReservationsByDay, getActiveReservationsByMachineId, getUpcomingReservationsByMachineId, getSlotAvailabilities48h,
   getReservationRules,

@@ -17,6 +17,7 @@ export default keyMirror({
 
   SET_USER: null,
   SET_USER_PROPERTY: null,
+  SET_WINDOW_SIZE: null,
   SET_LOADING: null,
   UNSET_LOADING: null,
 

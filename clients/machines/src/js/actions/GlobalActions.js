@@ -1,8 +1,24 @@
+var _ = require('lodash');
 var $ = require('jquery');
 var actionTypes = require('../actionTypes');
 var reactor = require('../reactor');
 var toastr = require('../toastr');
 
+
+if ($(window)) {
+  // We're not inside a unit test...
+
+  $(window).resize(_.debounce(() => {
+    setWindowSize({
+      width: window.innerWidth,
+      height: window.innerHeight
+    });
+  }, 500));
+}
+
+function setWindowSize({width, height}) {
+  reactor.dispatch(actionTypes.SET_WINDOW_SIZE, {width, height});
+}
 
 function showGlobalLoader() {
   reactor.dispatch(actionTypes.SET_LOADING);
