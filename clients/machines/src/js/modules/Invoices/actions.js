@@ -352,6 +352,9 @@ function save(locId, {invoiceId}) {
     case 'activation':
       url = '/api/activations/' + p.Id + '?location=' + locId;
       break;
+    case 'reservation':
+      url = '/api/reservations/' + p.Id + '?location=' + locId;
+      break;
     default:
       url = '/api/purchases/' + p.Id + '?type=' + p.Type;
     }
