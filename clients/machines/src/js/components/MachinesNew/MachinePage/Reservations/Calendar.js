@@ -1,4 +1,5 @@
 var _ = require('lodash');
+var $ = require('jquery');
 var getters = require('../../../../getters');
 var LoaderLocal = require('../../../LoaderLocal');
 var MachineActions = require('../../../../actions/MachineActions');
@@ -379,18 +380,17 @@ var Calendar = React.createClass({
       <div id="r-calendar">
         <div id="r-header">
           <button className="r-nav r-back" onClick={this.back}/>
-          <button className="r-nav r-forward" onClick={this.forward}/>
           <span id="r-range">
             {this.state.startDay.format('MMM DD')} - {endDay.format('MMM DD, YYYY')}
           </span>
+          <button className="r-nav r-forward" onClick={this.forward}/>
         </div>
         <div id="r-add-container" className="row">
-          <div className="col-sm-6">
+          <div className="col-xs-6"/>
+          <div className="col-xs-6">
             <button id="r-add" onClick={this.clickCreate}/>
           </div>
-          <div className="col-sm-6"/>
         </div>
-        <div id="r-header-border"/>
         <Week machineId={this.props.machineId} startDay={this.state.startDay}/>
       </div>
     );

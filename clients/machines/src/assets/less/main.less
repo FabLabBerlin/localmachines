@@ -1817,15 +1817,16 @@ http://codepen.io/anon/pen/QEXBEp
   background-color: white;
   background-position: 50%;
   background-repeat: no-repeat;
-  background-size: 40%;
+  background-size: 50%;
   border: none;
-  border-radius: 2px;
+  border-radius: 8px;
   color: #488BE9;
   font-size: 26px;
   font-weight: bold;
-  height: 24px;
-  margin: 7px 4px;
-  width: 24px;
+  height: 44px;
+  margin-top: 19px;
+  position: absolute;
+  width: 44px;
 }
 
 .r-back {
@@ -1834,10 +1835,12 @@ http://codepen.io/anon/pen/QEXBEp
 
 .r-forward {
   background-image: url(/machines/assets/img/machines/machine/r_forward.svg);
+  margin-left: 245px;
 }
 
 #r-range {
-  margin: 8px;
+  font-size: 18px;
+  margin: 28px 0 0 57px;
   position: absolute;
 }
 
@@ -1849,8 +1852,9 @@ http://codepen.io/anon/pen/QEXBEp
   background-image: url(/machines/assets/img/machines/machine/r_add.svg);
   background-position: 50%;
   background-repeat: no-repeat;
+  margin-top: -75px;
   position: absolute;
-  top: -32px;
+  right: 2px;
   z-index: 1;
 }
 
@@ -2651,28 +2655,21 @@ This is for the big screens. Remember: "Mobile First"
     margin: 0;
   }
 
-  .r-nav {
-    background-size: 50%;
-    border-radius: 8px;
-    font-size: 26px;
-    font-weight: bold;
-    height: 44px;
-    margin: 20px 4px;
-    width: 44px;
+  .r-forward {
+    margin-left: 321px;
   }
 
   #r-range {
     font-size: 26px;
-    margin: 23px 8px;
+    margin: 23px 0 0 57px;
   }
 
   #r-add-container button {
-    right: -63px;
-    top: -70px;
+    right: 7px;
   }
 
   #r-add {
-    height: 116px;
-    width: 116px;
+    height: 70px;
+    width: 70px;
   }
 } /* @media (min-width: @screen-md-min) */
