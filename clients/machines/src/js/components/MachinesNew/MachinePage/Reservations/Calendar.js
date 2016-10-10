@@ -139,6 +139,10 @@ var Event = React.createClass({
       height: (j - i) * 31
     };
 
+    if (window.innerWidth < 992) {
+      style.height = 82;
+    }
+
     if (r.get('Name')) {
       return (
         <div className="r-reservation r-rule" style={style}>
