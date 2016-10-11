@@ -30,7 +30,8 @@ var MachinePage = React.createClass({
       machines: Machines.getters.getMachines,
       reservationsByMachineId: getters.getActiveReservationsByMachineId,
       upcomingReservationsByMachineId: getters.getUpcomingReservationsByMachineId,
-      user: getters.getUser
+      user: getters.getUser,
+      width: getters.getWidth
     };
   },
 
@@ -100,7 +101,7 @@ var MachinePage = React.createClass({
         break;
     }
 
-    const small = window.innerWidth < 500;
+    const small = this.state.width < 500;
     const style = {
       backgroundImage: 'url(' + this.imgUrl(small) + ')'
     };
