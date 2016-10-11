@@ -109,7 +109,7 @@ render((
       <Route path="spendings" component={SpendingsPage} />
       <Route path="reservations" component={ReservationsPage} />
       <Route path="feedback" component={FeedbackPage} />
-      <Route path="/" component={MachinePage} />
+      <Route path="/" component={MachinesNewPage} />
     </Route>
   </Router>
 ), document.getElementById('app-container'));

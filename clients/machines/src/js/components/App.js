@@ -7,7 +7,7 @@ var LoaderLocal = require('./LoaderLocal');
 var LocationActions = require('../actions/LocationActions');
 var LoginActions = require('../actions/LoginActions');
 var LoginStore = require('../stores/LoginStore');
-var MachinePage = require('./MachinePage/MachinePage');
+var MachinesNewPage = require('./MachinesNew/Machines');
 var React = require('react');
 var toastr = require('../toastr');
 
@@ -47,7 +47,7 @@ vex.defaultOptions.className = 'vex-theme-custom';
       LoginActions.tryAutoLogin(this.context.router, {
         loggedIn: () => {
           if (this.props.location.pathname === '/login') {
-            hashHistory.push('/machine');
+            hashHistory.push('/machines');
           }
         },
         loggedOut: () => {
@@ -86,7 +86,7 @@ vex.defaultOptions.className = 'vex-theme-custom';
             this.props.location.pathname === '/product' ||
             this.props.location.pathname.indexOf('forgot_password') > 0
             ) ? 
-            (this.props.children || <MachinePage/>) :
+            (this.props.children || <MachinesNewPage/>) :
             <LoaderLocal />
           }
         </div>

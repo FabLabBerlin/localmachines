@@ -27,7 +27,7 @@ export default {
         reactor.dispatch(actionTypes.SUCCESS_LOGIN, { data });
         switch (data.Status) {
         case 'ok':
-          hashHistory.push('/machine');
+          hashHistory.push('/machines');
           break;
         case 'unregistered':
           hashHistory.push('/register_existing');
@@ -77,34 +77,6 @@ export default {
       error(xhr, status, err) {
         reactor.dispatch(actionTypes.FAIL_AUTO_LOGIN);
         console.error('/users/login', status, err);
-      }
-    });
-  },
-
-  /*
-   * Try to connect with nfc card
-   * @uid: unique id from the card
-   */
-  nfcLogin(uid, router) {
-    $.ajax({
-      url: '/api/users/loginuid',
-      method: 'POST',
-      data: {
-        uid: uid,
-        location: 1 // Hardcoded for now
-      },
-      success(data) {
-        reactor.dispatch(actionTypes.SUCCESS_LOGIN, { data });
-        LocationActions.setLocationId(1);
-        hashHistory.push('/machine');
-      },
-      error(xhr, status, err) {
-        toastr.error('Problem with NFC login.  Try again later or talk to us if the problem persists.');
-        setTimeout(function() {
-          document.location.reload(true);
-        }, 2000);
-        reactor.dispatch(actionTypes.ERROR_LOGIN);
-        //console.error('/users/loginuid', status, err);
       }
     });
   },

@@ -25,22 +25,6 @@ describe('LoginActions', function() {
     });
   });
 
-  describe('nfcLogin', function() {
-    it('POSTs to /api/users/loginuid', function() {
-      LoginActions.nfcLogin(123);
-      expect($.ajax).toBeCalledWith({
-        url: '/api/users/loginuid',
-        method: 'POST',
-        data: {
-          uid: 123,
-          location: 1
-        },
-        success: jasmine.any(Function),
-        error: jasmine.any(Function)
-      });
-    });
-  });
-
   describe('logout', function() {
     it('GETs /api/users/logout', function() {
       LoginActions.logout();
