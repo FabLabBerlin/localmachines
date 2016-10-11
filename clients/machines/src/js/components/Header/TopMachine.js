@@ -38,7 +38,7 @@ var Price = React.createClass({
   render() {
     var price;
     price = this.props.machine.get('Price').toFixed(2);
-    price += ' ' + (this.state.currency || '€') + ' / ';
+    price += ' ' + (this.state.currency || '€') + ' / ';
     switch (this.props.machine.get('PriceUnit')) {
       case 'hour':
         price += 'h';
