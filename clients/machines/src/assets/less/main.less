@@ -1636,7 +1636,9 @@ http://codepen.io/anon/pen/QEXBEp
 }
 
 .m-action {
-  background: white;
+  background-color: white;
+  background-position: 50% 170px;
+  background-repeat: no-repeat;
   border-radius: 50%;
   display: inline-block;
   font-size: 36px;
@@ -1644,12 +1646,6 @@ http://codepen.io/anon/pen/QEXBEp
   height: 223px;
   padding-top: 84px;
   width: 223px;
-}
-
-.m-action.m-clock {
-  background-image: url(/machines/assets/img/machines/machine/m_clock.svg);
-  background-position: 50% 170px;
-  background-repeat: no-repeat;
 }
 
 .m-action .machine-time-label {
@@ -1690,7 +1686,7 @@ http://codepen.io/anon/pen/QEXBEp
 }
 
 .m-occupied .m-action {
-  background: @m-color-occupied;
+  background-color: @m-color-occupied;
   border: 2px solid white;
   color: white;
   cursor: default;
@@ -1699,6 +1695,7 @@ http://codepen.io/anon/pen/QEXBEp
 /* Occupied but stoppable because staff.. */
 .m-occupied.m-stop .m-action {
   background-color: @m-color-occupied;
+  background-image: url(/machines/assets/img/machines/machine/m_clock_red.svg);
   box-shadow: 2px 4px 5px 0px #FF0000, -14px -4px 23px 0px #FF6D00;
   border: none;
   color: @ms-hover-color-running;
@@ -1713,6 +1710,7 @@ http://codepen.io/anon/pen/QEXBEp
 
 .m-stop .m-action {
   background-color: @ms-hover-color-running;
+  background-image: url(/machines/assets/img/machines/machine/m_clock.svg);
   color: @ms-hover-color-available;
   box-shadow: -10px 0px 9px 0px #CDCDAC, 2px 5px 8px 0px #CDCDAC;
   color: white;

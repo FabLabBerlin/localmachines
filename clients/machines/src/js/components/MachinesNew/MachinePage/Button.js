@@ -69,9 +69,10 @@ var Button = React.createClass({
     case constants.OCCUPIED:
       if (this.props.isStaff) {
         return (
-          <div className="m-action"
+          <div className="m-action m-clock"
                onClick={this.activationEnd}>
             <span>STOP</span>
+            <ActivationTimer activation={this.props.machine.get('activation').toJS()}/>
           </div>
         );
       }
