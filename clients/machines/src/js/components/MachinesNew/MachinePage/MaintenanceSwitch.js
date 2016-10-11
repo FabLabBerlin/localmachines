@@ -33,8 +33,18 @@ function handleClick(machine, onOrOff) {
 
 
 var On = React.createClass({
+
+  mixins: [ reactor.ReactMixin ],
+
+  getDataBindings() {
+    return {
+      isStaff: LocationGetters.getIsStaff
+    };
+  },
+
   render() {
-    if (this.props.machine && !this.props.machine.get('UnderMaintenance')) {
+    if (this.props.machine && !this.props.machine.get('UnderMaintenance')
+        && this.state.isStaff) {
       return (
         <div className="m-maintenance-switch m-maintenance-action"
              onClick={handleClick.bind(this, this.props.machine, 'on')}>
@@ -49,8 +59,18 @@ var On = React.createClass({
 
 
 var Off = React.createClass({
+
+  mixins: [ reactor.ReactMixin ],
+
+  getDataBindings() {
+    return {
+      isStaff: LocationGetters.getIsStaff
+    };
+  },
+
   render() {
-    if (this.props.machine && this.props.machine.get('UnderMaintenance')) {
+    if (this.props.machine && this.props.machine.get('UnderMaintenance')
+        && this.state.isStaff) {
       return (
         <div className="m-maintenance-switch m-maintenance-action"
              onClick={handleClick.bind(this, this.props.machine, 'off')}>
