@@ -79,6 +79,7 @@ var Button = React.createClass({
       return (
         <div className="m-action">
           <span>OCCUPIED</span>
+          <ActivationTimer activation={this.props.machine.get('activation').toJS()}/>
         </div>
       );
     case constants.RESERVED:
