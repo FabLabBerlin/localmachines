@@ -96,7 +96,8 @@ var AddPurchase = React.createClass({
   render() {
     return (
       <button id="inv-add-purchase">
-        Add Purchase
+        <div id="inv-add-purchase-icon"/>
+        <div>Add Purchase</div>
       </button>
     )
   }
