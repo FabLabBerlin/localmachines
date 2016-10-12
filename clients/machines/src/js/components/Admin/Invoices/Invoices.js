@@ -65,7 +65,6 @@ var Month = React.createClass({
                       .get('selected').get('year');
     const selected = this.isSelected();
     const summaries = this.state.MonthlySums.getIn([year, month]);
-    const style = selected ? {height: window.innerHeight * 0.9} : undefined;
 
     if (!summaries && selected) {
       return <LoaderLocal/>;
@@ -82,8 +81,7 @@ var Month = React.createClass({
     }
 
     return (
-      <div className={'inv-monthly-sums ' + (selected ? 'selected' : '')}
-           style={style}>
+      <div className={'inv-monthly-sums ' + (selected ? 'selected' : '')}>
         {selected ?
           (
             <div className="row" onClick={this.select}>

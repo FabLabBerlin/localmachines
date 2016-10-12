@@ -77,6 +77,20 @@ var DurationEdit = React.createClass({
 });
 
 
+var EmptyRow = React.createClass({
+  render() {
+    const style = {
+      border: 'none'
+    };
+
+    return (
+      <tr>
+        <td style={style}/>
+      </tr>
+    );
+  }
+});
+
 
 var BillTable = React.createClass({
   mixins: [ reactor.ReactMixin ],
@@ -151,14 +165,8 @@ var BillTable = React.createClass({
       case 'activation':
         // already okay
         break;
-      case 'co-working':
-        label = 'Co-Working';
-        break;
       case 'reservation':
         label += ' (Reservation)';
-        break;
-      case 'space':
-        label = 'Space Booking';
         break;
       case 'tutor':
         label = 'Tutoring';
@@ -187,6 +195,9 @@ var BillTable = React.createClass({
       );
     });
 
+    tbody.push(<EmptyRow key={i++}/>);
+    tbody.push(<EmptyRow key={i++}/>);
+    tbody.push(<EmptyRow key={i++}/>);
     tbody.push(
       <tr key={i++}>
         <td><b>Memberships</b></td>
