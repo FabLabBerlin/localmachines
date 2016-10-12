@@ -52,7 +52,7 @@ var Price = React.createClass({
 
     return (
       <div>
-        {price} pay-as-you-go
+        {price} incl. VAT
       </div>
     );
   }
