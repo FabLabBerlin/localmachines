@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="38px" height="38px" viewBox="0 0 38 38" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 40.2 (33826) - http://www.bohemiancoding.com/sketch -->
+    <title>Group 3</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <circle id="path-1" cx="15" cy="15" r="15"></circle>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="New-Invoicing-Detail-Wolf" transform="translate(-38.000000, -770.000000)">
+            <g id="Group-3" transform="translate(38.000000, 771.000000)">
+                <g id="Oval">
+                    <use fill="#FF0000" fill-rule="evenodd" xlink:href="#path-1"></use>
+                </g>
+                <g id="Group-2" transform="translate(7.863656, 7.429440)" stroke="#FFFFFF" stroke-width="8" stroke-linecap="square">
+                    <path d="M7.07317073,0.487226806 L7.07317073,14.6783822" id="Line"></path>
+                    <path d="M14.2196772,7.07317073 L0.0285217989,7.07317073" id="Line"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -92,6 +92,17 @@ var EmptyRow = React.createClass({
 });
 
 
+var AddPurchase = React.createClass({
+  render() {
+    return (
+      <button id="inv-add-purchase">
+        Add Purchase
+      </button>
+    )
+  }
+});
+
+
 var BillTable = React.createClass({
   mixins: [ reactor.ReactMixin ],
 
@@ -195,6 +206,7 @@ var BillTable = React.createClass({
       );
     });
 
+    tbody.push(<AddPurchase key={i++}/>);
     tbody.push(<EmptyRow key={i++}/>);
     tbody.push(<EmptyRow key={i++}/>);
     tbody.push(<EmptyRow key={i++}/>);
