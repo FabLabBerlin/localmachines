@@ -38,7 +38,7 @@ const getThisMonthInvoices = [
   }
 ];
 
-const getInvoiceActions = [
+const getInvoicesActions = [
   getEditPurchaseId,
   getInvoices,
   (editPurchaseId, invoices) => {
@@ -152,7 +152,7 @@ export default {
   getCheckStatus,
   getEditPurchaseId,
   getInvoices,
-  getInvoiceActions,
+  getInvoicesActions,
   getInvoiceStatuses,
   getMonthlySums,
   getThisMonthInvoices,

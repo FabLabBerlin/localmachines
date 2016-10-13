@@ -24,7 +24,7 @@ var Header = React.createClass({
     return {
       currency: SettingsGetters.getCurrency,
       editPurchaseId: Invoices.getters.getEditPurchaseId,
-      invoiceActions: Invoices.getters.getInvoiceActions,
+      invoicesActions: Invoices.getters.getInvoicesActions,
       invoiceStatuses: Invoices.getters.getInvoiceStatuses,
       location: LocationGetters.getLocation,
       locationId: LocationGetters.getLocationId,
@@ -43,15 +43,14 @@ var Header = React.createClass({
   cancel(e) {
     e.stopPropagation();
 
-    Invoices.actions.cancel();
+    Invoices.actions.cancel(this.props.invoice);
   },
 
   complete(e) {
     e.stopPropagation();
-    const locId = this.state.locationId;
     const invoice = this.props.invoice;
 
-    Invoices.actions.complete(locId);
+    Invoices.actions.complete(invoice);
   },
 
   hide() {
@@ -72,7 +71,7 @@ var Header = React.createClass({
     const locId = this.state.locationId;
     const invoice = this.props.invoice;
 
-    Invoices.actions.makeDraft(locId);
+    Invoices.actions.makeDraft(locId, invoice);
   },
 
   render() {
@@ -89,6 +88,7 @@ var Header = React.createClass({
                  ' ' + invoice.getIn(['User', 'LastName']);
     const timeFrame = '' + moment().month(invoice.get('Month') - 1).format('MMM') + '/' +
                            invoice.get('Year');
+    const invoiceActions = this.state.invoicesActions.get(invoice.get('Id'));
 
     return (
       <div id="inv-header">
@@ -99,42 +99,42 @@ var Header = React.createClass({
                     onClick={this.hide}>
               <img src="/machines/assets/img/invoicing/CANCEL.svg"/>
             </button>
-            {this.state.invoiceActions.get('PushDraft') ?
+            {invoiceActions.get('PushDraft') ?
               <button type="button"
                       onClick={this.makeDraft}
                       title="Make Draft">
                 <i className="fa fa-refresh"/>
               </button> : null
             }
-            {this.state.invoiceActions.get('Save') ?
+            {invoiceActions.get('Save') ?
               <button type="button"
                       onClick={this.save}
                       title="Save">
                 <img src="/machines/assets/img/invoicing/SAVE_INVOICE.svg"/>
               </button> : null
             }
-            {this.state.invoiceActions.get('Freeze') ?
+            {invoiceActions.get('Freeze') ?
               <button type="button"
                       onClick={this.complete}
                       title="Freeze">
                 <i className="fa fa-cart-arrow-down"/>
               </button> : null
             }
-            {this.state.invoiceActions.get('Send') ?
+            {invoiceActions.get('Send') ?
               <button type="button"
                       onClick={this.send}
                       title="Send">
                 <img src="/machines/assets/img/invoicing/send_invoice_white.svg"/>
               </button> : null
             }
-            {this.state.invoiceActions.get('SendCanceled') ?
+            {invoiceActions.get('SendCanceled') ?
               <button type="button"
                       onClick={this.sendCanceled}
                       title="Send Canceled">
                 <img src="/machines/assets/img/invoicing/send_invoice_white.svg"/>
               </button> : null
             }
-            {this.state.invoiceActions.get('Cancel') ?
+            {invoiceActions.get('Cancel') ?
               <button type="button"
                       onClick={this.cancel}
                       title="Cancel">
@@ -187,13 +187,13 @@ var Header = React.createClass({
   send(e) {
     e.stopPropagation();
 
-    Invoices.actions.send();
+    Invoices.actions.send(false, this.props.invoice);
   },
 
   sendCanceled(e) {
     e.stopPropagation();
 
-    Invoices.actions.sendCanceled();
+    Invoices.actions.sendCanceled(this.props.invoice);
   },
 
   statusInfo() {
@@ -212,7 +212,7 @@ var Invoice = React.createClass({
     return {
       editPurchaseId: Invoices.getters.getEditPurchaseId,
       invoices: Invoices.getters.getInvoices,
-      invoiceActions: Invoices.getters.getInvoiceActions,
+      invoicesActions: Invoices.getters.getInvoicesActions,
       invoiceStatuses: Invoices.getters.getInvoiceStatuses,
       location: LocationGetters.getLocation,
       locationId: LocationGetters.getLocationId,

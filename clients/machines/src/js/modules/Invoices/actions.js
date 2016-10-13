@@ -27,14 +27,14 @@ function cancel(invoice) {
 
   $.ajax({
     method: 'POST',
-    url: '/api/billing/invoices/' + invoice.Id + '/cancel',
+    url: '/api/billing/invoices/' + invoice.get('Id') + '/cancel',
     data: {
-      location: invoice.LocationId
+      location: invoice.get('LocationId')
     }
   })
   .success(() => {
     toastr.info('Invoice canceled');
-    refresh();
+    refresh(invoice);
   })
   .error((xhr) => {
     toastr.error('Error canceling invoice:' + xhr.responseText);
@@ -89,7 +89,7 @@ function checkedBatch(uriAction, verb) {
         iterate(invs, errors);
       } else {
         finish(errors);
-        refresh();
+        refresh(inv);
       }
     })
     .error((jqXHR, textStatus) => {
@@ -166,9 +166,9 @@ function complete(invoice) {
 
   $.ajax({
     method: 'POST',
-    url: '/api/billing/invoices/' + invoice.Id + '/complete',
+    url: '/api/billing/invoices/' + invoice.get('Id') + '/complete',
     data: {
-      location: invoice.LocationId
+      location: invoice.get('LocationId')
     }
   })
   .success(() => {
@@ -180,7 +180,7 @@ function complete(invoice) {
   .always(() => {
     GlobalActions.hideGlobalLoader();
     editPurchase(undefined);
-    refresh();
+    refresh(invoice);
   });
 }
 
@@ -275,7 +275,7 @@ function fetchInvoice(locId, {invoiceId}) {
 }
 
 function makeDraft(locId, invoice) {
-  if (invoice.FastbillId) {
+  if (invoice.get('FastbillId')) {
     /*eslint-disable no-alert */
     if (!window.confirm('Invoice already pushed to Fastbill. Overwrite changes in Fastbill?')) {
       toastr.warning('Aborted make draft');
@@ -288,7 +288,7 @@ function makeDraft(locId, invoice) {
 
   $.ajax({
     method: 'POST',
-    url: '/api/billing/invoices/' + invoice.Id + '/draft',
+    url: '/api/billing/invoices/' + invoice.get('Id') + '/draft',
     data: {
       location: locId
     }
@@ -311,8 +311,8 @@ function refresh(inv) {
   const year = monthlySums.selected.year;
 
   if (inv) {
-    fetchInvoice(inv.LocationId, {
-      invoiceId: inv.Id
+    fetchInvoice(inv.get('LocationId'), {
+      invoiceId: inv.get('Id')
     });
   }
   fetchMonthlySums(locationId, {
@@ -367,7 +367,7 @@ function save(locId, {invoice}) {
   .done(() => {
     toastr.info('Successfully saved updates');
     editPurchase(undefined);
-    refresh();
+    refresh(invoice);
   })
   .fail((xhr) => {
     toastr.error('Error while saving:' + xhr.responseText);
@@ -391,9 +391,9 @@ function send(canceled, invoice) {
 
   $.ajax({
     method: 'POST',
-    url: '/api/billing/invoices/' + invoice.Id + '/send',
+    url: '/api/billing/invoices/' + invoice.get('Id') + '/send',
     data: {
-      location: invoice.LocationId,
+      location: invoice.get('LocationId'),
       canceled: canceled
     }
   })
@@ -414,12 +414,12 @@ function send(canceled, invoice) {
   .always(() => {
     GlobalActions.hideGlobalLoader();
     editPurchase(undefined);
-    refresh();
+    refresh(invoice);
   });
 }
 
-function sendCanceled() {
-  send(true);
+function sendCanceled(invoice) {
+  send(true, invoice);
 }
 
 function setSelectedMonth({month, year}) {
