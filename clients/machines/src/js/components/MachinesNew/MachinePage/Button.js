@@ -74,7 +74,19 @@ var Button = React.createClass({
     case constants.MAINTENANCE:
       return (
         <div className="m-action">
-          <span>MAINTENANCE</span>
+          {this.props.isStaff ? (
+            this.props.machine.get('activation') ? (
+              <div onClick={this.activationEnd} style={{cursor: 'pointer'}}>
+                STOP
+              </div>
+            ) : (
+              <div onClick={this.activationStart} style={{cursor: 'pointer'}}>
+                START
+              </div>
+            )
+          ) : (
+            <span>MAINTENANCE</span>
+          )}
         </div>
       );
     case constants.OCCUPIED:
