@@ -1,10 +1,12 @@
 var $ = require('jquery');
 var ActivationTimer = require('../../MachinePage/Machine/ActivationTimer');
 var constants = require('../constants');
+var getters = require('../../../getters');
 var LoaderLocal = require('../../LoaderLocal');
 var LoginActions = require('../../../actions/LoginActions');
 var MachineActions = require('../../../actions/MachineActions');
 var React = require('react');
+var reactor = require('../../../reactor');
 var ReservationTimer = require('../../MachinePage/Machine/ReservationTimer');
 
 
@@ -16,6 +18,15 @@ vex.defaultOptions.className = 'vex-theme-custom';
 
 
 var Button = React.createClass({
+
+  mixins: [ reactor.ReactMixin ],
+
+  getDataBindings() {
+    return {
+      uid: getters.getUid
+    };
+  },
+
   activationEnd() {
     let aid = this.props.machine.getIn(['activation', 'Id']);
 
@@ -85,8 +96,18 @@ var Button = React.createClass({
     case constants.RESERVED:
       return (
         <div className="m-action m-clock">
-          RESERVED
-          <ReservationTimer reservation={this.props.reservation.toJS()}/>
+          {this.props.isStaff ||
+           this.props.reservation.get('UserId') === this.state.uid
+          ? (
+            <div onClick={this.activationStart} style={{cursor: 'pointer'}}>
+              START
+            </div>
+          ) : (
+            <div>
+              RESERVED
+              <ReservationTimer reservation={this.props.reservation.toJS()}/>
+            </div>
+          )}
         </div>
       );
     case constants.RUNNING:
