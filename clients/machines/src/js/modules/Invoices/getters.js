@@ -17,19 +17,13 @@ const getMonthlySums = [
   }
 ];
 
-const getInvoice = [
+const getInvoices = [
 	['invoicesStore'],
   (invoicesStore) => {
     const month = invoicesStore.getIn(['MonthlySums', 'selected', 'month']);
     const year = invoicesStore.getIn(['MonthlySums', 'selected', 'year']);
-    const matches = window.location.hash.match(/\/admin\/invoices\/(\d+)/);
 
-    if (matches && matches[1]) {
-      const invoiceId = parseInt(matches[1]);
-      const invoice = invoicesStore.getIn(['invoices', 'detailedInvoices', invoiceId]);
-
-      return invoice;
-    }
+    return invoicesStore.getIn(['invoices', 'detailedInvoices']);
   }
 ];
 
@@ -46,60 +40,62 @@ const getThisMonthInvoices = [
 
 const getInvoiceActions = [
   getEditPurchaseId,
-  getInvoice,
-  (editPurchaseId, invoice) => {
-    var as = {};
+  getInvoices,
+  (editPurchaseId, invoices) => {
+    return invoices.map(invoice => {
+      var as = {};
 
-    const m = moment().month() + 1;
-    const y = moment().year();
+      const m = moment().month() + 1;
+      const y = moment().year();
 
-    const isPastMonth = invoice &&
-     (y > invoice.get('Year') || m > invoice.get('Month'));
-    const isPositive = invoice && invoice.get('Total') >= 0.01;
+      const isPastMonth = invoice &&
+       (y > invoice.get('Year') || m > invoice.get('Month'));
+      const isPositive = invoice && invoice.get('Total') >= 0.01;
 
-    if (invoice && y >= invoice.get('Year')) {
-      switch (invoice.get('Status')) {
-      case 'draft':
-        as.Cancel = false;
-        as.Freeze = true;
-        as.PushDraft = true;
-        as.Save = !!editPurchaseId;
-        as.Send = false;
-        as.SendCanceled = false;
-        break;
-      case 'outgoing':
-        if (invoice.get('Canceled')) {
+      if (invoice && y >= invoice.get('Year')) {
+        switch (invoice.get('Status')) {
+        case 'draft':
           as.Cancel = false;
-          as.Freeze = false;
-          as.PushDraft = false;
-          as.Save = false;
-          as.Send = false;
-          as.SendCanceled = true;
-        } else {
-          as.Cancel = true;
-          as.Freeze = false;
-          as.PushDraft = false;
+          as.Freeze = true;
+          as.PushDraft = true;
           as.Save = !!editPurchaseId;
-          as.Send = true;
+          as.Send = false;
           as.SendCanceled = false;
+          break;
+        case 'outgoing':
+          if (invoice.get('Canceled')) {
+            as.Cancel = false;
+            as.Freeze = false;
+            as.PushDraft = false;
+            as.Save = false;
+            as.Send = false;
+            as.SendCanceled = true;
+          } else {
+            as.Cancel = true;
+            as.Freeze = false;
+            as.PushDraft = false;
+            as.Save = !!editPurchaseId;
+            as.Send = true;
+            as.SendCanceled = false;
+          }
+          break;
+        default:
+          console.error('Unhandled status', invoice.get('Status'));
         }
-        break;
-      default:
-        console.error('Unhandled status', invoice.get('Status'));
       }
-    }
 
-    if (!invoice || !invoice.getIn(['User', 'ClientId'])) {
-      as.Cancel = false;
-      as.Freeze = false;
-      as.PushDraft = false;
-      as.Send = false;
-    }
+      if (!invoice || !invoice.getIn(['User', 'ClientId'])) {
+        as.Cancel = false;
+        as.Freeze = false;
+        as.PushDraft = false;
+        as.Send = false;
+      }
 
-    as.Freeze = as.Freeze && isPastMonth && isPositive;
-    as.PushDraft = as.PushDraft && isPositive;
+      as.Freeze = as.Freeze && isPastMonth && isPositive;
+      as.PushDraft = as.PushDraft && isPositive;
 
-    return toImmutable(as);
+      return toImmutable(as);
+    });
   }
 ];
 
@@ -155,7 +151,7 @@ export default {
   getCheckedAll,
   getCheckStatus,
   getEditPurchaseId,
-  getInvoice,
+  getInvoices,
   getInvoiceActions,
   getInvoiceStatuses,
   getMonthlySums,

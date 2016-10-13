@@ -206,7 +206,7 @@ var BillTable = React.createClass({
       tbody.push(
         <tr key={i++}
             onClick={this.edit.bind(this, purchase)}
-            className={!selected ? 'unselected' : undefined}>
+            className={'inv-purchase ' + (!selected ? 'unselected' : undefined)}>
           <td>{label}</td>
           <td>{formatDate(moment(purchase.TimeStart))} {moment(purchase.TimeStart).format('HH:mm')}</td>
           <td>
@@ -303,7 +303,7 @@ var BillTable = React.createClass({
       <div key={i++}>
         {caption}
         <div className="table-responsive">
-          <table className="table table-stripped table-hover">
+          <table className="table table-stripped">
             <thead>{thead}</thead>
             <tbody>{tbody}</tbody>
             <tfoot>{tfoot}</tfoot>

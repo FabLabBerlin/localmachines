@@ -15,15 +15,13 @@ VexDialog = require('vex-js/js/vex.dialog.js');
 vex.defaultOptions.className = 'vex-theme-custom';
 
 
-function cancel() {
+function cancel(invoice) {
   /*eslint-disable no-alert */
   if (!window.confirm('Really cancel invoice?')) {
     toastr.warning('Aborted canceling invoice');
     return;
   }
   /*eslint-enable no-alert */
-
-  const invoice = reactor.evaluateToJS(getters.getInvoice);
 
   GlobalActions.showGlobalLoader();
 
@@ -156,15 +154,13 @@ function checkSetStatus(status) {
   reactor.dispatch(actionTypes.CHECK_SET_STATUS, status);
 }
 
-function complete() {
+function complete(invoice) {
   /*eslint-disable no-alert */
   if (!window.confirm('Invoice cannot be changed and will be synchronized with Fastbill.')) {
     toastr.warning('Aborted complete invoice');
     return;
   }
   /*eslint-enable no-alert */
-
-  const invoice = reactor.evaluateToJS(getters.getInvoice);
 
   GlobalActions.showGlobalLoader();
 
@@ -278,9 +274,7 @@ function fetchInvoice(locId, {invoiceId}) {
   });
 }
 
-function makeDraft(locId) {
-  const invoice = reactor.evaluateToJS(getters.getInvoice);
-
+function makeDraft(locId, invoice) {
   if (invoice.FastbillId) {
     /*eslint-disable no-alert */
     if (!window.confirm('Invoice already pushed to Fastbill. Overwrite changes in Fastbill?')) {
@@ -310,8 +304,7 @@ function makeDraft(locId) {
   });
 }
 
-function refresh() {
-  const inv = reactor.evaluateToJS(getters.getInvoice);
+function refresh(inv) {
   const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
   const monthlySums = reactor.evaluateToJS(getters.getMonthlySums);
   const month = monthlySums.selected.month;
@@ -328,10 +321,9 @@ function refresh() {
   });
 }
 
-function save(locId, {invoiceId}) {
-  var inv = reactor.evaluateToJS(getters.getInvoice);
+function save(locId, {invoice}) {
   var falseEdits = false;
-  var mutated = _.filter(inv.Purchases, (p) => {
+  var mutated = _.filter(invoice.Purchases, (p) => {
     if (p.editValid === false) {
       falseEdits = true;
     }
@@ -385,7 +377,7 @@ function save(locId, {invoiceId}) {
   });
 }
 
-function send(canceled) {
+function send(canceled, invoice) {
   const msg = canceled ? 'Really send cancelation invoice?' : 'Really send invoice?';
 
   /*eslint-disable no-alert */
@@ -394,8 +386,6 @@ function send(canceled) {
     return;
   }
   /*eslint-enable no-alert */
-
-  const invoice = reactor.evaluateToJS(getters.getInvoice);
 
   GlobalActions.showGlobalLoader();
 

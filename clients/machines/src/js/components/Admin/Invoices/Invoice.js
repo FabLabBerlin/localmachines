@@ -2,6 +2,7 @@ var BillTable = require('../../UserProfile/BillTable');
 var getters = require('../../../getters');
 var Invoices = require('../../../modules/Invoices');
 var LoaderLocal = require('../../LoaderLocal');
+var LocationActions = require('../../../actions/LocationActions');
 var LocationGetters = require('../../../modules/Location/getters');
 var moment = require('moment');
 var React = require('react');
@@ -9,6 +10,7 @@ var reactor = require('../../../reactor');
 var SettingsActions = require('../../../modules/Settings/actions');
 var SettingsGetters = require('../../../modules/Settings/getters');
 var toastr = require('../../../toastr');
+var UserActions = require('../../../actions/UserActions');
 var util = require('./util');
 
 import {hashHistory} from 'react-router';
@@ -22,7 +24,6 @@ var Header = React.createClass({
     return {
       currency: SettingsGetters.getCurrency,
       editPurchaseId: Invoices.getters.getEditPurchaseId,
-      invoice: Invoices.getters.getInvoice,
       invoiceActions: Invoices.getters.getInvoiceActions,
       invoiceStatuses: Invoices.getters.getInvoiceStatuses,
       location: LocationGetters.getLocation,
@@ -48,7 +49,7 @@ var Header = React.createClass({
   complete(e) {
     e.stopPropagation();
     const locId = this.state.locationId;
-    const invoice = this.state.invoice;
+    const invoice = this.props.invoice;
 
     Invoices.actions.complete(locId);
   },
@@ -69,13 +70,13 @@ var Header = React.createClass({
   makeDraft(e) {
     e.stopPropagation();
     const locId = this.state.locationId;
-    const invoice = this.state.invoice;
+    const invoice = this.props.invoice;
 
     Invoices.actions.makeDraft(locId);
   },
 
   render() {
-    const invoice = this.state.invoice;
+    const invoice = this.props.invoice;
     const invoiceStatuses = this.state.invoiceStatuses;
 
     if (!invoice) {
@@ -196,7 +197,7 @@ var Header = React.createClass({
   },
 
   statusInfo() {
-    const invoice = this.state.invoice;
+    const invoice = this.props.invoice;
 
     return util.statusInfo(invoice);
   }
@@ -210,7 +211,7 @@ var Invoice = React.createClass({
   getDataBindings() {
     return {
       editPurchaseId: Invoices.getters.getEditPurchaseId,
-      invoice: Invoices.getters.getInvoice,
+      invoices: Invoices.getters.getInvoices,
       invoiceActions: Invoices.getters.getInvoiceActions,
       invoiceStatuses: Invoices.getters.getInvoiceStatuses,
       location: LocationGetters.getLocation,
@@ -222,24 +223,30 @@ var Invoice = React.createClass({
   },
 
   componentWillMount() {
+    const uid = reactor.evaluateToJS(getters.getUid);
     const invoiceId = parseInt(this.props.params.invoiceId);
 
+    UserActions.fetchUser(uid);
+    LocationActions.loadUserLocations(uid);
     Invoices.actions.fetchInvoice(this.state.locationId, {
       invoiceId: invoiceId
     });
   },
 
   render() {
-    const invoice = this.state.invoice;
+    const invoiceId = parseInt(this.props.params.invoiceId);
+    const invoice = this.state.invoices.get(invoiceId);
     const invoiceStatuses = this.state.invoiceStatuses;
 
     if (invoice) {
       return (
-        <div className="inv-invoice"
-             onClick={this.stopPropagation}>
-          <Header/>
-          <div id="inv-body">
-            <BillTable bill={invoice}/>
+        <div className="inv-monthly-sums">
+          <div className="inv-invoice"
+               onClick={this.stopPropagation}>
+            <Header invoice={invoice}/>
+            <div id="inv-body">
+              <BillTable bill={invoice}/>
+            </div>
           </div>
         </div>
       );

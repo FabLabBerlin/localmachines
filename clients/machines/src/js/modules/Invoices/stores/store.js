@@ -19,7 +19,10 @@ const initialState = toImmutable({
       asc: true
     }
   },
-  checkStatus: 'all'
+  checkStatus: 'all',
+  invoices: {
+    detailedInvoices: {}
+  }
 });
 
 
