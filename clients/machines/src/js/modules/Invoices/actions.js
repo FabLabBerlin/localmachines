@@ -261,8 +261,6 @@ function fetchMonthlySums(locId, {month, year}) {
 }
 
 function fetchInvoice(locId, {invoiceId}) {
-  GlobalActions.showGlobalLoader();
-
   $.ajax({
     method: 'GET',
     url: '/api/billing/invoices/' + invoiceId,
@@ -277,9 +275,6 @@ function fetchInvoice(locId, {invoiceId}) {
   })
   .error(() => {
     toastr.error('Error fetch monthly summaries.  Please try again later.');
-  })
-  .always(() => {
-    GlobalActions.hideGlobalLoader();
   });
 }
 
@@ -390,10 +385,6 @@ function save(locId, {invoiceId}) {
   });
 }
 
-function selectInvoiceId(invoiceId) {
-  reactor.dispatch(actionTypes.SELECT_INVOICE_ID, invoiceId);
-}
-
 function send(canceled) {
   const msg = canceled ? 'Really send cancelation invoice?' : 'Really send invoice?';
 
@@ -466,7 +457,6 @@ export default {
   fetchUserMemberships,
   makeDraft,
   save,
-  selectInvoiceId,
   send,
   sendCanceled,
   setSelectedMonth,

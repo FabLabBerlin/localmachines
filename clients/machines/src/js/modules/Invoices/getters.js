@@ -22,10 +22,14 @@ const getInvoice = [
   (invoicesStore) => {
     const month = invoicesStore.getIn(['MonthlySums', 'selected', 'month']);
     const year = invoicesStore.getIn(['MonthlySums', 'selected', 'year']);
-    const invoiceId = invoicesStore.getIn(['MonthlySums', 'selected', 'invoiceId']);
-    const invoice = invoicesStore.getIn(['invoices', 'detailedInvoices', invoiceId]);
+    const matches = window.location.hash.match(/\/admin\/invoices\/(\d+)/);
 
-    return invoice;
+    if (matches && matches[1]) {
+      const invoiceId = parseInt(matches[1]);
+      const invoice = invoicesStore.getIn(['invoices', 'detailedInvoices', invoiceId]);
+
+      return invoice;
+    }
   }
 ];
 

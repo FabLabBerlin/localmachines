@@ -11,6 +11,8 @@ var SettingsGetters = require('../../../modules/Settings/getters');
 var toastr = require('../../../toastr');
 var util = require('./util');
 
+import {hashHistory} from 'react-router';
+
 
 var Header = React.createClass({
 
@@ -61,7 +63,7 @@ var Header = React.createClass({
       }
       /*eslint-enable no-alert */
     }
-    Invoices.actions.selectInvoiceId(null);
+    hashHistory.push('/admin/invoices');
   },
 
   makeDraft(e) {
@@ -219,6 +221,14 @@ var Invoice = React.createClass({
     };
   },
 
+  componentWillMount() {
+    const invoiceId = parseInt(this.props.params.invoiceId);
+
+    Invoices.actions.fetchInvoice(this.state.locationId, {
+      invoiceId: invoiceId
+    });
+  },
+
   render() {
     const invoice = this.state.invoice;
     const invoiceStatuses = this.state.invoiceStatuses;
@@ -234,6 +244,7 @@ var Invoice = React.createClass({
         </div>
       );
     } else {
+      console.log('!invoice');
       return <LoaderLocal/>;
     }
   },

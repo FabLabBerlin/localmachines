@@ -1,5 +1,4 @@
 var _ = require('lodash');
-var Invoice = require('./Invoice');
 var Invoices = require('../../../modules/Invoices');
 var LoaderLocal = require('../../LoaderLocal');
 var LocationGetters = require('../../../modules/Location/getters');
@@ -8,6 +7,8 @@ var React = require('react');
 var reactor = require('../../../reactor');
 var Settings = require('../../../modules/Settings');
 var util = require('./util');
+
+import {hashHistory} from 'react-router';
 
 
 var HeadColumn = React.createClass({
@@ -117,8 +118,6 @@ var List = React.createClass({
 
     return (
       <div>
-        {this.state.MonthlySums.getIn(['selected', 'invoiceId']) ?
-          <Invoice/> : null}
         <table className="table table-striped table-hover">
           <thead>
             <tr>
@@ -226,10 +225,7 @@ var List = React.createClass({
                       .get('selected').get('year');
     const userId = user.get('Id');
 
-    Invoices.actions.fetchInvoice(this.state.locationId, {
-      invoiceId: invoiceId
-    });
-    Invoices.actions.selectInvoiceId(invoiceId);
+    hashHistory.push('/admin/invoices/' + invoiceId);
   },
 
   selectStatus(e) {

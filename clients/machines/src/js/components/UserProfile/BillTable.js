@@ -85,7 +85,9 @@ var EmptyRow = React.createClass({
 
     return (
       <tr>
-        <td style={style}/>
+        <td style={style}>
+          {this.props.children}
+        </td>
       </tr>
     );
   }
@@ -221,7 +223,11 @@ var BillTable = React.createClass({
       );
     });
 
-    tbody.push(<AddPurchase key={i++}/>);
+    tbody.push(
+      <EmptyRow key={i++}>
+        <AddPurchase/>
+      </EmptyRow>
+    );
     tbody.push(<EmptyRow key={i++}/>);
     tbody.push(<EmptyRow key={i++}/>);
     tbody.push(<EmptyRow key={i++}/>);

@@ -5,6 +5,7 @@ if (window.location.pathname === '/product' || window.location.pathname === '/pr
   window.location.href = '/machines/#/product';
 } else {
 
+var AdminInvoice = require('./components/Admin/Invoices/Invoice');
 var AdminInvoices = require('./components/Admin/Invoices/Invoices');
 var AdminMachine = require('./components/Admin/Machines/Machine');
 var AdminMachines = require('./components/Admin/Machines/Machines');
@@ -86,6 +87,7 @@ render((
         <Route path="machines" component={AdminMachines} />
         <Route path="machines/:machineId" component={AdminMachine} />
         <Route path="invoices" component={AdminInvoices} />
+        <Route path="invoices/:invoiceId" component={AdminInvoice} />
         <Route path="settings" component={AdminSettings} />
         <Route path="users" component={AdminUsers} />
         <Route path="users/:userId" component={AdminUser} />
