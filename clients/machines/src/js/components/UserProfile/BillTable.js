@@ -93,18 +93,32 @@ var EmptyRow = React.createClass({
 
 
 var AddPurchase = React.createClass({
+
+  mixins: [ reactor.ReactMixin ],
+
+  getDataBindings() {
+    return {
+      isAdmin: LocationGetters.getIsAdmin
+    };
+  },
+
   render() {
-    return (
-      <button id="inv-add-purchase">
-        <div id="inv-add-purchase-icon"/>
-        <div>Add Purchase</div>
-      </button>
-    )
+    if (this.state.isAdmin) {
+      return (
+        <button id="inv-add-purchase">
+          <div id="inv-add-purchase-icon"/>
+          <div>Add Purchase</div>
+        </button>
+      );
+    } else {
+      return <div/>;
+    }
   }
 });
 
 
 var BillTable = React.createClass({
+
   mixins: [ reactor.ReactMixin ],
 
   getDataBindings() {

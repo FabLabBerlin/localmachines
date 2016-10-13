@@ -188,6 +188,10 @@ function complete() {
   });
 }
 
+function createPurchase() {
+  reactor.dispatch(actionTypes.CREATE_PURCHASE);
+}
+
 function editPurchase(id) {
   reactor.dispatch(actionTypes.EDIT_PURCHASE, id);
 }

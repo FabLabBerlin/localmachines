@@ -4,6 +4,7 @@ export default keyMirror({
   CHECK: null,
   CHECK_ALL: null,
   CHECK_SET_STATUS: null,
+  CREATE_PURCHASE: null,
   EDIT_PURCHASE: null,
   EDIT_PURCHASE_DURATION: null,
   FETCH_MONTHLY_SUMMARIES: null,
