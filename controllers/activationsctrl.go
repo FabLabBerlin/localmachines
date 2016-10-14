@@ -84,16 +84,32 @@ func (this *ActivationsController) Post() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	uid, err := this.GetSessionUserId()
+	uid, err := this.GetInt64("user")
+	beego.Info("user=", uid)
 	if err != nil {
-		beego.Info("Not logged in:", err)
-		this.CustomAbort(401, "Not logged in")
+		uid, err = this.GetSessionUserId()
+		if err != nil {
+			beego.Info("Not logged in:", err)
+			this.CustomAbort(401, "Not logged in")
+		}
 	}
+	beego.Info("uid=", uid)
 
-	inv, err := invoices.GetDraft(locId, uid, time.Now())
-	if err != nil {
-		beego.Info("get invoice draft:", err)
-		this.CustomAbort(400, "Get invoice draft")
+	var inv *invoices.Invoice
+	if invId, err := this.GetInt64("invoice"); err == nil {
+		if inv, err = invoices.Get(invId); err != nil {
+			beego.Info("get invoice:", err)
+			this.CustomAbort(400, "Get invoice")
+		}
+		if inv.Status != "draft" {
+			beego.Error("invoice status is", inv.Status)
+			this.CustomAbort(400, "Invoice status must be draft")
+		}
+	} else {
+		if inv, err = invoices.GetDraft(locId, uid, time.Now()); err != nil {
+			beego.Info("get invoice draft:", err)
+			this.CustomAbort(400, "Get invoice draft")
+		}
 	}
 
 	p := &purchases.Purchase{

@@ -180,7 +180,8 @@ var BillTable = React.createClass({
 
     tbody.push(
       <tr key={i++}>
-        <th>Machine</th>
+        <th>Category</th>
+        <th>Name</th>
         <th>Date</th>
         <th>Duration</th>
         <th>Price excl. VAT</th>
@@ -194,16 +195,16 @@ var BillTable = React.createClass({
     });
 
     _.each(sorted, (purchase) => {
-      var label = purchase.Machine ? purchase.Machine.Name : '';
+      var category;
       switch (purchase.Type) {
       case 'activation':
-        // already okay
+        category = 'Activation';
         break;
       case 'reservation':
-        label += ' (Reservation)';
+        category = 'Reservation';
         break;
       case 'tutor':
-        label = 'Tutoring';
+        category = 'Tutoring';
         break;
       default:
         console.log('unhandled purchase type ', purchase.Type);
@@ -213,7 +214,8 @@ var BillTable = React.createClass({
         <tr key={i++}
             onClick={this.edit.bind(this, purchase)}
             className={'inv-purchase ' + (!selected ? 'unselected' : undefined)}>
-          <td>{label}</td>
+          <td>{category}</td>
+          <td>{purchase.Machine && purchase.Machine.Name}</td>
           <td>{formatDate(moment(purchase.TimeStart))} {moment(purchase.TimeStart).format('HH:mm')}</td>
           <td>
             {selected && moment(purchase.TimeEnd).unix() > 0 ?

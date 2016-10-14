@@ -185,7 +185,28 @@ function complete(invoice) {
 }
 
 function createPurchase(invoice) {
-  reactor.dispatch(actionTypes.CREATE_PURCHASE, invoice.get('Id'));
+  console.log('invoice=', invoice);
+  GlobalActions.showGlobalLoader();
+
+  $.ajax({
+    method: 'POST',
+    url: '/api/activations',
+    data: {
+      location: invoice.get('LocationId'),
+      invoice: invoice.get('Id'),
+      user: invoice.get('UserId')
+    }
+  })
+  .success(() => {
+    toastr.info('Purchase created');
+    refresh(invoice);
+  })
+  .error(xhr => {
+    toastr.error('Error creating purchase:' + xhr.responseText);
+  })
+  .always(() => {
+    GlobalActions.hideGlobalLoader();
+  });
 }
 
 function editPurchase(id) {
@@ -442,6 +463,7 @@ export default {
   checkedSend,
   checkSetStatus,
   complete,
+  createPurchase,
   editPurchase,
   editPurchaseDuration,
   fetchFastbillStatuses,
