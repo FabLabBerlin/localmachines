@@ -72,6 +72,7 @@ var CategoryEdit = React.createClass({
               value={p.Type}>
         <option value="activation">Activation</option>
         <option value="reservation">Reservation</option>
+        <option value="other">Other</option>
       </select>
     );
   },
@@ -221,6 +222,9 @@ var BillTable = React.createClass({
       switch (purchase.Type) {
       case 'activation':
         category = 'Activation';
+        break;
+      case 'other':
+        category = 'Other';
         break;
       case 'reservation':
         category = 'Reservation';

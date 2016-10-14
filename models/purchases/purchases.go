@@ -17,6 +17,7 @@ const TABLE_NAME = "purchases"
 
 const (
 	TYPE_ACTIVATION  = "activation"
+	TYPE_OTHER       = "other"
 	TYPE_RESERVATION = "reservation"
 	TYPE_TUTOR       = "tutor"
 )

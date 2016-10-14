@@ -393,8 +393,9 @@ function save(locId, {invoice}) {
 
   GlobalActions.showGlobalLoader();
 
-  $.when(promises)
-  .done(() => {
+  $.when.apply(this, promises)
+  .done((...results) => {
+    console.log('results=', results);
     toastr.info('Successfully saved updates');
     editPurchase(undefined);
     refresh(invoice);

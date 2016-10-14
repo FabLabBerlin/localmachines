@@ -3,6 +3,7 @@ package controllers
 
 import (
 	"errors"
+	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib/redis"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/user_roles"
@@ -76,6 +77,42 @@ func init() {
 // Creates new ErrorResponse instance with Status:"error" already set
 func NewErrorResponse() *ErrorResponse {
 	return &ErrorResponse{Status: "error"}
+}
+
+func (this *Controller) Fail(args ...interface{}) {
+	var code int
+	var msg string
+
+	for ; len(args) > 0; args = args[1:] {
+		switch v := args[0].(type) {
+		case int:
+			code = v
+			break
+		case string:
+			if code == 0 {
+				var err error
+				code, err = strconv.Atoi(v)
+				if err == nil {
+					continue
+				}
+			}
+			if msg != "" {
+				msg += " "
+			}
+			msg += v
+			break
+		default:
+			beego.Error("Fail: unhandled type")
+			break
+		}
+	}
+
+	if msg == "" {
+		msg = http.StatusText(code)
+	}
+
+	beego.Error(fmt.Sprintf("[%v] %v", code, msg))
+	this.CustomAbort(code, msg)
 }
 
 func (this *Controller) GetSession(key string) interface{} {

@@ -91,7 +91,9 @@ function editPurchaseCategory(state, {category, invoiceId}) {
       p.editValid = false;
       p.editedCategory = category;
 
-      if (category === 'activation' || category === 'reservation') {
+      if (category === 'activation' ||
+          category === 'other' ||
+          category === 'reservation') {
         p.editValid = true;
         p.Type = category;
       }

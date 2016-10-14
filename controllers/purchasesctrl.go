@@ -66,13 +66,13 @@ func (this *PurchasesController) GetAll() {
 	locId, authorized := this.GetLocIdAdmin()
 	if !authorized {
 		beego.Error("Not authorized")
-		this.Abort("401")
+		this.Fail("401")
 	}
 
 	// This is admin and staff only
 	if !this.IsStaffAt(locId) {
 		beego.Error("Not authorized")
-		this.Abort("401")
+		this.Fail("401")
 	}
 
 	purchaseType := this.GetString("type")
@@ -131,12 +131,12 @@ func (this *PurchasesController) Get() {
 
 	if err != nil {
 		beego.Error("Failed to get purchase", err, " (purchaseType=", purchaseType, ")")
-		this.Abort("500")
+		this.Fail("500")
 	}
 
 	if !this.IsAdminAt(locationId) {
 		beego.Error("Not authorized")
-		this.Abort("401")
+		this.Fail("401")
 	}
 
 	this.Data["json"] = purchase
@@ -156,38 +156,38 @@ func (this *PurchasesController) Put() {
 	if this.GetString(":id") != "create" {
 		id, err := this.GetInt64(":id")
 		if err != nil {
-			this.Abort("400")
+			this.Fail("400")
 		}
 		existing, err = purchases.Get(id)
 		if err != nil {
 			beego.Error("Cannot get purchase:", err)
-			this.Abort("500")
+			this.Fail("500")
 		}
 
 		if !this.IsAdminAt(existing.LocationId) {
 			beego.Error("Unauthorized attempt to update purchase")
-			this.Abort("401")
+			this.Fail("401")
 		}
 
 		existingInv, err := invoices.Get(existing.InvoiceId)
 		if err != nil {
 			beego.Error("get invoice associated to existing purchase:", err)
-			this.Abort("500")
+			this.Fail("500")
 		}
 		if existingInv.Status != "draft" {
 			beego.Error("existing invoice has status", existingInv.Status)
-			this.Abort("403")
+			this.Fail("403")
 		}
 	}
 
 	assertSameIds := func(newId, newLocationId int64) {
 		if existing.Id != newId {
 			beego.Error("Id changed")
-			this.Abort("403")
+			this.Fail("403")
 		}
 		if existing.LocationId != newLocationId {
 			beego.Error("Location Id changed")
-			this.Abort("403")
+			this.Fail("403")
 		}
 	}
 
@@ -197,13 +197,37 @@ func (this *PurchasesController) Put() {
 	var err error
 
 	switch purchaseType {
+	case purchases.TYPE_OTHER:
+		p := &purchases.Purchase{}
+		dec := json.NewDecoder(this.Ctx.Request.Body)
+		if err := dec.Decode(p); err != nil {
+			beego.Error("Failed to decode json:", err)
+			this.Fail("400")
+		}
+
+		inv, err := invoices.Get(p.InvoiceId)
+		if err != nil {
+			beego.Error("getting invoice", inv.Id, ":", err)
+			this.Fail("500")
+		}
+
+		if inv.Status != "draft" {
+			this.Fail(400, "Expected status draft")
+		}
+
+		assertSameIds(p.Id, p.LocationId)
+		if err = purchases.Update(p); err == nil {
+			response = p
+		}
+
+		break
 	case purchases.TYPE_TUTOR:
 		tp := &purchases.Tutoring{}
 		dec := json.NewDecoder(this.Ctx.Request.Body)
 		defer this.Ctx.Request.Body.Close()
 		if err := dec.Decode(tp); err != nil {
 			beego.Error("Failed to decode json:", err)
-			this.Abort("400")
+			this.Fail("400")
 		}
 
 		t := tp.TimeStart
@@ -213,20 +237,20 @@ func (this *PurchasesController) Put() {
 			inv, err = invoices.GetDraft(tp.LocationId, tp.UserId, t)
 			if err != nil {
 				beego.Error("getting invoice of", t.Format("01-2006"), ":", err)
-				this.Abort("500")
+				this.Fail("500")
 			}
 			tp.InvoiceId = inv.Id
 		} else {
 			inv, err = invoices.Get(tp.InvoiceId)
 			if err != nil {
 				beego.Error("getting invoice", inv.Id, ":", err)
-				this.Abort("500")
+				this.Fail("500")
 			}
 		}
 
 		if inv.Status != "draft" {
 			beego.Error("the invoice for that month is in status", inv.Status)
-			this.Abort("500")
+			this.Fail("500")
 		}
 
 		if this.GetString(":id") == "create" {
@@ -248,7 +272,7 @@ func (this *PurchasesController) Put() {
 
 	if err != nil {
 		beego.Error("Failed to save purchase", err, " (purchaseType=", purchaseType, ")")
-		this.Abort("500")
+		this.Fail("500")
 	}
 
 	this.Data["json"] = response
@@ -267,18 +291,18 @@ func (this *PurchasesController) ArchivePurchase() {
 	purchaseId, err := this.GetInt64(":purchaseId")
 	if err != nil {
 		beego.Error("Failed to get :purchaseId variable")
-		this.Abort("400")
+		this.Fail("400")
 	}
 
 	purchase, err := purchases.Get(purchaseId)
 	if err != nil {
 		beego.Error("Failed to get purchase")
-		this.Abort("500")
+		this.Fail("500")
 	}
 
 	if !this.IsAdminAt(purchase.LocationId) {
 		beego.Error("Unauthorized attempt to archive purchase")
-		this.Abort("401")
+		this.Fail("401")
 	}
 
 	err = purchases.Archive(purchase)
