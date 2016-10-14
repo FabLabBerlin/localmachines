@@ -59,6 +59,29 @@ function formatPrice(price) {
 }
 
 
+var CategoryEdit = React.createClass({
+  render() {
+    const p = this.props.purchase;
+
+    if (p.Type === 'tutor') {
+      return <div>Tutoring</div>;
+    }
+
+    return (
+      <select onChange={this.update}
+              value={p.Type}>
+        <option value="activation">Activation</option>
+        <option value="reservation">Reservation</option>
+      </select>
+    );
+  },
+
+  update(e) {
+    Invoices.actions.editPurchaseCategory(this.props.invoice, e.target.value);
+  }
+});
+
+
 var DurationEdit = React.createClass({
   render() {
     return (
@@ -72,7 +95,6 @@ var DurationEdit = React.createClass({
   },
 
   update(e) {
-    console.log('this.props.invoice=', this.props.invoice);
     Invoices.actions.editPurchaseDuration(this.props.invoice, e.target.value);
   }
 });
@@ -214,7 +236,12 @@ var BillTable = React.createClass({
         <tr key={i++}
             onClick={this.edit.bind(this, purchase)}
             className={'inv-purchase ' + (!selected ? 'unselected' : undefined)}>
-          <td>{category}</td>
+          <td>
+            {selected && moment(purchase.TimeEnd).unix() > 0 ?
+              <CategoryEdit invoice={this.props.invoice} purchase={purchase}/> :
+              category
+            }
+          </td>
           <td>{purchase.Machine && purchase.Machine.Name}</td>
           <td>{formatDate(moment(purchase.TimeStart))} {moment(purchase.TimeStart).format('HH:mm')}</td>
           <td>

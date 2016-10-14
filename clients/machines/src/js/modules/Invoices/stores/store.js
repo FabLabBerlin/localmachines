@@ -37,6 +37,7 @@ var InvoicesStore = new Nuclear.Store({
     this.on(actionTypes.CHECK_ALL, checkAll);
     this.on(actionTypes.CHECK_SET_STATUS, checkSetStatus);
     this.on(actionTypes.EDIT_PURCHASE, editPurchase);
+    this.on(actionTypes.EDIT_PURCHASE_CATEGORY, editPurchaseCategory);
     this.on(actionTypes.EDIT_PURCHASE_DURATION, editPurchaseDuration);
     this.on(actionTypes.FETCH_MONTHLY_SUMMARIES, fetchMonthlySums);
     this.on(actionTypes.SET_SELECTED_MONTH, setSelectedMonth);
@@ -74,7 +75,35 @@ function editPurchase(state, id) {
   return state.set('editPurchaseId', id);
 }
 
+function editPurchaseCategory(state, {category, invoiceId}) {
+  console.log('#editPurchaseCategory');
+  var purchaseId = state.get('editPurchaseId');
+
+  var keyPath = [
+    'invoices',
+    'detailedInvoices',
+    invoiceId
+  ];
+  console.log('keyPath=', keyPath);
+  var iv = state.getIn(keyPath).toJS();
+  iv.Purchases = _.map(iv.Purchases, (p) => {
+    if (p.Id === purchaseId) {
+      p.editValid = false;
+      p.editedCategory = category;
+
+      if (category === 'activation' || category === 'reservation') {
+        p.editValid = true;
+        p.Type = category;
+      }
+    }
+    return p;
+  });
+
+  return state.setIn(keyPath, toImmutable(iv));
+}
+
 function editPurchaseDuration(state, {duration, invoiceId}) {
+  console.log('#editPurchaseDuration');
   var purchaseId = state.get('editPurchaseId');
 
   var keyPath = [

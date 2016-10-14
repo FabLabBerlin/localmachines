@@ -213,6 +213,12 @@ function editPurchase(id) {
   reactor.dispatch(actionTypes.EDIT_PURCHASE, id);
 }
 
+function editPurchaseCategory(invoice, category) {
+  const invoiceId = invoice.get('Id');
+
+  reactor.dispatch(actionTypes.EDIT_PURCHASE_CATEGORY, {category, invoiceId});
+}
+
 function editPurchaseDuration(invoice, duration) {
   const invoiceId = invoice.get('Id');
 
@@ -352,7 +358,7 @@ function save(locId, {invoice}) {
       falseEdits = true;
     }
 
-    return p.editedDuration;
+    return p.editedCategory || p.editedDuration;
   });
 
   if (falseEdits) {
@@ -465,6 +471,7 @@ export default {
   complete,
   createPurchase,
   editPurchase,
+  editPurchaseCategory,
   editPurchaseDuration,
   fetchFastbillStatuses,
   fetchInvoice,
