@@ -72,7 +72,8 @@ var DurationEdit = React.createClass({
   },
 
   update(e) {
-    Invoices.actions.editPurchaseDuration(e.target.value);
+    console.log('this.props.invoice=', this.props.invoice);
+    Invoices.actions.editPurchaseDuration(this.props.invoice, e.target.value);
   }
 });
 
@@ -104,10 +105,15 @@ var AddPurchase = React.createClass({
     };
   },
 
+  add() {
+    Invoices.actions.createPurchase(this.props.invoice);
+  },
+
   render() {
     if (this.state.isAdmin) {
       return (
-        <button id="inv-add-purchase">
+        <button id="inv-add-purchase"
+                onClick={this.add}>
           <div id="inv-add-purchase-icon"/>
           <div>Add Purchase</div>
         </button>
@@ -140,11 +146,11 @@ var BillTable = React.createClass({
   },
 
   render() {
-    if (!this.props.bill) {
+    if (!this.props.invoice) {
       return <div/>;
     }
 
-    const bill = this.props.bill.toJS();
+    const bill = this.props.invoice.toJS();
 
     var i = 0;
     var caption = [];
@@ -211,7 +217,7 @@ var BillTable = React.createClass({
           <td>{formatDate(moment(purchase.TimeStart))} {moment(purchase.TimeStart).format('HH:mm')}</td>
           <td>
             {selected && moment(purchase.TimeEnd).unix() > 0 ?
-              <DurationEdit purchase={purchase}/> :
+              <DurationEdit invoice={this.props.invoice} purchase={purchase}/> :
               (purchase.editedDuration ? purchase.editedDuration :
               formatDuration(purchase))
             }
@@ -225,7 +231,7 @@ var BillTable = React.createClass({
 
     tbody.push(
       <EmptyRow key={i++}>
-        <AddPurchase/>
+        <AddPurchase invoice={this.props.invoice}/>
       </EmptyRow>
     );
     tbody.push(<EmptyRow key={i++}/>);

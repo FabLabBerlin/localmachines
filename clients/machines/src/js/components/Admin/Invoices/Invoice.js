@@ -175,13 +175,9 @@ var Header = React.createClass({
   save(e) {
     e.stopPropagation();
     const locId = this.state.locationId;
-    const userId = this.state.uid;
-    const month = this.state.MonthlySums
-                      .get('selected').get('month');
-    const year = this.state.MonthlySums
-                      .get('selected').get('year');
+    const invoice = this.props.invoice;
 
-    Invoices.actions.save(locId, {month, year, userId});
+    Invoices.actions.save(locId, {invoice});
   },
 
   send(e) {
@@ -245,7 +241,7 @@ var Invoice = React.createClass({
                onClick={this.stopPropagation}>
             <Header invoice={invoice}/>
             <div id="inv-body">
-              <BillTable bill={invoice}/>
+              <BillTable invoice={invoice}/>
             </div>
           </div>
         </div>

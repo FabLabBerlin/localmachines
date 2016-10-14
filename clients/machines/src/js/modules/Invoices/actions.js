@@ -184,16 +184,18 @@ function complete(invoice) {
   });
 }
 
-function createPurchase() {
-  reactor.dispatch(actionTypes.CREATE_PURCHASE);
+function createPurchase(invoice) {
+  reactor.dispatch(actionTypes.CREATE_PURCHASE, invoice.get('Id'));
 }
 
 function editPurchase(id) {
   reactor.dispatch(actionTypes.EDIT_PURCHASE, id);
 }
 
-function editPurchaseDuration(duration) {
-  reactor.dispatch(actionTypes.EDIT_PURCHASE_DURATION, duration);
+function editPurchaseDuration(invoice, duration) {
+  const invoiceId = invoice.get('Id');
+
+  reactor.dispatch(actionTypes.EDIT_PURCHASE_DURATION, {duration, invoiceId});
 }
 
 function fetchFastbillStatuses(locId, {month, year, userId}) {
@@ -323,7 +325,8 @@ function refresh(inv) {
 
 function save(locId, {invoice}) {
   var falseEdits = false;
-  var mutated = _.filter(invoice.Purchases, (p) => {
+
+  var mutated = _.filter(invoice.get('Purchases').toJS(), (p) => {
     if (p.editValid === false) {
       falseEdits = true;
     }
@@ -335,7 +338,7 @@ function save(locId, {invoice}) {
     toastr.error('Trying to save invalid edit');
     return;
   }
-
+  console.log('save: mutated=', mutated);
   var promises = _.map(mutated, (p) => {
     var url;
 

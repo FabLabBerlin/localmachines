@@ -74,8 +74,7 @@ function editPurchase(state, id) {
   return state.set('editPurchaseId', id);
 }
 
-function editPurchaseDuration(state, duration) {
-  var invoiceId = state.getIn(['MonthlySums', 'selected', 'invoiceId']);
+function editPurchaseDuration(state, {duration, invoiceId}) {
   var purchaseId = state.get('editPurchaseId');
 
   var keyPath = [
@@ -83,7 +82,7 @@ function editPurchaseDuration(state, duration) {
     'detailedInvoices',
     invoiceId
   ];
-
+  console.log('keyPath=', keyPath);
   var iv = state.getIn(keyPath).toJS();
   iv.Purchases = _.map(iv.Purchases, (p) => {
     if (p.Id === purchaseId) {
