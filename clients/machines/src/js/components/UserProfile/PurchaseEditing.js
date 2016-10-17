@@ -4,7 +4,33 @@ var Invoices = require('../../modules/Invoices');
 var React = require('react');
 
 
-var CategoryEdit = React.createClass({
+var Amount = React.createClass({
+  render() {
+    const p = this.props.purchase;
+
+    if (p.Type === 'other') {
+      return (
+      <input type="number"
+             onChange={this.update}
+             value={this.props.purchase.Quantity}/>
+      );
+    } else {
+      return <Duration invoice={this.props.invoice}
+                       purchase={p}/>;
+    }
+  },
+
+  update(e) {
+    Invoices.actions.editPurchaseField({
+      invoice: this.props.invoice,
+      field: 'Quantity',
+      value: e.target.value
+    });
+  }
+});
+
+
+var Category = React.createClass({
   render() {
     const p = this.props.purchase;
 
@@ -32,7 +58,7 @@ var CategoryEdit = React.createClass({
 });
 
 
-var DurationEdit = React.createClass({
+var Duration = React.createClass({
   render() {
     return (
       <input type="text"
@@ -50,13 +76,19 @@ var DurationEdit = React.createClass({
 });
 
 
-var PricePerUnitEdit = React.createClass({
+var PricePerUnit = React.createClass({
   render() {
+    const p = this.props.purchase;
+
+    if (p.Type !== 'other') {
+      return <div>{p.PricePerUnit}</div>;
+    }
+
     return (
       <input type="text"
              autoFocus="on"
              onChange={this.update}
-             value={this.props.purchase.PricePerUnit}/>
+             value={p.PricePerUnit}/>
     );
   },
 
@@ -70,7 +102,7 @@ var PricePerUnitEdit = React.createClass({
 });
 
 
-var UnitEdit = React.createClass({
+var Unit = React.createClass({
   render() {
     const p = this.props.purchase;
 
@@ -101,8 +133,9 @@ var UnitEdit = React.createClass({
 });
 
 export default {
-  CategoryEdit,
-  DurationEdit,
-  PricePerUnitEdit,
-  UnitEdit
+  Amount,
+  Category,
+  Duration,
+  PricePerUnit,
+  Unit
 };

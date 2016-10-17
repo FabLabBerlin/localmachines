@@ -391,6 +391,10 @@ function save(locId, {invoice}) {
       if (!_.isNumber(p.PricePerUnit)) {
         p.PricePerUnit = parseFloat(p.PricePerUnit);
       }
+
+      if (!_.isNumber(p.Quantity)) {
+        p.Quantity = parseFloat(p.Quantity);
+      }
     }
 
     return $.ajax({

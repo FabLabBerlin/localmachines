@@ -1,5 +1,6 @@
 var _ = require('lodash');
 var $ = require('jquery');
+var Edit = require('./PurchaseEditing');
 var Invoices = require('../../modules/Invoices');
 var LocationGetters = require('../../modules/Location/getters');
 var moment = require('moment');
@@ -8,7 +9,6 @@ var reactor = require('../../reactor');
 var SettingsGetters = require('../../modules/Settings/getters');
 var toastr = require('../../toastr');
 var {formatDate, formatDuration, formatPrice, subtractVAT, toEuro, toCents} = require('./helpers');
-var {CategoryEdit, DurationEdit, PricePerUnitEdit, UnitEdit} = require('./PurchaseEditing');
 
 
 var EmptyRow = React.createClass({
@@ -116,7 +116,7 @@ var BillTable = React.createClass({
         <th>Category</th>
         <th>Name</th>
         <th>Date</th>
-        <th>Duration</th>
+        <th>Amount</th>
         <th>Unit</th>
         <th>Price / Unit</th>
         <th>Price excl. VAT</th>
@@ -156,7 +156,7 @@ var BillTable = React.createClass({
             className={'inv-purchase ' + (!selected ? 'unselected' : undefined)}>
           <td>
             {editable ?
-              <CategoryEdit invoice={this.props.invoice} purchase={purchase}/> :
+              <Edit.Category invoice={this.props.invoice} purchase={purchase}/> :
               category
             }
           </td>
@@ -164,20 +164,21 @@ var BillTable = React.createClass({
           <td>{formatDate(moment(purchase.TimeStart))} {moment(purchase.TimeStart).format('HH:mm')}</td>
           <td>
             {editable ?
-              <DurationEdit invoice={this.props.invoice} purchase={purchase}/> :
-              (purchase.editedDuration ? purchase.editedDuration :
-              formatDuration(purchase))
+              <Edit.Amount invoice={this.props.invoice} purchase={purchase}/> :
+              (purchase.editedDuration ? purchase.editedDuration : (
+              purchase.PriceUnit !== 'gram' ? formatDuration(purchase) :
+              purchase.Quantity))
             }
           </td>
           <td>
             {editable ?
-              <UnitEdit invoice={this.props.invoice} purchase={purchase}/> :
+              <Edit.Unit invoice={this.props.invoice} purchase={purchase}/> :
               purchase.PriceUnit
             }
           </td>
           <td>
             {editable ?
-              <PricePerUnitEdit invoice={this.props.invoice} purchase={purchase}/> :
+              <Edit.PricePerUnit invoice={this.props.invoice} purchase={purchase}/> :
               purchase.PricePerUnitUnit
             }
           </td>

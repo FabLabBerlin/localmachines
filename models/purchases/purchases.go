@@ -289,7 +289,9 @@ func Update(p *Purchase) (err error) {
 		return fmt.Errorf("invoice doesn't have status draft: %v", inv.Status)
 	}
 	p.InvoiceStatus = inv.Status
-	p.Quantity = floor10(p.quantityFromTimes())
+	if p.PriceUnit != "gram" {
+		p.Quantity = floor10(p.quantityFromTimes())
+	}
 	beego.Info("purchases.Update: p.Quantity <- ", p.Quantity)
 
 	_, err = o.Update(p)
