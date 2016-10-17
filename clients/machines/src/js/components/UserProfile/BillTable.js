@@ -160,7 +160,15 @@ var BillTable = React.createClass({
               category
             }
           </td>
-          <td>{purchase.Machine && purchase.Machine.Name}</td>
+          <td>
+            {editable ? (
+              <Edit.Name invoice={this.props.invoice} purchase={purchase}/>
+            ) : (
+              purchase.Type !== 'other' ?
+              (purchase.Machine && purchase.Machine.Name) :
+              purchase.CustomName
+            )}
+          </td>
           <td>{formatDate(moment(purchase.TimeStart))} {moment(purchase.TimeStart).format('HH:mm')}</td>
           <td>
             {editable ?
@@ -179,7 +187,7 @@ var BillTable = React.createClass({
           <td>
             {editable ?
               <Edit.PricePerUnit invoice={this.props.invoice} purchase={purchase}/> :
-              purchase.PricePerUnitUnit
+              purchase.PricePerUnit
             }
           </td>
           <td>{formatPrice(purchase.PriceExclVAT)} {this.state.currency}</td>

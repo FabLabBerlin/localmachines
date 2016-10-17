@@ -395,6 +395,10 @@ function save(locId, {invoice}) {
       if (!_.isNumber(p.Quantity)) {
         p.Quantity = parseFloat(p.Quantity);
       }
+    } else {
+      if (!_.isNumber(p.MachineId)) {
+        p.MachineId = parseInt(p.MachineId);
+      }
     }
 
     return $.ajax({

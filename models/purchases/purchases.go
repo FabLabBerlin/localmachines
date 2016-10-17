@@ -57,6 +57,9 @@ type Purchase struct {
 	Machine   *machine.Machine `orm:"-"`
 	MachineId int64
 
+	// Type Other fields:
+	CustomName string
+
 	// Activation+Tutoring fields:
 	Running bool
 

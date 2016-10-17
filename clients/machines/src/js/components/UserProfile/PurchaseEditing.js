@@ -1,7 +1,14 @@
 var _ = require('lodash');
 var {formatDuration} = require('./helpers');
+var getters = require('../../getters');
 var Invoices = require('../../modules/Invoices');
+var LoaderLocal = require('../LoaderLocal');
+var LocationGetters = require('../../modules/Location/getters');
+var MachineActions = require('../../actions/MachineActions');
+var Machines = require('../../modules/Machines');
 var React = require('react');
+var reactor = require('../../reactor');
+var UserActions = require('../../actions/UserActions');
 
 
 var Amount = React.createClass({
@@ -76,6 +83,75 @@ var Duration = React.createClass({
 });
 
 
+var Name = React.createClass({
+  mixins: [ reactor.ReactMixin ],
+
+  getDataBindings() {
+    return {
+      machines: Machines.getters.getMachines
+    };
+  },
+
+  componentWillMount() {
+    const locationId = reactor.evaluateToJS(LocationGetters.getLocation).Id;
+    const uid = reactor.evaluateToJS(getters.getUid);
+    UserActions.fetchUser(uid);
+    MachineActions.apiGetUserMachines(locationId, uid);
+  },
+
+  render() {
+    const p = this.props.purchase;
+
+    if (p.Type === 'other') {
+      return (
+        <input type="text"
+               onChange={this.update}
+               value={p.CustomName}/>
+      );
+    } else {
+      if (!this.state.machines) {
+        return <LoaderLocal/>;
+      }
+
+      return (
+        <select onChange={this.update}
+                value={p.MachineId}>
+          <option value="0">Please select</option>
+          {this.state.machines.toList()
+                              .sort(m => m.get('Name'))
+                              .map(m => {
+            return (
+              <option key={m.get('Id')}
+                      value={m.get('Id')}>
+                {m.get('Name')}
+              </option>
+            );
+          })}
+        </select>
+      );
+    }
+  },
+
+  update(e) {
+    const p = this.props.purchase;
+
+    if (p.Type === 'other') {
+      Invoices.actions.editPurchaseField({
+        invoice: this.props.invoice,
+        field: 'CustomName',
+        value: e.target.value
+      });
+    } else {
+      Invoices.actions.editPurchaseField({
+        invoice: this.props.invoice,
+        field: 'MachineId',
+        value: e.target.value
+      });
+    }
+  }
+});
+
+
 var PricePerUnit = React.createClass({
   render() {
     const p = this.props.purchase;
@@ -136,6 +212,7 @@ export default {
   Amount,
   Category,
   Duration,
+  Name,
   PricePerUnit,
   Unit
 };
