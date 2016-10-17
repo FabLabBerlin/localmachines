@@ -85,7 +85,10 @@ var Month = React.createClass({
         {selected ?
           (
             <div className="row" onClick={this.select}>
-              <div className="col-xs-12 text-right">
+              <div className="col-md-6">
+                <b>Show inactive users</b>
+              </div>
+              <div className="col-md-6 text-md-right">
                 <button type="button"
                         onClick={this.checkedSend}
                         title="Send">

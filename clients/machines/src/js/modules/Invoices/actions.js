@@ -215,22 +215,16 @@ function editPurchase(id) {
   reactor.dispatch(actionTypes.EDIT_PURCHASE, id);
 }
 
-function editPurchaseCategory(invoice, category) {
-  const invoiceId = invoice.get('Id');
-
-  reactor.dispatch(actionTypes.EDIT_PURCHASE_CATEGORY, {category, invoiceId});
-}
-
 function editPurchaseDuration(invoice, duration) {
   const invoiceId = invoice.get('Id');
 
   reactor.dispatch(actionTypes.EDIT_PURCHASE_DURATION, {duration, invoiceId});
 }
 
-function editPurchaseUnit(invoice, priceUnit) {
+function editPurchaseField({invoice, field, value}) {
   const invoiceId = invoice.get('Id');
 
-  reactor.dispatch(actionTypes.EDIT_PURCHASE_UNIT, {priceUnit, invoiceId});
+  reactor.dispatch(actionTypes.EDIT_PURCHASE_FIELD, {invoiceId, field, value});
 }
 
 function fetchFastbillStatuses(locId, {month, year, userId}) {
@@ -359,6 +353,7 @@ function refresh(inv) {
 }
 
 function save(locId, {invoice}) {
+  console.log('Invoice actions#save');
   var falseEdits = false;
 
   var mutated = _.filter(invoice.get('Purchases').toJS(), (p) => {
@@ -366,8 +361,10 @@ function save(locId, {invoice}) {
       falseEdits = true;
     }
 
-    return p.editedCategory || p.editedDuration;
+    return p.edited || p.editedDuration;
   });
+
+  console.log('falseEdits=', falseEdits);
 
   if (falseEdits) {
     toastr.error('Trying to save invalid edit');
@@ -386,6 +383,14 @@ function save(locId, {invoice}) {
       break;
     default:
       url = '/api/purchases/' + p.Id + '?type=' + p.Type;
+    }
+
+    console.log('sending data=', p);
+
+    if (p.Type === 'other') {
+      if (!_.isNumber(p.PricePerUnit)) {
+        p.PricePerUnit = parseFloat(p.PricePerUnit);
+      }
     }
 
     return $.ajax({
@@ -479,9 +484,8 @@ export default {
   complete,
   createPurchase,
   editPurchase,
-  editPurchaseCategory,
   editPurchaseDuration,
-  editPurchaseUnit,
+  editPurchaseField,
   fetchFastbillStatuses,
   fetchInvoice,
   fetchMonthlySums,

@@ -8,7 +8,7 @@ var reactor = require('../../reactor');
 var SettingsGetters = require('../../modules/Settings/getters');
 var toastr = require('../../toastr');
 var {formatDate, formatDuration, formatPrice, subtractVAT, toEuro, toCents} = require('./helpers');
-var {CategoryEdit, DurationEdit} = require('./PurchaseEditing');
+var {CategoryEdit, DurationEdit, PricePerUnitEdit, UnitEdit} = require('./PurchaseEditing');
 
 
 var EmptyRow = React.createClass({
@@ -118,6 +118,7 @@ var BillTable = React.createClass({
         <th>Date</th>
         <th>Duration</th>
         <th>Unit</th>
+        <th>Price / Unit</th>
         <th>Price excl. VAT</th>
         <th>VAT ({this.state.vatPercent}%)</th>
         <th>Total</th>
@@ -147,12 +148,14 @@ var BillTable = React.createClass({
         console.log('unhandled purchase type ', purchase.Type);
       }
       const selected = this.state.editPurchaseId === purchase.Id;
+      const editable = selected && moment(purchase.TimeEnd).unix() > 0;
+
       tbody.push(
         <tr key={i++}
             onClick={this.edit.bind(this, purchase)}
             className={'inv-purchase ' + (!selected ? 'unselected' : undefined)}>
           <td>
-            {selected && moment(purchase.TimeEnd).unix() > 0 ?
+            {editable ?
               <CategoryEdit invoice={this.props.invoice} purchase={purchase}/> :
               category
             }
@@ -160,13 +163,24 @@ var BillTable = React.createClass({
           <td>{purchase.Machine && purchase.Machine.Name}</td>
           <td>{formatDate(moment(purchase.TimeStart))} {moment(purchase.TimeStart).format('HH:mm')}</td>
           <td>
-            {selected && moment(purchase.TimeEnd).unix() > 0 ?
+            {editable ?
               <DurationEdit invoice={this.props.invoice} purchase={purchase}/> :
               (purchase.editedDuration ? purchase.editedDuration :
               formatDuration(purchase))
             }
           </td>
-          <td>{purchase.PriceUnit}</td>
+          <td>
+            {editable ?
+              <UnitEdit invoice={this.props.invoice} purchase={purchase}/> :
+              purchase.PriceUnit
+            }
+          </td>
+          <td>
+            {editable ?
+              <PricePerUnitEdit invoice={this.props.invoice} purchase={purchase}/> :
+              purchase.PricePerUnitUnit
+            }
+          </td>
           <td>{formatPrice(purchase.PriceExclVAT)} {this.state.currency}</td>
           <td>{formatPrice(purchase.PriceVAT)} {this.state.currency}</td>
           <td>{formatPrice(purchase.DiscountedTotal)} {this.state.currency}</td>

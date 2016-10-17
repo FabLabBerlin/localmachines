@@ -101,12 +101,12 @@ func (this *ReservationsController) Create() {
 	inv, err := invoices.GetDraft(locId, req.UserId(), t)
 	if err != nil {
 		beego.Error("getting invoice of", t.Format("01-2006"), ":", err)
-		this.Abort("500")
+		this.Fail("500")
 	}
 
 	if inv.Status != "draft" {
 		beego.Error("the invoice for that month is in status", inv.Status)
-		this.Abort("500")
+		this.Fail("500")
 	}
 
 	req.Purchase.InvoiceId = inv.Id
@@ -115,7 +115,7 @@ func (this *ReservationsController) Create() {
 		_, err := purchases.CreateReservation(&req)
 		if err != nil {
 			beego.Error("Failed to create reservation", err)
-			this.Abort("500")
+			this.Fail("500")
 		}
 		this.Data["json"] = req.Purchase
 	} else {
@@ -135,18 +135,18 @@ func (this *ReservationsController) Create() {
 func (this *ReservationsController) Put() {
 	id, err := this.GetInt64(":id")
 	if err != nil {
-		this.Abort("400")
+		this.Fail("400")
 	}
 
 	existing, err := purchases.GetReservation(id)
 	if err != nil {
 		beego.Error("get reservation:", err)
-		this.Abort("500")
+		this.Fail("500")
 	}
 
 	if !this.IsAdminAt(existing.LocationId()) {
 		beego.Error("Unauthorized attempt to update reservation")
-		this.Abort("401")
+		this.Fail("401")
 	}
 
 	reservation := &purchases.Reservation{}
@@ -154,7 +154,7 @@ func (this *ReservationsController) Put() {
 	buf, err := ioutil.ReadAll(this.Ctx.Request.Body)
 	if err != nil {
 		beego.Error("Failed to read all:", err)
-		this.Abort("400")
+		this.Fail("400")
 	}
 	beego.Info("buf:", string(buf))
 	defer this.Ctx.Request.Body.Close()
@@ -164,17 +164,17 @@ func (this *ReservationsController) Put() {
 	dec := json.NewDecoder(data)
 	if err := dec.Decode(reservation); err != nil {
 		beego.Error("Failed to decode json:", err)
-		this.Abort("400")
+		this.Fail("400")
 	}
 
 	if reservation.Id() != id || reservation.LocationId() != existing.LocationId() {
 		beego.Error("reservation id or location id changed")
-		this.Abort("403")
+		this.Fail("403")
 	}
 
 	if err := reservation.Update(); err != nil {
 		beego.Error("Failed to update reservation:", err)
-		this.Abort("500")
+		this.Fail("500")
 	}
 
 	this.Data["json"] = reservation
@@ -191,30 +191,30 @@ func (this *ReservationsController) Put() {
 func (this *ReservationsController) Cancel() {
 	id, err := this.GetInt64(":id")
 	if err != nil {
-		this.Abort("400")
+		this.Fail("400")
 	}
 
 	r, err := purchases.GetReservation(id)
 	if err != nil {
 		beego.Error("get reservation:", err)
-		this.Abort("500")
+		this.Fail("500")
 	}
 
 	uid, err := this.GetSessionUserId()
 	if err != nil {
 		beego.Error("cannot get session user id")
-		this.Abort("500")
+		this.Fail("500")
 	}
 	if r.UserId() != uid && !this.IsAdminAt(r.LocationId()) {
 		beego.Error("Unauthorized attempt to update user")
-		this.Abort("401")
+		this.Fail("401")
 	}
 
 	r.Purchase.Cancelled = true
 
 	if err := r.Update(); err != nil {
 		beego.Error("update:", err)
-		this.Abort("500")
+		this.Fail("500")
 	}
 
 	this.Data["json"] = r
@@ -232,7 +232,7 @@ func (this *ReservationsController) Cancel() {
 func (this *ReservationsController) ICalendar() {
 	locationId, err := this.GetInt64("location")
 	if err != nil {
-		this.Abort("400")
+		this.Fail("400")
 	}
 
 	machineId, err := this.GetInt64("machine")
@@ -243,13 +243,13 @@ func (this *ReservationsController) ICalendar() {
 	rs, err := purchases.GetAllReservationsAt(locationId)
 	if err != nil {
 		beego.Error("get all reservations:", err)
-		this.Abort("500")
+		this.Fail("500")
 	}
 
 	ms, err := machine.GetAllAt(locationId)
 	if err != nil {
 		beego.Error("get all users:", err)
-		this.Abort("500")
+		this.Fail("500")
 	}
 	msById := make(map[int64]*machine.Machine)
 	for _, m := range ms {
@@ -259,7 +259,7 @@ func (this *ReservationsController) ICalendar() {
 	uls, err := user_locations.GetAllForLocation(locationId)
 	if err != nil {
 		beego.Error("get all user locations:", err)
-		this.Abort("500")
+		this.Fail("500")
 	}
 	rolesByUserId := make(map[int64]user_roles.Role)
 	for _, ul := range uls {
