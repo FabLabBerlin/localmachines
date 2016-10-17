@@ -197,9 +197,11 @@ function createPurchase(invoice) {
       user: invoice.get('UserId')
     }
   })
-  .success(() => {
+  .success((data) => {
     toastr.info('Purchase created');
+    console.log('data=', data);
     refresh(invoice);
+    editPurchase(data.Id);
   })
   .error(xhr => {
     toastr.error('Error creating purchase:' + xhr.responseText);
@@ -223,6 +225,12 @@ function editPurchaseDuration(invoice, duration) {
   const invoiceId = invoice.get('Id');
 
   reactor.dispatch(actionTypes.EDIT_PURCHASE_DURATION, {duration, invoiceId});
+}
+
+function editPurchaseUnit(invoice, priceUnit) {
+  const invoiceId = invoice.get('Id');
+
+  reactor.dispatch(actionTypes.EDIT_PURCHASE_UNIT, {priceUnit, invoiceId});
 }
 
 function fetchFastbillStatuses(locId, {month, year, userId}) {
@@ -365,7 +373,7 @@ function save(locId, {invoice}) {
     toastr.error('Trying to save invalid edit');
     return;
   }
-  console.log('save: mutated=', mutated);
+
   var promises = _.map(mutated, (p) => {
     var url;
 
@@ -395,7 +403,6 @@ function save(locId, {invoice}) {
 
   $.when.apply(this, promises)
   .done((...results) => {
-    console.log('results=', results);
     toastr.info('Successfully saved updates');
     editPurchase(undefined);
     refresh(invoice);
@@ -474,6 +481,7 @@ export default {
   editPurchase,
   editPurchaseCategory,
   editPurchaseDuration,
+  editPurchaseUnit,
   fetchFastbillStatuses,
   fetchInvoice,
   fetchMonthlySums,

@@ -7,6 +7,7 @@ export default keyMirror({
   EDIT_PURCHASE: null,
   EDIT_PURCHASE_CATEGORY: null,
   EDIT_PURCHASE_DURATION: null,
+  EDIT_PURCHASE_UNIT: null,
   FETCH_MONTHLY_SUMMARIES: null,
   SET_SELECTED_MONTH: null,
   SET_INVOICE: null,

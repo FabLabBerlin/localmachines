@@ -39,6 +39,7 @@ var InvoicesStore = new Nuclear.Store({
     this.on(actionTypes.EDIT_PURCHASE, editPurchase);
     this.on(actionTypes.EDIT_PURCHASE_CATEGORY, editPurchaseCategory);
     this.on(actionTypes.EDIT_PURCHASE_DURATION, editPurchaseDuration);
+    this.on(actionTypes.EDIT_PURCHASE_UNIT, editPurchaseUnit);
     this.on(actionTypes.FETCH_MONTHLY_SUMMARIES, fetchMonthlySums);
     this.on(actionTypes.SET_SELECTED_MONTH, setSelectedMonth);
     this.on(actionTypes.SET_INVOICE, setInvoice);
@@ -76,7 +77,6 @@ function editPurchase(state, id) {
 }
 
 function editPurchaseCategory(state, {category, invoiceId}) {
-  console.log('#editPurchaseCategory');
   var purchaseId = state.get('editPurchaseId');
 
   var keyPath = [
@@ -84,7 +84,7 @@ function editPurchaseCategory(state, {category, invoiceId}) {
     'detailedInvoices',
     invoiceId
   ];
-  console.log('keyPath=', keyPath);
+
   var iv = state.getIn(keyPath).toJS();
   iv.Purchases = _.map(iv.Purchases, (p) => {
     if (p.Id === purchaseId) {
@@ -105,7 +105,6 @@ function editPurchaseCategory(state, {category, invoiceId}) {
 }
 
 function editPurchaseDuration(state, {duration, invoiceId}) {
-  console.log('#editPurchaseDuration');
   var purchaseId = state.get('editPurchaseId');
 
   var keyPath = [
@@ -113,7 +112,7 @@ function editPurchaseDuration(state, {duration, invoiceId}) {
     'detailedInvoices',
     invoiceId
   ];
-  console.log('keyPath=', keyPath);
+
   var iv = state.getIn(keyPath).toJS();
   iv.Purchases = _.map(iv.Purchases, (p) => {
     if (p.Id === purchaseId) {
@@ -124,6 +123,36 @@ function editPurchaseDuration(state, {duration, invoiceId}) {
       if (timeEnd) {
         p.editValid = true;
         p.TimeEnd = timeEnd;
+      }
+    }
+    return p;
+  });
+
+  return state.setIn(keyPath, toImmutable(iv));
+}
+
+function editPurchaseUnit(state, {priceUnit, invoiceId}) {
+  var purchaseId = state.get('editPurchaseId');
+
+  var keyPath = [
+    'invoices',
+    'detailedInvoices',
+    invoiceId
+  ];
+
+  var iv = state.getIn(keyPath).toJS();
+  iv.Purchases = _.map(iv.Purchases, (p) => {
+    if (p.Id === purchaseId) {
+      p.editValid = false;
+      p.editedUnit = priceUnit;
+
+      if (priceUnit === 'second' ||
+          priceUnit === 'minute' ||
+          priceUnit === '30 minutes' ||
+          priceUnit === 'day' ||
+          priceUnit === 'g') {
+        p.editValid = true;
+        p.Type = priceUnit;
       }
     }
     return p;

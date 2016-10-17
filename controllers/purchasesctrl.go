@@ -216,6 +216,7 @@ func (this *PurchasesController) Put() {
 		}
 
 		assertSameIds(p.Id, p.LocationId)
+		beego.Info("p=", p)
 		if err = purchases.Update(p); err == nil {
 			response = p
 		}

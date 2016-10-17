@@ -290,6 +290,7 @@ func Update(p *Purchase) (err error) {
 	}
 	p.InvoiceStatus = inv.Status
 	p.Quantity = floor10(p.quantityFromTimes())
+	beego.Info("purchases.Update: p.Quantity <- ", p.Quantity)
 
 	_, err = o.Update(p)
 	return
