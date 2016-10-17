@@ -377,9 +377,17 @@ function save(locId, {invoice}) {
     switch (p.Type) {
     case 'activation':
       url = '/api/activations/' + p.Id + '?location=' + locId;
+      if (p.Machine) {
+        p.PricePerUnit = p.Machine.Price;
+        p.PriceUnit = p.Machine.PriceUnit;
+      }
       break;
     case 'reservation':
       url = '/api/reservations/' + p.Id + '?location=' + locId;
+      p.PriceUnit = '30 minutes';
+      if (p.Machine) {
+        p.PricePerUnit = p.Machine.ReservationPriceHourly / 2;
+      }
       break;
     default:
       url = '/api/purchases/' + p.Id + '?type=' + p.Type;

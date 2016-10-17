@@ -15,7 +15,7 @@ var Amount = React.createClass({
   render() {
     const p = this.props.purchase;
 
-    if (p.Type === 'other') {
+    if (p.PriceUnit === 'gram') {
       return (
       <input type="number"
              onChange={this.update}
@@ -118,7 +118,7 @@ var Name = React.createClass({
                 value={p.MachineId}>
           <option value="0">Please select</option>
           {this.state.machines.toList()
-                              .sort(m => m.get('Name'))
+                              .sortBy(m => m.get('Name'))
                               .map(m => {
             return (
               <option key={m.get('Id')}
