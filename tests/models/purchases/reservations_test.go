@@ -34,7 +34,8 @@ func TestReservations(t *testing.T) {
 					InvoiceId:  123,
 					MachineId:  m.Id,
 					TimeStart:  time.Date(2015, 10, 1, 14, 15, 0, 0, time.UTC),
-					TimeEnd:    time.Date(2015, 10, 1, 14, 18, 0, 0, time.UTC),
+					Quantity:   6,
+					PriceUnit:  "30 minutes",
 				},
 			})
 			if err != nil {
@@ -47,7 +48,8 @@ func TestReservations(t *testing.T) {
 					InvoiceId:  123,
 					MachineId:  m.Id,
 					TimeStart:  time.Date(2015, 10, 1, 14, 16, 0, 0, time.UTC),
-					TimeEnd:    time.Date(2015, 10, 1, 14, 17, 0, 0, time.UTC),
+					Quantity:   2,
+					PriceUnit:  "30 minutes",
 				},
 			})
 			So(err, ShouldNotBeNil)
@@ -70,8 +72,9 @@ func TestReservations(t *testing.T) {
 					LocationId: 1,
 					InvoiceId:  123,
 					MachineId:  m.Id,
-					TimeStart:  time.Date(2016, 10, 1, 14, 15, 0, 0, time.UTC),
-					TimeEnd:    time.Date(2016, 10, 1, 14, 18, 0, 0, time.UTC),
+					TimeStart:  time.Date(2016, 10, 1, 14, 0, 0, 0, time.UTC),
+					Quantity:   2,
+					PriceUnit:  "30 minutes",
 				},
 			})
 			if err != nil {
@@ -83,8 +86,9 @@ func TestReservations(t *testing.T) {
 					LocationId: 1,
 					InvoiceId:  123,
 					MachineId:  m.Id,
-					TimeStart:  time.Date(2016, 10, 1, 14, 13, 0, 0, time.UTC),
-					TimeEnd:    time.Date(2016, 10, 1, 14, 15, 0, 0, time.UTC),
+					TimeStart:  time.Date(2016, 10, 1, 12, 0, 0, 0, time.UTC),
+					Quantity:   4,
+					PriceUnit:  "30 minutes",
 				},
 			})
 			So(err, ShouldBeNil)

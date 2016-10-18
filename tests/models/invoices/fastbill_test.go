@@ -215,7 +215,6 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 				LocationId:   1,
 				UserId:       uid,
 				TimeStart:    time.Now().AddDate(0, 0, -1),
-				TimeEnd:      time.Now(),
 				Quantity:     17,
 				PricePerUnit: 1,
 				PriceUnit:    "minute",

@@ -27,9 +27,10 @@ func CreateMembershipsActivation(userId, machineId, invoiceId int64, startTime t
 			UserId:     userId,
 			MachineId:  machineId,
 			InvoiceId:  invoiceId,
+			Quantity:   minutes,
+			PriceUnit:  "minute",
 		},
 	}
-	a.Purchase.TimeEnd = a.Purchase.TimeStart.Add(time.Duration(minutes) * time.Minute)
 
 	if err := purchases.Create(&a.Purchase); err != nil {
 		panic(err.Error())

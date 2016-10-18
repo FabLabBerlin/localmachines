@@ -43,7 +43,6 @@ func TestPurchases(t *testing.T) {
 				Created:      time.Now(),
 				UserId:       1,
 				TimeStart:    time.Now(),
-				TimeEnd:      time.Now(),
 				Quantity:     2,
 				PricePerUnit: 23,
 				PriceUnit:    "dolla",
@@ -79,7 +78,7 @@ func TestPurchases(t *testing.T) {
 				So(ap.Created, ShouldHappenWithin, time.Duration(1)*time.Second, purchase.Created)
 				So(ap.UserId, ShouldEqual, purchase.UserId)
 				So(ap.TimeStart, ShouldHappenWithin, time.Duration(1)*time.Second, purchase.TimeStart)
-				So(ap.TimeEnd, ShouldHappenWithin, time.Duration(1)*time.Second, purchase.TimeEnd)
+				So(ap.TimeEnd(), ShouldHappenWithin, time.Duration(1)*time.Second, purchase.TimeEnd())
 				So(ap.Quantity, ShouldEqual, purchase.Quantity)
 				So(ap.PricePerUnit, ShouldEqual, purchase.PricePerUnit)
 				So(ap.PriceUnit, ShouldEqual, purchase.PriceUnit)

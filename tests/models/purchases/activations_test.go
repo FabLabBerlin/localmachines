@@ -76,6 +76,7 @@ func TestActivations(t *testing.T) {
 						panic(err.Error())
 					}
 					err = a.Close(activationEndTime)
+					fmt.Printf("\nactivationEndTime=%v\n\n", activationEndTime)
 					assert.NoErrors(err)
 
 					activation, err = purchases.GetActivation(aid)
@@ -84,15 +85,8 @@ func TestActivations(t *testing.T) {
 					}
 
 					Convey("The end time of the closed activation should be correct", func() {
-						So(activation.Purchase.TimeEnd, ShouldHappenWithin,
+						So(activation.Purchase.TimeEnd(), ShouldHappenWithin,
 							time.Duration(1)*time.Second, activationEndTime)
-					})
-
-					Convey("The total duration of the activation should be correct", func() {
-						totalTime := activation.Purchase.TimeEnd.Sub(activation.Purchase.TimeStart)
-						q := activation.Purchase.Quantity
-						So(q, ShouldAlmostEqual,
-							int64(totalTime.Minutes()), 1)
 					})
 
 					Convey("the active flag should be false after closing", func() {

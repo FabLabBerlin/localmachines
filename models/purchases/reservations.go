@@ -123,7 +123,7 @@ func (r *Reservation) assertOk() (err error) {
 
 		if r.Overlaps(other) {
 			return fmt.Errorf("overlapping with %v (%v - %v)", other.Id(),
-				other.Purchase.TimeStart, other.Purchase.TimeEnd)
+				other.Purchase.TimeStart, other.Purchase.TimeEnd())
 		}
 	}
 

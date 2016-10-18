@@ -207,6 +207,7 @@ func (a *Activation) Close(endTime time.Time) error {
 	// Calculate activation duration and update activation.
 	a.Purchase.Running = false
 	a.Purchase.TimeStart = a.Purchase.TimeStart.Add(gracePeriod)
+	a.Purchase.Quantity = a.Purchase.quantityFromTimes(endTime)
 
 	if err = a.Update(); err != nil {
 		return fmt.Errorf("Failed to update activation: %v", err)

@@ -121,7 +121,6 @@ func testInvoiceWithMembershipAndTestPurchase(purchaseInsideMembershipInterval b
 	} else {
 		timeStart = time.Date(yNow, mNow, 16, 14, 10, 0, 0, loc)
 	}
-	timeEnd := timeStart.Add(2 * time.Minute)
 
 	iv, err := invutil.GetDraft(1, user.Id, timeStart)
 	if err != nil {
@@ -136,7 +135,6 @@ func testInvoiceWithMembershipAndTestPurchase(purchaseInsideMembershipInterval b
 		Created:      time.Now(),
 		UserId:       user.Id,
 		TimeStart:    timeStart,
-		TimeEnd:      timeEnd,
 		Quantity:     2,
 		PricePerUnit: 23,
 		PriceUnit:    "minute",

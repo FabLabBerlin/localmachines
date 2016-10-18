@@ -143,7 +143,6 @@ func simulate(s Simulation) {
 				MachineId:    m.Id,
 				UserId:       uid,
 				TimeStart:    time.Date(2016, 6, 1+j%20, 12, 13, 14, 0, time.UTC),
-				TimeEnd:      time.Date(2016, 6, 1+j%20, 13, 13, 14, 0, time.UTC),
 				Quantity:     1,
 				PricePerUnit: s.pricePerPurchase,
 				PriceUnit:    "hour",
