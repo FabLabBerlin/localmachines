@@ -50,14 +50,10 @@ var AddPurchase = React.createClass({
 
   render() {
     if (this.state.isAdmin && this.props.visible) {
-      return (
-        <div>
-          <Button.Annotated id="inv-add-purchase"
-                            icon="/machines/assets/img/invoicing/add_purchase.svg"
-                            label="Add Purchase"
-                            onClick={this.add}/>
-        </div>
-      );
+      return <Button.Annotated id="inv-add-purchase"
+                               icon="/machines/assets/img/invoicing/add_purchase.svg"
+                               label="Add Purchase"
+                               onClick={this.add}/>;
     } else {
       return <div/>;
     }

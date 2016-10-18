@@ -22,7 +22,8 @@ const initialState = toImmutable({
   checkStatus: 'all',
   invoices: {
     detailedInvoices: {}
-  }
+  },
+  showInactiveUsers: false
 });
 
 
@@ -43,6 +44,7 @@ var InvoicesStore = new Nuclear.Store({
     this.on(actionTypes.SET_SELECTED_MONTH, setSelectedMonth);
     this.on(actionTypes.SET_INVOICE, setInvoice);
     this.on(actionTypes.SET_INVOICE_STATUSES, setInvoiceStatuses);
+    this.on(actionTypes.SET_SHOW_INACTIVE_USERS, setShowInactiveUsers);
     this.on(actionTypes.SET_USER_MEMBERSHIPS, setUserMemberships);
     this.on(actionTypes.SORT_BY, sortBy);
   }
@@ -141,6 +143,10 @@ function setInvoice(state, { invoice }) {
 
 function setInvoiceStatuses(state, { month, year, userId, invoiceStatuses }) {
   return state.setIn(['invoiceStatuses', year, month, userId], invoiceStatuses);
+}
+
+function setShowInactiveUsers(state, { show }) {
+  return state.set('showInactiveUsers', show);
 }
 
 function setUserMemberships(state, { userId, userMemberships }) {

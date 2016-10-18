@@ -509,6 +509,12 @@ function setSelectedMonth({month, year}) {
   reactor.dispatch(actionTypes.SET_SELECTED_MONTH, { month, year });
 }
 
+function setShowInactiveUsers(yes) {
+  reactor.dispatch(actionTypes.SET_SHOW_INACTIVE_USERS, {
+    show: yes
+  });
+}
+
 function sortBy(column, asc) {
   reactor.dispatch(actionTypes.SORT_BY, {column, asc});
 }
@@ -536,5 +542,6 @@ export default {
   send,
   sendCanceled,
   setSelectedMonth,
+  setShowInactiveUsers,
   sortBy
 };

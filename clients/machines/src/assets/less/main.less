@@ -67,7 +67,6 @@ ul, li {
 div button.button-annotated {
   background: transparent;
   border-radius: 0;
-  color: #ff0000;
   font-size: 22px;
   font-weight: bold;
   position: absolute;
@@ -79,12 +78,12 @@ div button.button-annotated {
   }
 }
 
-.button-annotated:active .button-annotated-icon {
-  box-shadow: none;
-}
-
 .button-annotated:focus .button-annotated-icon {
   box-shadow: 2px 1px 10px -1px black;
+}
+
+.button-annotated:active .button-annotated-icon {
+  box-shadow: none;
 }
 
 .button-annotated-icon {
@@ -832,6 +831,16 @@ Y888888P VP   V8P    YP     `Y88P'  Y888888P  `Y88P' Y88888P `8888Y'
   vertical-align: super;
 }
 
+#invs-toggle-inactive .button-annotated-icon {
+  background: #474747;
+  height: 45px;
+  width: 45px;
+}
+
+#invs-toggle-inactive .button-annotated-label {
+  margin-top: 7px;
+}
+
 .inv-monthly-sums button {
   background: white;
   border-radius: 50%;
@@ -924,6 +933,10 @@ Y888888P VP   V8P    YP     `Y88P'  Y888888P  `Y88P' Y88888P `8888Y'
 
 .inv-amount {
   white-space: nowrap;
+}
+
+#inv-add-purchase {
+  color: #ff0000;
 }
 
 #inv-add-purchase div {

@@ -11,6 +11,7 @@ export default keyMirror({
   SET_SELECTED_MONTH: null,
   SET_INVOICE: null,
   SET_INVOICE_STATUSES: null,
+  SET_SHOW_INACTIVE_USERS: null,
   SET_USER_MEMBERSHIPS: null,
   SORT_BY: null
 });

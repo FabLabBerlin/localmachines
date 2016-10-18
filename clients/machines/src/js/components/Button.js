@@ -2,8 +2,8 @@ var React = require('react');
 
 
 var Annotated = React.createClass({
-  click() {
-    this.props.onClick();
+  click(e) {
+    this.props.onClick(e);
   },
 
   render() {
@@ -17,7 +17,9 @@ var Annotated = React.createClass({
               onClick={this.click}>
         <div className="button-annotated-icon"
              style={iconStyle}/>
-        <div>{this.props.label}</div>
+        <div className="button-annotated-label">
+          {this.props.label}
+        </div>
       </button>
     );
   }

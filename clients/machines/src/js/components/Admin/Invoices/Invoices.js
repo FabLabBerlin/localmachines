@@ -1,3 +1,4 @@
+var Button = require('../../Button');
 var getters = require('../../../getters');
 var Invoices = require('../../../modules/Invoices');
 var List = require('./List');
@@ -10,6 +11,37 @@ var reactor = require('../../../reactor');
 var Settings = require('../../../modules/Settings');
 var SettingsActions = require('../../../modules/Settings/actions');
 var UserActions = require('../../../actions/UserActions');
+
+
+var ToggleInactiveUsers = React.createClass({
+
+  mixins: [ reactor.ReactMixin ],
+
+  getDataBindings() {
+    return {
+      showInactiveUsers: Invoices.getters.getShowInactiveUsers
+    };
+  },
+
+  render() {
+    if (this.state.showInactiveUsers) {
+      return <Button.Annotated id="invs-toggle-inactive"
+                               icon="/machines/assets/img/invoicing/inactive_hide.svg"
+                               label="Hide inactive users"
+                               onClick={this.setShow.bind(this, false)}/>;
+    } else {
+      return <Button.Annotated id="invs-toggle-inactive"
+                               icon="/machines/assets/img/invoicing/inactive_show.svg"
+                               label="Show inactive users"
+                               onClick={this.setShow.bind(this, true)}/>;
+    }
+  },
+
+  setShow(yes, e) {
+    e.stopPropagation();
+    Invoices.actions.setShowInactiveUsers(yes);
+  }
+});
 
 
 var Month = React.createClass({
@@ -86,7 +118,7 @@ var Month = React.createClass({
           (
             <div className="row" onClick={this.select}>
               <div className="col-md-6">
-                <b>Show inactive users</b>
+                <ToggleInactiveUsers/>
               </div>
               <div className="col-md-6 text-md-right">
                 <button type="button"

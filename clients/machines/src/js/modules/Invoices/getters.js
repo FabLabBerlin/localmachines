@@ -147,6 +147,13 @@ const getCheckedAll = [
   }
 ];
 
+const getShowInactiveUsers = [
+  ['invoicesStore'],
+  (invoicesStore) => {
+    return invoicesStore.get('showInactiveUsers');
+  }
+];
+
 export default {
   getCheckedAll,
   getCheckStatus,
@@ -155,6 +162,7 @@ export default {
   getInvoicesActions,
   getInvoiceStatuses,
   getMonthlySums,
+  getShowInactiveUsers,
   getThisMonthInvoices,
   getUserMemberships
 };
