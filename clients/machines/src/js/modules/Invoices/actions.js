@@ -357,7 +357,7 @@ function save(locId, {invoice}) {
   var falseEdits = false;
 
   var mutated = _.filter(invoice.get('Purchases').toJS(), (p) => {
-    if (p.editValid === false) {
+    if (p.PriceUnit !== 'gram' && p.editValid === false) {
       falseEdits = true;
     }
 

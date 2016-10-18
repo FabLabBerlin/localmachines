@@ -174,7 +174,7 @@ var SuccessMsg = React.createClass({
           <p><b>Machine:</b> {machine && machine.get('Name')}</p>
           <p><b>Date:</b> {date}</p>
           <p><b>Time:</b> {timeFrom}—{timeTo}</p>
-          <p><b>Total price:</b> {this.state.currency} {(this.state.newReservationPrice || 0).toFixed(2)}</p>
+          <p><b>Reservation price:</b> {this.state.currency} {(this.state.newReservationPrice || 0).toFixed(2)}</p>
         </div>
         <div>
           The reservation price is on top of the Machine Time.

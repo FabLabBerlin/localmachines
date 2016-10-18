@@ -119,9 +119,7 @@ var BillTable = React.createClass({
         <th>Amount</th>
         <th>Unit</th>
         <th>Price / Unit</th>
-        <th>Price excl. VAT</th>
-        <th>VAT ({this.state.vatPercent}%)</th>
-        <th>Total</th>
+        <th>Total (incl. VAT)</th>
       </tr>
     );
 
@@ -190,8 +188,6 @@ var BillTable = React.createClass({
               purchase.PricePerUnit
             }
           </td>
-          <td>{formatPrice(purchase.PriceExclVAT)} {this.state.currency}</td>
-          <td>{formatPrice(purchase.PriceVAT)} {this.state.currency}</td>
           <td>{formatPrice(purchase.DiscountedTotal)} {this.state.currency}</td>
         </tr>
       );
