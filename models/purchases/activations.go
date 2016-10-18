@@ -111,7 +111,7 @@ func GetActiveActivations() ([]*Activation, error) {
 		a := &Activation{
 			Purchase: *purchase,
 		}
-		a.Purchase.Quantity = a.Purchase.quantityFromTimes()
+		a.Purchase.Quantity = a.Purchase.quantityFromTimes(time.Now())
 		activations = append(activations, a)
 	}
 
@@ -207,13 +207,6 @@ func (a *Activation) Close(endTime time.Time) error {
 	// Calculate activation duration and update activation.
 	a.Purchase.Running = false
 	a.Purchase.TimeStart = a.Purchase.TimeStart.Add(gracePeriod)
-	a.Purchase.TimeEnd = endTime
-	if a.Purchase.TimeEnd.Before(a.Purchase.TimeStart) {
-		a.Purchase.TimeEnd = a.Purchase.TimeStart
-		if gracePeriod == 0 {
-			beego.Error("time end before time start?!")
-		}
-	}
 
 	if err = a.Update(); err != nil {
 		return fmt.Errorf("Failed to update activation: %v", err)
@@ -248,7 +241,6 @@ func (a *Activation) Update() error {
 		a.Purchase.PriceUnit = m.PriceUnit
 		a.Purchase.PricePerUnit = m.Price
 	}
-	a.Purchase.Quantity = floor10(a.Purchase.quantityFromTimes())
 
 	return Update(&a.Purchase)
 }

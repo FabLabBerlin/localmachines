@@ -115,7 +115,6 @@ func (this *ActivationsController) Post() {
 	p := &purchases.Purchase{
 		LocationId: locId,
 		TimeStart:  time.Now(),
-		TimeEnd:    time.Now().Add(time.Hour),
 		InvoiceId:  inv.Id,
 		UserId:     uid,
 		Type:       purchases.TYPE_ACTIVATION,
@@ -192,12 +191,12 @@ func (this *ActivationsController) Put() {
 	inv, err := invoices.GetDraft(locId, activation.Purchase.UserId, activation.Purchase.TimeStart)
 	if err != nil {
 		beego.Error("Get draft:", err)
-		this.Abort("500")
+		this.Fail("500")
 	}
 
 	if inv.Status != "draft" {
 		beego.Error("cannot edit because invoice in status", inv.Status)
-		this.Abort("500")
+		this.Fail("500")
 	}
 
 	activation.Purchase.InvoiceId = inv.Id

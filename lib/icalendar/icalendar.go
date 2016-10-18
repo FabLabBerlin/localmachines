@@ -4,9 +4,9 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_roles"
-	"time"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const TIME_FMT = "20060102T150405Z"
@@ -41,15 +41,15 @@ END:VTIMEZONE`
 const END = `END:VCALENDAR`
 
 type Event struct {
-	Machine *machine.Machine
+	Machine     *machine.Machine
 	Reservation *purchases.Reservation
-	UserRole user_roles.Role
+	UserRole    user_roles.Role
 }
 
 func (e Event) toIcal() (ical string) {
 	ical += "BEGIN:VEVENT\n"
 	ical += "DTSTART:" + e.Reservation.Purchase.TimeStart.UTC().Format(TIME_FMT) + "\n"
-	ical += "DTEND:" + e.Reservation.Purchase.TimeEnd.UTC().Format(TIME_FMT) + "\n"
+	ical += "DTEND:" + e.Reservation.Purchase.TimeEnd().UTC().Format(TIME_FMT) + "\n"
 	ical += "DTSTAMP:" + time.Now().UTC().Format(TIME_FMT) + "\n"
 	ical += "CREATED:" + e.Reservation.Purchase.Created.Format(TIME_FMT) + "\n"
 	ical += "SUMMARY:" + e.Machine.Name + "\n"

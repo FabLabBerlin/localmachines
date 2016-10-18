@@ -98,5 +98,8 @@
         "never"
       ]
     }
+  },
+  "dependencies": {
+    "react-datetime": "^2.6.0"
   }
 }

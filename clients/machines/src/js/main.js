@@ -51,6 +51,7 @@ require('bootstrap-less');
 require('../assets/less/main.less');
 require('../assets/less/common.less');
 require('font-awesome-webpack');
+require('react-datetime');
 require('toastr/build/toastr.min.css');
 require('vex/css/vex.css');
 

@@ -34,8 +34,8 @@ func (this *Reservation) Overlaps(other *Reservation) bool {
 		return false
 	}
 
-	return !(this.Purchase.TimeStart.Unix() >= other.Purchase.TimeEnd.Unix() ||
-		other.Purchase.TimeStart.Unix() >= this.Purchase.TimeEnd.Unix())
+	return !(this.Purchase.TimeStart.Unix() >= other.Purchase.TimeEnd().Unix() ||
+		other.Purchase.TimeStart.Unix() >= this.Purchase.TimeEnd().Unix())
 }
 
 func (this *Reservation) UserId() int64 {
@@ -87,7 +87,6 @@ func CreateReservation(r *Reservation) (id int64, err error) {
 	r.Purchase.Type = TYPE_RESERVATION
 	r.Purchase.PricePerUnit = *m.ReservationPriceHourly / 2
 	r.Purchase.PriceUnit = "30 minutes"
-	r.Purchase.Quantity = r.Purchase.quantityFromTimes()
 
 	err = Create(&r.Purchase)
 	id = r.Purchase.Id
@@ -100,7 +99,6 @@ func (r *Reservation) Update() (err error) {
 		return err
 	}
 
-	r.Purchase.Quantity = r.Purchase.quantityFromTimes()
 	return Update(&r.Purchase)
 }
 

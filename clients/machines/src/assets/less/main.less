@@ -20,6 +20,7 @@ query at the bottom: @media (min-width: 768px) { ...
 @import "~bootstrap-less/bootstrap/bootstrap.less";
 @import "common.less";
 @import "prefixer.less";
+@import "react-datetime.less";
 @import "responsive-text-align.less";
 @import "vex-theme.less";
 
@@ -871,10 +872,15 @@ Y888888P VP   V8P    YP     `Y88P'  Y888888P  `Y88P' Y88888P `8888Y'
   white-space: nowrap;
 }
 
-.inv-monthly-sums tbody tr.inv-purchase {
+.inv-monthly-sums .inv-purchase {
   &:hover, &.selected {
     background: black;
     color: white;
+
+    .rdt {
+      color: black;
+      width: 150px;
+    }
   }
 
   &.selected {

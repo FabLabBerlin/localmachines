@@ -213,7 +213,13 @@ var BillTable = React.createClass({
               purchase.CustomName
             )}
           </td>
-          <td>{formatDate(moment(purchase.TimeStart))} {moment(purchase.TimeStart).format('HH:mm')}</td>
+          <td>
+            {editable ? (
+              <Edit.StartTime invoice={this.props.invoice} purchase={purchase}/>
+            ) : (
+              formatDate(moment(purchase.TimeStart)) + ' ' + moment(purchase.TimeStart).format('HH:mm')
+            )}
+          </td>
           <td>
             {editable ?
               <Edit.Amount invoice={this.props.invoice} purchase={purchase}/> :

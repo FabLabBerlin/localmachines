@@ -34,7 +34,6 @@ type Purchase struct {
 	UserId int64
 
 	TimeStart      time.Time `orm:"type(datetime)" json:",omitempty"`
-	TimeEnd        time.Time `orm:"type(datetime)" json:",omitempty"`
 	TimeEndPlanned time.Time `orm:"type(datetime)" json:",omitempty"`
 	Quantity       float64
 	PricePerUnit   float64
@@ -232,16 +231,7 @@ func (this *Purchase) MembershipStr() (membershipStr string, err error) {
 	return
 }
 
-func (this *Purchase) quantityFromTimes() (quantity float64) {
-	var timeEnd time.Time
-	if !this.TimeEnd.IsZero() {
-		timeEnd = this.TimeEnd
-	} else if !this.TimeEndPlanned.IsZero() {
-		timeEnd = this.TimeEndPlanned
-	} else {
-		timeEnd = time.Now()
-	}
-
+func (this *Purchase) quantityFromTimes(timeEnd time.Time) (quantity float64) {
 	seconds := timeEnd.Sub(this.TimeStart).Seconds()
 
 	switch this.PriceUnit {
@@ -294,10 +284,6 @@ func Update(p *Purchase) (err error) {
 		return fmt.Errorf("invoice doesn't have status draft: %v", inv.Status)
 	}
 	p.InvoiceStatus = inv.Status
-	if p.PriceUnit != "gram" {
-		p.Quantity = floor10(p.quantityFromTimes())
-	}
-	beego.Info("purchases.Update: p.Quantity <- ", p.Quantity)
 
 	_, err = o.Update(p)
 	return
@@ -378,4 +364,8 @@ func (this Purchase) ProductName() string {
 
 func (this Purchases) Swap(i, j int) {
 	*this[i], *this[j] = *this[j], *this[i]
+}
+
+func (this Purchase) TimeEnd() time.Time {
+	return this.TimeStart.Add(time.Duration(this.Seconds()) * time.Second)
 }

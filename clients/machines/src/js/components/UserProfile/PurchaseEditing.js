@@ -6,7 +6,9 @@ var LoaderLocal = require('../LoaderLocal');
 var LocationGetters = require('../../modules/Location/getters');
 var MachineActions = require('../../actions/MachineActions');
 var Machines = require('../../modules/Machines');
+var moment = require('moment');
 var React = require('react');
+var Datetime = require('react-datetime');
 var reactor = require('../../reactor');
 var UserActions = require('../../actions/UserActions');
 
@@ -179,6 +181,25 @@ var PricePerUnit = React.createClass({
 });
 
 
+var StartTime = React.createClass({
+  render() {
+    const p = this.props.purchase;
+
+    return <Datetime value={moment(p.TimeStart)}
+                     onChange={this.update}
+                     timeFormat="HH:mm"/>;
+  },
+
+  update(t) {
+    Invoices.actions.editPurchaseField({
+      invoice: this.props.invoice,
+      field: 'TimeStart',
+      value: t.toJSON()
+    });
+  }
+});
+
+
 var Unit = React.createClass({
   render() {
     const p = this.props.purchase;
@@ -215,5 +236,6 @@ export default {
   Duration,
   Name,
   PricePerUnit,
+  StartTime,
   Unit
 };

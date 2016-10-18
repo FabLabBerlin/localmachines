@@ -34,8 +34,6 @@ func CreateTutoring(tp *Tutoring) (id int64, err error) {
 	tp.Created = time.Now()
 	tp.Type = TYPE_TUTOR
 	tp.TimeStart = time.Now()
-	tp.TimeEnd = tp.Purchase.TimeStart.
-		Add(time.Duration(1) * time.Hour)
 	//tp.TimeEndPlanned = time.Now()
 	tp.PriceUnit = "hour"
 

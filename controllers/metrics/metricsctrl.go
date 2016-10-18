@@ -95,13 +95,9 @@ func (c *Controller) GetActivations() {
 			row = append(row, p.TimeStart.String())
 			row = append(row, p.User.FirstName+" "+p.User.LastName, p.User.Email)
 			row = append(row, p.Machine.Name)
-			if p.TimeEnd.IsZero() {
-				row = append(row, "0")
-			} else {
-				mins := fmt.Sprintf("%v", p.TimeEnd.Sub(p.TimeStart).Minutes())
-				mins = strings.Replace(mins, ".", ",", -1)
-				row = append(row, mins)
-			}
+			mins := fmt.Sprintf("%v", p.TimeEnd().Sub(p.TimeStart).Minutes())
+			mins = strings.Replace(mins, ".", ",", -1)
+			row = append(row, mins)
 			membershipStr, err := p.MembershipStr()
 			if err != nil {
 				c.CustomAbort(500, err.Error())
