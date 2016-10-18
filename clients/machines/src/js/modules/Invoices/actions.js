@@ -15,6 +15,30 @@ VexDialog = require('vex-js/js/vex.dialog.js');
 vex.defaultOptions.className = 'vex-theme-custom';
 
 
+function archivePurchase({invoice, purchaseId}) {
+  console.log('invoice=', invoice);
+  console.log('purchaseId=', purchaseId);
+  GlobalActions.showGlobalLoader();
+
+  $.ajax({
+    method: 'PUT',
+    url: '/api/purchases/' + purchaseId + '/archive',
+    data: {
+      location: invoice.get('LocationId')
+    }
+  })
+  .success(data => {
+    toastr.info('Purchase archived');
+    refresh(invoice);
+  })
+  .error(xhr => {
+    toastr.error('Error archiving purchase:' + xhr.responseText);
+  })
+  .always(() => {
+    GlobalActions.hideGlobalLoader();
+  });
+}
+
 function cancel(invoice) {
   /*eslint-disable no-alert */
   if (!window.confirm('Really cancel invoice?')) {
@@ -490,6 +514,7 @@ function sortBy(column, asc) {
 }
 
 export default {
+  archivePurchase,
   cancel,
   check,
   checkAll,

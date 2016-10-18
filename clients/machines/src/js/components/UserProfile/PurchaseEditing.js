@@ -72,6 +72,7 @@ var Duration = React.createClass({
              autoFocus="on"
              ref="duration"
              onChange={this.update}
+             placeholder="e.g. 08:54:00 h"
              value={this.props.purchase.editedDuration ||
                     formatDuration(this.props.purchase)}/>
     );

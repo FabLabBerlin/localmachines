@@ -10,6 +10,11 @@ var SettingsGetters = require('../../modules/Settings/getters');
 var toastr = require('../../toastr');
 var {formatDate, formatDuration, formatPrice, subtractVAT, toEuro, toCents} = require('./helpers');
 
+// https://github.com/HubSpot/vex/issues/72
+var vex = require('vex-js'),
+VexDialog = require('vex-js/js/vex.dialog.js');
+vex.defaultOptions.className = 'vex-theme-custom';
+
 
 var EmptyRow = React.createClass({
   render() {
@@ -49,6 +54,49 @@ var AddPurchase = React.createClass({
                 onClick={this.add}>
           <div id="inv-add-purchase-icon"/>
           <div>Add Purchase</div>
+        </button>
+      );
+    } else {
+      return <div/>;
+    }
+  }
+});
+
+
+var RemovePurchase = React.createClass({
+
+  mixins: [ reactor.ReactMixin ],
+
+  getDataBindings() {
+    return {
+      isAdmin: LocationGetters.getIsAdmin
+    };
+  },
+
+  archive() {
+    VexDialog.buttons.YES.text = 'Yes';
+    VexDialog.buttons.NO.text = 'No';
+
+    VexDialog.confirm({
+      message: 'Do you really want to archive this purchase?',
+      callback: confirmed => {
+        if (confirmed) {
+          Invoices.actions.archivePurchase({
+            invoice: this.props.invoice,
+            purchaseId: this.props.purchase.Id
+          });
+        }
+        $('.vex').remove();
+        $('body').removeClass('vex-open');
+      }
+    });
+  },
+
+  render() {
+    if (this.state.isAdmin && this.props.visible) {
+      return (
+        <button id="inv-remove-purchase"
+                onClick={this.archive}>
         </button>
       );
     } else {
@@ -151,7 +199,7 @@ var BillTable = React.createClass({
       tbody.push(
         <tr key={i++}
             onClick={this.edit.bind(this, purchase)}
-            className={'inv-purchase ' + (!selected ? 'unselected' : undefined)}>
+            className={'inv-purchase ' + (selected ? 'selected' : 'unselected')}>
           <td>
             {editable ?
               <Edit.Category invoice={this.props.invoice} purchase={purchase}/> :
@@ -189,6 +237,14 @@ var BillTable = React.createClass({
             }
           </td>
           <td>{formatPrice(purchase.DiscountedTotal)} {this.state.currency}</td>
+          <td>
+            {editable ?
+              <RemovePurchase invoice={this.props.invoice}
+                              purchase={purchase}
+                              visible={this.props.addPurchaseVisible}/> :
+              null
+            }
+          </td>
         </tr>
       );
     });

@@ -113,6 +113,7 @@ func GetAllAt(locationId int64) (ps []*Purchase, err error) {
 		Filter("location_id", locationId).
 		Exclude("invoice_status", "outgoing").
 		Exclude("invoice_status", "credit").
+		Exclude("archived", "1").
 		Limit(1000000).
 		All(&ps)
 
@@ -129,6 +130,7 @@ func GetByInvoiceId(invoiceId int64) (ps []*Purchase, err error) {
 
 	_, err = o.QueryTable(TABLE_NAME).
 		Filter("invoice_id", invoiceId).
+		Exclude("archived", "1").
 		All(&ps)
 
 	return

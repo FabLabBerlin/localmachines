@@ -829,10 +829,30 @@ Y888888P VP   V8P    YP     `Y88P'  Y888888P  `Y88P' Y88888P `8888Y'
   white-space: nowrap;
 }
 
-.inv-monthly-sums tbody tr.inv-purchase:hover {
-  background: black;
-  color: white;
-  cursor: pointer;
+.inv-monthly-sums tbody tr.inv-purchase {
+  &:hover, &.selected {
+    background: black;
+    color: white;
+  }
+
+  &.selected {
+    height: 70px;
+    td {
+      padding-top: 23px;
+    }
+  }
+
+  &.unselected:hover {
+    cursor: pointer;
+  }
+}
+
+#inv-remove-purchase {
+  background: url(/machines/assets/img/invoicing/remove_purchase.svg) no-repeat;
+  border-radius: 0;
+  height: 32px;
+  margin: -4px 0 0 0;
+  width: 32px;
 }
 
 .inv-monthly-sums tbody tr input {
