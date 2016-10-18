@@ -1,5 +1,6 @@
 var _ = require('lodash');
 var $ = require('jquery');
+var Button = require('../Button');
 var Edit = require('./PurchaseEditing');
 var Invoices = require('../../modules/Invoices');
 var LocationGetters = require('../../modules/Location/getters');
@@ -50,11 +51,12 @@ var AddPurchase = React.createClass({
   render() {
     if (this.state.isAdmin && this.props.visible) {
       return (
-        <button id="inv-add-purchase"
-                onClick={this.add}>
-          <div id="inv-add-purchase-icon"/>
-          <div>Add Purchase</div>
-        </button>
+        <div>
+          <Button.Annotated id="inv-add-purchase"
+                            icon="/machines/assets/img/invoicing/add_purchase.svg"
+                            label="Add Purchase"
+                            onClick={this.add}/>
+        </div>
       );
     } else {
       return <div/>;
