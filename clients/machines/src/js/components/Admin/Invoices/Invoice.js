@@ -241,7 +241,8 @@ var Invoice = React.createClass({
                onClick={this.stopPropagation}>
             <Header invoice={invoice}/>
             <div id="inv-body">
-              <BillTable invoice={invoice}/>
+              <BillTable invoice={invoice}
+                         addPurchaseVisible={true}/>
             </div>
           </div>
         </div>

@@ -43,7 +43,7 @@ var AddPurchase = React.createClass({
   },
 
   render() {
-    if (this.state.isAdmin) {
+    if (this.state.isAdmin && this.props.visible) {
       return (
         <button id="inv-add-purchase"
                 onClick={this.add}>
@@ -199,7 +199,8 @@ var BillTable = React.createClass({
 
     tbody.push(
       <EmptyRow key={i++}>
-        <AddPurchase invoice={this.props.invoice}/>
+        <AddPurchase invoice={this.props.invoice}
+                     visible={this.props.addPurchaseVisible}/>
       </EmptyRow>
     );
     tbody.push(<EmptyRow key={i++}/>);
