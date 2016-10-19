@@ -187,6 +187,7 @@ var StartTime = React.createClass({
 
     return <Datetime value={moment(p.TimeStart)}
                      onChange={this.update}
+                     dateFormat="DD. MMM YYYY"
                      timeFormat="HH:mm"/>;
   },
 
