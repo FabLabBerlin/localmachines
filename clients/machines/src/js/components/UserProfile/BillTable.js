@@ -43,7 +43,7 @@ var AddPurchase = React.createClass({
   },
 
   render() {
-    if (this.state.isAdmin) {
+    /*if (this.state.isAdmin) {
       return (
         <button id="inv-add-purchase"
                 onClick={this.add}>
@@ -53,7 +53,8 @@ var AddPurchase = React.createClass({
       );
     } else {
       return <div/>;
-    }
+    }*/
+    return <div/>;
   }
 });
 

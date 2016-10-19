@@ -86,7 +86,6 @@ var Month = React.createClass({
           (
             <div className="row" onClick={this.select}>
               <div className="col-md-6">
-                <b>Show inactive users</b>
               </div>
               <div className="col-md-6 text-md-right">
                 <button type="button"
