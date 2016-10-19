@@ -1,10 +1,17 @@
 package purchases
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/lib/email"
+	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/FabLabBerlin/localmachines/models/machine"
+	"github.com/FabLabBerlin/localmachines/models/settings"
+	"github.com/FabLabBerlin/localmachines/models/users"
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"time"
 )
 
 type Reservation struct {
@@ -93,6 +100,84 @@ func CreateReservation(r *Reservation) (id int64, err error) {
 	id = r.Purchase.Id
 
 	return
+}
+
+func (r *Reservation) SendEmailNotifications() (err error) {
+	m, err := machine.Get(r.Purchase.MachineId)
+	if err != nil {
+		return fmt.Errorf("get machine: %v", err)
+	}
+
+	user, err := users.GetUser(r.Purchase.UserId)
+	if err != nil {
+		return fmt.Errorf("get user: %v", err)
+	}
+
+	location, err := locations.Get(r.Purchase.LocationId)
+	if err != nil {
+		return fmt.Errorf("get location: %v", err)
+	}
+
+	labSettings, err := settings.GetAllAt(r.Purchase.LocationId)
+	if err != nil {
+		return fmt.Errorf("get settings: %v", err)
+	}
+
+	timeLoc, err := time.LoadLocation(location.Timezone)
+	if err != nil {
+		timeLoc, err = time.LoadLocation("Europe/Berlin")
+		if err != nil {
+			err = nil
+			timeLoc = time.UTC
+		}
+	}
+	timeStart := r.Purchase.TimeStart.In(timeLoc).Format(time.RFC822)
+
+	labEmail := email.New()
+	labSubject := fmt.Sprintf("Reservation for %v on %v", m.Name, timeStart)
+	labMessage := bytes.Buffer{}
+	data := map[string]interface{}{
+		"Location":    location,
+		"User":        user,
+		"Machine":     m,
+		"Reservation": r,
+		"TimeStart":   timeStart,
+	}
+	labTo := labSettings.GetString(r.Purchase.LocationId, settings.RESERVATION_NOTIFICATION_EMAIL)
+	if labTo == nil || len(*labTo) < 4 {
+		beego.Error("lab to mail address is nil")
+		goto userNotification
+	}
+	err = email.LocationReservationNotification.Execute(&labMessage, data)
+	if err != nil {
+		beego.Error("execute location reservation notification template:", err)
+		goto userNotification
+	}
+
+	err = labEmail.Send(*labTo, labSubject, labMessage.String())
+	if err != nil {
+		beego.Error("send location reservation notification:", err)
+	}
+
+userNotification:
+
+	userMessage := bytes.Buffer{}
+	userEmail := email.New()
+	userSubject := fmt.Sprintf("%v reservation on %v",
+		location.Title, timeStart)
+	err = email.UserReservationNotification.Execute(&userMessage, data)
+	if err != nil {
+		beego.Error("execute user reservation notification template:", err)
+		return err
+	}
+
+	err = userEmail.Send(user.Email, userSubject, userMessage.String())
+	if err != nil {
+		beego.Error("send location reservation notification:", err)
+		return err
+	}
+
+	return err
 }
 
 func (r *Reservation) Update() (err error) {

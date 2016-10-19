@@ -117,6 +117,11 @@ func (this *ReservationsController) Create() {
 			beego.Error("Failed to create reservation", err)
 			this.Fail("500")
 		}
+
+		if err := req.SendEmailNotifications(); err != nil {
+			beego.Error("Failed to send email notifications:", err)
+		}
+
 		this.Data["json"] = req.Purchase
 	} else {
 		this.CustomAbort(401, "Not authorized")

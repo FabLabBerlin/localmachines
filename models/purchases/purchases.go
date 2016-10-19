@@ -208,6 +208,10 @@ func (this Purchase) CloneOrm(o orm.Ormer, inv *invoices.Invoice) error {
 	return err
 }
 
+func (this *Purchase) Duration() time.Duration {
+	return time.Duration(this.Seconds()) * time.Second
+}
+
 func (this *Purchase) MembershipStr() (membershipStr string, err error) {
 	affected, err := AffectedMemberships(this)
 	if err != nil {
