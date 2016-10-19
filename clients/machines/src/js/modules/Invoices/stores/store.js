@@ -145,7 +145,10 @@ function editPurchaseDuration(state, {duration, invoiceId}) {
 }
 
 function fetchMonthlySums(state, { month, year, summaries }) {
-  return state.setIn(['MonthlySums', year, month], toImmutable(summaries));
+  const sums = toImmutable(summaries).map(s => {
+    return s.set('active', s.get('Total') >= 0.01 || s.get('FastbillNo'));
+  });
+  return state.setIn(['MonthlySums', year, month], sums);
 }
 
 function setSelectedMonth(state, { month, year }) {

@@ -73,7 +73,8 @@ var List = React.createClass({
       currency: Settings.getters.getCurrency,
       locationId: LocationGetters.getLocationId,
       MonthlySums: Invoices.getters.getMonthlySums,
-      checkStatus: Invoices.getters.getCheckStatus
+      checkStatus: Invoices.getters.getCheckStatus,
+      showInactiveUsers: Invoices.getters.getShowInactiveUsers
     };
   },
 
@@ -88,7 +89,9 @@ var List = React.createClass({
   },
 
   render() {
-    const summaries = this.props.summaries.sortBy((sum) => {
+    const summaries = this.props.summaries
+    .filter(sum => sum.get('active') || this.state.showInactiveUsers)
+    .sortBy(sum => {
       return (sum.getIn(['User', 'FirstName'])
            + ' ' + sum.getIn(['User', 'LastName']))
            .toLowerCase();

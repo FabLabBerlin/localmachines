@@ -96,9 +96,7 @@ func (this *Controller) GetMonth() {
 			Invoice: *iv,
 			User:    usrsById[iv.UserId],
 		}
-		if inv.Total >= 0.01 || inv.FastbillNo != "" {
-			list = append(list, inv)
-		}
+		list = append(list, inv)
 	}
 
 	this.Data["json"] = list
