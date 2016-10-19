@@ -5,6 +5,7 @@ var moment = require('moment');
 var Nuclear = require('nuclear-js');
 var reactor = require('../../../reactor');
 var toImmutable = Nuclear.toImmutable;
+var {formatDuration, toQuantity} = require('../../../components/UserProfile/helpers');
 
 const initialState = toImmutable({
   MonthlySums: {
@@ -93,6 +94,21 @@ function editPurchaseField(state, {field, value, invoiceId}) {
         p.edited = {};
       }
 
+      if (field === 'Type' && p.PriceUnit !== 'gram') {
+        const durationString = formatDuration(p);
+        console.log('p.Machine.PriceUnit=', p.Machine.PriceUnit);
+        switch (value) {
+        case 'activation':
+          p.PriceUnit = 'minute';
+          break;
+        case 'reservation':
+          p.PriceUnit = '30 minutes';
+          break;
+        }
+
+        p.Quantity = toQuantity(p, durationString);
+      }
+
       p[field] = value;
     }
     return p;
@@ -102,7 +118,6 @@ function editPurchaseField(state, {field, value, invoiceId}) {
 }
 
 function editPurchaseDuration(state, {duration, invoiceId}) {
-  console.log('#editPurchaseDuration');
   var purchaseId = state.get('editPurchaseId');
 
   var keyPath = [
@@ -162,33 +177,6 @@ function sortBy(state, { column, asc }) {
 }
 
 // Private:
-
-function toQuantity(p, duration) {
-  var m;
-
-  if (duration.indexOf(':') > 0) {
-    console.log('a');
-    m = moment.duration(duration);
-  } else {
-    console.log('b');
-    m = moment.duration({
-      hours: duration
-    });
-  }
-
-  switch (p.PriceUnit) {
-  case 'second':
-    return m.asSeconds();
-  case 'minute':
-    return m.asMinutes();
-  case '30 minutes':
-    return m.asHours() * 2;
-  case 'hour':
-    return m.asHours();
-  case 'day':
-    return m.asDays();
-  }
-}
 
 function updateChecks(state, toggle) {
   const checkedAll = reactor.evaluateToJS(getters.getCheckedAll);

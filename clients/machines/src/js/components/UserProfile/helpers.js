@@ -1,3 +1,4 @@
+var moment = require('moment');
 var reactor = require('../../reactor');
 var SettingsGetters = require('../../modules/Settings/getters');
 
@@ -82,7 +83,32 @@ function formatPrice(price) {
   return (Math.round(price * 100) / 100).toFixed(2);
 }
 
+function toQuantity(p, duration) {
+  var m;
+
+  if (duration.indexOf(':') > 0) {
+    m = moment.duration(duration);
+  } else {
+    m = moment.duration({
+      hours: duration
+    });
+  }
+
+  switch (p.PriceUnit) {
+  case 'second':
+    return m.asSeconds();
+  case 'minute':
+    return m.asMinutes();
+  case '30 minutes':
+    return m.asHours() * 2;
+  case 'hour':
+    return m.asHours();
+  case 'day':
+    return m.asDays();
+  }
+}
+
 export default {
   addVAT, subtractVAT, toCents, toEuro,
-  formatDate, formatDuration, formatPrice
+  formatDate, formatDuration, formatPrice, toQuantity
 };
