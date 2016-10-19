@@ -118,9 +118,11 @@ func (this *ReservationsController) Create() {
 			this.Fail("500")
 		}
 
-		if err := req.SendEmailNotifications(); err != nil {
-			beego.Error("Failed to send email notifications:", err)
-		}
+		go func() {
+			if err := req.SendEmailNotifications(); err != nil {
+				beego.Error("Failed to send email notifications:", err)
+			}
+		}()
 
 		this.Data["json"] = req.Purchase
 	} else {
