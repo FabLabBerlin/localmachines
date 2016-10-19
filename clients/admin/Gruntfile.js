@@ -85,7 +85,6 @@ module.exports = function (grunt) {
 					'tmp/app.js': [
 						'tmp/dependencies.js',
 						'dev/ng-main.js',
-						'dev/ng-modules/activation/activation.js',
 						'dev/ng-modules/activations/activations.js',
 						'dev/ng-modules/api/api.js',
 						'dev/ng-modules/bookings/bookings.js',
@@ -181,11 +180,6 @@ module.exports = function (grunt) {
 				}, {
 					src: 'dev/ng-modules/user/user.html', 
 					dest: 'prod/ng-modules/user/',
-					expand: true,
-					flatten: true
-				}, {
-					src: 'dev/ng-modules/activation/activation.html', 
-					dest: 'prod/ng-modules/activation/',
 					expand: true,
 					flatten: true
 				}, {

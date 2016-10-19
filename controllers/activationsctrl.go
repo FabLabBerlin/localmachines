@@ -188,6 +188,8 @@ func (this *ActivationsController) Put() {
 		this.CustomAbort(400, "Failed to update Activation")
 	}
 
+	beego.Info("q=", activation.Purchase.Quantity)
+
 	inv, err := invoices.GetDraft(locId, activation.Purchase.UserId, activation.Purchase.TimeStart)
 	if err != nil {
 		beego.Error("Get draft:", err)

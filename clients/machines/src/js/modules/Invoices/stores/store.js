@@ -116,10 +116,10 @@ function editPurchaseDuration(state, {duration, invoiceId}) {
       p.editValid = false;
       p.editedDuration = duration;
 
-      var timeEnd = toTimeEnd(p, duration);
-      if (timeEnd) {
+      var quantity = toQuantity(p, duration);
+      if (quantity) {
         p.editValid = true;
-        p.TimeEnd = timeEnd;
+        p.Quantity = quantity;
       }
     }
     return p;
@@ -162,31 +162,26 @@ function sortBy(state, { column, asc }) {
 
 // Private:
 
-function toTimeEnd(p, duration) {
+function toQuantity(p, duration) {
   var i = duration.indexOf('h');
   if (i <= 0) {
     return undefined;
   }
 
-  var str = duration.slice(0, i).trim();
-  var hms = str.split(':');
+  var m = moment.duration(duration.slice(0, i).trim());
 
-  if (hms.length !== 3) {
-    return undefined;
+  switch(p.PriceUnit) {
+  case 'second':
+    return m.asSeconds();
+  case 'minute':
+    return m.asMinutes();
+  case '30 minutes':
+    return m.asHours() * 2;
+  case 'hour':
+    return m.asHours();
+  case 'day':
+    return m.asDays();
   }
-
-  var hh = parseInt(hms[0], 10);
-  var mm = parseInt(hms[1], 10);
-  var ss = parseInt(hms[2], 10);
-
-  if (!_.isNumber(hh) || !_.isNumber(mm) || !_.isNumber(ss)) {
-    return undefined;
-  }
-
-  return moment(p.TimeStart).add(hh, 'hours')
-                            .add(mm, 'minutes')
-                            .add(ss, 'seconds')
-                            .toDate();
 }
 
 function updateChecks(state, toggle) {

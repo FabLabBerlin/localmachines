@@ -74,12 +74,6 @@
         <td>{{activation.TimeEnd | date:'yyyy-MM-dd HH:mm:ss'}}</td>
         <td>{{activation.UserName}}</td>
         <td>
-          <button 
-            type="button" 
-            class="btn btn-primary btn-ico" 
-            ng-click="edit(activation.Id)">
-            <span class="fa fa-edit"></span>
-          </button>
         </td>
       </tr>
     </tbody>
@@ -88,11 +82,6 @@
   <hr>
 
   <div class="pull-right">
-    <button class="btn btn-primary btn-lg"
-            ng-click="createActivation()">
-      Create Activation
-    </button>
-
     <button class="btn btn-primary btn-lg"
             ng-disabled="!activations.length"
             ng-click="exportSpreadsheet()">
