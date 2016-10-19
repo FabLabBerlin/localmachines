@@ -8,10 +8,11 @@ import (
 const TABLE_NAME = "settings"
 
 const (
-	CURRENCY             = "Currency"
-	TERMS_URL            = "TermsUrl"
-	VAT                  = "VAT"
-	FASTBILL_TEMPLATE_ID = "FastbillTemplateId"
+	CURRENCY                       = "Currency"
+	TERMS_URL                      = "TermsUrl"
+	VAT                            = "VAT"
+	FASTBILL_TEMPLATE_ID           = "FastbillTemplateId"
+	RESERVATION_NOTIFICATION_EMAIL = "ReservationNotificationEmail"
 )
 
 var validNames = []string{
@@ -19,6 +20,7 @@ var validNames = []string{
 	TERMS_URL,
 	VAT,
 	FASTBILL_TEMPLATE_ID,
+	RESERVATION_NOTIFICATION_EMAIL,
 }
 
 type Settings struct {

@@ -109,6 +109,14 @@ var Settings = React.createClass({
                                uploadUrl={'/api/locations/' + locationId + '/image?location=' + locationId}/>
               </td>
             </tr>
+            <tr>
+              <td>Reservation Notification E-Mail</td>
+              <td>
+                <input type="text"
+                       ref="ReservationNotificationEmail"
+                       defaultValue={this.state.settings.getIn(['ReservationNotificationEmail', 'ValueString'])}/>
+              </td>
+            </tr>
           </tbody>
         </table>
 
@@ -137,6 +145,9 @@ var Settings = React.createClass({
       },
       VAT: {
         ValueFloat: parseFloat(this.refs.VAT.value)
+      },
+      ReservationNotificationEmail: {
+        ValueString: this.refs.ReservationNotificationEmail.value
       }
     };
 
