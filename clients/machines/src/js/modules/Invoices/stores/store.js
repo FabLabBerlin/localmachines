@@ -102,6 +102,7 @@ function editPurchaseField(state, {field, value, invoiceId}) {
 }
 
 function editPurchaseDuration(state, {duration, invoiceId}) {
+  console.log('#editPurchaseDuration');
   var purchaseId = state.get('editPurchaseId');
 
   var keyPath = [
@@ -163,14 +164,19 @@ function sortBy(state, { column, asc }) {
 // Private:
 
 function toQuantity(p, duration) {
-  var i = duration.indexOf('h');
-  if (i <= 0) {
-    return undefined;
+  var m;
+
+  if (duration.indexOf(':') > 0) {
+    console.log('a');
+    m = moment.duration(duration);
+  } else {
+    console.log('b');
+    m = moment.duration({
+      hours: duration
+    });
   }
 
-  var m = moment.duration(duration.slice(0, i).trim());
-
-  switch(p.PriceUnit) {
+  switch (p.PriceUnit) {
   case 'second':
     return m.asSeconds();
   case 'minute':

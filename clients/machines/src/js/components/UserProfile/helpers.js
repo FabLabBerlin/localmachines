@@ -68,17 +68,11 @@ function formatDuration(purchase) {
     var d = parseInt(duration.toString(), 10);
     var h = String(Math.floor(d / 3600));
     var m = String(Math.floor(d % 3600 / 60));
-    var s = String(Math.floor(d % 3600 % 60));
-    if (h.length === 1) {
-      h = '0' + h;
-    }
+
     if (m.length === 1) {
       m = '0' + m;
     }
-    if (s.length === 1) {
-      s = '0' + s;
-    }
-    var str = h + ':' + m + ':' + s + ' h';
+    var str = h + ':' + m;
 
     return str;
   }

@@ -377,7 +377,6 @@ function refresh(inv) {
 }
 
 function save(locId, {invoice}) {
-  console.log('Invoice actions#save');
   var falseEdits = false;
 
   var mutated = _.filter(invoice.get('Purchases').toJS(), (p) => {
@@ -387,8 +386,6 @@ function save(locId, {invoice}) {
 
     return p.edited || p.editedDuration;
   });
-
-  console.log('falseEdits=', falseEdits);
 
   if (falseEdits) {
     toastr.error('Trying to save invalid edit');
