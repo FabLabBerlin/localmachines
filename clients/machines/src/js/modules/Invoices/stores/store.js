@@ -94,19 +94,27 @@ function editPurchaseField(state, {field, value, invoiceId}) {
         p.edited = {};
       }
 
-      if (field === 'Type' && p.PriceUnit !== 'gram') {
+      if (field === 'Type' || field === 'MachineId') {
         const durationString = formatDuration(p);
-        console.log('p.Machine.PriceUnit=', p.Machine.PriceUnit);
-        switch (value) {
+        console.log('p=', p);
+        switch (field === 'Type' ? value : p.Type) {
         case 'activation':
-          p.PriceUnit = 'minute';
+          p.PriceUnit = (p.Machine && p.Machine.PriceUnit) || 'minute';
+          if (p.Machine) {
+            p.PricePerUnit = p.Machine.Price;  
+          }
           break;
         case 'reservation':
           p.PriceUnit = '30 minutes';
+          if (p.Machine) {
+            p.PricePerUnit = p.Machine.ReservationPriceHourly;
+          }
           break;
         }
 
-        p.Quantity = toQuantity(p, durationString);
+        if (value === 'activation' || value === 'reservation') {
+          p.Quantity = toQuantity(p, durationString);
+        }
       }
 
       p[field] = value;

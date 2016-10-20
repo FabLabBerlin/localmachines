@@ -86,6 +86,10 @@ function formatPrice(price) {
 function toQuantity(p, duration) {
   var m;
 
+  if (!duration) {
+    return undefined;
+  }
+
   if (duration.indexOf(':') > 0) {
     m = moment.duration(duration);
   } else {
