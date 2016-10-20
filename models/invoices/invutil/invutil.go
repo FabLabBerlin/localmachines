@@ -317,9 +317,14 @@ func toUtilInvoices(locId int64, ivs []*invoices.Invoice) (invs []*Invoice, err 
 		inv := &Invoice{
 			Invoice: *iv,
 		}
+		if _, userInLocation := usersById[inv.UserId]; !userInLocation {
+			beego.Error("user", inv.UserId, "is not in location", inv.LocationId,
+				"(referenced through invoice", inv.Id, ") - skipping invoice!")
+			continue
+		}
 		err = inv.load(usersById, purchasesByInv, userMembershipsByInv)
 		if err != nil {
-			return nil, fmt.Errorf("load: %v", err)
+			return nil, fmt.Errorf("load (invoice %v): %v", inv.Id, err)
 		}
 		invs = append(invs, inv)
 	}
