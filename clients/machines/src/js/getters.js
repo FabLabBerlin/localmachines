@@ -6,6 +6,8 @@ var moment = require('moment');
 var Nuclear = require('nuclear-js');
 var toImmutable = Nuclear.toImmutable;
 
+var helpers = require('./components/UserProfile/helpers');
+
 
 /*
  * Global state related getters
@@ -323,7 +325,7 @@ function slotAvailabilities({date, machinesById, reservationsStore, reservationR
     if (rs) {
       _.each(rs.toArray(), function(reservation) {
         var rStart = moment(reservation.get('TimeStart')).unix();
-        var rEnd = moment(reservation.get('TimeEnd')).unix();
+        var rEnd = helpers.timeEnd(reservation).unix();
         var tStart = moment(t.get('start')).unix();
         var tEnd = moment(t.get('end')).unix();
         var tStartInInterval = tStart >= rStart && tStart < rEnd;
@@ -376,7 +378,7 @@ const getActiveReservationsByMachineId = [
       if (rs) {
         _.each(rs.toObject(), (reservation) => {
           var start = moment(reservation.get('TimeStart')).unix();
-          var end = moment(reservation.get('TimeEnd')).unix();
+          var end = helpers.timeEnd(reservation).unix();
           if (start <= u && u <= end) {
             reservationsByMachineId[reservation.get('MachineId')] = reservation;
           }
@@ -398,7 +400,7 @@ const getUpcomingReservationsByMachineId = [
       if (rs) {
         _.each(rs.toObject(), (r) => {
           var start = moment(r.get('TimeStart')).unix();
-          var end = moment(r.get('TimeEnd')).unix();
+          var end = helpers.timeEnd(r).unix();
           if (start > u && start - u < 12 * 3600 && u <= end) {
             reservationsByMachineId[r.get('MachineId')] = r;
           }
@@ -474,6 +476,19 @@ const getNewReservationTo = [
   }
 ];
 
+const getNewReservationQuantity = [
+  getNewReservationTimes,
+  (reservationTimes) => {
+    if (reservationTimes) {
+      var selectedTimes = _.filter(reservationTimes.toArray(), function(t) {
+        return t.get('selected');
+      });
+
+      return selectedTimes.length;
+    }
+  }
+];
+
 const getNewReservationPrice = [
   Machines.getters.getMachinesById,
   getNewReservation,
@@ -519,12 +534,12 @@ const getSlotAvailabilities48h = [
       var tmp = {
         today: rs.filter(r => {
           var start = moment(r.get('TimeStart')).unix();
-          var end = moment(r.get('TimeEnd')).unix();
+          var end = helpers.timeEnd(r).unix();
           return start >= todayStart && end <= todayEnd;
         }),
         tomorrow: rs.filter(r => {
           var start = moment(r.get('TimeStart')).unix();
-          var end = moment(r.get('TimeEnd')).unix();
+          var end = helpers.timeEnd(r).unix();
           return start >= tomorrowStart && end <= tomorrowEnd;
         })
       };
@@ -574,7 +589,7 @@ export default {
   getUser,
   getWidth, getHeight, getIsLoading, getBill, getBillMonths, getMonthlyBills, getMemberships, getMembershipsByMonth,
   getFeedbackSubject, getFeedbackSubjectDropdown, getFeedbackSubjectOtherText, getFeedbackMessage,
-  getNewReservation, getNewReservationPrice, getNewReservationTimes, getNewReservationFrom, getNewReservationTo, getReservations, getReservationsByDay, getActiveReservationsByMachineId, getUpcomingReservationsByMachineId, getSlotAvailabilities48h,
+  getNewReservation, getNewReservationPrice, getNewReservationTimes, getNewReservationFrom, getNewReservationTo, getNewReservationQuantity, getReservations, getReservationsByDay, getActiveReservationsByMachineId, getUpcomingReservationsByMachineId, getSlotAvailabilities48h,
   getReservationRules,
   getScrollUpEnabled, getScrollDownEnabled, getScrollPosition,
   getTutorings

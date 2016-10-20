@@ -9,6 +9,9 @@ var moment = require('moment');
 var reactor = require('../reactor');
 var toastr = require('toastr');
 
+var helpers = require('../components/UserProfile/helpers');
+
+
 const STEP_SET_MACHINE = 1;
 const STEP_SET_DATE = 2;
 const STEP_SET_TIME = 3;
@@ -34,7 +37,7 @@ var ReservationActions = {
       _.each(reservations, function(reservation) {
         var twoDays = 2 * 86400;
         var timeStart = moment(reservation.TimeStart).unix() - twoDays;
-        var timeEnd = moment(reservation.TimeEnd).unix() + twoDays;
+        var timeEnd = helpers.timeEnd(reservation).unix() + twoDays;
         if (timeStart <= t && t <= timeEnd) {
           userIds.push(reservation.UserId);
         }
@@ -110,7 +113,7 @@ var ReservationActions = {
         MachineId: reservation.machineId,
         UserId: uid,
         TimeStart: reactor.evaluateToJS(getters.getNewReservationFrom),
-        TimeEnd: reactor.evaluateToJS(getters.getNewReservationTo),
+        Quantity: reactor.evaluateToJS(getters.getNewReservationQuantity),
         Created: new Date()
       };
       $.ajax({

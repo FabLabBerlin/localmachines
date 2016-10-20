@@ -5,6 +5,8 @@ var moment = require('moment');
 var React = require('react');
 var reactor = require('../../../reactor');
 
+var helpers = require('../../UserProfile/helpers');
+
 
 var ReservedBy = React.createClass({
   mixins: [ reactor.ReactMixin ],
@@ -22,9 +24,9 @@ var ReservedBy = React.createClass({
         const uid = this.props.reservation.get('UserId');
         const users = this.state.machineUsers;
         const user = users.get(uid) || {};
-        var timeEnd = this.props.reservation.get('TimeEnd');
+        var timeEnd = helpers.timeEnd(this.props.reservation);
         if (timeEnd) {
-          timeEnd = moment(timeEnd).format('HH:mm');
+          timeEnd = timeEnd.format('HH:mm');
         }
 
         return (

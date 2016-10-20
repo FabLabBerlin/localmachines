@@ -92,9 +92,6 @@ function timeEnd(p) {
 
   const d = toDuration(pp);
 
-  console.log('p.TimeStart=', pp.TimeStart);
-  console.log('d=', d);
-
   return moment(pp.TimeStart).add(d);
 }
 

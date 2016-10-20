@@ -5,6 +5,9 @@ var React = require('react');
 var reactor = require('../../reactor');
 var toastr = require('../../toastr');
 
+var { timeEnd } = require('../../components/UserProfile/helpers');
+
+
 const DELTA = 2.08333333;
 
 function isNow(t) {
@@ -54,7 +57,7 @@ var Slot = React.createClass({
     var width = String(DELTA) + '%';
     if (this.props.reservation) {
       var start = moment(this.props.reservation.get('TimeStart'));
-      var end = moment(this.props.reservation.get('TimeEnd'));
+      var end = timeEnd(this.props.reservation);
       width = String(DELTA * (end.unix() - start.unix()) / 1800) + '%';
       title = start.format('DD. MMM HH:mm') + ' - ' + end.format('HH:mm');
       var userId = this.props.reservation.get('UserId');

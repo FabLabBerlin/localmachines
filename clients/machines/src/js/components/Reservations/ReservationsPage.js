@@ -17,6 +17,9 @@ var Settings = require('../../modules/Settings');
 var toImmutable = Nuclear.toImmutable;
 var UserActions = require('../../actions/UserActions');
 
+var { timeEnd } = require('../../components/UserProfile/helpers');
+
+
 // https://github.com/HubSpot/vex/issues/72
 var vex = require('vex-js'),
 VexDialog = require('vex-js/js/vex.dialog.js');
@@ -57,7 +60,7 @@ var TableRow = React.createClass({
     const reservationId = reservation.get('Id');
 
     const reservationStart = moment( reservation.get('TimeStart') );
-    const reservationEnd = moment( reservation.get('TimeEnd') );
+    const reservationEnd = timeEnd( reservation );
     const now = moment();
 
     const isPast = reservationEnd.isBefore(now);
@@ -75,7 +78,7 @@ var TableRow = React.createClass({
         <td>{machine.get('Name')}</td>
         <td>{formatDate(reservation.get('TimeStart'))}</td>
         <td>{formatTime(reservation.get('TimeStart'))}</td>
-        <td>{formatTime(reservation.get('TimeEnd'))}</td>
+        <td>{formatTime(timeEnd(reservation))}</td>
         <td>{formatDate(reservation.get('Created'))}</td>
         <td>
           {(!isPast && !isToday) ?

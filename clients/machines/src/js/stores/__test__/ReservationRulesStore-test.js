@@ -3,6 +3,7 @@ jest.dontMock('moment');
 jest.dontMock('nuclear-js');
 jest.dontMock('../../actionTypes');
 jest.dontMock('../../components/Reservations/helpers');
+jest.dontMock('../../components/UserProfile/helpers');
 jest.dontMock('../../getters');
 jest.dontMock('../../reactor');
 jest.dontMock('../../modules/Machines');
@@ -24,16 +25,20 @@ function existingReservations() {
       'MachineId': 3,
       'UserId': 19,
       'TimeStart': '2015-10-15T11:30:00+02:00',
-      'TimeEnd': '2015-10-15T18:00:00+02:00',
-      'Created': '2015-10-02T17:29:51+02:00'
+      //'TimeEnd': '2015-10-15T18:00:00+02:00',
+      'Quantity': 13,
+      'Created': '2015-10-02T17:29:51+02:00',
+      'PriceUnit': '30 minutes'
     },
     {  
       'Id': 2,
       'MachineId': 3,
       'UserId': 19,
       'TimeStart': '2015-10-06T14:00:00+02:00',
-      'TimeEnd': '2015-10-06T15:00:00+02:00',
-      'Created': '2015-10-05T11:23:58+02:00'
+      //'TimeEnd': '2015-10-06T15:00:00+02:00',
+      'Quantity': 2,
+      'Created': '2015-10-05T11:23:58+02:00',
+      'PriceUnit': '30 minutes'
     }
   ];
 }
