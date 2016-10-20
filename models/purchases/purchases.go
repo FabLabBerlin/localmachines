@@ -362,7 +362,10 @@ func (this Purchase) ProductName() string {
 		return this.Machine.Name + " Reservation"
 	case TYPE_TUTOR:
 		return "Tutoring"
+	case TYPE_OTHER:
+		return this.CustomName
 	}
+
 	return "Unnamed product"
 }
 
