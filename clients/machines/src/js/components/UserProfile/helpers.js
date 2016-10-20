@@ -83,6 +83,31 @@ function formatPrice(price) {
   return (Math.round(price * 100) / 100).toFixed(2);
 }
 
+function timeEnd(p) {
+  var pp = p;
+
+  if (p.get && p.get('TimeStart')) {
+    pp = p.toJS();
+  }
+
+  const d = toDuration(pp);
+
+  console.log('p.TimeStart=', pp.TimeStart);
+  console.log('d=', d);
+
+  return moment(pp.TimeStart).add(d);
+}
+
+function toDuration(p) {
+  var pp = p;
+
+  if (p.get && p.get('TimeStart')) {
+    pp = p.toJS();
+  }
+
+  return moment.duration(formatDuration(pp));
+}
+
 function toQuantity(p, duration) {
   var m;
 
@@ -114,5 +139,5 @@ function toQuantity(p, duration) {
 
 export default {
   addVAT, subtractVAT, toCents, toEuro,
-  formatDate, formatDuration, formatPrice, toQuantity
+  formatDate, formatDuration, formatPrice, timeEnd, toDuration, toQuantity
 };

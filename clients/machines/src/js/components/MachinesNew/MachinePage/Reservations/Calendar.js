@@ -9,6 +9,8 @@ var React = require('react');
 var reactor = require('../../../../reactor');
 var ReservationActions = require('../../../../actions/ReservationActions');
 
+var { timeEnd } = require('../../../UserProfile/helpers');
+
 
 // https://github.com/HubSpot/vex/issues/72
 var vex = require('vex-js'),
@@ -135,7 +137,7 @@ var Event = React.createClass({
     const user = users.get(uid) || {};
     const r = this.props.reservation;
     const i = toInt(r.get('TimeStart'));
-    const j = toInt(r.get('TimeEnd'));
+    const j = toInt(r.get('TimeEnd') ? r.get('TimeEnd') : timeEnd(r));
     const style = {
       height: (j - i) * 31
     };
@@ -159,7 +161,8 @@ var Event = React.createClass({
     } else {
       const my = uid === this.state.uid;
       const className = my ? 'r-my' : '';
-
+      console.log('r=', r.toJS());
+      console.log('timeEnd(r)=', timeEnd(r));
       return (
         <div className={'r-reservation ' + className} style={style}>
           <div className="r-label row">
@@ -175,7 +178,7 @@ var Event = React.createClass({
           </div>
 
           <div className="text-center visible-xs-block visible-sm-block">
-            {moment(r.get('TimeStart')).format('HH:mm')} - {moment(r.get('TimeEnd')).format('HH:mm')}
+            {moment(r.get('TimeStart')).format('HH:mm')} - {timeEnd(r).format('HH:mm')}
           </div>
         </div>
       );
@@ -244,7 +247,7 @@ var Day = React.createClass({
     for (var i = toInt(this.props.start); i < toInt(this.props.end); i++) {
       if (res) {
         const j = toInt(res.get('TimeStart'));
-        const k = toInt(res.get('TimeEnd'));
+        const k = toInt(timeEnd(res));
 
         if (i < j || k <= i) {
           res = null;
