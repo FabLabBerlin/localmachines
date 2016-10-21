@@ -161,8 +161,7 @@ var Event = React.createClass({
     } else {
       const my = uid === this.state.uid;
       const className = my ? 'r-my' : '';
-      console.log('r=', r.toJS());
-      console.log('timeEnd(r)=', timeEnd(r));
+
       return (
         <div className={'r-reservation ' + className} style={style}>
           <div className="r-label row">
@@ -247,7 +246,7 @@ var Day = React.createClass({
     for (var i = toInt(this.props.start); i < toInt(this.props.end); i++) {
       if (res) {
         const j = toInt(res.get('TimeStart'));
-        const k = toInt(timeEnd(res));
+        const k = toInt(res.get('TimeEnd') ? res.get('TimeEnd') : timeEnd(res));
 
         if (i < j || k <= i) {
           res = null;
