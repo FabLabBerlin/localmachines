@@ -191,7 +191,7 @@ var BillTable = React.createClass({
       default:
         console.log('unhandled purchase type ', purchase.Type);
       }
-      const selected = this.state.editPurchaseId === purchase.Id;
+      const selected = this.state.editPurchaseId === purchase.Id && this.props.addPurchaseVisible;
       const editable = selected && moment(purchase.TimeEnd).unix() > 0;
 
       tbody.push(
