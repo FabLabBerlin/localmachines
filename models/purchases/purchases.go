@@ -357,9 +357,13 @@ func (this Purchases) Less(i, j int) bool {
 func (this Purchase) ProductName() string {
 	switch this.Type {
 	case TYPE_ACTIVATION:
-		return this.Machine.Name
+		if this.Machine != nil {
+			return this.Machine.Name
+		}
 	case TYPE_RESERVATION:
-		return this.Machine.Name + " Reservation"
+		if this.Machine != nil {
+			return this.Machine.Name + " Reservation"
+		}
 	case TYPE_TUTOR:
 		return "Tutoring"
 	case TYPE_OTHER:
