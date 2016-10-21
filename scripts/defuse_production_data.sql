@@ -23,3 +23,5 @@ UPDATE user SET first_name = concat('f', '-', id),
                 username = concat('f', '-', id, '.', 'l', '-', id),
                 email = concat('f', '-', id, '.', 'l', '-', id, '@example.com')
             WHERE id NOT IN (6, 10, 19, 237, 336, 521, 10912) AND username <> 'testuser';
+
+UPDATE settings SET value_string = '' WHERE name = 'ReservationNotificationEmail';
