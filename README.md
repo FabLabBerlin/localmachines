@@ -78,6 +78,20 @@ Quickly install Localmachines to get it running on Linux or OS X. For more
    cd $GOPATH/src/github.com/FabLabBerlin/localmachines
    ```
 
+10. Setup Angular frontends:
+
+   ```
+   cd clients/admin
+   npm install
+   bower install
+
+   cd clients/signup
+   npm install
+   bower install
+
+   cd $GOPATH/src/github.com/FabLabBerlin/localmachines
+   ```
+
 10. Now you should be able to start the server with:
 
    ```
