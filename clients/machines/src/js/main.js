@@ -9,6 +9,7 @@ var AdminInvoice = require('./components/Admin/Invoices/Invoice');
 var AdminInvoices = require('./components/Admin/Invoices/Invoices');
 var AdminMachine = require('./components/Admin/Machines/Machine');
 var AdminMachines = require('./components/Admin/Machines/Machines');
+var AdminMemberships = require('./components/Admin/Memberships');
 var AdminSettings = require('./components/Admin/Settings/Settings');
 var AdminUser = require('./components/Admin/Users/User');
 var AdminUsers = require('./components/Admin/Users/Users');
@@ -28,6 +29,7 @@ var MachineNewReservationPage = require('./components/MachinesNew/MachinePage/Re
 var MachinePage = require('./components/MachinePage/MachinePage');
 var Machines = require('./modules/Machines');
 var MachinesNewPage = require('./components/MachinesNew/Machines');
+var Memberships = require('./modules/Memberships');
 var React = require('react');
 var ProductPage = require('./components/ProductPage/ProductPage');
 var reactor = require('./reactor');
@@ -66,6 +68,7 @@ reactor.registerStores({
   invoicesStore: Invoices.store,
   loginStore: LoginStore,
   machineStore: Machines.store,
+  membershipsStore: Memberships.store,
   reservationsStore: ReservationsStore,
   reservationRulesStore: ReservationRulesStore,
   scrollNavStore: ScrollNavStore,
@@ -85,10 +88,11 @@ render((
   <Router history={hashHistory}>
     <Route path="/" component={App} >
       <Route path="admin">
-        <Route path="machines" component={AdminMachines} />
-        <Route path="machines/:machineId" component={AdminMachine} />
         <Route path="invoices" component={AdminInvoices} />
         <Route path="invoices/:invoiceId" component={AdminInvoice} />
+        <Route path="machines" component={AdminMachines} />
+        <Route path="machines/:machineId" component={AdminMachine} />
+        <Route path="memberships" component={AdminMemberships} />
         <Route path="settings" component={AdminSettings} />
         <Route path="users" component={AdminUsers} />
         <Route path="users/:userId" component={AdminUser} />
