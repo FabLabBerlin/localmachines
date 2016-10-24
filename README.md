@@ -13,6 +13,7 @@ Resource management software for Fab Labs. REST API built with the [BeeGo](http:
 - [API Documentation](#api-documentation)
 - [Deployment](#deployment)
 - [Troubleshooting](#troubleshooting)
+- [TODO](#TODO)
 
 ## Quick-Start
 
@@ -564,3 +565,7 @@ We use [Automated API Document](http://beego.me/docs/advantage/docs.md) feature 
 
 Beego watches a lot of files to automatically re-compile the code. On OS X the maximum number of open files is quite low by default. See here how to solve this: http://unix.stackexchange.com/a/221988
 
+## TODO
+
+- Merge functionality of clients/admin to clients/machines
+- Flatten directory structure in clients
