@@ -5,6 +5,14 @@ const getAllMemberships = [
   }
 ];
 
+const getShowArchived = [
+  ['membershipsStore'],
+  (membershipsStore) => {
+    return membershipsStore.get('showArchived');
+  }
+];
+
 export default {
-  getAllMemberships
+  getAllMemberships,
+  getShowArchived
 };

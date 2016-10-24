@@ -1,12 +1,13 @@
 var Button = require('../../Button');
 var getters = require('../../../getters');
+var {hashHistory} = require('react-router');
 var LoaderLocal = require('../../LoaderLocal');
 var LocationActions = require('../../../actions/LocationActions');
 var LocationGetters = require('../../../modules/Location/getters');
 var Memberships = require('../../../modules/Memberships');
 var React = require('react');
 var reactor = require('../../../reactor');
-var SettingsActions = require('../../../modules/Settings/actions');
+var Settings = require('../../../modules/Settings');
 var UserActions = require('../../../actions/UserActions');
 
 
@@ -16,7 +17,9 @@ var MembershipsPage = React.createClass({
 
   getDataBindings() {
     return {
-      memberships: Memberships.getters.getAllMemberships
+      currency: Settings.getters.getCurrency,
+      memberships: Memberships.getters.getAllMemberships,
+      showArchived: Memberships.getters.getShowArchived
     };
   },
 
@@ -26,7 +29,7 @@ var MembershipsPage = React.createClass({
     UserActions.fetchUser(uid);
     Memberships.actions.fetch({locationId});
     LocationActions.loadUserLocations(uid);
-    SettingsActions.loadSettings({locationId});
+    Settings.actions.loadSettings({locationId});
   },
 
 	render() {
@@ -41,12 +44,17 @@ var MembershipsPage = React.createClass({
             <h1>All Memberships</h1>
           </div>
           <div className="col-xs-6 text-right">
-            <Button.Annotated id="mbs-toggle-inactive"
-                               label="Show archived"
-                               onClick={this.setShowArchived.bind(this, true)}/>
+            {this.state.showArchived ?
+              <Button.Annotated id="mbs-toggle-inactive"
+                                 label="Hide archived"
+                                 onClick={this.setShowArchived.bind(this, false)}/> :
+              <Button.Annotated id="mbs-toggle-inactive"
+                                 label="Show archived"
+                                 onClick={this.setShowArchived.bind(this, true)}/>
+            }
           </div>
         </div>
-        <table>
+        <table className="table table-striped table-hover">
           <thead>
             <tr>
               <th>
@@ -56,17 +64,22 @@ var MembershipsPage = React.createClass({
                 Minimum Duration
               </th>
               <th>
-                Monthly Price
+                Monthly Price / {this.state.currency}
               </th>
             </tr>
           </thead>
           <tbody>
             {this.state.memberships.sortBy(mb => mb.get('Title'))
+                                   .filter(mb => !mb.get('Archived')
+                                                 || this.state.showArchived)
                                    .map(mb => {
               return (
-                <tr key={mb.get('Id')}>
-                  <td>{mb.get('Title')}</td>
-                  <td>{mb.get('DurationMonths')}</td>
+                <tr key={mb.get('Id')} onClick={this.showMembership.bind(this, mb.get('Id'))}>
+                  <td><b>{mb.get('Title')}</b></td>
+                  <td>
+                    {mb.get('DurationMonths')} {mb.get('DurationMonths') > 1 ?
+                                                'months' : 'month'}
+                  </td>
                   <td>{mb.get('MonthlyPrice')}</td>
                 </tr>
               );
@@ -78,6 +91,11 @@ var MembershipsPage = React.createClass({
   },
 
   setShowArchived(yes, e) {
+    Memberships.actions.setShowArchived(yes);
+  },
+
+  showMembership(id) {
+    hashHistory.push('/admin/memberships/' + id);
   }
 });
 

@@ -18,6 +18,11 @@ function fetch({locationId}) {
   });
 }
 
+function setShowArchived(yes) {
+  reactor.dispatch(actionTypes.SET_SHOW_ARCHIVED_MEMBERSHIPS, yes);
+}
+
 export default {
-  fetch
+  fetch,
+  setShowArchived
 };
