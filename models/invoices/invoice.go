@@ -10,7 +10,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
-	"github.com/FabLabBerlin/localmachines/models/user_memberships"
+	/*"github.com/FabLabBerlin/localmachines/models/user_memberships"*/
 	"github.com/astaxie/beego/orm"
 	"time"
 )
@@ -318,7 +318,7 @@ func (inv *Invoice) setCurrent(o orm.Ormer) (err error) {
 	}
 
 	if currentInvoice != nil {
-		currentUms, err := user_memberships.GetForInvoice(currentInvoice.Id)
+		/*currentUms, err := user_memberships.GetForInvoice(currentInvoice.Id)
 		if err != nil {
 			return fmt.Errorf("get user memberships for current inv: %v", err)
 		}
@@ -326,9 +326,9 @@ func (inv *Invoice) setCurrent(o orm.Ormer) (err error) {
 		thisUms, err := user_memberships.GetForInvoice(inv.Id)
 		if err != nil {
 			return fmt.Errorf("get user memberships for this inv: %v", err)
-		}
+		}*/
 
-		umsToBeCloned := make([]*user_memberships.Combo, 0, len(currentUms.Data))
+		/*umsToBeCloned := make([]*user_memberships.Combo, 0, len(currentUms.Data))
 		for _, um := range currentUms.Data {
 			alreadyCloned := false
 			for _, existing := range thisUms.Data {
@@ -340,7 +340,7 @@ func (inv *Invoice) setCurrent(o orm.Ormer) (err error) {
 			if !alreadyCloned {
 				umsToBeCloned = append(umsToBeCloned, um)
 			}
-		}
+		}*/
 
 		/*for _, umCombo := range umsToBeCloned {
 			um, err := user_memberships.Get(umCombo.Id)

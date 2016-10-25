@@ -8,7 +8,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/settings"
-	"github.com/FabLabBerlin/localmachines/models/user_memberships"
+	"github.com/FabLabBerlin/localmachines/models/user_memberships/inv_user_memberships"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
@@ -159,7 +159,7 @@ func (inv *Invoice) FastbillCreateDraft(overwriteExisting bool) (fbDraft *fastbi
 	if fbDraft.Month, fbDraft.Year, err = getFastbillMonthYear(&intv); err != nil {
 		return nil, false, fmt.Errorf("get fastbill month: %v", err)
 	}
-	ms, err := user_memberships.GetForInvoice(inv.Id)
+	ms, err := inv_user_memberships.GetForInvoice(inv.Id)
 	if err != nil {
 		return nil, false, fmt.Errorf("GetUserMemberships: %v", err)
 	}
@@ -169,23 +169,22 @@ func (inv *Invoice) FastbillCreateDraft(overwriteExisting bool) (fbDraft *fastbi
 		return nil, false, fmt.Errorf("Fastbill customer id: %v", err)
 	}
 
-	if len(inv.Purchases) == 0 &&
-		(ms == nil || len(ms.Data) == 0) {
+	if len(inv.Purchases) == 0 && len(ms) == 0 {
 		return nil, true, nil
 	}
 
 	invoiceValue := 0.0
 
 	// Add Memberships
-	for _, m := range ms.Data {
-		if m.MonthlyPrice > 0 &&
+	for _, m := range ms {
+		if m.Membership().MonthlyPrice > 0 &&
 			m.StartDate.Before(inv.Interval().TimeTo()) &&
-			m.UserMembership().ActiveAt(inv.Interval().TimeFrom()) {
+			m.UserMembership.ActiveAt(inv.Interval().TimeFrom()) {
 
 			item := fastbill.Item{
-				Description: m.Title + " Membership (unit: month)",
+				Description: m.Membership().Title + " Membership (unit: month)",
 				Quantity:    1,
-				UnitPrice:   m.MonthlyPrice,
+				UnitPrice:   m.Membership().MonthlyPrice,
 				IsGross:     IS_GROSS_BRUTTO,
 				VatPercent:  inv.VatPercent,
 			}
