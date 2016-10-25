@@ -74,12 +74,12 @@ func (inv *Invoice) FastbillCancel() (err error) {
 		}
 	}
 
-	for _, um := range inv.UserMemberships.Data {
+	/*for _, um := range inv.UserMemberships.Data {
 		err := um.UserMembership().CloneOrm(o, draft.Invoice.Id, draft.Invoice.Status)
 		if err != nil {
 			return fmt.Errorf("clone user membership: %v", err)
 		}
-	}
+	}*/
 
 	if err := o.Commit(); err != nil {
 		return fmt.Errorf("commit tx: %v", err)
@@ -178,7 +178,10 @@ func (inv *Invoice) FastbillCreateDraft(overwriteExisting bool) (fbDraft *fastbi
 
 	// Add Memberships
 	for _, m := range ms.Data {
-		if m.MonthlyPrice > 0 && m.StartDate.Before(inv.Interval().TimeTo()) && m.EndDate.After(inv.Interval().TimeFrom()) {
+		if m.MonthlyPrice > 0 &&
+			m.StartDate.Before(inv.Interval().TimeTo()) &&
+			m.UserMembership().ActiveAt(inv.Interval().TimeFrom()) {
+
 			item := fastbill.Item{
 				Description: m.Title + " Membership (unit: month)",
 				Quantity:    1,

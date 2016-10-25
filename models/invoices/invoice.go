@@ -221,48 +221,6 @@ func (inv *Invoice) assertDataOk() (err error) {
 	return
 }
 
-func (inv *Invoice) attachUserMembership(um *user_memberships.UserMembership) error {
-	if inv.Id == 0 {
-		return errors.New("invoice Id = 0")
-	}
-
-	switch um.InvoiceId {
-	case inv.Id:
-		return nil
-	case 0:
-		um.InvoiceId = inv.Id
-		if err := um.Update(); err != nil {
-			return fmt.Errorf("update user membership: %v", err)
-		}
-		return nil
-	default:
-		locId := inv.LocationId
-		ums, err := user_memberships.GetAllAt(locId)
-		if err != nil {
-			return fmt.Errorf("get all user memberships at %v: %v", locId, err)
-		}
-		for _, existing := range ums {
-			if existing.InvoiceId == inv.Id {
-				// Already done
-				return nil
-			}
-		}
-
-		o := orm.NewOrm()
-		newUm, err := user_memberships.Create(o, um.UserId, um.MembershipId, inv.Id, um.StartDate)
-		if err != nil {
-			return fmt.Errorf("create user membership: %v", err)
-		}
-		newUm.AutoExtend = um.AutoExtend
-		newUm.EndDate = um.EndDate
-		newUm.InvoiceStatus = inv.Status
-		if newUm.Update(); err != nil {
-			return fmt.Errorf("update user membership: %v", err)
-		}
-	}
-	return nil
-}
-
 func (inv *Invoice) Interval() lib.Interval {
 	if inv.Month == 0 || inv.Year == 0 {
 		panic(fmt.Sprintf("inv.Month=%v, inv.Year=%v", inv.Month, inv.Year))
@@ -384,7 +342,7 @@ func (inv *Invoice) setCurrent(o orm.Ormer) (err error) {
 			}
 		}
 
-		for _, umCombo := range umsToBeCloned {
+		/*for _, umCombo := range umsToBeCloned {
 			um, err := user_memberships.Get(umCombo.Id)
 			if err != nil {
 				return fmt.Errorf("get user membership: %v", err)
@@ -398,7 +356,7 @@ func (inv *Invoice) setCurrent(o orm.Ormer) (err error) {
 			if err := inv.attachUserMembership(um); err != nil {
 				return fmt.Errorf("attach user membership: %v", err)
 			}
-		}
+		}*/
 	}
 
 	if currentInvoice != nil {

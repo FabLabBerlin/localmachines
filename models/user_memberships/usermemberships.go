@@ -9,12 +9,16 @@ import (
 
 // User membership model that has a mapping in the database.
 type UserMembership struct {
-	Id           int64
-	UserId       int64
-	MembershipId int64
-	StartDate    time.Time `orm:"type(datetime)"`
-	EndDate      time.Time `orm:"type(datetime)"`
-	AutoExtend   bool
+	Id                    int64
+	UserId                int64
+	MembershipId          int64
+	StartDate             time.Time `orm:"type(datetime)"`
+	TerminationDate       time.Time `orm:"type(datetime)"`
+	InitialDurationMonths int
+	AutoExtend            bool
+
+	Created time.Time
+	Updated time.Time
 }
 
 /*func (this UserMembership) CloneOrm(o orm.Ormer, invId int64, invStatus string) error {
@@ -32,6 +36,10 @@ func (this *UserMembership) TableName() string {
 	return "user_memberships"
 }
 
+func (this *UserMembership) TerminationDateDefined() bool {
+	return this.TerminationDate.Unix() > 0
+}
+
 // Updates user membership in the database by using a pointer
 // to user membership store.
 func (this *UserMembership) Update() (err error) {
@@ -40,52 +48,21 @@ func (this *UserMembership) Update() (err error) {
 	return
 }
 
+func (this UserMembership) ActiveAt(t time.Time) bool {
+	if t.Before(this.StartDate) {
+		return false
+	}
+	if this.TerminationDateDefined() && this.TerminationDate.Before(t) {
+		return false
+	}
+	if this.AutoExtend {
+		return true
+	}
+	return this.StartDate.AddDate(0, this.InitialDurationMonths, 0).After(t)
+}
+
 func init() {
 	orm.RegisterModel(new(UserMembership))
-}
-
-// Extended user membership type that contains the same fields as
-// the UserMembership model and fields of the Membership model.
-type Combo struct {
-	Id            int64
-	UserId        int64
-	MembershipId  int64
-	StartDate     time.Time
-	EndDate       time.Time
-	AutoExtend    bool
-	InvoiceId     int64
-	InvoiceStatus string
-
-	LocationId            int64
-	Title                 string
-	ShortName             string
-	DurationMonths        int64
-	MonthlyPrice          float64
-	MachinePriceDeduction int
-	AffectedMachines      string
-
-	Bill *bool `json:",omitempty"`
-}
-
-func (umc *Combo) UserMembership() UserMembership {
-	return UserMembership{
-		Id:           umc.Id,
-		UserId:       umc.UserId,
-		MembershipId: umc.MembershipId,
-		StartDate:    umc.StartDate,
-		EndDate:      umc.EndDate,
-		AutoExtend:   umc.AutoExtend,
-
-		InvoiceId:     umc.InvoiceId,
-		InvoiceStatus: umc.InvoiceStatus,
-	}
-}
-
-// List container for the UserMembershipCombo type. Beego swagger
-// has problems with interpretting plain arrays as documentable
-// data type.
-type List struct {
-	Data []*Combo
 }
 
 // Creates user membership from user ID, membership ID and start time.
@@ -103,9 +80,10 @@ func Create(o orm.Ormer, userId, membershipId, invoiceId int64, start time.Time)
 		UserId:       userId,
 		MembershipId: membershipId,
 		StartDate:    start,
-		EndDate:      start.AddDate(0, int(m.DurationMonths), 0),
 		AutoExtend:   m.AutoExtend,
-		InvoiceId:    invoiceId,
+
+		Created: time.Now(),
+		Updated: time.Now(),
 	}
 
 	if um.Id, err = o.Insert(&um); err != nil {
@@ -159,10 +137,8 @@ func GetAllAtList(locId int64) (list *List, err error) {
 		c.UserId = um.UserId
 		c.MembershipId = um.MembershipId
 		c.StartDate = um.StartDate
-		c.EndDate = um.EndDate
+		c.TerminationDate = um.TerminationDate
 		c.AutoExtend = um.AutoExtend
-		c.InvoiceId = um.InvoiceId
-		c.InvoiceStatus = um.InvoiceStatus
 
 		m, ok := msbyId[um.MembershipId]
 		if !ok {

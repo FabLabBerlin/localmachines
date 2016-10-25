@@ -10,7 +10,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/settings"
-	"github.com/FabLabBerlin/localmachines/models/user_memberships"
+	"github.com/FabLabBerlin/localmachines/models/user_memberships/invoice_user_memberships"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 	"time"
@@ -18,10 +18,10 @@ import (
 
 type Invoice struct {
 	invoices.Invoice
-	User            *users.User            `json:",omitempty"`
-	UserMemberships *user_memberships.List `json:",omitempty"`
-	Purchases       purchases.Purchases    `json:",omitempty"`
-	Sums            *Sums                  `json:",omitempty"`
+	User            *users.User                    `json:",omitempty"`
+	UserMemberships *invoice_user_memberships.List `json:",omitempty"`
+	Purchases       purchases.Purchases            `json:",omitempty"`
+	Sums            *Sums                          `json:",omitempty"`
 }
 
 type Sums struct {
@@ -104,7 +104,7 @@ func (inv *Invoice) calculateTotals(ms *user_memberships.List) (err error) {
 
 func (inv *Invoice) membershipGetsBilledHere(m *user_memberships.Combo) bool {
 	return m.StartDate.Unix() <= inv.Interval().TimeTo().Unix() &&
-		inv.Interval().TimeTo().Unix() <= m.EndDate.Unix()
+		m.UserMembership().ActiveAt(inv.Interval().TimeTo())
 }
 
 func (inv *Invoice) Load() (err error) {
@@ -392,11 +392,7 @@ func toUtilInvoices(locId int64, ivs []*invoices.Invoice) (invs []*Invoice, err 
 				if !ok {
 					return nil, fmt.Errorf("Unknown membership id: %v", mbId)
 				}
-				if umb.EndDate.IsZero() {
-					return nil, fmt.Errorf("end date is zero")
-				}
-				if umb.StartDate.Unix() <= p.TimeStart.Unix() &&
-					p.TimeStart.Unix() <= umb.EndDate.Unix()+86400 &&
+				if umb.ActiveAt(p.TimeStart) &&
 					umb.InvoiceId == inv.Id {
 					p.Memberships = append(p.Memberships, mb)
 				}
