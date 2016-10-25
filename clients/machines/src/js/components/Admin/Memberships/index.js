@@ -41,7 +41,7 @@ var MembershipsPage = React.createClass({
       <div className="container-fluid">
         <div className="row">
           <div className="col-xs-6 text-left">
-            <h1>All Memberships</h1>
+            <h2>All Memberships</h2>
           </div>
           <div className="col-xs-6 text-right">
             {this.state.showArchived ?
@@ -74,7 +74,9 @@ var MembershipsPage = React.createClass({
                                                  || this.state.showArchived)
                                    .map(mb => {
               return (
-                <tr key={mb.get('Id')} onClick={this.showMembership.bind(this, mb.get('Id'))}>
+                <tr key={mb.get('Id')}
+                    className="mbs-row"
+                    onClick={this.showMembership.bind(this, mb.get('Id'))}>
                   <td><b>{mb.get('Title')}</b></td>
                   <td>
                     {mb.get('DurationMonths')} {mb.get('DurationMonths') > 1 ?

@@ -9,6 +9,7 @@ var AdminInvoice = require('./components/Admin/Invoices/Invoice');
 var AdminInvoices = require('./components/Admin/Invoices/Invoices');
 var AdminMachine = require('./components/Admin/Machines/Machine');
 var AdminMachines = require('./components/Admin/Machines/Machines');
+var AdminMembership = require('./components/Admin/Memberships/Membership');
 var AdminMemberships = require('./components/Admin/Memberships');
 var AdminSettings = require('./components/Admin/Settings/Settings');
 var AdminUser = require('./components/Admin/Users/User');
@@ -93,6 +94,7 @@ render((
         <Route path="machines" component={AdminMachines} />
         <Route path="machines/:machineId" component={AdminMachine} />
         <Route path="memberships" component={AdminMemberships} />
+        <Route path="memberships/:membershipId" component={AdminMembership} />
         <Route path="settings" component={AdminSettings} />
         <Route path="users" component={AdminUsers} />
         <Route path="users/:userId" component={AdminUser} />
