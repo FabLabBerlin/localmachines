@@ -168,7 +168,7 @@ func (this Data) sumMembershipsBy(timeFormat string, rndOnly bool) (sums map[str
 	sums = make(map[string]float64)
 
 	for _, inv := range this.Invoices {
-		for _, userMembership := range inv.UserMemberships.Data {
+		for _, userMembership := range inv.InvUserMemberships {
 			membership, ok := this.membershipsById[userMembership.MembershipId]
 			if !ok {
 				return nil, fmt.Errorf("User Membership %v links to unknown Membership Id %v", userMembership.Id, userMembership.MembershipId)
@@ -200,7 +200,7 @@ func (this Data) sumMembershipCountsBy(timeFormat string, rndOnly bool) (sums ma
 	sums = make(map[string]int)
 
 	for _, inv := range this.Invoices {
-		for _, userMembership := range inv.UserMemberships.Data {
+		for _, userMembership := range inv.InvUserMemberships {
 			membership, ok := this.membershipsById[userMembership.MembershipId]
 			if !ok {
 				return nil, fmt.Errorf("User Membership %v links to unknown Membership Id %v", userMembership.Id, userMembership.MembershipId)

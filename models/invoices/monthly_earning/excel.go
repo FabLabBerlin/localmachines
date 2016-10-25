@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
-	"github.com/FabLabBerlin/localmachines/models/user_memberships"
+	"github.com/FabLabBerlin/localmachines/models/user_memberships/inv_user_memberships"
 	"github.com/tealeg/xlsx"
 	"sort"
 	"strconv"
@@ -167,13 +167,12 @@ func createXlsxFile(
 	// Fill the xlsx sheet
 	for _, inv := range monthlyEarning.Invoices {
 
-		ms, err := user_memberships.GetForInvoice(inv.Id)
+		ms, err := inv_user_memberships.GetForInvoice(inv.Id)
 		if err != nil {
 			return fmt.Errorf("GetUserMemberships: %v", err)
 		}
 
-		if len(inv.Purchases) == 0 &&
-			(ms == nil || len(ms.Data) == 0) {
+		if len(inv.Purchases) == 0 && len(ms) == 0 {
 			// nothing to bill
 			continue
 		}
@@ -261,7 +260,7 @@ func createXlsxFile(
 			cell = row.AddCell()
 			cell.Value = "Start Date"
 			cell = row.AddCell()
-			cell.Value = "End Date"
+			cell.Value = "Termination Date"
 			cell = row.AddCell()
 			cell.SetStyle(boldStyle())
 			cell.Value = "Monthly Price / " + monthlyEarning.Currency
@@ -269,27 +268,29 @@ func createXlsxFile(
 			cell.Value = "Duration Unit"
 			cell = row.AddCell()
 			cell.Value = "Machine Price Deduction"
-			for _, m := range ms.Data {
+			for _, m := range ms {
 
 				if m.StartDate.Before(monthlyEarning.PeriodTo()) &&
-					m.EndDate.After(monthlyEarning.PeriodFrom()) {
+					m.UserMembership.ActiveAt(monthlyEarning.PeriodFrom()) {
 
 					row = sheet.AddRow()
 					row.AddCell()
 					cell = row.AddCell()
 					cell.SetStyle(colorStyle(BLUE))
-					cell.Value = m.Title
+					cell.Value = m.Membership().Title
 					cell = row.AddCell()
 					cell.Value = m.StartDate.In(loc.TZ()).Format(time.RFC1123)
 					cell = row.AddCell()
-					cell.Value = m.EndDate.In(loc.TZ()).Format(time.RFC1123)
+					if m.UserMembership.TerminationDateDefined() {
+						cell.Value = m.UserMembership.TerminationDate.In(loc.TZ()).Format(time.RFC1123)
+					}
 					cell = row.AddCell()
-					cell.SetFloatWithFormat(float64(m.MonthlyPrice), FORMAT_2_DIGIT)
+					cell.SetFloatWithFormat(float64(m.Membership().MonthlyPrice), FORMAT_2_DIGIT)
 					cell.SetStyle(colorStyle(GREEN))
 					cell = row.AddCell()
 					cell.Value = ""
 					cell = row.AddCell()
-					cell.Value = strconv.Itoa(m.MachinePriceDeduction) + "%"
+					cell.Value = strconv.Itoa(m.Membership().MachinePriceDeduction) + "%"
 
 				}
 

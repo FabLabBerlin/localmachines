@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+const TABLE_NAME = "user_memberships"
+
 // User membership model that has a mapping in the database.
 type UserMembership struct {
 	Id                    int64
@@ -35,7 +37,7 @@ type UserMembership struct {
 
 // Returns the database table name of the UserMembership model.
 func (this *UserMembership) TableName() string {
-	return "user_memberships"
+	return TABLE_NAME
 }
 
 func (this *UserMembership) TerminationDateDefined() bool {
@@ -129,6 +131,37 @@ func GetAllAtDeep(locId int64) (ums []*UserMembership, err error) {
 	ums, err = GetAllAt(locId)
 	if err != nil {
 		return nil, fmt.Errorf("GetAllAt: %v", err)
+	}
+
+	for _, um := range ums {
+		var ok bool
+
+		um.Membership, ok = msbyId[um.MembershipId]
+		if !ok {
+			return nil, fmt.Errorf("cannot find membership with id %v", um.MembershipId)
+		}
+	}
+
+	return
+}
+
+func GetAllOfDeep(locId, userId int64) (ums []*UserMembership, err error) {
+	ms, err := memberships.GetAllAt(locId)
+	if err != nil {
+		return nil, fmt.Errorf("get all at: %v", err)
+	}
+	msbyId := make(map[int64]*memberships.Membership)
+	for _, m := range ms {
+		msbyId[m.Id] = m
+	}
+
+	if _, err = orm.NewOrm().
+		QueryTable(TABLE_NAME).
+		Filter("location_id", locId).
+		Filter("user_id", locId).
+		All(&ums); err != nil {
+
+		return
 	}
 
 	for _, um := range ums {

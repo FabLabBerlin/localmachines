@@ -299,13 +299,11 @@ func toUtilInvoices(locId int64, ivs []*invoices.Invoice) (invs []*Invoice, err 
 	}
 
 	if umbs, err := inv_user_memberships.GetAllAt(locId); err == nil {
-		for _, umb := range umbs.Data {
-			if _, ok := userMembershipsByInv[umb.InvoiceId]; !ok {
-				userMembershipsByInv[umb.InvoiceId] = &user_memberships.List{
-					Data: make([]*user_memberships.Combo, 0, 3),
-				}
+		for _, umb := range umbs {
+			if _, ok := invUserMembershipsByInv[umb.InvoiceId]; !ok {
+				invUserMembershipsByInv[umb.InvoiceId] = make([]*inv_user_memberships.InvoiceUserMembership, 0, 3)
 			}
-			userMembershipsByInv[umb.InvoiceId].Data = append(userMembershipsByInv[umb.InvoiceId].Data, umb)
+			invUserMembershipsByInv[umb.InvoiceId] = append(invUserMembershipsByInv[umb.InvoiceId], umb)
 		}
 	} else {
 		return nil, fmt.Errorf("get all user memberships: %v", err)
@@ -320,7 +318,7 @@ func toUtilInvoices(locId int64, ivs []*invoices.Invoice) (invs []*Invoice, err 
 				"(referenced through invoice", inv.Id, ") - skipping invoice!")
 			continue
 		}
-		err = inv.load(usersById, purchasesByInv, userMembershipsByInv)
+		err = inv.load(usersById, purchasesByInv, invUserMembershipsByInv)
 		if err != nil {
 			return nil, fmt.Errorf("load (invoice %v): %v", inv.Id, err)
 		}
@@ -337,12 +335,12 @@ func toUtilInvoices(locId int64, ivs []*invoices.Invoice) (invs []*Invoice, err 
 		msById[m.Id] = m
 	}
 
-	umbsByUid := make(map[int64][]*user_memberships.UserMembership)
-	if umbs, err := user_memberships.GetAllAt(locId); err == nil {
+	umbsByUid := make(map[int64][]*inv_user_memberships.InvoiceUserMembership)
+	if umbs, err := inv_user_memberships.GetAllAt(locId); err == nil {
 		for _, umb := range umbs {
 			uid := umb.UserId
 			if _, ok := umbsByUid[uid]; !ok {
-				umbsByUid[uid] = []*user_memberships.UserMembership{
+				umbsByUid[uid] = []*inv_user_memberships.InvoiceUserMembership{
 					umb,
 				}
 			} else {
@@ -382,7 +380,7 @@ func toUtilInvoices(locId int64, ivs []*invoices.Invoice) (invs []*Invoice, err 
 
 			umbs, ok := umbsByUid[p.UserId]
 			if !ok {
-				umbs = []*user_memberships.UserMembership{}
+				umbs = []*inv_user_memberships.InvoiceUserMembership{}
 			}
 			for _, umb := range umbs {
 				mbId := umb.MembershipId
@@ -390,7 +388,7 @@ func toUtilInvoices(locId int64, ivs []*invoices.Invoice) (invs []*Invoice, err 
 				if !ok {
 					return nil, fmt.Errorf("Unknown membership id: %v", mbId)
 				}
-				if umb.ActiveAt(p.TimeStart) &&
+				if umb.UserMembership.ActiveAt(p.TimeStart) &&
 					umb.InvoiceId == inv.Id {
 					p.Memberships = append(p.Memberships, mb)
 				}
@@ -408,7 +406,7 @@ func toUtilInvoices(locId int64, ivs []*invoices.Invoice) (invs []*Invoice, err 
 			p.PriceExclVAT = p.DiscountedTotal / percent
 			p.PriceVAT = p.DiscountedTotal - p.PriceExclVAT
 		}
-		if err = inv.calculateTotals(inv.UserMemberships); err != nil {
+		if err = inv.calculateTotals(inv.InvUserMemberships); err != nil {
 			return nil, fmt.Errorf("calculate totals: %v", err)
 		}
 	}

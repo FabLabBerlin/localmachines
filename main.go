@@ -7,7 +7,6 @@ import (
 	_ "github.com/FabLabBerlin/localmachines/lib/log"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/machine"
-	"github.com/FabLabBerlin/localmachines/models/user_memberships/auto_extend"
 	"github.com/FabLabBerlin/localmachines/routers"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
@@ -114,9 +113,6 @@ func configDatabase() {
 // Setup Beego toolbox tasks. They are kind of cron jobs.
 func setupTasks() {
 	fmt.Println("Starting tasks")
-	extUsrMemberships := toolbox.NewTask("Extend User Memberships",
-		"0 0/10 * * * *",
-		auto_extend.RunTask)
 	fetchLocalIps := toolbox.NewTask("Fetch Local IPs",
 		"0 0/2 * * * *",
 		machine.FetchLocalIpsTask)
@@ -131,7 +127,6 @@ func setupTasks() {
 		machine.TaskPingNetswitches)
 
 	toolbox.AddTask("Calculate Invoice Totals", calculateTotals)
-	toolbox.AddTask("Extend User Memberships", extUsrMemberships)
 	toolbox.AddTask("Fetch Local IPs", fetchLocalIps)
 	toolbox.AddTask("Sync Fastbill", fastbillSync)
 	toolbox.AddTask("Ping Netswitches", pingNetswitches)

@@ -10,6 +10,10 @@ import (
 
 const TABLE_NAME = "invoice_user_memberships"
 
+// InvoiceUserMembership represents the billed user memberships. As such it is
+// not directly user editable. The only possibility is editing UserMembership,
+// in case this entity is associated with a draft invoices, the changes will be
+// propagated.
 type InvoiceUserMembership struct {
 	Id               int64
 	LocationId       int64
@@ -40,8 +44,34 @@ func init() {
 	orm.RegisterModel(new(InvoiceUserMembership))
 }
 
-func GetAllAt() (iums []*InvoiceUserMembership, err error) {
+func GetAllAt(locId int64) (iums []*InvoiceUserMembership, err error) {
 
+	if _, err = orm.NewOrm().
+		QueryTable(TABLE_NAME).
+		Filter("location_id", locId).
+		All(&iums); err != nil {
+
+		return
+	}
+
+	if len(iums) == 0 {
+		return
+	}
+
+	ums, err := user_memberships.GetAllAtDeep(locId)
+	if err != nil {
+		return
+	}
+	umsById := make(map[int64]*user_memberships.UserMembership)
+	for _, um := range ums {
+		umsById[um.Id] = um
+	}
+
+	for _, ium := range iums {
+		ium.UserMembership = umsById[ium.UserMembershipId]
+	}
+
+	return
 }
 
 // Gets all user memberships for a user by consuming user ID.
@@ -82,7 +112,12 @@ func GetForInvoice(invoiceId int64) (iums []*InvoiceUserMembership, err error) {
 	}
 	umsById := make(map[int64]*user_memberships.UserMembership)
 	for _, um := range ums {
+		um.Membership = msbyId[um.MembershipId]
 		umsById[um.Id] = um
+	}
+
+	for _, ium := range iums {
+		ium.UserMembership = umsById[ium.UserMembershipId]
 	}
 
 	return

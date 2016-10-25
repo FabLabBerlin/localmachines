@@ -143,22 +143,13 @@ func (this *UserMembershipsController) GetUserMemberships() {
 
 	beego.Info("current inv.Id=", inv.Id)
 
-	all, err := user_memberships.GetForInvoice(inv.Id)
+	ums, err := user_memberships.GetAllOfDeep(locationId, uid)
 	if err != nil {
 		beego.Error("Failed to get user machine permissions")
 		this.Abort("500")
 	}
 
-	list := &user_memberships.List{
-		Data: make([]*user_memberships.Combo, 0, len(all.Data)),
-	}
-	for _, um := range all.Data {
-		if locationId <= 0 || locationId == um.LocationId {
-			list.Data = append(list.Data, um)
-		}
-	}
-
-	this.Data["json"] = list
+	this.Data["json"] = ums
 	this.ServeJSON()
 }
 
@@ -180,18 +171,7 @@ func (this *UserMembershipsController) PutUserMembership() {
 		this.Abort("500")
 	}
 
-	inv, err := invoices.Get(um.InvoiceId)
-	if err != nil {
-		beego.Error("get invoice:", err)
-		this.Abort("500")
-	}
-
-	if inv.Status != "draft" {
-		beego.Error("cannot delete user membership because it's bound to non-draft invoice")
-		this.Abort("403")
-	}
-
-	if !this.IsAdminAt(inv.LocationId) {
+	if !this.IsAdminAt(um.LocationId) {
 		beego.Error("Not authorized")
 		this.CustomAbort(401, "Not authorized")
 	}
@@ -205,7 +185,7 @@ func (this *UserMembershipsController) PutUserMembership() {
 	this.ServeJSON()
 }
 
-// @Title Delete
+/*// @Title Delete
 // @Description Delete UserMembership
 // @Param	uid		path 	int	true						"User Membership Id"
 // @Success	200	ok
@@ -225,22 +205,12 @@ func (this *UserMembershipsController) DeleteUserMembership() {
 		this.Abort("500")
 	}
 
-	inv, err := invoices.Get(um.InvoiceId)
-	if err != nil {
-		beego.Error("get invoice:", err)
-		this.Abort("500")
-	}
-
-	if !this.IsAdminAt(inv.LocationId) {
+	if !this.IsAdminAt(um.LocationId) {
 		beego.Error("Not authorized")
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	if inv.Status != "draft" {
-		beego.Error("cannot delete user membership because it's bound to non-draft invoice")
-		this.Abort("403")
-	}
-	err = user_memberships.Delete(umid)
+	err = inv_user_memberships.DeleteByUserMembershipId(umid)
 	if err != nil {
 		beego.Error("delete user membership:", err)
 		this.Abort("500")
@@ -248,4 +218,4 @@ func (this *UserMembershipsController) DeleteUserMembership() {
 
 	this.Data["json"] = "ok"
 	this.ServeJSON()
-}
+}*/
