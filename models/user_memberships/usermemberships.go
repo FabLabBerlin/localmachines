@@ -15,12 +15,9 @@ type UserMembership struct {
 	StartDate    time.Time `orm:"type(datetime)"`
 	EndDate      time.Time `orm:"type(datetime)"`
 	AutoExtend   bool
-
-	InvoiceId     int64
-	InvoiceStatus string
 }
 
-func (this UserMembership) CloneOrm(o orm.Ormer, invId int64, invStatus string) error {
+/*func (this UserMembership) CloneOrm(o orm.Ormer, invId int64, invStatus string) error {
 	var clone UserMembership
 	clone = this
 	clone.Id = 0
@@ -28,20 +25,11 @@ func (this UserMembership) CloneOrm(o orm.Ormer, invId int64, invStatus string) 
 	clone.InvoiceStatus = invStatus
 	_, err := o.Insert(&clone)
 	return err
-}
-
-/*func (this UserMembership) Interval() lib.Interval {
-	return lib.Interval{
-		MonthFrom: int(this.StartDate.Month()),
-		YearFrom:  this.StartDate.Year(),
-		MonthTo:   int(this.EndDate.Month()),
-		YearTo:    this.EndDate.Year(),
-	}
 }*/
 
 // Returns the database table name of the UserMembership model.
 func (this *UserMembership) TableName() string {
-	return "user_membership"
+	return "user_memberships"
 }
 
 // Updates user membership in the database by using a pointer
