@@ -86,9 +86,32 @@ func (m Month) toInt() int {
 //         ...
 //
 //
-type Months []Month
+type Months []*Month
 
 // General methods:
+func (ms Months) HasVaryingMemberships() bool {
+	l := ms.MaxLenOldUserMemberships()
+	if l == 0 {
+		return false
+	} else if l > 1 {
+		panic("not implemented yet")
+	}
+
+	var membershipId int64
+	for _, m := range ms {
+		if len(m.OldUserMemberships) > 0 {
+			um := m.OldUserMemberships[0]
+
+			if membershipId == 0 {
+				membershipId = um.MembershipId
+			} else if membershipId != um.MembershipId {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 func (ms Months) MaxLenOldUserMemberships() (max int) {
 	for _, m := range ms {
 		if l := len(m.OldUserMemberships); l > max {
@@ -124,10 +147,10 @@ func userUp(o orm.Ormer, locId, userId int64) (err error) {
 		return fmt.Errorf("GetAllOfUserAt: %v", err)
 	}
 
-	ms := make([]Month, 0, len(ivs))
+	ms := make([]*Month, 0, len(ivs))
 
 	for _, iv := range ivs {
-		ms = append(ms, Month{
+		ms = append(ms, &Month{
 			InvoiceId: iv.Id,
 			Month:     iv.Month,
 			Year:      iv.Year,
@@ -138,8 +161,29 @@ func userUp(o orm.Ormer, locId, userId int64) (err error) {
 
 	sort.Sort(months)
 
+	var ums []UserMembershipOld
+
+	if _, err = o.
+		QueryTable("user_membership").
+		Filter("user_id", userId).
+		All(&ums); err != nil {
+
+		return fmt.Errorf("query user_membership: %v", err)
+	}
+
+	for _, um := range ums {
+		for _, m := range months {
+			if um.InvoiceId == m.InvoiceId {
+				m.OldUserMemberships = append(m.OldUserMemberships, um)
+				break
+			}
+		}
+	}
+
 	if l := months.MaxLenOldUserMemberships(); l > 1 {
 		fmt.Printf("l=%v\n", l)
+	} else if months.HasVaryingMemberships() {
+		fmt.Printf("varying\n")
 	}
 
 	return
