@@ -4,12 +4,15 @@ import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/locations"
+	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego/migration"
 	"github.com/astaxie/beego/orm"
 	"sort"
 	"time"
 )
+
+var membershipsById = make(map[int64]*memberships.Membership)
 
 /*
 At the moment:
@@ -37,8 +40,9 @@ type UserMembershipOld struct {
 	Id           int64
 	UserId       int64
 	MembershipId int64
-	StartDate    time.Time `orm:"type(datetime)"`
-	EndDate      time.Time `orm:"type(datetime)"`
+	Membership   *memberships.Membership `orm:"-"`
+	StartDate    time.Time               `orm:"type(datetime)"`
+	EndDate      time.Time               `orm:"type(datetime)"`
 	AutoExtend   bool
 
 	InvoiceId     int64
@@ -57,18 +61,33 @@ type UserMembershipNew struct {
 	//Membership            *memberships.Membership `orm:"-" json:",omitempty"`
 	StartDate             time.Time `orm:"type(datetime)"`
 	TerminationDate       time.Time `orm:"type(datetime)"`
-	InitialDurationMonths int
+	InitialDurationMonths int64
 	AutoExtend            bool
 
 	Created time.Time
 	Updated time.Time
 }
 
+func (this *UserMembershipNew) TableName() string {
+	return "user_memberships"
+}
+
 type Month struct {
+	LocationId         int64
 	InvoiceId          int64
 	Month              int
 	Year               int
-	OldUserMemberships []UserMembershipOld `orm:"-"`
+	OldUserMemberships []*UserMembershipOld `orm:"-"`
+}
+
+func (m Month) OldUserMembershipsReversed() (ums []*UserMembershipOld) {
+	ums = make([]*UserMembershipOld, len(m.OldUserMemberships))
+
+	for i, um := range m.OldUserMemberships {
+		ums[len(ums)-1-i] = um
+	}
+
+	return
 }
 
 func (m Month) toInt() int {
@@ -121,6 +140,35 @@ func (ms Months) MaxLenOldUserMemberships() (max int) {
 	return
 }
 
+func (ms Months) NewUserMemberships() (ums []*UserMembershipNew) {
+	if ms.MaxLenOldUserMemberships() > 1 {
+		panic("not implemented yet")
+	} else if ms.HasVaryingMemberships() {
+		panic("not implemented yet")
+	}
+
+	// Case for l = 1:
+	um := &UserMembershipNew{}
+	for _, m := range ms {
+		for _, old := range m.OldUserMembershipsReversed() {
+			um.LocationId = m.LocationId
+			um.UserId = old.UserId
+			um.MembershipId = old.MembershipId
+			um.StartDate = old.StartDate
+			if old.EndDate.Before(time.Now()) {
+				um.TerminationDate = old.EndDate
+			}
+			um.AutoExtend = old.AutoExtend
+			um.Updated = time.Now()
+			um.InitialDurationMonths = old.Membership.DurationMonths
+
+			return []*UserMembershipNew{um}
+		}
+	}
+
+	return
+}
+
 // Implementation of sort.Interface:
 func (ms Months) Len() int {
 	return len(ms)
@@ -137,11 +185,6 @@ func (ms Months) Swap(i, j int) {
 type UserId int64
 
 func userUp(o orm.Ormer, locId, userId int64) (err error) {
-	/*_, err = o.
-	QueryTable("invoices").
-	Filter("location_id", locId).
-	Filter("user_id", userId).
-	All(&ms)*/
 	ivs, err := invoices.GetAllOfUserAt(locId, userId)
 	if err != nil {
 		return fmt.Errorf("GetAllOfUserAt: %v", err)
@@ -151,9 +194,10 @@ func userUp(o orm.Ormer, locId, userId int64) (err error) {
 
 	for _, iv := range ivs {
 		ms = append(ms, &Month{
-			InvoiceId: iv.Id,
-			Month:     iv.Month,
-			Year:      iv.Year,
+			LocationId: locId,
+			InvoiceId:  iv.Id,
+			Month:      iv.Month,
+			Year:       iv.Year,
 		})
 	}
 
@@ -161,7 +205,7 @@ func userUp(o orm.Ormer, locId, userId int64) (err error) {
 
 	sort.Sort(months)
 
-	var ums []UserMembershipOld
+	var ums []*UserMembershipOld
 
 	if _, err = o.
 		QueryTable("user_membership").
@@ -172,6 +216,8 @@ func userUp(o orm.Ormer, locId, userId int64) (err error) {
 	}
 
 	for _, um := range ums {
+		um.Membership = membershipsById[um.MembershipId]
+
 		for _, m := range months {
 			if um.InvoiceId == m.InvoiceId {
 				m.OldUserMemberships = append(m.OldUserMemberships, um)
@@ -184,6 +230,12 @@ func userUp(o orm.Ormer, locId, userId int64) (err error) {
 		fmt.Printf("l=%v\n", l)
 	} else if months.HasVaryingMemberships() {
 		fmt.Printf("varying\n")
+	} else {
+		for _, newUm := range months.NewUserMemberships() {
+			if _, err = o.Insert(newUm); err != nil {
+				return fmt.Errorf("insert new um: %v", err)
+			}
+		}
 	}
 
 	return
@@ -206,13 +258,52 @@ func locationUp(o orm.Ormer, locId int64) (err error) {
 
 // Run the migrations
 func (m *InvoiceUserMemberships_20161025_190752) Up() {
-	orm.RegisterModel(new(UserMembershipOld))
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Printf("recovering from %v...\n", r)
+			orm.NewOrm().Raw("DROP TABLE user_memberships").Exec()
+			panic("lol")
+		} else {
+			fmt.Printf("no recovery possible\n")
+		}
+	}()
+
+	_, err := orm.NewOrm().Raw(`
+CREATE TABLE user_memberships (
+	id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+	location_id INT(11) UNSIGNED,
+	membership_id INT(11) UNSIGNED,
+	start_date DATETIME,
+	termination_date DATETIME,
+	intial_duration_months INT(11),
+	auto_extend TINYINT(1),
+	created DATETIME,
+	updated DATETIME,
+	PRIMARY KEY (id)
+)
+	`).Exec()
+	if err != nil {
+		panic(err.Error())
+	}
+
+	orm.RegisterModel(new(UserMembershipOld), new(UserMembershipNew))
+
+	o := orm.NewOrm()
+	o.Begin()
+
+	var mbs []*memberships.Membership
+	_, err = o.QueryTable("membership").
+		All(&mbs)
+
+	for _, mb := range mbs {
+		membershipsById[mb.Id] = mb
+	}
+
 	locs, err := locations.GetAll()
 	if err != nil {
 		panic(err.Error())
 	}
-	o := orm.NewOrm()
-	o.Begin()
+
 	for _, loc := range locs {
 		if err := locationUp(o, loc.Id); err != nil {
 			o.Rollback()
@@ -237,19 +328,6 @@ func (m *InvoiceUserMemberships_20161025_190752) Up() {
 	fmt.Printf("user=%v\n", user)
 	panic("foo")
 	m.SQL("RENAME TABLE user_membership TO invoice_user_memberships")
-	m.SQL(`
-CREATE TABLE user_memberships (
-	id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-	location_id INT(11) UNSIGNED,
-	membership_id INT(11) UNSIGNED,
-	start_date DATETIME,
-	termination_date DATETIME,
-	intial_duration_months INT(11),
-	auto_extend TINY INT(1),
-	created DATETIME,
-	updated DATETIME
-)
-	`)
 	m.SQL(`
 INSERT INTO user_memberships (
 	location_id
