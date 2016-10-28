@@ -91,9 +91,9 @@ type InvoiceUserMembership struct {
 	InvoiceStatus string
 }
 
-func NewInvoiceUserMembership(old UserMembershipOld, locationId int64) (ium *InvoiceUserMembership) {
+func NewInvoiceUserMembership(old UserMembershipOld) (ium *InvoiceUserMembership) {
 	ium = &InvoiceUserMembership{
-		LocationId:    locationId,
+		LocationId:    old.Membership.LocationId,
 		UserId:        old.UserId,
 		MembershipId:  old.MembershipId,
 		Updated:       time.Now(),
@@ -200,7 +200,7 @@ func (ms Months) NewUserMemberships() (ums []*UserMembershipNew) {
 				um.Updated = time.Now()
 				um.InitialDurationMonths = old.Membership.DurationMonths
 			}
-			um.InvUserMemberships = append(um.InvUserMemberships, NewInvoiceUserMembership(*old, m.LocationId))
+			um.InvUserMemberships = append(um.InvUserMemberships, NewInvoiceUserMembership(*old))
 			i++
 
 		}
@@ -277,6 +277,9 @@ func userUp(o orm.Ormer, locId, userId int64) (err error) {
 			}
 			for _, ium := range newUm.InvUserMemberships {
 				ium.UserMembershipId = newUm.Id
+				ium.StartDate = newUm.StartDate
+				ium.TerminationDate = newUm.TerminationDate
+				ium.InitialDurationMonths = newUm.InitialDurationMonths
 				if _, err = o.Insert(ium); err != nil {
 					return fmt.Errorf("insert ium: %v", err)
 				}
