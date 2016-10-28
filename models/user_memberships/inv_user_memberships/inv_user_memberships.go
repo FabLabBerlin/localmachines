@@ -15,15 +15,15 @@ const TABLE_NAME = "invoice_user_memberships"
 // in case this entity is associated with a draft invoices, the changes will be
 // propagated.
 type InvoiceUserMembership struct {
-	Id               int64
-	LocationId       int64
-	UserId           int64
-	MembershipId     int64
-	UserMembershipId int64
-	UserMembership   *user_memberships.UserMembership `orm:"-" json:",omitempty"`
-	StartDate        time.Time                        `orm:"type(datetime)"`
-	TerminationDate  time.Time                        `orm:"type(datetime)"`
-	DurationMonths   int64
+	Id                    int64
+	LocationId            int64
+	UserId                int64
+	MembershipId          int64
+	UserMembershipId      int64
+	UserMembership        *user_memberships.UserMembership `orm:"-" json:",omitempty"`
+	StartDate             time.Time                        `orm:"type(datetime)"`
+	TerminationDate       time.Time                        `orm:"type(datetime)"`
+	InitialDurationMonths int64
 
 	Created time.Time
 	Updated time.Time

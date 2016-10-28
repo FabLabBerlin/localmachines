@@ -66,10 +66,46 @@ type UserMembershipNew struct {
 
 	Created time.Time
 	Updated time.Time
+
+	InvUserMemberships []*InvoiceUserMembership `orm:"-"`
 }
 
 func (this *UserMembershipNew) TableName() string {
 	return "user_memberships"
+}
+
+type InvoiceUserMembership struct {
+	Id                    int64
+	LocationId            int64
+	UserId                int64
+	MembershipId          int64
+	UserMembershipId      int64
+	StartDate             time.Time `orm:"type(datetime)"`
+	TerminationDate       time.Time `orm:"type(datetime)"`
+	InitialDurationMonths int64
+
+	Created time.Time
+	Updated time.Time
+
+	InvoiceId     int64
+	InvoiceStatus string
+}
+
+func NewInvoiceUserMembership(old UserMembershipOld, locationId int64) (ium *InvoiceUserMembership) {
+	ium = &InvoiceUserMembership{
+		LocationId:    locationId,
+		UserId:        old.UserId,
+		MembershipId:  old.MembershipId,
+		Updated:       time.Now(),
+		InvoiceId:     old.InvoiceId,
+		InvoiceStatus: old.InvoiceStatus,
+	}
+
+	return
+}
+
+func (this *InvoiceUserMembership) TableName() string {
+	return "invoice_user_memberships"
 }
 
 type Month struct {
@@ -149,24 +185,28 @@ func (ms Months) NewUserMemberships() (ums []*UserMembershipNew) {
 
 	// Case for l = 1:
 	um := &UserMembershipNew{}
+	i := 0
 	for _, m := range ms {
 		for _, old := range m.OldUserMembershipsReversed() {
-			um.LocationId = m.LocationId
-			um.UserId = old.UserId
-			um.MembershipId = old.MembershipId
-			um.StartDate = old.StartDate
-			if old.EndDate.Before(time.Now()) {
-				um.TerminationDate = old.EndDate
+			if i == 0 {
+				um.LocationId = m.LocationId
+				um.UserId = old.UserId
+				um.MembershipId = old.MembershipId
+				um.StartDate = old.StartDate
+				if old.EndDate.Before(time.Now()) {
+					um.TerminationDate = old.EndDate
+				}
+				um.AutoExtend = old.AutoExtend
+				um.Updated = time.Now()
+				um.InitialDurationMonths = old.Membership.DurationMonths
 			}
-			um.AutoExtend = old.AutoExtend
-			um.Updated = time.Now()
-			um.InitialDurationMonths = old.Membership.DurationMonths
+			um.InvUserMemberships = append(um.InvUserMemberships, NewInvoiceUserMembership(*old, m.LocationId))
+			i++
 
-			return []*UserMembershipNew{um}
 		}
 	}
 
-	return
+	return []*UserMembershipNew{um}
 }
 
 // Implementation of sort.Interface:
@@ -235,6 +275,12 @@ func userUp(o orm.Ormer, locId, userId int64) (err error) {
 			if _, err = o.Insert(newUm); err != nil {
 				return fmt.Errorf("insert new um: %v", err)
 			}
+			for _, ium := range newUm.InvUserMemberships {
+				ium.UserMembershipId = newUm.Id
+				if _, err = o.Insert(ium); err != nil {
+					return fmt.Errorf("insert ium: %v", err)
+				}
+			}
 		}
 	}
 
@@ -257,7 +303,7 @@ func locationUp(o orm.Ormer, locId int64) (err error) {
 }
 
 func init() {
-	orm.RegisterModel(new(UserMembershipOld), new(UserMembershipNew))
+	orm.RegisterModel(new(UserMembershipOld), new(UserMembershipNew), new(InvoiceUserMembership))
 }
 
 // Run the migrations
@@ -284,38 +330,14 @@ func (m *PopulateInvoiceUserMemberships_20161028_134609) Up() {
 			panic(err.Error())
 		}
 	}
-	panic("123x")
+
 	if err := o.Commit(); err != nil {
 		panic(err.Error())
 	}
-
-	type User struct {
-		Id       int
-		Username string
-	}
-
-	var user User
-	err = o.Raw("SELECT id, username FROM user WHERE id = ?", 19).QueryRow(&user)
-	if err != nil {
-		panic(err.Error())
-	}
-	fmt.Printf("user=%v\n", user)
-	panic("foo")
-	m.SQL("RENAME TABLE user_membership TO invoice_user_memberships")
-	m.SQL(`
-INSERT INTO user_memberships (
-	location_id
-)
-SELECT
-	location_id
-FROM invoice_user_memberships
-WHERE
-GROUP BY
-	`)
 }
 
 // Reverse the migrations
 func (m *PopulateInvoiceUserMemberships_20161028_134609) Down() {
-	// use m.SQL("DROP TABLE ...") to reverse schema update
-
+	m.SQL("DELETE FROM user_memberships")
+	m.SQL("DELETE FROM invoice_user_memberships")
 }
