@@ -179,26 +179,37 @@ func (ms Months) MaxLenOldUserMemberships() (max int) {
 func (ms Months) NewUserMemberships() (ums []*UserMembershipNew) {
 	if ms.MaxLenOldUserMemberships() > 1 {
 		panic("not implemented yet")
-	} else if ms.HasVaryingMemberships() {
-		panic("not implemented yet")
 	}
 
 	// Case for l = 1:
-	um := &UserMembershipNew{}
+	var um *UserMembershipNew
 	i := 0
 	for _, m := range ms {
 		for _, old := range m.OldUserMembershipsReversed() {
-			if i == 0 {
+			if i == 0 || um.MembershipId != old.MembershipId {
+				dbg := func(msg string) {
+					if um.UserId == 179 {
+						fmt.Printf("%v\n", msg)
+					}
+				}
+				um = &UserMembershipNew{}
 				um.LocationId = m.LocationId
 				um.UserId = old.UserId
 				um.MembershipId = old.MembershipId
 				um.StartDate = old.StartDate
 				if old.EndDate.Before(time.Now()) {
+					dbg(fmt.Sprintf("a\n"))
 					um.TerminationDate = old.EndDate
+				} else if m.Year < time.Now().Year() || m.Month < int(time.Now().Month()) {
+					dbg(fmt.Sprintf("b, %v/%v\n", m.Month, m.Year))
+					um.TerminationDate = time.Date(m.Year, time.Month(m.Month), 1, 0, 0, 0, 0, time.UTC).AddDate(0, 1, -1)
+				} else {
+					dbg(fmt.Sprintf("c\n"))
+					um.AutoExtend = old.AutoExtend
 				}
-				um.AutoExtend = old.AutoExtend
 				um.Updated = time.Now()
 				um.InitialDurationMonths = old.Membership.DurationMonths
+				ums = append(ums, um)
 			}
 			ium := NewInvoiceUserMembership(*old)
 			um.InvUserMemberships = append(um.InvUserMemberships, ium)
@@ -213,7 +224,7 @@ func (ms Months) NewUserMemberships() (ums []*UserMembershipNew) {
 		}
 	}
 
-	return []*UserMembershipNew{um}
+	return
 }
 
 // Implementation of sort.Interface:
@@ -222,7 +233,9 @@ func (ms Months) Len() int {
 }
 
 func (ms Months) Less(i, j int) bool {
-	return ms[i].toInt() < ms[j].toInt()
+	// TODO: this should be a "<" because at some point
+	//       ...reverse...() is called
+	return ms[i].toInt() > ms[j].toInt()
 }
 
 func (ms Months) Swap(i, j int) {
@@ -275,9 +288,10 @@ func userUp(o orm.Ormer, locId, userId int64) (err error) {
 
 	if l := months.MaxLenOldUserMemberships(); l > 1 {
 		fmt.Printf("l=%v\n", l)
-	} else if months.HasVaryingMemberships() {
-		fmt.Printf("varying\n")
 	} else {
+		if months.HasVaryingMemberships() {
+			fmt.Printf("varying for uid=%v\n", userId)
+		}
 		for _, newUm := range months.NewUserMemberships() {
 			if _, err = o.Insert(newUm); err != nil {
 				return fmt.Errorf("insert new um: %v", err)
