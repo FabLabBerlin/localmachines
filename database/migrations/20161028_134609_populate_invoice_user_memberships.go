@@ -200,7 +200,14 @@ func (ms Months) NewUserMemberships() (ums []*UserMembershipNew) {
 				um.Updated = time.Now()
 				um.InitialDurationMonths = old.Membership.DurationMonths
 			}
-			um.InvUserMemberships = append(um.InvUserMemberships, NewInvoiceUserMembership(*old))
+			ium := NewInvoiceUserMembership(*old)
+			um.InvUserMemberships = append(um.InvUserMemberships, ium)
+			ium.StartDate = old.StartDate
+			/*if old.EndDate.Before(time.Now()) {
+				ium.TerminationDate = old.EndDate
+			}*/
+			ium.TerminationDate = um.TerminationDate
+			ium.InitialDurationMonths = um.InitialDurationMonths
 			i++
 
 		}
@@ -277,9 +284,6 @@ func userUp(o orm.Ormer, locId, userId int64) (err error) {
 			}
 			for _, ium := range newUm.InvUserMemberships {
 				ium.UserMembershipId = newUm.Id
-				ium.StartDate = newUm.StartDate
-				ium.TerminationDate = newUm.TerminationDate
-				ium.InitialDurationMonths = newUm.InitialDurationMonths
 				if _, err = o.Insert(ium); err != nil {
 					return fmt.Errorf("insert ium: %v", err)
 				}
