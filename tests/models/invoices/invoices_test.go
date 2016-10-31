@@ -29,7 +29,7 @@ func TestInvoices(t *testing.T) {
 			})
 
 			Convey("Not auto creates new invoice for past month because in that case there are no purchases", func() {
-				t := time.Now().AddDate(0, -1, 0)
+				t := time.Now().AddDate(0, -1, -1)
 				_, err := invoices.GetDraft(1, 123, t)
 				So(err, ShouldNotBeNil)
 			})

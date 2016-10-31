@@ -178,6 +178,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 		})
 
 		Convey("Testing CompleteFastbill", func() {
+			fmt.Printf("TIME_START=%v\n", TIME_START)
 			m := TIME_START.Month()
 			y := TIME_START.Year()
 

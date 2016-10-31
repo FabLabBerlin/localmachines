@@ -8,6 +8,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/user_memberships"
+	"github.com/FabLabBerlin/localmachines/models/user_memberships/inv_user_memberships"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
 	"github.com/astaxie/beego/orm"
@@ -34,8 +35,8 @@ func TestInvutilInvoices(t *testing.T) {
 
 			mNow := time.Now().Month()
 			yNow := time.Now().Year()
-			mLast := time.Now().AddDate(0, -1, 0).Month()
-			yLast := time.Now().AddDate(0, -1, 0).Year()
+			mLast := time.Now().AddDate(0, -1, -1).Month()
+			yLast := time.Now().AddDate(0, -1, -1).Year()
 			user, iv, _ := createInvoiceWithMembership(yLast, mLast, 1)
 			iv.Invoice.Current = true
 			if err := iv.Invoice.Save(); err != nil {
@@ -53,9 +54,19 @@ func TestInvutilInvoices(t *testing.T) {
 				panic(err.Error())
 			}
 
-			existingIvs, err := invoices.GetAllInvoices(1)
+			existingIvs, err := invutil.GetAllAt(1)
 			if err != nil {
 				panic(err.Error())
+			}
+
+			data := invutil.NewPrefetchedData(1)
+			if err := data.Prefetch(); err != nil {
+				panic(err.Error())
+			}
+
+			for _, inv := range existingIvs {
+				err := inv.InvoiceUserMemberships(data)
+				So(err, ShouldBeNil)
 			}
 
 			existingUms, err := user_memberships.GetAllAt(1)
@@ -63,10 +74,18 @@ func TestInvutilInvoices(t *testing.T) {
 				panic(err.Error())
 			}
 
+			existingIums, err := inv_user_memberships.GetAllAt(1)
+			if err != nil {
+				panic(err.Error())
+			}
+
 			if l := len(existingIvs); l != 2 {
 				panic(strconv.Itoa(l))
 			}
-			if l := len(existingUms); l != 2 {
+			if l := len(existingUms); l != 1 {
+				panic(strconv.Itoa(l))
+			}
+			if l := len(existingIums); l != 2 {
 				panic(strconv.Itoa(l))
 			}
 
@@ -78,10 +97,10 @@ func TestInvutilInvoices(t *testing.T) {
 			So(existingIvs[1].Year, ShouldEqual, yNow)
 			So(existingIvs[1].Current, ShouldBeTrue)
 
-			So(existingUms[0].UserId, ShouldEqual, user.Id)
-			So(existingUms[0].StartDate.Month(), ShouldEqual, mLast)
-			So(existingUms[1].UserId, ShouldEqual, user.Id)
-			So(existingUms[1].StartDate.Month(), ShouldEqual, mLast)
+			So(existingIums[0].UserId, ShouldEqual, user.Id)
+			So(existingIums[0].StartDate.Month(), ShouldEqual, mLast)
+			So(existingIums[1].UserId, ShouldEqual, user.Id)
+			So(existingIums[1].StartDate.Month(), ShouldEqual, mLast)
 		})
 
 		Convey("Memberships in 1st month half affect 1st half", func() {
@@ -103,15 +122,11 @@ func testInvoiceWithMembershipAndTestPurchase(purchaseInsideMembershipInterval b
 	yNow := time.Now().Year()
 	mLast := time.Now().AddDate(0, -1, 0).Month()
 	yLast := time.Now().AddDate(0, -1, 0).Year()
-	user, iv, userMembership := createInvoiceWithMembership(yLast, mLast, 15)
+	user, iv, _ := createInvoiceWithMembership(yLast, mLast, 15)
 	iv.Invoice.Current = true
 	if err := iv.Invoice.Save(); err != nil {
 		panic(err.Error())
 	}
-
-	So(userMembership.EndDate.Year(), ShouldEqual, yNow)
-	So(userMembership.EndDate.Month(), ShouldEqual, mNow)
-	So(userMembership.EndDate.Day(), ShouldEqual, 15)
 
 	loc, _ := time.LoadLocation("Europe/Berlin")
 
@@ -154,7 +169,7 @@ func testInvoiceWithMembershipAndTestPurchase(purchaseInsideMembershipInterval b
 		panic(strconv.Itoa(l))
 	}
 
-	if l := len(iv.UserMemberships.Data); l != 1 {
+	if l := len(iv.InvUserMemberships); l != 1 {
 		panic(strconv.Itoa(l))
 	}
 
@@ -165,6 +180,8 @@ func testInvoiceWithMembershipAndTestPurchase(purchaseInsideMembershipInterval b
 	fmt.Printf("iv.Purchases.PriceInclVAT=%v\n", iv.Sums.Purchases.PriceInclVAT)
 	fmt.Printf("iv.Purchases.Undiscounted=%v\n", iv.Sums.Purchases.Undiscounted)
 	So(math.Abs(iv.Sums.Purchases.Undiscounted-46) < 0.01, ShouldBeTrue)
+
+	fmt.Printf("iv.Sums.Purchases.PriceInclVAT=%v\n", iv.Sums.Purchases.PriceInclVAT)
 
 	if purchaseInsideMembershipInterval {
 		So(math.Abs(iv.Sums.Purchases.PriceInclVAT) < 0.01, ShouldBeTrue)
@@ -217,7 +234,7 @@ func createInvoiceWithMembership(year int, month time.Month, dayStart int) (
 	m.MachinePriceDeduction = 100
 	m.AutoExtend = true
 	m.AutoExtendDurationMonths = 30
-	m.AffectedMachines = fmt.Sprintf("[1,2,3]")
+	m.AffectedMachines = "[1,2,3]"
 	if err := m.Update(); err != nil {
 		panic(err.Error())
 	}

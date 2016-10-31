@@ -15,6 +15,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/user_memberships"
+	"github.com/FabLabBerlin/localmachines/models/user_memberships/inv_user_memberships"
 	"github.com/FabLabBerlin/localmachines/models/user_permissions"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
@@ -24,6 +25,7 @@ import (
 var dbModels = []Model{
 	&coupons.Coupon{},
 	&coupons.CouponUsage{},
+	&inv_user_memberships.InvoiceUserMembership{},
 	&invoices.Invoice{},
 	&monthly_earning.MonthlyEarning{},
 	&users.Auth{},

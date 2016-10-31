@@ -101,7 +101,7 @@ func (inv *Invoice) calculateTotals(ms []*inv_user_memberships.InvoiceUserMember
 	return
 }
 
-func (inv *Invoice) invoiceUserMemberships(data *PrefetchedData) (err error) {
+func (inv *Invoice) InvoiceUserMemberships(data *PrefetchedData) (err error) {
 	umbs, ok := data.UmbsByUid[inv.UserId]
 	if !ok {
 		umbs = []*user_memberships.UserMembership{}
@@ -349,7 +349,7 @@ func toUtilInvoices(locId int64, ivs []*invoices.Invoice) (invs []*Invoice, err 
 	}
 
 	for _, inv := range invs {
-		if err = inv.invoiceUserMemberships(data); err != nil {
+		if err = inv.InvoiceUserMemberships(data); err != nil {
 			return nil, fmt.Errorf("invoice user memberships: %v", err)
 		}
 
@@ -411,6 +411,7 @@ func AssureUserHasDraftFor(locId int64, u *users.User, year int, month time.Mont
 	}
 
 	if draft == nil {
+		fmt.Printf("0.0\n")
 		var newIv invoices.Invoice
 
 		newIv.Year = year
@@ -429,6 +430,7 @@ func AssureUserHasDraftFor(locId int64, u *users.User, year int, month time.Mont
 			}
 		}
 	} else {
+		fmt.Printf("1.0\n")
 		if year == time.Now().Year() && month == time.Now().Month() {
 			if err := draft.SetCurrent(); err != nil {
 				return fmt.Errorf("set current: %v", err)
