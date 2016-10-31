@@ -284,15 +284,19 @@ var BillTable = React.createClass({
       </tr>
     );
 
-    _.each(bill.UserMemberships.Data, (um) => {
+    _.each(bill.InvUserMemberships, (ium) => {
       tbody.push(
         <tr key={i++}>
-          <td>{um.Title}</td>
-          <td>{formatDate(moment(um.StartDate))}</td>
-          <td>{formatDate(moment(um.EndDate))}</td>
+          <td>{ium.UserMembership.Membership.Title}</td>
+          <td>{formatDate(moment(ium.StartDate))}</td>
+          <td>
+            {(ium.TerminationDate && moment(ium.TerminationDate).unix() > 0)
+              ? formatDate(moment(ium.TerminationDate))
+              : '-'}
+          </td>
           <td></td>
           <td></td>
-          <td>{um.MonthlyPrice ? (formatPrice(um.MonthlyPrice) + this.state.currency) : '-'}</td>
+          <td>{ium.MonthlyPrice ? (formatPrice(ium.MonthlyPrice) + this.state.currency) : '-'}</td>
         </tr>
       );
     });
