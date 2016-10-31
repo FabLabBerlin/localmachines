@@ -218,7 +218,7 @@ app.controller('UserCtrl',
     .success(function(invoices) {
       var data = [];
       _.each(invoices, function(invoice) {
-        _.each(invoice.UserMemberships.Data, function(umb) {
+        _.each(invoice.InvUserMemberships, function(umb) {
           umb.Invoice = invoice;
           data.push(umb);
         });

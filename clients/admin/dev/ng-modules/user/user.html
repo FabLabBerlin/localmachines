@@ -282,7 +282,7 @@
       <tr>
         <th>Membership Name</th>
         <th>Start Date</th>
-        <th>End Date</th>
+        <th>Termination Date</th>
         <th>Extends Automatically</th>
         <th>Invoice</th>
         <th style="min-width:60px">&nbsp;</th>
@@ -293,14 +293,14 @@
         <td colspan="6">User has no memberships</td>
       </tr>
       <tr ng-repeat="userMembership in userMemberships | userMembershipsFilter:this">
-        <td>{{userMembership.Title}}</td>
+        <td>{{userMembership.UserMembership.Membership.Title}}</td>
         <td style="min-width:90px">
           <div class="form-inline" ng-show="userMembership.Invoice.Current">
             <div class="input-group">
               <input
                 class="adm-user-membership-date adm-user-membership-start-date form-control datepicker"
                 data-user-membership-id="{{userMembership.Id}}"
-                placeholder="End Date"
+                placeholder="Start Date"
                 value="{{userMembership.StartDate}}">
               <div class="input-group-addon">
                 <i class="fa fa-calendar"></i>
@@ -318,14 +318,14 @@
                 class="adm-user-membership-date adm-user-membership-end-date form-control datepicker"
                 data-user-membership-id="{{userMembership.Id}}"
                 placeholder="End Date"
-                value="{{userMembership.EndDate}}">
+                value="{{userMembership.TerminationDate}}">
               <div class="input-group-addon">
                 <i class="fa fa-calendar"></i>
               </div>
             </div>
           </div>
-          <div ng-hide="userMembership.Invoice.Current">
-            {{userMembership.EndDate}}
+          <div ng-show="!userMembership.Invoice.Current && userMembership.TerminationDate && moment(userMembership.TerminationDate).unix() > 0">
+            {{userMembership.TerminationDate}}
           </div>
         </td>
         <td>
