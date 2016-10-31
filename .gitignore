@@ -16,6 +16,7 @@ localmachines.amd64.bin
 localmachines.arm.bin
 npm-debug.log
 conf/app.conf
+database/migrations/m.go
 views/prod/*
 excel_exports/*
 tests/excel_exports/*
