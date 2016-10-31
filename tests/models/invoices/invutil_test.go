@@ -118,17 +118,21 @@ func testInvoiceWithMembershipAndTestPurchase(purchaseInsideMembershipInterval b
 		panic("Expected clean state to test in.")
 	}
 
+	loc, err := time.LoadLocation("Europe/Berlin")
+	if err != nil {
+		panic(err.Error())
+	}
+
 	mNow := time.Now().Month()
 	yNow := time.Now().Year()
-	mLast := time.Now().AddDate(0, -1, 0).Month()
-	yLast := time.Now().AddDate(0, -1, 0).Year()
+	mLast := time.Now().AddDate(0, -1, -1).Month()
+	yLast := time.Now().AddDate(0, -1, -1).Year()
 	user, iv, _ := createInvoiceWithMembership(yLast, mLast, 15)
+	fmt.Printf("staarrrrt @ %v-%v-%v\n", yLast, mLast, 15)
 	iv.Invoice.Current = true
 	if err := iv.Invoice.Save(); err != nil {
 		panic(err.Error())
 	}
-
-	loc, _ := time.LoadLocation("Europe/Berlin")
 
 	var timeStart time.Time
 	if purchaseInsideMembershipInterval {
@@ -137,7 +141,7 @@ func testInvoiceWithMembershipAndTestPurchase(purchaseInsideMembershipInterval b
 		timeStart = time.Date(yNow, mNow, 16, 14, 10, 0, 0, loc)
 	}
 
-	iv, err := invutil.GetDraft(1, user.Id, timeStart)
+	iv, err = invutil.GetDraft(1, user.Id, timeStart)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -177,11 +181,7 @@ func testInvoiceWithMembershipAndTestPurchase(purchaseInsideMembershipInterval b
 		panic(err.Error())
 	}
 
-	fmt.Printf("iv.Purchases.PriceInclVAT=%v\n", iv.Sums.Purchases.PriceInclVAT)
-	fmt.Printf("iv.Purchases.Undiscounted=%v\n", iv.Sums.Purchases.Undiscounted)
 	So(math.Abs(iv.Sums.Purchases.Undiscounted-46) < 0.01, ShouldBeTrue)
-
-	fmt.Printf("iv.Sums.Purchases.PriceInclVAT=%v\n", iv.Sums.Purchases.PriceInclVAT)
 
 	if purchaseInsideMembershipInterval {
 		So(math.Abs(iv.Sums.Purchases.PriceInclVAT) < 0.01, ShouldBeTrue)
@@ -232,7 +232,7 @@ func createInvoiceWithMembership(year int, month time.Month, dayStart int) (
 	}
 	m.DurationMonths = 1
 	m.MachinePriceDeduction = 100
-	m.AutoExtend = true
+	m.AutoExtend = false
 	m.AutoExtendDurationMonths = 30
 	m.AffectedMachines = "[1,2,3]"
 	if err := m.Update(); err != nil {
