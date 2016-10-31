@@ -6,10 +6,9 @@ package invutil
 import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
-	"github.com/FabLabBerlin/localmachines/models/machine"
-	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/settings"
+	"github.com/FabLabBerlin/localmachines/models/user_memberships"
 	"github.com/FabLabBerlin/localmachines/models/user_memberships/inv_user_memberships"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
@@ -102,48 +101,78 @@ func (inv *Invoice) calculateTotals(ms []*inv_user_memberships.InvoiceUserMember
 	return
 }
 
+func (inv *Invoice) invoiceUserMemberships(data *PrefetchedData) (err error) {
+	umbs, ok := data.UmbsByUid[inv.UserId]
+	if !ok {
+		umbs = []*user_memberships.UserMembership{}
+	}
+
+	for _, um := range umbs {
+		invoiced := false
+
+		for _, ium := range inv.InvUserMemberships {
+			if ium.UserMembershipId == um.Id {
+				invoiced = true
+				break
+			}
+		}
+
+		if !invoiced {
+			fmt.Printf("AAAA\n")
+			/*if inv.Status != "draft" {
+				beego.Error("invoice doesn't have status draft but not all user memberships are associated")
+				continue
+			}*/
+			fmt.Printf("BBBB\n")
+			ium, err := inv_user_memberships.Create(um, inv.Id)
+			if err != nil {
+				return fmt.Errorf("inv_user_memberships.Create: %v", err)
+			}
+
+			inv.InvUserMemberships = append(inv.InvUserMemberships, ium)
+			data.IumbsByUid[ium.UserId] = append(data.IumbsByUid[ium.UserId], ium)
+		}
+	}
+
+	return
+}
+
 func (inv *Invoice) membershipGetsBilledHere(m *inv_user_memberships.InvoiceUserMembership) bool {
 	return m.StartDate.Unix() <= inv.Interval().TimeTo().Unix() &&
 		m.UserMembership.ActiveAt(inv.Interval().TimeTo())
 }
 
 func (inv *Invoice) Load() (err error) {
-	usersById := make(map[int64]*users.User)
-	purchasesByInv := make(map[int64][]*purchases.Purchase)
-	invUserMembershipsByInv := make(map[int64][]*inv_user_memberships.InvoiceUserMembership)
+	data := NewPrefetchedData(inv.LocationId)
 
-	usersById[inv.UserId], err = users.GetUser(inv.UserId)
+	data.UsersById[inv.UserId], err = users.GetUser(inv.UserId)
 	if err != nil {
 		return fmt.Errorf("get user(id=%v): %v", inv.UserId, err)
 	}
 
-	purchasesByInv[inv.Id], err = purchases.GetByInvoiceId(inv.Id)
+	data.PurchasesByInv[inv.Id], err = purchases.GetByInvoiceId(inv.Id)
 	if err != nil {
 		return fmt.Errorf("get purchases by invoice id: %v", err)
 	}
 
-	invUserMembershipsByInv[inv.Id], err = inv_user_memberships.GetForInvoice(inv.Id)
+	data.InvUserMembershipsByInv[inv.Id], err = inv_user_memberships.GetForInvoice(inv.Id)
 	if err != nil {
 		return fmt.Errorf("get user memberships for invoice: %v", err)
 	}
 
-	return inv.load(usersById, purchasesByInv, invUserMembershipsByInv)
+	return inv.load(*data)
 }
 
-func (inv *Invoice) load(
-	usersById map[int64]*users.User,
-	purchasesByInv map[int64][]*purchases.Purchase,
-	invUserMembershipsByInv map[int64][]*inv_user_memberships.InvoiceUserMembership,
-) (err error) {
+func (inv *Invoice) load(data PrefetchedData) (err error) {
 	var ok bool
 
-	if inv.User, ok = usersById[inv.UserId]; !ok {
+	if inv.User, ok = data.UsersById[inv.UserId]; !ok {
 		return fmt.Errorf("user # %v not found", inv.UserId)
 	}
-	if inv.Purchases, ok = purchasesByInv[inv.Id]; !ok {
+	if inv.Purchases, ok = data.PurchasesByInv[inv.Id]; !ok {
 		inv.Purchases = []*purchases.Purchase{}
 	}
-	if inv.InvUserMemberships, ok = invUserMembershipsByInv[inv.Id]; !ok {
+	if inv.InvUserMemberships, ok = data.InvUserMembershipsByInv[inv.Id]; !ok {
 		inv.InvUserMemberships = make([]*inv_user_memberships.InvoiceUserMembership, 0, 5)
 	}
 	/*for _, umb := range inv.InvUserMemberships {
@@ -271,95 +300,42 @@ func GetAllOfMonthAt(locId int64, year int, m time.Month) ([]*Invoice, error) {
 	return invs, err
 }
 
+// toUtilInvoices converts []invoices.Invoice into []invutil.Invoice with all
+// fields deeply populated.
+//
+// What it does:
+//
+// 1. Bulk load associated data
+// 2. Go through each invoice
+// 2a. Attach data
+// 2b. Update monthly total
+// (TODO: 2c. Update invoice_user_memberships according to user_memberships)
+//
+// TODO: convert into multiple functions
 func toUtilInvoices(locId int64, ivs []*invoices.Invoice) (invs []*Invoice, err error) {
-	t0 := time.Now()
 	invs = make([]*Invoice, 0, len(ivs))
 
-	usersById := make(map[int64]*users.User)
-	purchasesByInv := make(map[int64][]*purchases.Purchase)
-	invUserMembershipsByInv := make(map[int64][]*inv_user_memberships.InvoiceUserMembership)
+	data := NewPrefetchedData(locId)
 
-	if us, err := users.GetAllUsersAt(locId); err == nil {
-		for _, u := range us {
-			usersById[u.Id] = u
-		}
-	} else {
-		return nil, fmt.Errorf("get all users: %v", err)
-	}
-
-	if ps, err := purchases.GetAllAt(locId); err == nil {
-		for _, p := range ps {
-			if _, ok := purchasesByInv[p.InvoiceId]; !ok {
-				purchasesByInv[p.InvoiceId] = make([]*purchases.Purchase, 0, 20)
-			}
-			purchasesByInv[p.InvoiceId] = append(purchasesByInv[p.InvoiceId], p)
-		}
-	} else {
-		return nil, fmt.Errorf("get all purchases: %v", err)
-	}
-
-	if umbs, err := inv_user_memberships.GetAllAt(locId); err == nil {
-		for _, umb := range umbs {
-			if _, ok := invUserMembershipsByInv[umb.InvoiceId]; !ok {
-				invUserMembershipsByInv[umb.InvoiceId] = make([]*inv_user_memberships.InvoiceUserMembership, 0, 3)
-			}
-			invUserMembershipsByInv[umb.InvoiceId] = append(invUserMembershipsByInv[umb.InvoiceId], umb)
-		}
-	} else {
-		return nil, fmt.Errorf("get all user memberships: %v", err)
+	if err := data.Prefetch(); err != nil {
+		return nil, fmt.Errorf("prefetch data: %v", err)
 	}
 
 	for _, iv := range ivs {
 		inv := &Invoice{
 			Invoice: *iv,
 		}
-		if _, userInLocation := usersById[inv.UserId]; !userInLocation {
+		if _, userInLocation := data.UsersById[inv.UserId]; !userInLocation {
 			beego.Error("user", inv.UserId, "is not in location", inv.LocationId,
 				"(referenced through invoice", inv.Id, ") - skipping invoice!")
 			continue
 		}
-		err = inv.load(usersById, purchasesByInv, invUserMembershipsByInv)
-		if err != nil {
+
+		if err = inv.load(*data); err != nil {
 			return nil, fmt.Errorf("load (invoice %v): %v", inv.Id, err)
 		}
 		invs = append(invs, inv)
 	}
-	beego.Info("STAGE 1:", time.Now().Sub(t0))
-	t1 := time.Now()
-	ms, err := machine.GetAllAt(locId)
-	if err != nil {
-		return nil, fmt.Errorf("get all machines at %v: %v", locId, err)
-	}
-	msById := make(map[int64]*machine.Machine)
-	for _, m := range ms {
-		msById[m.Id] = m
-	}
-
-	umbsByUid := make(map[int64][]*inv_user_memberships.InvoiceUserMembership)
-	if umbs, err := inv_user_memberships.GetAllAt(locId); err == nil {
-		for _, umb := range umbs {
-			uid := umb.UserId
-			if _, ok := umbsByUid[uid]; !ok {
-				umbsByUid[uid] = []*inv_user_memberships.InvoiceUserMembership{
-					umb,
-				}
-			} else {
-				umbsByUid[uid] = append(umbsByUid[uid], umb)
-			}
-		}
-	} else {
-		return nil, fmt.Errorf("Failed to get user memberships: %v", err)
-	}
-
-	mbsById := make(map[int64]*memberships.Membership)
-	if mbs, err := memberships.GetAllAt(locId); err == nil {
-		for _, mb := range mbs {
-			mbsById[mb.Id] = mb
-		}
-	} else {
-		return nil, fmt.Errorf("Failed to get memberships: %v", err)
-	}
-	beego.Info("stage 2:", time.Now().Sub(t1))
 
 	locSettings, err := settings.GetAllAt(locId)
 	if err != nil {
@@ -373,23 +349,29 @@ func toUtilInvoices(locId int64, ivs []*invoices.Invoice) (invs []*Invoice, err 
 	}
 
 	for _, inv := range invs {
+		if err = inv.invoiceUserMemberships(data); err != nil {
+			return nil, fmt.Errorf("invoice user memberships: %v", err)
+		}
+
 		for _, p := range inv.Purchases {
-			if m, ok := msById[p.MachineId]; ok {
+			if m, ok := data.MsById[p.MachineId]; ok {
 				p.Machine = m
 			}
 
-			umbs, ok := umbsByUid[p.UserId]
+			iumbs, ok := data.IumbsByUid[p.UserId]
 			if !ok {
-				umbs = []*inv_user_memberships.InvoiceUserMembership{}
+				iumbs = []*inv_user_memberships.InvoiceUserMembership{}
 			}
-			for _, umb := range umbs {
-				mbId := umb.MembershipId
-				mb, ok := mbsById[mbId]
+
+			for _, iumb := range iumbs {
+				mbId := iumb.MembershipId
+				mb, ok := data.MbsById[mbId]
 				if !ok {
 					return nil, fmt.Errorf("Unknown membership id: %v", mbId)
 				}
-				if umb.UserMembership.ActiveAt(p.TimeStart) &&
-					umb.InvoiceId == inv.Id {
+
+				if iumb.UserMembership.ActiveAt(p.TimeStart) &&
+					iumb.InvoiceId == inv.Id {
 					p.Memberships = append(p.Memberships, mb)
 				}
 			}
@@ -406,6 +388,7 @@ func toUtilInvoices(locId int64, ivs []*invoices.Invoice) (invs []*Invoice, err 
 			p.PriceExclVAT = p.DiscountedTotal / percent
 			p.PriceVAT = p.DiscountedTotal - p.PriceExclVAT
 		}
+
 		if err = inv.calculateTotals(inv.InvUserMemberships); err != nil {
 			return nil, fmt.Errorf("calculate totals: %v", err)
 		}

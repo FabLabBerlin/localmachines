@@ -56,12 +56,15 @@ func (this UserMembership) ActiveAt(t time.Time) bool {
 	if t.Before(this.StartDate) {
 		return false
 	}
+
 	if this.TerminationDateDefined() && this.TerminationDate.Before(t) {
 		return false
 	}
+
 	if this.AutoExtend {
 		return true
 	}
+
 	return this.StartDate.AddDate(0, this.InitialDurationMonths, 0).After(t)
 }
 
@@ -81,10 +84,12 @@ func Create(o orm.Ormer, userId, membershipId, invoiceId int64, start time.Time)
 	}
 
 	um := UserMembership{
-		UserId:       userId,
-		MembershipId: membershipId,
-		StartDate:    start,
-		AutoExtend:   m.AutoExtend,
+		LocationId:            m.LocationId,
+		UserId:                userId,
+		MembershipId:          membershipId,
+		StartDate:             start,
+		AutoExtend:            m.AutoExtend,
+		InitialDurationMonths: int(m.DurationMonths),
 
 		Created: time.Now(),
 		Updated: time.Now(),

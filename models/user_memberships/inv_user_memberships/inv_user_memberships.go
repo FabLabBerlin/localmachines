@@ -23,13 +23,39 @@ type InvoiceUserMembership struct {
 	UserMembership        *user_memberships.UserMembership `orm:"-" json:",omitempty"`
 	StartDate             time.Time                        `orm:"type(datetime)"`
 	TerminationDate       time.Time                        `orm:"type(datetime)"`
-	InitialDurationMonths int64
+	InitialDurationMonths int
 
 	Created time.Time
 	Updated time.Time
 
 	InvoiceId     int64
 	InvoiceStatus string
+}
+
+func Create(um *user_memberships.UserMembership, invoiceId int64) (
+	ium *InvoiceUserMembership,
+	err error,
+) {
+	ium = New(um, invoiceId)
+	ium.Id, err = orm.NewOrm().Insert(ium)
+
+	return
+}
+
+func New(um *user_memberships.UserMembership, invoiceId int64) *InvoiceUserMembership {
+	return &InvoiceUserMembership{
+		LocationId:            um.LocationId,
+		UserId:                um.UserId,
+		MembershipId:          um.MembershipId,
+		UserMembershipId:      um.Id,
+		UserMembership:        um,
+		StartDate:             um.StartDate,
+		TerminationDate:       um.TerminationDate,
+		InitialDurationMonths: um.InitialDurationMonths,
+		Created:               time.Now(),
+		Updated:               time.Now(),
+		InvoiceId:             invoiceId,
+	}
 }
 
 func (this *InvoiceUserMembership) Membership() *memberships.Membership {

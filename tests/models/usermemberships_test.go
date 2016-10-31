@@ -172,6 +172,7 @@ func TestUserMemberships(t *testing.T) {
 						MonthTo:   6,
 						YearTo:    2015,
 					}
+
 					me, err := monthly_earning.New(1, interval)
 					if err != nil {
 						panic(err.Error())
