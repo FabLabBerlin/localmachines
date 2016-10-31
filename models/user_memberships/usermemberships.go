@@ -98,23 +98,11 @@ func Create(o orm.Ormer, userId, membershipId, invoiceId int64, start time.Time)
 }
 
 func GetAllAt(locationId int64) (ums []*UserMembership, err error) {
-	o := orm.NewOrm()
-	m := new(memberships.Membership)
-	um := new(UserMembership)
+	orm.NewOrm().
+		QueryTable(TABLE_NAME).
+		Filter("location_id", locationId).
+		All(&ums)
 
-	qb, err := orm.NewQueryBuilder("mysql")
-	if err != nil {
-		return nil, fmt.Errorf("new query builder: %v", err)
-	}
-
-	qb.Select(um.TableName() + ".*").
-		From(um.TableName()).
-		InnerJoin(m.TableName()).
-		On("membership.id = membership_id").
-		Where("location_id = ?")
-
-	_, err = o.Raw(qb.String(), locationId).
-		QueryRows(&ums)
 	return
 }
 
