@@ -116,16 +116,6 @@ type Month struct {
 	OldUserMemberships []*UserMembershipOld `orm:"-"`
 }
 
-func (m Month) OldUserMembershipsReversed() (ums []*UserMembershipOld) {
-	ums = make([]*UserMembershipOld, len(m.OldUserMemberships))
-
-	for i, um := range m.OldUserMemberships {
-		ums[len(ums)-1-i] = um
-	}
-
-	return
-}
-
 func (m Month) toInt() int {
 	return m.Year*100 + m.Month
 }
@@ -181,46 +171,74 @@ func (ms Months) NewUserMemberships() (ums []*UserMembershipNew) {
 		panic("not implemented yet")
 	}
 
-	// Case for l = 1:
-	var um *UserMembershipNew
-	i := 0
+	var lastMonthProcessed []*UserMembershipNew
+
 	for _, m := range ms {
-		for _, old := range m.OldUserMembershipsReversed() {
-			if i == 0 || um.MembershipId != old.MembershipId {
-				dbg := func(msg string) {
-					if um.UserId == 179 {
-						fmt.Printf("%v\n", msg)
-					}
+		processed := make([]*UserMembershipNew, 0, 2)
+
+		for _, old := range m.OldUserMemberships {
+			var um *UserMembershipNew
+
+			for i, umm := range lastMonthProcessed {
+				if old.MembershipId == umm.MembershipId &&
+					old.StartDate.Equal(umm.StartDate) {
+
+					um = lastMonthProcessed[i]
+					lastMonthProcessed = append(lastMonthProcessed[:i], lastMonthProcessed[i+1:]...)
+					break
 				}
+			}
+
+			if um == nil {
 				um = &UserMembershipNew{}
 				um.LocationId = m.LocationId
 				um.UserId = old.UserId
 				um.MembershipId = old.MembershipId
 				um.StartDate = old.StartDate
-				if old.EndDate.Before(time.Now()) {
-					dbg(fmt.Sprintf("a\n"))
-					um.TerminationDate = old.EndDate
-				} else if m.Year < time.Now().Year() || m.Month < int(time.Now().Month()) {
-					dbg(fmt.Sprintf("b, %v/%v\n", m.Month, m.Year))
-					um.TerminationDate = time.Date(m.Year, time.Month(m.Month), 1, 0, 0, 0, 0, time.UTC).AddDate(0, 1, -1)
-				} else {
-					dbg(fmt.Sprintf("c\n"))
-					um.AutoExtend = old.AutoExtend
-				}
 				um.Updated = time.Now()
 				um.InitialDurationMonths = old.Membership.DurationMonths
 				ums = append(ums, um)
 			}
+
+			dbg := func(msg string) {
+				if um.UserId == 179 {
+					fmt.Printf("%v\n", msg)
+				}
+			}
+
+			if old.EndDate.Before(time.Now()) {
+				dbg(fmt.Sprintf("a\n"))
+				um.TerminationDate = old.EndDate
+			} else if m.Year < time.Now().Year() || m.Month < int(time.Now().Month()) {
+				dbg(fmt.Sprintf("b, %v/%v\n", m.Month, m.Year))
+				um.TerminationDate = time.Date(m.Year, time.Month(m.Month), 1, 0, 0, 0, 0, time.UTC).AddDate(0, 1, -1)
+			} else {
+				dbg(fmt.Sprintf("c\n"))
+				um.AutoExtend = old.AutoExtend
+				um.TerminationDate = time.Time{}
+			}
+
+			// Create corresponding invoice user membership
 			ium := NewInvoiceUserMembership(*old)
 			um.InvUserMemberships = append(um.InvUserMemberships, ium)
 			ium.StartDate = old.StartDate
-			/*if old.EndDate.Before(time.Now()) {
-				ium.TerminationDate = old.EndDate
-			}*/
+			//if old.EndDate.Before(time.Now()) {
+			//	ium.TerminationDate = old.EndDate
+			//}
 			ium.TerminationDate = um.TerminationDate
 			ium.InitialDurationMonths = um.InitialDurationMonths
-			i++
 
+			processed = append(processed, um)
+		}
+
+		lastMonthProcessed = processed
+	}
+
+	for _, um := range ums {
+		for i := len(um.InvUserMemberships) - 1; i >= 0; i-- {
+			ium := um.InvUserMemberships[i]
+
+			ium.TerminationDate = um.TerminationDate
 		}
 	}
 
@@ -233,9 +251,7 @@ func (ms Months) Len() int {
 }
 
 func (ms Months) Less(i, j int) bool {
-	// TODO: this should be a "<" because at some point
-	//       ...reverse...() is called
-	return ms[i].toInt() > ms[j].toInt()
+	return ms[i].toInt() < ms[j].toInt()
 }
 
 func (ms Months) Swap(i, j int) {
