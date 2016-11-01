@@ -139,7 +139,7 @@ func (ms Months) HasVaryingMemberships() bool {
 	if l == 0 {
 		return false
 	} else if l > 1 {
-		panic("not implemented yet")
+		return true
 	}
 
 	var membershipId int64
@@ -167,10 +167,6 @@ func (ms Months) MaxLenOldUserMemberships() (max int) {
 }
 
 func (ms Months) NewUserMemberships() (ums []*UserMembershipNew) {
-	if ms.MaxLenOldUserMemberships() > 1 {
-		panic("not implemented yet")
-	}
-
 	var lastMonthProcessed []*UserMembershipNew
 
 	for _, m := range ms {
@@ -303,20 +299,19 @@ func userUp(o orm.Ormer, locId, userId int64) (err error) {
 	}
 
 	if l := months.MaxLenOldUserMemberships(); l > 1 {
-		fmt.Printf("l=%v\n", l)
-	} else {
-		if months.HasVaryingMemberships() {
-			fmt.Printf("varying for uid=%v\n", userId)
+		fmt.Printf("l=%v for uid=%v\n", l, userId)
+	}
+	if months.HasVaryingMemberships() {
+		fmt.Printf("varying for uid=%v\n", userId)
+	}
+	for _, newUm := range months.NewUserMemberships() {
+		if _, err = o.Insert(newUm); err != nil {
+			return fmt.Errorf("insert new um: %v", err)
 		}
-		for _, newUm := range months.NewUserMemberships() {
-			if _, err = o.Insert(newUm); err != nil {
-				return fmt.Errorf("insert new um: %v", err)
-			}
-			for _, ium := range newUm.InvUserMemberships {
-				ium.UserMembershipId = newUm.Id
-				if _, err = o.Insert(ium); err != nil {
-					return fmt.Errorf("insert ium: %v", err)
-				}
+		for _, ium := range newUm.InvUserMemberships {
+			ium.UserMembershipId = newUm.Id
+			if _, err = o.Insert(ium); err != nil {
+				return fmt.Errorf("insert ium: %v", err)
 			}
 		}
 	}
