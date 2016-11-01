@@ -79,7 +79,7 @@ func (inv *Invoice) calculateTotals(ms []*inv_user_memberships.InvoiceUserMember
 	inv.Sums.Purchases.PriceVAT = inv.Sums.Purchases.PriceInclVAT - inv.Sums.Purchases.PriceExclVAT
 
 	for _, m := range ms {
-		if inv.membershipGetsBilledHere(m) {
+		if inv.userMembershipGetsBilledHere(m.UserMembership) {
 			inv.Sums.Memberships.Undiscounted += m.Membership().MonthlyPrice
 			inv.Sums.Memberships.PriceInclVAT += m.Membership().MonthlyPrice
 		}
@@ -102,6 +102,8 @@ func (inv *Invoice) calculateTotals(ms []*inv_user_memberships.InvoiceUserMember
 }
 
 func (inv *Invoice) InvoiceUserMemberships(data *PrefetchedData) (err error) {
+	beego.Info("InvoiceUserMemberships(..)")
+	beego.Info("  len(inv.InvUserMemberships)=", len(inv.InvUserMemberships))
 	umbs, ok := data.UmbsByUid[inv.UserId]
 	if !ok {
 		umbs = []*user_memberships.UserMembership{}
@@ -137,9 +139,8 @@ func (inv *Invoice) InvoiceUserMemberships(data *PrefetchedData) (err error) {
 	return
 }
 
-func (inv *Invoice) membershipGetsBilledHere(m *inv_user_memberships.InvoiceUserMembership) bool {
-	return m.StartDate.Unix() <= inv.Interval().TimeTo().Unix() &&
-		m.UserMembership.ActiveAt(inv.Interval().TimeTo())
+func (inv *Invoice) userMembershipGetsBilledHere(um *user_memberships.UserMembership) bool {
+	return um.ActiveAt(inv.Interval().TimeTo())
 }
 
 func (inv *Invoice) Load() (err error) {

@@ -147,9 +147,10 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 			if err != nil {
 				panic(err.Error())
 			}
+			fmt.Printf("fastbill...~150: startTime=%v\n", startTime)
 			//t := time.Now()
 
-			all, err := invutil.GetAllOfMonthAt(1, TIME_START.Year(), TIME_START.Month())
+			all, err := invutil.GetAllOfMonthAt(1, startTime.Year(), startTime.Month())
 			if err != nil {
 				panic(err.Error())
 			}
