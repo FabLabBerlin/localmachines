@@ -123,7 +123,7 @@ func simulate(s Simulation) {
 		iv.UserId = uid
 		iv.Month = 6
 		iv.Year = 2016
-		iv.Status = "outgoing"
+		iv.Status = "draft"
 		if _, err = invoices.Create(&iv.Invoice); err != nil {
 			panic(err.Error())
 		}

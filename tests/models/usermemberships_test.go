@@ -75,7 +75,7 @@ func TestUserMemberships(t *testing.T) {
 			invNow.UserId = userId
 			invNow.Month = 6
 			invNow.Year = 2015
-			invNow.Status = "outgoing"
+			invNow.Status = "draft"
 			if _, err = invoices.Create(&invNow.Invoice); err != nil {
 				panic(err.Error())
 			}
@@ -85,7 +85,7 @@ func TestUserMemberships(t *testing.T) {
 			invThen.UserId = userId
 			invThen.Month = 2
 			invThen.Year = 2015
-			invThen.Status = "outgoing"
+			invThen.Status = "draft"
 			if _, err = invoices.Create(&invThen.Invoice); err != nil {
 				panic(err.Error())
 			}

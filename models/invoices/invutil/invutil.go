@@ -121,10 +121,10 @@ func (inv *Invoice) InvoiceUserMemberships(data *PrefetchedData) (err error) {
 
 		if !invoiced {
 			fmt.Printf("AAAA\n")
-			/*if inv.Status != "draft" {
+			if inv.Status != "draft" {
 				beego.Error("invoice doesn't have status draft but not all user memberships are associated")
 				continue
-			}*/
+			}
 			fmt.Printf("BBBB\n")
 			ium, err := inv_user_memberships.Create(um, inv.Id)
 			if err != nil {
@@ -137,6 +137,11 @@ func (inv *Invoice) InvoiceUserMemberships(data *PrefetchedData) (err error) {
 	}
 
 	return
+}
+
+func (inv *Invoice) userMembershipActiveHere(um *user_memberships.UserMembership) bool {
+	return um.ActiveAt(inv.Interval().TimeFrom()) ||
+		um.ActiveAt(inv.Interval().TimeTo())
 }
 
 func (inv *Invoice) userMembershipGetsBilledHere(um *user_memberships.UserMembership) bool {
