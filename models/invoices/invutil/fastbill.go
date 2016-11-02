@@ -180,8 +180,7 @@ func (inv *Invoice) FastbillCreateDraft(overwriteExisting bool) (fbDraft *fastbi
 	// Add Memberships
 	for _, m := range ms {
 		if m.Membership().MonthlyPrice > 0 &&
-			m.StartDate.Before(inv.Interval().TimeTo()) &&
-			m.UserMembership.ActiveAt(inv.Interval().TimeFrom()) {
+			inv.userMembershipGetsBilledHere(m.UserMembership) {
 
 			item := fastbill.Item{
 				Description: m.Membership().Title + " Membership (unit: month)",

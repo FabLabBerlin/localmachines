@@ -145,18 +145,17 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 			if err = ms.Update(); err != nil {
 				panic(err.Error())
 			}
-			startTime := time.Now().AddDate(0, -2, 0)
-			_, err = user_memberships.Create(o, uid, ms.Id, inv.Id, startTime)
-			if err != nil {
-				panic(err.Error())
-			}
-			fmt.Printf("fastbill...~150: startTime=%v\n", startTime)
-			//t := time.Now()
 
-			all, err := invutil.GetAllOfMonthAt(1, startTime.Year(), startTime.Month())
+			_, err = user_memberships.Create(o, uid, ms.Id, inv.Id, TIME_START)
 			if err != nil {
 				panic(err.Error())
 			}
+
+			all, err := invutil.GetAllOfMonthAt(1, TIME_START.Year(), TIME_START.Month())
+			if err != nil {
+				panic(err.Error())
+			}
+
 			drafts := make([]*invutil.Invoice, 0, 1)
 			for _, iv := range all {
 				if iv.Status == "draft" {
@@ -168,6 +167,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 			}
 
 			drafts[0].User.ClientId = 1
+			fmt.Printf("len(drafts[0].InvUserMemberships)=%v\n", len(drafts[0].InvUserMemberships))
 
 			testServer := mock.NewServer("foo@bar.com")
 
