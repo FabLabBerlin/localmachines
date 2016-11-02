@@ -10,6 +10,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/user_memberships"
 	"github.com/FabLabBerlin/localmachines/models/user_memberships/inv_user_memberships"
 	"github.com/FabLabBerlin/localmachines/models/users"
+	"github.com/FabLabBerlin/localmachines/tests/models/mocks"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
 	"github.com/astaxie/beego/orm"
 	. "github.com/smartystreets/goconvey/convey"
@@ -109,6 +110,36 @@ func TestInvutilInvoices(t *testing.T) {
 
 		Convey("Memberships in 1st month half don't affect 2nd half", func() {
 			testInvoiceWithMembershipAndTestPurchase(false)
+		})
+	})
+
+	Convey("InvoiceUserMemberships", t, func() {
+		Reset(setup.ResetDB)
+		Convey("(Inv)UserMemberships don't get unnecessarily duplicated", func() {
+			inv := mocks.LoadInvoice(4165)
+
+			So(len(inv.InvUserMemberships), ShouldEqual, 1)
+
+			data := &invutil.PrefetchedData{
+				LocationId: 1,
+				UmbsByUid:  make(map[int64][]*user_memberships.UserMembership),
+				IumbsByUid: make(map[int64][]*inv_user_memberships.InvoiceUserMembership),
+			}
+
+			data.UmbsByUid[19] = []*user_memberships.UserMembership{
+				mocks.LoadUserMembership(14),
+				mocks.LoadUserMembership(15),
+			}
+
+			for _, ium := range inv.InvUserMemberships {
+				data.IumbsByUid[19] = append(data.IumbsByUid[19], ium)
+			}
+
+			if err := inv.InvoiceUserMemberships(data); err != nil {
+				panic(err.Error())
+			}
+
+			So(len(inv.InvUserMemberships), ShouldEqual, 1)
 		})
 	})
 }

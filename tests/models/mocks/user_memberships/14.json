@@ -1,0 +1,25 @@
+{
+  "Id": 14,
+  "LocationId": 1,
+  "UserId": 19,
+  "MembershipId": 3,
+  "Membership": {
+    "Id": 3,
+    "LocationId": 1,
+    "Title": "Fab Lab Staff ",
+    "ShortName": "FLS",
+    "DurationMonths": 12,
+    "MonthlyPrice": 0,
+    "MachinePriceDeduction": 100,
+    "AffectedMachines": "[2,4,12,7,8,10,6,13,40,74,31,29,11,77,43,9,48,23,28,15,3,17,20,44,18,14,35,34,37,42,38,32,33,16,39,24,21,26,19,25,27,41]",
+    "AutoExtend": true,
+    "AutoExtendDurationMonths": 1,
+    "Archived": false
+  },
+  "StartDate": "2015-07-07T00:00:00+02:00",
+  "TerminationDate": "2016-09-07T00:00:00+02:00",
+  "InitialDurationMonths": 12,
+  "AutoExtend": false,
+  "Created": "0001-01-01T00:00:00Z",
+  "Updated": "2016-11-02T16:19:35+01:00"
+}
