@@ -1,7 +1,6 @@
 package invoices
 
 import (
-	"fmt"
 	"os"
 	"testing"
 	"time"
@@ -9,64 +8,25 @@ import (
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models/invoices/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/locations"
-	"github.com/FabLabBerlin/localmachines/models/machine"
-	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/settings"
+	"github.com/FabLabBerlin/localmachines/tests/models/util"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/tealeg/xlsx"
 )
 
-var TIME_START = time.Now().AddDate(0, -1, -1)
+var TIME_START = util.TIME_START
 
 func init() {
 	setup.ConfigDB()
-}
-
-func CreateTestPurchase(machineId int64, machineName string,
-	minutes time.Duration, pricePerMinute float64) *purchases.Purchase {
-
-	m := machine.Machine{}
-	m.Id = machineId
-	m.Name = machineName
-	m.PriceUnit = "minute"
-	m.Price = pricePerMinute
-
-	invAct := &purchases.Purchase{
-		LocationId:   1,
-		Type:         purchases.TYPE_ACTIVATION,
-		TimeStart:    TIME_START,
-		PricePerUnit: pricePerMinute,
-		PriceUnit:    "minute",
-		Quantity:     minutes.Minutes(),
-		Machine:      &m,
-		MachineId:    machineId,
-		MachineUsage: minutes,
-		Memberships: []*memberships.Membership{
-			{
-				Id:                    42,
-				Title:                 "Half price",
-				ShortName:             "HP",
-				MachinePriceDeduction: 50,
-				AffectedMachines:      fmt.Sprintf("[%v]", machineId),
-			},
-		},
-	}
-	invAct.TotalPrice = purchases.PriceTotalExclDisc(invAct)
-	var err error
-	invAct.DiscountedTotal, err = purchases.PriceTotalDisc(invAct)
-	if err != nil {
-		panic(err.Error())
-	}
-	return invAct
 }
 
 func TestInvoiceActivation(t *testing.T) {
 	Convey("Testing InvoiceActivation model", t, func() {
 		Reset(setup.ResetDB)
 		Convey("Testing MembershipStr", func() {
-			invAct := CreateTestPurchase(22, "Lasercutter",
+			invAct := util.CreateTestPurchase(22, "Lasercutter",
 				time.Duration(12)*time.Minute, 0.5)
 			membershipStr, err := invAct.MembershipStr()
 			if err != nil {
@@ -75,12 +35,12 @@ func TestInvoiceActivation(t *testing.T) {
 			So(membershipStr, ShouldEqual, "HP (50%)")
 		})
 		Convey("Testing PriceTotalExclDisc", func() {
-			invAct := CreateTestPurchase(22, "Lasercutter",
+			invAct := util.CreateTestPurchase(22, "Lasercutter",
 				time.Duration(12)*time.Minute, 0.5)
 			So(purchases.PriceTotalExclDisc(invAct), ShouldEqual, 6)
 		})
 		Convey("Testing PriceTotalDisc", func() {
-			invAct := CreateTestPurchase(22, "Lasercutter",
+			invAct := util.CreateTestPurchase(22, "Lasercutter",
 				time.Duration(12)*time.Minute, 0.5)
 			if priceTotalDisc, err := purchases.PriceTotalDisc(invAct); err == nil {
 				So(priceTotalDisc, ShouldEqual, 3)
@@ -108,7 +68,7 @@ func TestInvoiceActivation(t *testing.T) {
 				panic(err.Error())
 			}
 
-			invAct := CreateTestPurchase(22, "Lasercutter",
+			invAct := util.CreateTestPurchase(22, "Lasercutter",
 				time.Duration(12)*time.Minute, 0.5)
 			file := xlsx.NewFile()
 			sheet, _ := file.AddSheet("User Summaries")

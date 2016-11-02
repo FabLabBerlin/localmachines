@@ -16,10 +16,13 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/user_memberships"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/FabLabBerlin/localmachines/tests/lib/fastbill/mock"
+	"github.com/FabLabBerlin/localmachines/tests/models/util"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
 	"github.com/astaxie/beego/orm"
 	. "github.com/smartystreets/goconvey/convey"
 )
+
+var TIME_START = util.TIME_START
 
 func init() {
 	setup.ConfigDB()
@@ -67,7 +70,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 			panic(err.Error())
 		}
 
-		p := CreateTestPurchase(lasercutter.Id, "Lasercutter", time.Duration(12)*time.Minute, 0.5)
+		p := util.CreateTestPurchase(lasercutter.Id, "Lasercutter", time.Duration(12)*time.Minute, 0.5)
 		p.InvoiceId = inv.Id
 		p.UserId = uid
 		o := orm.NewOrm()
@@ -105,7 +108,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 
 			o := orm.NewOrm()
 
-			p := CreateTestPurchase(lasercutter.Id, "Lasercutter", time.Duration(34)*time.Hour, 0.5)
+			p := util.CreateTestPurchase(lasercutter.Id, "Lasercutter", time.Duration(34)*time.Hour, 0.5)
 			p.UserId = uid
 			if _, err := o.Insert(p); err != nil {
 				panic(err.Error())
@@ -121,7 +124,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 				panic(err.Error())
 			}
 
-			p = CreateTestPurchase(i3.Id, "i3", time.Duration(100)*time.Nanosecond, 0.1)
+			p = util.CreateTestPurchase(i3.Id, "i3", time.Duration(100)*time.Nanosecond, 0.1)
 			p.InvoiceId = inv.Id
 			p.UserId = uid
 			if purchases.Create(p); err != nil {

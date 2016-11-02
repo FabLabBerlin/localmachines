@@ -1,4 +1,4 @@
-package invoices
+package coupons
 
 import (
 	"fmt"
@@ -13,9 +13,16 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/FabLabBerlin/localmachines/tests/lib/fastbill/mock"
+	"github.com/FabLabBerlin/localmachines/tests/models/util"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
 	. "github.com/smartystreets/goconvey/convey"
 )
+
+var TIME_START = util.TIME_START
+
+func init() {
+	setup.ConfigDB()
+}
 
 func TestInvoiceCouponUsage(t *testing.T) {
 	Convey("Test Generate and UseForInvoice", t, func() {
@@ -86,7 +93,7 @@ func TestInvoiceCouponUsage(t *testing.T) {
 			panic(err.Error())
 		}
 
-		p := CreateTestPurchase(lasercutter.Id, "Lasercutter",
+		p := util.CreateTestPurchase(lasercutter.Id, "Lasercutter",
 			time.Duration(lasercutterMinutes)*time.Minute,
 			lasercutterPricePerMinute)
 		p.InvoiceId = inv.Id
