@@ -112,6 +112,10 @@ func (inv *Invoice) InvoiceUserMemberships(data *PrefetchedData) (err error) {
 	for _, um := range umbs {
 		invoiced := false
 
+		if !inv.userMembershipActiveHere(um) {
+			continue
+		}
+
 		for _, ium := range inv.InvUserMemberships {
 			if ium.UserMembershipId == um.Id {
 				invoiced = true
