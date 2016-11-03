@@ -323,9 +323,14 @@
               </div>
             </div>
           </div>
-          <div ng-show="!userMembership.Invoice.Current">
+          <div ng-show="userMembership.TerminationDateFormatted">
             {{userMembership.TerminationDateFormatted}}
           </div>
+          <button 
+            class="btn btn-danger"
+            ng-hide="userMembership.TerminationDateFormatted">
+            Set Termination Date
+          </button>
         </td>
         <td>
           {{userMembership.InitialDurationMonths}} {{userMembership.InitialDurationMonths === 1 ? 'month' : 'months'}}
