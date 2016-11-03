@@ -186,7 +186,7 @@ func DeleteForUserMembership(o orm.Ormer, userMembershipId int64) (err error) {
 		}
 
 		if inv.Status != "draft" {
-			return fmt.Errorf("associated to non-draft invoice")
+			return fmt.Errorf("associated to billed invoice")
 		}
 
 		if _, err := o.Delete(&ium); err != nil {
