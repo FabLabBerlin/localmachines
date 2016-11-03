@@ -283,8 +283,7 @@
         <th>Membership Name</th>
         <th>Start Date</th>
         <th>Termination Date</th>
-        <th>Extends Automatically</th>
-        <th>Invoice</th>
+        <th>Minimum Duration</th>
         <th style="min-width:60px">&nbsp;</th>
       </tr>
     </thead>
@@ -292,8 +291,8 @@
       <tr ng-hide="userMemberships.length">
         <td colspan="6">User has no memberships</td>
       </tr>
-      <tr ng-repeat="userMembership in userMemberships | userMembershipsFilter:this">
-        <td>{{userMembership.UserMembership.Membership.Title}}</td>
+      <tr ng-repeat="userMembership in userMemberships">
+        <td>{{userMembership.Membership.Title}}</td>
         <td style="min-width:90px">
           <div class="form-inline" ng-show="userMembership.Invoice.Current">
             <div class="input-group">
@@ -329,23 +328,14 @@
           </div>
         </td>
         <td>
-          <input 
-            type="checkbox" 
-            ng-model="userMembership.UserMembership.AutoExtend"
-            ng-disabled="userMemberhip.Inactive"
-            ng-change="updateUserMembership(userMembership.Id)"
-            ng-show="userMembership.Invoice.Current">
-        </td>
-        <td>
-          {{userMembership.Invoice.Month}}/{{userMembership.Invoice.Year}} {{userMembership.Invoice.Canceled ? '(Canceled)' : ''}}
+          {{userMembership.InitialDurationMonths}} {{userMembership.InitialDurationMonths === 1 ? 'month' : 'months'}}
         </td>
         <td>
           <div class="pull-right">
             <button 
               type="button" 
               class="btn btn-danger btn-ico" 
-              ng-click="deleteUserMembershipPrompt(userMembership.Id)"
-              ng-show="userMembership.Invoice.Status === 'draft'">
+              ng-click="deleteUserMembershipPrompt(userMembership.Id)">
               <i class="fa fa-close"></i>
             </button>
           </div>
@@ -390,25 +380,11 @@
         class="btn btn-primary btn-block" 
         id="user-add-membership-btn" 
         ng-click="addUserMembership()">
-        <i class="fa fa-plus"></i>&nbsp;Add Membership
+        <i class="fa fa-plus"></i>&nbsp;Add
       </button>
     </div>
 
     <div class="col-sm-3">
-      <button 
-        class="btn btn-primary btn-block" 
-        id="user-add-membership-btn" 
-        ng-click="showUserMembershipHistory()"
-        ng-hide="userMembershipsHistoryVisible">
-        Show History
-      </button>
-      <button 
-        class="btn btn-primary btn-block" 
-        id="user-add-membership-btn" 
-        ng-click="hideUserMembershipHistory()"
-        ng-show="userMembershipsHistoryVisible">
-        Hide History
-      </button>
     </div>
   </div>
 

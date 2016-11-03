@@ -209,30 +209,22 @@ app.controller('UserCtrl',
   $scope.getUserMemberships = function() {
     $http({
       method: 'GET',
-      url: '/api/users/' + $scope.user.Id + '/bill',
+      url: '/api/users/' + $scope.user.Id + '/memberships',
       params: {
         ac: new Date().getTime(),
         location: $cookies.get('location')
       }
     })
-    .success(function(invoices) {
-      var data = [];
-      _.each(invoices, function(invoice) {
-        _.each(invoice.InvUserMemberships, function(umb) {
-          umb.Invoice = invoice;
-          if (umb.TerminationDate && moment(umb.TerminationDate).unix() > 0) {
-            umb.TerminationDateFormatted = moment(umb.TerminationDate).format('YYYY-MM-DD');
-          }
-          data.push(umb);
-        });
-      });
-
+    .success(function(data) {
       $scope.userMemberships = _.map(data, function(userMembership) {
         
         userMembership.StartDate = 
           new Date(Date.parse(userMembership.StartDate));
         
         userMembership.EndDate = new Date(Date.parse(userMembership.EndDate));
+        if (userMembership.TerminationDate && moment(userMembership.TerminationDate).unix() > 0) {
+          userMembership.TerminationDateFormatted = moment(userMembership.TerminationDate).format('YYYY-MM-DD');
+        }
         var today = new Date();
         
         if (userMembership.StartDate <= today && 
@@ -255,12 +247,12 @@ app.controller('UserCtrl',
         return userMembership;
       });
 
-      $scope.userMemberships = _.sortBy($scope.userMemberships, function(umb) {
+      /*$scope.userMemberships = _.sortBy($scope.userMemberships, function(umb) {
         var n = umb.Invoice.Current ? 1000000 : 0;
         n += umb.Invoice.Year * 100;
         n += umb.Invoice.Month;
         return -n;
-      });
+      });*/
 
       $scope.getAvailableMemberships();
     })
@@ -808,13 +800,5 @@ app.controller('UserCtrl',
   };
 
 }]); // app.controller
-
-app.filter('userMembershipsFilter', function() {
-  return function(userMemberships, scope) {
-    return _.filter(userMemberships, function(umb) {
-      return umb.Invoice.Current || scope.userMembershipsHistoryVisible;
-    });
-  };
-});
 
 })(); // closure
