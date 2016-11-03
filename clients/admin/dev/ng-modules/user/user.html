@@ -294,7 +294,7 @@
       <tr ng-repeat="userMembership in userMemberships">
         <td>{{userMembership.Membership.Title}}</td>
         <td style="min-width:90px">
-          <div class="form-inline" ng-show="userMembership.Invoice.Current">
+          <div class="form-inline">
             <div class="input-group">
               <input
                 class="adm-user-membership-date adm-user-membership-start-date form-control datepicker"
@@ -306,25 +306,19 @@
               </div>
             </div>
           </div>
-          <div ng-hide="userMembership.Invoice.Current">
-            {{userMembership.StartDate}}
-          </div>
         </td>
         <td style="min-width:160px">
-          <div class="form-inline" ng-show="userMembership.Invoice.Current">
+          <div ng-show="userMembership.TerminationDateFormatted">
             <div class="input-group">
               <input
                 class="adm-user-membership-date adm-user-membership-end-date form-control datepicker"
                 data-user-membership-id="{{userMembership.Id}}"
-                placeholder="End Date"
-                value="{{userMembership.TerminationDate}}">
+                placeholder="YYYY-MM-DD"
+                value="{{userMembership.TerminationDateFormatted}}">
               <div class="input-group-addon">
                 <i class="fa fa-calendar"></i>
               </div>
             </div>
-          </div>
-          <div ng-show="userMembership.TerminationDateFormatted">
-            {{userMembership.TerminationDateFormatted}}
           </div>
           <button 
             class="btn btn-danger"
