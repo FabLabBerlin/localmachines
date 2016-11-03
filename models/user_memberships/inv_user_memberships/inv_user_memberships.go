@@ -84,17 +84,13 @@ func GetAllAt(locId int64) (iums []*InvoiceUserMembership, err error) {
 		return
 	}
 
-	ums, err := user_memberships.GetAllAtDeep(locId)
+	ums, err := user_memberships.GetAllAt(locId)
 	if err != nil {
 		return
 	}
-	umsById := make(map[int64]*user_memberships.UserMembership)
-	for _, um := range ums {
-		umsById[um.Id] = um
-	}
 
-	for _, ium := range iums {
-		ium.UserMembership = umsById[ium.UserMembershipId]
+	if deeplyPopulate(locId, iums, ums); err != nil {
+		return nil, fmt.Errorf("deeply populate: %v", err)
 	}
 
 	return
@@ -118,15 +114,6 @@ func GetForInvoice(invoiceId int64) (iums []*InvoiceUserMembership, err error) {
 	locId := iums[0].LocationId
 	userId := iums[0].UserId
 
-	ms, err := memberships.GetAllAt(locId)
-	if err != nil {
-		return nil, fmt.Errorf("get all at: %v", err)
-	}
-	msbyId := make(map[int64]*memberships.Membership)
-	for _, m := range ms {
-		msbyId[m.Id] = m
-	}
-
 	var ums []*user_memberships.UserMembership
 
 	if _, err = orm.NewOrm().
@@ -136,6 +123,28 @@ func GetForInvoice(invoiceId int64) (iums []*InvoiceUserMembership, err error) {
 
 		return
 	}
+
+	if deeplyPopulate(locId, iums, ums); err != nil {
+		return nil, fmt.Errorf("deeply populate: %v", err)
+	}
+
+	return
+}
+
+func deeplyPopulate(
+	locId int64,
+	iums []*InvoiceUserMembership,
+	ums []*user_memberships.UserMembership,
+) (err error) {
+	ms, err := memberships.GetAllAt(locId)
+	if err != nil {
+		return fmt.Errorf("get all at: %v", err)
+	}
+	msbyId := make(map[int64]*memberships.Membership)
+	for _, m := range ms {
+		msbyId[m.Id] = m
+	}
+
 	umsById := make(map[int64]*user_memberships.UserMembership)
 	for _, um := range ums {
 		um.Membership = msbyId[um.MembershipId]
