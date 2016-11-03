@@ -104,6 +104,13 @@ func init() {
 			[]string{"put"},
 			nil})
 
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UserMembershipsController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UserMembershipsController"],
+		beego.ControllerComments{
+			"DeleteUserMembership",
+			`/:uid/memberships/:umid`,
+			[]string{"delete"},
+			nil})
+
 	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UserPermissionsController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UserPermissionsController"],
 		beego.ControllerComments{
 			"CreateUserPermission",

@@ -374,8 +374,8 @@ app.controller('UserCtrl',
       toastr.success('Membership deleted.');
       $scope.getUserMemberships();
     })
-    .error(function() {
-      toastr.error('Error while trying to delete user membership');
+    .error(function(status) {
+      toastr.error(status);
     });
   };
 

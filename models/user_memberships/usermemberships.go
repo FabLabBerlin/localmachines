@@ -179,8 +179,7 @@ func Get(id int64) (*UserMembership, error) {
 	return &userMembership, err
 }
 
-func Delete(id int64) (err error) {
-	o := orm.NewOrm()
+func Delete(o orm.Ormer, id int64) (err error) {
 	_, err = o.Delete(&UserMembership{Id: id})
 	return
 }

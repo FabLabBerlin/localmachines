@@ -132,8 +132,12 @@ func GetDraft(locId, uid int64, t time.Time) (*Invoice, error) {
 }
 
 func Get(id int64) (*Invoice, error) {
+	return GetOrm(orm.NewOrm(), id)
+}
+
+func GetOrm(o orm.Ormer, id int64) (*Invoice, error) {
 	inv := Invoice{Id: id}
-	err := orm.NewOrm().Read(&inv)
+	err := o.Read(&inv)
 	return &inv, err
 }
 

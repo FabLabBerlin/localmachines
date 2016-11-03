@@ -2,6 +2,7 @@ package inv_user_memberships
 
 import (
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/user_memberships"
 	"github.com/astaxie/beego/orm"
@@ -96,7 +97,6 @@ func GetAllAt(locId int64) (iums []*InvoiceUserMembership, err error) {
 	return
 }
 
-// Gets all user memberships for a user by consuming user ID.
 func GetForInvoice(invoiceId int64) (iums []*InvoiceUserMembership, err error) {
 
 	if _, err = orm.NewOrm().
@@ -126,6 +126,72 @@ func GetForInvoice(invoiceId int64) (iums []*InvoiceUserMembership, err error) {
 
 	if deeplyPopulate(locId, iums, ums); err != nil {
 		return nil, fmt.Errorf("deeply populate: %v", err)
+	}
+
+	return
+}
+
+func GetForUserMembership(userMembershipId int64) (iums []*InvoiceUserMembership, err error) {
+	return getForUserMembership(orm.NewOrm(), userMembershipId)
+}
+
+func getForUserMembership(o orm.Ormer, userMembershipId int64) (iums []*InvoiceUserMembership, err error) {
+
+	if _, err = o.
+		QueryTable(TABLE_NAME).
+		Filter("user_membership_id", userMembershipId).
+		All(&iums); err != nil {
+
+		return
+	}
+
+	if len(iums) == 0 {
+		return
+	}
+
+	locId := iums[0].LocationId
+	userId := iums[0].UserId
+
+	var ums []*user_memberships.UserMembership
+
+	if _, err = o.
+		QueryTable("user_memberships").
+		Filter("user_id", userId).
+		All(&ums); err != nil {
+
+		return
+	}
+
+	if deeplyPopulate(locId, iums, ums); err != nil {
+		return nil, fmt.Errorf("deeply populate: %v", err)
+	}
+
+	return
+}
+
+func DeleteForUserMembership(o orm.Ormer, userMembershipId int64) (err error) {
+	iums, err := getForUserMembership(o, userMembershipId)
+	if err != nil {
+		return
+	}
+
+	if len(iums) == 0 {
+		return
+	}
+
+	for _, ium := range iums {
+		inv, err := invoices.GetOrm(o, ium.InvoiceId)
+		if err != nil {
+			return fmt.Errorf("get invoice: %v", err)
+		}
+
+		if inv.Status != "draft" {
+			return fmt.Errorf("associated to non-draft invoice")
+		}
+
+		if _, err := o.Delete(&ium); err != nil {
+			return fmt.Errorf("delete: %v", err)
+		}
 	}
 
 	return

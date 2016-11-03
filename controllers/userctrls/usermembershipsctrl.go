@@ -6,6 +6,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/user_memberships"
+	"github.com/FabLabBerlin/localmachines/models/user_memberships/inv_user_memberships"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"time"
@@ -185,7 +186,7 @@ func (this *UserMembershipsController) PutUserMembership() {
 	this.ServeJSON()
 }
 
-/*// @Title Delete
+// @Title Delete
 // @Description Delete UserMembership
 // @Param	uid		path 	int	true						"User Membership Id"
 // @Success	200	ok
@@ -196,26 +197,44 @@ func (this *UserMembershipsController) PutUserMembership() {
 func (this *UserMembershipsController) DeleteUserMembership() {
 	umid, err := this.GetInt64(":umid")
 	if err != nil {
-		this.Abort("400")
+		this.Fail("400")
 	}
 
 	um, err := user_memberships.Get(umid)
 	if err != nil {
 		beego.Error("Get user membership:", err)
-		this.Abort("500")
+		this.Fail("500")
 	}
 
 	if !this.IsAdminAt(um.LocationId) {
 		beego.Error("Not authorized")
-		this.CustomAbort(401, "Not authorized")
+		this.Fail(401, "Not authorized")
 	}
 
-	err = inv_user_memberships.DeleteByUserMembershipId(umid)
-	if err != nil {
-		beego.Error("delete user membership:", err)
-		this.Abort("500")
+	o := orm.NewOrm()
+
+	if err := o.Begin(); err != nil {
+		this.Fail(500, "tx begin")
+	}
+
+	if err = inv_user_memberships.DeleteForUserMembership(o, umid); err != nil {
+		o.Rollback()
+		msg := fmt.Sprintf("delete invoice user membership: %v", err)
+		beego.Error(msg)
+		this.Fail("500", msg)
+	}
+
+	if err = user_memberships.Delete(o, umid); err != nil {
+		o.Rollback()
+		msg := fmt.Sprintf("delete user membership: %v", err)
+		beego.Error(msg)
+		this.Fail("500", msg)
+	}
+
+	if err := o.Commit(); err != nil {
+		this.Fail(500, "tx commit")
 	}
 
 	this.Data["json"] = "ok"
 	this.ServeJSON()
-}*/
+}
