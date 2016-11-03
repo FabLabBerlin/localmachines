@@ -151,7 +151,7 @@ func GetAllOfDeep(locId, userId int64) (ums []*UserMembership, err error) {
 	if _, err = orm.NewOrm().
 		QueryTable(TABLE_NAME).
 		Filter("location_id", locId).
-		Filter("user_id", locId).
+		Filter("user_id", userId).
 		All(&ums); err != nil {
 
 		return
