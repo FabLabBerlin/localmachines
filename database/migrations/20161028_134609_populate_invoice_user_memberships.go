@@ -211,7 +211,11 @@ func (ms Months) NewUserMemberships() (ums []*UserMembershipNew) {
 			} else {
 				dbg(fmt.Sprintf("c\n"))
 				um.AutoExtend = old.AutoExtend
-				um.TerminationDate = time.Time{}
+				if um.AutoExtend {
+					um.TerminationDate = time.Time{}
+				} else {
+					um.TerminationDate = old.EndDate
+				}
 			}
 
 			// Create corresponding invoice user membership
