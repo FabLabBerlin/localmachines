@@ -324,8 +324,8 @@
               </div>
             </div>
           </div>
-          <div ng-show="!userMembership.Invoice.Current && userMembership.TerminationDate && moment(userMembership.TerminationDate).unix() > 0">
-            {{userMembership.TerminationDate}}
+          <div ng-show="!userMembership.Invoice.Current">
+            {{userMembership.TerminationDateFormatted}}
           </div>
         </td>
         <td>

@@ -220,6 +220,9 @@ app.controller('UserCtrl',
       _.each(invoices, function(invoice) {
         _.each(invoice.InvUserMemberships, function(umb) {
           umb.Invoice = invoice;
+          if (umb.TerminationDate && moment(umb.TerminationDate).unix() > 0) {
+            umb.TerminationDateFormatted = moment(umb.TerminationDate).format('YYYY-MM-DD');
+          }
           data.push(umb);
         });
       });
