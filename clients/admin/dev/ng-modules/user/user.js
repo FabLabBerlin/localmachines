@@ -191,10 +191,7 @@ app.controller('UserCtrl',
         var eachUserMembershipId = $(this).attr('data-user-membership-id');
         eachUserMembershipId = parseInt(eachUserMembershipId);
         $(this).pickadate({
-          format: 'yyyy-mm-dd',
-          onSet: function(setWhat) {
-            $scope.updateUserMembership(eachUserMembershipId);
-          }
+          format: 'yyyy-mm-dd'
         });
       });
 
@@ -322,6 +319,27 @@ app.controller('UserCtrl',
       } // callback
     });
   };
+
+  $scope.updateUserMembershipPrompt = function(userMembershipId) {
+    var token = randomToken.generate();
+    vex.dialog.prompt({
+      message: 'Enter <span class="delete-prompt-token">' +
+      token + '</span> to update',
+      placeholder: 'Token',
+      callback: function(value) {
+        if (value) {
+          if (value === token) {
+            $scope.updateUserMembership(userMembershipId);
+          } else {
+            toastr.error('Wrong token');
+          }
+        } else if (value !== false) {
+          toastr.error('No token');
+        }
+      } // callback
+    });
+  };
+
 
   $scope.updateUserMembership = function(userMembershipId) {
     var userMembership;

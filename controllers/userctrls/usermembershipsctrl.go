@@ -177,9 +177,19 @@ func (this *UserMembershipsController) PutUserMembership() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	if err := um.Update(); err != nil {
+	o := orm.NewOrm()
+
+	if err := o.Begin(); err != nil {
+		this.Fail(500, "tx begin")
+	}
+
+	if err := um.Update(o); err != nil {
 		beego.Error("UpdateMembership: ", err)
 		this.Abort("500")
+	}
+
+	if err := o.Commit(); err != nil {
+		this.Fail(500, "tx commit")
 	}
 
 	this.Data["json"] = "ok"

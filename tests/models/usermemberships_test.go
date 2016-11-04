@@ -129,7 +129,10 @@ func TestUserMemberships(t *testing.T) {
 				}
 				So(userMembership.AutoExtend, ShouldEqual, membership.AutoExtend)
 				userMembership.AutoExtend = false
-				if err := userMembership.Update(); err != nil {
+
+				o = orm.NewOrm()
+
+				if err := userMembership.Update(o); err != nil {
 					panic(err.Error())
 				}
 				So(userMembership.AutoExtend, ShouldBeFalse)

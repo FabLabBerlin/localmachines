@@ -25,16 +25,6 @@ type UserMembership struct {
 	Updated time.Time
 }
 
-/*func (this UserMembership) CloneOrm(o orm.Ormer, invId int64, invStatus string) error {
-	var clone UserMembership
-	clone = this
-	clone.Id = 0
-	clone.InvoiceId = invId
-	clone.InvoiceStatus = invStatus
-	_, err := o.Insert(&clone)
-	return err
-}*/
-
 // Returns the database table name of the UserMembership model.
 func (this *UserMembership) TableName() string {
 	return TABLE_NAME
@@ -46,8 +36,7 @@ func (this *UserMembership) TerminationDateDefined() bool {
 
 // Updates user membership in the database by using a pointer
 // to user membership store.
-func (this *UserMembership) Update() (err error) {
-	o := orm.NewOrm()
+func (this *UserMembership) Update(o orm.Ormer) (err error) {
 	_, err = o.Update(this)
 	return
 }
