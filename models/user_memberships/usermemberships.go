@@ -18,7 +18,6 @@ type UserMembership struct {
 	StartDate             time.Time               `orm:"type(datetime)"`
 	TerminationDate       time.Time               `orm:"type(datetime)"`
 	InitialDurationMonths int
-	AutoExtend            bool
 
 	Created time.Time
 	Updated time.Time
@@ -46,10 +45,6 @@ func (this UserMembership) ActiveAt(t time.Time) bool {
 		return false
 	}
 
-	if this.AutoExtend {
-		return true
-	}
-
 	return this.StartDate.AddDate(0, this.InitialDurationMonths, 0).After(t)
 }
 
@@ -73,7 +68,6 @@ func Create(o orm.Ormer, userId, membershipId, invoiceId int64, start time.Time)
 		UserId:                userId,
 		MembershipId:          membershipId,
 		StartDate:             start,
-		AutoExtend:            m.AutoExtend,
 		InitialDurationMonths: int(m.DurationMonths),
 
 		Created: time.Now(),

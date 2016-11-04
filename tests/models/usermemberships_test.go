@@ -127,20 +127,18 @@ func TestUserMemberships(t *testing.T) {
 				if err != nil {
 					panic(err.Error())
 				}
-				So(userMembership.AutoExtend, ShouldEqual, membership.AutoExtend)
-				userMembership.AutoExtend = false
 
 				o = orm.NewOrm()
 
 				if err := userMembership.Update(o); err != nil {
 					panic(err.Error())
 				}
-				So(userMembership.AutoExtend, ShouldBeFalse)
+
 				gotUserMembership, err := user_memberships.Get(userMembership.Id)
 				if err != nil {
 					panic(err.Error())
 				}
-				So(gotUserMembership.AutoExtend, ShouldBeFalse)
+
 				Convey("There should be no error", func() {
 					So(err, ShouldBeNil)
 				})
@@ -155,7 +153,6 @@ func TestUserMemberships(t *testing.T) {
 						panic(err.Error())
 					}
 					So(len(ums), ShouldEqual, 1)
-					So(ums[0].AutoExtend, ShouldBeFalse)
 				})
 
 				Convey("It should be possible to read it back again", func() {
