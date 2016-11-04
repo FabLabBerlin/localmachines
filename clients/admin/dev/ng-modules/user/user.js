@@ -244,12 +244,17 @@ app.controller('UserCtrl',
         return userMembership;
       });
 
-      /*$scope.userMemberships = _.sortBy($scope.userMemberships, function(umb) {
-        var n = umb.Invoice.Current ? 1000000 : 0;
-        n += umb.Invoice.Year * 100;
-        n += umb.Invoice.Month;
-        return -n;
-      });*/
+      $scope.userMemberships = _.sortBy($scope.userMemberships, function(umb) {
+        var t = moment(umb.TerminationDate).unix();
+
+        console.log(t);
+
+        if (t < 0) {
+          return -1e20;
+        }
+
+        return -t;
+      });
 
       $scope.getAvailableMemberships();
     })
@@ -401,6 +406,16 @@ app.controller('UserCtrl',
     _.each($scope.userMemberships, function(um) {
       if (um.Id && um.Id === userMembershipId) {
         um.TerminationDateFormatted = moment().format('YYYY-MM-DD');
+      }
+    });
+  };
+
+  $scope.unsetTerminationDate = function(userMembershipId) {
+    _.each($scope.userMemberships, function(um) {
+      if (um.Id && um.Id === userMembershipId) {
+        um.TerminationDate = moment('0001-01-01').toDate();
+        um.TerminationDateFormatted = null;
+        $('.adm-user-membership-termination-date[data-user-membership-id=' + userMembershipId + ']').val('');
       }
     });
   };

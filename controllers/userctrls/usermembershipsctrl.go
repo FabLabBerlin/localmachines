@@ -210,7 +210,7 @@ func (this *UserMembershipsController) PutUserMembership() {
 		}
 	}
 
-	if nonDraftInvoiceErrors == len(iums) {
+	if nonDraftInvoiceErrors > 0 && nonDraftInvoiceErrors == len(iums) {
 		o.Rollback()
 		this.Fail(500, "changes would only affect billed invoices")
 	}

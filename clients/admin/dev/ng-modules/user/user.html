@@ -315,8 +315,10 @@
                 data-user-membership-id="{{userMembership.Id}}"
                 placeholder="YYYY-MM-DD"
                 value="{{userMembership.TerminationDateFormatted}}">
-              <div class="input-group-addon">
-                <i class="fa fa-calendar"></i>
+              <div class="input-group-addon"
+                   style="cursor: pointer"
+                   ng-click="unsetTerminationDate(userMembership.Id)">
+                <i class="fa fa-close"></i>
               </div>
             </div>
           </div>

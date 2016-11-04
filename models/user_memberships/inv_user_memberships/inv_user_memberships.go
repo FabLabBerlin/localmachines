@@ -60,7 +60,7 @@ func New(um *user_memberships.UserMembership, invoiceId int64) *InvoiceUserMembe
 	}
 }
 
-var ErrNonDraftInvoice = errors.New("tried to change non-draft invoice")
+var ErrNonDraftInvoice = errors.New("this would change a billed invoice")
 
 func (this *InvoiceUserMembership) Denormalize(
 	o orm.Ormer,
