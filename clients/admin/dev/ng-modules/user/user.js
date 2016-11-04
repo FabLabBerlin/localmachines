@@ -360,9 +360,9 @@ app.controller('UserCtrl',
           if (startDate) {
             transformed.StartDate = new Date(startDate);
           }
-          var endDate = $('.adm-user-membership-end-date[data-user-membership-id=' + userMembershipId + ']').val();
-          if (endDate) {
-            transformed.EndDate = new Date(endDate);
+          var terminationDate = $('.adm-user-membership-termination-date[data-user-membership-id=' + userMembershipId + ']').val();
+          if (terminationDate) {
+            transformed.TerminationDate = new Date(terminationDate);
           }
           delete transformed.Invoice;
           return JSON.stringify(transformed);
@@ -371,8 +371,8 @@ app.controller('UserCtrl',
       .success(function() {
         toastr.success('Membership updated.');
       })
-      .error(function() {
-        toastr.error('Error while trying to update user membership');
+      .error(function(status) {
+        toastr.error(status);
       });
     } else {
       toastr.error('Fatal error.');

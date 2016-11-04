@@ -1,6 +1,7 @@
 package inv_user_memberships
 
 import (
+	"errors"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
@@ -59,12 +60,42 @@ func New(um *user_memberships.UserMembership, invoiceId int64) *InvoiceUserMembe
 	}
 }
 
+var ErrNonDraftInvoice = errors.New("tried to change non-draft invoice")
+
+func (this *InvoiceUserMembership) Denormalize(
+	o orm.Ormer,
+	um user_memberships.UserMembership,
+) (err error) {
+	inv, err := invoices.GetOrm(o, this.InvoiceId)
+	if err != nil {
+		return fmt.Errorf("get invoice: %v", err)
+	}
+
+	if inv.Status != "draft" {
+		return ErrNonDraftInvoice
+	}
+
+	this.StartDate = um.StartDate
+	this.TerminationDate = um.TerminationDate
+
+	if err = this.Update(o); err != nil {
+		return
+	}
+
+	return
+}
+
 func (this *InvoiceUserMembership) Membership() *memberships.Membership {
 	return this.UserMembership.Membership
 }
 
 func (this *InvoiceUserMembership) TableName() string {
 	return TABLE_NAME
+}
+
+func (this *InvoiceUserMembership) Update(o orm.Ormer) (err error) {
+	_, err = o.Update(this)
+	return
 }
 
 func init() {
@@ -132,10 +163,10 @@ func GetForInvoice(invoiceId int64) (iums []*InvoiceUserMembership, err error) {
 }
 
 func GetForUserMembership(userMembershipId int64) (iums []*InvoiceUserMembership, err error) {
-	return getForUserMembership(orm.NewOrm(), userMembershipId)
+	return GetForUserMembershipOrm(orm.NewOrm(), userMembershipId)
 }
 
-func getForUserMembership(o orm.Ormer, userMembershipId int64) (iums []*InvoiceUserMembership, err error) {
+func GetForUserMembershipOrm(o orm.Ormer, userMembershipId int64) (iums []*InvoiceUserMembership, err error) {
 
 	if _, err = o.
 		QueryTable(TABLE_NAME).
@@ -170,7 +201,7 @@ func getForUserMembership(o orm.Ormer, userMembershipId int64) (iums []*InvoiceU
 }
 
 func DeleteForUserMembership(o orm.Ormer, userMembershipId int64) (err error) {
-	iums, err := getForUserMembership(o, userMembershipId)
+	iums, err := GetForUserMembershipOrm(o, userMembershipId)
 	if err != nil {
 		return
 	}
@@ -186,7 +217,7 @@ func DeleteForUserMembership(o orm.Ormer, userMembershipId int64) (err error) {
 		}
 
 		if inv.Status != "draft" {
-			return fmt.Errorf("associated to billed invoice")
+			return ErrNonDraftInvoice
 		}
 
 		if _, err := o.Delete(&ium); err != nil {

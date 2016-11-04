@@ -164,17 +164,18 @@ func (this *UserMembershipsController) GetUserMemberships() {
 // @Failure	403	Variable message
 // @router /:uid/memberships/:umid [put]
 func (this *UserMembershipsController) PutUserMembership() {
+	beego.Info("UserMembershipsController#PutUserMembership()")
 	dec := json.NewDecoder(this.Ctx.Request.Body)
 	var um user_memberships.UserMembership
 
 	if err := dec.Decode(&um); err != nil {
 		beego.Error("Failed to decode json", err)
-		this.Abort("500")
+		this.Fail("500")
 	}
 
 	if !this.IsAdminAt(um.LocationId) {
 		beego.Error("Not authorized")
-		this.CustomAbort(401, "Not authorized")
+		this.Fail(401, "Not authorized")
 	}
 
 	o := orm.NewOrm()
@@ -184,8 +185,34 @@ func (this *UserMembershipsController) PutUserMembership() {
 	}
 
 	if err := um.Update(o); err != nil {
-		beego.Error("UpdateMembership: ", err)
-		this.Abort("500")
+		o.Rollback()
+		beego.Error("UpdateMembership:", err)
+		this.Fail(500)
+	}
+
+	iums, err := inv_user_memberships.GetForUserMembershipOrm(o, um.Id)
+	if err != nil {
+		o.Rollback()
+		beego.Error("get invoice user memberships:", err)
+		this.Fail(500)
+	}
+
+	nonDraftInvoiceErrors := 0
+
+	for _, ium := range iums {
+		if err := ium.Denormalize(o, um); err == inv_user_memberships.ErrNonDraftInvoice {
+			nonDraftInvoiceErrors++
+			continue
+		} else if err != nil {
+			o.Rollback()
+			beego.Error("Denormalize:", err.Error())
+			this.Fail(500, err.Error())
+		}
+	}
+
+	if nonDraftInvoiceErrors == len(iums) {
+		o.Rollback()
+		this.Fail(500, "changes would only affect billed invoices")
 	}
 
 	if err := o.Commit(); err != nil {
