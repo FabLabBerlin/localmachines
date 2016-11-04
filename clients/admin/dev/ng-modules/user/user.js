@@ -379,6 +379,14 @@ app.controller('UserCtrl',
     });
   };
 
+  $scope.setTerminationDate = function(userMembershipId) {
+    _.each($scope.userMemberships, function(um) {
+      if (um.Id && um.Id === userMembershipId) {
+        um.TerminationDateFormatted = moment().format('YYYY-MM-DD');
+      }
+    });
+  };
+
   $scope.saveUser = function() {
     if ($scope.user.UserRole === 'admin') {
       $scope.updateUser();
