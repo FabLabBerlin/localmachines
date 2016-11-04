@@ -9,7 +9,6 @@ import (
 
 const TABLE_NAME = "user_memberships"
 
-// User membership model that has a mapping in the database.
 type UserMembership struct {
 	Id                    int64
 	LocationId            int64
@@ -25,7 +24,6 @@ type UserMembership struct {
 	Updated time.Time
 }
 
-// Returns the database table name of the UserMembership model.
 func (this *UserMembership) TableName() string {
 	return TABLE_NAME
 }
@@ -34,8 +32,6 @@ func (this *UserMembership) TerminationDateDefined() bool {
 	return this.TerminationDate.Unix() > 0
 }
 
-// Updates user membership in the database by using a pointer
-// to user membership store.
 func (this *UserMembership) Update(o orm.Ormer) (err error) {
 	_, err = o.Update(this)
 	return
@@ -158,8 +154,6 @@ func GetAllOfDeep(locId, userId int64) (ums []*UserMembership, err error) {
 	return
 }
 
-// Gets pointer to filled user membership store
-// by using user membership ID.
 func Get(id int64) (*UserMembership, error) {
 	userMembership := UserMembership{
 		Id: id,

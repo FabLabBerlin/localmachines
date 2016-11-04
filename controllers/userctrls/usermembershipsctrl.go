@@ -31,22 +31,22 @@ func (this *UserMembershipsController) PostUserMemberships() {
 	uid, err := this.GetInt64(":uid")
 	if err != nil {
 		beego.Error("Failed to get requested user ID:", err)
-		this.Abort("400")
+		this.Fail("400")
 	}
 	if uid <= 0 {
 		beego.Error("Wrong User ID:", uid)
-		this.Abort("400")
+		this.Fail("400")
 	}
 
 	mId, err := this.GetInt64("membershipId")
 	if err != nil {
 		beego.Error("Failed to get membership ID")
-		this.Abort("400")
+		this.Fail("400")
 	}
 	m, err := memberships.Get(mId)
 	if err != nil {
 		beego.Error("get membership:", err)
-		this.Abort("500")
+		this.Fail("500")
 	}
 
 	if !this.IsAdminAt(m.LocationId) {
@@ -59,7 +59,7 @@ func (this *UserMembershipsController) PostUserMemberships() {
 		time.UTC)
 	if err != nil {
 		beego.Error("Failed to parse startDate=", startDate)
-		this.Abort("500")
+		this.Fail("500")
 	}
 
 	t := time.Now()
@@ -84,32 +84,32 @@ func (this *UserMembershipsController) PostUserMemberships() {
 
 		if i > 100 {
 			beego.Error("loop executed more than 100x")
-			this.Abort("500")
+			this.Fail("500")
 		}
 	}
 
 	if len(invoiceIds) > 2 {
 		beego.Error("more than 2 invoice months would be affected")
-		this.Abort("500")
+		this.Fail("500")
 	}
 
 	o := orm.NewOrm()
 	if err := o.Begin(); err != nil {
 		beego.Error("begin tx:", err)
-		this.Abort("500")
+		this.Fail("500")
 	}
 
 	for _, invId := range invoiceIds {
 		_, err = user_memberships.Create(o, uid, mId, invId, startDate)
 		if err != nil {
 			beego.Error("Error creating user membership:", err)
-			this.Abort("500")
+			this.Fail("500")
 		}
 	}
 
 	if err := o.Commit(); err != nil {
 		beego.Error("commit tx:", err)
-		this.Abort("500")
+		this.Fail("500")
 	}
 
 	this.ServeJSON()
@@ -133,13 +133,13 @@ func (this *UserMembershipsController) GetUserMemberships() {
 
 	if locationId <= 0 {
 		beego.Error("location id:", locationId)
-		this.Abort("400")
+		this.Fail("400")
 	}
 
 	inv, err := invoices.GetDraft(locationId, uid, time.Now())
 	if err != nil {
 		beego.Error("current invoice:", err)
-		this.Abort("500")
+		this.Fail("500")
 	}
 
 	beego.Info("current inv.Id=", inv.Id)
@@ -147,7 +147,7 @@ func (this *UserMembershipsController) GetUserMemberships() {
 	ums, err := user_memberships.GetAllOfDeep(locationId, uid)
 	if err != nil {
 		beego.Error("Failed to get user machine permissions")
-		this.Abort("500")
+		this.Fail("500")
 	}
 
 	this.Data["json"] = ums
@@ -164,7 +164,6 @@ func (this *UserMembershipsController) GetUserMemberships() {
 // @Failure	403	Variable message
 // @router /:uid/memberships/:umid [put]
 func (this *UserMembershipsController) PutUserMembership() {
-	beego.Info("UserMembershipsController#PutUserMembership()")
 	dec := json.NewDecoder(this.Ctx.Request.Body)
 	var um user_memberships.UserMembership
 
@@ -205,7 +204,6 @@ func (this *UserMembershipsController) PutUserMembership() {
 			continue
 		} else if err != nil {
 			o.Rollback()
-			beego.Error("Denormalize:", err.Error())
 			this.Fail(500, err.Error())
 		}
 	}
