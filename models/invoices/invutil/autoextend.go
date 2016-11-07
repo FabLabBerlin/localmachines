@@ -37,17 +37,29 @@ func taskAutoExtend(locId int64) (err error) {
 	}
 
 	for _, u := range us {
-		iv, ok := invsByUid[u.Id]
-		if !ok {
-			iv, err = invoices.GetDraft(locId, u.Id, time.Now())
+		var currentIv *invoices.Invoice
+
+		ivs, ok := invsByUid[u.Id]
+		for _, iv := range ivs {
+			if iv.Month == int(time.Now().Month()) &&
+				iv.Year == time.Now().Year() {
+
+				currentIv = iv
+				break
+			}
+		}
+
+		if currentIv == nil {
+			currentIv, err = invoices.GetDraft(locId, u.Id, time.Now())
 			if err != nil {
 				return fmt.Errorf("get draft: %v", err)
 			}
 		}
 
-		inv, err := Get(iv.Id)
-		if err != nil {
-			return fmt.Errorf("invutil.Get(%v): %v", iv.Id, err)
+		inv := Invoice{Invoice: *currentIv}
+
+		if err = inv.load(*data); err != nil {
+			return fmt.Errorf("load: %v", err)
 		}
 
 		if err := inv.InvoiceUserMemberships(data); err != nil {
@@ -66,7 +78,7 @@ func taskData(locId int64) (
 ) {
 	ums, err := user_memberships.GetAllAt(locId)
 	if err != nil {
-		return fmt.Errorf("get all user memberships: %v", err)
+		return nil, nil, nil, fmt.Errorf("get all user memberships: %v", err)
 	}
 
 	umsByUid = make(map[int64]*user_memberships.UserMembership)
@@ -74,9 +86,9 @@ func taskData(locId int64) (
 		umsByUid[um.UserId] = um
 	}
 
-	invs, err := invoices.GetAllAt(locId)
+	invs, err := invoices.GetAllInvoices(locId)
 	if err != nil {
-		return fmt.Errorf("get all invoices: %v", err)
+		return nil, nil, nil, fmt.Errorf("get all invoices: %v", err)
 	}
 
 	invsByUid = make(map[int64][]*Invoice)
@@ -89,7 +101,7 @@ func taskData(locId int64) (
 
 	us, err = users.GetAllUsersAt(locId)
 	if err != nil {
-		return fmt.Errorf("get all users: %v", err)
+		return nil, nil, nil, fmt.Errorf("get all users: %v", err)
 	}
 
 	return
