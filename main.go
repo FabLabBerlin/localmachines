@@ -113,6 +113,9 @@ func configDatabase() {
 // Setup Beego toolbox tasks. They are kind of cron jobs.
 func setupTasks() {
 	fmt.Println("Starting tasks")
+	autoextendUserMembership := toolbox.NewTask("Autoextend User Membership",
+		"",
+		invutil.TaskAutoExtend)
 	fetchLocalIps := toolbox.NewTask("Fetch Local IPs",
 		"0 0/2 * * * *",
 		machine.FetchLocalIpsTask)
@@ -126,6 +129,7 @@ func setupTasks() {
 		" 0 0/10 * * * *",
 		machine.TaskPingNetswitches)
 
+	toolbox.AddTask("Autoextend User Membership", autoextendUserMembership)
 	toolbox.AddTask("Calculate Invoice Totals", calculateTotals)
 	toolbox.AddTask("Fetch Local IPs", fetchLocalIps)
 	toolbox.AddTask("Sync Fastbill", fastbillSync)
