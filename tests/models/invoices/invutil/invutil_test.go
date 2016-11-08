@@ -15,6 +15,7 @@ import (
 	"github.com/astaxie/beego/orm"
 	. "github.com/smartystreets/goconvey/convey"
 	"math"
+	"math/rand"
 	"strconv"
 	"testing"
 	"time"
@@ -143,98 +144,145 @@ func TestInvutilInvoices(t *testing.T) {
 		})
 
 		Convey("Membership from 11/30-12/31 billed exactly once", func() {
-			user := &users.User{
-				FirstName: "Gerhard",
-				LastName:  "Schröder",
-				Email:     "gerhardt@schroeder.net",
-			}
-			userId, err := users.CreateUser(user)
-			if err != nil {
-				panic(err.Error())
-			}
-			_, err = user_locations.Create(&user_locations.UserLocation{
-				UserId:     user.Id,
-				LocationId: 1,
-			})
-			if err != nil {
-				panic(err.Error())
-			}
+			mt := MembershipIntervalTest{}
 
-			m, err := memberships.Create(1, "Foo")
-			if err != nil {
-				panic(err.Error())
-			}
-			m.MonthlyPrice = 123.45
-			if err := m.Update(); err != nil {
-				panic(err.Error())
-			}
+			mt.First.Month = 11
+			mt.First.Year = 2015
+			mt.First.Expect.LenInvUserMemberships = 1
+			mt.First.Expect.Price = 123.45
 
-			o := orm.NewOrm()
-			startDate := time.Date(2015, 11, 30, 0, 0, 0, 0, time.UTC)
-			terminationDate := time.Date(2015, 12, 31, 23, 59, 59, 0, time.UTC)
+			mt.Second.Month = 12
+			mt.Second.Year = 2015
+			mt.Second.Expect.LenInvUserMemberships = 1
+			mt.Second.Expect.Price = 0
 
-			um, err := user_memberships.Create(o, userId, m.Id, startDate)
-			if err != nil {
-				panic(err.Error())
-			}
+			mt.Membership.From = time.Date(2015, 11, 30, 0, 0, 0, 0, time.UTC)
+			mt.Membership.To = time.Date(2015, 12, 31, 23, 59, 59, 0, time.UTC)
+			mt.Membership.MonthlyPrice = 123.45
 
-			um.TerminationDate = terminationDate
-
-			if err := um.Update(o); err != nil {
-				panic(err.Error())
-			}
-
-			invNovId, err := invoices.Create(&invoices.Invoice{
-				LocationId: 1,
-				Month:      11,
-				Year:       2015,
-				UserId:     userId,
-				Status:     "draft",
-			})
-			if err != nil {
-				panic(err.Error())
-			}
-
-			invDecId, err := invoices.Create(&invoices.Invoice{
-				LocationId: 1,
-				Month:      12,
-				Year:       2015,
-				UserId:     userId,
-				Status:     "draft",
-			})
-			if err != nil {
-				panic(err.Error())
-			}
-
-			invNov, err := invutil.Get(invNovId)
-			if err != nil {
-				panic(err.Error())
-			}
-
-			invDec, err := invutil.Get(invDecId)
-			if err != nil {
-				panic(err.Error())
-			}
-
-			data := invutil.NewPrefetchedData(1)
-			if err := data.Prefetch(); err != nil {
-				panic(err.Error())
-			}
-
-			if err := invNov.InvoiceUserMemberships(data); err != nil {
-				panic(err.Error())
-			}
-
-			if err := invDec.InvoiceUserMemberships(data); err != nil {
-				panic(err.Error())
-			}
-
-			So(len(invNov.InvUserMemberships), ShouldEqual, 1)
-			So(invNov.Sums.All.PriceInclVAT, ShouldEqual, 123.45)
-			So(len(invDec.InvUserMemberships), ShouldEqual, 1)
-			So(invDec.Sums.All.PriceInclVAT, ShouldEqual, 0)
+			mt.Run()
 		})
 	})
+}
+
+type MembershipIntervalTest struct {
+	First struct {
+		Month  int
+		Year   int
+		Expect struct {
+			LenInvUserMemberships int
+			Price                 float64
+		}
+	}
+
+	Second struct {
+		Month  int
+		Year   int
+		Expect struct {
+			LenInvUserMemberships int
+			Price                 float64
+		}
+	}
+
+	Membership struct {
+		From         time.Time
+		To           time.Time
+		MonthlyPrice float64
+	}
+}
+
+func (t *MembershipIntervalTest) Run() {
+	r := fmt.Sprintf("%v", rand.Intn(1000))
+	user := &users.User{
+		FirstName: "Gerhard" + r,
+		LastName:  "Schröder" + r,
+		Email:     "gerhardt" + r + "@schroeder.net",
+	}
+	userId, err := users.CreateUser(user)
+	if err != nil {
+		panic(err.Error())
+	}
+	_, err = user_locations.Create(&user_locations.UserLocation{
+		UserId:     user.Id,
+		LocationId: 1,
+	})
+	if err != nil {
+		panic(err.Error())
+	}
+
+	m, err := memberships.Create(1, "Foo")
+	if err != nil {
+		panic(err.Error())
+	}
+	m.MonthlyPrice = t.Membership.MonthlyPrice
+	if err := m.Update(); err != nil {
+		panic(err.Error())
+	}
+
+	o := orm.NewOrm()
+	startDate := t.Membership.From
+	terminationDate := t.Membership.To
+
+	um, err := user_memberships.Create(o, userId, m.Id, startDate)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	um.TerminationDate = terminationDate
+
+	if err := um.Update(o); err != nil {
+		panic(err.Error())
+	}
+
+	inv1stId, err := invoices.Create(&invoices.Invoice{
+		LocationId: 1,
+		Month:      t.First.Month,
+		Year:       t.First.Year,
+		UserId:     userId,
+		Status:     "draft",
+	})
+	if err != nil {
+		panic(err.Error())
+	}
+
+	inv2ndId, err := invoices.Create(&invoices.Invoice{
+		LocationId: 1,
+		Month:      t.Second.Month,
+		Year:       t.Second.Year,
+		UserId:     userId,
+		Status:     "draft",
+	})
+	if err != nil {
+		panic(err.Error())
+	}
+
+	inv1st, err := invutil.Get(inv1stId)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	inv2nd, err := invutil.Get(inv2ndId)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	data := invutil.NewPrefetchedData(1)
+	if err := data.Prefetch(); err != nil {
+		panic(err.Error())
+	}
+
+	if err := inv1st.InvoiceUserMemberships(data); err != nil {
+		panic(err.Error())
+	}
+
+	if err := inv2nd.InvoiceUserMemberships(data); err != nil {
+		panic(err.Error())
+	}
+
+	So(len(inv1st.InvUserMemberships), ShouldEqual, t.First.Expect.LenInvUserMemberships)
+	So(inv1st.Sums.All.PriceInclVAT, ShouldEqual, t.First.Expect.Price)
+	So(len(inv2nd.InvUserMemberships), ShouldEqual, t.Second.Expect.LenInvUserMemberships)
+	So(inv2nd.Sums.All.PriceInclVAT, ShouldEqual, t.Second.Expect.Price)
 }
 
 func testInvoiceWithMembershipAndTestPurchase(purchaseInsideMembershipInterval bool) {
