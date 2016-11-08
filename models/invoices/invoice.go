@@ -58,7 +58,7 @@ func Create(inv *Invoice) (id int64, err error) {
 		return 0, fmt.Errorf("begin tx: %v", err)
 	}
 
-	if _, err = o.Insert(inv); err != nil {
+	if id, err = o.Insert(inv); err != nil {
 		return 0, fmt.Errorf("insert inv: %v", err)
 	}
 
