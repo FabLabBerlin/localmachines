@@ -226,7 +226,7 @@ func TestInvutilInvoices(t *testing.T) {
 			}
 
 			So(len(invNov.InvUserMemberships), ShouldEqual, 1)
-			So(len(invDec.InvUserMemberships), ShouldEqual, 1)
+			So(len(invDec.InvUserMemberships), ShouldEqual, 0)
 		})
 	})
 }
