@@ -62,49 +62,16 @@ func (this *UserMembershipsController) PostUserMemberships() {
 		this.Fail("500")
 	}
 
-	t := time.Now()
-
-	invoiceIds := make([]int64, 0, 1)
-
-	for i := 0; ; i++ {
-		inv, err := invoices.GetDraft(m.LocationId, uid, t)
-		if err != nil {
-			msg := fmt.Sprintf("error getting this month' invoice: %v", err)
-			beego.Error(msg)
-			this.CustomAbort(500, msg)
-		}
-
-		invoiceIds = append(invoiceIds, inv.Id)
-
-		if t.Month() == startDate.Month() && t.Year() == startDate.Year() {
-			break
-		} else {
-			t = t.AddDate(0, -1, 0)
-		}
-
-		if i > 100 {
-			beego.Error("loop executed more than 100x")
-			this.Fail("500")
-		}
-	}
-
-	if len(invoiceIds) > 2 {
-		beego.Error("more than 2 invoice months would be affected")
-		this.Fail("500")
-	}
-
 	o := orm.NewOrm()
 	if err := o.Begin(); err != nil {
 		beego.Error("begin tx:", err)
 		this.Fail("500")
 	}
 
-	for _, invId := range invoiceIds {
-		_, err = user_memberships.Create(o, uid, mId, invId, startDate)
-		if err != nil {
-			beego.Error("Error creating user membership:", err)
-			this.Fail("500")
-		}
+	_, err = user_memberships.Create(o, uid, mId, startDate)
+	if err != nil {
+		beego.Error("Error creating user membership:", err)
+		this.Fail("500")
 	}
 
 	if err := o.Commit(); err != nil {

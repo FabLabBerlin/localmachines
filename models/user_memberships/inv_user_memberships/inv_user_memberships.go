@@ -220,7 +220,7 @@ func DeleteForUserMembership(o orm.Ormer, userMembershipId int64) (err error) {
 			return ErrNonDraftInvoice
 		}
 
-		if _, err := o.Delete(&ium); err != nil {
+		if _, err := o.Delete(ium); err != nil {
 			return fmt.Errorf("delete: %v", err)
 		}
 	}

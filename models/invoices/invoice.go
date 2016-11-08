@@ -112,6 +112,7 @@ func GetDraft(locId, uid int64, t time.Time) (*Invoice, error) {
 	} else if err == orm.ErrNoRows {
 		fmt.Printf(": no rows\n")
 		if isThisMonth || isNextMonth {
+			fmt.Printf("isThisMonth || isNextMonth\n")
 			if _, err := Create(&inv); err == nil {
 				if isThisMonth {
 					if err := inv.SetCurrent(); err != nil {
@@ -123,6 +124,7 @@ func GetDraft(locId, uid int64, t time.Time) (*Invoice, error) {
 				return nil, fmt.Errorf("create: %v", err)
 			}
 		} else {
+			fmt.Printf("!(isThisMonth || isNextMonth); t=%v\n", t)
 			return nil, ErrNoInvoiceForThatMonth
 		}
 	} else {

@@ -53,11 +53,7 @@ func init() {
 }
 
 // Creates user membership from user ID, membership ID and start time.
-func Create(o orm.Ormer, userId, membershipId, invoiceId int64, start time.Time) (*UserMembership, error) {
-	if invoiceId <= 0 {
-		return nil, fmt.Errorf("need (valid) invoice id")
-	}
-
+func Create(o orm.Ormer, userId, membershipId int64, start time.Time) (*UserMembership, error) {
 	m, err := memberships.Get(membershipId)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get membership: %v", err)
