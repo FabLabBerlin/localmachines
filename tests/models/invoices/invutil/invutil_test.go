@@ -162,6 +162,46 @@ func TestInvutilInvoices(t *testing.T) {
 
 			mt.Run()
 		})
+
+		Convey("Membership from 11/09-12/15 billed exactly once", func() {
+			mt := MembershipIntervalTest{}
+
+			mt.First.Month = 11
+			mt.First.Year = 2015
+			mt.First.Expect.LenInvUserMemberships = 1
+			mt.First.Expect.Price = 123.45
+
+			mt.Second.Month = 12
+			mt.Second.Year = 2015
+			mt.Second.Expect.LenInvUserMemberships = 1
+			mt.Second.Expect.Price = 0
+
+			mt.Membership.From = time.Date(2015, 11, 9, 0, 0, 0, 0, time.UTC)
+			mt.Membership.To = time.Date(2015, 12, 15, 23, 59, 59, 0, time.UTC)
+			mt.Membership.MonthlyPrice = 123.45
+
+			mt.Run()
+		})
+
+		Convey("Membership from 11/01-12/31 billed exactly twice", func() {
+			mt := MembershipIntervalTest{}
+
+			mt.First.Month = 11
+			mt.First.Year = 2015
+			mt.First.Expect.LenInvUserMemberships = 1
+			mt.First.Expect.Price = 123.45
+
+			mt.Second.Month = 12
+			mt.Second.Year = 2015
+			mt.Second.Expect.LenInvUserMemberships = 1
+			mt.Second.Expect.Price = 123.45
+
+			mt.Membership.From = time.Date(2015, 11, 9, 0, 0, 0, 0, time.UTC)
+			mt.Membership.To = time.Date(2015, 12, 15, 23, 59, 59, 0, time.UTC)
+			mt.Membership.MonthlyPrice = 123.45
+
+			mt.Run()
+		})
 	})
 }
 
