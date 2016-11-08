@@ -206,8 +206,6 @@ func TestInvutilInvoices(t *testing.T) {
 				panic(err.Error())
 			}
 
-			fmt.Printf("000000000000\n")
-
 			invNov, err := invutil.Get(invNovId)
 			if err != nil {
 				panic(err.Error())

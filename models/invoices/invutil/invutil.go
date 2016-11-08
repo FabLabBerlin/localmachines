@@ -80,11 +80,8 @@ func (inv *Invoice) calculateTotals(ms []*inv_user_memberships.InvoiceUserMember
 
 	for _, m := range ms {
 		if inv.userMembershipGetsBilledHere(m.UserMembership) {
-			fmt.Printf("calculateTotals: gets billed here\n")
 			inv.Sums.Memberships.Undiscounted += m.Membership().MonthlyPrice
 			inv.Sums.Memberships.PriceInclVAT += m.Membership().MonthlyPrice
-		} else {
-			fmt.Printf("calculateTotals: gets not billed here\n")
 		}
 		inv.Sums.Memberships.PriceExclVAT = inv.Sums.Memberships.PriceInclVAT / p
 		inv.Sums.Memberships.PriceVAT = inv.Sums.Memberships.PriceInclVAT - inv.Sums.Memberships.PriceExclVAT
@@ -127,12 +124,11 @@ func (inv *Invoice) InvoiceUserMemberships(data *PrefetchedData) (err error) {
 		}
 
 		if !invoiced {
-			fmt.Printf("AAAA\n")
 			if inv.Status != "draft" {
 				beego.Error("invoice doesn't have status draft but not all user memberships are associated")
 				continue
 			}
-			fmt.Printf("BBBB\n")
+
 			ium, err := inv_user_memberships.Create(um, inv.Id)
 			if err != nil {
 				return fmt.Errorf("inv_user_memberships.Create: %v", err)
@@ -155,7 +151,6 @@ func (inv *Invoice) userMembershipGetsBilledHere(um *user_memberships.UserMember
 	invTo := inv.Interval().TimeTo()
 
 	if um.TerminationDateDefined() {
-		fmt.Printf("um.TerminationDateDefined\n")
 		if um.TerminationDate.Before(invTo.AddDate(0, 0, 7)) {
 			return false
 		}
@@ -433,7 +428,6 @@ func AssureUserHasDraftFor(locId int64, u *users.User, year int, month time.Mont
 	}
 
 	if draft == nil {
-		fmt.Printf("0.0\n")
 		var newIv invoices.Invoice
 
 		newIv.Year = year
@@ -452,7 +446,6 @@ func AssureUserHasDraftFor(locId int64, u *users.User, year int, month time.Mont
 			}
 		}
 	} else {
-		fmt.Printf("1.0\n")
 		if year == time.Now().Year() && month == time.Now().Month() {
 			if err := draft.SetCurrent(); err != nil {
 				return fmt.Errorf("set current: %v", err)
