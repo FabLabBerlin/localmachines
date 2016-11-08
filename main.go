@@ -114,7 +114,7 @@ func configDatabase() {
 func setupTasks() {
 	fmt.Println("Starting tasks")
 	autoextendUserMembership := toolbox.NewTask("Autoextend User Membership",
-		"",
+		" 0 0/53 * * * *",
 		invutil.TaskAutoExtend)
 	fetchLocalIps := toolbox.NewTask("Fetch Local IPs",
 		"0 0/2 * * * *",

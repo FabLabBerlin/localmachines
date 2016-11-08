@@ -5,10 +5,13 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/FabLabBerlin/localmachines/models/users"
+	"github.com/astaxie/beego"
 	"time"
 )
 
 func TaskAutoExtend() (err error) {
+	beego.Info("TaskAutoExtend()")
+
 	ls, err := locations.GetAll()
 	if err != nil {
 		return fmt.Errorf("get all locations: %v", err)
