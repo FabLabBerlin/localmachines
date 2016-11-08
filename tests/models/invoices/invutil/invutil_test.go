@@ -164,6 +164,10 @@ func TestInvutilInvoices(t *testing.T) {
 			if err != nil {
 				panic(err.Error())
 			}
+			m.MonthlyPrice = 123.45
+			if err := m.Update(); err != nil {
+				panic(err.Error())
+			}
 
 			o := orm.NewOrm()
 			startDate := time.Date(2015, 11, 30, 0, 0, 0, 0, time.UTC)
@@ -202,6 +206,8 @@ func TestInvutilInvoices(t *testing.T) {
 				panic(err.Error())
 			}
 
+			fmt.Printf("000000000000\n")
+
 			invNov, err := invutil.Get(invNovId)
 			if err != nil {
 				panic(err.Error())
@@ -226,7 +232,9 @@ func TestInvutilInvoices(t *testing.T) {
 			}
 
 			So(len(invNov.InvUserMemberships), ShouldEqual, 1)
-			So(len(invDec.InvUserMemberships), ShouldEqual, 0)
+			So(invNov.Sums.All.PriceInclVAT, ShouldEqual, 123.45)
+			So(len(invDec.InvUserMemberships), ShouldEqual, 1)
+			So(invDec.Sums.All.PriceInclVAT, ShouldEqual, 0)
 		})
 	})
 }

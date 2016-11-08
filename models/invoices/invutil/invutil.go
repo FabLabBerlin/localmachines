@@ -80,8 +80,11 @@ func (inv *Invoice) calculateTotals(ms []*inv_user_memberships.InvoiceUserMember
 
 	for _, m := range ms {
 		if inv.userMembershipGetsBilledHere(m.UserMembership) {
+			fmt.Printf("calculateTotals: gets billed here\n")
 			inv.Sums.Memberships.Undiscounted += m.Membership().MonthlyPrice
 			inv.Sums.Memberships.PriceInclVAT += m.Membership().MonthlyPrice
+		} else {
+			fmt.Printf("calculateTotals: gets not billed here\n")
 		}
 		inv.Sums.Memberships.PriceExclVAT = inv.Sums.Memberships.PriceInclVAT / p
 		inv.Sums.Memberships.PriceVAT = inv.Sums.Memberships.PriceInclVAT - inv.Sums.Memberships.PriceExclVAT
@@ -149,7 +152,16 @@ func (inv *Invoice) userMembershipActiveHere(um *user_memberships.UserMembership
 }
 
 func (inv *Invoice) userMembershipGetsBilledHere(um *user_memberships.UserMembership) bool {
-	return um.ActiveAt(inv.Interval().TimeTo())
+	invTo := inv.Interval().TimeTo()
+
+	if um.TerminationDateDefined() {
+		fmt.Printf("um.TerminationDateDefined\n")
+		if um.TerminationDate.Before(invTo.AddDate(0, 0, 7)) {
+			return false
+		}
+	}
+
+	return um.ActiveAt(invTo)
 }
 
 func (inv *Invoice) Load() (err error) {
