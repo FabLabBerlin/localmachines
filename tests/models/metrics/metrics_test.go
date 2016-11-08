@@ -129,7 +129,7 @@ func simulate(s Simulation) {
 		}
 
 		if i < s.nFlatrateUsers {
-			_, err := user_memberships.Create(orm.NewOrm(), uid, mb.Id, iv.Id, time.Date(2016, 6, 1, 1, 1, 1, 1, time.UTC))
+			_, err := user_memberships.Create(orm.NewOrm(), uid, mb.Id, time.Date(2016, 6, 1, 1, 1, 1, 1, time.UTC))
 			if err != nil {
 				panic(err.Error())
 			}

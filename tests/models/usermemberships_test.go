@@ -106,7 +106,7 @@ func TestUserMemberships(t *testing.T) {
 				o := orm.NewOrm()
 
 				userMembership, err := user_memberships.Create(
-					o, fakeUserId, fakeMembershipId, 123, startDate)
+					o, fakeUserId, fakeMembershipId, startDate)
 
 				Convey("It should return error", func() {
 					So(err, ShouldNotBeNil)
@@ -123,7 +123,7 @@ func TestUserMemberships(t *testing.T) {
 				o := orm.NewOrm()
 
 				userMembership, err := user_memberships.Create(
-					o, userId, membership.Id, invNow.Id, startDate)
+					o, userId, membership.Id, startDate)
 				if err != nil {
 					panic(err.Error())
 				}

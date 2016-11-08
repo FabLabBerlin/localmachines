@@ -270,7 +270,7 @@ func createInvoiceWithMembership(year int, month time.Month, dayStart int) (
 		panic(err.Error())
 	}
 
-	um, err = user_memberships.Create(o, userId, m.Id, iv.Id, membershipStart)
+	um, err = user_memberships.Create(o, userId, m.Id, membershipStart)
 	if err != nil {
 		panic(err.Error())
 	}

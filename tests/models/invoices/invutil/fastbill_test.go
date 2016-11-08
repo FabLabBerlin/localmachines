@@ -146,7 +146,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 				panic(err.Error())
 			}
 
-			_, err = user_memberships.Create(o, uid, ms.Id, inv.Id, TIME_START)
+			_, err = user_memberships.Create(o, uid, ms.Id, TIME_START)
 			if err != nil {
 				panic(err.Error())
 			}
