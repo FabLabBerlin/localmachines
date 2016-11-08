@@ -141,6 +141,93 @@ func TestInvutilInvoices(t *testing.T) {
 
 			So(len(inv.InvUserMemberships), ShouldEqual, 1)
 		})
+
+		Convey("Membership from 11/30-12/31 billed exactly once", func() {
+			user := &users.User{
+				FirstName: "Gerhard",
+				LastName:  "Schröder",
+				Email:     "gerhardt@schroeder.net",
+			}
+			userId, err := users.CreateUser(user)
+			if err != nil {
+				panic(err.Error())
+			}
+			_, err = user_locations.Create(&user_locations.UserLocation{
+				UserId:     user.Id,
+				LocationId: 1,
+			})
+			if err != nil {
+				panic(err.Error())
+			}
+
+			m, err := memberships.Create(1, "Foo")
+			if err != nil {
+				panic(err.Error())
+			}
+
+			o := orm.NewOrm()
+			startDate := time.Date(2015, 11, 30, 0, 0, 0, 0, time.UTC)
+			terminationDate := time.Date(2015, 12, 31, 23, 59, 59, 0, time.UTC)
+
+			um, err := user_memberships.Create(o, userId, m.Id, startDate)
+			if err != nil {
+				panic(err.Error())
+			}
+
+			um.TerminationDate = terminationDate
+
+			if err := um.Update(o); err != nil {
+				panic(err.Error())
+			}
+
+			invNovId, err := invoices.Create(&invoices.Invoice{
+				LocationId: 1,
+				Month:      11,
+				Year:       2015,
+				UserId:     userId,
+				Status:     "draft",
+			})
+			if err != nil {
+				panic(err.Error())
+			}
+
+			invDecId, err := invoices.Create(&invoices.Invoice{
+				LocationId: 1,
+				Month:      12,
+				Year:       2015,
+				UserId:     userId,
+				Status:     "draft",
+			})
+			if err != nil {
+				panic(err.Error())
+			}
+
+			invNov, err := invutil.Get(invNovId)
+			if err != nil {
+				panic(err.Error())
+			}
+
+			invDec, err := invutil.Get(invDecId)
+			if err != nil {
+				panic(err.Error())
+			}
+
+			data := invutil.NewPrefetchedData(1)
+			if err := data.Prefetch(); err != nil {
+				panic(err.Error())
+			}
+
+			if err := invNov.InvoiceUserMemberships(data); err != nil {
+				panic(err.Error())
+			}
+
+			if err := invDec.InvoiceUserMemberships(data); err != nil {
+				panic(err.Error())
+			}
+
+			So(len(invNov.InvUserMemberships), ShouldEqual, 1)
+			So(len(invDec.InvUserMemberships), ShouldEqual, 1)
+		})
 	})
 }
 
