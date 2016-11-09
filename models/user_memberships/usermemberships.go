@@ -194,3 +194,7 @@ func (this *UserMembership) durationMonths() *int {
 func (this *UserMembership) load() {
 	this.DurationMonths = this.durationMonths()
 }
+
+func (this *UserMembership) DurationUntilModMonths(t time.Time) (months int, days float64) {
+	return
+}
