@@ -79,7 +79,7 @@ func (inv *Invoice) calculateTotals(ms []*inv_user_memberships.InvoiceUserMember
 	inv.Sums.Purchases.PriceVAT = inv.Sums.Purchases.PriceInclVAT - inv.Sums.Purchases.PriceExclVAT
 
 	for _, m := range ms {
-		if inv.userMembershipGetsBilledHere(m.UserMembership) {
+		if inv.UserMembershipGetsBilledHere(m.UserMembership) {
 			inv.Sums.Memberships.Undiscounted += m.Membership().MonthlyPrice
 			inv.Sums.Memberships.PriceInclVAT += m.Membership().MonthlyPrice
 		}
@@ -112,8 +112,12 @@ func (inv *Invoice) InvoiceUserMemberships(data *PrefetchedData) (err error) {
 	for _, um := range umbs {
 		invoiced := false
 
-		if !inv.userMembershipActiveHere(um) {
+		//fmt.Printf("\ninv[%v/%v] ", inv.Month, inv.Year)
+		if !inv.UserMembershipActiveHere(um) {
+			//fmt.Printf(" not active here\n")
 			continue
+		} else {
+			//fmt.Printf(" active here\n")
 		}
 
 		for _, ium := range inv.InvUserMemberships {
@@ -142,20 +146,32 @@ func (inv *Invoice) InvoiceUserMemberships(data *PrefetchedData) (err error) {
 	return
 }
 
-func (inv *Invoice) userMembershipActiveHere(um *user_memberships.UserMembership) bool {
+func (inv *Invoice) UserMembershipActiveHere(um *user_memberships.UserMembership) bool {
 	return um.ActiveAt(inv.Interval().TimeFrom()) ||
+		um.ActiveAt(inv.Interval().TimeFrom().AddDate(0, 0, 15)) ||
 		um.ActiveAt(inv.Interval().TimeTo())
 }
 
-func (inv *Invoice) userMembershipGetsBilledHere(um *user_memberships.UserMembership) bool {
-	invTo := inv.Interval().TimeTo()
+func (inv *Invoice) UserMembershipGetsBilledHere(um *user_memberships.UserMembership) bool {
+	//invFrom := inv.Interval().TimeFrom()
+	quarterDay := -6 * time.Hour
+	invTo := inv.Interval().TimeTo().Add(quarterDay)
+	//fmt.Printf("'invTo'=%v\n", invTo)
+
+	if um.StartDate.AddDate(0, 0, 2).After(invTo) {
+		return false
+	}
 
 	if um.TerminationDateDefined() {
-		if um.TerminationDate.Before(invTo.AddDate(0, 0, 7)) {
+		//fmt.Printf("aaaa\n")
+		if um.TerminationDate.Before(invTo) {
+			//fmt.Printf("bbbb\n")
 			return false
 		}
 	}
 
+	//fmt.Printf("cccc\n")
+	//fmt.Printf("um.TerminationDate=%v\n", um.TerminationDate)
 	return um.ActiveAt(invTo)
 }
 

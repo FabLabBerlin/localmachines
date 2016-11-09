@@ -149,12 +149,12 @@ func TestInvutilInvoices(t *testing.T) {
 			mt.First.Month = 11
 			mt.First.Year = 2015
 			mt.First.Expect.LenInvUserMemberships = 1
-			mt.First.Expect.Price = 123.45
+			mt.First.Expect.Price = 0
 
 			mt.Second.Month = 12
 			mt.Second.Year = 2015
 			mt.Second.Expect.LenInvUserMemberships = 1
-			mt.Second.Expect.Price = 0
+			mt.Second.Expect.Price = 123.45
 
 			mt.Membership.From = time.Date(2015, 11, 30, 0, 0, 0, 0, time.UTC)
 			mt.Membership.To = time.Date(2015, 12, 31, 23, 59, 59, 0, time.UTC)
@@ -196,14 +196,14 @@ func TestInvutilInvoices(t *testing.T) {
 			mt.Second.Expect.LenInvUserMemberships = 1
 			mt.Second.Expect.Price = 123.45
 
-			mt.Membership.From = time.Date(2015, 11, 9, 0, 0, 0, 0, time.UTC)
-			mt.Membership.To = time.Date(2015, 12, 15, 23, 59, 59, 0, time.UTC)
+			mt.Membership.From = time.Date(2015, 11, 1, 0, 0, 0, 0, time.UTC)
+			mt.Membership.To = time.Date(2015, 12, 31, 23, 59, 59, 0, time.UTC)
 			mt.Membership.MonthlyPrice = 123.45
 
 			mt.Run()
 		})
 
-		Convey("Membership from 11/01-12/31 billed exactly twice", func() {
+		Convey("Membership from 11/02-12/30 is less than 2 months => bill 1x", func() {
 			mt := MembershipIntervalTest{}
 
 			mt.First.Month = 11
@@ -214,13 +214,97 @@ func TestInvutilInvoices(t *testing.T) {
 			mt.Second.Month = 12
 			mt.Second.Year = 2015
 			mt.Second.Expect.LenInvUserMemberships = 1
-			mt.Second.Expect.Price = 123.45
+			mt.Second.Expect.Price = 0
 
-			mt.Membership.From = time.Date(2015, 11, 9, 0, 0, 0, 0, time.UTC)
-			mt.Membership.To = time.Date(2015, 12, 15, 23, 59, 59, 0, time.UTC)
+			mt.Membership.From = time.Date(2015, 11, 2, 0, 0, 0, 0, time.UTC)
+			mt.Membership.To = time.Date(2015, 12, 30, 23, 59, 59, 0, time.UTC)
 			mt.Membership.MonthlyPrice = 123.45
 
 			mt.Run()
+		})
+	})
+
+	Convey("userMembershipActiveHere", t, func() {
+		Reset(setup.ResetDB)
+		Convey("Membership from 11/01-12/31 is active in Nov", func() {
+			um := &user_memberships.UserMembership{
+				StartDate:       time.Date(2015, 11, 1, 0, 0, 0, 0, time.UTC),
+				TerminationDate: time.Date(2015, 12, 31, 23, 59, 59, 0, time.UTC),
+			}
+
+			inv := invutil.Invoice{}
+			inv.Month = 11
+			inv.Year = 2015
+
+			So(inv.UserMembershipActiveHere(um), ShouldBeTrue)
+		})
+
+		Convey("Membership from 11/01-12/31 is active in Dec", func() {
+			um := &user_memberships.UserMembership{
+				StartDate:       time.Date(2015, 11, 1, 0, 0, 0, 0, time.UTC),
+				TerminationDate: time.Date(2015, 12, 31, 23, 59, 59, 0, time.UTC),
+			}
+
+			inv := invutil.Invoice{}
+			inv.Month = 12
+			inv.Year = 2015
+
+			So(inv.UserMembershipActiveHere(um), ShouldBeTrue)
+		})
+	})
+
+	Convey("userMembershipGetsBilledHere", t, func() {
+		Reset(setup.ResetDB)
+		Convey("Membership from 11/30-12/31 not billed in Nov", func() {
+			um := &user_memberships.UserMembership{
+				StartDate:       time.Date(2015, 11, 30, 0, 0, 0, 0, time.UTC),
+				TerminationDate: time.Date(2015, 12, 31, 23, 59, 59, 0, time.UTC),
+			}
+
+			inv := invutil.Invoice{}
+			inv.Month = 11
+			inv.Year = 2015
+
+			So(inv.UserMembershipGetsBilledHere(um), ShouldBeFalse)
+		})
+
+		Convey("Membership from 11/30-12/31 is billed in Dec", func() {
+			um := &user_memberships.UserMembership{
+				StartDate:       time.Date(2015, 11, 30, 0, 0, 0, 0, time.UTC),
+				TerminationDate: time.Date(2015, 12, 31, 23, 59, 59, 0, time.UTC),
+			}
+
+			inv := invutil.Invoice{}
+			inv.Month = 12
+			inv.Year = 2015
+
+			So(inv.UserMembershipGetsBilledHere(um), ShouldBeTrue)
+		})
+
+		Convey("Membership from 11/01-12/31 is billed in Nov", func() {
+			um := &user_memberships.UserMembership{
+				StartDate:       time.Date(2015, 11, 1, 0, 0, 0, 0, time.UTC),
+				TerminationDate: time.Date(2015, 12, 31, 23, 59, 59, 0, time.UTC),
+			}
+
+			inv := invutil.Invoice{}
+			inv.Month = 11
+			inv.Year = 2015
+
+			So(inv.UserMembershipGetsBilledHere(um), ShouldBeTrue)
+		})
+
+		Convey("Membership from 11/01-12/31 is billed in Dec", func() {
+			um := &user_memberships.UserMembership{
+				StartDate:       time.Date(2015, 11, 1, 0, 0, 0, 0, time.UTC),
+				TerminationDate: time.Date(2015, 12, 31, 23, 59, 59, 0, time.UTC),
+			}
+
+			inv := invutil.Invoice{}
+			inv.Month = 12
+			inv.Year = 2015
+
+			So(inv.UserMembershipGetsBilledHere(um), ShouldBeTrue)
 		})
 	})
 }
@@ -356,12 +440,15 @@ func testInvoiceWithMembershipAndTestPurchase(purchaseInsideMembershipInterval b
 		panic(err.Error())
 	}
 
-	mNow := time.Now().Month()
+	//membershipStart := time.Date(2015, time.June, 15, 0, 0, 0, 0, loc)
+	//membershipEnd := time.Date(2015, time.July, 15, 0, 0, 0, 0, loc)
+
+	/*mNow := time.Now().Month()
 	yNow := time.Now().Year()
 	mLast := time.Now().AddDate(0, -1, -1).Month()
-	yLast := time.Now().AddDate(0, -1, -1).Year()
-	user, iv, _ := createInvoiceWithMembership(yLast, mLast, 15)
-	fmt.Printf("staarrrrt @ %v-%v-%v\n", yLast, mLast, 15)
+	yLast := time.Now().AddDate(0, -1, -1).Year()*/
+	user, iv, _ := createInvoiceWithMembership(2015, 6, 15)
+	fmt.Printf("staarrrrt @ %v-%v-%v\n", 2015, 6, 15)
 	iv.Invoice.Current = true
 	if err := iv.Invoice.Save(); err != nil {
 		panic(err.Error())
@@ -369,22 +456,30 @@ func testInvoiceWithMembershipAndTestPurchase(purchaseInsideMembershipInterval b
 
 	var timeStart time.Time
 	if purchaseInsideMembershipInterval {
-		timeStart = time.Date(yNow, mNow, 2, 14, 10, 0, 0, loc)
+		timeStart = time.Date(2015, time.June, 18, 14, 10, 0, 0, loc)
 	} else {
-		timeStart = time.Date(yNow, mNow, 16, 14, 10, 0, 0, loc)
+		timeStart = time.Date(2015, time.June, 2, 14, 10, 0, 0, loc)
 	}
 
-	iv, err = invutil.GetDraft(1, user.Id, timeStart)
+	/*iv, err = invutil.GetDraft(1, user.Id, timeStart)
 	if err != nil {
 		panic(err.Error())
-	}
+	}*/
+	/*iv = &invutil.Invoice{}
+	iv.LocationId = locId
+	iv.UserId = user.Id
+	iv.Month = 7
+	iv.Year = 2015
+	iv.Status = "draft"
+	if _, err := invoices.Create(&iv.Invoice); err != nil {
+		panic(err.Error())
+	}*/
 
 	purchase := purchases.Purchase{
 		LocationId:   1,
 		Type:         purchases.TYPE_ACTIVATION,
 		InvoiceId:    iv.Id,
 		MachineId:    1,
-		Created:      time.Now(),
 		UserId:       user.Id,
 		TimeStart:    timeStart,
 		Quantity:     2,

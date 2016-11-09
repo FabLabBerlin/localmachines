@@ -37,15 +37,21 @@ func (this *UserMembership) Update(o orm.Ormer) (err error) {
 }
 
 func (this UserMembership) ActiveAt(t time.Time) bool {
+	//fmt.Printf("ActiveAt(t=%v)\n", t)
 	if t.Before(this.StartDate) {
+		//fmt.Printf("0000\n")
 		return false
 	}
 
-	if this.TerminationDateDefined() && this.TerminationDate.Before(t) {
-		return false
+	if this.TerminationDateDefined() {
+		//fmt.Printf("1111\n")
+		res := this.TerminationDate.After(t)
+		//fmt.Printf("res=%v\n", res)
+		return res
+	} else {
+		//fmt.Printf("2222\n")
+		return true
 	}
-
-	return this.StartDate.AddDate(0, this.InitialDurationMonths, 0).After(t)
 }
 
 func init() {
