@@ -222,6 +222,39 @@ func TestInvutilInvoices(t *testing.T) {
 
 			mt.Run()
 		})
+
+		Convey("Membership of 1 month ±1d gets billed exactly once", func() {
+			for startOffset := 0; startOffset < 30; startOffset++ {
+				for tolerance := 0; tolerance <= 1; tolerance++ {
+					mt := MembershipIntervalTest{}
+
+					mt.Membership.From = time.Date(2015, 11, 1+startOffset, 0, 0, 0, 0, time.UTC)
+					mt.Membership.To = mt.Membership.From.AddDate(0, 1, tolerance)
+					mt.Membership.MonthlyPrice = 123.45
+
+					mt.First.Month = 11
+					mt.First.Year = 2015
+					mt.First.Expect.LenInvUserMemberships = 1
+					mt.First.Expect.Price = 123.45
+
+					mt.Second.Month = 12
+					mt.Second.Year = 2015
+					if mt.Membership.To.Before(time.Date(2015, 12, 1, 8, 0, 0, 0, time.UTC)) {
+						mt.Second.Expect.LenInvUserMemberships = 0
+					} else {
+						mt.Second.Expect.LenInvUserMemberships = 1
+					}
+					mt.Second.Expect.Price = 0
+
+					if mt.Membership.From.After(time.Date(2015, 11, 28, 8, 0, 0, 0, time.UTC)) {
+						mt.First.Expect.Price = 0
+						mt.Second.Expect.Price = 123.45
+					}
+
+					mt.Run()
+				}
+			}
+		})
 	})
 
 	Convey("userMembershipActiveHere", t, func() {
@@ -337,7 +370,7 @@ type MembershipIntervalTest struct {
 }
 
 func (t *MembershipIntervalTest) Run() {
-	r := fmt.Sprintf("%v", rand.Intn(1000))
+	r := fmt.Sprintf("%v", rand.Intn(100000))
 	user := &users.User{
 		FirstName: "Gerhard" + r,
 		LastName:  "Schröder" + r,
