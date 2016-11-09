@@ -162,9 +162,11 @@ func (inv *Invoice) UserMembershipGetsBilledHere(um *user_memberships.UserMember
 		return false
 	}
 
-	if um.TerminationDateDefined() {
+	if months, _ := um.DurationModMonths(); months != nil {
 		//fmt.Printf("aaaa\n")
-		if um.TerminationDate.Before(invTo) {
+		tmp := um.StartDate.AddDate(0, *months, 0)
+		fmt.Printf("   tmp=%v    (*months=%v)\n", tmp, *months)
+		if tmp.Before(invTo) {
 			//fmt.Printf("bbbb\n")
 			return false
 		}

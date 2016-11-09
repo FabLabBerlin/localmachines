@@ -209,5 +209,32 @@ func TestUserMemberships(t *testing.T) {
 				})
 			})
 		})
+
+		Convey("DurationMonthsUntil", func() {
+			um := user_memberships.UserMembership{
+				StartDate: time.Date(2015, 11, 1, 0, 0, 0, 0, time.UTC),
+			}
+
+			expectations := map[time.Time]int{
+				time.Date(2015, 11, 2, 0, 0, 0, 0, time.UTC):  0,
+				time.Date(2015, 11, 15, 0, 0, 0, 0, time.UTC): 0,
+				time.Date(2015, 11, 19, 0, 0, 0, 0, time.UTC): 0,
+				time.Date(2015, 11, 25, 0, 0, 0, 0, time.UTC): 0,
+				time.Date(2015, 11, 30, 0, 0, 0, 0, time.UTC): 1,
+				time.Date(2015, 12, 1, 0, 0, 0, 0, time.UTC):  1,
+				time.Date(2015, 12, 2, 0, 0, 0, 0, time.UTC):  1,
+				time.Date(2015, 12, 15, 0, 0, 0, 0, time.UTC): 1,
+				time.Date(2015, 12, 19, 0, 0, 0, 0, time.UTC): 1,
+				time.Date(2015, 12, 25, 0, 0, 0, 0, time.UTC): 1,
+			}
+
+			for end, expect := range expectations {
+				So(um.DurationMonthsUntil(end), ShouldEqual, expect)
+			}
+		})
+
+		Convey("DurationModMonths", func() {
+
+		})
 	})
 }

@@ -181,20 +181,45 @@ func Delete(o orm.Ormer, id int64) (err error) {
 
 func (this *UserMembership) durationMonths() *int {
 	if this.TerminationDateDefined() {
-		ms := 0
-		for t := this.StartDate; t.Before(this.TerminationDate); t = t.AddDate(0, 1, 0) {
-			ms++
-		}
+		ms := this.DurationMonthsUntil(this.TerminationDate)
 		return &ms
 	} else {
 		return nil
 	}
 }
 
+func (this *UserMembership) DurationMonthsUntil(end time.Time) (ms int) {
+	t := this.StartDate
+
+	for {
+		t = t.AddDate(0, 1, 0)
+
+		if t.Before(end.AddDate(0, 0, 2)) {
+			ms++
+		} else {
+			break
+		}
+	}
+
+	return ms
+}
+
 func (this *UserMembership) load() {
 	this.DurationMonths = this.durationMonths()
 }
 
-func (this *UserMembership) DurationUntilModMonths(t time.Time) (months int, days float64) {
+// DurationModMonths is |TerminationDate - StartDate| % month. It is undefined
+// when no TerminationDate is defined, thus returning nil, nil.
+func (this *UserMembership) DurationModMonths() (months *int, days *float64) {
+	if this.TerminationDateDefined() {
+		ms := this.DurationMonthsUntil(this.TerminationDate)
+		months = &ms
+		ds := float64(this.TerminationDate.Sub(this.StartDate).Hours()) / 24
+		if ds < 0 {
+			ds = 0
+		}
+		days = &ds
+	}
+
 	return
 }
