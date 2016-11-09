@@ -283,7 +283,8 @@
         <th>Membership Name</th>
         <th>Start Date</th>
         <th>Termination Date</th>
-        <th>Minimum Duration</th>
+        <th>Minimum Duration (months)</th>
+        <th>Duration (months)</th>
         <th style="min-width:60px">&nbsp;</th>
       </tr>
     </thead>
@@ -330,7 +331,10 @@
           </button>
         </td>
         <td>
-          {{userMembership.InitialDurationMonths}} {{userMembership.InitialDurationMonths === 1 ? 'month' : 'months'}}
+          {{userMembership.InitialDurationMonths}}
+        </td>
+        <td>
+          {{!_.isNumber(userMembership.DurationMonths) ? userMembership.DurationMonths : 'open end'}}
         </td>
         <td>
           <div class="pull-right">

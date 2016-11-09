@@ -18,6 +18,7 @@ type UserMembership struct {
 	StartDate             time.Time               `orm:"type(datetime)"`
 	TerminationDate       time.Time               `orm:"type(datetime)"`
 	InitialDurationMonths int
+	DurationMonths        *int `orm:"-" json:",omitempty"`
 
 	Created time.Time
 	Updated time.Time
@@ -80,14 +81,23 @@ func Create(o orm.Ormer, userId, membershipId int64, start time.Time) (*UserMemb
 		return nil, fmt.Errorf("insert: %v", err)
 	}
 
+	um.load()
+
 	return &um, nil
 }
 
 func GetAllAt(locationId int64) (ums []*UserMembership, err error) {
-	orm.NewOrm().
+	if _, err = orm.NewOrm().
 		QueryTable(TABLE_NAME).
 		Filter("location_id", locationId).
-		All(&ums)
+		All(&ums); err != nil {
+
+		return
+	}
+
+	for _, um := range ums {
+		um.load()
+	}
 
 	return
 }
@@ -145,6 +155,7 @@ func GetAllOfDeep(locId, userId int64) (ums []*UserMembership, err error) {
 		if !ok {
 			return nil, fmt.Errorf("cannot find membership with id %v", um.MembershipId)
 		}
+		um.load()
 	}
 
 	return
@@ -154,11 +165,32 @@ func Get(id int64) (*UserMembership, error) {
 	userMembership := UserMembership{
 		Id: id,
 	}
-	err := orm.NewOrm().Read(&userMembership)
-	return &userMembership, err
+
+	if err := orm.NewOrm().Read(&userMembership); err != nil {
+		return nil, err
+	}
+	userMembership.load()
+
+	return &userMembership, nil
 }
 
 func Delete(o orm.Ormer, id int64) (err error) {
 	_, err = o.Delete(&UserMembership{Id: id})
 	return
+}
+
+func (this *UserMembership) durationMonths() *int {
+	if this.TerminationDateDefined() {
+		ms := 0
+		for t := this.StartDate; t.Before(this.TerminationDate); t = t.AddDate(0, 1, 0) {
+			ms++
+		}
+		return &ms
+	} else {
+		return nil
+	}
+}
+
+func (this *UserMembership) load() {
+	this.DurationMonths = this.durationMonths()
 }
