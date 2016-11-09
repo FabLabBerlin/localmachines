@@ -15,7 +15,6 @@ import (
 	"github.com/astaxie/beego/orm"
 	. "github.com/smartystreets/goconvey/convey"
 	"math"
-	"math/rand"
 	"strconv"
 	"testing"
 	"time"
@@ -225,7 +224,7 @@ func TestInvutilInvoices(t *testing.T) {
 
 		Convey("Membership of 1 month ±1d gets billed exactly once", func() {
 			for startOffset := 0; startOffset < 30; startOffset++ {
-				for tolerance := 0; tolerance <= 1; tolerance++ {
+				for tolerance := 0; tolerance <= 15; tolerance++ {
 					mt := MembershipIntervalTest{}
 
 					mt.Membership.From = time.Date(2015, 11, 1+startOffset, 0, 0, 0, 0, time.UTC)
@@ -369,12 +368,15 @@ type MembershipIntervalTest struct {
 	}
 }
 
+var uniqueId = 0
+
 func (t *MembershipIntervalTest) Run() {
-	r := fmt.Sprintf("%v", rand.Intn(100000))
+	uniqueId++
+	n := fmt.Sprintf("%v", uniqueId)
 	user := &users.User{
-		FirstName: "Gerhard" + r,
-		LastName:  "Schröder" + r,
-		Email:     "gerhardt" + r + "@schroeder.net",
+		FirstName: "Gerhard" + n,
+		LastName:  "Schröder" + n,
+		Email:     "gerhardt" + n + "@schroeder.net",
 	}
 	userId, err := users.CreateUser(user)
 	if err != nil {
