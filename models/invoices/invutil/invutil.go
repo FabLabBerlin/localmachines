@@ -184,11 +184,14 @@ func (inv *Invoice) UserMembershipGetsBilledHere(um *user_memberships.UserMember
 		fmt.Printf("aaaa\n")
 		fmt.Printf("days=%v", *days)
 		//tmp := um.StartDate.AddDate(0, *months, 0)
-		tmp := addMonths(um.StartDate, *months).AddDate(0, 0, 1)
+		tmp := addMonths(um.StartDate, *months).AddDate(0, 0, 2)
 		fmt.Printf("   tmp=%v    (*months=%v)\n", tmp, *months)
 		if tmp.Before(invTo) {
 			fmt.Printf("bbbb\n")
 			return false
+		} else {
+			fmt.Printf("dddd\n")
+			return true
 		}
 	}
 
