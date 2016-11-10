@@ -230,6 +230,7 @@ func TestInvutilInvoices(t *testing.T) {
 					mt.Membership.From = time.Date(2015, 11, 1+startOffset, 0, 0, 0, 0, time.UTC)
 					mt.Membership.To = mt.Membership.From.AddDate(0, 1, tolerance)
 					mt.Membership.MonthlyPrice = 123.45
+					fmt.Printf("startOffset = %v\n", startOffset)
 					fmt.Printf("from=%v  to=%v\n", mt.Membership.From, mt.Membership.To)
 					fmt.Printf("   tolerance=%v\n", tolerance)
 
