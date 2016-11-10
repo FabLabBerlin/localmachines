@@ -152,28 +152,48 @@ func (inv *Invoice) UserMembershipActiveHere(um *user_memberships.UserMembership
 		um.ActiveAt(inv.Interval().TimeTo())
 }
 
+// addMonth where the neutral element of addition is the last day of month.
+func addMonth(t time.Time) time.Time {
+	s := time.Date(t.Year(), t.Month()+1, 1, 0, 0, 0, 0, t.Location())
+	u := time.Date(t.Year(), t.Month()+2, 1, 0, 0, 0, 0, t.Location())
+	return t.Add(u.Sub(s))
+}
+
+// addMonths where the neutral element of addition is the last day of month.
+func addMonths(t time.Time, months int) (u time.Time) {
+	u = t
+
+	for i := 0; i < months; i++ {
+		u = addMonth(u)
+	}
+
+	return
+}
+
 func (inv *Invoice) UserMembershipGetsBilledHere(um *user_memberships.UserMembership) bool {
 	//invFrom := inv.Interval().TimeFrom()
 	quarterDay := -6 * time.Hour
 	invTo := inv.Interval().TimeTo().Add(quarterDay)
-	//fmt.Printf("'invTo'=%v\n", invTo)
+	fmt.Printf("\n'invTo'=%v\n", invTo)
 
 	if um.StartDate.AddDate(0, 0, 2).After(invTo) {
 		return false
 	}
 
-	if months, _ := um.DurationModMonths(); months != nil {
-		//fmt.Printf("aaaa\n")
-		tmp := um.StartDate.AddDate(0, *months, 0)
+	if months, days := um.DurationModMonths(); months != nil {
+		fmt.Printf("aaaa\n")
+		fmt.Printf("days=%v", *days)
+		//tmp := um.StartDate.AddDate(0, *months, 0)
+		tmp := addMonths(um.StartDate, *months).AddDate(0, 0, 1)
 		fmt.Printf("   tmp=%v    (*months=%v)\n", tmp, *months)
 		if tmp.Before(invTo) {
-			//fmt.Printf("bbbb\n")
+			fmt.Printf("bbbb\n")
 			return false
 		}
 	}
 
-	//fmt.Printf("cccc\n")
-	//fmt.Printf("um.TerminationDate=%v\n", um.TerminationDate)
+	fmt.Printf("cccc\n")
+	fmt.Printf("um.TerminationDate=%v\n", um.TerminationDate)
 	return um.ActiveAt(invTo)
 }
 
