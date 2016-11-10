@@ -112,12 +112,8 @@ func (inv *Invoice) InvoiceUserMemberships(data *PrefetchedData) (err error) {
 	for _, um := range umbs {
 		invoiced := false
 
-		//fmt.Printf("\ninv[%v/%v] ", inv.Month, inv.Year)
 		if !inv.UserMembershipActiveHere(um) {
-			//fmt.Printf(" not active here\n")
 			continue
-		} else {
-			//fmt.Printf(" active here\n")
 		}
 
 		for _, ium := range inv.InvUserMemberships {
@@ -170,33 +166,24 @@ func addMonths(t time.Time, months int) (u time.Time) {
 	return
 }
 
+// addDate2 where the neutral element of monthly addition is the last day of
+// month.
+func addDate2(t time.Time, years, months, days int) time.Time {
+	return addMonths(t, months).AddDate(years, 0, days)
+}
+
 func (inv *Invoice) UserMembershipGetsBilledHere(um *user_memberships.UserMembership) bool {
-	//invFrom := inv.Interval().TimeFrom()
 	quarterDay := -6 * time.Hour
 	invTo := inv.Interval().TimeTo().Add(quarterDay)
-	fmt.Printf("\n'invTo'=%v\n", invTo)
 
 	if um.StartDate.AddDate(0, 0, 2).After(invTo) {
 		return false
 	}
 
-	if months, days := um.DurationModMonths(); months != nil {
-		fmt.Printf("aaaa\n")
-		fmt.Printf("days=%v", *days)
-		//tmp := um.StartDate.AddDate(0, *months, 0)
-		tmp := addMonths(um.StartDate, *months).AddDate(0, 0, 2)
-		fmt.Printf("   tmp=%v    (*months=%v)\n", tmp, *months)
-		if tmp.Before(invTo) {
-			fmt.Printf("bbbb\n")
-			return false
-		} else {
-			fmt.Printf("dddd\n")
-			return true
-		}
+	if months, _ := um.DurationModMonths(); months != nil {
+		return addDate2(um.StartDate, 0, *months, 2).After(invTo)
 	}
 
-	fmt.Printf("cccc\n")
-	fmt.Printf("um.TerminationDate=%v\n", um.TerminationDate)
 	return um.ActiveAt(invTo)
 }
 
