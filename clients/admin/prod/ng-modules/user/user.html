@@ -282,9 +282,9 @@
       <tr>
         <th>Membership Name</th>
         <th>Start Date</th>
-        <th>End Date</th>
-        <th>Extends Automatically</th>
-        <th>Invoice</th>
+        <th>Termination Date</th>
+        <th>Minimum Duration (months)</th>
+        <th>Duration (months)</th>
         <th style="min-width:60px">&nbsp;</th>
       </tr>
     </thead>
@@ -292,60 +292,62 @@
       <tr ng-hide="userMemberships.length">
         <td colspan="6">User has no memberships</td>
       </tr>
-      <tr ng-repeat="userMembership in userMemberships | userMembershipsFilter:this">
-        <td>{{userMembership.Title}}</td>
+      <tr ng-repeat="userMembership in userMemberships">
+        <td>{{userMembership.Membership.Title}}</td>
         <td style="min-width:90px">
-          <div class="form-inline" ng-show="userMembership.Invoice.Current">
+          <div class="form-inline">
             <div class="input-group">
               <input
                 class="adm-user-membership-date adm-user-membership-start-date form-control datepicker"
                 data-user-membership-id="{{userMembership.Id}}"
-                placeholder="End Date"
+                placeholder="Start Date"
                 value="{{userMembership.StartDate}}">
               <div class="input-group-addon">
                 <i class="fa fa-calendar"></i>
               </div>
             </div>
           </div>
-          <div ng-hide="userMembership.Invoice.Current">
-            {{userMembership.StartDate}}
-          </div>
         </td>
         <td style="min-width:160px">
-          <div class="form-inline" ng-show="userMembership.Invoice.Current">
+          <div ng-show="userMembership.TerminationDateFormatted">
             <div class="input-group">
               <input
-                class="adm-user-membership-date adm-user-membership-end-date form-control datepicker"
+                class="adm-user-membership-date adm-user-membership-termination-date form-control datepicker"
                 data-user-membership-id="{{userMembership.Id}}"
-                placeholder="End Date"
-                value="{{userMembership.EndDate}}">
-              <div class="input-group-addon">
-                <i class="fa fa-calendar"></i>
+                placeholder="YYYY-MM-DD"
+                value="{{userMembership.TerminationDateFormatted}}">
+              <div class="input-group-addon"
+                   style="cursor: pointer"
+                   ng-click="unsetTerminationDate(userMembership.Id)">
+                <i class="fa fa-close"></i>
               </div>
             </div>
           </div>
-          <div ng-hide="userMembership.Invoice.Current">
-            {{userMembership.EndDate}}
-          </div>
+          <button 
+            class="btn btn-danger"
+            ng-click="setTerminationDate(userMembership.Id)"
+            ng-hide="userMembership.TerminationDateFormatted">
+            Set Termination Date
+          </button>
         </td>
         <td>
-          <input 
-            type="checkbox" 
-            ng-model="userMembership.AutoExtend"
-            ng-disabled="userMemberhip.Inactive"
-            ng-change="updateUserMembership(userMembership.Id)"
-            ng-show="userMembership.Invoice.Current">
+          {{userMembership.InitialDurationMonths}}
         </td>
         <td>
-          {{userMembership.Invoice.Month}}/{{userMembership.Invoice.Year}} {{userMembership.Invoice.Canceled ? '(Canceled)' : ''}}
+          {{!_.isNumber(userMembership.DurationMonths) ? userMembership.DurationMonths : 'open end'}}
         </td>
         <td>
           <div class="pull-right">
             <button 
               type="button" 
+              class="btn btn-primary btn-ico" 
+              ng-click="updateUserMembershipPrompt(userMembership.Id)">
+              <i class="fa fa-save"></i>
+            </button>
+            <button 
+              type="button" 
               class="btn btn-danger btn-ico" 
-              ng-click="deleteUserMembershipPrompt(userMembership.Id)"
-              ng-show="userMembership.Invoice.Status === 'draft'">
+              ng-click="deleteUserMembershipPrompt(userMembership.Id)">
               <i class="fa fa-close"></i>
             </button>
           </div>
@@ -390,25 +392,11 @@
         class="btn btn-primary btn-block" 
         id="user-add-membership-btn" 
         ng-click="addUserMembership()">
-        <i class="fa fa-plus"></i>&nbsp;Add Membership
+        <i class="fa fa-plus"></i>&nbsp;Add
       </button>
     </div>
 
     <div class="col-sm-3">
-      <button 
-        class="btn btn-primary btn-block" 
-        id="user-add-membership-btn" 
-        ng-click="showUserMembershipHistory()"
-        ng-hide="userMembershipsHistoryVisible">
-        Show History
-      </button>
-      <button 
-        class="btn btn-primary btn-block" 
-        id="user-add-membership-btn" 
-        ng-click="hideUserMembershipHistory()"
-        ng-show="userMembershipsHistoryVisible">
-        Hide History
-      </button>
     </div>
   </div>
 

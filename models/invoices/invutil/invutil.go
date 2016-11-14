@@ -102,8 +102,6 @@ func (inv *Invoice) calculateTotals(ms []*inv_user_memberships.InvoiceUserMember
 }
 
 func (inv *Invoice) InvoiceUserMemberships(data *PrefetchedData) (err error) {
-	beego.Info("InvoiceUserMemberships(..)")
-	beego.Info("  len(inv.InvUserMemberships)=", len(inv.InvUserMemberships))
 	umbs, ok := data.UmbsByUid[inv.UserId]
 	if !ok {
 		umbs = []*user_memberships.UserMembership{}
