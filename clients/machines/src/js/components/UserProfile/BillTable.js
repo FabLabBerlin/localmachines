@@ -284,7 +284,7 @@ var BillTable = React.createClass({
       </tr>
     );
 
-    _.each(bill.InvUserMemberships, (ium) => {
+    _.each(bill.InvUserMemberships, ium => {
       tbody.push(
         <tr key={i++}>
           <td>{ium.UserMembership.Membership.Title}</td>
@@ -296,7 +296,7 @@ var BillTable = React.createClass({
           </td>
           <td></td>
           <td></td>
-          <td>{ium.MonthlyPrice ? (formatPrice(ium.MonthlyPrice) + this.state.currency) : '-'}</td>
+          <td>{ium.UserMembership.Membership.MonthlyPrice ? (formatPrice(ium.UserMembership.Membership.MonthlyPrice) + this.state.currency) : '-'}</td>
         </tr>
       );
     });
