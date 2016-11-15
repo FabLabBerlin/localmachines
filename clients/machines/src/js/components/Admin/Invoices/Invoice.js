@@ -102,42 +102,42 @@ var Header = React.createClass({
             {invoiceActions.get('PushDraft') ?
               <button type="button"
                       onClick={this.makeDraft}
-                      title="Make Draft">
-                <i className="fa fa-refresh"/>
+                      title="Make Invoice Draft">
+                <i className="fa fa-pencil-square-o"/>
               </button> : null
             }
             {invoiceActions.get('Save') ?
               <button type="button"
                       onClick={this.save}
                       title="Save">
-                <img src="/machines/assets/img/invoicing/SAVE_INVOICE.svg"/>
+                <i className="fa fa-save"/>
               </button> : null
             }
             {invoiceActions.get('Freeze') ?
               <button type="button"
                       onClick={this.complete}
-                      title="Freeze">
-                <i className="fa fa-cart-arrow-down"/>
+                      title="Create Invoice">
+                <i className="fa fa-money"/>
               </button> : null
             }
             {invoiceActions.get('Send') ?
               <button type="button"
                       onClick={this.send}
-                      title="Send">
+                      title="Send Invoice">
                 <img src="/machines/assets/img/invoicing/send_invoice_white.svg"/>
               </button> : null
             }
             {invoiceActions.get('SendCanceled') ?
               <button type="button"
                       onClick={this.sendCanceled}
-                      title="Send Canceled">
+                      title="Send Cancelation">
                 <img src="/machines/assets/img/invoicing/send_invoice_white.svg"/>
               </button> : null
             }
             {invoiceActions.get('Cancel') ?
               <button type="button"
                       onClick={this.cancel}
-                      title="Cancel">
+                      title="Cancel Invoice">
                 <i className="fa fa-ban"/>
               </button> : null
             }

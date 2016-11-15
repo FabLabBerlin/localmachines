@@ -88,8 +88,7 @@ var Profiles = React.createClass({
           Wolf is the founder and CEO of Fab Lab Berlin/Makea Industries GmbH.
           After his diploma in Product-Design at the academy of art Berlin
           Weißensee he went out to explore the world of makers and establish
-          the first Fab Lab in Berlin. He takes care of the project management
-          and product development. 
+          the first Fab Lab in Berlin.
         </Profile>
 
         <Profile image="/machines/assets/img/product/phil.jpg"

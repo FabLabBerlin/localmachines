@@ -95,6 +95,7 @@ var RemovePurchase = React.createClass({
       return (
         <button id="inv-remove-purchase"
                 onClick={this.archive}>
+          <i className="fa fa-trash-o"/>
         </button>
       );
     } else {

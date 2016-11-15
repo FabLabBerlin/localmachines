@@ -123,18 +123,18 @@ var Month = React.createClass({
               <div className="col-md-6 text-md-right">
                 <button type="button"
                         onClick={this.checkedSend}
-                        title="Send">
+                        title="Send Invoices">
                   <img src="/machines/assets/img/invoicing/send_invoice_white.svg"/>
                 </button>
                 <button type="button"
                         onClick={this.checkedComplete}
-                        title="Freeze">
-                  <i className="fa fa-cart-arrow-down"/>
+                        title="Create Invoices">
+                  <i className="fa fa-money"/>
                 </button>
                 <button type="button"
                         onClick={this.checkedPushDrafts}
-                        title="Push Drafts">
-                  <i className="fa fa-refresh"/>
+                        title="Make Invoice Drafts">
+                  <i className="fa fa-pencil-square-o"/>
                 </button>
               </div>
             </div>
