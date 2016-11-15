@@ -1,18 +1,44 @@
 package month
 
 import (
+	"errors"
+	"fmt"
+	"strconv"
+	"strings"
 	"time"
 )
 
 type Month struct {
-	m time.Month 
-	y int 
+	m time.Month
+	y int
 }
 
 func New(m time.Month, y int) Month {
 	return Month{
 		m: m,
 		y: y,
+	}
+}
+
+// NewString("2015-01") or NewString("2015-01-15") results in Jan '15
+func NewString(s string) (m Month, err error) {
+	tmp := strings.Split(s, "-")
+
+	switch len(tmp) {
+	case 2, 3:
+		m.y, err = strconv.Atoi(tmp[0])
+		if err != nil {
+			return m, fmt.Errorf("year format: %v", err)
+		}
+		mm, err := strconv.Atoi(tmp[1])
+		if err != nil {
+			return m, fmt.Errorf("month format: %v", err)
+		}
+		m.m = time.Month(mm)
+
+		return m, err
+	default:
+		return m, errors.New("wrong format")
 	}
 }
 
@@ -37,12 +63,17 @@ func (m Month) Contains(t time.Time, loc *time.Location) bool {
 	return u.Month() == m.Month() && u.Year() == m.Year()
 }
 
-func (m Month) Equal(other Month) bool{
+func (m Month) Equal(other Month) bool {
 	return m.Month() == other.Month() && m.Year() == other.Year()
 }
 
 func (m Month) Month() time.Month {
 	return time.Month(m.m)
+}
+
+func (m Month) String() string {
+	t := time.Date(m.Year(), m.Month(), 11, 0, 0, 0, 0, time.UTC)
+	return t.Format("2006-01")
 }
 
 func (m Month) Year() int {

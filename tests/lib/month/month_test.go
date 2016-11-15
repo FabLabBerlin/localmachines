@@ -16,6 +16,15 @@ func TestLibMonth(t *testing.T) {
 		So(cpy.Year(), ShouldEqual, 2014)
 	})
 
+	Convey("NewString", t, func() {
+		for _, s := range []string{"2013-07", "2013-07-01"} {
+			m, err := month.NewString(s)
+			So(err, ShouldBeNil)
+			So(m.Month(), ShouldEqual, time.July)
+			So(m.Year(), ShouldEqual, 2013)
+		}
+	})
+
 	Convey("After", t, func() {
 		m := month.New(time.February, 2014)
 		before := month.New(time.January, 2014)
@@ -42,5 +51,10 @@ func TestLibMonth(t *testing.T) {
 		n := month.New(time.December, 2015)
 		So(m.Equal(n), ShouldBeFalse)
 		So(m.Equal(m), ShouldBeTrue)
+	})
+
+	Convey("String", t, func() {
+		m := month.New(time.November, 2015)
+		So(m.String(), ShouldEqual, "2015-11")
 	})
 }
