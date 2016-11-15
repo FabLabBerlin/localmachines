@@ -133,8 +133,8 @@ var Month = React.createClass({
                 </button>
                 <button type="button"
                         onClick={this.checkedPushDrafts}
-                        title="Make Invoice Drafts">
-                  <i className="fa fa-pencil-square-o"/>
+                        title="Upload Invoice Drafts to Fastbill">
+                  <i className="fa fa-cloud-upload"/>
                 </button>
               </div>
             </div>

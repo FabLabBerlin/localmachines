@@ -102,8 +102,8 @@ var Header = React.createClass({
             {invoiceActions.get('PushDraft') ?
               <button type="button"
                       onClick={this.makeDraft}
-                      title="Make Invoice Draft">
-                <i className="fa fa-pencil-square-o"/>
+                      title="Upload Invoice Draft to Fastbill">
+                <i className="fa fa-cloud-upload"/>
               </button> : null
             }
             {invoiceActions.get('Save') ?
