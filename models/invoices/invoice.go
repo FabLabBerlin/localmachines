@@ -82,7 +82,6 @@ var ErrNoInvoiceForThatMonth = errors.New("no draft invoice exists for that mont
 // GetDraft for User uid @ Location locId and time t.  If it doesn't exist, it
 // gets created insofar it doesn't violate business logic.
 func GetDraft(locId, uid int64, t time.Time) (*Invoice, error) {
-	fmt.Printf("invoice.GetDraft(%v, %v, %v)", locId, uid, t)
 	y := t.Year()
 	m := t.Month()
 	isThisMonth := time.Now().Month() == m && time.Now().Year() == y
@@ -107,12 +106,9 @@ func GetDraft(locId, uid int64, t time.Time) (*Invoice, error) {
 	)
 
 	if err == nil {
-		fmt.Printf(": existing\n")
 		return existing, nil
 	} else if err == orm.ErrNoRows {
-		fmt.Printf(": no rows\n")
 		if isThisMonth || isNextMonth {
-			fmt.Printf("isThisMonth || isNextMonth\n")
 			if _, err := Create(&inv); err == nil {
 				if isThisMonth {
 					if err := inv.SetCurrent(); err != nil {
@@ -124,11 +120,9 @@ func GetDraft(locId, uid int64, t time.Time) (*Invoice, error) {
 				return nil, fmt.Errorf("create: %v", err)
 			}
 		} else {
-			fmt.Printf("!(isThisMonth || isNextMonth); t=%v\n", t)
 			return nil, ErrNoInvoiceForThatMonth
 		}
 	} else {
-		fmt.Printf(": err: %v", err)
 		return nil, fmt.Errorf("get by props: %v", err)
 	}
 }

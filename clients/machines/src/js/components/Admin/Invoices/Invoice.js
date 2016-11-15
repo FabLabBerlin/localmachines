@@ -97,7 +97,7 @@ var Header = React.createClass({
             <button type="button"
                     title="Close"
                     onClick={this.hide}>
-              <img src="/machines/assets/img/invoicing/CANCEL.svg"/>
+              <i className="fa fa-close"/>
             </button>
             {invoiceActions.get('PushDraft') ?
               <button type="button"
@@ -248,7 +248,6 @@ var Invoice = React.createClass({
         </div>
       );
     } else {
-      console.log('!invoice');
       return <LoaderLocal/>;
     }
   },

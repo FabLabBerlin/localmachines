@@ -45,7 +45,7 @@ func GetAllCouponsAt(locId int64) (cs []*Coupon, err error) {
 	return
 }
 
-func GetAllCouponsOf(locId, userId int64)  (cs []*Coupon, err error) {
+func GetAllCouponsOf(locId, userId int64) (cs []*Coupon, err error) {
 	o := orm.NewOrm()
 	_, err = o.QueryTable("coupons").
 		Filter("location_id", locId).
@@ -66,8 +66,8 @@ func Generate(locId int64, staticCode string, n int, value float64) (cs []*Coupo
 			}
 			c := &Coupon{
 				LocationId: locId,
-				Code: code,
-				Value: value,
+				Code:       code,
+				Value:      value,
 			}
 			cs = append(cs, c)
 		}
@@ -84,7 +84,7 @@ func Generate(locId int64, staticCode string, n int, value float64) (cs []*Coupo
 	for _, c := range cs {
 		if _, err = o.Insert(c); err != nil {
 			o.Rollback()
-			return nil, fmt.Errorf("insert: %v", err)			
+			return nil, fmt.Errorf("insert: %v", err)
 		}
 	}
 	if err = o.Commit(); err != nil {
@@ -154,7 +154,6 @@ func (c *Coupon) TableName() string {
 }
 
 func (c *Coupon) Update() (err error) {
-	fmt.Printf("coupon#update: c=%v\n", c)
 	_, err = orm.NewOrm().Update(c)
 	return
 }
@@ -201,9 +200,9 @@ func (c *Coupon) UseForInvoice(invoiceValue float64, month time.Month, year int)
 		t := time.Now()
 		u = &CouponUsage{
 			CouponId: c.Id,
-			Value: value,
-			Month: int(t.Month()),
-			Year: t.Year(),
+			Value:    value,
+			Month:    int(t.Month()),
+			Year:     t.Year(),
 		}
 		_, err = orm.NewOrm().Insert(u)
 	}

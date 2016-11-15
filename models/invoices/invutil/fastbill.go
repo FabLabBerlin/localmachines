@@ -99,8 +99,6 @@ func (inv *Invoice) FastbillComplete() (err error) {
 		return fmt.Errorf("fastbill before check: %v", err)
 	}
 
-	fmt.Printf("FastbillComplete: month/year=%v/%v\n", inv.Month, inv.Year)
-
 	if inv.Year > time.Now().Year() ||
 		(inv.Year == time.Now().Year() &&
 			int(inv.Month) >= int(time.Now().Month())) {
@@ -251,7 +249,7 @@ func (inv *Invoice) FastbillCreateDraft(overwriteExisting bool) (fbDraft *fastbi
 		return nil, false, fmt.Errorf("submit: %v", err)
 	} else {
 		inv.FastbillId = fbDraft.Id
-		fmt.Printf("inv.FastbillId <- %v", fbDraft.Id)
+
 		if err := inv.Save(); err != nil {
 			return nil, false, fmt.Errorf("invoice save fastbill db id: %v", err)
 		}
