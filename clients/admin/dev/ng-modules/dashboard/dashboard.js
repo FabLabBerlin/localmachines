@@ -86,7 +86,11 @@ app.controller('DashboardCtrl',
         title: 'Revenue / ' + currency
       },
       tooltip: {isHtml: true},
-      isStacked: true
+      isStacked: true,
+      explorer: {
+        axis: 'horizontal',
+        keepInBounds: true
+      }
     };
 
     var chart = new google.visualization.ColumnChart(
