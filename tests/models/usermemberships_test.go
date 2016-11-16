@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/FabLabBerlin/localmachines/lib"
+	"github.com/FabLabBerlin/localmachines/lib/day"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/invoices/monthly_earning"
@@ -100,13 +101,13 @@ func TestUserMemberships(t *testing.T) {
 
 			Convey("Try creating a user membership with non existend membership ID", func() {
 				fakeMembershipId := int64(-23)
-				startDate := time.Now()
+				startDay := day.Now()
 				fakeUserId := int64(1)
 
 				o := orm.NewOrm()
 
 				userMembership, err := user_memberships.Create(
-					o, fakeUserId, fakeMembershipId, startDate)
+					o, fakeUserId, fakeMembershipId, startDay)
 
 				Convey("It should return error", func() {
 					So(err, ShouldNotBeNil)
@@ -118,12 +119,12 @@ func TestUserMemberships(t *testing.T) {
 			})
 
 			Convey("When creating user membership normally", func() {
-				startDate := time.Date(2015, 6, 1, 0, 0, 0, 0, time.UTC)
+				startDay := day.New(2015, 6, 1)
 
 				o := orm.NewOrm()
 
 				userMembership, err := user_memberships.Create(
-					o, userId, membership.Id, startDate)
+					o, userId, membership.Id, startDay)
 				if err != nil {
 					panic(err.Error())
 				}
@@ -161,8 +162,7 @@ func TestUserMemberships(t *testing.T) {
 				})
 
 				Convey("The start date should be correct", func() {
-					So(gotUserMembership.StartDate, ShouldHappenWithin,
-						time.Duration(1)*time.Second, startDate)
+					So(gotUserMembership.StartDay().Equal(startDay), ShouldBeTrue)
 				})
 
 				Convey("The activations made during the user membership period should be affected by the base membership discount rules", func() {
@@ -212,20 +212,20 @@ func TestUserMemberships(t *testing.T) {
 
 		Convey("DurationMonthsUntil", func() {
 			um := user_memberships.UserMembership{
-				StartDate: time.Date(2015, 11, 1, 0, 0, 0, 0, time.UTC),
+				StartDate: "2015-11-01",
 			}
 
-			expectations := map[time.Time]int{
-				time.Date(2015, 11, 2, 0, 0, 0, 0, time.UTC):  0,
-				time.Date(2015, 11, 15, 0, 0, 0, 0, time.UTC): 0,
-				time.Date(2015, 11, 19, 0, 0, 0, 0, time.UTC): 0,
-				time.Date(2015, 11, 25, 0, 0, 0, 0, time.UTC): 0,
-				time.Date(2015, 11, 30, 0, 0, 0, 0, time.UTC): 1,
-				time.Date(2015, 12, 1, 0, 0, 0, 0, time.UTC):  1,
-				time.Date(2015, 12, 2, 0, 0, 0, 0, time.UTC):  1,
-				time.Date(2015, 12, 15, 0, 0, 0, 0, time.UTC): 1,
-				time.Date(2015, 12, 19, 0, 0, 0, 0, time.UTC): 1,
-				time.Date(2015, 12, 25, 0, 0, 0, 0, time.UTC): 1,
+			expectations := map[day.Day]int{
+				day.New(2015, 11, 2):  0,
+				day.New(2015, 11, 15): 0,
+				day.New(2015, 11, 19): 0,
+				day.New(2015, 11, 25): 0,
+				day.New(2015, 11, 30): 1,
+				day.New(2015, 12, 1):  1,
+				day.New(2015, 12, 2):  1,
+				day.New(2015, 12, 15): 1,
+				day.New(2015, 12, 19): 1,
+				day.New(2015, 12, 25): 1,
 			}
 
 			for end, expect := range expectations {

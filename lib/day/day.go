@@ -14,7 +14,10 @@ type Day struct {
 	d int
 }
 
-func New(d int, m time.Month, y int) Day {
+func New(y int, m time.Month, d int) Day {
+	if d > 31 {
+		panic(fmt.Sprintf("%v"))
+	}
 	return Day{
 		d: d,
 		m: month.New(m, y),
@@ -46,6 +49,10 @@ func NewTime(t time.Time) (d Day) {
 		d: t.Day(),
 		m: month.New(t.Month(), t.Year()),
 	}
+}
+
+func Now() (d Day) {
+	return NewTime(time.Now())
 }
 
 func (d Day) Add(dur time.Duration) Day {

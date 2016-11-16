@@ -16,8 +16,8 @@
     "AutoExtendDurationMonths": 1,
     "Archived": false
   },
-  "StartDate": "2016-08-01T00:00:00+02:00",
-  "TerminationDate": "0001-01-01T00:00:00Z",
+  "StartDate": "2016-08-01",
+  "TerminationDate": null,
   "InitialDurationMonths": 12,
   "AutoExtend": true,
   "Created": "0001-01-01T00:00:00Z",

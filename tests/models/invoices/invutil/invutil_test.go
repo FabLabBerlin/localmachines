@@ -2,6 +2,7 @@ package invoices
 
 import (
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/lib/day"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
@@ -99,9 +100,11 @@ func TestInvutilInvoices(t *testing.T) {
 			So(existingIvs[1].Current, ShouldBeTrue)
 
 			So(existingIums[0].UserId, ShouldEqual, user.Id)
-			So(existingIums[0].StartDate.Month(), ShouldEqual, mLast)
+			fmt.Printf("existingIums[0].StartDate=%v\n", existingIums[0].StartDate)
+			fmt.Printf("existingIums[0].StartDay()=%s\n", existingIums[0].StartDay())
+			So(existingIums[0].StartDay().Month(), ShouldEqual, mLast)
 			So(existingIums[1].UserId, ShouldEqual, user.Id)
-			So(existingIums[1].StartDate.Month(), ShouldEqual, mLast)
+			So(existingIums[1].StartDay().Month(), ShouldEqual, mLast)
 		})
 
 		Convey("Memberships in 1st month half affect 1st half", func() {
@@ -155,8 +158,8 @@ func TestInvutilInvoices(t *testing.T) {
 			mt.Second.Expect.LenInvUserMemberships = 1
 			mt.Second.Expect.Price = 123.45
 
-			mt.Membership.From = time.Date(2015, 11, 30, 0, 0, 0, 0, time.UTC)
-			mt.Membership.To = time.Date(2015, 12, 31, 23, 59, 59, 0, time.UTC)
+			mt.Membership.From = day.New(2015, 11, 30)
+			mt.Membership.To = day.New(2015, 12, 31)
 			mt.Membership.MonthlyPrice = 123.45
 
 			mt.Run()
@@ -175,8 +178,8 @@ func TestInvutilInvoices(t *testing.T) {
 			mt.Second.Expect.LenInvUserMemberships = 1
 			mt.Second.Expect.Price = 0
 
-			mt.Membership.From = time.Date(2015, 11, 9, 0, 0, 0, 0, time.UTC)
-			mt.Membership.To = time.Date(2015, 12, 15, 23, 59, 59, 0, time.UTC)
+			mt.Membership.From = day.New(2015, 11, 9)
+			mt.Membership.To = day.New(2015, 12, 15)
 			mt.Membership.MonthlyPrice = 123.45
 
 			mt.Run()
@@ -195,8 +198,8 @@ func TestInvutilInvoices(t *testing.T) {
 			mt.Second.Expect.LenInvUserMemberships = 1
 			mt.Second.Expect.Price = 123.45
 
-			mt.Membership.From = time.Date(2015, 11, 1, 0, 0, 0, 0, time.UTC)
-			mt.Membership.To = time.Date(2015, 12, 31, 23, 59, 59, 0, time.UTC)
+			mt.Membership.From = day.New(2015, 11, 1)
+			mt.Membership.To = day.New(2015, 12, 31)
 			mt.Membership.MonthlyPrice = 123.45
 
 			mt.Run()
@@ -215,8 +218,8 @@ func TestInvutilInvoices(t *testing.T) {
 			mt.Second.Expect.LenInvUserMemberships = 1
 			mt.Second.Expect.Price = 0
 
-			mt.Membership.From = time.Date(2015, 11, 2, 0, 0, 0, 0, time.UTC)
-			mt.Membership.To = time.Date(2015, 12, 30, 23, 59, 59, 0, time.UTC)
+			mt.Membership.From = day.New(2015, 11, 2)
+			mt.Membership.To = day.New(2015, 12, 30)
 			mt.Membership.MonthlyPrice = 123.45
 
 			mt.Run()
@@ -227,7 +230,7 @@ func TestInvutilInvoices(t *testing.T) {
 				for tolerance := 0; tolerance <= 15; tolerance++ {
 					mt := MembershipIntervalTest{}
 
-					mt.Membership.From = time.Date(2015, 11, 1+startOffset, 0, 0, 0, 0, time.UTC)
+					mt.Membership.From = day.New(2015, 11, 1+startOffset)
 					mt.Membership.To = mt.Membership.From.AddDate(0, 1, tolerance)
 					mt.Membership.MonthlyPrice = 123.45
 
@@ -238,14 +241,14 @@ func TestInvutilInvoices(t *testing.T) {
 
 					mt.Second.Month = 12
 					mt.Second.Year = 2015
-					if mt.Membership.To.Before(time.Date(2015, 12, 1, 8, 0, 0, 0, time.UTC)) {
+					if mt.Membership.To.Before(day.New(2015, 12, 1)) {
 						mt.Second.Expect.LenInvUserMemberships = 0
 					} else {
 						mt.Second.Expect.LenInvUserMemberships = 1
 					}
 					mt.Second.Expect.Price = 0
 
-					if mt.Membership.From.After(time.Date(2015, 11, 28, 8, 0, 0, 0, time.UTC)) {
+					if mt.Membership.From.After(day.New(2015, 11, 28)) {
 						mt.First.Expect.Price = 0
 						mt.Second.Expect.Price = 123.45
 					}
@@ -259,9 +262,10 @@ func TestInvutilInvoices(t *testing.T) {
 	Convey("userMembershipActiveHere", t, func() {
 		Reset(setup.ResetDB)
 		Convey("Membership from 11/01-12/31 is active in Nov", func() {
+			td := "2015-12-31"
 			um := &user_memberships.UserMembership{
-				StartDate:       time.Date(2015, 11, 1, 0, 0, 0, 0, time.UTC),
-				TerminationDate: time.Date(2015, 12, 31, 23, 59, 59, 0, time.UTC),
+				StartDate:       "2015-11-01",
+				TerminationDate: &td,
 			}
 
 			inv := invutil.Invoice{}
@@ -272,9 +276,10 @@ func TestInvutilInvoices(t *testing.T) {
 		})
 
 		Convey("Membership from 11/01-12/31 is active in Dec", func() {
+			td := "2015-12-31"
 			um := &user_memberships.UserMembership{
-				StartDate:       time.Date(2015, 11, 1, 0, 0, 0, 0, time.UTC),
-				TerminationDate: time.Date(2015, 12, 31, 23, 59, 59, 0, time.UTC),
+				StartDate:       "2015-11-01",
+				TerminationDate: &td,
 			}
 
 			inv := invutil.Invoice{}
@@ -288,9 +293,10 @@ func TestInvutilInvoices(t *testing.T) {
 	Convey("userMembershipGetsBilledHere", t, func() {
 		Reset(setup.ResetDB)
 		Convey("Membership from 11/30-12/31 not billed in Nov", func() {
+			td := "2015-12-31"
 			um := &user_memberships.UserMembership{
-				StartDate:       time.Date(2015, 11, 30, 0, 0, 0, 0, time.UTC),
-				TerminationDate: time.Date(2015, 12, 31, 23, 59, 59, 0, time.UTC),
+				StartDate:       "2015-11-30",
+				TerminationDate: &td,
 			}
 
 			inv := invutil.Invoice{}
@@ -301,9 +307,10 @@ func TestInvutilInvoices(t *testing.T) {
 		})
 
 		Convey("Membership from 11/30-12/31 is billed in Dec", func() {
+			td := "2015-12-31"
 			um := &user_memberships.UserMembership{
-				StartDate:       time.Date(2015, 11, 30, 0, 0, 0, 0, time.UTC),
-				TerminationDate: time.Date(2015, 12, 31, 23, 59, 59, 0, time.UTC),
+				StartDate:       "2015-11-30",
+				TerminationDate: &td,
 			}
 
 			inv := invutil.Invoice{}
@@ -314,9 +321,10 @@ func TestInvutilInvoices(t *testing.T) {
 		})
 
 		Convey("Membership from 11/01-12/31 is billed in Nov", func() {
+			td := "2015-12-31"
 			um := &user_memberships.UserMembership{
-				StartDate:       time.Date(2015, 11, 1, 0, 0, 0, 0, time.UTC),
-				TerminationDate: time.Date(2015, 12, 31, 23, 59, 59, 0, time.UTC),
+				StartDate:       "2015-11-01",
+				TerminationDate: &td,
 			}
 
 			inv := invutil.Invoice{}
@@ -327,9 +335,10 @@ func TestInvutilInvoices(t *testing.T) {
 		})
 
 		Convey("Membership from 11/01-12/31 is billed in Dec", func() {
+			td := "2015-12-31"
 			um := &user_memberships.UserMembership{
-				StartDate:       time.Date(2015, 11, 1, 0, 0, 0, 0, time.UTC),
-				TerminationDate: time.Date(2015, 12, 31, 23, 59, 59, 0, time.UTC),
+				StartDate:       "2015-11-01",
+				TerminationDate: &td,
 			}
 
 			inv := invutil.Invoice{}
@@ -362,8 +371,8 @@ type MembershipIntervalTest struct {
 	}
 
 	Membership struct {
-		From         time.Time
-		To           time.Time
+		From         day.Day
+		To           day.Day
 		MonthlyPrice float64
 	}
 }
@@ -408,7 +417,8 @@ func (t *MembershipIntervalTest) Run() {
 		panic(err.Error())
 	}
 
-	um.TerminationDate = terminationDate
+	terminationDateString := terminationDate.String()
+	um.TerminationDate = &terminationDateString
 
 	if err := um.Update(o); err != nil {
 		panic(err.Error())
@@ -559,8 +569,7 @@ func createInvoiceWithMembership(year int, month time.Month, dayStart int) (
 	iv *invutil.Invoice,
 	um *user_memberships.UserMembership) {
 	o := orm.NewOrm()
-	loc, _ := time.LoadLocation("Europe/Berlin")
-	membershipStart := time.Date(year, month, dayStart, 14, 0, 0, 0, loc)
+	membershipStart := day.New(year, month, dayStart)
 
 	user = &users.User{
 		FirstName: "Amen",

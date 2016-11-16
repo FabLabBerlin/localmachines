@@ -9,7 +9,7 @@ import (
 
 func TestLibDay(t *testing.T) {
 	Convey("Construct and Copy", t, func() {
-		d := day.New(7, time.February, 2014)
+		d := day.New(2014, time.February, 7)
 		var cpy day.Day
 		cpy = d
 		So(cpy.Day(), ShouldEqual, 7)
@@ -26,9 +26,9 @@ func TestLibDay(t *testing.T) {
 	})
 
 	Convey("After", t, func() {
-		d := day.New(28, time.February, 2014)
-		before := day.New(27, time.February, 2014)
-		after := day.New(11, time.January, 2015)
+		d := day.New(2014, time.February, 28)
+		before := day.New(2014, time.February, 27)
+		after := day.New(2015, time.January, 11)
 
 		So(before.Before(d), ShouldBeTrue)
 		So(after.After(d), ShouldBeTrue)
@@ -42,19 +42,19 @@ func TestLibDay(t *testing.T) {
 		}
 
 		tm := time.Date(2015, 11, 1, 0, 0, 0, 0, loc)
-		d := day.New(1, time.November, 2015)
+		d := day.New(2015, time.November, 1)
 		So(d.Contains(tm, loc), ShouldBeTrue)
 	})
 
 	Convey("Equal", t, func() {
-		d := day.New(7, time.November, 2015)
-		e := day.New(8, time.November, 2015)
+		d := day.New(2015, time.November, 7)
+		e := day.New(2015, time.November, 8)
 		So(d.Equal(e), ShouldBeFalse)
 		So(d.Equal(d), ShouldBeTrue)
 	})
 
 	Convey("String", t, func() {
-		m := day.New(17, time.November, 2015)
+		m := day.New(2015, time.November, 17)
 		So(m.String(), ShouldEqual, "2015-11-17")
 	})
 }

@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/FabLabBerlin/localmachines/lib/day"
 	"github.com/FabLabBerlin/localmachines/lib/fastbill"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
@@ -146,7 +147,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 				panic(err.Error())
 			}
 
-			_, err = user_memberships.Create(o, uid, ms.Id, TIME_START)
+			_, err = user_memberships.Create(o, uid, ms.Id, day.NewTime(TIME_START))
 			if err != nil {
 				panic(err.Error())
 			}

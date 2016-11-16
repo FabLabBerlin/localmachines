@@ -257,7 +257,7 @@ func deeplyPopulate(
 }
 
 func (this *InvoiceUserMembership) StartDay() (d day.Day) {
-	if d, err := day.NewString(this.StartDate); err != nil {
+	if d, err := day.NewString(this.StartDate); err == nil {
 		return d
 	}
 	return
