@@ -363,11 +363,13 @@ app.controller('UserCtrl',
           var transformed = _.extend({}, data);
           var startDate = $('.adm-user-membership-start-date[data-user-membership-id=' + userMembershipId + ']').val();
           if (startDate) {
-            transformed.StartDate = new Date(startDate);
+            transformed.StartDate = startDate;
           }
           var terminationDate = $('.adm-user-membership-termination-date[data-user-membership-id=' + userMembershipId + ']').val();
           if (terminationDate) {
-            transformed.TerminationDate = new Date(terminationDate);
+            transformed.TerminationDate = terminationDate;
+          } else {
+            delete transformed.TerminationDate;
           }
           delete transformed.Invoice;
           return JSON.stringify(transformed);
