@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/FabLabBerlin/localmachines/lib/day"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/machine"
@@ -129,7 +130,7 @@ func simulate(s Simulation) {
 		}
 
 		if i < s.nFlatrateUsers {
-			_, err := user_memberships.Create(orm.NewOrm(), uid, mb.Id, time.Date(2016, 6, 1, 1, 1, 1, 1, time.UTC))
+			_, err := user_memberships.Create(orm.NewOrm(), uid, mb.Id, day.New(2016, 6, 1))
 			if err != nil {
 				panic(err.Error())
 			}
