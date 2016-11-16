@@ -23,8 +23,8 @@ type InvoiceUserMembership struct {
 	MembershipId          int64
 	UserMembershipId      int64
 	UserMembership        *user_memberships.UserMembership `orm:"-" json:",omitempty"`
-	StartDate             time.Time                        `orm:"type(datetime)"`
-	TerminationDate       time.Time                        `orm:"type(datetime)"`
+	StartDate             string
+	TerminationDate       *string
 	InitialDurationMonths int
 
 	Created time.Time

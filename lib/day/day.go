@@ -41,6 +41,13 @@ func NewString(s string) (d Day, err error) {
 	}
 }
 
+func NewTime(t time.Time) (d Day) {
+	return Day{
+		d: t.Day(),
+		m: month.New(t.Month(), t.Year()),
+	}
+}
+
 func (d Day) After(other Day) bool {
 	if d.m.Equal(other.m) {
 		return d.d > other.d
@@ -49,12 +56,20 @@ func (d Day) After(other Day) bool {
 	}
 }
 
+func (d Day) AfterTime(t time.Time) bool {
+	return d.After(NewTime(t))
+}
+
 func (d Day) Before(other Day) bool {
 	if d.m.Equal(other.m) {
 		return d.d < other.d
 	} else {
 		return d.m.Before(other.m)
 	}
+}
+
+func (d Day) BeforeTime(t time.Time) bool {
+	return d.Before(NewTime(t))
 }
 
 func (d Day) Contains(t time.Time, loc *time.Location) bool {

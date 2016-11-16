@@ -2,6 +2,7 @@ package user_memberships
 
 import (
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/lib/day"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/astaxie/beego/orm"
 	"time"
@@ -15,8 +16,8 @@ type UserMembership struct {
 	UserId                int64
 	MembershipId          int64
 	Membership            *memberships.Membership `orm:"-" json:",omitempty"`
-	StartDate             time.Time               `orm:"type(datetime)"`
-	TerminationDate       time.Time               `orm:"type(datetime)"`
+	StartDate             string
+	TerminationDate       *string
 	InitialDurationMonths int
 	DurationMonths        *int `orm:"-" json:",omitempty"`
 
@@ -28,22 +29,18 @@ func (this *UserMembership) TableName() string {
 	return TABLE_NAME
 }
 
-func (this *UserMembership) TerminationDateDefined() bool {
-	return this.TerminationDate.Unix() > 0
-}
-
 func (this *UserMembership) Update(o orm.Ormer) (err error) {
 	_, err = o.Update(this)
 	return
 }
 
 func (this UserMembership) ActiveAt(t time.Time) bool {
-	if t.Before(this.StartDate) {
+	if this.StartDay().AfterTime(t) {
 		return false
 	}
 
-	if this.TerminationDateDefined() {
-		return this.TerminationDate.After(t)
+	if td := this.TerminationDay(); td != nil {
+		return !this.TerminationDay().BeforeTime(t)
 	} else {
 		return true
 	}
@@ -216,4 +213,18 @@ func (this *UserMembership) DurationModMonths() (months *int, days *float64) {
 	}
 
 	return
+}
+
+func (this *UserMembership) StartDay() day.Day {
+	return day.New(this.StartDate)
+}
+
+func (this *UserMembership) TerminationDay() *day.Day {
+	if this.TerminationDate != nil {
+		d := day.New(this.TerminationDate)
+
+		return &d
+	} else {
+		return nil
+	}
 }
