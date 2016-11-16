@@ -34,7 +34,12 @@ func (this *UserMembership) Update(o orm.Ormer) (err error) {
 	return
 }
 
-func (this UserMembership) ActiveAt(t time.Time) bool {
+func (this UserMembership) ActiveAt(d day.Day) bool {
+	t := time.Date(d.Year(), d.Month(), d.Day(), 11, 0, 0, 0, time.UTC)
+	return this.ActiveAtTime(t)
+}
+
+func (this UserMembership) ActiveAtTime(t time.Time) bool {
 	if this.StartDay().AfterTime(t) {
 		return false
 	}
@@ -51,7 +56,7 @@ func init() {
 }
 
 // Creates user membership from user ID, membership ID and start time.
-func Create(o orm.Ormer, userId, membershipId int64, start time.Time) (*UserMembership, error) {
+func Create(o orm.Ormer, userId, membershipId int64, start day.Day) (*UserMembership, error) {
 	m, err := memberships.Get(membershipId)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get membership: %v", err)
@@ -61,7 +66,7 @@ func Create(o orm.Ormer, userId, membershipId int64, start time.Time) (*UserMemb
 		LocationId:            m.LocationId,
 		UserId:                userId,
 		MembershipId:          membershipId,
-		StartDate:             start,
+		StartDate:             start.String(),
 		InitialDurationMonths: int(m.DurationMonths),
 
 		Created: time.Now(),
@@ -171,16 +176,16 @@ func Delete(o orm.Ormer, id int64) (err error) {
 }
 
 func (this *UserMembership) durationMonths() *int {
-	if this.TerminationDateDefined() {
-		ms := this.DurationMonthsUntil(this.TerminationDate)
+	if td := this.TerminationDay(); td != nil {
+		ms := this.DurationMonthsUntil(*td)
 		return &ms
 	} else {
 		return nil
 	}
 }
 
-func (this *UserMembership) DurationMonthsUntil(end time.Time) (ms int) {
-	t := this.StartDate
+func (this *UserMembership) DurationMonthsUntil(end day.Day) (ms int) {
+	t := this.StartDay()
 
 	for {
 		t = t.AddDate(0, 1, 0)
@@ -202,10 +207,10 @@ func (this *UserMembership) load() {
 // DurationModMonths is |TerminationDate - StartDate| % month. It is undefined
 // when no TerminationDate is defined, thus returning nil, nil.
 func (this *UserMembership) DurationModMonths() (months *int, days *float64) {
-	if this.TerminationDateDefined() {
-		ms := this.DurationMonthsUntil(this.TerminationDate)
+	if td := this.TerminationDay(); td != nil {
+		ms := this.DurationMonthsUntil(*td)
 		months = &ms
-		ds := float64(this.TerminationDate.Sub(this.StartDate).Hours()) / 24
+		ds := float64(td.Sub(this.StartDay()).Hours()) / 24
 		if ds < 0 {
 			ds = 0
 		}
@@ -215,15 +220,22 @@ func (this *UserMembership) DurationModMonths() (months *int, days *float64) {
 	return
 }
 
-func (this *UserMembership) StartDay() day.Day {
-	return day.New(this.StartDate)
+func (this *UserMembership) StartDay() (d day.Day) {
+	if d, err := day.NewString(this.StartDate); err != nil {
+		return d
+	}
+	return
 }
 
 func (this *UserMembership) TerminationDay() *day.Day {
-	if this.TerminationDate != nil {
-		d := day.New(this.TerminationDate)
+	if td := this.TerminationDate; td != nil {
+		d, err := day.NewString(*td)
 
-		return &d
+		if err == nil {
+			return &d
+		} else {
+			return nil
+		}
 	} else {
 		return nil
 	}

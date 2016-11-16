@@ -3,6 +3,7 @@ package monthly_earning
 import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
+	"github.com/FabLabBerlin/localmachines/lib/day"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/FabLabBerlin/localmachines/models/settings"
@@ -57,12 +58,12 @@ func (this *MonthlyEarning) Less(i, j int) bool {
 	return strings.ToLower(aName) < strings.ToLower(bName)
 }
 
-func (this *MonthlyEarning) PeriodFrom() time.Time {
-	return this.Interval().TimeFrom()
+func (this *MonthlyEarning) PeriodFrom() day.Day {
+	return this.Interval().DayFrom()
 }
 
-func (this *MonthlyEarning) PeriodTo() time.Time {
-	return this.Interval().TimeTo()
+func (this *MonthlyEarning) PeriodTo() day.Day {
+	return this.Interval().DayTo()
 }
 
 func (this *MonthlyEarning) Swap(i, j int) {

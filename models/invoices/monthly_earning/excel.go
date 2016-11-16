@@ -270,7 +270,7 @@ func createXlsxFile(
 			cell.Value = "Machine Price Deduction"
 			for _, m := range ms {
 
-				if m.StartDate.Before(monthlyEarning.PeriodTo()) &&
+				if m.StartDay().Before(monthlyEarning.PeriodTo()) &&
 					m.UserMembership.ActiveAt(monthlyEarning.PeriodFrom()) {
 
 					row = sheet.AddRow()
@@ -279,10 +279,10 @@ func createXlsxFile(
 					cell.SetStyle(colorStyle(BLUE))
 					cell.Value = m.Membership().Title
 					cell = row.AddCell()
-					cell.Value = m.StartDate.In(loc.TZ()).Format(time.RFC1123)
+					cell.Value = m.StartDay().String()
 					cell = row.AddCell()
-					if m.UserMembership.TerminationDateDefined() {
-						cell.Value = m.UserMembership.TerminationDate.In(loc.TZ()).Format(time.RFC1123)
+					if td := m.UserMembership.TerminationDay(); td != nil {
+						cell.Value = td.String()
 					}
 					cell = row.AddCell()
 					cell.SetFloatWithFormat(float64(m.Membership().MonthlyPrice), FORMAT_2_DIGIT)

@@ -141,9 +141,9 @@ func (inv *Invoice) InvoiceUserMemberships(data *PrefetchedData) (err error) {
 }
 
 func (inv *Invoice) UserMembershipActiveHere(um *user_memberships.UserMembership) bool {
-	return um.ActiveAt(inv.Interval().TimeFrom()) ||
-		um.ActiveAt(inv.Interval().TimeFrom().AddDate(0, 0, 15)) ||
-		um.ActiveAt(inv.Interval().TimeTo())
+	return um.ActiveAt(inv.Interval().DayFrom()) ||
+		um.ActiveAt(inv.Interval().DayFrom().AddDate(0, 0, 15)) ||
+		um.ActiveAt(inv.Interval().DayTo())
 }
 
 // addMonth where the neutral element of addition is the last day of month.
@@ -171,15 +171,14 @@ func addDate2(t time.Time, years, months, days int) time.Time {
 }
 
 func (inv *Invoice) UserMembershipGetsBilledHere(um *user_memberships.UserMembership) bool {
-	quarterDay := -6 * time.Hour
-	invTo := inv.Interval().TimeTo().Add(quarterDay)
+	invTo := inv.Interval().DayTo()
 
-	if um.StartDate.AddDate(0, 0, 2).After(invTo) {
+	if um.StartDay().AddDate(0, 0, 2).After(invTo) {
 		return false
 	}
 
 	if months, _ := um.DurationModMonths(); months != nil {
-		return addDate2(um.StartDate, 0, *months, 2).After(invTo)
+		return um.StartDay().AddDate2(0, *months, 2).After(invTo)
 	}
 
 	return um.ActiveAt(invTo)
@@ -413,7 +412,7 @@ func toUtilInvoices(locId int64, ivs []*invoices.Invoice) (invs []*Invoice, err 
 					return nil, fmt.Errorf("Unknown membership id: %v", mbId)
 				}
 
-				if iumb.UserMembership.ActiveAt(p.TimeStart) &&
+				if iumb.UserMembership.ActiveAtTime(p.TimeStart) &&
 					iumb.InvoiceId == inv.Id {
 					p.Memberships = append(p.Memberships, mb)
 				}

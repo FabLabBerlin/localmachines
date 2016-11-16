@@ -3,6 +3,7 @@ package metrics
 import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
+	"github.com/FabLabBerlin/localmachines/lib/day"
 	"github.com/FabLabBerlin/localmachines/models/invoices/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
@@ -129,11 +130,11 @@ func NewTrotecStats() (t *Trotec, err error) {
 		return nil, fmt.Errorf("Failed to get user memberships: %v", err)
 	}
 
-	midMonth := time.Date(2015, time.November, 15, 5, 5, 5, 5, time.UTC)
+	midMonth := day.New(2015, time.November, 15)
 	for ; midMonth.Month() != time.April; midMonth = midMonth.AddDate(0, 1, 0) {
 		month := midMonth.Month()
 		for _, um := range userMemberships {
-			if um.StartDate.Unix() <= midMonth.Unix() &&
+			if um.StartDay().BeforeOrEqual(midMonth) &&
 				um.ActiveAt(midMonth) &&
 				membershipIdHasTrotecRebate(um.MembershipId) {
 				m := membershipsById[um.MembershipId]

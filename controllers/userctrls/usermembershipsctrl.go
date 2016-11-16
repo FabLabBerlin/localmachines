@@ -3,6 +3,7 @@ package userctrls
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/lib/day"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/user_memberships"
@@ -54,9 +55,7 @@ func (this *UserMembershipsController) PostUserMemberships() {
 		this.CustomAbort(401, "Not authorized")
 	}
 
-	startDate, err := time.ParseInLocation("2006-01-02",
-		this.GetString("startDate"),
-		time.UTC)
+	startDate, err := day.NewString(this.GetString("startDate"))
 	if err != nil {
 		beego.Error("Failed to parse startDate=", startDate)
 		this.Fail("500")

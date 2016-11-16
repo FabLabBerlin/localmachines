@@ -48,6 +48,42 @@ func NewTime(t time.Time) (d Day) {
 	}
 }
 
+func (d Day) Add(dur time.Duration) Day {
+	t := time.Date(d.Year(), d.Month(), d.Day(), 0, 0, 0, 0, time.UTC)
+	return NewTime(t.Add(dur))
+}
+
+func (d Day) AddDate(y, m, dd int) Day {
+	t := time.Date(d.Year(), d.Month(), d.Day(), 11, 0, 0, 0, time.UTC)
+	t = t.AddDate(y, m, dd)
+
+	return NewTime(t)
+}
+
+// addMonth where the neutral element of addition is the last day of month.
+func (d Day) addMonth() Day {
+	s := time.Date(d.Year(), d.Month()+1, 1, 0, 0, 0, 0, time.UTC)
+	u := time.Date(d.Year(), d.Month()+2, 1, 0, 0, 0, 0, time.UTC)
+	return d.Add(u.Sub(s))
+}
+
+// addMonths where the neutral element of addition is the last day of month.
+func (d Day) addMonths(months int) (e Day) {
+	e = d
+
+	for i := 0; i < months; i++ {
+		e = e.addMonth()
+	}
+
+	return
+}
+
+// AddDate2 where the neutral element of monthly addition is the last day of
+// month.
+func (d Day) AddDate2(y, m, dd int) Day {
+	return d.addMonths(m).AddDate(y, 0, dd)
+}
+
 func (d Day) After(other Day) bool {
 	if d.m.Equal(other.m) {
 		return d.d > other.d
@@ -66,6 +102,10 @@ func (d Day) Before(other Day) bool {
 	} else {
 		return d.m.Before(other.m)
 	}
+}
+
+func (d Day) BeforeOrEqual(other Day) bool {
+	return d.Before(other) || d.Equal(other)
 }
 
 func (d Day) BeforeTime(t time.Time) bool {
@@ -95,6 +135,12 @@ func (d Day) Month() time.Month {
 func (d Day) String() string {
 	t := time.Date(d.Year(), d.Month(), d.Day(), 11, 0, 0, 0, time.UTC)
 	return t.Format("2006-01-02")
+}
+
+func (d Day) Sub(other Day) time.Duration {
+	t := time.Date(d.Year(), d.Month(), d.Day(), 11, 0, 0, 0, time.UTC)
+	u := time.Date(other.Year(), other.Month(), other.Day(), 11, 0, 0, 0, time.UTC)
+	return t.Sub(u)
 }
 
 func (d Day) Year() int {

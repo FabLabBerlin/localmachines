@@ -2,6 +2,7 @@ package lib
 
 import (
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/lib/day"
 	"strconv"
 	"strings"
 	"time"
@@ -44,14 +45,12 @@ func (i Interval) Contains(t time.Time) bool {
 	return i.TimeFrom().Before(t) && i.TimeTo().After(t)
 }
 
-func (i Interval) DayFrom() string {
-	return fmt.Sprintf(ISO8601_FMT, i.YearFrom, i.MonthFrom, 1)
+func (i Interval) DayFrom() day.Day {
+	return day.New(i.YearFrom, time.Month(i.MonthFrom), 1)
 }
 
-func (i Interval) DayTo() string {
-	t := time.Date(i.YearTo, time.Month(i.MonthTo), 1, 0, 0, 0, 0, time.UTC)
-	t = t.AddDate(0, 1, -1)
-	return t.Format("2006-01-02")
+func (i Interval) DayTo() day.Day {
+	return day.New(i.YearTo, time.Month(i.MonthTo), 1).AddDate(0, 1, -1)
 }
 
 func (i Interval) TimeFrom() time.Time {

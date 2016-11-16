@@ -3,6 +3,7 @@ package inv_user_memberships
 import (
 	"errors"
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/lib/day"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/user_memberships"
@@ -253,4 +254,25 @@ func deeplyPopulate(
 	}
 
 	return
+}
+
+func (this *InvoiceUserMembership) StartDay() (d day.Day) {
+	if d, err := day.NewString(this.StartDate); err != nil {
+		return d
+	}
+	return
+}
+
+func (this *InvoiceUserMembership) TerminationDay() *day.Day {
+	if td := this.TerminationDate; td != nil {
+		d, err := day.NewString(*td)
+
+		if err == nil {
+			return &d
+		} else {
+			return nil
+		}
+	} else {
+		return nil
+	}
 }
