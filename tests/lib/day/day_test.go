@@ -65,7 +65,7 @@ func TestLibDay(t *testing.T) {
 		So(d.Day(), ShouldEqual, 31)
 	})
 
-	Convey("After", t, func() {
+	Convey("After/Before", t, func() {
 		d := day.New(2014, time.February, 28)
 		before := day.New(2014, time.February, 27)
 		after := day.New(2015, time.January, 11)
@@ -73,6 +73,18 @@ func TestLibDay(t *testing.T) {
 		So(before.Before(d), ShouldBeTrue)
 		So(after.After(d), ShouldBeTrue)
 		So(d.Before(d), ShouldBeFalse)
+	})
+
+	Convey("AfterTime/BeforeTime", t, func() {
+		d := day.New(2014, time.February, 28)
+		t0 := time.Date(2014, time.February, 28, 11, 0, 0, 0, time.UTC)
+		before := time.Date(2014, time.February, 27, 11, 0, 0, 0, time.UTC)
+		after := time.Date(2015, time.January, 11, 11, 0, 0, 0, time.UTC)
+
+		So(d.BeforeTime(after), ShouldBeTrue)
+		So(d.AfterTime(before), ShouldBeTrue)
+		So(d.AfterTime(t0), ShouldBeFalse)
+		So(d.BeforeTime(t0), ShouldBeFalse)
 	})
 
 	Convey("Contains", t, func() {
@@ -96,5 +108,11 @@ func TestLibDay(t *testing.T) {
 	Convey("String", t, func() {
 		m := day.New(2015, time.November, 17)
 		So(m.String(), ShouldEqual, "2015-11-17")
+	})
+
+	Convey("Sub", t, func() {
+		d := day.New(2016, time.March, 1)
+		e := day.New(2016, time.February, 1)
+		So(d.Sub(e), ShouldEqual, 29*24*time.Hour)
 	})
 }

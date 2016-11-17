@@ -9,6 +9,7 @@ import (
 	"time"
 )
 
+// Day representation independent of time (zone).
 type Day struct {
 	m month.Month
 	d int
