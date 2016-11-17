@@ -146,30 +146,6 @@ func (inv *Invoice) UserMembershipActiveHere(um *user_memberships.UserMembership
 		um.ActiveAt(inv.Interval().DayTo())
 }
 
-// addMonth where the neutral element of addition is the last day of month.
-func addMonth(t time.Time) time.Time {
-	s := time.Date(t.Year(), t.Month()+1, 1, 0, 0, 0, 0, t.Location())
-	u := time.Date(t.Year(), t.Month()+2, 1, 0, 0, 0, 0, t.Location())
-	return t.Add(u.Sub(s))
-}
-
-// addMonths where the neutral element of addition is the last day of month.
-func addMonths(t time.Time, months int) (u time.Time) {
-	u = t
-
-	for i := 0; i < months; i++ {
-		u = addMonth(u)
-	}
-
-	return
-}
-
-// addDate2 where the neutral element of monthly addition is the last day of
-// month.
-func addDate2(t time.Time, years, months, days int) time.Time {
-	return addMonths(t, months).AddDate(years, 0, days)
-}
-
 func (inv *Invoice) UserMembershipGetsBilledHere(um *user_memberships.UserMembership) bool {
 	invTo := inv.Interval().DayTo()
 
