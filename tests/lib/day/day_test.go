@@ -25,6 +25,46 @@ func TestLibDay(t *testing.T) {
 		So(m.Year(), ShouldEqual, 2013)
 	})
 
+	Convey("NewTime", t, func() {
+		tm := time.Now().AddDate(-10, -5, -1)
+		d := day.NewTime(tm)
+		So(tm.Year(), ShouldEqual, d.Year())
+		So(tm.Month(), ShouldEqual, d.Month())
+		So(tm.Day(), ShouldEqual, d.Day())
+	})
+
+	Convey("Now", t, func() {
+		tm := time.Now()
+		d := day.Now()
+		So(tm.Year(), ShouldEqual, d.Year())
+		So(tm.Month(), ShouldEqual, d.Month())
+		So(tm.Day(), ShouldEqual, d.Day())
+	})
+
+	Convey("Add", t, func() {
+		d := day.New(2016, 2, 29)
+		d = d.Add(24 * time.Hour)
+		So(d.Year(), ShouldEqual, 2016)
+		So(d.Month(), ShouldEqual, time.March)
+		So(d.Day(), ShouldEqual, 1)
+	})
+
+	Convey("AddDate", t, func() {
+		d := day.New(2016, 2, 29)
+		d = d.AddDate(0, 0, 1)
+		So(d.Year(), ShouldEqual, 2016)
+		So(d.Month(), ShouldEqual, time.March)
+		So(d.Day(), ShouldEqual, 1)
+	})
+
+	Convey("AddDate2", t, func() {
+		d := day.New(2016, 2, 29)
+		d = d.AddDate2(0, 1, 0)
+		So(d.Year(), ShouldEqual, 2016)
+		So(d.Month(), ShouldEqual, time.March)
+		So(d.Day(), ShouldEqual, 31)
+	})
+
 	Convey("After", t, func() {
 		d := day.New(2014, time.February, 28)
 		before := day.New(2014, time.February, 27)
