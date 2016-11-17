@@ -225,9 +225,9 @@ func TestInvutilInvoices(t *testing.T) {
 			mt.Run()
 		})
 
-		Convey("Membership of 1 month (+0..+15d) gets billed exactly once", func() {
+		Convey("Membership of 1 month (-1..+15d) gets billed exactly once", func() {
 			for startOffset := 0; startOffset < 30; startOffset++ {
-				for tolerance := 0; tolerance <= 15; tolerance++ {
+				for tolerance := -1; tolerance <= 15; tolerance++ {
 					mt := MembershipIntervalTest{}
 
 					mt.Membership.From = day.New(2015, 11, 1+startOffset)

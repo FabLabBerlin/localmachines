@@ -88,6 +88,12 @@ func (d Day) addMonths(months int) (e Day) {
 
 // AddDate2 where the neutral element of monthly addition is the last day of
 // month.
+//
+// Example: day.New(2016, 2, 29).AddDate2(0, 1, 0) => March 31st
+//
+//           but
+//
+//          day.New(2016, 2, 29).AddDate(0, 1, 0) => March 29th
 func (d Day) AddDate2(y, m, dd int) Day {
 	return d.addMonths(m).AddDate(y, 0, dd)
 }

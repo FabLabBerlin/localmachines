@@ -146,6 +146,9 @@ func (inv *Invoice) UserMembershipActiveHere(um *user_memberships.UserMembership
 		um.ActiveAt(inv.Interval().DayTo())
 }
 
+// UserMembershipGetsBilledHere when it has started today or before and is not
+// terminated yet. If it's terminated then during its life-time it must be
+// billed math.Ceil(lifetime in months) times.
 func (inv *Invoice) UserMembershipGetsBilledHere(um *user_memberships.UserMembership) bool {
 	invTo := inv.Interval().DayTo()
 
