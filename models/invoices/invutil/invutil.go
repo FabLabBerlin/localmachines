@@ -123,7 +123,9 @@ func (inv *Invoice) InvoiceUserMemberships(data *PrefetchedData) (err error) {
 
 		if !invoiced {
 			if inv.Status != "draft" {
-				beego.Error("invoice doesn't have status draft but not all user memberships are associated")
+				if inv.Year > 2016 || (inv.Year == 2016 && inv.Month > 10) {
+					beego.Error("invoice", inv.Id, "doesn't have status draft but user membership", um.Id, "not associated with it")
+				}
 				continue
 			}
 
