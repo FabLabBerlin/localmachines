@@ -122,6 +122,10 @@ func filter(all []*invutil.Invoice) (filtered []*invutil.Invoice) {
 			continue
 		}
 
+		if iv.Canceled {
+			continue
+		}
+
 		if _, ok := byUserIdYearMonth[uid]; !ok {
 			byUserIdYearMonth[uid] = make(map[int]map[time.Month]*invutil.Invoice)
 		}
