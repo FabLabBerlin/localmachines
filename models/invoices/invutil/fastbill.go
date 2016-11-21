@@ -344,7 +344,9 @@ func FastbillSyncFast(
 			continue
 		}
 
-		inv.Total = fbInv.Total
+		//No need to sync the invoice totals because are so different in
+		//Fastbill, e.g. because material prices are not included.
+		//inv.Total = fbInv.Total
 		inv.VatPercent = fbInv.VatPercent
 		inv.Canceled = fbInv.Canceled()
 		inv.DueDate = fbInv.DueDate()
