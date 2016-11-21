@@ -107,7 +107,9 @@ var Month = React.createClass({
       total = (Math.round(this.state.MonthlySums.getIn([
         t.year(),
         t.month() + 1
-      ]).reduce((result, monthlySum) => {
+      ]).filter(monthlySum => {
+        return !monthlySum.get('Canceled');
+      }).reduce((result, monthlySum) => {
         return result + monthlySum.get('Total');
       }, 0) * 100) / 100).toFixed(2);
     }
