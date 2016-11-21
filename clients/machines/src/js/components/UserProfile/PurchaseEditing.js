@@ -69,6 +69,10 @@ var Category = React.createClass({
 
 var Duration = React.createClass({
   render() {
+    if (!this.props.purchase.PriceUnit) {
+      return <div/>;
+    }
+
     return (
       <input type="text"
              autoFocus="on"
