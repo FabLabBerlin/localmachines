@@ -277,9 +277,16 @@ func GetDraft(locId, uid int64, t time.Time) (inv *Invoice, err error) {
 	if err != nil {
 		return nil, fmt.Errorf("get invoice draft entity: %v", err)
 	}
+
+	data := NewPrefetchedData(locId)
+
+	if err := data.Prefetch(); err != nil {
+		return nil, fmt.Errorf("prefetch data: %v", err)
+	}
+
 	tmp, err := toUtilInvoices(iv.LocationId, []*invoices.Invoice{
 		iv,
-	})
+	}, data)
 	if tmp[0].VatPercent < 0.01 {
 		beego.Error("detected zero vat")
 	}
@@ -292,9 +299,17 @@ func Get(id int64) (inv *Invoice, err error) {
 	if err != nil {
 		return nil, fmt.Errorf("get invoice entity: %v", err)
 	}
+
+	data := NewPrefetchedData(iv.LocationId)
+
+	if err := data.Prefetch(); err != nil {
+		return nil, fmt.Errorf("prefetch data: %v", err)
+	}
+
 	tmp, err := toUtilInvoices(iv.LocationId, []*invoices.Invoice{
 		iv,
-	})
+	}, data)
+
 	if tmp[0].VatPercent < 0.01 {
 		beego.Error("detected zero vat")
 	}
@@ -308,7 +323,13 @@ func GetAllAt(locId int64) (invs []*Invoice, err error) {
 		return nil, fmt.Errorf("invoices.GetAllInvoices: %v", err)
 	}
 
-	if invs, err = toUtilInvoices(locId, ivs); err != nil {
+	data := NewPrefetchedData(locId)
+
+	if err := data.Prefetch(); err != nil {
+		return nil, fmt.Errorf("prefetch data: %v", err)
+	}
+
+	if invs, err = toUtilInvoices(locId, ivs, data); err != nil {
 		return nil, fmt.Errorf("to util invoices: %v", err)
 	}
 
@@ -316,12 +337,22 @@ func GetAllAt(locId int64) (invs []*Invoice, err error) {
 }
 
 func GetAllOfUserAt(locId, userId int64) (invs []*Invoice, err error) {
+	data := NewPrefetchedData(locId)
+
+	if err := data.Prefetch(); err != nil {
+		return nil, fmt.Errorf("prefetch data: %v", err)
+	}
+
+	return getAllOfUserAt(locId, userId, data)
+}
+
+func getAllOfUserAt(locId, userId int64, data *PrefetchedData) (invs []*Invoice, err error) {
 	ivs, err := invoices.GetAllOfUserAt(locId, userId)
 	if err != nil {
 		return nil, fmt.Errorf("invoices.GetAllUserAt: %v", err)
 	}
 
-	if invs, err = toUtilInvoices(locId, ivs); err != nil {
+	if invs, err = toUtilInvoices(locId, ivs, data); err != nil {
 		return nil, fmt.Errorf("to util invoices: %v", err)
 	}
 
@@ -336,7 +367,13 @@ func GetAllOfMonthAt(locId int64, year int, m time.Month) ([]*Invoice, error) {
 		return nil, fmt.Errorf("get all invoices between: %v", err)
 	}
 
-	if invs, err = toUtilInvoices(locId, ivs); err != nil {
+	data := NewPrefetchedData(locId)
+
+	if err := data.Prefetch(); err != nil {
+		return nil, fmt.Errorf("prefetch data: %v", err)
+	}
+
+	if invs, err = toUtilInvoices(locId, ivs, data); err != nil {
 		return nil, fmt.Errorf("to util invoices: %v", err)
 	}
 
@@ -355,14 +392,8 @@ func GetAllOfMonthAt(locId int64, year int, m time.Month) ([]*Invoice, error) {
 // (TODO: 2c. Update invoice_user_memberships according to user_memberships)
 //
 // TODO: convert into multiple functions
-func toUtilInvoices(locId int64, ivs []*invoices.Invoice) (invs []*Invoice, err error) {
+func toUtilInvoices(locId int64, ivs []*invoices.Invoice, data *PrefetchedData) (invs []*Invoice, err error) {
 	invs = make([]*Invoice, 0, len(ivs))
-
-	data := NewPrefetchedData(locId)
-
-	if err := data.Prefetch(); err != nil {
-		return nil, fmt.Errorf("prefetch data: %v", err)
-	}
 
 	for _, iv := range ivs {
 		inv := &Invoice{

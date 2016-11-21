@@ -6,7 +6,7 @@ import (
 	_ "github.com/FabLabBerlin/localmachines/docs"
 	_ "github.com/FabLabBerlin/localmachines/lib/log"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
-	"github.com/FabLabBerlin/localmachines/models/machine"
+	//"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/routers"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
@@ -113,25 +113,25 @@ func configDatabase() {
 // Setup Beego toolbox tasks. They are kind of cron jobs.
 func setupTasks() {
 	fmt.Println("Starting tasks")
-	autoextendUserMembership := toolbox.NewTask("Autoextend User Membership",
-		" 0 0/53 * * * *",
-		invutil.TaskAutoExtend)
-	fetchLocalIps := toolbox.NewTask("Fetch Local IPs",
+	/*autoextendUserMembership := toolbox.NewTask("Autoextend User Membership",
+	" 0 0/1 * * * *",
+	invutil.TaskAutoExtend)*/
+	/*fetchLocalIps := toolbox.NewTask("Fetch Local IPs",
 		"0 0/2 * * * *",
 		machine.FetchLocalIpsTask)
 	calculateTotals := toolbox.NewTask("Calculate Invoice Totals",
-		" 0 0/50 * * * *",
-		invutil.TaskCalculateTotals)
+		" 0 0/1 * * * *",
+		invutil.TaskCalculateTotals)*/
 	fastbillSync := toolbox.NewTask("Sync Fastbill",
-		" 0 0/59 * * * *",
+		" 0 0/1 * * * *",
 		invutil.TaskFastbillSync)
-	pingNetswitches := toolbox.NewTask("Ping Netswitches",
-		" 0 0/10 * * * *",
-		machine.TaskPingNetswitches)
+	/*pingNetswitches := toolbox.NewTask("Ping Netswitches",
+	" 0 0/10 * * * *",
+	machine.TaskPingNetswitches)*/
 
-	toolbox.AddTask("Autoextend User Membership", autoextendUserMembership)
-	toolbox.AddTask("Calculate Invoice Totals", calculateTotals)
-	toolbox.AddTask("Fetch Local IPs", fetchLocalIps)
+	//toolbox.AddTask("Autoextend User Membership", autoextendUserMembership)
+	//toolbox.AddTask("Calculate Invoice Totals", calculateTotals)
+	//toolbox.AddTask("Fetch Local IPs", fetchLocalIps)
 	toolbox.AddTask("Sync Fastbill", fastbillSync)
-	toolbox.AddTask("Ping Netswitches", pingNetswitches)
+	//toolbox.AddTask("Ping Netswitches", pingNetswitches)
 }

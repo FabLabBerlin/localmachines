@@ -316,15 +316,22 @@ func FastbillSync(locId int64, u *users.User) (err error) {
 		return fmt.Errorf("Failed to get invoice list from fastbill: %v", err)
 	}
 
-	return FastbillSyncFast(locId, u, l)
+	data := NewPrefetchedData(locId)
+
+	if err := data.Prefetch(); err != nil {
+		return fmt.Errorf("prefetch data: %v", err)
+	}
+
+	return FastbillSyncFast(locId, u, l, data)
 }
 
 func FastbillSyncFast(
 	locId int64,
 	u *users.User,
-	l []fastbill.InvoiceGetResponseInvoice) (err error) {
+	l []fastbill.InvoiceGetResponseInvoice,
+	data *PrefetchedData) (err error) {
 
-	invs, err := invoices.GetAllOfUserAt(locId, u.Id)
+	invs, err := getAllOfUserAt(locId, u.Id, data)
 	if err != nil {
 		return fmt.Errorf("get invoices of user at location: %v", err)
 	}
@@ -335,7 +342,7 @@ func FastbillSyncFast(
 
 		for _, iv := range invs {
 			if iv.FastbillId == fbInv.Id {
-				inv = iv
+				inv = &iv.Invoice
 				break
 			}
 		}
@@ -344,6 +351,8 @@ func FastbillSyncFast(
 			continue
 		}
 
+		beego.Info("fbInv=", fbInv)
+		beego.Info("setting inv.Total <- fbInv.Total identical w/ ", fbInv.Total)
 		inv.Total = fbInv.Total
 		inv.VatPercent = fbInv.VatPercent
 		inv.Canceled = fbInv.Canceled()
@@ -372,7 +381,7 @@ func FastbillSyncFast(
 				continue
 			}
 			if strings.Contains(fbInv.InvoiceNumber, iv.FastbillNo) {
-				inv = iv
+				inv = &iv.Invoice
 				break
 			}
 		}
