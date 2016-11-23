@@ -4,7 +4,6 @@ import (
 	"github.com/FabLabBerlin/localmachines/lib/month"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/machine"
-	"github.com/astaxie/beego"
 	"math"
 	"time"
 )
@@ -88,10 +87,6 @@ func (me MachineEarning) Memberships() (sum Money) {
 				continue
 			}
 
-			if len(p.Memberships) > 1 {
-				beego.Warn("len(p.Memberships) > 1")
-			}
-
 			for _, m := range p.Memberships {
 				membershipIds[m.Id] = true
 			}
@@ -120,10 +115,6 @@ func (me MachineEarning) Membership(membershipId int64) (sum Money) {
 		for _, p := range inv.Purchases {
 			if !me.ContainsTime(p.TimeStart) {
 				continue
-			}
-
-			if len(p.Memberships) > 1 {
-				beego.Warn("len(p.Memberships) > 1")
 			}
 
 			for _, m := range p.Memberships {
