@@ -1,7 +1,6 @@
 package machine_earnings
 
 import (
-	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib/month"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/machine"
@@ -112,10 +111,8 @@ func TestMachineEarnings(t *testing.T) {
 						inv,
 					},
 				)
-				fmt.Printf("me83Seconds80CentsPerMinute.Memberships()=%v\n", me83Seconds80CentsPerMinute.Memberships())
-				fmt.Printf("me160Seconds160CentsPerMinute.Memberships()=%v\n", me160Seconds160CentsPerMinute.Memberships())
-				So(float64(me83Seconds80CentsPerMinute.Memberships()), ShouldEqual, 150*0.21)
-				So(float64(me160Seconds160CentsPerMinute.Memberships()), ShouldEqual, 150*0.79)
+				So(math.Abs(float64(me83Seconds80CentsPerMinute.Memberships())-150*0.21) < 0.4, ShouldBeTrue)
+				So(math.Abs(float64(me160Seconds160CentsPerMinute.Memberships())-150*0.79) < 0.4, ShouldBeTrue)
 			})
 		})
 	})

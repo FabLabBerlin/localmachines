@@ -4,7 +4,6 @@ import (
 	"github.com/FabLabBerlin/localmachines/lib/month"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/machine"
-	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/astaxie/beego"
 	"math"
 	"time"
@@ -74,21 +73,12 @@ type UserMembershipId int64
 //          20h Lasercutting                   => 1900€ Payg
 //
 //
-//                   w[1]*sum(Membership[1]) + ... + w[n]*sum(Membership[n])
-//  Memberships() = ---------------------------------------------------------
-//                                 w[1] + ... + w[n]
 //
-//   where
-//
-//  w[i] = sum(Purchase.Undiscounted, Purchase affected by Membership[i]),
-//  sum(Membership[i]) = sum(InvUserMembership.MonthlyPrice, Invoice in [from, to] and
-//                                                           MembershipId fits)
+//  Memberships(Machine) = sum(Membership(MembershipId, Machine))
 //
 func (me MachineEarning) Memberships() (sum Money) {
-	ms := make(map[int64]*memberships.Membership)
-	ws := make(map[int64]Money)
+	membershipIds := make(map[int64]bool)
 
-	// Step 1: obtain w[i] and m[i]
 	for _, inv := range me.invs {
 		for _, p := range inv.Purchases {
 			if p.MachineId != me.m.Id {
@@ -103,36 +93,65 @@ func (me MachineEarning) Memberships() (sum Money) {
 			}
 
 			for _, m := range p.Memberships {
-				ws[m.Id] += Money(p.PricePerUnit * p.Quantity)
-				ms[m.Id] = m
+				membershipIds[m.Id] = true
 			}
 		}
 	}
 
-	// Step 2: plug in w[i] and get membership earnings on-the-fly
-	enumerator := 0.0
+	for membershipId := range membershipIds {
+		sum += me.Membership(membershipId)
+	}
 
-	for membershipId := range ms {
-		innerSum := Money(0)
-		for _, inv := range me.invs {
-			for _, ium := range inv.InvUserMemberships {
-				if ium.MembershipId == membershipId {
-					innerSum += Money(ium.Membership().MonthlyPrice)
+	return
+}
+
+//
+//                                Undiscounted cost for Machine
+//  Membership(Machine) = -------------------------------------------------- * sum(Membership.MonthlyPrice)
+//                         Undiscounted cost for all Machines in Membership
+//
+func (me MachineEarning) Membership(membershipId int64) (sum Money) {
+	undiscountedForMachine := Money(0.0)
+	undiscountedForMembership := Money(0.0)
+	sumMonthlyPrice := Money(0.0)
+
+	// Step 1) Calculate undiscountedForMachine and undiscountedForMembership
+	for _, inv := range me.invs {
+		for _, p := range inv.Purchases {
+			if !me.ContainsTime(p.TimeStart) {
+				continue
+			}
+
+			if len(p.Memberships) > 1 {
+				beego.Warn("len(p.Memberships) > 1")
+			}
+
+			for _, m := range p.Memberships {
+				if m.Id == membershipId {
+					if p.MachineId == me.m.Id {
+						undiscountedForMachine += Money(p.PricePerUnit * p.Quantity)
+					}
+					undiscountedForMembership += Money(p.PricePerUnit * p.Quantity)
 				}
 			}
 		}
-
-		enumerator += float64(innerSum) * float64(ws[membershipId])
 	}
 
-	denominator := 0.0
-	for _, w := range ws {
-		denominator += float64(w)
+	// Step 2) Calculate sumMonthlyPrice
+	for _, inv := range me.invs {
+		for _, ium := range inv.InvUserMemberships {
+			if ium.MembershipId == membershipId {
+				sumMonthlyPrice += Money(ium.UserMembership.Membership.MonthlyPrice)
+			}
+		}
 	}
 
-	if math.Abs(enumerator) < 0.01 {
+	if math.Abs(float64(undiscountedForMachine)) < 0.01 {
 		return 0
 	}
 
-	return Money(enumerator / denominator)
+	lhs := undiscountedForMachine / undiscountedForMembership
+	rhs := sumMonthlyPrice
+
+	return lhs * rhs
 }
