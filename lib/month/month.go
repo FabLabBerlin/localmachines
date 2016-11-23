@@ -42,6 +42,13 @@ func NewString(s string) (m Month, err error) {
 	}
 }
 
+func NewTime(t time.Time) (m Month) {
+	return Month{
+		y: t.Year(),
+		m: t.Month(),
+	}
+}
+
 func (m Month) After(other Month) bool {
 	if m.Year() == other.Year() {
 		return int(m.Month()) > int(other.Month())
@@ -50,12 +57,28 @@ func (m Month) After(other Month) bool {
 	}
 }
 
+func (m Month) AfterOrEqual(other Month) bool {
+	return m.After(other) || m.Equal(other)
+}
+
+func (m Month) AfterTime(t time.Time) bool {
+	return m.After(NewTime(t))
+}
+
 func (m Month) Before(other Month) bool {
 	if m.Year() == other.Year() {
 		return int(m.Month()) < int(other.Month())
 	} else {
 		return m.Year() < other.Year()
 	}
+}
+
+func (m Month) BeforeOrEqual(other Month) bool {
+	return m.Before(other) || m.Equal(other)
+}
+
+func (m Month) BeforeTime(t time.Time) bool {
+	return m.Before(NewTime(t))
 }
 
 func (m Month) Contains(t time.Time, loc *time.Location) bool {

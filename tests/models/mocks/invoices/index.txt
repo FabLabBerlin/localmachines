@@ -1,3 +1,5 @@
- Id  | User | Kind  | Status | Month   | Total | Activations | Reservations
------+------+-------+--------+---------+-------+-------------+--------------
-4165 | 19   | Staff | Draft  | 10/2016 | 2.50  | 9           | 1
+ Id  | User | Kind   | Status   | Month   | Total  | Activations | Reservations
+-----+------+--------+----------+---------+--------+-------------+--------------
+4165 | 19   | Staff  | Draft    | 10/2016 | 2.50   | 9           | 1
+4928 |      | Member | Draft    | 10/2016 | 164.15 | 6           | 2
+5936 |      | Member | Draft    | 10/2016 | 155    | 6           | 2
