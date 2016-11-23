@@ -1,6 +1,7 @@
 package machine_earnings
 
 import (
+	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib/month"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/machine"
@@ -79,6 +80,42 @@ func TestMachineEarnings(t *testing.T) {
 				)
 
 				So(float64(me.Memberships()), ShouldEqual, 150)
+			})
+
+			Convey("Using only two Machines 20%% / 80%% should be split accordingly", func() {
+				inv := mocks.LoadInvoice(4402)
+
+				// 66.4 cents ~ 21%
+				m83Seconds80CentsPerMinute := &machine.Machine{
+					Id: 3,
+				}
+
+				// 256 cents ~ 79%
+				m160Seconds160CentsPerMinute := &machine.Machine{
+					Id: 17,
+				}
+
+				me83Seconds80CentsPerMinute := machine_earnings.New(
+					m83Seconds80CentsPerMinute,
+					month.New(1, 2016),
+					month.New(12, 2016),
+					[]*invutil.Invoice{
+						inv,
+					},
+				)
+
+				me160Seconds160CentsPerMinute := machine_earnings.New(
+					m160Seconds160CentsPerMinute,
+					month.New(1, 2016),
+					month.New(12, 2016),
+					[]*invutil.Invoice{
+						inv,
+					},
+				)
+				fmt.Printf("me83Seconds80CentsPerMinute.Memberships()=%v\n", me83Seconds80CentsPerMinute.Memberships())
+				fmt.Printf("me160Seconds160CentsPerMinute.Memberships()=%v\n", me160Seconds160CentsPerMinute.Memberships())
+				So(float64(me83Seconds80CentsPerMinute.Memberships()), ShouldEqual, 150*0.21)
+				So(float64(me160Seconds160CentsPerMinute.Memberships()), ShouldEqual, 150*0.79)
 			})
 		})
 	})
