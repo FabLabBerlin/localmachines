@@ -141,7 +141,7 @@ func (c *Controller) GetMachineEarnings() {
 		c.Fail(500, "Failed to get invoices")
 	}
 
-	resp := make(map[string]interface{})
+	resp := make([]interface{}, 0, 40)
 
 	for _, machine := range machines {
 		res := make(map[string]interface{})
@@ -153,9 +153,10 @@ func (c *Controller) GetMachineEarnings() {
 			invs,
 		)
 
+		res["Machine"] = machine
 		res["Memberships"] = me.MembershipsCached()
 		res["PayAsYouGo"] = me.PayAsYouGoCached()
-		resp[machine.Name] = res
+		resp = append(resp, res)
 	}
 
 	c.Data["json"] = resp

@@ -12,11 +12,6 @@ import (
 
 type Money float64
 
-type T struct {
-	locationId int64
-	invoices   []*invutil.Invoice
-}
-
 type MachineEarning struct {
 	m    *machine.Machine
 	from month.Month
