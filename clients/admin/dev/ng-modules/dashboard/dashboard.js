@@ -35,6 +35,21 @@ app.controller('DashboardCtrl',
     .success(function(metrics) {
       $scope.metrics = metrics;
       $scope.renderChartsInit();
+      $http({
+        method: 'GET',
+        url: '/api/metrics/machine_earnings',
+        params: {
+          location: $cookies.get('location'),
+        ac: new Date().getTime()
+        }
+      })
+      .success(function(machineEarnings) {
+        $scope.machineEarnings = machineEarnings;
+        $scope.renderMachineEarnings();
+      })
+      .error(function(data, status) {
+        toastr.error('Failed to load machine earnings data');
+      });
     })
     .error(function(data, status) {
       toastr.error('Failed to load metrics data');
@@ -147,6 +162,56 @@ app.controller('DashboardCtrl',
 
   $scope.renderChartsInit = function() {
     $scope.renderCharts();
+  };
+
+  $scope.renderMachineEarnings = function() {
+    console.log('$scope.machineEarnings=', $scope.machineEarnings);
+
+    var ary = [
+      ['Source', 'Memberships', 'Pay-As-You-Go', { role: 'annotation' } ]
+    ];
+
+    const typeNames = {
+      0: 'z Other',
+      1: '3D Printer',
+      2: 'CNC mill',
+      3: 'Heatpress',
+      4: 'Knitting Machine',
+      5: 'Lasercutters',
+      6: 'Vinylcutter'
+    };
+
+    var sorted = _.sortBy($scope.machineEarnings, function(earning) {
+      return [typeNames[earning.Machine.TypeId], earning.Machine.Name];
+    });
+
+    sorted = _.filter(sorted, function(earning) {
+      return !earning.Machine.Archived;
+    });
+
+    _.each(sorted, function(earning) {
+      ary.push([
+        earning.Machine.Name, earning.Memberships, earning.PayAsYouGo, 0
+      ]);
+    });
+
+    var data = google.visualization.arrayToDataTable(ary);
+
+    var options = {
+      title: 'Earnings by Machine',
+      bars: 'horizontal',
+      width: window.innerWidth,
+      height: window.innerWidth,
+      legend: { position: 'top', maxLines: 3 },
+      //bar: { groupWidth: '75%' },
+      isStacked: true,
+      hAxis: {
+        logscale: true
+      }
+    };
+
+    var material = new google.charts.Bar(document.getElementById('chart_machine_earnings'));
+    material.draw(data, options);
   };
 
   var waitForFinalEvent = (function () {
