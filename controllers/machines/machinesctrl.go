@@ -4,8 +4,11 @@ package machines
 import (
 	"encoding/json"
 	"github.com/FabLabBerlin/localmachines/controllers"
+	"github.com/FabLabBerlin/localmachines/lib/month"
 	"github.com/FabLabBerlin/localmachines/models"
+	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/machine"
+	"github.com/FabLabBerlin/localmachines/models/metrics/machine_earnings"
 	"github.com/FabLabBerlin/localmachines/models/user_permissions"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
@@ -207,6 +210,50 @@ func (this *Controller) Update() {
 	}
 
 	this.Data["json"] = "ok"
+	this.ServeJSON()
+}
+
+// @Title GetEarnings
+// @Description Get earnings by machine ID
+// @Param	mid		path 	int	true		"Machine ID"
+// @Success 200 machine.Machine
+// @Failure	400	Wrong Input
+// @Failure	401	Not authorized
+// @Failure	500	Internal Server Error
+// @router /:mid/earnings [get]
+func (this *Controller) GetEarnings() {
+	machineId, err := this.GetInt64(":mid")
+	if err != nil {
+		beego.Error("Failed to get :mid variable")
+		this.Abort("400")
+	}
+
+	machine, err := machine.Get(machineId)
+	if err != nil {
+		beego.Error("Failed to get machine", err)
+		this.Abort("500")
+	}
+
+	invs, err := invutil.GetAllAt(machine.LocationId)
+	if err != nil {
+		this.Fail(500, "Failed to get invoices")
+	}
+
+	if !this.IsAdminAt(machine.LocationId) {
+		this.Fail(403)
+	}
+
+	me := machine_earnings.New(
+		machine,
+		month.New(1, 2015),
+		month.New(12, 2017),
+		invs,
+	)
+
+	resp := make(map[string]interface{})
+	resp["Memberships"] = me.Memberships()
+	resp["PayAsYouGo"] = me.PayAsYouGo()
+	this.Data["json"] = resp
 	this.ServeJSON()
 }
 
