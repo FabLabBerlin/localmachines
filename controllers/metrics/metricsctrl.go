@@ -7,8 +7,12 @@ import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/controllers"
 	"github.com/FabLabBerlin/localmachines/lib"
+	"github.com/FabLabBerlin/localmachines/lib/month"
+	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/invoices/monthly_earning"
+	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/metrics"
+	"github.com/FabLabBerlin/localmachines/models/metrics/machine_earnings"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/astaxie/beego"
 	"strings"
@@ -111,6 +115,50 @@ func (c *Controller) GetActivations() {
 	}
 	w.Flush()
 	c.Ctx.WriteString(buf.String())
+	c.ServeJSON()
+}
+
+// @Title Get machine earnings
+// @Description Get all Machine Earnings
+// @Success 200
+// @Failure	500	Failed to get machine earnings
+// @Failure	401	Not authorized
+// @router /machine_earnings [get]
+func (c *Controller) GetMachineEarnings() {
+	locId, authorized := c.GetLocIdAdmin()
+	if !authorized {
+		c.CustomAbort(401, "Not authorized")
+	}
+
+	machines, err := machine.GetAllAt(locId)
+	if err != nil {
+		beego.Error("Failed to get machines:", err)
+		c.Abort("500")
+	}
+
+	invs, err := invutil.GetAllAt(locId)
+	if err != nil {
+		c.Fail(500, "Failed to get invoices")
+	}
+
+	resp := make(map[string]interface{})
+
+	for _, machine := range machines {
+		res := make(map[string]interface{})
+
+		me := machine_earnings.New(
+			machine,
+			month.New(1, 2015),
+			month.New(12, 2017),
+			invs,
+		)
+
+		res["Memberships"] = me.MembershipsCached()
+		res["PayAsYouGo"] = me.PayAsYouGoCached()
+		resp[machine.Name] = res
+	}
+
+	c.Data["json"] = resp
 	c.ServeJSON()
 }
 

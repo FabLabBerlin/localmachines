@@ -1,7 +1,9 @@
 package machine_earnings
 
 import (
+	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib/month"
+	"github.com/FabLabBerlin/localmachines/lib/redis"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"math"
@@ -46,6 +48,16 @@ func (me MachineEarning) ContainsTime(t time.Time) bool {
 	return !me.from.AfterTime(t) && !me.to.BeforeTime(t)
 }
 
+func (me MachineEarning) PayAsYouGoCached() (sum Money) {
+	key := fmt.Sprintf("PayAsYouGo(%v)", me.m.Id)
+
+	redis.Cached(key, 3600, &sum, func() interface{} {
+		return me.PayAsYouGo()
+	})
+
+	return
+}
+
 func (me MachineEarning) PayAsYouGo() (sum Money) {
 	for _, inv := range me.invs {
 		for _, p := range inv.Purchases {
@@ -63,6 +75,16 @@ func (me MachineEarning) PayAsYouGo() (sum Money) {
 }
 
 type UserMembershipId int64
+
+func (me MachineEarning) MembershipsCached() (sum Money) {
+	key := fmt.Sprintf("Memberships(%v)", me.m.Id)
+
+	redis.Cached(key, 3600, &sum, func() interface{} {
+		return me.Memberships()
+	})
+
+	return
+}
 
 // Memberships money channel. The proportion is approximated by the
 // undiscounted PAYG price.

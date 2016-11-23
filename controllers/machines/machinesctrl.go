@@ -251,8 +251,9 @@ func (this *Controller) GetEarnings() {
 	)
 
 	resp := make(map[string]interface{})
-	resp["Memberships"] = me.Memberships()
-	resp["PayAsYouGo"] = me.PayAsYouGo()
+
+	resp["Memberships"] = me.MembershipsCached()
+	resp["PayAsYouGo"] = me.PayAsYouGoCached()
 	this.Data["json"] = resp
 	this.ServeJSON()
 }
