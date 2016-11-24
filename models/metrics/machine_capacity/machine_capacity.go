@@ -1,8 +1,10 @@
 package machine_capacity
 
 import (
+	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib/day"
 	"github.com/FabLabBerlin/localmachines/lib/month"
+	"github.com/FabLabBerlin/localmachines/lib/redis"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
@@ -58,16 +60,6 @@ func (mc MachineCapacity) Opening() (opening day.Day) {
 	return
 }
 
-func (mc MachineCapacity) Total() Percentage {
-	usage := mc.Usage().Seconds()
-
-	if usage == 0 {
-		return 0
-	}
-
-	return Percentage(usage / mc.Capacity().Seconds())
-}
-
 func (mc MachineCapacity) Usage() (usage time.Duration) {
 	for _, inv := range mc.invs {
 		if inv.Canceled {
@@ -86,6 +78,36 @@ func (mc MachineCapacity) Usage() (usage time.Duration) {
 			usage += dur
 		}
 	}
+
+	return
+}
+
+func (mc MachineCapacity) UsageCached() (u time.Duration) {
+	key := fmt.Sprintf("Usage(%v)", mc.m.Id)
+
+	redis.Cached(key, 3600, &u, func() interface{} {
+		return mc.Usage()
+	})
+
+	return
+}
+
+func (mc MachineCapacity) Utilization() Percentage {
+	usage := mc.Usage().Seconds()
+
+	if usage == 0 {
+		return 0
+	}
+
+	return Percentage(usage / mc.Capacity().Seconds())
+}
+
+func (mc MachineCapacity) UtilizationCached() (u Percentage) {
+	key := fmt.Sprintf("Utilization(%v)", mc.m.Id)
+
+	redis.Cached(key, 3600, &u, func() interface{} {
+		return mc.Utilization()
+	})
 
 	return
 }

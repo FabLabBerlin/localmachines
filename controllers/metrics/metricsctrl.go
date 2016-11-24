@@ -12,6 +12,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/invoices/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/metrics"
+	"github.com/FabLabBerlin/localmachines/models/metrics/machine_capacity"
 	"github.com/FabLabBerlin/localmachines/models/metrics/machine_earnings"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/astaxie/beego"
@@ -115,6 +116,51 @@ func (c *Controller) GetActivations() {
 	}
 	w.Flush()
 	c.Ctx.WriteString(buf.String())
+	c.ServeJSON()
+}
+
+// @Title Get machine capacities
+// @Description Get all Machine Capacities
+// @Success 200
+// @Failure	500	Failed to get machine capacities
+// @Failure	401	Not authorized
+// @router /machine_capacities [get]
+func (c *Controller) GetMachineCapacities() {
+	locId, authorized := c.GetLocIdAdmin()
+	if !authorized {
+		c.CustomAbort(401, "Not authorized")
+	}
+
+	machines, err := machine.GetAllAt(locId)
+	if err != nil {
+		beego.Error("Failed to get machines:", err)
+		c.Abort("500")
+	}
+
+	invs, err := invutil.GetAllAt(locId)
+	if err != nil {
+		c.Fail(500, "Failed to get invoices")
+	}
+
+	resp := make([]interface{}, 0, 40)
+
+	for _, machine := range machines {
+		res := make(map[string]interface{})
+
+		mc := machine_capacity.New(
+			machine,
+			month.New(1, 2015),
+			month.New(12, 2017),
+			invs,
+		)
+
+		res["Machine"] = machine
+		res["Hours"] = mc.UsageCached().Hours()
+		res["Utilization"] = mc.Utilization()
+		resp = append(resp, res)
+	}
+
+	c.Data["json"] = resp
 	c.ServeJSON()
 }
 

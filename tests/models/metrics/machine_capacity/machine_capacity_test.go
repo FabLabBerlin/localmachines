@@ -42,23 +42,6 @@ func TestMachineCapacity(t *testing.T) {
 			So(mc.Opening().Year(), ShouldEqual, 2016)
 		})
 
-		Convey("Total", func() {
-			Reset(setup.ResetDB)
-
-			Convey("0 when DB empty", func() {
-				m := &machine.Machine{
-					Id: 3,
-				}
-				mc := machine_capacity.New(
-					m,
-					month.New(1, 2016),
-					month.New(12, 2016),
-					[]*invutil.Invoice{},
-				)
-				So(mc.Total(), ShouldEqual, 0)
-			})
-		})
-
 		Convey("Usage", func() {
 			Reset(setup.ResetDB)
 
@@ -78,6 +61,23 @@ func TestMachineCapacity(t *testing.T) {
 			)
 
 			So(math.Abs(float64(mc.Usage().Hours())-6) < 0.1, ShouldBeTrue)
+		})
+
+		Convey("Utilization", func() {
+			Reset(setup.ResetDB)
+
+			Convey("0 when DB empty", func() {
+				m := &machine.Machine{
+					Id: 3,
+				}
+				mc := machine_capacity.New(
+					m,
+					month.New(1, 2016),
+					month.New(12, 2016),
+					[]*invutil.Invoice{},
+				)
+				So(mc.Total(), ShouldEqual, 0)
+			})
 		})
 	})
 
