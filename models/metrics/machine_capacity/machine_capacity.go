@@ -41,6 +41,10 @@ func (mc MachineCapacity) Capacity() time.Duration {
 func (mc MachineCapacity) Opening() (opening day.Day) {
 	for _, inv := range mc.invs {
 		for _, p := range inv.Purchases {
+			if p.MachineId != mc.m.Id {
+				continue
+			}
+
 			if opening.IsZero() || opening.AfterTime(p.TimeStart) {
 				opening = day.NewTime(p.TimeStart)
 			}
@@ -71,6 +75,9 @@ func (mc MachineCapacity) Usage() (usage time.Duration) {
 		}
 
 		for _, p := range inv.Purchases {
+			if p.MachineId != mc.m.Id {
+				continue
+			}
 			if p.Type != purchases.TYPE_ACTIVATION {
 				continue
 			}
