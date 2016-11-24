@@ -105,6 +105,13 @@ func TestLibDay(t *testing.T) {
 		So(d.Equal(d), ShouldBeTrue)
 	})
 
+	Convey("IsZero", t, func() {
+		d := day.Day{}
+		So(d.IsZero(), ShouldBeTrue)
+		d = day.Now()
+		So(d.IsZero(), ShouldBeFalse)
+	})
+
 	Convey("String", t, func() {
 		m := day.New(2015, time.November, 17)
 		So(m.String(), ShouldEqual, "2015-11-17")

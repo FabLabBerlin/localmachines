@@ -142,6 +142,10 @@ func (d Day) Equal(other Day) bool {
 	return d.m.Equal(other.m) && d.d == other.d
 }
 
+func (d Day) IsZero() bool {
+	return d.d == 0 && d.m.IsZero()
+}
+
 func (d Day) Month() time.Month {
 	return d.m.Month()
 }

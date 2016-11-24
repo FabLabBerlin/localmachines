@@ -90,6 +90,10 @@ func (m Month) Equal(other Month) bool {
 	return m.Month() == other.Month() && m.Year() == other.Year()
 }
 
+func (m Month) IsZero() bool {
+	return m.m == 0 && m.y == 0
+}
+
 func (m Month) Month() time.Month {
 	return time.Month(m.m)
 }

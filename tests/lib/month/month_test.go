@@ -53,6 +53,13 @@ func TestLibMonth(t *testing.T) {
 		So(m.Equal(m), ShouldBeTrue)
 	})
 
+	Convey("IsZero", t, func() {
+		m := month.Month{}
+		So(m.IsZero(), ShouldBeTrue)
+		m = month.New(time.December, 1999)
+		So(m.IsZero(), ShouldBeFalse)
+	})
+
 	Convey("String", t, func() {
 		m := month.New(time.November, 2015)
 		So(m.String(), ShouldEqual, "2015-11")
