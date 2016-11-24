@@ -93,7 +93,6 @@ app.controller('DashboardCtrl',
     data.addRows(byMonth);
 
     var options = {
-      title: 'Revenue through Activations and Memberships',
       hAxis: {
         title: 'Month',
       },
@@ -139,7 +138,6 @@ app.controller('DashboardCtrl',
     data.addRows(byDay);
 
     var options = {
-      title: 'Daily Revenue through Activations',
       hAxis: {
         title: 'Day',
       },
@@ -198,7 +196,6 @@ app.controller('DashboardCtrl',
     var data = google.visualization.arrayToDataTable(ary);
 
     var options = {
-      title: 'Earnings by Machine',
       bars: 'horizontal',
       width: window.innerWidth,
       height: window.innerWidth,
