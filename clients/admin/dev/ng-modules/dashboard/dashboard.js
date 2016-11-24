@@ -46,6 +46,21 @@ app.controller('DashboardCtrl',
       .success(function(machineEarnings) {
         $scope.machineEarnings = machineEarnings;
         $scope.renderMachineEarnings();
+        $http({
+          method: 'GET',
+          url: '/api/metrics/machine_capacities',
+          params: {
+            location: $cookies.get('location'),
+          ac: new Date().getTime()
+          }
+        })
+        .success(function(machineCapacities) {
+          $scope.machineCapacities = machineCapacities;
+          $scope.renderMachineCapacities();
+        })
+        .error(function(data, status) {
+          toastr.error('Failed to load machine capacities data');
+        });
       })
       .error(function(data, status) {
         toastr.error('Failed to load machine earnings data');
@@ -160,6 +175,55 @@ app.controller('DashboardCtrl',
 
   $scope.renderChartsInit = function() {
     $scope.renderCharts();
+  };
+
+  $scope.renderMachineCapacities = function() {
+    console.log('$scope.machineCapacities=', $scope.machineCapacities);
+
+    var ary = [
+      ['Source', 'Active (Days)', 'Lifetime (days)', { role: 'annotation' } ]
+    ];
+
+    const typeNames = {
+      0: 'z Other',
+      1: '3D Printer',
+      2: 'CNC mill',
+      3: 'Heatpress',
+      4: 'Knitting Machine',
+      5: 'Lasercutters',
+      6: 'Vinylcutter'
+    };
+
+    var sorted = _.sortBy($scope.machineCapacities, function(c) {
+      return [typeNames[c.Machine.TypeId], c.Machine.Name];
+    });
+
+    sorted = _.filter(sorted, function(c) {
+      return !c.Machine.Archived;
+    });
+
+    _.each(sorted, function(c) {
+      ary.push([
+        c.Machine.Name, c.Hours, c.Capacity, 0
+      ]);
+    });
+
+    var data = google.visualization.arrayToDataTable(ary);
+
+    var options = {
+      bars: 'horizontal',
+      width: window.innerWidth,
+      height: window.innerWidth,
+      legend: { position: 'top', maxLines: 3 },
+      //bar: { groupWidth: '75%' },
+      isStacked: true,
+      hAxis: {
+        logscale: true
+      }
+    };
+
+    var material = new google.charts.Bar(document.getElementById('chart_machine_capacities'));
+    material.draw(data, options);
   };
 
   $scope.renderMachineEarnings = function() {

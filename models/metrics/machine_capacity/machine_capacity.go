@@ -40,6 +40,16 @@ func (mc MachineCapacity) Capacity() time.Duration {
 	return day.Now().Sub(mc.Opening())
 }
 
+func (mc MachineCapacity) CapacityCached() (c time.Duration) {
+	key := fmt.Sprintf("Capacity(%v)", mc.m.Id)
+
+	redis.Cached(key, 3600, &c, func() interface{} {
+		return mc.Capacity()
+	})
+
+	return
+}
+
 func (mc MachineCapacity) Opening() (opening day.Day) {
 	for _, inv := range mc.invs {
 		for _, p := range inv.Purchases {

@@ -155,7 +155,8 @@ func (c *Controller) GetMachineCapacities() {
 		)
 
 		res["Machine"] = machine
-		res["Hours"] = mc.UsageCached().Hours()
+		res["Capacity"] = mc.CapacityCached().Hours() / 24
+		res["Hours"] = mc.UsageCached().Hours() / 24
 		res["Utilization"] = mc.Utilization()
 		resp = append(resp, res)
 	}
