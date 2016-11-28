@@ -91,6 +91,34 @@ func TestRetention(t *testing.T) {
 					}
 				}
 			})
+
+			/*Convey("Two users in October", func() {
+				invs := []*invutil.Invoice{
+					mocks.LoadInvoice(4928),
+					mocks.LoadInvoice(5936),
+				}
+
+				us := []*users.User{
+					{
+						Id:      15629,
+						Created: time.Date(2016, time.October, 1, 12, 0, 0, 0, time.UTC),
+					},
+					{
+						Id:
+					}
+				}
+
+				r := retention.New(
+					1,
+					1,
+					day.New(2016, 10, 1),
+					day.New(2016, 10, 31),
+					[]*invutil.Invoice{
+						inv,
+					},
+					us,
+				)
+			})*/
 		})
 	})
 }
