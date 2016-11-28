@@ -32,7 +32,7 @@ func TestRetention(t *testing.T) {
 					[]*users.User{},
 				)
 				triangle := r.Calculate()
-				So(len(triangle), ShouldEqual, 53)
+				So(len(triangle), ShouldEqual, 52)
 				for i, row := range triangle {
 					So(len(row.Returns), ShouldEqual, 52-i)
 					So(row.StepDays, ShouldEqual, 7)
@@ -64,19 +64,30 @@ func TestRetention(t *testing.T) {
 					us,
 				)
 				triangle := r.Calculate()
-				So(len(triangle), ShouldEqual, 31)
+				So(len(triangle), ShouldEqual, 30)
+
+				// User who signed up on Oct 1, did prints on
+				// Oct 4, 6, 12, 14, 20, 21, 31
 				for i, row := range triangle {
 					So(len(row.Returns), ShouldEqual, 30-i)
 					So(row.StepDays, ShouldEqual, 1)
 					if i == 0 {
 						So(row.Users, ShouldEqual, 1)
 						So(row.NewUsers(), ShouldResemble, []int64{19})
+						for j, percentage := range row.Returns {
+							switch j {
+							case 3, 5, 11, 13, 19, 20, 30:
+								So(percentage, ShouldEqual, 1.0)
+							default:
+								So(percentage, ShouldEqual, 0)
+							}
+						}
 					} else {
 						So(row.Users, ShouldEqual, 0)
 						So(row.NewUsers(), ShouldResemble, []int64{})
-					}
-					for _, retrn := range row.Returns {
-						So(retrn, ShouldEqual, 0.0)
+						for _, retrn := range row.Returns {
+							So(retrn, ShouldEqual, 0.0)
+						}
 					}
 				}
 			})

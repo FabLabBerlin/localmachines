@@ -70,6 +70,7 @@ func (row *Row) AddNewUser(userId int64) {
 
 func (row *Row) AddReturnedUser(t time.Time, userId int64) {
 	i := dayToIndex(row.From, day.NewTime(t), row.StepDays)
+
 	row.returnedUsers[i] = append(row.returnedUsers[i], userId)
 }
 
@@ -99,6 +100,10 @@ func (row Row) NewUsers() []int64 {
 	return row.newUsers
 }
 
+func (row Row) ReturnedUsers() [][]int64 {
+	return row.returnedUsers
+}
+
 func (row Row) To() day.Day {
 	return row.From.AddDate(0, 0, row.StepDays-1)
 }
@@ -121,26 +126,30 @@ func uniq(ids []int64) (u []int64, h map[int64]struct{}) {
 
 // Calculate a retention triangle like in Mixpanel or Google Analytics.
 func (r Retention) Calculate() (triangle []*Row) {
-	triangle = make([]*Row, r.NumberOfRows())
+	triangle = make([]*Row, r.NumberOfRows()-1)
 
 	i := 0
 	for d := r.from; d.BeforeOrEqual(r.to); d = d.AddDate(0, 0, int(r.stepDays)) {
 		triangle[i] = NewRow(d, r.stepDays, r.NumberOfRows()-i-1)
-		i++
+
+		if i++; i >= len(triangle) {
+			break
+		}
 	}
 
 	for _, inv := range r.invs {
-		if !inv.Canceled {
+		if inv.Canceled {
 			continue
 		}
 
 		for _, p := range inv.Purchases {
 			i := r.RowFor(p)
+			if i >= len(triangle) {
+				continue
+			}
 
-			triangle[i].AddNewUser(p.UserId)
-
-			for j := 0; j < i; j++ {
-				triangle[i].AddReturnedUser(p.TimeStart, p.UserId)
+			for j := 0; j+1 < i; j++ {
+				triangle[j].AddReturnedUser(p.TimeStart, p.UserId)
 			}
 		}
 	}
