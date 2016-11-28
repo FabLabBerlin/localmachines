@@ -91,6 +91,10 @@ func (row *Row) Calculate() {
 	}
 }
 
+func (row Row) NewUsers() []int64 {
+	return row.newUsers
+}
+
 func uniq(ids []int64) (u []int64, h map[int64]struct{}) {
 	h = make(map[int64]struct{})
 
@@ -112,7 +116,7 @@ func (r Retention) Calculate() (triangle []*Row) {
 	triangle = make([]*Row, r.NumberOfRows())
 
 	i := 0
-	for d := r.from; d.Before(r.to); d = d.AddDate(0, 0, int(r.stepDays)) {
+	for d := r.from; d.BeforeOrEqual(r.to); d = d.AddDate(0, 0, int(r.stepDays)) {
 		triangle[i] = NewRow(d, r.stepDays, r.NumberOfRows()-i-1)
 		i++
 	}
