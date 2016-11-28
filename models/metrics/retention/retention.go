@@ -1,6 +1,7 @@
 package retention
 
 import (
+	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib/day"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
@@ -65,6 +66,7 @@ func NewRow(from day.Day, stepDays, numberOfValues int) *Row {
 }
 
 func (row *Row) AddNewUser(userId int64) {
+	fmt.Printf("row[from=%v]#AddNewUser(%v)\n", row.From, userId)
 	row.newUsers = append(row.newUsers, userId)
 }
 
@@ -147,22 +149,25 @@ func (r Retention) Calculate() (triangle []*Row) {
 			if i >= len(triangle) {
 				continue
 			}
-
-			for j := 0; j+1 < i; j++ {
+			fmt.Printf("i=%v p.TimeStart=%v\n", i, p.TimeStart)
+			for j := 0; j <= i; j++ {
+				fmt.Printf("[j=%v] \n", j)
 				triangle[j].AddReturnedUser(p.TimeStart, p.UserId)
 			}
 		}
 	}
 
-	for _, row := range triangle {
-		for _, u := range r.us {
+	fmt.Printf("len(r.us)=%v\n", len(r.us))
+	for _, u := range r.us {
+		for _, row := range triangle {
 			d := day.NewTime(u.Created)
 			if row.From.BeforeOrEqual(d) && d.BeforeOrEqual(row.To()) {
 				row.AddNewUser(u.Id)
+				row.Calculate()
 				break
 			}
 		}
-		row.Calculate()
+
 	}
 
 	return
