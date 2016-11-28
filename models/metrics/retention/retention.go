@@ -4,6 +4,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/lib/day"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
+	"github.com/FabLabBerlin/localmachines/models/users"
 	"time"
 )
 
@@ -13,6 +14,7 @@ type Retention struct {
 	from       day.Day
 	to         day.Day
 	invs       []*invutil.Invoice
+	us         []*users.User
 }
 
 func New(
@@ -21,6 +23,7 @@ func New(
 	from day.Day,
 	to day.Day,
 	invs []*invutil.Invoice,
+	us []*users.User,
 ) *Retention {
 
 	return &Retention{
@@ -29,6 +32,7 @@ func New(
 		from:       from,
 		to:         to,
 		invs:       invs,
+		us:         us,
 	}
 }
 
@@ -95,6 +99,10 @@ func (row Row) NewUsers() []int64 {
 	return row.newUsers
 }
 
+func (row Row) To() day.Day {
+	return row.From.AddDate(0, 0, row.StepDays-1)
+}
+
 func uniq(ids []int64) (u []int64, h map[int64]struct{}) {
 	h = make(map[int64]struct{})
 
@@ -138,6 +146,13 @@ func (r Retention) Calculate() (triangle []*Row) {
 	}
 
 	for _, row := range triangle {
+		for _, u := range r.us {
+			d := day.NewTime(u.Created)
+			if row.From.BeforeOrEqual(d) && d.BeforeOrEqual(row.To()) {
+				row.AddNewUser(u.Id)
+				break
+			}
+		}
 		row.Calculate()
 	}
 

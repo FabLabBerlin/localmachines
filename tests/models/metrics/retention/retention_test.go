@@ -4,10 +4,12 @@ import (
 	"github.com/FabLabBerlin/localmachines/lib/day"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/metrics/retention"
+	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/FabLabBerlin/localmachines/tests/models/mocks"
 	"github.com/FabLabBerlin/localmachines/tests/setup"
 	. "github.com/smartystreets/goconvey/convey"
 	"testing"
+	"time"
 )
 
 func init() {
@@ -27,6 +29,7 @@ func TestRetention(t *testing.T) {
 					day.New(2016, 1, 1),
 					day.New(2016, 12, 31),
 					[]*invutil.Invoice{},
+					[]*users.User{},
 				)
 				triangle := r.Calculate()
 				So(len(triangle), ShouldEqual, 53)
@@ -43,6 +46,13 @@ func TestRetention(t *testing.T) {
 			Convey("Single staff user in October", func() {
 				inv := mocks.LoadInvoice(4165)
 
+				us := []*users.User{
+					{
+						Id:      19,
+						Created: time.Date(2016, time.October, 1, 12, 0, 0, 0, time.UTC),
+					},
+				}
+
 				r := retention.New(
 					1,
 					1,
@@ -51,14 +61,20 @@ func TestRetention(t *testing.T) {
 					[]*invutil.Invoice{
 						inv,
 					},
+					us,
 				)
 				triangle := r.Calculate()
 				So(len(triangle), ShouldEqual, 31)
 				for i, row := range triangle {
 					So(len(row.Returns), ShouldEqual, 30-i)
 					So(row.StepDays, ShouldEqual, 1)
-					//So(row.Users, ShouldEqual, 1)
-					//So(row.NewUsers(), ShouldEqual, []uint64{19})
+					if i == 0 {
+						So(row.Users, ShouldEqual, 1)
+						So(row.NewUsers(), ShouldResemble, []int64{19})
+					} else {
+						So(row.Users, ShouldEqual, 0)
+						So(row.NewUsers(), ShouldResemble, []int64{})
+					}
 					for _, retrn := range row.Returns {
 						So(retrn, ShouldEqual, 0.0)
 					}

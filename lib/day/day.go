@@ -106,6 +106,10 @@ func (d Day) After(other Day) bool {
 	}
 }
 
+func (d Day) AfterOrEqual(other Day) bool {
+	return d.After(other) || d.Equal(other)
+}
+
 func (d Day) AfterTime(t time.Time) bool {
 	return d.After(NewTime(t))
 }
