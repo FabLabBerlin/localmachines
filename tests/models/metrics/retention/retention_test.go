@@ -209,4 +209,16 @@ func TestRetention(t *testing.T) {
 			})
 		})
 	})
+
+	Convey("Testing DayToIndex", t, func() {
+		DayToIndex := retention.DayToIndex
+
+		Convey("monthly", func() {
+			So(DayToIndex(day.New(2016, 10, 23), day.New(2016, 11, 0), 30), ShouldEqual, 0)
+			So(DayToIndex(day.New(2016, 10, 23), day.New(2016, 11, 11), 30), ShouldEqual, 0)
+			So(DayToIndex(day.New(2016, 10, 23), day.New(2016, 11, 20), 30), ShouldEqual, 0)
+			So(DayToIndex(day.New(2016, 10, 23), day.New(2016, 11, 23), 30), ShouldEqual, 1)
+			So(DayToIndex(day.New(2016, 10, 23), day.New(2016, 12, 10), 30), ShouldEqual, 1)
+		})
+	})
 }

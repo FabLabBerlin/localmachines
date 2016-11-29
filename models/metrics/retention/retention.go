@@ -69,7 +69,7 @@ func (row *Row) AddNewUser(userId int64) {
 }
 
 func (row *Row) AddReturnedUser(t time.Time, userId int64) {
-	i := dayToIndex(row.From, day.NewTime(t), row.StepDays)
+	i := DayToIndex(row.From, day.NewTime(t), row.StepDays)
 
 	row.returnedUsers[i] = append(row.returnedUsers[i], userId)
 }
@@ -183,10 +183,10 @@ func (r Retention) RowFor(p *purchases.Purchase) int {
 }
 
 func (r Retention) RowForDay(d day.Day) int {
-	return dayToIndex(r.from, d, r.stepDays)
+	return DayToIndex(r.from, d, r.stepDays)
 }
 
-func dayToIndex(d0, d day.Day, stepDays int) int {
+func DayToIndex(d0, d day.Day, stepDays int) int {
 	f := d.Sub(d0).Hours() / 24.0 / float64(stepDays)
 
 	return int(f)
