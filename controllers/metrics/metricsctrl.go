@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/controllers"
 	"github.com/FabLabBerlin/localmachines/lib"
+	"github.com/FabLabBerlin/localmachines/lib/day"
 	"github.com/FabLabBerlin/localmachines/lib/month"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/invoices/monthly_earning"
@@ -14,7 +15,11 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/metrics"
 	"github.com/FabLabBerlin/localmachines/models/metrics/machine_capacity"
 	"github.com/FabLabBerlin/localmachines/models/metrics/machine_earnings"
+	"github.com/FabLabBerlin/localmachines/models/metrics/retention"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
+	"github.com/FabLabBerlin/localmachines/models/user_locations"
+	"github.com/FabLabBerlin/localmachines/models/user_roles"
+	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 	"strings"
 	"time"
@@ -228,5 +233,59 @@ func (c *Controller) GetMachineRevenue() {
 	}
 
 	c.Data["json"] = s
+	c.ServeJSON()
+}
+
+// @Title Get user retention
+// @Description Get user retention
+// @Success 200
+// @Failure	500	Failed to get user retention
+// @Failure	401	Not authorized
+// @router /retention [get]
+func (c *Controller) GetRetention() {
+	locId, authorized := c.GetLocIdAdmin()
+	if !authorized {
+		c.CustomAbort(401, "Not authorized")
+	}
+
+	allUsers, err := users.GetAllUsersAt(locId)
+	if err != nil {
+		beego.Error("Failed to get users:", err)
+		c.Abort("500")
+	}
+
+	uls, err := user_locations.GetAllForLocation(locId)
+	if err != nil {
+		beego.Error("Failed to get user locations:", err)
+		c.Abort("500")
+	}
+
+	rolesByUid := make(map[int64]user_roles.Role)
+	for _, ul := range uls {
+		rolesByUid[ul.UserId] = ul.GetRole()
+	}
+
+	us := make([]*users.User, 0, len(allUsers))
+	for _, u := range allUsers {
+		if r, ok := rolesByUid[u.Id]; !ok || r == user_roles.MEMBER {
+			us = append(us, u)
+		}
+	}
+
+	invs, err := invutil.GetAllAt(locId)
+	if err != nil {
+		c.Fail(500, "Failed to get invoices")
+	}
+
+	r := retention.New(
+		locId,
+		30,
+		day.New(2015, 7, 1),
+		day.Now(),
+		invs,
+		us,
+	)
+
+	c.Data["json"] = r.Calculate()
 	c.ServeJSON()
 }

@@ -76,7 +76,7 @@ func TestMachineCapacity(t *testing.T) {
 					month.New(12, 2016),
 					[]*invutil.Invoice{},
 				)
-				So(mc.Total(), ShouldEqual, 0)
+				So(mc.Utilization(), ShouldEqual, 0)
 			})
 		})
 	})

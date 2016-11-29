@@ -106,6 +106,10 @@ func (d Day) After(other Day) bool {
 	}
 }
 
+func (d Day) AfterOrEqual(other Day) bool {
+	return d.After(other) || d.Equal(other)
+}
+
 func (d Day) AfterTime(t time.Time) bool {
 	return d.After(NewTime(t))
 }
@@ -144,6 +148,10 @@ func (d Day) Equal(other Day) bool {
 
 func (d Day) IsZero() bool {
 	return d.d == 0 && d.m.IsZero()
+}
+
+func (d Day) MarshalJSON() ([]byte, error) {
+	return []byte("\"" + d.String() + "\""), nil
 }
 
 func (d Day) Month() time.Month {
