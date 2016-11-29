@@ -150,6 +150,10 @@ func (d Day) IsZero() bool {
 	return d.d == 0 && d.m.IsZero()
 }
 
+func (d Day) MarshalJSON() ([]byte, error) {
+	return []byte("\"" + d.String() + "\""), nil
+}
+
 func (d Day) Month() time.Month {
 	return d.m.Month()
 }
