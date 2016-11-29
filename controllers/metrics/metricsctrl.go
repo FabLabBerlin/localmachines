@@ -269,6 +269,8 @@ func (c *Controller) GetRetention() {
 
 	everActiveUid := make(map[int64]struct{})
 
+	everStaffUid := make(map[int64]struct{})
+
 	invs, err := invutil.GetAllAt(locId)
 	if err != nil {
 		c.Fail(500, "Failed to get invoices")
@@ -280,6 +282,9 @@ func (c *Controller) GetRetention() {
 		}
 		for _, ium := range inv.InvUserMemberships {
 			everActiveUid[ium.UserId] = struct{}{}
+			if ium.MembershipId == 3 {
+				everStaffUid[ium.UserId] = struct{}{}
+			}
 		}
 	}
 
@@ -289,6 +294,9 @@ func (c *Controller) GetRetention() {
 			if _, everActive := everActiveUid[u.Id]; !everActive {
 				continue
 			}
+		}
+		if _, everStaff := everStaffUid[u.Id]; everStaff {
+			continue
 		}
 		if r, ok := rolesByUid[u.Id]; !ok || r == user_roles.MEMBER {
 			us = append(us, u)
