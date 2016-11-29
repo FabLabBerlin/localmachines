@@ -17,6 +17,8 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/metrics/machine_earnings"
 	"github.com/FabLabBerlin/localmachines/models/metrics/retention"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
+	"github.com/FabLabBerlin/localmachines/models/user_locations"
+	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 	"strings"
@@ -246,10 +248,28 @@ func (c *Controller) GetRetention() {
 		c.CustomAbort(401, "Not authorized")
 	}
 
-	us, err := users.GetAllUsersAt(locId)
+	allUsers, err := users.GetAllUsersAt(locId)
 	if err != nil {
 		beego.Error("Failed to get users:", err)
 		c.Abort("500")
+	}
+
+	uls, err := user_locations.GetAllForLocation(locId)
+	if err != nil {
+		beego.Error("Failed to get user locations:", err)
+		c.Abort("500")
+	}
+
+	rolesByUid := make(map[int64]user_roles.Role)
+	for _, ul := range uls {
+		rolesByUid[ul.UserId] = ul.GetRole()
+	}
+
+	us := make([]*users.User, 0, len(allUsers))
+	for _, u := range allUsers {
+		if r, ok := rolesByUid[u.Id]; !ok || r == user_roles.MEMBER {
+			us = append(us, u)
+		}
 	}
 
 	invs, err := invutil.GetAllAt(locId)
