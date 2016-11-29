@@ -41,7 +41,7 @@
     </div>
 
     <h3>Customer Retention</h3>
-    <h4>Excludes Staff/Admins</h4>
+    <h4>How many come back and use a machine excluding Staff/Admins</h4>
     <label>
       <input type="checkbox" ng-model="activeOnly"> Show only users that did at least one purchase
     </label>
@@ -69,7 +69,7 @@
               #
             </th>
             <th ng-repeat="r in retention[0].Returns track by $index" class="text-center">
-              {{$index + 1}}
+              {{$index}}
             </th>
           </tr>
         </thead>
@@ -113,7 +113,7 @@
               #
             </th>
             <th ng-repeat="r in retentionActive[0].Returns track by $index" class="text-center">
-              {{$index + 1}}
+              {{$index}}
             </th>
           </tr>
         </thead>
