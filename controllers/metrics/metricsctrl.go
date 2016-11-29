@@ -248,6 +248,8 @@ func (c *Controller) GetRetention() {
 		c.CustomAbort(401, "Not authorized")
 	}
 
+	excludeNeverActive := c.GetString("excludeNeverActive") == "true"
+
 	allUsers, err := users.GetAllUsersAt(locId)
 	if err != nil {
 		beego.Error("Failed to get users:", err)
@@ -265,16 +267,32 @@ func (c *Controller) GetRetention() {
 		rolesByUid[ul.UserId] = ul.GetRole()
 	}
 
-	us := make([]*users.User, 0, len(allUsers))
-	for _, u := range allUsers {
-		if r, ok := rolesByUid[u.Id]; !ok || r == user_roles.MEMBER {
-			us = append(us, u)
-		}
-	}
+	everActiveUid := make(map[int64]struct{})
 
 	invs, err := invutil.GetAllAt(locId)
 	if err != nil {
 		c.Fail(500, "Failed to get invoices")
+	}
+
+	for _, inv := range invs {
+		for _, p := range inv.Purchases {
+			everActiveUid[p.UserId] = struct{}{}
+		}
+		for _, ium := range inv.InvUserMemberships {
+			everActiveUid[ium.UserId] = struct{}{}
+		}
+	}
+
+	us := make([]*users.User, 0, len(allUsers))
+	for _, u := range allUsers {
+		if excludeNeverActive {
+			if _, everActive := everActiveUid[u.Id]; !everActive {
+				continue
+			}
+		}
+		if r, ok := rolesByUid[u.Id]; !ok || r == user_roles.MEMBER {
+			us = append(us, u)
+		}
 	}
 
 	r := retention.New(

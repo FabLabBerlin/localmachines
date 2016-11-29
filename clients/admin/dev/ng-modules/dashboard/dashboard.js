@@ -80,6 +80,29 @@ app.controller('DashboardCtrl',
           .error(function(data, status) {
             toastr.error('Failed to load retention data');
           });
+          $http({
+            method: 'GET',
+            url: '/api/metrics/retention?excludeNeverActive=true',
+            params: {
+              location: $cookies.get('location'),
+              ac: new Date().getTime()
+            }
+          })
+          .success(function(retention) {
+            $scope.retentionActive = retention;
+            $scope.retentionActiveMaxReturn = undefined;
+            _.each($scope.retentionActive, function(row) {
+              _.each(row.Returns, function(r) {
+                if (_.isUndefined($scope.retentionActiveMaxReturn) || $scope.retentionActiveMaxReturn < r) {
+                  $scope.retentionActiveMaxReturn = r;
+                }
+              });
+            });
+            console.log('$scope.retentionMaxReturn=', $scope.retentionActiveMaxReturn);
+          })
+          .error(function(data, status) {
+            toastr.error('Failed to load retention active data');
+          });
         })
         .error(function(data, status) {
           toastr.error('Failed to load machine capacities data');
@@ -313,6 +336,10 @@ app.controller('DashboardCtrl',
 
   $scope.formatPercentage = function(r) {
     return Math.round(100 * r);
+  };
+
+  $scope.retentionActiveClass = function(r) {
+    return 'retention-' + Math.round(r / $scope.retentionActiveMaxReturn * 4);
   };
 
   $scope.retentionClass = function(r) {

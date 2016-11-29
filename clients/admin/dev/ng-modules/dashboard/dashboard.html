@@ -42,12 +42,15 @@
 
     <h3>Customer Retention</h3>
     <h4>Excludes users that currently have Admin rights</h4>
-    <div class="loader-local" ng-hide="retention">
+    <label>
+      <input type="checkbox" ng-model="activeOnly"> Show only users that did at least one purchase
+    </label>
+    <div class="loader-local" ng-hide="retention || activeOnly">
       <div class="spinner">
         <i class="fa fa-cog fa-spin"></i>
       </div>
     </div>
-    <div id="customer_retention" ng-show="retention">
+    <div id="customer_retention" ng-show="retention && !activeOnly">
       <table class="table">
         <thead>
           <tr>
@@ -83,5 +86,50 @@
             </td>
           </tr>
         </tbody>
+      </table>
+    </div>
+
+    <div class="loader-local" ng-hide="retentionActive || !activeOnly">
+      <div class="spinner">
+        <i class="fa fa-cog fa-spin"></i>
+      </div>
+    </div>
+    <div id="customer_retention" ng-show="retentionActive && activeOnly">
+      <table class="table">
+        <thead>
+          <tr>
+            <th colspan="2" class="text-right">
+              Signups
+            </th>
+            <th colspan="{{retentionActive[0].Returns.length}}" class="text-center">
+              Months later
+            </th>
+          </tr>
+          <tr>
+            <th class="text-center">
+              From
+            </th>
+            <th class="text-center">
+              #
+            </th>
+            <th ng-repeat="r in retentionActive[0].Returns track by $index" class="text-center">
+              {{$index + 1}}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="row in retentionActive">
+            <td>
+              <b>{{row.From}}</b>
+            </td>
+            <td>
+              {{row.Users}}
+            </td>
+            <td ng-repeat="r in row.Returns track by $index" class="retention {{retentionActiveClass(r)}}">
+              <b>{{formatPercentage(r)}}%</b>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 </div>
