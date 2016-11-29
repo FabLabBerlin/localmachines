@@ -51,12 +51,35 @@ app.controller('DashboardCtrl',
           url: '/api/metrics/machine_capacities',
           params: {
             location: $cookies.get('location'),
-          ac: new Date().getTime()
+            ac: new Date().getTime()
           }
         })
         .success(function(machineCapacities) {
           $scope.machineCapacities = machineCapacities;
           $scope.renderMachineCapacities();
+          $http({
+            method: 'GET',
+            url: '/api/metrics/retention',
+            params: {
+              location: $cookies.get('location'),
+              ac: new Date().getTime()
+            }
+          })
+          .success(function(retention) {
+            $scope.retention = retention;
+            $scope.retentionMaxReturn = undefined;
+            _.each($scope.retention, function(row) {
+              _.each(row.Returns, function(r) {
+                if (_.isUndefined($scope.retentionMaxReturn) || $scope.retentionMaxReturn < r) {
+                  $scope.retentionMaxReturn = r;
+                }
+              });
+            });
+            console.log('$scope.retentionMaxReturn=', $scope.retentionMaxReturn);
+          })
+          .error(function(data, status) {
+            toastr.error('Failed to load retention data');
+          });
         })
         .error(function(data, status) {
           toastr.error('Failed to load machine capacities data');
@@ -287,6 +310,14 @@ app.controller('DashboardCtrl',
       timers[uniqueId] = setTimeout(callback, ms);
     };
   })();
+
+  $scope.formatPercentage = function(r) {
+    return Math.round(100 * r);
+  };
+
+  $scope.retentionClass = function(r) {
+    return 'retention-' + Math.round(r / $scope.retentionMaxReturn * 4);
+  };
 
   $(window).resize(function(){
     waitForFinalEvent(function(){
