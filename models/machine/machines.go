@@ -7,6 +7,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/lib/email"
 	"github.com/FabLabBerlin/localmachines/lib/redis"
 	"github.com/FabLabBerlin/localmachines/models/locations"
+	"github.com/FabLabBerlin/localmachines/models/machine/maintenance"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
@@ -263,6 +264,16 @@ func (this *Machine) SetUnderMaintenance(underMaintenance bool) error {
 
 	if err := this.Update(false); err != nil {
 		return err
+	}
+
+	if underMaintenance {
+		if _, err := maintenance.On(this.Id); err != nil {
+			beego.Error("maintenance#On: %v", err)
+		}
+	} else {
+		if _, err := maintenance.Off(this.Id); err != nil {
+			beego.Error("maintenance#Off: %v", err)
+		}
 	}
 
 	if err := redis.PublishMachinesUpdate(redis.MachinesUpdate{

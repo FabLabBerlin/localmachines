@@ -38,6 +38,16 @@ func On(machineId int64) (mt *Maintenance, err error) {
 	return
 }
 
+func Off(machineId int64) (mt *Maintenance, err error) {
+	if mt, err = GetBy(machineId); err != nil {
+		return nil, fmt.Errorf("get by %v: %v", machineId, err)
+	}
+
+	err = Create(mt)
+
+	return
+}
+
 func (mt *Maintenance) TableName() string {
 	return TABLE_NAME
 }
