@@ -27,6 +27,17 @@ func Create(mt *Maintenance) (err error) {
 	return
 }
 
+func GetBy(machineId int64) (*Maintenance, error) {
+	var mt Maintenance
+
+	err := orm.NewOrm().
+		QueryTable(TABLE_NAME).
+		Filter("machine_id", machineId).
+		One(&mt)
+
+	return &mt, err
+}
+
 func On(machineId int64) (mt *Maintenance, err error) {
 	mt = &Maintenance{
 		MachineId: machineId,
@@ -38,14 +49,14 @@ func On(machineId int64) (mt *Maintenance, err error) {
 	return
 }
 
-func Off(machineId int64) (mt *Maintenance, err error) {
-	if mt, err = GetBy(machineId); err != nil {
-		return nil, fmt.Errorf("get by %v: %v", machineId, err)
+func Off(machineId int64) (err error) {
+	mt, err := GetBy(machineId)
+
+	if err != nil {
+		return fmt.Errorf("get by %v: %v", machineId, err)
 	}
 
-	err = Create(mt)
-
-	return
+	return mt.Off()
 }
 
 func (mt *Maintenance) TableName() string {

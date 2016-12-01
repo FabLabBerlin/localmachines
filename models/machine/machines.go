@@ -271,7 +271,7 @@ func (this *Machine) SetUnderMaintenance(underMaintenance bool) error {
 			beego.Error("maintenance#On: %v", err)
 		}
 	} else {
-		if _, err := maintenance.Off(this.Id); err != nil {
+		if err := maintenance.Off(this.Id); err != nil {
 			beego.Error("maintenance#Off: %v", err)
 		}
 	}
