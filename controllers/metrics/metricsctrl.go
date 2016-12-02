@@ -215,27 +215,6 @@ func (c *Controller) GetMachineEarnings() {
 	c.ServeJSON()
 }
 
-// @Title Get machine revenue
-// @Description Get all activations
-// @Success 200
-// @Failure	500	Failed to get machine revenue
-// @Failure	401	Not authorized
-// @router /machine_revenue [get]
-func (c *Controller) GetMachineRevenue() {
-	if !c.IsAdminAt(1) {
-		c.Abort("401")
-	}
-
-	s, err := metrics.NewTrotecStats()
-	if err != nil {
-		beego.Error("trotec stats:", err)
-		c.Abort("500")
-	}
-
-	c.Data["json"] = s
-	c.ServeJSON()
-}
-
 // @Title Get user retention
 // @Description Get user retention
 // @Success 200
