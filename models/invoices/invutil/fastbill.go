@@ -195,6 +195,10 @@ func (inv *Invoice) FastbillCreateDraft(overwriteExisting bool) (fbDraft *fastbi
 	// Add Product Purchases
 
 	for _, p := range inv.Purchases {
+		if p.Archived || p.Cancelled {
+			continue
+		}
+
 		discount := false
 		priceDisc, err := purchases.PriceTotalDisc(p)
 		if err != nil {

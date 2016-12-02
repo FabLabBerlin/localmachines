@@ -79,7 +79,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 			panic(err.Error())
 		}
 
-		Convey("Testing createFastbillDraft", func() {
+		Convey("Testing FastbillCreateDraft", func() {
 
 			m := TIME_START.Month()
 			y := TIME_START.Year()
@@ -104,7 +104,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 			So(testServer.FbInv.Items, ShouldHaveLength, 1)
 		})
 
-		Convey("Flatrate Memberships in draft leave no 0 price items", func() {
+		Convey("Flatrate Memberships in draft leave no 0 price, cancelled or archived items", func() {
 			Reset(setup.ResetDB)
 
 			o := orm.NewOrm()
@@ -129,6 +129,20 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 			p.InvoiceId = inv.Id
 			p.UserId = uid
 			if purchases.Create(p); err != nil {
+				panic(err.Error())
+			}
+
+			p = util.CreateTestPurchase(lasercutter.Id+1, "Tutoring", time.Duration(34)*time.Hour, 0.5)
+			p.InvoiceId = inv.Id
+			p.Cancelled = true
+			if _, err := o.Insert(p); err != nil {
+				panic(err.Error())
+			}
+
+			p = util.CreateTestPurchase(lasercutter.Id+2, "Prototyping", time.Duration(34)*time.Hour, 0.5)
+			p.InvoiceId = inv.Id
+			p.Archived = true
+			if _, err := o.Insert(p); err != nil {
 				panic(err.Error())
 			}
 
