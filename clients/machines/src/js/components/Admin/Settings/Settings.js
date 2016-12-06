@@ -43,10 +43,10 @@ var Settings = React.createClass({
     }
 
     return (
-      <div className="container">
+      <div id="set" className="container">
         <h1>Settings</h1>
 
-        <table className="table table-striped table-hover">
+        <table className="table table-striped">
           <thead>
             <tr>
               <th>Setting</th>
