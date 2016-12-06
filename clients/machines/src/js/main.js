@@ -24,12 +24,11 @@ var GlobalStore = require('./stores/GlobalStore');
 var Invoices = require('./modules/Invoices');
 var LoginChooser = require('./components/Login/LoginChooser');
 var LoginStore = require('./stores/LoginStore');
-var MachineNewPage = require('./components/MachinesNew/MachinePage');
-var MachineNewInfosPage = require('./components/MachinesNew/MachinePage/Infos');
-var MachineNewReservationPage = require('./components/MachinesNew/MachinePage/Reservations');
-var MachinePage = require('./components/MachinePage/MachinePage');
+var MachinePage = require('./components/Machines/MachinePage');
+var MachineInfosPage = require('./components/Machines/MachinePage/Infos');
+var MachineReservationPage = require('./components/Machines/MachinePage/Reservations');
 var Machines = require('./modules/Machines');
-var MachinesNewPage = require('./components/MachinesNew/Machines');
+var MachinesPage = require('./components/Machines/Machines');
 var Memberships = require('./modules/Memberships');
 var React = require('react');
 var ProductPage = require('./components/ProductPage/ProductPage');
@@ -107,18 +106,17 @@ render((
         <Route path="done" component={ForgotPassword.Done} />
       </Route>
       <Route path="login" component={LoginChooser} />
-      <Route path="machine" component={MachinePage} />
-      <Route path="machines" component={MachinesNewPage} />
-      <Route path="machines/:machineId" component={MachineNewPage} />
-      <Route path="machines/:machineId/infos" component={MachineNewInfosPage} />
-      <Route path="machines/:machineId/reservations" component={MachineNewReservationPage} />
+      <Route path="machines" component={MachinesPage} />
+      <Route path="machines/:machineId" component={MachinePage} />
+      <Route path="machines/:machineId/infos" component={MachineInfosPage} />
+      <Route path="machines/:machineId/reservations" component={MachineReservationPage} />
       <Route path="product" component={ProductPage} />
       <Route path="profile" component={UserPage} />
       <Route path="register_existing" component={RegisterExisting} />
       <Route path="spendings" component={SpendingsPage} />
       <Route path="reservations" component={ReservationsPage} />
       <Route path="feedback" component={FeedbackPage} />
-      <Route path="/" component={MachinesNewPage} />
+      <Route path="/" component={MachinesPage} />
     </Route>
   </Router>
 ), document.getElementById('app-container'));

@@ -1,5 +1,5 @@
 var $ = require('jquery');
-var ActivationTimer = require('../../MachinePage/Machine/ActivationTimer');
+var ActivationTimer = require('../ActivationTimer');
 var constants = require('../constants');
 var getters = require('../../../getters');
 var LoaderLocal = require('../../LoaderLocal');
@@ -7,7 +7,7 @@ var LoginActions = require('../../../actions/LoginActions');
 var MachineActions = require('../../../actions/MachineActions');
 var React = require('react');
 var reactor = require('../../../reactor');
-var ReservationTimer = require('../../MachinePage/Machine/ReservationTimer');
+var ReservationTimer = require('../ReservationTimer');
 
 
 // https://github.com/HubSpot/vex/issues/72

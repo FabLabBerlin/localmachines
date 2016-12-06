@@ -1,5 +1,5 @@
 var React = require('react');
-var ReservationTimer = require('../../MachinePage/Machine/ReservationTimer');
+var ReservationTimer = require('../ReservationTimer');
 
 
 var UpcomingReservation = React.createClass({

@@ -7,7 +7,7 @@ var LoaderLocal = require('./LoaderLocal');
 var LocationActions = require('../actions/LocationActions');
 var LoginActions = require('../actions/LoginActions');
 var LoginStore = require('../stores/LoginStore');
-var MachinesNewPage = require('./MachinesNew/Machines');
+var MachinesNewPage = require('./Machines/Machines');
 var React = require('react');
 var toastr = require('../toastr');
 
