@@ -136,7 +136,7 @@ var List = React.createClass({
                         value={this.state.checkStatus}>
                   <option value="all">All</option>
                   <option value="draft">Draft</option>
-                  <option value="outgoing">Outgoing</option>
+                  <option value="outgoing">Invoice</option>
                 </select>
               </th>
               <HeadColumn label="No."
