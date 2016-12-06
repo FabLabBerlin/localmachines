@@ -109,13 +109,11 @@ var MachineActions = {
     });
   },
 
-  /*
-   * Use GET call to get the machines the user can use
-   * callback are defined below
-   */
   apiGetUserMachines(locationId, uid) {
-    var url = '/api/users/' + uid + '/machines?location=' + locationId;
-    ApiActions.getCall(url, (machines) => {
+    $.ajax({
+      url: '/api/users/' + uid + '/machines?location=' + locationId
+    })
+    .done(machines => {
       reactor.dispatch(Machines.actionTypes.SET_MACHINES, { machines });
     });
   },

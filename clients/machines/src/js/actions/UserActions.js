@@ -32,7 +32,10 @@ var UserActions = {
   },
 
   fetchUser(uid) {
-    ApiActions.getCall('/api/users/' + uid, function(user) {
+    $.ajax({
+      url: '/api/users/' + uid
+    })
+    .done(user => {
       reactor.dispatch(actionTypes.SET_USER, { user });      
     });
   },

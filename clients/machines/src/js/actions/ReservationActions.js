@@ -30,7 +30,10 @@ var ReservationActions = {
   // But only load user names for reservations that are currently active.
   load() {
     const lid = Cookies.get('location');
-    ApiActions.getCall('/api/reservations?location=' + lid, function(reservations) {
+    $.ajax({
+      url: '/api/reservations?location=' + lid
+    })
+    .done(reservations => {
       var t = moment().unix();
       var userIds = [];
 
