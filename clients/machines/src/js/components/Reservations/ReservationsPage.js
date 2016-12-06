@@ -134,11 +134,7 @@ var ReservationsTable = React.createClass({
                 <th>From</th>
                 <th>To</th>
                 <th>Created</th>
-                <th>
-                  <div className="pull-right">
-                    Options
-                  </div>
-                </th>
+                <th/>
               </tr>
             </thead>
             <tbody>

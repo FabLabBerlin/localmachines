@@ -47,13 +47,7 @@ var Settings = React.createClass({
         <h1>Settings</h1>
 
         <table className="table table-striped">
-          <thead>
-            <tr>
-              <th>Setting</th>
-              <th>Value</th>
-              <th></th>
-            </tr>
-          </thead>
+          <thead/>
           <tbody>
             <tr>
               <td>URL to AGBs</td>
