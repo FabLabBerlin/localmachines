@@ -1,6 +1,5 @@
 var $ = require('jquery');
 var actionTypes = require('../actionTypes');
-var ApiActions = require('./ApiActions');
 var reactor = require('../reactor');
 
 var ReservationRulesActions = {

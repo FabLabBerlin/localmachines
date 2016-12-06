@@ -1,5 +1,4 @@
 jest.dontMock('../../actionTypes');
-jest.dontMock('../ApiActions');
 jest.dontMock('../../getters');
 jest.dontMock('../LocationActions');
 jest.dontMock('../../modules/Location/getters');

@@ -1,7 +1,6 @@
 var _ = require('lodash');
 var $ = require('jquery');
 var actionTypes = require('../actionTypes');
-var ApiActions = require('./ApiActions');
 var Cookies = require('js-cookie');
 var getters = require('../getters');
 var Machines = require('../modules/Machines');

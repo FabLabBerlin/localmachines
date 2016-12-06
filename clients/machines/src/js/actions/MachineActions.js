@@ -1,7 +1,6 @@
 var _ = require('lodash');
 var $ = require('jquery');
 var actionTypes = require('../actionTypes');
-var ApiActions = require('./ApiActions');
 var getters = require('../getters');
 var GlobalActions = require('./GlobalActions');
 var LocationGetters = require('../modules/Location/getters');
@@ -234,20 +233,21 @@ var MachineActions = {
   pollDashboard() {},
 
   setUnderMaintenance({ mid, onOrOff }) {
-    ApiActions.postCall('/api/machines/' + mid + '/under_maintenance/' + onOrOff,
-                    {},
-                    function(data) {
-                      reactor.dispatch(Machines.actionTypes.SET_UNDER_MAINTENANCE, { mid, onOrOff });
-                      if (onOrOff === 'on') {
-                        toastr.info('Machine under maintenance');
-                      } else {
-                        toastr.info('Machine is working again');
-                      }
-                    },
-                    function() {
-                      toastr.error('Could not change maintenance mode');
-                    }
-    );
+    $.ajax({
+      url: '/api/machines/' + mid + '/under_maintenance/' + onOrOff,
+      type: 'POST'
+    })
+    .done(data => {
+      reactor.dispatch(Machines.actionTypes.SET_UNDER_MAINTENANCE, { mid, onOrOff });
+      if (onOrOff === 'on') {
+        toastr.info('Machine under maintenance');
+      } else {
+        toastr.info('Machine is working again');
+      }
+    })
+    .error(() => {
+      toastr.error('Could not change maintenance mode');
+    });
   },
 
   updateMachineField(mid, name, value) {
