@@ -189,7 +189,7 @@ var List = React.createClass({
                   <td className="text-right" onClick={click}>
                     {sum.get('FastbillNo') || '-'}
                   </td>
-                  <td className="text-right" onClick={click}>
+                  <td className="text-left" onClick={click}>
                     {util.statusInfo(sum)}
                   </td>
                   <td className="text-center" onClick={click}>

@@ -2,7 +2,7 @@ function statusInfo(invoice) {
   var info = '';
 
   if (invoice.get('FastbillNo') || invoice.get('Status') === 'outgoing') {
-    info += 'Invoice No: ' + invoice.get('FastbillNo');
+    info += 'Invoice';
   } else {
     info += 'Draft';
   }
