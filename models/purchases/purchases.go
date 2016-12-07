@@ -63,8 +63,7 @@ type Purchase struct {
 	Running bool
 
 	// Old fields:
-	MachineUsage time.Duration             `orm:"-"`
-	Memberships  []*memberships.Membership `orm:"-"`
+	Memberships []*memberships.Membership `orm:"-"`
 
 	Archived       bool
 	Comments       string
@@ -114,7 +113,6 @@ func GetAllAt(locationId int64) (ps []*Purchase, err error) {
 		Exclude("invoice_status", "outgoing").
 		Exclude("invoice_status", "credit").
 		Exclude("archived", "1").
-		Limit(1000000).
 		All(&ps)
 
 	return
