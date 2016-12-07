@@ -28,7 +28,6 @@ func CreateTestPurchase(machineId int64, machineName string,
 		Quantity:     minutes.Minutes(),
 		Machine:      &m,
 		MachineId:    machineId,
-		MachineUsage: minutes,
 		Memberships: []*memberships.Membership{
 			{
 				Id:                    42,
