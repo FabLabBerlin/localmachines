@@ -7,9 +7,6 @@ import (
 	"strings"
 )
 
-// Main membership type/struct that contains information
-// about a mase membership and is mapper to a table in
-// the database.
 type Membership struct {
 	Id                       int64
 	LocationId               int64

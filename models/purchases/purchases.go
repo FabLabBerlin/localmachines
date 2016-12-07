@@ -80,6 +80,7 @@ func init() {
 }
 
 func Create(p *Purchase) (err error) {
+	p.Created = time.Now()
 	p.Id, err = CreateOrm(orm.NewOrm(), p)
 	return
 }

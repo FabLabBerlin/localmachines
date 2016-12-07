@@ -10,7 +10,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
-	/*"github.com/FabLabBerlin/localmachines/models/user_memberships"*/
 	"github.com/astaxie/beego/orm"
 	"time"
 )
@@ -77,6 +76,8 @@ func Create(inv *Invoice) (id int64, err error) {
 	return
 }
 
+// ErrNoInvoiceForThatMonth is related to lazy creation of invoices. We don't
+// want to spam the database with irrelevant data.
 var ErrNoInvoiceForThatMonth = errors.New("no draft invoice exists for that month (and none will be auto-created)")
 
 // GetDraft for User uid @ Location locId and time t.  If it doesn't exist, it
