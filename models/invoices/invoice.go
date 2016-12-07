@@ -322,48 +322,6 @@ func (inv *Invoice) setCurrent(o orm.Ormer) (err error) {
 	}
 
 	if currentInvoice != nil {
-		/*currentUms, err := user_memberships.GetForInvoice(currentInvoice.Id)
-		if err != nil {
-			return fmt.Errorf("get user memberships for current inv: %v", err)
-		}
-
-		thisUms, err := user_memberships.GetForInvoice(inv.Id)
-		if err != nil {
-			return fmt.Errorf("get user memberships for this inv: %v", err)
-		}*/
-
-		/*umsToBeCloned := make([]*user_memberships.Combo, 0, len(currentUms.Data))
-		for _, um := range currentUms.Data {
-			alreadyCloned := false
-			for _, existing := range thisUms.Data {
-				if um.Id == existing.Id {
-					alreadyCloned = true
-					break
-				}
-			}
-			if !alreadyCloned {
-				umsToBeCloned = append(umsToBeCloned, um)
-			}
-		}*/
-
-		/*for _, umCombo := range umsToBeCloned {
-			um, err := user_memberships.Get(umCombo.Id)
-			if err != nil {
-				return fmt.Errorf("get user membership: %v", err)
-			}
-
-			if !um.AutoExtend &&
-				um.EndDate.Before(inv.Interval().TimeFrom()) {
-				continue
-			}
-
-			if err := inv.attachUserMembership(um); err != nil {
-				return fmt.Errorf("attach user membership: %v", err)
-			}
-		}*/
-	}
-
-	if currentInvoice != nil {
 		currentInvoice.Current = false
 		if _, err := o.Update(currentInvoice); err != nil {
 			return fmt.Errorf("update current invoice: %v", err)
