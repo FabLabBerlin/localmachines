@@ -56,6 +56,14 @@ app.controller('UserCtrl',
     })
     .success(function(locations) {
       $scope.locations = locations;
+      _.each(locations, function(l) {
+        if (l.Id === $scope.locationId) {
+          $scope.location = l;
+
+          return false;
+        }
+      });
+  console.log('$scope.location=', $scope.location);
     })
     .error(function(data, status) {
       toastr.error('Failed to load locations data');

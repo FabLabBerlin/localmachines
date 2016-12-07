@@ -30,6 +30,7 @@ type Location struct {
 	FeatureCoupons   bool   `json:",omitempty"`
 	Timezone         string `orm:"size(100)"`
 	Logo             string `orm:"size(255)"`
+	University       bool
 }
 
 func init() {

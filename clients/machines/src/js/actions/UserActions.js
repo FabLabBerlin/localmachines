@@ -7,11 +7,6 @@ var UserStore = require('../stores/UserStore');
 
 var UserActions = {
 
-  /*
-   * Try to update the user information
-   * @userState: data from userForm
-   * call the UserStore to interact with the back-end
-   */
   updateUser(uid, user){
     $.ajax({
       headers: {'Content-Type': 'application/json'},
