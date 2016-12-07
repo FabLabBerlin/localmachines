@@ -1,4 +1,4 @@
-<div class="container-fluid">
+<div class="container-fluid" ng-show="location">
 
   <h1>Edit User</h1>
   <p>Created on {{user.Created | date : 'd MMM yyyy H:mm'}}</p>
@@ -42,7 +42,7 @@
   </div> <!-- /.row -->
 
   <!-- Billing Address -->
-  <div class="row">
+  <div class="row" ng-hide="location.University">
     <div class="col-sm-3">
       <label for="phone">Phone</label>
       <input 
@@ -80,7 +80,7 @@
     </div>
   </div> <!-- /.row -->
 
-  <div class="row">
+  <div class="row" ng-hide="location.University">
     <div class="col-sm-3">
       <div class="form-group">
         <label for="country">Country</label>
@@ -105,7 +105,7 @@
     </div>
   </div>
 
-  <div class="row">
+  <div class="row" ng-hide="location.University">
     <div class="col-sm-3">
       <div class="form-group">
         <label for="fastbill-customer-number">FastBill Customer Number</label>
@@ -142,7 +142,7 @@
     </div>
   </div> <!-- /.row -->
 
-  <div class="row">
+  <div class="row" ng-hide="location.University">
     <div class="col-sm-3">
       <div class="form-group">
         <label>
@@ -152,7 +152,7 @@
     </div>
   </div>
 
-  <div class="row">
+  <div class="row" ng-hide="location.University">
     <div class="col-sm-3">
       <div class="form-group">
         <label for="machine-type">Custom Fastbill Template</label>
@@ -166,8 +166,9 @@
         </select>
       </div>
     </div>
+  </div>
 
-  <div class="row">
+  <div class="row" ng-hide="location.University">
     <div class="col-sm-3">
       <div class="form-group">
         <label>
@@ -275,130 +276,132 @@
 
   </div> <!-- /.row -->
 
-
-  <h2>User Memberships</h2>
-  <table class="table table-striped table-hover">
-    <thead>
-      <tr>
-        <th>Membership Name</th>
-        <th>Start Date</th>
-        <th>Termination Date</th>
-        <th>Minimum Duration (months)</th>
-        <th>Duration (months)</th>
-        <th style="min-width:60px">&nbsp;</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr ng-hide="userMemberships.length">
-        <td colspan="6">User has no memberships</td>
-      </tr>
-      <tr ng-repeat="userMembership in userMemberships">
-        <td>{{userMembership.Membership.Title}}</td>
-        <td style="min-width:90px">
-          <div class="form-inline">
-            <div class="input-group">
-              <input
-                class="adm-user-membership-date adm-user-membership-start-date form-control datepicker"
-                data-user-membership-id="{{userMembership.Id}}"
-                placeholder="Start Date"
-                value="{{userMembership.StartDate}}">
-              <div class="input-group-addon">
-                <i class="fa fa-calendar"></i>
+  <div id="user-memberships" ng-hide="location.University"> <!-- User Memberships-->
+    <h2>User Memberships</h2>
+    <table class="table table-striped table-hover">
+      <thead>
+        <tr>
+          <th>Membership Name</th>
+          <th>Start Date</th>
+          <th>Termination Date</th>
+          <th>Minimum Duration (months)</th>
+          <th>Duration (months)</th>
+          <th style="min-width:60px">&nbsp;</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-hide="userMemberships.length">
+          <td colspan="6">User has no memberships</td>
+        </tr>
+        <tr ng-repeat="userMembership in userMemberships">
+          <td>{{userMembership.Membership.Title}}</td>
+          <td style="min-width:90px">
+            <div class="form-inline">
+              <div class="input-group">
+                <input
+                  class="adm-user-membership-date adm-user-membership-start-date form-control datepicker"
+                  data-user-membership-id="{{userMembership.Id}}"
+                  placeholder="Start Date"
+                  value="{{userMembership.StartDate}}">
+                <div class="input-group-addon">
+                  <i class="fa fa-calendar"></i>
+                </div>
               </div>
             </div>
-          </div>
-        </td>
-        <td style="min-width:160px">
-          <div ng-show="userMembership.TerminationDateFormatted">
-            <div class="input-group">
-              <input
-                class="adm-user-membership-date adm-user-membership-termination-date form-control datepicker"
-                data-user-membership-id="{{userMembership.Id}}"
-                placeholder="YYYY-MM-DD"
-                value="{{userMembership.TerminationDateFormatted}}">
-              <div class="input-group-addon"
-                   style="cursor: pointer"
-                   ng-click="unsetTerminationDate(userMembership.Id)">
+          </td>
+          <td style="min-width:160px">
+            <div ng-show="userMembership.TerminationDateFormatted">
+              <div class="input-group">
+                <input
+                  class="adm-user-membership-date adm-user-membership-termination-date form-control datepicker"
+                  data-user-membership-id="{{userMembership.Id}}"
+                  placeholder="YYYY-MM-DD"
+                  value="{{userMembership.TerminationDateFormatted}}">
+                <div class="input-group-addon"
+                     style="cursor: pointer"
+                     ng-click="unsetTerminationDate(userMembership.Id)">
+                  <i class="fa fa-close"></i>
+                </div>
+              </div>
+            </div>
+            <button 
+              class="btn btn-danger"
+              ng-click="setTerminationDate(userMembership.Id)"
+              ng-hide="userMembership.TerminationDateFormatted">
+              Set Termination Date
+            </button>
+          </td>
+          <td>
+            {{userMembership.InitialDurationMonths}}
+          </td>
+          <td>
+            {{!_.isNumber(userMembership.DurationMonths) ? userMembership.DurationMonths : 'open end'}}
+          </td>
+          <td>
+            <div class="pull-right">
+              <button 
+                type="button" 
+                class="btn btn-primary btn-ico" 
+                ng-click="updateUserMembershipPrompt(userMembership.Id)">
+                <i class="fa fa-save"></i>
+              </button>
+              <button 
+                type="button" 
+                class="btn btn-danger btn-ico" 
+                ng-click="deleteUserMembershipPrompt(userMembership.Id)">
                 <i class="fa fa-close"></i>
-              </div>
+              </button>
             </div>
-          </div>
-          <button 
-            class="btn btn-danger"
-            ng-click="setTerminationDate(userMembership.Id)"
-            ng-hide="userMembership.TerminationDateFormatted">
-            Set Termination Date
-          </button>
-        </td>
-        <td>
-          {{userMembership.InitialDurationMonths}}
-        </td>
-        <td>
-          {{!_.isNumber(userMembership.DurationMonths) ? userMembership.DurationMonths : 'open end'}}
-        </td>
-        <td>
-          <div class="pull-right">
-            <button 
-              type="button" 
-              class="btn btn-primary btn-ico" 
-              ng-click="updateUserMembershipPrompt(userMembership.Id)">
-              <i class="fa fa-save"></i>
-            </button>
-            <button 
-              type="button" 
-              class="btn btn-danger btn-ico" 
-              ng-click="deleteUserMembershipPrompt(userMembership.Id)">
-              <i class="fa fa-close"></i>
-            </button>
-          </div>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
-  <div class="row">
-    <div class="col-sm-3">
-      <div class="form-group">
-        <select 
-          class="form-control" 
-          id="user-select-membership" 
-          placeholder="Membership">
-          <!-- These have to be loaded via API -->
-          <option value="" selected disabled>Select Membership</option>
-          <option ng-repeat="membership in memberships | membershipsFilter:this" 
-                  value={{membership.Id}}>
-            {{membership.Title}}
-          </option>
-        </select>
+    <div class="row">
+      <div class="col-sm-3">
+        <div class="form-group">
+          <select 
+            class="form-control" 
+            id="user-select-membership" 
+            placeholder="Membership">
+            <!-- These have to be loaded via API -->
+            <option value="" selected disabled>Select Membership</option>
+            <option ng-repeat="membership in memberships | membershipsFilter:this" 
+                    value={{membership.Id}}>
+              {{membership.Title}}
+            </option>
+          </select>
+        </div>
       </div>
-    </div>
 
-    <div class="col-sm-3">
-      <div class="form-group">
-        <div class="input-group">
-          <input 
-            id="adm-add-user-membership-start-date" 
-            class="form-control datepicker" 
-            placeholder="Start Date">
-          <div class="input-group-addon">
-            <i class="fa fa-calendar"></i>
+      <div class="col-sm-3">
+        <div class="form-group">
+          <div class="input-group">
+            <input 
+              id="adm-add-user-membership-start-date" 
+              class="form-control datepicker" 
+              placeholder="Start Date">
+            <div class="input-group-addon">
+              <i class="fa fa-calendar"></i>
+            </div>
           </div>
         </div>
       </div>
+
+      <div class="col-sm-3">
+        <button 
+          class="btn btn-primary btn-block" 
+          id="user-add-membership-btn" 
+          ng-click="addUserMembership()">
+          <i class="fa fa-plus"></i>&nbsp;Add
+        </button>
+      </div>
+
+      <div class="col-sm-3">
+      </div>
     </div>
 
-    <div class="col-sm-3">
-      <button 
-        class="btn btn-primary btn-block" 
-        id="user-add-membership-btn" 
-        ng-click="addUserMembership()">
-        <i class="fa fa-plus"></i>&nbsp;Add
-      </button>
-    </div>
-
-    <div class="col-sm-3">
-    </div>
-  </div>
+  </div> <!-- User Memberships -->
 
   <hr>
 
