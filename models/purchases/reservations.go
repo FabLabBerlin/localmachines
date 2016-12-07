@@ -41,6 +41,12 @@ func (this *Reservation) Overlaps(other *Reservation) bool {
 		return false
 	}
 
+	if this.Purchase.Archived || this.Purchase.Cancelled || this.Purchase.ReservationDisabled ||
+		other.Purchase.Archived || other.Purchase.Cancelled || other.Purchase.ReservationDisabled {
+
+		return false
+	}
+
 	return !(this.Purchase.TimeStart.Unix() >= other.Purchase.TimeEnd().Unix() ||
 		other.Purchase.TimeStart.Unix() >= this.Purchase.TimeEnd().Unix())
 }
