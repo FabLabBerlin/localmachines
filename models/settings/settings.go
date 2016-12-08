@@ -13,6 +13,8 @@ const (
 	VAT                            = "VAT"
 	FASTBILL_TEMPLATE_ID           = "FastbillTemplateId"
 	RESERVATION_NOTIFICATION_EMAIL = "ReservationNotificationEmail"
+	MAILCHIMP_API_KEY              = "MailchimpApiKey"
+	MAILCHIMP_LIST_ID              = "MailchimpListId"
 )
 
 var validNames = []string{
@@ -21,6 +23,8 @@ var validNames = []string{
 	VAT,
 	FASTBILL_TEMPLATE_ID,
 	RESERVATION_NOTIFICATION_EMAIL,
+	MAILCHIMP_API_KEY,
+	MAILCHIMP_LIST_ID,
 }
 
 type Settings struct {

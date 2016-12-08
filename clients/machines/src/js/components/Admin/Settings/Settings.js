@@ -111,6 +111,22 @@ var Settings = React.createClass({
                        defaultValue={this.state.settings.getIn(['ReservationNotificationEmail', 'ValueString'])}/>
               </td>
             </tr>
+            <tr>
+              <td>Mailchimp API Key</td>
+              <td>
+                <input type="text"
+                       ref="MailchimpApiKey"
+                       defaultValue={this.state.settings.getIn(['MailchimpApiKey', 'ValueString'])}/>
+              </td>
+            </tr>
+            <tr>
+              <td>Mailchimp List Id</td>
+              <td>
+                <input type="text"
+                       ref="MailchimpListId"
+                       defaultValue={this.state.settings.getIn(['MailchimpListId', 'ValueString'])}/>
+              </td>
+            </tr>
           </tbody>
         </table>
 
@@ -142,6 +158,12 @@ var Settings = React.createClass({
       },
       ReservationNotificationEmail: {
         ValueString: this.refs.ReservationNotificationEmail.value
+      },
+      MailchimpApiKey: {
+        ValueString: this.refs.MailchimpApiKey.value
+      },
+      MailchimpListId: {
+        ValueString: this.refs.MailchimpListId.value
       }
     };
 
