@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/controllers"
+	"github.com/FabLabBerlin/localmachines/lib/mailchimp"
 	"github.com/FabLabBerlin/localmachines/models"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/machine"
@@ -241,12 +242,6 @@ func (this *UsersController) Signup() {
 
 	newsletter := this.GetString("newsletter") == "true"
 
-	if newsletter {
-		beego.Info("signup up for lab newsletter")
-	} else {
-		beego.Info("no signup up for lab newsletter")
-	}
-
 	// Get body as array of models.User
 	// Attempt to decode passed json
 	jsonDecoder := json.NewDecoder(this.Ctx.Request.Body)
@@ -266,6 +261,17 @@ func (this *UsersController) Signup() {
 	} else if err != nil {
 		beego.Error("Failed to create user:", err)
 		this.CustomAbort(500, "Internal Server Error")
+	}
+
+	if newsletter {
+		beego.Info("signup up for lab newsletter")
+		go func() {
+			if err := mailchimp.LocationSubscribe(locId, data.User.Email); err != nil {
+				beego.Error("signup for location", locId, "newsletter:", err)
+			}
+		}()
+	} else {
+		beego.Info("no signup up for lab newsletter")
 	}
 
 	// Set the password
