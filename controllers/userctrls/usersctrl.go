@@ -239,6 +239,14 @@ func (this *UsersController) Signup() {
 
 	locId, _ := this.GetInt64("location")
 
+	newsletter := this.GetString("newsletter") == "true"
+
+	if newsletter {
+		beego.Info("signup up for lab newsletter")
+	} else {
+		beego.Info("no signup up for lab newsletter")
+	}
+
 	// Get body as array of models.User
 	// Attempt to decode passed json
 	jsonDecoder := json.NewDecoder(this.Ctx.Request.Body)

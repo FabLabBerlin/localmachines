@@ -163,9 +163,11 @@ angular.module('fabsmith.signup.form', ['ngRoute', 'ngCookies'])
       return;
     }
 
+    console.log('$scope.newsletter=', $scope.newsletter);
+
     $http({
       method: 'POST',
-      url: '/api/users/signup?location=' + $scope.locationId,
+      url: '/api/users/signup?location=' + $scope.locationId + '&newsletter=' + $scope.newsletter,
       data: {
         "User": {
           "Email": $scope.email,
