@@ -430,3 +430,6 @@ footer {
   background: #222222;
   color: white;
 }
+.form-control.datepicker {
+  cursor: pointer;
+}

@@ -39,6 +39,9 @@ type User struct {
 	NoAutoInvoicing    bool
 	FastbillTemplateId int64
 	EuDelivery         bool
+	// University fields
+	StudentId        *string
+	SecurityBriefing *string
 }
 
 func (this *User) TableName() string {

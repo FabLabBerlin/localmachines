@@ -210,6 +210,69 @@
     
   </div> <!-- /.row -->
 
+  <div id="university-fields-labels" class="row" ng-show="location.University">
+    <div class="col-sm-3">
+      <label for="nfc-id">NFC ID</label>
+    </div>
+
+    <div class="col-sm-3">
+    </div>
+
+    <div class="col-sm-3">
+      <label for="student-id">Student ID</label>
+    </div>
+
+    <div class="col-sm-3">
+      <label for="security-briefing">Security Briefing</label>
+    </div>
+  </div>
+  
+  
+
+  <div id="university-fields" class="row" ng-show="location.University">
+    <div class="col-sm-3">
+      <div class="form-group">
+        <input id="nfc-id"
+          class="form-control"
+          placeholder="NFC ID"
+          ng-model="user.Company">
+      </div>
+    </div>
+
+    <div class="col-sm-3">
+      <div class="form-group">
+        <button class="btn btn-primary btn-block" ng-click="updateNfcID()">
+          Update NFC ID
+        </button>
+      </div>
+    </div>
+
+    <div class="col-sm-3">
+      <div class="form-group">
+
+        <input id="student-id"
+          class="form-control"
+          placeholder="Student ID"
+          ng-model="user.Company">
+      </div>
+    </div>
+
+    <div class="col-sm-3">
+      <div class="form-group">
+        <div class="input-group">
+          <input 
+            id="security-briefing" 
+            class="form-control datepicker" 
+            placeholder="Not briefed yet">
+          <div class="input-group-addon">
+            <i class="fa fa-calendar"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> <!-- /.row -->
+
+
   <div class="row">
     <div class="col-sm-12">
       <h2>Comments</h2>
