@@ -17,6 +17,7 @@ import (
 func (this *UsersController) GetByNfcId() {
 	locId, authorized := this.GetLocIdApi()
 	if !authorized {
+		beego.Error("not having api user role")
 		this.Fail(400)
 	}
 

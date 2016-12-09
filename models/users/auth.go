@@ -94,8 +94,10 @@ func AuthGetByNfcId(nfcId string) (userId int64, err error) {
 	}
 
 	o := orm.NewOrm()
-	auth := Auth{NfcKey: nfcId}
-	err = o.Read(&auth)
+	var auth Auth
+	err = o.QueryTable("auth").
+		Filter("nfc_key", nfcId).
+		One(&auth)
 	userId = auth.UserId
 
 	return
