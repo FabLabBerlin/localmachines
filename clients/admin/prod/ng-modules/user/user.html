@@ -235,13 +235,13 @@
         <input id="nfc-id"
           class="form-control"
           placeholder="NFC ID"
-          ng-model="user.Company">
+          ng-model="nfcId">
       </div>
     </div>
 
     <div class="col-sm-3">
       <div class="form-group">
-        <button class="btn btn-primary btn-block" ng-click="updateNfcID()">
+        <button class="btn btn-primary btn-block" ng-click="updateNfcId()">
           Update NFC ID
         </button>
       </div>
@@ -253,7 +253,7 @@
         <input id="student-id"
           class="form-control"
           placeholder="Student ID"
-          ng-model="user.Company">
+          ng-model="user.StudentId">
       </div>
     </div>
 
@@ -263,6 +263,7 @@
           <input 
             id="security-briefing" 
             class="form-control datepicker" 
+            ng-model="user.SecurityBriefing"
             placeholder="Not briefed yet">
           <div class="input-group-addon">
             <i class="fa fa-calendar"></i>
