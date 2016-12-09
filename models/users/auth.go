@@ -84,6 +84,17 @@ func AuthenticateUser(username, password string) (int64, error) {
 	}
 }
 
+func AuthSetNfcId(userId int64, nfcId string) (err error) {
+	o := orm.NewOrm()
+	auth := Auth{UserId: userId}
+	if err = o.Read(&auth); err != nil {
+		return
+	}
+	auth.NfcKey = nfcId
+	_, err = o.Update(&auth)
+	return
+}
+
 func AuthSetPassword(userId int64, password string) error {
 	o := orm.NewOrm()
 	auth := Auth{UserId: userId}

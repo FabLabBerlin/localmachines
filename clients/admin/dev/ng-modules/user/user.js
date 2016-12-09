@@ -519,6 +519,25 @@ app.controller('UserCtrl',
     });
   };
 
+  $scope.updateNfcId = function() {
+    console.log('updateNfcId()');
+
+    $http({
+      method: 'POST',
+      url: '/api/users/' + $scope.user.Id + '/nfc_id',
+      params: {
+        nfcId: $scope.nfcId,
+        ac: new Date().getTime()
+      }
+    })
+    .success(function() {
+      toastr.success('NFC ID successfully updated');
+    })
+    .error(function() {
+      toastr.error('Error while trying to update NFC ID');
+    });
+  };
+
   $scope.updateUserLocation = function(userLocation, cb) {
     $http({
       method: 'PUT',

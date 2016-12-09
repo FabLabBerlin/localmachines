@@ -225,6 +225,13 @@ func init() {
 
 	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UsersController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UsersController"],
 		beego.ControllerComments{
+			"PostNfcId",
+			`/:uid/nfc_id`,
+			[]string{"post"},
+			nil})
+
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UsersController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UsersController"],
+		beego.ControllerComments{
 			"PostUserPassword",
 			`/:uid/password`,
 			[]string{"post"},
