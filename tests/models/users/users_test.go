@@ -2,6 +2,7 @@ package users
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 	"time"
 
@@ -104,6 +105,17 @@ func TestUsers(t *testing.T) {
 
 				So(uid, ShouldBeGreaterThan, 0)
 				So(err, ShouldNotBeNil)
+			})
+		})
+		Convey("NFC", func() {
+			Convey("AuthGetByNfcId", func() {
+				Convey("Specific error when key smaller 6", func() {
+					_, err := users.AuthGetByNfcId("1234")
+					So(strings.Contains(err.Error(), "too short"), ShouldBeTrue)
+
+					_, err = users.AuthGetByNfcId("     1234    ")
+					So(strings.Contains(err.Error(), "too short"), ShouldBeTrue)
+				})
 			})
 		})
 		Convey("Testing DeleteUserAuth", func() {
