@@ -1,4 +1,4 @@
-package modelTest
+package users
 
 import (
 	"fmt"
