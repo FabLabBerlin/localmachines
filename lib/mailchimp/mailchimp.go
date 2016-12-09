@@ -20,8 +20,8 @@ type Subscription struct {
 }
 
 func (req Subscription) Submit() (err error) {
-	url := urlPrefix() + "/lists/subscribe.json"
-
+	url := urlPrefix(req.ApiKey) + "/lists/subscribe.json"
+	fmt.Printf("url=%v\n", url)
 	buf := bytes.Buffer{}
 	enc := json.NewEncoder(&buf)
 	if err := enc.Encode(req); err != nil {
@@ -43,8 +43,7 @@ func (req Subscription) Submit() (err error) {
 	return
 }
 
-func urlPrefix() string {
-	apikey := beego.AppConfig.String("mailchimpapikey")
+func urlPrefix(apikey string) string {
 	tmp := strings.Split(apikey, "-")
 	if len(tmp) != 2 {
 		beego.Error("mailchimpapikey has no part after the dash")
