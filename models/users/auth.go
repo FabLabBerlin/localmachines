@@ -84,6 +84,23 @@ func AuthenticateUser(username, password string) (int64, error) {
 	}
 }
 
+func AuthGetByNfcId(nfcId string) (userId int64, err error) {
+	<-time.After(100 * time.Millisecond)
+
+	nfcId = strings.TrimSpace(nfcId)
+
+	if len(nfcId) < 6 {
+		return 0, fmt.Errorf("nfc id too short")
+	}
+
+	o := orm.NewOrm()
+	auth := Auth{NfcKey: nfcId}
+	err = o.Read(&auth)
+	userId = auth.UserId
+
+	return
+}
+
 func AuthSetNfcId(userId int64, nfcId string) (err error) {
 	o := orm.NewOrm()
 	auth := Auth{UserId: userId}

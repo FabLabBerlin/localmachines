@@ -621,31 +621,6 @@ func (this *UsersController) GetUserNames() {
 	this.ServeJSON()
 }
 
-// @Title PostNfcId
-// @Description Post nfc id
-// @Param	uid		path 	int	true		"User ID"
-// @Success 200
-// @Failure	403	Failed to get user
-// @Failure	401	Not authorized
-// @router /:uid/nfc_id [post]
-func (this *UsersController) PostNfcId() {
-	uid, authorized := this.GetRouteUid()
-	if !authorized {
-		this.CustomAbort(400, "Wrong uid in url or not authorized")
-	}
-
-	err := users.AuthSetNfcId(uid, this.GetString("nfcId"))
-	if err != nil {
-		beego.Error("Unable to nfcId: ", err)
-		this.CustomAbort(403, "Unable to update nfcId")
-	}
-
-	this.Data["json"] = models.StatusResponse{
-		Status: "Password changed successfully!",
-	}
-	this.ServeJSON()
-}
-
 // @Title PostUserPassword
 // @Description Post user password
 // @Param	uid		path 	int	true		"User ID"
