@@ -294,7 +294,11 @@ func (this *Controller) globalUserRole() user_roles.Role {
 		beego.Info("globalUserRole: couldn't get user:", err)
 		return user_roles.NOT_AFFILIATED
 	}
-	return user.GetRole()
+	if user.SuperAdmin {
+		return user_roles.SUPER_ADMIN
+	} else {
+		return user_roles.NOT_AFFILIATED
+	}
 }
 
 func (this *Controller) localUserRole(locationId int64) user_roles.Role {

@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
-	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"regexp"
@@ -29,7 +28,7 @@ type User struct {
 	Company            string `orm:"size(100)"`
 	VatUserId          string `orm:"size(100)"`
 	VatRate            int
-	UserRole           string    `orm:"size(100)"`
+	SuperAdmin         bool
 	Created            time.Time `orm:"type(datetime)"`
 	Comments           string    `orm:"type(text)"`
 	Phone              string    `orm:"size(50)"`
@@ -63,6 +62,10 @@ func CreateUser(user *User) (userId int64, er error) {
 	var query string
 	type UserIdStruct struct {
 		Id int64
+	}
+
+	if user.SuperAdmin {
+		return 0, errors.New("attempted to create user with super admin rights")
 	}
 
 	o := orm.NewOrm()
@@ -137,32 +140,9 @@ func checkEmail(email string) (err error) {
 	return
 }
 
-func (user *User) GetRole() user_roles.Role {
-	return user_roles.Role(user.UserRole)
-}
-
 // Update user
 func (user *User) Update() error {
 	o := orm.NewOrm()
-
-	// Check if not last admin in case UserRole is not admin
-	if user.GetRole() != user_roles.ADMIN {
-		numAdmins, err := o.QueryTable(user.TableName()).
-			Filter("UserRole", user_roles.ADMIN).Count()
-		if err != nil {
-			return err
-		}
-		beego.Trace("Number of admins:", numAdmins)
-		if numAdmins <= 1 {
-			// Check if the user we are updating is that 1 last admin
-			userIsAdmin := o.QueryTable(user.TableName()).
-				Filter("id", user.Id).
-				Filter("user_role", user_roles.ADMIN).Exist()
-			if userIsAdmin {
-				return errors.New("Only one admin left")
-			}
-		}
-	}
 
 	// Validate email
 	if err := user.CheckEmail(); err != nil {

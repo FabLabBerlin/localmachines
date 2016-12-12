@@ -8,6 +8,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
+	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/user_memberships"
 	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"github.com/astaxie/beego"
@@ -77,6 +78,7 @@ type Data struct {
 	startTime       time.Time
 	endTime         time.Time
 	Invoices        []*invutil.Invoice
+	userLocations   user_locations.UserLocations
 	userMemberships []*user_memberships.UserMembership
 	membershipsById map[int64]*memberships.Membership
 }
@@ -104,6 +106,11 @@ func FetchData(locationId int64) (data Data, err error) {
 	data.userMemberships, err = user_memberships.GetAllAt(locationId)
 	if err != nil {
 		return data, fmt.Errorf("Failed to get user memberships: %v", err)
+	}
+
+	data.userLocations, err = user_locations.GetAllForLocation(locationId)
+	if err != nil {
+		return data, fmt.Errorf("Failed to get user locations: %v", err)
 	}
 
 	return
@@ -226,7 +233,8 @@ func (this Data) sumMinutesBy(timeFormat string) (sums map[string]float64, err e
 	sums = make(map[string]float64)
 
 	for _, inv := range this.Invoices {
-		if inv.User.GetRole() != user_roles.STAFF && inv.User.GetRole() != user_roles.ADMIN {
+		r, _ := this.userLocations.UserRoleOf(this.LocationId, inv.User.Id)
+		if r != user_roles.STAFF && r != user_roles.ADMIN && !inv.User.SuperAdmin {
 			for _, purchase := range inv.Purchases {
 				if purchase.Type == purchases.TYPE_ACTIVATION {
 					key := purchase.TimeStart.Format(timeFormat)

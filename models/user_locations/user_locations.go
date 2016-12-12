@@ -35,11 +35,23 @@ func Create(ul *UserLocation) (id int64, err error) {
 	return orm.NewOrm().Insert(ul)
 }
 
-func GetAllForLocation(locationId int64) (uls []*UserLocation, err error) {
+type UserLocations []*UserLocation
+
+func GetAllForLocation(locationId int64) (uls UserLocations, err error) {
 	_, err = orm.NewOrm().QueryTable(TABLE_NAME).
 		Filter("location_id", locationId).
 		Exclude("archived", 1).
 		All(&uls)
+	return
+}
+
+func (uls UserLocations) UserRoleOf(locId, userId int64) (r user_roles.Role, ok bool) {
+	for _, ul := range uls {
+		if ul.LocationId == locId && ul.UserId == userId {
+			return ul.GetRole(), true
+		}
+	}
+
 	return
 }
 

@@ -153,7 +153,7 @@ func login(locId int64, reqAdmin bool, username, password string) (
 				if err != nil {
 					return 0, false, fmt.Errorf("Failed to get user: %v", err)
 				}
-				if u.UserRole != user_roles.SUPER_ADMIN.String() {
+				if !u.SuperAdmin {
 					return 0, false, fmt.Errorf("User is not admin at this location")
 				}
 			}
@@ -251,8 +251,6 @@ func (this *UsersController) Signup() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	data.User.UserRole = user_roles.MEMBER.String()
-
 	// Attempt to create the user
 	if userId, err = users.CreateUser(&data.User); err == users.ErrUsernameExists {
 		this.CustomAbort(400, err.Error())
@@ -318,8 +316,7 @@ func (this *UsersController) Post() {
 	}
 
 	user := users.User{
-		Email:    email,
-		UserRole: user_roles.MEMBER.String(),
+		Email: email,
 	}
 
 	// Attempt to create the user.
@@ -418,20 +415,9 @@ func (this *UsersController) Put() {
 		this.CustomAbort(500, "Internal Server Error")
 	}
 
-	if existingUser.UserRole != req.User.UserRole {
-		if sessUserId == req.User.Id {
-			beego.Error("User can't change his own user role (attempted to change from", existingUser.UserRole, "to", req.User.UserRole)
-			this.CustomAbort(500, "Internal Server Error")
-		} else if !this.IsAdminForUser(req.User.Id) {
-			beego.Error("User is not authorized to change UserRole")
-			this.CustomAbort(500, "Internal Server Error")
-		}
-	}
-
-	if existingUser.UserRole != user_roles.SUPER_ADMIN.String() &&
-		req.User.UserRole == user_roles.SUPER_ADMIN.String() {
-		beego.Error("Cannot set super admin through UI")
-		this.CustomAbort(401, "Not authorized")
+	if existingUser.SuperAdmin != req.User.SuperAdmin {
+		beego.Error("User is not authorized to change UserRole")
+		this.CustomAbort(403, "Internal Server Error")
 	}
 
 	err = req.User.Update()

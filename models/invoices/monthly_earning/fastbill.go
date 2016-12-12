@@ -2,6 +2,7 @@ package monthly_earning
 
 import (
 	"github.com/FabLabBerlin/localmachines/lib/fastbill"
+	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"github.com/astaxie/beego"
 )
@@ -26,13 +27,24 @@ func CreateFastbillDrafts(me *MonthlyEarning, vatPercent float64) (report Drafts
 	report.AlreadyExportedUids = make([]int64, 0, len(me.Invoices))
 	report.Errors = make([]DraftsCreationError, 0, len(me.Invoices))
 
+	uls, err := user_locations.GetAllForLocation(me.LocationId)
+	if err != nil {
+		e := DraftsCreationError{
+			UserId:  0,
+			Problem: "DB GetAllForLocation: " + err.Error(),
+		}
+		report.Errors = append(report.Errors, e)
+		beego.Error("GetAllForLocation:", err.Error())
+		return
+	}
+
 	for _, inv := range me.Invoices {
 		uid := inv.User.Id
 		inv.VatPercent = vatPercent
 		if inv.User.NoAutoInvoicing {
 			continue
 		}
-		if r := inv.User.GetRole(); (r == user_roles.STAFF || r == user_roles.ADMIN || r == user_roles.SUPER_ADMIN) && uid != 19 {
+		if r, _ := uls.UserRoleOf(me.LocationId, uid); (r == user_roles.STAFF || r == user_roles.ADMIN || inv.User.SuperAdmin) && uid != 19 {
 			e := DraftsCreationError{
 				UserId:  uid,
 				Problem: "User role is " + r.String(),
