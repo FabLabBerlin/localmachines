@@ -21,7 +21,6 @@ func LoginAsAdmin() *http.Cookie {
 	u := users.User{
 		Username: "admin",
 		Email:    "admin@easylab.io",
-		UserRole: user_roles.ADMIN.String(),
 	}
 	uid, err := users.CreateUser(&u)
 	if err != nil {
@@ -58,7 +57,6 @@ func LoginAsRegular() *http.Cookie {
 	u := users.User{
 		Username: "user",
 		Email:    "user@easylab.io",
-		UserRole: user_roles.MEMBER.String(),
 	}
 	uid, err := users.CreateUser(&u)
 	if err != nil {
