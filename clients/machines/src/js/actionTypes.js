@@ -9,11 +9,6 @@ export default keyMirror({
   SUCCESS_LOGOUT: null,
   LOGIN_FAILURE_HANDLED: null,
   KEEP_ALIVE: null,
-  
-  SET_LOCATION_ID: null,
-  SET_LOCATIONS: null,
-  SET_LOCATION_TERMS_URL: null,
-  SET_USER_LOCATIONS: null,
 
   SET_USER: null,
   SET_USER_PROPERTY: null,

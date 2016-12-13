@@ -1,9 +1,9 @@
 var $ = require('jquery');
-var actionTypes = require('../actionTypes');
+var actionTypes = require('./actionTypes');
 var Cookies = require('js-cookie');
-var getters = require('../getters');
-var reactor = require('../reactor');
-var toastr = require('../toastr');
+var getters = require('../../getters');
+var reactor = require('../../reactor');
+var toastr = require('../../toastr');
 
 import {hashHistory} from 'react-router';
 

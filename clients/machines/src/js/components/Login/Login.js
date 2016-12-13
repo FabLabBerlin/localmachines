@@ -1,12 +1,10 @@
 var $ = require('jquery');
 
 var getters = require('../../getters');
-var LocationGetters = require('../../modules/Location/getters');
+var Location = require('../../modules/Location');
 var LoginStore = require('../../stores/LoginStore');
-var LocationStore = require('../../stores/LocationStore');
 
 var LoginActions = require('../../actions/LoginActions');
-var LocationActions = require('../../actions/LocationActions');
 
 var React = require('react');
 var ReactDOM = require('react-dom');
@@ -28,9 +26,9 @@ var Login = React.createClass({
 
   getDataBindings() {
     return {
-      location: LocationGetters.getLocation,
-      locationId: LocationGetters.getLocationId,
-      locations: LocationGetters.getLocations
+      location: Location.getters.getLocation,
+      locationId: Location.getters.getLocationId,
+      locations: Location.getters.getLocations
     };
   },
 
@@ -145,7 +143,7 @@ var Login = React.createClass({
 
   updateLocation() {
     var locationId = parseInt(this.refs.location.value);
-    LocationActions.setLocationId(locationId);
+    Location.actions.setLocationId(locationId);
   }
 });
 
