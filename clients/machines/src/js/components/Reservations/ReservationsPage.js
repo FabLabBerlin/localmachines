@@ -2,8 +2,7 @@ var _ = require('lodash');
 var $ = require('jquery');
 var getters = require('../../getters');
 var LoaderLocal = require('../LoaderLocal');
-var LocationActions = require('../../actions/LocationActions');
-var LocationGetters = require('../../modules/Location/getters');
+var Location = require('../../modules/Location');
 var MachineActions = require('../../actions/MachineActions');
 var Machines = require('../../modules/Machines');
 var moment = require('moment');
@@ -102,13 +101,13 @@ var ReservationsTable = React.createClass({
   mixins: [ reactor.ReactMixin ],
 
   componentWillMount() {
-    const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
+    const locationId = reactor.evaluateToJS(Location.getters.getLocationId);
     const uid = reactor.evaluateToJS(getters.getUid);
     UserActions.fetchUser(uid);
     MachineActions.apiGetUserMachines(locationId, uid);
     ReservationActions.load();
     ReservationRulesActions.load(locationId);
-    LocationActions.loadUserLocations(uid);
+    Location.actions.loadUserLocations(uid);
   },
 
   getDataBindings() {
@@ -163,7 +162,7 @@ var ReservationsPage = React.createClass({
   mixins: [ reactor.ReactMixin ],
 
   componentWillMount() {
-    const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
+    const locationId = reactor.evaluateToJS(Location.getters.getLocationId);
     Settings.actions.loadSettings({locationId});
   },
 

@@ -1,4 +1,4 @@
-var LocationActions = require('../../actions/LocationActions');
+var Location = require('../../modules/Location');
 var Login = require('./Login');
 var React = require('react');
 
@@ -10,7 +10,7 @@ var React = require('react');
  */
 var LoginChooser = React.createClass({
   componentWillMount() {
-    LocationActions.loadLocations();
+    Location.actions.loadLocations();
   },
 
   render() {

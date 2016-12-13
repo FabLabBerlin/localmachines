@@ -1,6 +1,6 @@
 var FeedbackActions = require('../../actions/FeedbackActions');
 var getters = require('../../getters');
-var LocationActions = require('../../actions/LocationActions');
+var Location = require('../../modules/Location');
 var React = require('react');
 var reactor = require('../../reactor');
 var UserActions = require('../../actions/UserActions');
@@ -21,7 +21,7 @@ var FeedbackPage = React.createClass({
   componentDidMount() {
     const uid = reactor.evaluateToJS(getters.getUid);
     UserActions.fetchUser(uid);
-    LocationActions.loadUserLocations(uid);
+    Location.actions.loadUserLocations(uid);
   },
 
   handleChange(event) {

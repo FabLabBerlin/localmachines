@@ -4,7 +4,7 @@ var getters = require('../getters');
 var GlobalActions = require('../actions/GlobalActions');
 var HeaderNav = require('./Header/HeaderNav');
 var LoaderLocal = require('./LoaderLocal');
-var LocationActions = require('../actions/LocationActions');
+var Location = require('../modules/Location');
 var LoginActions = require('../actions/LoginActions');
 var LoginStore = require('../stores/LoginStore');
 var MachinesNewPage = require('./Machines/Machines');
@@ -56,7 +56,7 @@ vex.defaultOptions.className = 'vex-theme-custom';
           }
         }
       });
-      LocationActions.loadLocations();
+      Location.actions.loadLocations();
     } else {
       if (this.props.location.pathname === '/login') {
         hashHistory.push('/machines');

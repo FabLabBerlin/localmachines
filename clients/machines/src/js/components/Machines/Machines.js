@@ -1,8 +1,7 @@
 var _ = require('lodash');
 var getters = require('../../getters');
 var LoaderLocal = require('../LoaderLocal');
-var LocationActions = require('../../actions/LocationActions');
-var LocationGetters = require('../../modules/Location/getters');
+var Location = require('../../modules/Location');
 var MachineActions = require('../../actions/MachineActions');
 var Machine = require('./Machine');
 var Machines = require('../../modules/Machines');
@@ -44,7 +43,7 @@ var MachinesPage = React.createClass({
   getDataBindings() {
     return {
       activations: Machines.getters.getActivations,
-      locationId: LocationGetters.getLocationId,
+      locationId: Location.getters.getLocationId,
       machines: Machines.getters.getMachines,
       machinesById: Machines.getters.getMachinesById,
       myMachines: Machines.getters.getMyMachines,
@@ -53,12 +52,12 @@ var MachinesPage = React.createClass({
   },
 
   componentWillMount() {
-    const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
+    const locationId = reactor.evaluateToJS(Location.getters.getLocationId);
     const uid = reactor.evaluateToJS(getters.getUid);
 
     ReservationActions.load();
     UserActions.fetchUser(uid);
-    LocationActions.loadUserLocations(uid);
+    Location.actions.loadUserLocations(uid);
 
     if (window.WebSocket) {
       MachineActions.wsDashboard(this.context.router, locationId);

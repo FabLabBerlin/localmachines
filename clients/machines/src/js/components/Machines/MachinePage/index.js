@@ -3,8 +3,7 @@ var constants = require('../constants');
 var FeedbackDialogs = require('../../Feedback/FeedbackDialogs');
 var getters = require('../../../getters');
 var LoaderLocal = require('../../LoaderLocal');
-var LocationActions = require('../../../actions/LocationActions');
-var LocationGetters = require('../../../modules/Location/getters');
+var Location = require('../../../modules/Location');
 var MachineActions = require('../../../actions/MachineActions');
 var MachineMixin = require('../MachineMixin');
 var Machines = require('../../../modules/Machines');
@@ -25,8 +24,8 @@ var MachinePage = React.createClass({
   getDataBindings() {
     return {
       activations: Machines.getters.getActivations,
-      isStaff: LocationGetters.getIsStaff,
-      locationId: LocationGetters.getLocationId,
+      isStaff: Location.getters.getIsStaff,
+      locationId: Location.getters.getLocationId,
       machines: Machines.getters.getMachines,
       reservationsByMachineId: getters.getActiveReservationsByMachineId,
       upcomingReservationsByMachineId: getters.getUpcomingReservationsByMachineId,
@@ -36,11 +35,11 @@ var MachinePage = React.createClass({
   },
 
   componentWillMount() {
-    const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
+    const locationId = reactor.evaluateToJS(Location.getters.getLocationId);
     const uid = reactor.evaluateToJS(getters.getUid);
     MachineActions.apiGetUserMachines(locationId, uid);
     UserActions.fetchUser(uid);
-    LocationActions.loadUserLocations(uid);
+    Location.actions.loadUserLocations(uid);
     ReservationActions.load();
     MachineActions.wsDashboard(null, locationId);
   },

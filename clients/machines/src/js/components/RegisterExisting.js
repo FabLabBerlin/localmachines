@@ -1,8 +1,7 @@
 var $ = require('jquery');
 var getters = require('../getters');
 var LoaderLocal = require('./LoaderLocal');
-var LocationActions = require('../actions/LocationActions');
-var LocationGetters = require('../modules/Location/getters');
+var Location = require('../modules/Location');
 var LoginActions = require('../actions/LoginActions');
 var React = require('react');
 var reactor = require('../reactor');
@@ -18,16 +17,16 @@ var RegisterExisting = React.createClass({
 
   getDataBindings() {
     return {
-      location: LocationGetters.getLocation,
-      locationTermsUrl: LocationGetters.getLocationTermsUrl,
+      location: Location.getters.getLocation,
+      locationTermsUrl: Location.getters.getLocationTermsUrl,
       userId: getters.getUid
     };
   },
 
   componentWillMount() {
-    LocationActions.loadLocations();
-    var locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
-    LocationActions.loadTermsUrl(locationId);
+    Location.actions.loadLocations();
+    var locationId = reactor.evaluateToJS(Location.getters.getLocationId);
+    Location.actions.loadTermsUrl(locationId);
   },
 
   render() {
@@ -77,7 +76,7 @@ var RegisterExisting = React.createClass({
       var userId = this.state.userId;
       var router = this.context.router;
 
-      LocationActions.addLocation({locationId, userId, router});
+      Location.actions.addLocation({locationId, userId, router});
     } else {
       toastr.error('Accepting the AGBs is mandatory to add this location');
     }

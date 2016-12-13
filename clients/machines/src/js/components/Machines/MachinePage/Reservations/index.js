@@ -1,7 +1,6 @@
 var Calendar = require('./Calendar');
 var getters = require('../../../../getters');
-var LocationActions = require('../../../../actions/LocationActions');
-var LocationGetters = require('../../../../modules/Location/getters');
+var Location = require('../../../../modules/Location');
 var MachineActions = require('../../../../actions/MachineActions');
 var NewReservation = require('../../../Reservations/NewReservation');
 var React = require('react');
@@ -33,11 +32,11 @@ var ReservationPage = React.createClass({
   },
 
   componentWillMount() {
-    const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
+    const locationId = reactor.evaluateToJS(Location.getters.getLocationId);
     const uid = reactor.evaluateToJS(getters.getUid);
     MachineActions.apiGetUserMachines(locationId, uid);
     UserActions.fetchUser(uid);
-    LocationActions.loadUserLocations(uid);
+    Location.actions.loadUserLocations(uid);
     ReservationActions.load();
     ReservationRulesActions.load(locationId);
     MachineActions.wsDashboard(null, locationId);

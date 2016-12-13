@@ -1,6 +1,5 @@
 var getters = require('../../getters');
-var LocationActions = require('../../actions/LocationActions');
-var LocationGetters = require('../../modules/Location/getters');
+var Location = require('../../modules/Location');
 var MachineActions = require('../../actions/MachineActions');
 var LoginActions = require('../../actions/LoginActions');
 var React = require('react');
@@ -20,13 +19,13 @@ var UserPage = React.createClass({
   },
 
   componentDidMount() {
-    const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
+    const locationId = reactor.evaluateToJS(Location.getters.getLocationId);
     const uid = reactor.evaluateToJS(getters.getUid);
     MachineActions.apiGetUserMachines(locationId, uid);
     UserActions.fetchUser(uid);
     UserActions.fetchBill(locationId, uid);
     UserActions.fetchMemberships(locationId, uid);
-    LocationActions.loadUserLocations(uid);
+    Location.actions.loadUserLocations(uid);
   },
 
   handleLogout() {
