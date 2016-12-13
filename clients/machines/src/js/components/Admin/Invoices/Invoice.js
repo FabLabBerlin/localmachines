@@ -209,8 +209,8 @@ var Invoice = React.createClass({
       invoices: Invoices.getters.getInvoices,
       invoicesActions: Invoices.getters.getInvoicesActions,
       invoiceStatuses: Invoices.getters.getInvoiceStatuses,
-      location: LocationGetters.getLocation,
-      locationId: LocationGetters.getLocationId,
+      location: Location.getters.getLocation,
+      locationId: Location.getters.getLocationId,
       MonthlySums: Invoices.getters.getMonthlySums,
       uid: getters.getUid,
       userMemberships: Invoices.getters.getUserMemberships

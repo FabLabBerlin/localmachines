@@ -1,20 +1,21 @@
 jest.dontMock('../../actionTypes');
 jest.dontMock('../../getters');
-jest.dontMock('../LocationActions');
+jest.dontMock('../../modules/Location');
+jest.dontMock('../../modules/Location/actions');
 jest.dontMock('../../modules/Location/getters');
 jest.dontMock('../MachineActions');
 jest.dontMock('nuclear-js');
 jest.dontMock('../../reactor');
-jest.dontMock('../../stores/LocationStore');
+jest.dontMock('../../modules/Location/stores/store');
 jest.dontMock('../../stores/LoginStore');
 jest.mock('jquery');
 
 var $ = require('jquery');
 var actionTypes = require('../../actionTypes');
-var LocationActions = require('../LocationActions');
+var LocationActions = require('../../modules/Location/actions');
 var MachineActions = require('../MachineActions');
 var reactor = require('../../reactor');
-var LocationStore = require('../../stores/LocationStore');
+var LocationStore = require('../../modules/Location/stores/store');
 var LoginStore = require('../../stores/LoginStore');
 
 
