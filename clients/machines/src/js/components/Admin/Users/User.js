@@ -1,8 +1,7 @@
 var _ = require('lodash');
 var getters = require('../../../getters');
 var LoaderLocal = require('../../LoaderLocal');
-var LocationActions = require('../../../actions/LocationActions');
-var LocationGetters = require('../../../modules/Location/getters');
+var Location = require('../../../modules/Location');
 var MachineActions = require('../../../actions/MachineActions');
 var Machines = require('../../../modules/Machines');
 var React = require('react');
@@ -22,7 +21,7 @@ var GeneralInfo = React.createClass({
 
   getDataBindings() {
     return {
-      location: LocationGetters.getLocation
+      location: Location.getters.getLocation
     };
   },
 
@@ -147,7 +146,7 @@ var BillingInfo = React.createClass({
 
   getDataBindings() {
     return {
-      location: LocationGetters.getLocation
+      location: Location.getters.getLocation
     };
   },
 
@@ -213,7 +212,7 @@ var Password = React.createClass({
 
   getDataBindings() {
     return {
-      location: LocationGetters.getLocation
+      location: Location.getters.getLocation
     };
   },
 
@@ -262,7 +261,7 @@ var Comments = React.createClass({
 
   getDataBindings() {
     return {
-      location: LocationGetters.getLocation
+      location: Location.getters.getLocation
     };
   },
 
@@ -290,9 +289,9 @@ var Permissions = React.createClass({
 
   getDataBindings() {
     return {
-      location: LocationGetters.getLocation,
+      location: Location.getters.getLocation,
       machines: Machines.getters.getMachines,
-      userLocation: LocationGetters.getUserLocation
+      userLocation: Location.getters.getUserLocation
     };
   },
 
@@ -370,7 +369,7 @@ var Buttons = React.createClass({
 
   getDataBindings() {
     return {
-      location: LocationGetters.getLocation
+      location: Location.getters.getLocation
     };
   },
 
@@ -389,18 +388,18 @@ var UserView = React.createClass({
   mixins: [ reactor.ReactMixin ],
 
   componentWillMount() {
-    const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
+    const locationId = reactor.evaluateToJS(Location.getters.getLocationId);
     const uid = reactor.evaluateToJS(getters.getUid);
     MachineActions.apiGetUserMachines(locationId, uid);
     Users.actions.fetchUsers({locationId});
     UserActions.fetchUser(uid);
-    LocationActions.loadUserLocations(uid);
+    Location.actions.loadUserLocations(uid);
   },
 
   getDataBindings() {
     return {
-      locations: LocationGetters.getLocations,
-      location: LocationGetters.getLocation,
+      locations: Location.getters.getLocations,
+      location: Location.getters.getLocation,
       users: Users.getters.getUsers
     };
   },
