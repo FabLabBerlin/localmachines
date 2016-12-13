@@ -2,8 +2,7 @@ var BillTable = require('../../UserProfile/BillTable');
 var getters = require('../../../getters');
 var Invoices = require('../../../modules/Invoices');
 var LoaderLocal = require('../../LoaderLocal');
-var LocationActions = require('../../../actions/LocationActions');
-var LocationGetters = require('../../../modules/Location/getters');
+var Location = require('../../../modules/Location');
 var moment = require('moment');
 var React = require('react');
 var reactor = require('../../../reactor');
@@ -26,8 +25,8 @@ var Header = React.createClass({
       editPurchaseId: Invoices.getters.getEditPurchaseId,
       invoicesActions: Invoices.getters.getInvoicesActions,
       invoiceStatuses: Invoices.getters.getInvoiceStatuses,
-      location: LocationGetters.getLocation,
-      locationId: LocationGetters.getLocationId,
+      location: Location.getters.getLocation,
+      locationId: Location.getters.getLocationId,
       MonthlySums: Invoices.getters.getMonthlySums,
       uid: getters.getUid,
       userMemberships: Invoices.getters.getUserMemberships,
@@ -36,7 +35,7 @@ var Header = React.createClass({
   },
 
   componentWillMount() {
-    const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
+    const locationId = reactor.evaluateToJS(Location.getters.getLocationId);
     SettingsActions.loadSettings({locationId});
   },
 
@@ -223,7 +222,7 @@ var Invoice = React.createClass({
     const invoiceId = parseInt(this.props.params.invoiceId);
 
     UserActions.fetchUser(uid);
-    LocationActions.loadUserLocations(uid);
+    Location.actions.loadUserLocations(uid);
     Invoices.actions.fetchInvoice(this.state.locationId, {
       invoiceId: invoiceId
     });

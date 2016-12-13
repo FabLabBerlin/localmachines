@@ -1,8 +1,7 @@
 var getters = require('../../../getters');
 var {hashHistory} = require('react-router');
 var LoaderLocal = require('../../LoaderLocal');
-var LocationActions = require('../../../actions/LocationActions');
-var LocationGetters = require('../../../modules/Location/getters');
+var Location = require('../../../modules/Location');
 var Memberships = require('../../../modules/Memberships');
 var React = require('react');
 var reactor = require('../../../reactor');
@@ -23,11 +22,11 @@ var MembershipPage = React.createClass({
   },
 
   componentDidMount() {
-    const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
+    const locationId = reactor.evaluateToJS(Location.getters.getLocationId);
     const uid = reactor.evaluateToJS(getters.getUid);
     UserActions.fetchUser(uid);
     Memberships.actions.fetch({locationId});
-    LocationActions.loadUserLocations(uid);
+    Location.actions.loadUserLocations(uid);
     Settings.actions.loadSettings({locationId});
   },
 

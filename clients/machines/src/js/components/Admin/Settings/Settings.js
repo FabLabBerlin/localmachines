@@ -2,8 +2,7 @@ var _ = require('lodash');
 var getters = require('../../../getters');
 var ImageUploader = require('../ImageUploader');
 var LoaderLocal = require('../../LoaderLocal');
-var LocationActions = require('../../../actions/LocationActions');
-var LocationGetters = require('../../../modules/Location/getters');
+var Location = require('../../../modules/Location');
 var React = require('react');
 var reactor = require('../../../reactor');
 var SettingsActions = require('../../../modules/Settings/actions');
@@ -16,20 +15,20 @@ var Settings = React.createClass({
   mixins: [ reactor.ReactMixin ],
 
   componentWillMount() {
-    const locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
+    const locationId = reactor.evaluateToJS(Location.getters.getLocationId);
     const uid = reactor.evaluateToJS(getters.getUid);
     SettingsActions.loadSettings({locationId});
     SettingsActions.loadFastbillTemplates({locationId});
     UserActions.fetchUser(uid);
-    LocationActions.loadUserLocations(uid);
+    Location.actions.loadUserLocations(uid);
   },
 
   getDataBindings() {
     return {
       settings: SettingsGetters.getAdminSettings,
       fastbillTemplates: SettingsGetters.getFastbillTemplates,
-      location: LocationGetters.getLocation,
-      locationId: LocationGetters.getLocationId,
+      location: Location.getters.getLocation,
+      locationId: Location.getters.getLocationId,
       uid: getters.getUid,
       vatPercent: SettingsGetters.getVatPercent
     };

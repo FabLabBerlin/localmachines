@@ -7,6 +7,7 @@ if (window.location.pathname === '/product' || window.location.pathname === '/pr
 
 var AdminInvoice = require('./components/Admin/Invoices/Invoice');
 var AdminInvoices = require('./components/Admin/Invoices/Invoices');
+var AdminLocations = require('./components/Admin/Locations/Locations');
 var AdminMachine = require('./components/Admin/Machines/Machine');
 var AdminMachines = require('./components/Admin/Machines/Machines');
 var AdminMembership = require('./components/Admin/Memberships/Membership');
@@ -44,7 +45,7 @@ var SpendingsPage = require('./components/UserProfile/SpendingsPage');
 var UserPage = require('./components/UserProfile/UserPage');
 var Users = require('./modules/Users');
 var UserStore = require('./stores/UserStore');
-var LocationStore = require('./stores/LocationStore');
+var Location = require('./modules/Location');
 
 /*
  * Style dependencies for webpack
@@ -75,7 +76,7 @@ reactor.registerStores({
   settingsStore: SettingsStore,
   userStore: UserStore,
   usersStore: Users.store,
-  locationStore: LocationStore
+  locationStore: Location.store
 });
 
 
@@ -90,6 +91,7 @@ render((
       <Route path="admin">
         <Route path="invoices" component={AdminInvoices} />
         <Route path="invoices/:invoiceId" component={AdminInvoice} />
+        <Route path="locations" component={AdminLocations} />
         <Route path="machines" component={AdminMachines} />
         <Route path="machines/:machineId" component={AdminMachine} />
         <Route path="memberships" component={AdminMemberships} />

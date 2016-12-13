@@ -44,6 +44,11 @@ var Right = React.createClass({
                     <a href="/machines/#/admin/invoices">Invoices</a>
                   </li>
                 ) : null}
+                {this.state.user.get('SuperAdmin') ? (
+                  <li>
+                    <a href="/machines/#/admin/locations">Locations</a>
+                  </li>
+                ) : null}
                 {this.state.isAdmin ? (
                   <li>
                     <a href="/machines/#/admin/settings">Settings</a>

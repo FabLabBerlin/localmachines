@@ -1,6 +1,6 @@
 var $ = require('jquery');
 var actionTypes = require('../actionTypes');
-var LocationActions = require('./LocationActions');
+var Location = require('../modules/Location');
 var Machines = require('../modules/Machines');
 var reactor = require('../reactor');
 var toastr = require('../toastr');
@@ -23,7 +23,7 @@ export default {
       type: 'POST',
       data: content,
       success(data) {
-        LocationActions.setLocationId(data.LocationId);
+        Location.actions.setLocationId(data.LocationId);
         reactor.dispatch(actionTypes.SUCCESS_LOGIN, { data });
         switch (data.Status) {
         case 'ok':
