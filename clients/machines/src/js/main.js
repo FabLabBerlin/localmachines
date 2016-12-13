@@ -23,7 +23,7 @@ var ForgotPasswordStore = require('./modules/ForgotPassword/stores/store');
 var getters = require('./getters');
 var GlobalStore = require('./stores/GlobalStore');
 var Invoices = require('./modules/Invoices');
-var LoginChooser = require('./components/Login/LoginChooser');
+var Login = require('./components/Login/Login');
 var LoginStore = require('./stores/LoginStore');
 var MachinePage = require('./components/Machines/MachinePage');
 var MachineInfosPage = require('./components/Machines/MachinePage/Infos');
@@ -107,7 +107,7 @@ render((
         <Route path="reset" component={ForgotPassword.Reset} />
         <Route path="done" component={ForgotPassword.Done} />
       </Route>
-      <Route path="login" component={LoginChooser} />
+      <Route path="login" component={Login} />
       <Route path="machines" component={MachinesPage} />
       <Route path="machines/:machineId" component={MachinePage} />
       <Route path="machines/:machineId/infos" component={MachineInfosPage} />
