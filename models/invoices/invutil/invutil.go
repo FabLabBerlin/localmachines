@@ -192,9 +192,16 @@ func (inv *Invoice) load(data PrefetchedData) (err error) {
 	if inv.User, ok = data.UsersById[inv.UserId]; !ok {
 		return fmt.Errorf("user # %v not found", inv.UserId)
 	}
-	if inv.Purchases, ok = data.PurchasesByInv[inv.Id]; !ok {
-		inv.Purchases = []*purchases.Purchase{}
+
+	all := data.PurchasesByInv[inv.Id]
+	inv.Purchases = make([]*purchases.Purchase, 0, len(all))
+
+	for _, p := range all {
+		if !p.Archived && !p.Cancelled {
+			inv.Purchases = append(inv.Purchases, p)
+		}
 	}
+
 	if inv.InvUserMemberships, ok = data.InvUserMembershipsByInv[inv.Id]; !ok {
 		inv.InvUserMemberships = make([]*inv_user_memberships.InvoiceUserMembership, 0, 5)
 	}
