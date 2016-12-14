@@ -57,7 +57,7 @@ var LocationActions = {
       dataType: 'json',
       type: 'POST',
       success(data) {
-        hashHistory.push('/machine');
+        hashHistory.push('/machines');
       },
       error(xhr, status, err) {
         toastr.error('Error.  Please try again later.');
