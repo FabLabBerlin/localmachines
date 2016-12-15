@@ -181,7 +181,7 @@ func (inv *Invoice) FastbillCreateDraft(overwriteExisting bool) (fbDraft *fastbi
 			inv.UserMembershipGetsBilledHere(m.UserMembership) {
 
 			item := fastbill.Item{
-				Description: m.Membership().Title + " Membership (unit: month)",
+				Description: m.Membership().Title + " Membership (by month)",
 				Quantity:    1,
 				UnitPrice:   m.Membership().MonthlyPrice,
 				IsGross:     IS_GROSS_BRUTTO,
@@ -217,7 +217,7 @@ func (inv *Invoice) FastbillCreateDraft(overwriteExisting bool) (fbDraft *fastbi
 		}
 
 		item := fastbill.Item{
-			Description: p.ProductName() + " (unit: " + p.PriceUnit + ")",
+			Description: p.ProductName() + " (" + p.TimeStart.Format("02.01.06 15:04") + ", by " + p.PriceUnit + ")",
 			Quantity:    p.Quantity,
 			UnitPrice:   unitPrice,
 			IsGross:     IS_GROSS_BRUTTO,
