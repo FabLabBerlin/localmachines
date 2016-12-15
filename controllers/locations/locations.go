@@ -2,6 +2,7 @@
 package locations
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/controllers"
 	"github.com/FabLabBerlin/localmachines/models"
@@ -42,6 +43,39 @@ func (this *Controller) Create() {
 	this.Data = map[interface{}]interface{}{
 		"Id": l.Id,
 	}
+	this.ServeJSON()
+}
+
+// @Title Put
+// @Description Update location with id
+// @Param	id		path 	int					true	"Location ID"
+// @Param	body	body	locations.Location	true	"Location model"
+// @Success	200	ok
+// @Failure	400	Variable message
+// @Failure	401	Unauthorized
+// @Failure	403	Variable message
+// @router /:id [put]
+func (this *Controller) Put() {
+
+	dec := json.NewDecoder(this.Ctx.Request.Body)
+	l := locations.Location{}
+	if err := dec.Decode(&l); err == nil {
+		beego.Info("l: ", l)
+	} else {
+		beego.Error("Failed to decode json", err)
+		this.Fail(400, "Failed to decode json")
+	}
+
+	if !this.IsSuperAdmin() {
+		beego.Error("Not authorized to update a location")
+		this.Fail(403)
+	}
+
+	if err := l.Update(); err != nil {
+		this.Fail("Failed to update location:", err)
+	}
+
+	this.Data["json"] = "ok"
 	this.ServeJSON()
 }
 

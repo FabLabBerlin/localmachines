@@ -81,7 +81,9 @@ var LocationActions = {
     $.ajax({
       url: '/api/locations/',
       dataType: 'json',
-      type: 'PUT'
+      type: 'PUT',
+      contentType: 'application/json; charset=utf-8',
+      data: JSON.stringify(l)
     })
     .done(() => {
       toastr.info('Successfully updated location.');
