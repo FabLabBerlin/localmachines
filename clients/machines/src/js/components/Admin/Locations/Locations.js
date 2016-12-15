@@ -16,25 +16,56 @@ var Row = React.createClass({
     };
   },
 
+  handleEdit(key, e) {
+    Location.actions.setEditLocation({[key]: e.target.value});
+  },
+
+  handleSave() {
+    Location.actions.saveEditedLocation();
+  },
+
   handleSelect() {
-    const id = this.props.location.get('Id');
-    Location.actions.setEditLocation({Id: id});
+    Location.actions.setEditLocation(this.props.location.toJS());
   },
 
   render() {
     const l = this.props.location;
+    const edit = this.state.editLocation;
 
     return (
-      <tr onClick={this.handleSelect}>
-        <td>{l.get('Id')}</td>
-        <td>{l.get('Title')}</td>
-        <td>{l.get('FirstName')}</td>
-        <td>{l.get('LastName')}</td>
-        <td>{l.get('Email')}</td>
-        <td>{l.get('XmppId')}</td>
-        <td>{l.get('City')}</td>
-        <td>{l.get('Timezone')}</td>
-      </tr>
+      edit.get('Id') !== l.get('Id') ? (
+        <tr onClick={this.handleSelect}>
+          <td>{l.get('Id')}</td>
+          <td>{l.get('Title')}</td>
+          <td>{l.get('FirstName')}</td>
+          <td>{l.get('LastName')}</td>
+          <td>{l.get('Email')}</td>
+          <td>{l.get('XmppId')}</td>
+          <td>{l.get('City')}</td>
+          <td>{l.get('Timezone')}</td>
+          <td/>
+        </tr>
+      ) : (
+        <tr>
+          <td>{l.get('Id')}</td>
+          <td><input onChange={this.handleEdit.bind(this, 'Title')}
+                     value={edit.get('Title')}/></td>
+          <td><input onChange={this.handleEdit.bind(this, 'FirstName')}
+                     value={l.get('FirstName')}/></td>
+          <td><input onChange={this.handleEdit.bind(this, 'LastName')}
+                     value={l.get('LastName')}/></td>
+          <td><input onChange={this.handleEdit.bind(this, 'Email')}
+                     value={l.get('Email')}/></td>
+          <td><input onChange={this.handleEdit.bind(this, 'XmppId')}
+                     value={l.get('XmppId')}/></td>
+          <td><input onChange={this.handleEdit.bind(this, 'City')}
+                     value={l.get('City')}/></td>
+          <td><input onChange={this.handleEdit.bind(this, 'Timezone')}
+                     value={l.get('Timezone')}/></td>
+          <td><i className="fa fa-floppy-o"
+                 onClick={this.handleSave}/></td>
+        </tr>
+      )
     );
   }
 });
@@ -68,9 +99,6 @@ var Locations = React.createClass({
       return <div/>;
     }
 
-    console.log('locations=', this.state.locations);
-    console.log('editLocation=', this.state.editLocation.toJS());
-
     return (
       <div className="container">
         <h1>Location List</h1>
@@ -85,6 +113,7 @@ var Locations = React.createClass({
               <th>Jabber ID</th>
               <th>City</th>
               <th>IANA Timezone</th>
+              <th/>
             </tr>
           </thead>
           <tbody>

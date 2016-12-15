@@ -2,6 +2,7 @@ var $ = require('jquery');
 var actionTypes = require('./actionTypes');
 var Cookies = require('js-cookie');
 var getters = require('../../getters');
+var LocationGetters = require('./getters');
 var reactor = require('../../reactor');
 var toastr = require('../../toastr');
 
@@ -68,6 +69,27 @@ var LocationActions = {
 
   setLocationId(id) {
     reactor.dispatch(actionTypes.SET_LOCATION_ID, { id });
+  },
+
+  /*
+   * Editing functions
+   */
+
+  saveEditedLocation() {
+    var l = reactor.evaluateToJS(LocationGetters.getEditLocation);
+
+    $.ajax({
+      url: '/api/locations/',
+      dataType: 'json',
+      type: 'PUT'
+    })
+    .done(() => {
+      toastr.info('Successfully updated location.');
+      LocationActions.loadLocations();
+    })
+    .fail(() => {
+      toastr.error('Error updating location.  Please try again later.');
+    });
   },
 
   setEditLocation(location) {
