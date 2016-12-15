@@ -57,8 +57,10 @@ func (c *Controller) GetAll() {
 		c.CustomAbort(500, "Failed to get all locations")
 	}
 	var l *locations.Location
-	for _, l = range ls {
-		l.ClearPrivateData()
+	if !c.IsSuperAdmin() {
+		for _, l = range ls {
+			l.ClearPrivateData()
+		}
 	}
 	c.Data["json"] = ls
 	c.ServeJSON()

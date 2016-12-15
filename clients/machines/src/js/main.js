@@ -76,7 +76,8 @@ reactor.registerStores({
   settingsStore: SettingsStore,
   userStore: UserStore,
   usersStore: Users.store,
-  locationStore: Location.store
+  locationStore: Location.store,
+  locationEditStore: Location.editStore
 });
 
 

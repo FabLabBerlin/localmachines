@@ -75,7 +75,15 @@ const getIsAdmin = [
   }
 ];
 
+const getEditLocation = [
+  ['locationEditStore'],
+  (locationEditStore) => {
+    return locationEditStore;
+  }
+];
+
 export default {
   getLocation, getLocationId, getLocations, getLocationTermsUrl,
-  getIsStaff, getIsAdmin, getUserLocation
+  getIsStaff, getIsAdmin, getUserLocation,
+  getEditLocation
 };

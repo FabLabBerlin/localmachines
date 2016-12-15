@@ -6,12 +6,47 @@ var reactor = require('../../../reactor');
 var UserActions = require('../../../actions/UserActions');
 
 
+var Row = React.createClass({
+
+  mixins: [ reactor.ReactMixin ],
+
+  getDataBindings() {
+    return {
+      editLocation: Location.getters.getEditLocation
+    };
+  },
+
+  handleSelect() {
+    const id = this.props.location.get('Id');
+    Location.actions.setEditLocation({Id: id});
+  },
+
+  render() {
+    const l = this.props.location;
+
+    return (
+      <tr onClick={this.handleSelect}>
+        <td>{l.get('Id')}</td>
+        <td>{l.get('Title')}</td>
+        <td>{l.get('FirstName')}</td>
+        <td>{l.get('LastName')}</td>
+        <td>{l.get('Email')}</td>
+        <td>{l.get('XmppId')}</td>
+        <td>{l.get('City')}</td>
+        <td>{l.get('Timezone')}</td>
+      </tr>
+    );
+  }
+});
+
+
 var Locations = React.createClass({
 
   mixins: [ reactor.ReactMixin ],
 
   getDataBindings() {
     return {
+      editLocation: Location.getters.getEditLocation,
       isLogged: getters.getIsLogged,
       locations: Location.getters.getLocations,
       user: getters.getUser
@@ -34,6 +69,7 @@ var Locations = React.createClass({
     }
 
     console.log('locations=', this.state.locations);
+    console.log('editLocation=', this.state.editLocation.toJS());
 
     return (
       <div className="container">
@@ -52,20 +88,7 @@ var Locations = React.createClass({
             </tr>
           </thead>
           <tbody>
-            {this.state.locations.map(l => {
-              return (
-                <tr key={l.get('Id')}>
-                  <td>{l.get('Id')}</td>
-                  <td>{l.get('Title')}</td>
-                  <td>{l.get('FirstName')}</td>
-                  <td>{l.get('LastName')}</td>
-                  <td>{l.get('Email')}</td>
-                  <td>{l.get('XmppId')}</td>
-                  <td>{l.get('City')}</td>
-                  <td>{l.get('Timezone')}</td>
-                </tr>
-              );
-            })}
+            {this.state.locations.map((l, i) => <Row key={i} location={l}/>)}
           </tbody>
         </table>
       </div>

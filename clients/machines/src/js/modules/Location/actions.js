@@ -68,6 +68,10 @@ var LocationActions = {
 
   setLocationId(id) {
     reactor.dispatch(actionTypes.SET_LOCATION_ID, { id });
+  },
+
+  setEditLocation(location) {
+    reactor.dispatch(actionTypes.SET_EDIT_LOCATION, location);
   }
 
 };
