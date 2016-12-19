@@ -1,3 +1,4 @@
+var Button = require('../../Button');
 var LoaderLocal = require('../../LoaderLocal');
 var Location = require('../../../modules/Location');
 var React = require('react');
@@ -17,7 +18,13 @@ var Row = React.createClass({
   },
 
   handleEdit(key, e) {
+    console.log('e=', e);
     Location.actions.setEditLocation({[key]: e.target.value});
+  },
+
+  handleCheckboxEdit(key, e) {
+    console.log('e=', e);
+    Location.actions.setEditLocation({[key]: e.target.checked});
   },
 
   handleSave() {
@@ -43,7 +50,8 @@ var Row = React.createClass({
           <td>{l.get('XmppId')}</td>
           <td>{l.get('City')}</td>
           <td>{l.get('Timezone')}</td>
-          <td>Show on Login page</td>
+          <td>{l.get('Approved') ? <i className="fa fa-check"/> : null}</td>
+          <td></td>
           <td/>
         </tr>
       ) : (
@@ -63,8 +71,9 @@ var Row = React.createClass({
                      value={edit.get('City')}/></td>
           <td><input onChange={this.handleEdit.bind(this, 'Timezone')}
                      value={edit.get('Timezone')}/></td>
-          <td><input onChange={this.handleEdit.bind(this, 'Approved')}
-                     value={edit.get('Approved')}/></td>
+          <td><input onChange={this.handleCheckboxEdit.bind(this, 'Approved')}
+                     checked={edit.get('Approved')}
+                     type="checkbox"/></td>
           <td><i className="fa fa-floppy-o"
                  onClick={this.handleSave}/></td>
         </tr>
@@ -120,6 +129,7 @@ var Locations = React.createClass({
               <th>Jabber ID</th>
               <th>City</th>
               <th>IANA Timezone</th>
+              <th>Show on Login page</th>
               <th/>
             </tr>
           </thead>
@@ -127,8 +137,11 @@ var Locations = React.createClass({
             {this.state.locations.map((l, i) => <Row key={i} location={l}/>)}
           </tbody>
         </table>
-        <div>
-          <button onClick={this.handleAdd}>Add Location</button>
+        <div style={{ height: '100px' }}>
+          <Button.Annotated id="inv-add-purchase"
+                            icon="/machines/assets/img/invoicing/add_purchase.svg"
+                            label="Add Location"
+                            onClick={this.handleAdd}/>
         </div>
       </div>
     );
