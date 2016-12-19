@@ -17,6 +17,8 @@ import (
 	"github.com/FabLabBerlin/localmachines/controllers/userctrls"
 	locationModels "github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/astaxie/beego"
+	"strings"
+	"unicode"
 )
 
 // Init must be exportable for controller tests
@@ -148,11 +150,22 @@ func Init() {
 		panic(err.Error())
 	}
 	for _, l := range locs {
+		l.Title = strings.Map(func(r rune) rune {
+			if unicode.IsLetter(r) || unicode.IsDigit(r) || unicode.IsNumber(r) || r == ' ' {
+				return r
+			} else {
+				return '-'
+			}
+		}, l.Title)
+
+		beego.Info("Adding name space", l.Title)
+
 		ns := beego.NewNamespace(l.Title,
 			beego.NSInclude(
 				&custom_url.Controller{},
 			),
 		)
+
 		beego.AddNamespace(ns)
 	}
 	beego.Info("Router: custom urls added...")
