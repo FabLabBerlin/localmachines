@@ -3,7 +3,7 @@ var Nuclear = require('nuclear-js');
 var toImmutable = Nuclear.toImmutable;
 
 
-const initialState = undefined;
+const initialState = null;
 
 var CategoriesStore = new Nuclear.Store({
   getInitialState() {
