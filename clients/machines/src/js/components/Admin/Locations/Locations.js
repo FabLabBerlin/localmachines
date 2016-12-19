@@ -16,6 +16,10 @@ var Row = React.createClass({
     };
   },
 
+  handleAdd() {
+    Location.actions.addEditLocation();
+  },
+
   handleEdit(key, e) {
     Location.actions.setEditLocation({[key]: e.target.value});
   },
@@ -43,6 +47,7 @@ var Row = React.createClass({
           <td>{l.get('XmppId')}</td>
           <td>{l.get('City')}</td>
           <td>{l.get('Timezone')}</td>
+          <td>Show on Login page</td>
           <td/>
         </tr>
       ) : (
@@ -62,6 +67,8 @@ var Row = React.createClass({
                      value={edit.get('City')}/></td>
           <td><input onChange={this.handleEdit.bind(this, 'Timezone')}
                      value={edit.get('Timezone')}/></td>
+          <td><input onChange={this.handleEdit.bind(this, 'Approved')}
+                     value={edit.get('Approved')}/></td>
           <td><i className="fa fa-floppy-o"
                  onClick={this.handleSave}/></td>
         </tr>
@@ -120,6 +127,9 @@ var Locations = React.createClass({
             {this.state.locations.map((l, i) => <Row key={i} location={l}/>)}
           </tbody>
         </table>
+        <div>
+          <button onChange={this.handleAdd}>Add Location</button>
+        </div>
       </div>
     );
   }

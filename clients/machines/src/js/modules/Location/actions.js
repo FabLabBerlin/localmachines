@@ -75,6 +75,24 @@ var LocationActions = {
    * Editing functions
    */
 
+  addEditLocation() {
+    $.ajax({
+      url: '/api/locations',
+      dataType: 'json',
+      type: 'POST',
+      data: {
+        Title: 'Untitled'
+      }
+    })
+    .done(() => {
+      toastr.info('Successfully added location.');
+      LocationActions.loadLocations();
+    })
+    .fail(() => {
+      toastr.error('Error adding location.  Please try again later.');
+    });
+  },
+
   saveEditedLocation() {
     var l = reactor.evaluateToJS(LocationGetters.getEditLocation);
 
