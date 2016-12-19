@@ -7,7 +7,6 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"net"
-	"strings"
 	"time"
 )
 
@@ -44,41 +43,17 @@ func (l *Location) ClearPrivateData() {
 	l.FeatureCoupons = false
 }
 
-func (l *Location) Save() (err error) {
+func (l *Location) Create() (err error) {
 	if l.Title == "" {
 		return fmt.Errorf("No title")
 	}
-
-	if l.FirstName == "" {
-		return fmt.Errorf("No first name")
-	}
-
-	if l.LastName == "" {
-		return fmt.Errorf("No last name")
-	}
-
-	if l.Email == "" {
-		return fmt.Errorf("No email")
-	}
-
-	// Just a rough check for email because addresses like
-	// foo+bar@fablab.berlin are difficult to test
-	if !strings.Contains(l.Email, "@") || len(l.Email) < 5 {
-		return fmt.Errorf("Invalid email")
-	}
-
-	if l.City == "" {
-		return fmt.Errorf("No city")
-	}
-
-	// TODO: Check for duplicates
 
 	o := orm.NewOrm()
 	_, err = o.Insert(l)
 	if err != nil {
 		return fmt.Errorf("insert: %v", err)
 	}
-	err = l.emailAnnounce()
+
 	return
 }
 

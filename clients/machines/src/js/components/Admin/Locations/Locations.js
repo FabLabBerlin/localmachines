@@ -16,10 +16,6 @@ var Row = React.createClass({
     };
   },
 
-  handleAdd() {
-    Location.actions.addEditLocation();
-  },
-
   handleEdit(key, e) {
     Location.actions.setEditLocation({[key]: e.target.value});
   },
@@ -97,6 +93,10 @@ var Locations = React.createClass({
     Location.actions.loadUserLocations(uid);
   },
 
+  handleAdd() {
+    Location.actions.addEditLocation();
+  },
+
   render() {
     if (!this.state.user || !this.state.locations) {
       return <LoaderLocal/>;
@@ -128,7 +128,7 @@ var Locations = React.createClass({
           </tbody>
         </table>
         <div>
-          <button onChange={this.handleAdd}>Add Location</button>
+          <button onClick={this.handleAdd}>Add Location</button>
         </div>
       </div>
     );

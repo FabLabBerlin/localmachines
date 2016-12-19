@@ -76,12 +76,13 @@ var LocationActions = {
    */
 
   addEditLocation() {
+    console.log('addEditLocation()');
     $.ajax({
       url: '/api/locations',
       dataType: 'json',
       type: 'POST',
       data: {
-        Title: 'Untitled'
+        title: 'Untitled'
       }
     })
     .done(() => {
@@ -97,7 +98,7 @@ var LocationActions = {
     var l = reactor.evaluateToJS(LocationGetters.getEditLocation);
 
     $.ajax({
-      url: '/api/locations/',
+      url: '/api/locations/' + l.Id,
       dataType: 'json',
       type: 'PUT',
       contentType: 'application/json; charset=utf-8',

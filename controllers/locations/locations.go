@@ -35,7 +35,7 @@ func (this *Controller) Create() {
 		Comments:     this.GetString("comments"),
 	}
 
-	if err := l.Save(); err != nil {
+	if err := l.Create(); err != nil {
 		beego.Error(err)
 		this.CustomAbort(500, "Failed to save host")
 	}
