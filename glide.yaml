@@ -23,7 +23,7 @@ import:
     ref:     54cdc20
     vcs:     git
   - package: github.com/astaxie/beego
-    ref:     92d0b9
+    ref:     9099971
     vcs:     git
   - package: github.com/dustin/go-jsonpointer
     ref:     2efc9f

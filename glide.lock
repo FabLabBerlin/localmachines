@@ -1,8 +1,8 @@
-hash: fabebcd91aa29ad1295929ae30d440aab9202f5e4a9b4a33e93599c69a627664
-updated: 2016-08-24T11:07:04.284272521+02:00
+hash: 749d24cd0cd00d0f349be6d8a440068b1751f63f8cd473260153d543fb179ff4
+updated: 2016-12-19T14:23:54.45477867+01:00
 imports:
 - name: github.com/astaxie/beego
-  version: 92d0b9ae95662d04e1d32eeffa52b4697b01ae37
+  version: 90999717dda6193c6f970eec52e289b0a9e74998
   vcs: git
   subpackages:
   - config
@@ -37,9 +37,22 @@ imports:
 - name: github.com/dustin/gojson
   version: 2e71ec9dd5adce3b168cd0dbde03b5cc04951c30
   vcs: git
+- name: github.com/FabLabBerlin/easylab-gw
+  version: e72e7b0ccd180b3b162ea96b6403880e2bc4247a
+  subpackages:
+  - global
+  - netswitch
+  - netswitches
+- name: github.com/FabLabBerlin/easylab-lib
+  version: f1431d7f0b27f2640d61718e1db5e51f6d6976db
+  subpackages:
+  - mfi
+  - xmpp
+  - xmpp/commands
 - name: github.com/FabLabBerlin/localmachines
   version: 4cae1fc281725dfed976c7d144cc50c43c8b9a5b
-  vcs: git
+  subpackages:
+  - lib/mfi
 - name: github.com/garyburd/go-oauth
   version: 719b069913e1151a73ea30d2ea4f90deda3ce234
   subpackages:
@@ -80,14 +93,6 @@ imports:
   version: a646d33e2ee3172a661fc09bca23bb4889a41bc8
   subpackages:
   - unix
-- name: gopkg.in/gcfg.v1
-  version: 27e4946190b4a327b539185f2b5b1f7c84730728
-  subpackages:
-  - scanner
-  - token
-  - types
-- name: gopkg.in/warnings.v0
-  version: 8a331561fe74dadba6edfc59f3be66c22c3b065d
 testImports:
 - name: github.com/gopherjs/gopherjs
   version: 45518c130e5bd1525f20110830a4986365a153de

@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/database/connect"
-	_ "github.com/FabLabBerlin/localmachines/docs"
-	_ "github.com/FabLabBerlin/localmachines/lib/log"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/routers"

@@ -131,10 +131,6 @@ func TestUsers(t *testing.T) {
 				err = users.DeleteUserAuth(uid)
 				So(err, ShouldBeNil)
 			})
-			Convey("Delete auth on non-existing user", func() {
-				err := users.DeleteUserAuth(0)
-				So(err, ShouldNotBeNil)
-			})
 		})
 		Convey("Testing AuthSetPassword", func() {
 			Convey("Creating a user and setting him a password", func() {
@@ -146,11 +142,6 @@ func TestUsers(t *testing.T) {
 
 				err = users.AuthSetPassword(uid, "test")
 				So(err, ShouldBeNil)
-			})
-			Convey("Try setting password on non-existing user", func() {
-				err := users.AuthSetPassword(0, "test")
-
-				So(err, ShouldNotBeNil)
 			})
 		})
 		Convey("Testing AuthenticateUser", func() {

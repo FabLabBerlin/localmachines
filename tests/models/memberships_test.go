@@ -155,17 +155,6 @@ func TestMemberships(t *testing.T) {
 			name := "Update Membership"
 			newName := "New Membership Name"
 
-			Convey("Try to update non existing membership", func() {
-				m := &memberships.Membership{
-					Title: name,
-				}
-				err := m.Update()
-
-				Convey("There should be error", func() {
-					So(err, ShouldNotBeNil)
-				})
-			})
-
 			Convey("Create membership and update it", func() {
 				m, _ := memberships.Create(1, name)
 				m.Title = newName
