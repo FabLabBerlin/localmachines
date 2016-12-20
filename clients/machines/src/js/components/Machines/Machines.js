@@ -1,4 +1,5 @@
 var _ = require('lodash');
+var Categories = require('../../modules/Categories');
 var getters = require('../../getters');
 var LoaderLocal = require('../LoaderLocal');
 var Location = require('../../modules/Location');
@@ -43,6 +44,7 @@ var MachinesPage = React.createClass({
   getDataBindings() {
     return {
       activations: Machines.getters.getActivations,
+      categories: Categories.getters.getAll,
       locationId: Location.getters.getLocationId,
       machines: Machines.getters.getMachines,
       machinesById: Machines.getters.getMachinesById,
