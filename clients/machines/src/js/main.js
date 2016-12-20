@@ -16,6 +16,7 @@ var AdminSettings = require('./components/Admin/Settings/Settings');
 var AdminUser = require('./components/Admin/Users/User');
 var AdminUsers = require('./components/Admin/Users/Users');
 var App = require('./components/App');
+var CategoriesStore = require('./modules/Categories/stores/store');
 var FeedbackPage = require('./components/Feedback/FeedbackPage');
 var FeedbackStore = require('./stores/FeedbackStore');
 var ForgotPassword = require('./components/ForgotPassword');
@@ -63,6 +64,7 @@ require('vex/css/vex.css');
  */
 
 reactor.registerStores({
+  categoriesStore: CategoriesStore,
   feedbackStore: FeedbackStore,
   forgotPasswordStore: ForgotPasswordStore,
   globalStore: GlobalStore,

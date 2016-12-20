@@ -22,6 +22,7 @@ function addCategory(state, category) {
 }
 
 function setCategories(state, categories) {
+  console.log('setCategories(.., categories=', categories, ')');
   return toImmutable(categories);
 }
 

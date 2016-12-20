@@ -66,6 +66,8 @@ var MachinesPage = React.createClass({
     } else {
       MachineActions.lpDashboard(this.context.router, locationId);
     }
+
+    Categories.actions.loadAll(locationId);
   },
 
   render() {
@@ -93,7 +95,8 @@ var MachinesPage = React.createClass({
     }
     if (!this.state.locationId || !this.state.machines ||
         this.state.machines.toList().count() === 0 ||
-        !this.state.activations) {
+        !this.state.activations ||
+        !this.state.categories) {
       return <LoaderLocal/>;
     }
 
@@ -125,13 +128,11 @@ var MachinesPage = React.createClass({
         {myMachinesList
           ? <Section title="My Machines" machines={myMachinesList}/>
           : null}
-        <Section title="3D Printers" machines={machinesByType.get(1)}/>
-        <Section title="CNC Mill" machines={machinesByType.get(2)}/>
-        <Section title="Heatpress" machines={machinesByType.get(3)}/>
-        <Section title="Knitting Machine" machines={machinesByType.get(4)}/>
-        <Section title="Lasercutters" machines={machinesByType.get(5)}/>
-        <Section title="Vinylcutter" machines={machinesByType.get(6)}/>
-        <Section title="Other" machines={machinesByType.get(0)}/>
+        {this.state.categories.map(c => {
+          return <Section key={c.get('Id')}
+                          title={c.get('Name')}
+                          machines={machinesByType.get(c.get('Id'))}/>;
+        })}
       </div>
     );
   }
