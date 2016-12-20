@@ -5,7 +5,7 @@ var toImmutable = Nuclear.toImmutable;
 const getAll = [
   ['categoriesStore'],
   (categoriesStore) => {
-  	if (categoriesStore) {
+    if (categoriesStore) {
       return categoriesStore.push(toImmutable({
         Id: 0,
         ShortName: 'other',

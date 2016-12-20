@@ -38,6 +38,11 @@ var Right = React.createClass({
                 </div>
               </button>
               <ul className="dropdown-menu pull-right" aria-labelledby="dropdownMenu1">
+                {this.state.user.get('SuperAdmin') ? (
+                  <li>
+                    <a href="/machines/#/admin/categories">Categories</a>
+                  </li>
+                ) : null}
                 <li><a href="/machines/#/profile">Info</a></li>
                 {this.state.isAdmin ? (
                   <li>

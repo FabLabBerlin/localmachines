@@ -18,8 +18,8 @@ var CategoriesActions = {
     })
     .error(() => {
       toastr.error('Error fetching categories.');
-    })
+    });
   }
-}
+};
 
 export default CategoriesActions;
