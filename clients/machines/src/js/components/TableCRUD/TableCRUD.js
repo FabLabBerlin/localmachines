@@ -1,5 +1,6 @@
 var _ = require('lodash');
 var $ = require('jquery');
+var Button = require('../Button');
 var Location = require('../../modules/Location');
 var React = require('react');
 var reactor = require('../../reactor');
@@ -9,15 +10,31 @@ var toastr = require('toastr');
 var Input = React.createClass({
   handleEdit(e) {
     if (this.props.onChange) {
-      this.props.onChange(e.target.value);
+      if (this.isBool()) {
+        this.props.onChange(!this.props.value);
+      } else {
+        this.props.onChange(e.target.value);
+      }
     }
   },
 
+  isBool() {
+    return this.props.value === false || this.props.value === true;
+  },
+
   render() {
-    return (
-      <input onChange={this.handleEdit}
-             value={this.props.value}/>
-    );
+    if (this.isBool()) {
+      return (
+        <input onChange={this.handleEdit}
+               type="checkbox"
+               checked={this.props.value}/>
+      );
+    } else {
+      return (
+        <input onChange={this.handleEdit}
+               value={this.props.value}/>
+      );
+    }
   }
 });
 
@@ -28,6 +45,10 @@ var TableCRUD = React.createClass({
   getInitialState() {
     return {
     };
+  },
+
+  handleAdd() {
+    this.props.onAdd();
   },
 
   handleClick(i) {
@@ -134,9 +155,9 @@ var TableCRUD = React.createClass({
               return (
                 <tr key={i} onClick={this.handleClick.bind(this, i)}>
                   {this.props.fields.map(f => {
-                    if (editRow && f.key !== 'Id') {
-                      var value = e.get(f.key);
+                    var value = e.get(f.key);
 
+                    if (editRow && f.key !== 'Id') {
                       if (this.state.editRow.changes &&
                           this.state.editRow.changes[f.key]) {
 
@@ -147,7 +168,15 @@ var TableCRUD = React.createClass({
                                     value={value}
                                     onChange={this.handleEdit.bind(this, i, f.key)}/>;
                     } else {
-                      return e.get(f.key);
+                      if (value === true || value === false) {
+                        if (value) {
+                          return <i className="fa fa-check"/>;
+                        } else {
+                          return <div/>;
+                        }
+                      } else {
+                        return e.get(f.key);
+                      }
                     }
                   }).map((tag, j) => <td key={j}>{tag}</td>)}
 
@@ -161,6 +190,13 @@ var TableCRUD = React.createClass({
             })}
           </tbody>
         </table>
+
+        <div style={{ height: '100px' }}>
+          <Button.Annotated id="inv-add-purchase"
+                            icon="/machines/assets/img/invoicing/add_purchase.svg"
+                            label="Add"
+                            onClick={this.handleAdd}/>
+        </div>
       </div>
     );
   }
