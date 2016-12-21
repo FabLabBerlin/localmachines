@@ -20,6 +20,10 @@ var CategoriesPage = React.createClass({
   },
 
   componentWillMount() {
+    this.fetchData();
+  },
+
+  fetchData() {
     const locationId = reactor.evaluateToJS(Location.getters.getLocationId);
     const uid = reactor.evaluateToJS(getters.getUid);
 
@@ -40,7 +44,9 @@ var CategoriesPage = React.createClass({
     ];
 
     return <TableCRUD entities={this.state.categories}
-                      fields={fields}/>;
+                      fields={fields}
+                      onAfterUpdate={this.fetchData}
+                      updateUrl="/api/machine_types"/>;
   }
 
 });

@@ -1,5 +1,8 @@
 var _ = require('lodash');
+var Location = require('../../modules/Location');
 var React = require('react');
+var reactor = require('../../reactor');
+var toastr = require('toastr');
 
 
 var Input = React.createClass({
@@ -65,6 +68,44 @@ var TableCRUD = React.createClass({
   },
 
   handleSave(i) {
+    if (!this.state.editRow) {
+      return;
+    }
+    console.log('this.state.editRow=', this.state.editRow);
+    console.log('i=', i);
+    if (this.state.editRow.index !== i) {
+      toastr.error('Internal Error.  Please try again later.');
+      return;
+    }
+
+    const entity = this.props.entities.get(i).toJS();
+
+    _.each(this.state.editRow.changes, (v, k) => {
+      entity[k] = v;
+    })
+
+    const locationId = reactor.evaluateToJS(Location.getters.getLocationId);
+
+    $.ajax({
+      url: this.props.updateUrl + '/' + entity.Id + '?location=' + locationId,
+      dataType: 'json',
+      type: 'PUT',
+      contentType: 'application/json; charset=utf-8',
+      data: JSON.stringify(entity)
+    })
+    .done(() => {
+      toastr.info('Successfully saved.');
+
+      if (this.props.onAfterUpdate) {
+        this.setState({});
+        this.props.onAfterUpdate();
+      } else {
+        toastr.error('Please define onAfterUpdate property');
+      }
+    })
+    .fail(() => {
+      toastr.error('Error saving.  Please try again later.');
+    });
   },
 
   render() {
@@ -110,7 +151,8 @@ var TableCRUD = React.createClass({
 
                   <td>
                     {editRow ? <i className="fa fa-floppy-o"
-                                  onClick={this.handleSave.bind(this, i)}/> : null}
+                                  onClick={this.handleSave.bind(this, i)}
+                                  style={{cursor: 'pointer'}}/> : null}
                   </td>
                 </tr>
               );
