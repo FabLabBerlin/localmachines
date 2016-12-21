@@ -106,6 +106,13 @@ func init() {
 
 	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:MachineTypeController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:MachineTypeController"],
 		beego.ControllerComments{
+			Method: "Create",
+			Router: `/`,
+			AllowHTTPMethods: []string{"post"},
+			Params: nil})
+
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:MachineTypeController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:MachineTypeController"],
+		beego.ControllerComments{
 			Method: "Put",
 			Router: `/:id`,
 			AllowHTTPMethods: []string{"put"},

@@ -25,10 +25,27 @@ func (c *MachineTypeController) GetAll() {
 	c.ServeJSON()
 }
 
+// @Title Create
+// @Description Create machine tpye
+// @Success 200 {object}
+// @Failure	401	Not authorized
+// @Failure	500	Internal Server Error
+// @router / [post]
+func (c *MachineTypeController) Create() {
+	t := machine.Type{
+		Name: c.GetString("name"),
+	}
+
+	if err := t.Create(); err != nil {
+		beego.Error(err)
+		c.CustomAbort(500, "Failed to save")
+	}
+
+	c.ServeJSON()
+}
+
 // @Title Put
-// @Description Update location with id
-// @Param	id		path 	int					true	"Location ID"
-// @Param	body	body	locations.Location	true	"Location model"
+// @Description Update machine tpye with id
 // @Success	200	ok
 // @Failure	400	Variable message
 // @Failure	401	Unauthorized

@@ -5,6 +5,7 @@ var Location = require('../../../modules/Location');
 var React = require('react');
 var reactor = require('../../../reactor');
 var TableCRUD = require('../../TableCRUD/TableCRUD');
+var toastr = require('toastr');
 var UserActions = require('../../../actions/UserActions');
 
 
@@ -21,6 +22,24 @@ var CategoriesPage = React.createClass({
 
   componentWillMount() {
     this.fetchData();
+  },
+
+  add() {
+    $.ajax({
+      url: '/api/machine_types',
+      dataType: 'json',
+      type: 'POST',
+      data: {
+        name: 'Untitled'
+      }
+    })
+    .done(() => {
+      toastr.info('Successfully added category.');
+      this.fetchData();
+    })
+    .fail(() => {
+      toastr.error('Error adding category.  Please try again later.');
+    });
   },
 
   fetchData() {
@@ -45,6 +64,7 @@ var CategoriesPage = React.createClass({
 
     return <TableCRUD entities={this.state.categories}
                       fields={fields}
+                      onAdd={this.add}
                       onAfterUpdate={this.fetchData}
                       updateUrl="/api/machine_types"/>;
   }

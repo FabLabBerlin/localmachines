@@ -1,6 +1,7 @@
 package machine
 
 import (
+	"fmt"
 	"github.com/astaxie/beego/orm"
 )
 
@@ -20,6 +21,20 @@ func init() {
 
 func (t *Type) TableName() string {
 	return TYPE_TABLE_NAME
+}
+
+func (t *Type) Create() (err error) {
+	if t.Name == "" {
+		return fmt.Errorf("No name")
+	}
+
+	o := orm.NewOrm()
+	_, err = o.Insert(t)
+	if err != nil {
+		return fmt.Errorf("insert: %v", err)
+	}
+
+	return
 }
 
 func GetAllTypes() (ts []*Type, err error) {
