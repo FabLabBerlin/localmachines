@@ -27,3 +27,9 @@ func GetAllTypes() (ts []*Type, err error) {
 	_, err = o.QueryTable(TYPE_TABLE_NAME).All(&ts)
 	return
 }
+
+func (t *Type) Update() (err error) {
+	o := orm.NewOrm()
+	_, err = o.Update(t)
+	return
+}

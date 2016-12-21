@@ -1,4 +1,5 @@
 var _ = require('lodash');
+var $ = require('jquery');
 var Location = require('../../modules/Location');
 var React = require('react');
 var reactor = require('../../reactor');
@@ -71,8 +72,7 @@ var TableCRUD = React.createClass({
     if (!this.state.editRow) {
       return;
     }
-    console.log('this.state.editRow=', this.state.editRow);
-    console.log('i=', i);
+
     if (this.state.editRow.index !== i) {
       toastr.error('Internal Error.  Please try again later.');
       return;
@@ -82,7 +82,7 @@ var TableCRUD = React.createClass({
 
     _.each(this.state.editRow.changes, (v, k) => {
       entity[k] = v;
-    })
+    });
 
     const locationId = reactor.evaluateToJS(Location.getters.getLocationId);
 
@@ -96,8 +96,10 @@ var TableCRUD = React.createClass({
     .done(() => {
       toastr.info('Successfully saved.');
 
+      this.setState({
+        editRow: null
+      });
       if (this.props.onAfterUpdate) {
-        this.setState({});
         this.props.onAfterUpdate();
       } else {
         toastr.error('Please define onAfterUpdate property');
