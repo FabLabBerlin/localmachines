@@ -4,6 +4,7 @@ var LoaderLocal = require('../../LoaderLocal');
 var Location = require('../../../modules/Location');
 var React = require('react');
 var reactor = require('../../../reactor');
+var TableCRUD = require('../../TableCRUD/TableCRUD');
 var UserActions = require('../../../actions/UserActions');
 
 
@@ -32,31 +33,14 @@ var CategoriesPage = React.createClass({
       return <LoaderLocal/>;
     }
 
-    return (
-      <div className="container">
-        <table className="table table-striped table-hover">
-          <thead>
-            <tr>
-              <th>Category Id</th>
-              <th>Short Name</th>
-              <th>Name</th>
-            </tr>
-          </thead>
+    const fields = [
+      {key: 'Id', label: 'Id'},
+      {key: 'ShortName', label: 'Short Name'},
+      {key: 'Name', label: 'Name'}
+    ];
 
-          <tbody>
-            {this.state.categories.map((c, i) => {
-              return (
-                <tr key={i}>
-                  <td>{c.get('Id')}</td>
-                  <td>{c.get('ShortName')}</td>
-                  <td>{c.get('Name')}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-    );
+    return <TableCRUD entities={this.state.categories}
+                      fields={fields}/>;
   }
 
 });
