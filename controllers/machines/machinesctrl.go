@@ -253,7 +253,9 @@ func (this *Controller) GetEarnings() {
 	resp := make(map[string]interface{})
 
 	resp["Memberships"] = me.MembershipsCached()
-	resp["PayAsYouGo"] = me.PayAsYouGoCached()
+	if resp["PayAsYouGo"], err = me.PayAsYouGoCached(); err != nil {
+		this.Fail(500, err.Error())
+	}
 	this.Data["json"] = resp
 	this.ServeJSON()
 }

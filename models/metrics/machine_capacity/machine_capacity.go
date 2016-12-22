@@ -40,11 +40,11 @@ func (mc MachineCapacity) Capacity() time.Duration {
 	return day.Now().Sub(mc.Opening())
 }
 
-func (mc MachineCapacity) CapacityCached() (c time.Duration) {
+func (mc MachineCapacity) CapacityCached() (c time.Duration, err error) {
 	key := fmt.Sprintf("Capacity(%v)", mc.m.Id)
 
-	redis.Cached(key, 3600, &c, func() interface{} {
-		return mc.Capacity()
+	err = redis.Cached(key, 3600, &c, func() (interface{}, error) {
+		return mc.Capacity(), nil
 	})
 
 	return
@@ -92,11 +92,11 @@ func (mc MachineCapacity) Usage() (usage time.Duration) {
 	return
 }
 
-func (mc MachineCapacity) UsageCached() (u time.Duration) {
+func (mc MachineCapacity) UsageCached() (u time.Duration, err error) {
 	key := fmt.Sprintf("Usage(%v)", mc.m.Id)
 
-	redis.Cached(key, 3600, &u, func() interface{} {
-		return mc.Usage()
+	err = redis.Cached(key, 3600, &u, func() (interface{}, error) {
+		return mc.Usage(), nil
 	})
 
 	return
@@ -112,11 +112,11 @@ func (mc MachineCapacity) Utilization() Percentage {
 	return Percentage(usage / mc.Capacity().Seconds())
 }
 
-func (mc MachineCapacity) UtilizationCached() (u Percentage) {
+func (mc MachineCapacity) UtilizationCached() (u Percentage, err error) {
 	key := fmt.Sprintf("Utilization(%v)", mc.m.Id)
 
-	redis.Cached(key, 3600, &u, func() interface{} {
-		return mc.Utilization()
+	err = redis.Cached(key, 3600, &u, func() (interface{}, error) {
+		return mc.Utilization(), nil
 	})
 
 	return

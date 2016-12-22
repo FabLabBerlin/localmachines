@@ -160,8 +160,16 @@ func (c *Controller) GetMachineCapacities() {
 		)
 
 		res["Machine"] = machine
-		res["Capacity"] = mc.CapacityCached().Hours() / 24
-		res["Hours"] = mc.UsageCached().Hours() / 24
+		capacity, err := mc.CapacityCached()
+		if err != nil {
+			c.Fail(500, err.Error())
+		}
+		res["Capacity"] = capacity.Hours() / 24
+		usage, err := mc.UsageCached()
+		if err != nil {
+			c.Fail(500, err.Error())
+		}
+		res["Hours"] = usage.Hours() / 24
 		res["Utilization"] = mc.Utilization()
 		resp = append(resp, res)
 	}
@@ -207,7 +215,11 @@ func (c *Controller) GetMachineEarnings() {
 
 		res["Machine"] = machine
 		res["Memberships"] = me.MembershipsCached()
-		res["PayAsYouGo"] = me.PayAsYouGoCached()
+		payg, err := me.PayAsYouGoCached()
+		if err != nil {
+			c.Fail(500, err.Error())
+		}
+		res["PayAsYouGo"] = payg
 		resp = append(resp, res)
 	}
 

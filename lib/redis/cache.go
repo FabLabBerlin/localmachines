@@ -2,12 +2,13 @@ package redis
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/astaxie/beego"
 )
 
 type Seconds int
 
-func Cached(key string, expire Seconds, o interface{}, f ...func() interface{}) {
+func Cached(key string, expire Seconds, o interface{}, f ...func() (interface{}, error)) error {
 	var buf []byte
 
 	c := GetPoolConn()
@@ -25,26 +26,29 @@ func Cached(key string, expire Seconds, o interface{}, f ...func() interface{}) 
 		buf = v.([]byte)
 
 		if err := json.Unmarshal(buf, &o); err != nil {
-			beego.Info("redis cached: unmarshal:", err)
+			return fmt.Errorf("unmarshal:", err)
 		}
 
-		return
+		return nil
 	}
 
 uncached:
 	if len(f) == 1 {
-		buf, err := json.Marshal(f[0]())
+		fResult, err := f[0]()
 		if err != nil {
-			beego.Info("redis cached: marshal:", err)
-			return
+			return fmt.Errorf("calling f: %v", err)
+		}
+		buf, err := json.Marshal(fResult)
+		if err != nil {
+			return fmt.Errorf("marshal:", err)
 		}
 		if err := c.Send("SET", key, buf, "EX", expire); err != nil {
-			beego.Info("redis cached: set:", err)
+			return fmt.Errorf("set:", err)
 		}
 		c.Flush()
 		if err := json.Unmarshal(buf, &o); err != nil {
-			beego.Info("redis cached: cache miss: unmarshal:", err)
+			return fmt.Errorf("cache miss: unmarshal:", err)
 		}
 	}
-	return
+	return nil
 }

@@ -52,11 +52,11 @@ func (me MachineEarning) ContainsTime(t time.Time) bool {
 	return !me.from.AfterTime(t) && !me.to.BeforeTime(t)
 }
 
-func (me MachineEarning) PayAsYouGoCached() (sum Money) {
+func (me MachineEarning) PayAsYouGoCached() (sum Money, err error) {
 	key := fmt.Sprintf("PayAsYouGo(%v)", me.m.Id)
 
-	redis.Cached(key, 3600, &sum, func() interface{} {
-		return me.PayAsYouGo()
+	err = redis.Cached(key, 3600, &sum, func() (interface{}, error) {
+		return me.PayAsYouGo(), nil
 	})
 
 	return
@@ -86,8 +86,8 @@ type UserMembershipId int64
 func (me MachineEarning) MembershipsCached() (sum Money) {
 	key := fmt.Sprintf("Memberships(%v)", me.m.Id)
 
-	redis.Cached(key, 3600, &sum, func() interface{} {
-		return me.Memberships()
+	redis.Cached(key, 3600, &sum, func() (interface{}, error) {
+		return me.Memberships(), nil
 	})
 
 	return
