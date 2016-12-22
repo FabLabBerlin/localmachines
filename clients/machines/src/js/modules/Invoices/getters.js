@@ -27,6 +27,13 @@ const getInvoices = [
   }
 ];
 
+const getAllInvoices = [
+  ['invoicesStore'],
+  (invoicesStore) => {
+    return invoicesStore.getIn(['invoices', 'all']);
+  }
+];
+
 const getThisMonthInvoices = [
   getMonthlySums,
   (monthlySums) => {
@@ -159,6 +166,7 @@ export default {
   getCheckStatus,
   getEditPurchaseId,
   getInvoices,
+  getAllInvoices,
   getInvoicesActions,
   getInvoiceStatuses,
   getMonthlySums,

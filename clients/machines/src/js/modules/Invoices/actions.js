@@ -325,7 +325,25 @@ function fetchInvoice(locId, {invoiceId}) {
     });
   })
   .error(() => {
-    toastr.error('Error fetch monthly summaries.  Please try again later.');
+    toastr.error('Error fetching invoice.  Please try again later.');
+  });
+}
+
+function fetchInvoices(locId) {
+  $.ajax({
+    method: 'GET',
+    url: '/api/billing/invoices',
+    data: {
+      location: locId
+    }
+  })
+  .success((invoice) => {
+    reactor.dispatch(actionTypes.SET_INVOICES, {
+      invoice: invoice
+    });
+  })
+  .error(() => {
+    toastr.error('Error fetching invoices.  Please try again later.');
   });
 }
 

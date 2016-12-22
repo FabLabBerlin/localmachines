@@ -10,6 +10,7 @@ export default keyMirror({
   FETCH_MONTHLY_SUMMARIES: null,
   SET_SELECTED_MONTH: null,
   SET_INVOICE: null,
+  SET_INVOICES: null,
   SET_INVOICE_STATUSES: null,
   SET_SHOW_INACTIVE_USERS: null,
   SET_USER_MEMBERSHIPS: null,

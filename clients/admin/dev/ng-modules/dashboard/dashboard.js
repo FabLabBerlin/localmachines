@@ -1,3 +1,5 @@
+/*global metricsLoad */
+
 (function(){
 
 'use strict';
@@ -24,47 +26,24 @@ app.controller('DashboardCtrl',
   });
 
   $scope.loadMetricsData = function() {
-    $http({
-      method: 'GET',
-      url: '/api/metrics',
-      params: {
-        location: $cookies.get('location'),
-        ac: new Date().getTime()
-      }
-    })
+    var locId = $cookies.get('location');
+
+    metricsLoad.main(locId)
     .success(function(metrics) {
       $scope.metrics = metrics;
       $scope.renderChartsInit();
-      $http({
-        method: 'GET',
-        url: '/api/metrics/machine_earnings',
-        params: {
-          location: $cookies.get('location'),
-        ac: new Date().getTime()
-        }
-      })
+
+      metricsLoad.machineEarnings(locId)
       .success(function(machineEarnings) {
         $scope.machineEarnings = machineEarnings;
         $scope.renderMachineEarnings();
-        $http({
-          method: 'GET',
-          url: '/api/metrics/machine_capacities',
-          params: {
-            location: $cookies.get('location'),
-            ac: new Date().getTime()
-          }
-        })
+
+        metricsLoad.machineCapacities(locId)
         .success(function(machineCapacities) {
           $scope.machineCapacities = machineCapacities;
           $scope.renderMachineCapacities();
-          $http({
-            method: 'GET',
-            url: '/api/metrics/retention',
-            params: {
-              location: $cookies.get('location'),
-              ac: new Date().getTime()
-            }
-          })
+
+          metricsLoad.retention(locId)
           .success(function(retention) {
             $scope.retention = retention;
             $scope.retentionMaxReturn = undefined;

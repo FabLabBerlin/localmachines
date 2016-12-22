@@ -2,6 +2,44 @@
 
     <h1>Dashboard</h1>
     <h2>Metrics</h2>
+    <h3>Timeframe</h3>
+
+    <div class="loader-local" ng-hide="retention">
+      <div class="spinner">
+        <i class="fa fa-cog fa-spin"></i>
+      </div>
+    </div>
+    <div class="row" ng-show="retention">
+      <div class="col-sm-3">
+        <div class="form-group">
+          <div class="input-group">
+            <input 
+              id="metrics-timeframe-to" 
+              class="form-control datepicker" 
+              placeholder="Start Date">
+            <div class="input-group-addon">
+              <i class="fa fa-calendar"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-3">
+        <div class="form-group">
+          <div class="input-group">
+            <input 
+              id="metrics-timeframe-from" 
+              class="form-control datepicker" 
+              placeholder="End Date">
+            <div class="input-group-addon">
+              <i class="fa fa-calendar"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="timeframe-from"></div>
+    <div id="timeframe-to"></div>
+
     <h3>Revenue through Activations and Memberships</h3>
     <div id="chart_monthly">
       <div class="loader-local">
