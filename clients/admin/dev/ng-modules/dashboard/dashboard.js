@@ -18,6 +18,7 @@ app.controller('DashboardCtrl',
  function($scope, $http, $location, $cookies, api) {
 
   $scope.metrics = [];
+  $scope.retention = {};
   var currency = '';
 
   api.loadSettings(function(settings) {
@@ -45,16 +46,16 @@ app.controller('DashboardCtrl',
 
           metricsLoad.retention(locId)
           .success(function(retention) {
-            $scope.retention = retention;
-            $scope.retentionMaxReturn = undefined;
-            _.each($scope.retention, function(row) {
+            $scope.retention.all = retention;
+            $scope.retention.maxReturn = undefined;
+            _.each($scope.retention.all, function(row) {
               _.each(row.Returns, function(r) {
-                if (_.isUndefined($scope.retentionMaxReturn) || $scope.retentionMaxReturn < r) {
-                  $scope.retentionMaxReturn = r;
+                if (_.isUndefined($scope.retention.maxReturn) || $scope.retention.maxReturn < r) {
+                  $scope.retention.maxReturn = r;
                 }
               });
             });
-            console.log('$scope.retentionMaxReturn=', $scope.retentionMaxReturn);
+            console.log('$scope.retentionMaxReturn=', $scope.retention.maxReturn);
           })
           .error(function(data, status) {
             toastr.error('Failed to load retention data');
@@ -67,17 +68,17 @@ app.controller('DashboardCtrl',
               ac: new Date().getTime()
             }
           })
-          .success(function(retention) {
-            $scope.retentionActive = retention;
-            $scope.retentionActiveMaxReturn = undefined;
-            _.each($scope.retentionActive, function(row) {
+          .success(function(retentionActive) {
+            $scope.retention.active = retentionActive;
+            $scope.retention.activeMaxReturn = undefined;
+            _.each($scope.retention.active, function(row) {
               _.each(row.Returns, function(r) {
-                if (_.isUndefined($scope.retentionActiveMaxReturn) || $scope.retentionActiveMaxReturn < r) {
-                  $scope.retentionActiveMaxReturn = r;
+                if (_.isUndefined($scope.retention.activeMaxReturn) || $scope.retention.activeMaxReturn < r) {
+                  $scope.retention.activeMaxReturn = r;
                 }
               });
             });
-            console.log('$scope.retentionMaxReturn=', $scope.retentionActiveMaxReturn);
+            console.log('$scope.retentionMaxReturn=', $scope.retention.activeMaxReturn);
           })
           .error(function(data, status) {
             toastr.error('Failed to load retention active data');
@@ -318,11 +319,11 @@ app.controller('DashboardCtrl',
   };
 
   $scope.retentionActiveClass = function(r) {
-    return 'retention-' + Math.round(r / $scope.retentionActiveMaxReturn * 4);
+    return 'retention-' + Math.round(r / $scope.retention.activeMaxReturn * 4);
   };
 
   $scope.retentionClass = function(r) {
-    return 'retention-' + Math.round(r / $scope.retentionMaxReturn * 4);
+    return 'retention-' + Math.round(r / $scope.retention.maxReturn * 4);
   };
 
   $(window).resize(function(){

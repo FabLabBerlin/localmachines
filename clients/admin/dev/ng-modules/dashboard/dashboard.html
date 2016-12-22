@@ -4,12 +4,12 @@
     <h2>Metrics</h2>
     <h3>Timeframe</h3>
 
-    <div class="loader-local" ng-hide="retention">
+    <div class="loader-local" ng-hide="retention.all">
       <div class="spinner">
         <i class="fa fa-cog fa-spin"></i>
       </div>
     </div>
-    <div class="row" ng-show="retention">
+    <div class="row" ng-show="retention.all">
       <div class="col-sm-3">
         <div class="form-group">
           <div class="input-group">
@@ -83,19 +83,19 @@
     <label>
       <input type="checkbox" ng-model="activeOnly"> Show only users that did at least one purchase
     </label>
-    <div class="loader-local" ng-hide="retention || activeOnly">
+    <div class="loader-local" ng-hide="retention.all || activeOnly">
       <div class="spinner">
         <i class="fa fa-cog fa-spin"></i>
       </div>
     </div>
-    <div id="customer_retention" ng-show="retention && !activeOnly">
+    <div id="customer_retention" ng-show="retention.all && !activeOnly">
       <table class="table">
         <thead>
           <tr>
             <th colspan="2" class="text-right">
               Signups
             </th>
-            <th colspan="{{retention[0].Returns.length}}" class="text-center">
+            <th colspan="{{retention.all[0].Returns.length}}" class="text-center">
               Months later
             </th>
           </tr>
@@ -106,13 +106,13 @@
             <th class="text-center">
               #
             </th>
-            <th ng-repeat="r in retention[0].Returns track by $index" class="text-center">
+            <th ng-repeat="r in retention.all[0].Returns track by $index" class="text-center">
               {{$index}}
             </th>
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat="row in retention">
+          <tr ng-repeat="row in retention.all">
             <td>
               <b>{{row.From}}</b>
             </td>
@@ -127,19 +127,19 @@
       </table>
     </div>
 
-    <div class="loader-local" ng-hide="retentionActive || !activeOnly">
+    <div class="loader-local" ng-hide="retention.active || !activeOnly">
       <div class="spinner">
         <i class="fa fa-cog fa-spin"></i>
       </div>
     </div>
-    <div id="customer_retention" ng-show="retentionActive && activeOnly">
+    <div id="customer_retention" ng-show="retention.active && activeOnly">
       <table class="table">
         <thead>
           <tr>
             <th colspan="2" class="text-right">
               Signups
             </th>
-            <th colspan="{{retentionActive[0].Returns.length}}" class="text-center">
+            <th colspan="{{retention.active[0].Returns.length}}" class="text-center">
               Months later
             </th>
           </tr>
@@ -150,13 +150,13 @@
             <th class="text-center">
               #
             </th>
-            <th ng-repeat="r in retentionActive[0].Returns track by $index" class="text-center">
+            <th ng-repeat="r in retention.active[0].Returns track by $index" class="text-center">
               {{$index}}
             </th>
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat="row in retentionActive">
+          <tr ng-repeat="row in retention.active">
             <td>
               <b>{{row.From}}</b>
             </td>
