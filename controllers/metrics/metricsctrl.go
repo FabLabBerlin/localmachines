@@ -154,7 +154,7 @@ func (c *Controller) GetMachineCapacities() {
 
 		mc := machine_capacity.New(
 			machine,
-			month.New(1, 2015),
+			month.New(8, 2015),
 			month.New(12, 2017),
 			invs,
 		)
@@ -200,7 +200,7 @@ func (c *Controller) GetMachineEarnings() {
 
 		me := machine_earnings.New(
 			machine,
-			month.New(1, 2015),
+			month.New(8, 2015),
 			month.New(12, 2017),
 			invs,
 		)

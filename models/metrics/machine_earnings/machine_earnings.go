@@ -6,6 +6,8 @@ import (
 	"github.com/FabLabBerlin/localmachines/lib/redis"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/machine"
+	"github.com/FabLabBerlin/localmachines/models/memberships"
+	"github.com/astaxie/beego"
 	"math"
 	"time"
 )
@@ -26,17 +28,24 @@ func New(
 	invs []*invutil.Invoice,
 ) *MachineEarning {
 
+	filteredInvs := make([]*invutil.Invoice, 0, len(invs))
+	for _, inv := range invs {
+		if !inv.Canceled && ContainsInvoice(inv, from, to) {
+			filteredInvs = append(filteredInvs, inv)
+		}
+	}
+
 	return &MachineEarning{
 		m:    m,
 		from: from,
 		to:   to,
-		invs: invs,
+		invs: filteredInvs,
 	}
 }
 
-func (me MachineEarning) ContainsInvoice(inv *invutil.Invoice) bool {
+func ContainsInvoice(inv *invutil.Invoice, from, to month.Month) bool {
 	m := month.New(time.Month(inv.Month), inv.Year)
-	return me.from.BeforeOrEqual(m) && me.to.AfterOrEqual(m)
+	return from.BeforeOrEqual(m) && to.AfterOrEqual(m)
 }
 
 func (me MachineEarning) ContainsTime(t time.Time) bool {
@@ -93,7 +102,7 @@ func (me MachineEarning) MembershipsCached() (sum Money) {
 //  Memberships(Machine) = sum(Membership(MembershipId, Machine))
 //
 func (me MachineEarning) Memberships() (sum Money) {
-	membershipIds := make(map[int64]bool)
+	memberships := make(map[int64]*memberships.Membership)
 
 	for _, inv := range me.invs {
 		for _, p := range inv.Purchases {
@@ -105,13 +114,19 @@ func (me MachineEarning) Memberships() (sum Money) {
 			}
 
 			for _, m := range p.Memberships {
-				membershipIds[m.Id] = true
+				memberships[m.Id] = m
 			}
 		}
 	}
 
-	for membershipId := range membershipIds {
-		sum += me.Membership(membershipId)
+	for membershipId, m := range memberships {
+		affected, err := m.IsMachineAffected(me.m.Id)
+		if err != nil {
+			beego.Error(err.Error())
+		}
+		if affected {
+			sum += me.Membership(membershipId)
+		}
 	}
 
 	return
@@ -123,6 +138,7 @@ func (me MachineEarning) Memberships() (sum Money) {
 //                         Undiscounted cost for all Machines in Membership
 //
 func (me MachineEarning) Membership(membershipId int64) (sum Money) {
+	iumIds := make(map[int64]struct{})
 	undiscountedForMachine := Money(0.0)
 	undiscountedForMembership := Money(0.0)
 	sumMonthlyPrice := Money(0.0)
@@ -130,6 +146,10 @@ func (me MachineEarning) Membership(membershipId int64) (sum Money) {
 	// Step 1) Calculate undiscountedForMachine and undiscountedForMembership
 	for _, inv := range me.invs {
 		for _, p := range inv.Purchases {
+			if p.Archived || p.Cancelled {
+				continue
+			}
+
 			if !me.ContainsTime(p.TimeStart) {
 				continue
 			}
@@ -149,6 +169,10 @@ func (me MachineEarning) Membership(membershipId int64) (sum Money) {
 	for _, inv := range me.invs {
 		for _, ium := range inv.InvUserMemberships {
 			if ium.MembershipId == membershipId {
+				if _, exists := iumIds[ium.Id]; exists {
+					beego.Error("duplicate sum!!!")
+				}
+				iumIds[ium.Id] = struct{}{}
 				sumMonthlyPrice += Money(ium.UserMembership.Membership.MonthlyPrice)
 			}
 		}
@@ -159,7 +183,11 @@ func (me MachineEarning) Membership(membershipId int64) (sum Money) {
 	}
 
 	lhs := undiscountedForMachine / undiscountedForMembership
+	if lhs > 1.1 {
+		beego.Error("lhs > 1.1")
+	}
 	rhs := sumMonthlyPrice
+	fmt.Printf("lhs(membershipId=%v)=%v €\t\trhs=%v €\n", membershipId, math.Ceil(float64(lhs)*100)/100, math.Ceil(float64(rhs)))
 
 	return lhs * rhs
 }
