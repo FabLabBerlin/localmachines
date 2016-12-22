@@ -65,6 +65,9 @@ func (me MachineEarning) PayAsYouGoCached() (sum Money) {
 func (me MachineEarning) PayAsYouGo() (sum Money) {
 	for _, inv := range me.invs {
 		for _, p := range inv.Purchases {
+			if p.Archived || p.Cancelled {
+				continue
+			}
 			if !me.ContainsTime(p.TimeStart) {
 				continue
 			}
