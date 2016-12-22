@@ -1,3 +1,4 @@
+var $ = require('jquery');
 var Categories = require('../../../modules/Categories');
 var getters = require('../../../getters');
 var LoaderLocal = require('../../LoaderLocal');
