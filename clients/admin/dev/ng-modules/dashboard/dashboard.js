@@ -18,7 +18,6 @@ app.controller('DashboardCtrl',
  function($scope, $http, $location, $cookies, api) {
 
   $scope.metrics = [];
-  $scope.retention = {};
   var currency = '';
 
   api.loadSettings(function(settings) {
@@ -45,43 +44,11 @@ app.controller('DashboardCtrl',
           $scope.renderMachineCapacities();
 
           metricsLoad.retention(locId)
-          .success(function(retention) {
-            $scope.retention.all = retention;
-            $scope.retention.maxReturn = undefined;
-            _.each($scope.retention.all, function(row) {
-              _.each(row.Returns, function(r) {
-                if (_.isUndefined($scope.retention.maxReturn) || $scope.retention.maxReturn < r) {
-                  $scope.retention.maxReturn = r;
-                }
-              });
-            });
-            console.log('$scope.retentionMaxReturn=', $scope.retention.maxReturn);
+          .done(function(retention) {
+            $scope.retention = retention;
           })
-          .error(function(data, status) {
+          .fail(function(data, status) {
             toastr.error('Failed to load retention data');
-          });
-          $http({
-            method: 'GET',
-            url: '/api/metrics/retention?excludeNeverActive=true',
-            params: {
-              location: $cookies.get('location'),
-              ac: new Date().getTime()
-            }
-          })
-          .success(function(retentionActive) {
-            $scope.retention.active = retentionActive;
-            $scope.retention.activeMaxReturn = undefined;
-            _.each($scope.retention.active, function(row) {
-              _.each(row.Returns, function(r) {
-                if (_.isUndefined($scope.retention.activeMaxReturn) || $scope.retention.activeMaxReturn < r) {
-                  $scope.retention.activeMaxReturn = r;
-                }
-              });
-            });
-            console.log('$scope.retentionMaxReturn=', $scope.retention.activeMaxReturn);
-          })
-          .error(function(data, status) {
-            toastr.error('Failed to load retention active data');
           });
         })
         .error(function(data, status) {
