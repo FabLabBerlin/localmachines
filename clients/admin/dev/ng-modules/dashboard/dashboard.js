@@ -17,6 +17,7 @@ app.controller('DashboardCtrl',
  ['$scope', '$http', '$location', '$cookies', 'api',
  function($scope, $http, $location, $cookies, api) {
 
+  $scope.activeOnly = true;
   $scope.metrics = [];
   var currency = '';
 
@@ -28,39 +29,36 @@ app.controller('DashboardCtrl',
   $scope.loadMetricsData = function() {
     var locId = $cookies.get('location');
 
-    metricsLoad.main(locId)
-    .success(function(metrics) {
-      $scope.metrics = metrics;
+    $.when(
+      metricsLoad.main(locId),
+      metricsLoad.machineEarnings(locId),
+      metricsLoad.machineCapacities(locId),
+      metricsLoad.retention(locId)
+    )
+    .done(function(metrics, machineEarnings, machineCapacities, retention) {
+      console.log('metrics=', metrics);
+      console.log('machineEarnings=', machineEarnings);
+      $scope.metrics = metrics[0];
       $scope.renderChartsInit();
 
-      metricsLoad.machineEarnings(locId)
-      .success(function(machineEarnings) {
-        $scope.machineEarnings = machineEarnings;
-        $scope.renderMachineEarnings();
+      $scope.machineEarnings = machineEarnings[0];
+      $scope.renderMachineEarnings();
 
-        metricsLoad.machineCapacities(locId)
-        .success(function(machineCapacities) {
-          $scope.machineCapacities = machineCapacities;
-          $scope.renderMachineCapacities();
+      window.setTimeout(function() {
+        $scope.machineCapacities = machineCapacities[0];
+        $scope.renderMachineCapacities();
+      }, 1000);
 
-          metricsLoad.retention(locId)
-          .done(function(retention) {
-            $scope.retention = retention;
-          })
-          .fail(function(data, status) {
-            toastr.error('Failed to load retention data');
-          });
-        })
-        .error(function(data, status) {
-          toastr.error('Failed to load machine capacities data');
+      window.setTimeout(function() {
+        console.log('retention=', retention);
+        $scope.$apply(function() {
+          $scope.retention = retention;
         });
-      })
-      .error(function(data, status) {
-        toastr.error('Failed to load machine earnings data');
-      });
+        console.log('$scope.retention = ', $scope.retention);
+      }, 1000);
     })
-    .error(function(data, status) {
-      toastr.error('Failed to load metrics data');
+    .fail(function() {
+      toastr.error('Failed to load data');
     });
   };
 
