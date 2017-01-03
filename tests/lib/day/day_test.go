@@ -13,23 +13,23 @@ func TestLibDay(t *testing.T) {
 		var cpy day.Day
 		cpy = d
 		So(cpy.Day(), ShouldEqual, 7)
-		So(cpy.Month(), ShouldEqual, time.February)
+		So(cpy.Month().Month(), ShouldEqual, time.February)
 		So(cpy.Year(), ShouldEqual, 2014)
 	})
 
 	Convey("NewString", t, func() {
-		m, err := day.NewString("2013-07-16")
+		d, err := day.NewString("2013-07-16")
 		So(err, ShouldBeNil)
-		So(m.Day(), ShouldEqual, 16)
-		So(m.Month(), ShouldEqual, time.July)
-		So(m.Year(), ShouldEqual, 2013)
+		So(d.Day(), ShouldEqual, 16)
+		So(d.Month().Month(), ShouldEqual, time.July)
+		So(d.Year(), ShouldEqual, 2013)
 	})
 
 	Convey("NewTime", t, func() {
 		tm := time.Now().AddDate(-10, -5, -1)
 		d := day.NewTime(tm)
 		So(tm.Year(), ShouldEqual, d.Year())
-		So(tm.Month(), ShouldEqual, d.Month())
+		So(tm.Month(), ShouldEqual, d.Month().Month())
 		So(tm.Day(), ShouldEqual, d.Day())
 	})
 
@@ -37,7 +37,7 @@ func TestLibDay(t *testing.T) {
 		tm := time.Now()
 		d := day.Now()
 		So(tm.Year(), ShouldEqual, d.Year())
-		So(tm.Month(), ShouldEqual, d.Month())
+		So(tm.Month(), ShouldEqual, d.Month().Month())
 		So(tm.Day(), ShouldEqual, d.Day())
 	})
 
@@ -45,7 +45,7 @@ func TestLibDay(t *testing.T) {
 		d := day.New(2016, 2, 29)
 		d = d.Add(24 * time.Hour)
 		So(d.Year(), ShouldEqual, 2016)
-		So(d.Month(), ShouldEqual, time.March)
+		So(d.Month().Month(), ShouldEqual, time.March)
 		So(d.Day(), ShouldEqual, 1)
 	})
 
@@ -53,7 +53,7 @@ func TestLibDay(t *testing.T) {
 		d := day.New(2016, 2, 29)
 		d = d.AddDate(0, 0, 1)
 		So(d.Year(), ShouldEqual, 2016)
-		So(d.Month(), ShouldEqual, time.March)
+		So(d.Month().Month(), ShouldEqual, time.March)
 		So(d.Day(), ShouldEqual, 1)
 	})
 
@@ -61,7 +61,7 @@ func TestLibDay(t *testing.T) {
 		d := day.New(2016, 2, 29)
 		d = d.AddDate2(0, 1, 0)
 		So(d.Year(), ShouldEqual, 2016)
-		So(d.Month(), ShouldEqual, time.March)
+		So(d.Month().Month(), ShouldEqual, time.March)
 		So(d.Day(), ShouldEqual, 31)
 	})
 
