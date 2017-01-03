@@ -98,6 +98,12 @@ func (this *ReservationsController) Create() {
 
 	t := req.Purchase.TimeStart
 
+	if t.Sub(time.Now()) < 4*time.Hour {
+		if !this.IsAdminAt(locId) {
+			this.Fail(400, "Reservation must be at least 4h in the future")
+		}
+	}
+
 	inv, err := invoices.GetDraft(locId, req.UserId(), t)
 	if err != nil {
 		beego.Error("getting invoice of", t.Format("01-2006"), ":", err)
