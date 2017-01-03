@@ -25,6 +25,13 @@ func TestLibMonth(t *testing.T) {
 		}
 	})
 
+	Convey("Add", t, func() {
+		m := month.New(time.February, 2014)
+		So(m.Add(1).String(), ShouldEqual, "2014-03")
+		So(m.Add(13).String(), ShouldEqual, "2015-03")
+		So(m.Add(26).String(), ShouldEqual, "2016-04")
+	})
+
 	Convey("After", t, func() {
 		m := month.New(time.February, 2014)
 		before := month.New(time.January, 2014)

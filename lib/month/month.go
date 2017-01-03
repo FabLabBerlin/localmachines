@@ -49,6 +49,16 @@ func NewTime(t time.Time) (m Month) {
 	}
 }
 
+func (m Month) Add(months int) (added Month) {
+	mmm := int(m.m) + months
+	mm := mmm % 12
+	yy := m.y + (mmm-mm)/12
+	added.m = time.Month(mm)
+	added.y = yy
+
+	return
+}
+
 func (m Month) After(other Month) bool {
 	if m.Year() == other.Year() {
 		return int(m.Month()) > int(other.Month())
