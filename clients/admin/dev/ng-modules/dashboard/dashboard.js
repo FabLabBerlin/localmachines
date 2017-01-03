@@ -33,52 +33,30 @@ app.controller('DashboardCtrl',
   $scope.loadMetricsData = function() {
     var locId = $cookies.get('location');
 
-    var metricsDfd = metricsLoad.main(locId);
-    var machineEarningsDfd = metricsLoad.machineEarnings(locId);
-    var machineCapacitiesDfd = metricsLoad.machineCapacities(locId);
-    var retentionDfd = metricsLoad.retention(locId);
-
-    metricsDfd.then(function(metrics) {
-      console.log('metrics=', metrics);
+    metricsLoad.main(locId).then(function(metrics) {
       $scope.metrics = metrics;
       $scope.renderChartsInit();
-    });
+      metricsLoad.machineEarnings(locId).then(function(machineEarnings) {
+        $scope.machineEarnings = machineEarnings;
+        $scope.renderMachineEarnings();
+        metricsLoad.machineCapacities(locId)
+        .then(function(machineCapacities) {
+          $scope.machineCapacities = machineCapacities;
+          $scope.renderMachineCapacities();
+          metricsLoad.retention(locId)
+          .then(function(retention) {
+            console.log('retention=', retention);
+            $scope.$apply(function() {
+              $scope.retention = retention;
+              var pickadateOptions = {
+                format: 'yyyy-mm-dd'
+              };
 
-    machineEarningsDfd.then(function(machineEarnings) {
-      console.log('machineEarnings=', machineEarnings);
-      $scope.machineEarnings = machineEarnings;
-      $scope.renderMachineEarnings();
-    });
-
-    machineCapacitiesDfd.then(function(machineCapacities) {
-      $scope.machineCapacities = machineCapacities;
-      $scope.renderMachineCapacities();
-    });
-
-    retentionDfd.then(function(retention) {
-      console.log('retention=', retention);
-      $scope.$apply(function() {
-        $scope.retention = retention;
+              $('.datepicker').pickadate(pickadateOptions);
+            });
+          });
+        });
       });
-    });
-
-    $.when(
-      metricsDfd,
-      machineEarningsDfd,
-      machineCapacitiesDfd,
-      retentionDfd
-    )
-    .done(function(metrics, machineEarnings, machineCapacities, retention) {
-      window.setTimeout(function() {
-        var pickadateOptions = {
-          format: 'yyyy-mm-dd'
-        };
-
-        $('.datepicker').pickadate(pickadateOptions);
-      }, 2000);
-    })
-    .fail(function() {
-      toastr.error('Failed to load data');
     });
   };
 
