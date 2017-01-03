@@ -19,6 +19,10 @@ app.controller('DashboardCtrl',
 
   $scope.activeOnly = true;
   $scope.metrics = [];
+  $scope.timeframe = {
+    start: '2015-08-01',
+    end: moment().format('YYYY-MM-DD')
+  }
   var currency = '';
 
   api.loadSettings(function(settings) {
@@ -56,6 +60,14 @@ app.controller('DashboardCtrl',
         });
         console.log('$scope.retention = ', $scope.retention);
       }, 1000);
+
+      window.setTimeout(function() {
+        var pickadateOptions = {
+          format: 'yyyy-mm-dd'
+        };
+
+        $('.datepicker').pickadate(pickadateOptions);
+      }, 2000);
     })
     .fail(function() {
       toastr.error('Failed to load data');

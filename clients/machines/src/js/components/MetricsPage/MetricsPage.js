@@ -1,4 +1,10 @@
+var Categories = require('../../modules/Categories');
+var Invoices = require('../../modules/Invoices');
+var Location = require('../../modules/Location');
+var Machines = require('../../modules/Machines');
+var getters = require('../../../getters');
 var React = require('react');
+var reactor = require('../../../reactor');
 
 
 var MetricsPage = React.createClass({
@@ -19,7 +25,9 @@ var MetricsPage = React.createClass({
   },
 
   componentWillMount() {
-    Invoices.actions.fetchInvoices
+    const locId = reactor.evaluateToJS(Location.getters.getLocationId);
+
+    Invoices.actions.fetchInvoices(locId);
   },
 
   render() {
