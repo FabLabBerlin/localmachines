@@ -62,7 +62,7 @@ func (c *Controller) GetAll() {
 
 	from, to, err := c.FromTo()
 	if err != nil {
-		c.Fail(400, fmt.Sprintf("from/to:", err))
+		c.Fail(400, fmt.Sprintf("from/to: %v", err))
 	}
 
 	interval := lib.Interval{
@@ -181,7 +181,7 @@ func (c *Controller) GetMachineCapacities() {
 
 	from, to, err := c.FromTo()
 	if err != nil {
-		c.Fail(400, fmt.Sprintf("from/to:", err))
+		c.Fail(400, fmt.Sprintf("from/to: %v", err))
 	}
 
 	for _, machine := range machines {
@@ -240,7 +240,7 @@ func (c *Controller) GetMachineEarnings() {
 
 	from, to, err := c.FromTo()
 	if err != nil {
-		c.Fail(400, fmt.Sprintf("from/to:", err))
+		c.Fail(400, fmt.Sprintf("from/to: %v", err))
 	}
 
 	for _, machine := range machines {
@@ -336,7 +336,7 @@ func (c *Controller) GetRetention() {
 
 	from, to, err := c.FromTo()
 	if err != nil {
-		c.Fail(400, fmt.Sprintf("from/to:", err))
+		c.Fail(400, fmt.Sprintf("from/to: %v", err))
 	}
 
 	r := retention.New(
