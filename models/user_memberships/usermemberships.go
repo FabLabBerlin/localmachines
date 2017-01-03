@@ -35,7 +35,7 @@ func (this *UserMembership) Update(o orm.Ormer) (err error) {
 }
 
 func (this UserMembership) ActiveAt(d day.Day) bool {
-	t := time.Date(d.Year(), d.Month(), d.Day(), 11, 0, 0, 0, time.UTC)
+	t := time.Date(d.Year(), d.Month().Month(), d.Day(), 11, 0, 0, 0, time.UTC)
 	return this.ActiveAtTime(t)
 }
 

@@ -10,6 +10,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
+	"github.com/FabLabBerlin/localmachines/lib/month"
 	"github.com/astaxie/beego/orm"
 	"time"
 )
@@ -224,6 +225,10 @@ func (inv *Invoice) assertDataOk() (err error) {
 	}
 
 	return
+}
+
+func (inv *Invoice) GetMonth() month.Month {
+	return month.New(time.Month(inv.Month), inv.Year)
 }
 
 func (inv *Invoice) Interval() lib.Interval {

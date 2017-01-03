@@ -5,6 +5,7 @@ package metrics
 
 import (
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
@@ -83,7 +84,7 @@ type Data struct {
 	membershipsById map[int64]*memberships.Membership
 }
 
-func FetchData(locationId int64) (data Data, err error) {
+func FetchData(locationId int64, interval lib.Interval) (data Data, err error) {
 	data.LocationId = locationId
 
 	allInvoices, err := invutil.GetAllAt(locationId)
@@ -91,7 +92,7 @@ func FetchData(locationId int64) (data Data, err error) {
 		return data, fmt.Errorf("Failed to get invoice summary: %v", err)
 	}
 
-	data.Invoices = filter(allInvoices)
+	data.Invoices = filter(allInvoices, interval)
 
 	ms, err := memberships.GetAllAt(locationId)
 	if err != nil {
@@ -116,7 +117,11 @@ func FetchData(locationId int64) (data Data, err error) {
 	return
 }
 
-func filter(all []*invutil.Invoice) (filtered []*invutil.Invoice) {
+func filter(
+	all []*invutil.Invoice,
+	interval lib.Interval,
+) (filtered []*invutil.Invoice) {
+
 	byUserIdYearMonth := make(map[int64]map[int]map[time.Month]*invutil.Invoice)
 	filtered = make([]*invutil.Invoice, 0, len(all))
 
@@ -125,7 +130,11 @@ func filter(all []*invutil.Invoice) (filtered []*invutil.Invoice) {
 		m := time.Month(iv.Month)
 		y := iv.Year
 
-		if y == 2015 && iv.Month < 8 {
+		if iv.GetMonth().Before(interval.DayFrom().Month()) {
+			continue
+		}
+
+		if iv.GetMonth().After(interval.DayTo().Month()) {
 			continue
 		}
 

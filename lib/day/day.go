@@ -57,12 +57,12 @@ func Now() (d Day) {
 }
 
 func (d Day) Add(dur time.Duration) Day {
-	t := time.Date(d.Year(), d.Month(), d.Day(), 0, 0, 0, 0, time.UTC)
+	t := time.Date(d.Year(), d.m.Month(), d.Day(), 0, 0, 0, 0, time.UTC)
 	return NewTime(t.Add(dur))
 }
 
 func (d Day) AddDate(y, m, dd int) Day {
-	t := time.Date(d.Year(), d.Month(), d.Day(), 11, 0, 0, 0, time.UTC)
+	t := time.Date(d.Year(), d.m.Month(), d.Day(), 11, 0, 0, 0, time.UTC)
 	t = t.AddDate(y, m, dd)
 
 	return NewTime(t)
@@ -70,8 +70,8 @@ func (d Day) AddDate(y, m, dd int) Day {
 
 // addMonth where the neutral element of addition is the last day of month.
 func (d Day) addMonth() Day {
-	s := time.Date(d.Year(), d.Month()+1, 1, 0, 0, 0, 0, time.UTC)
-	u := time.Date(d.Year(), d.Month()+2, 1, 0, 0, 0, 0, time.UTC)
+	s := time.Date(d.Year(), d.m.Month()+1, 1, 0, 0, 0, 0, time.UTC)
+	u := time.Date(d.Year(), d.m.Month()+2, 1, 0, 0, 0, 0, time.UTC)
 	return d.Add(u.Sub(s))
 }
 
@@ -154,18 +154,18 @@ func (d Day) MarshalJSON() ([]byte, error) {
 	return []byte("\"" + d.String() + "\""), nil
 }
 
-func (d Day) Month() time.Month {
-	return d.m.Month()
+func (d Day) Month() month.Month {
+	return d.m
 }
 
 func (d Day) String() string {
-	t := time.Date(d.Year(), d.Month(), d.Day(), 11, 0, 0, 0, time.UTC)
+	t := time.Date(d.Year(), d.m.Month(), d.Day(), 11, 0, 0, 0, time.UTC)
 	return t.Format("2006-01-02")
 }
 
 func (d Day) Sub(other Day) time.Duration {
-	t := time.Date(d.Year(), d.Month(), d.Day(), 11, 0, 0, 0, time.UTC)
-	u := time.Date(other.Year(), other.Month(), other.Day(), 11, 0, 0, 0, time.UTC)
+	t := time.Date(d.Year(), d.m.Month(), d.Day(), 11, 0, 0, 0, time.UTC)
+	u := time.Date(other.Year(), other.m.Month(), other.Day(), 11, 0, 0, 0, time.UTC)
 	return t.Sub(u)
 }
 

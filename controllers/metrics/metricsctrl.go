@@ -42,7 +42,16 @@ func (c *Controller) GetAll() {
 		c.CustomAbort(401, "Not authorized")
 	}
 
-	data, err := metrics.FetchData(locId)
+	endTime := time.Now()
+
+	interval := lib.Interval{
+		MonthFrom: int(time.August),
+		YearFrom:  2015,
+		MonthTo:   int(endTime.Month()),
+		YearTo:    endTime.Year(),
+	}
+
+	data, err := metrics.FetchData(locId, interval)
 	if err != nil {
 		beego.Error("Failed to get metrics data:", err)
 		c.CustomAbort(500, "Failed to get metrics data")
