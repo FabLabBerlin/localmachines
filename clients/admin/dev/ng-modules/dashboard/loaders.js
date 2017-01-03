@@ -16,7 +16,9 @@ window.metricsLoad = {
       method: 'GET',
       url: '/api/metrics/machine_earnings',
       data: {
-        location: options.locationId
+        location: options.locationId,
+        from: options.timeframe.from,
+        to: options.timeframe.to
       }
     });
   },
@@ -26,7 +28,9 @@ window.metricsLoad = {
       method: 'GET',
       url: '/api/metrics/machine_capacities',
       data: {
-        location: options.locationId
+        location: options.locationId,
+        from: options.timeframe.from,
+        to: options.timeframe.to
       }
     });
   },
@@ -39,14 +43,18 @@ window.metricsLoad = {
         method: 'GET',
         url: '/api/metrics/retention',
         data: {
-          location: options.locationId
+          location: options.locationId,
+        from: options.timeframe.from,
+        to: options.timeframe.to
         }
       }),
       $.ajax({
         method: 'GET',
         url: '/api/metrics/retention?excludeNeverActive=true',
         data: {
-          location: options.locationId
+          location: options.locationId,
+          from: options.timeframe.from,
+          to: options.timeframe.to
         }
       })
     ).done(function(r, rActive) {
