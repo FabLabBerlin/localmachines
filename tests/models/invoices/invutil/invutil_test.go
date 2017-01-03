@@ -102,9 +102,9 @@ func TestInvutilInvoices(t *testing.T) {
 			So(existingIums[0].UserId, ShouldEqual, user.Id)
 			fmt.Printf("existingIums[0].StartDate=%v\n", existingIums[0].StartDate)
 			fmt.Printf("existingIums[0].StartDay()=%s\n", existingIums[0].StartDay())
-			So(existingIums[0].StartDay().Month(), ShouldEqual, mLast)
+			So(existingIums[0].StartDay().Month().Month(), ShouldEqual, mLast)
 			So(existingIums[1].UserId, ShouldEqual, user.Id)
-			So(existingIums[1].StartDay().Month(), ShouldEqual, mLast)
+			So(existingIums[1].StartDay().Month().Month(), ShouldEqual, mLast)
 		})
 
 		Convey("Memberships in 1st month half affect 1st half", func() {
