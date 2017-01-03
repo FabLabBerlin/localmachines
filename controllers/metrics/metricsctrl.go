@@ -8,7 +8,6 @@ import (
 	"github.com/FabLabBerlin/localmachines/controllers"
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/lib/day"
-	"github.com/FabLabBerlin/localmachines/lib/month"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/invoices/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/machine"
@@ -180,13 +179,18 @@ func (c *Controller) GetMachineCapacities() {
 
 	resp := make([]interface{}, 0, 40)
 
+	from, to, err := c.FromTo()
+	if err != nil {
+		c.Fail(400, fmt.Sprintf("from/to:", err))
+	}
+
 	for _, machine := range machines {
 		res := make(map[string]interface{})
 
 		mc := machine_capacity.New(
 			machine,
-			month.New(8, 2015),
-			month.New(12, 2017),
+			from.Month(),
+			to.Month(),
 			invs,
 		)
 
@@ -234,13 +238,18 @@ func (c *Controller) GetMachineEarnings() {
 
 	resp := make([]interface{}, 0, 40)
 
+	from, to, err := c.FromTo()
+	if err != nil {
+		c.Fail(400, fmt.Sprintf("from/to:", err))
+	}
+
 	for _, machine := range machines {
 		res := make(map[string]interface{})
 
 		me := machine_earnings.New(
 			machine,
-			month.New(8, 2015),
-			month.New(12, 2017),
+			from.Month(),
+			to.Month(),
 			invs,
 		)
 
@@ -325,11 +334,16 @@ func (c *Controller) GetRetention() {
 		}
 	}
 
+	from, to, err := c.FromTo()
+	if err != nil {
+		c.Fail(400, fmt.Sprintf("from/to:", err))
+	}
+
 	r := retention.New(
 		locId,
 		30,
-		day.New(2015, 7, 1),
-		day.Now(),
+		from,
+		to,
 		invs,
 		us,
 	)

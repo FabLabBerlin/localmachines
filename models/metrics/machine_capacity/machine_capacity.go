@@ -37,11 +37,16 @@ func New(
 type Percentage float64
 
 func (mc MachineCapacity) Capacity() time.Duration {
-	return day.Now().Sub(mc.Opening())
+	to := day.New(mc.to.Year(), mc.to.Month(), 1).AddDate(0, 1, -1)
+	dur := to.Sub(mc.Opening())
+	if dur.Seconds() < 0 {
+		return 0
+	}
+	return dur
 }
 
 func (mc MachineCapacity) CapacityCached() (c time.Duration, err error) {
-	key := fmt.Sprintf("Capacity(%v)", mc.m.Id)
+	key := fmt.Sprintf("Capacity(%v)-%v-%v", mc.m.Id, mc.from, mc.to)
 
 	err = redis.Cached(key, 3600, &c, func() (interface{}, error) {
 		return mc.Capacity(), nil
@@ -50,10 +55,18 @@ func (mc MachineCapacity) CapacityCached() (c time.Duration, err error) {
 	return
 }
 
+func (mc MachineCapacity) ContainsTime(t time.Time) bool {
+	return !mc.from.AfterTime(t) && !mc.to.BeforeTime(t)
+}
+
 func (mc MachineCapacity) Opening() (opening day.Day) {
 	for _, inv := range mc.invs {
 		for _, p := range inv.Purchases {
 			if p.MachineId != mc.m.Id {
+				continue
+			}
+
+			if !mc.ContainsTime(p.TimeStart) {
 				continue
 			}
 
@@ -83,6 +96,9 @@ func (mc MachineCapacity) Usage() (usage time.Duration) {
 			if p.Type != purchases.TYPE_ACTIVATION {
 				continue
 			}
+			if !mc.ContainsTime(p.TimeStart) {
+				continue
+			}
 
 			dur := time.Duration(p.Seconds()) * time.Second
 			usage += dur
@@ -93,7 +109,7 @@ func (mc MachineCapacity) Usage() (usage time.Duration) {
 }
 
 func (mc MachineCapacity) UsageCached() (u time.Duration, err error) {
-	key := fmt.Sprintf("Usage(%v)", mc.m.Id)
+	key := fmt.Sprintf("Usage(%v)-%v-%v", mc.m.Id, mc.from, mc.to)
 
 	err = redis.Cached(key, 3600, &u, func() (interface{}, error) {
 		return mc.Usage(), nil
@@ -113,7 +129,7 @@ func (mc MachineCapacity) Utilization() Percentage {
 }
 
 func (mc MachineCapacity) UtilizationCached() (u Percentage, err error) {
-	key := fmt.Sprintf("Utilization(%v)", mc.m.Id)
+	key := fmt.Sprintf("Utilization(%v)-%v-%v", mc.m.Id, mc.from, mc.to)
 
 	err = redis.Cached(key, 3600, &u, func() (interface{}, error) {
 		return mc.Utilization(), nil

@@ -53,7 +53,7 @@ func (me MachineEarning) ContainsTime(t time.Time) bool {
 }
 
 func (me MachineEarning) PayAsYouGoCached() (sum Money, err error) {
-	key := fmt.Sprintf("PayAsYouGo(%v)", me.m.Id)
+	key := fmt.Sprintf("PayAsYouGo(%v)-%v-%v", me.m.Id, me.from, me.to)
 
 	err = redis.Cached(key, 3600, &sum, func() (interface{}, error) {
 		return me.PayAsYouGo(), nil
@@ -84,7 +84,7 @@ func (me MachineEarning) PayAsYouGo() (sum Money) {
 type UserMembershipId int64
 
 func (me MachineEarning) MembershipsCached() (sum Money) {
-	key := fmt.Sprintf("Memberships(%v)", me.m.Id)
+	key := fmt.Sprintf("Memberships(%v)-%v-%v", me.m.Id, me.from, me.to)
 
 	redis.Cached(key, 3600, &sum, func() (interface{}, error) {
 		return me.Memberships(), nil
@@ -190,7 +190,6 @@ func (me MachineEarning) Membership(membershipId int64) (sum Money) {
 		beego.Error("lhs > 1.1")
 	}
 	rhs := sumMonthlyPrice
-	fmt.Printf("lhs(membershipId=%v)=%v €\t\trhs=%v €\n", membershipId, math.Ceil(float64(lhs)*100)/100, math.Ceil(float64(rhs)))
 
 	return lhs * rhs
 }
