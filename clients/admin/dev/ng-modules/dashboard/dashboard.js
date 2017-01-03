@@ -22,7 +22,7 @@ app.controller('DashboardCtrl',
   $scope.timeframe = {
     start: '2015-08-01',
     end: moment().format('YYYY-MM-DD')
-  }
+  };
   var currency = '';
 
   api.loadSettings(function(settings) {
@@ -33,34 +33,42 @@ app.controller('DashboardCtrl',
   $scope.loadMetricsData = function() {
     var locId = $cookies.get('location');
 
+    var metricsDfd = metricsLoad.main(locId);
+    var machineEarningsDfd = metricsLoad.machineEarnings(locId);
+    var machineCapacitiesDfd = metricsLoad.machineCapacities(locId);
+    var retentionDfd = metricsLoad.retention(locId);
+
+    metricsDfd.then(function(metrics) {
+      console.log('metrics=', metrics);
+      $scope.metrics = metrics;
+      $scope.renderChartsInit();
+    });
+
+    machineEarningsDfd.then(function(machineEarnings) {
+      console.log('machineEarnings=', machineEarnings);
+      $scope.machineEarnings = machineEarnings;
+      $scope.renderMachineEarnings();
+    });
+
+    machineCapacitiesDfd.then(function(machineCapacities) {
+      $scope.machineCapacities = machineCapacities;
+      $scope.renderMachineCapacities();
+    });
+
+    retentionDfd.then(function(retention) {
+      console.log('retention=', retention);
+      $scope.$apply(function() {
+        $scope.retention = retention;
+      });
+    });
+
     $.when(
-      metricsLoad.main(locId),
-      metricsLoad.machineEarnings(locId),
-      metricsLoad.machineCapacities(locId),
-      metricsLoad.retention(locId)
+      metricsDfd,
+      machineEarningsDfd,
+      machineCapacitiesDfd,
+      retentionDfd
     )
     .done(function(metrics, machineEarnings, machineCapacities, retention) {
-      console.log('metrics=', metrics);
-      console.log('machineEarnings=', machineEarnings);
-      $scope.metrics = metrics[0];
-      $scope.renderChartsInit();
-
-      $scope.machineEarnings = machineEarnings[0];
-      $scope.renderMachineEarnings();
-
-      window.setTimeout(function() {
-        $scope.machineCapacities = machineCapacities[0];
-        $scope.renderMachineCapacities();
-      }, 1000);
-
-      window.setTimeout(function() {
-        console.log('retention=', retention);
-        $scope.$apply(function() {
-          $scope.retention = retention;
-        });
-        console.log('$scope.retention = ', $scope.retention);
-      }, 1000);
-
       window.setTimeout(function() {
         var pickadateOptions = {
           format: 'yyyy-mm-dd'
