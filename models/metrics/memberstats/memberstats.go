@@ -89,7 +89,7 @@ func (s *Stats) Bins() (bins []*Bin) {
 }
 
 func (s *Stats) BinsCached() (c time.Duration, err error) {
-	key := fmt.Sprintf("Memberstats(%v)-%v-%v", s.from, s.to)
+	key := fmt.Sprintf("Memberstats-%v-%v", s.from, s.to)
 
 	err = redis.Cached(key, 3600, &c, func() (interface{}, error) {
 		return s.Bins(), nil
