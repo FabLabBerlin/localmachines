@@ -38,7 +38,7 @@ func TestMachineCapacity(t *testing.T) {
 			)
 
 			So(mc.Opening().Day(), ShouldEqual, 21)
-			So(mc.Opening().Month(), ShouldEqual, 10)
+			So(mc.Opening().Month().Month(), ShouldEqual, 10)
 			So(mc.Opening().Year(), ShouldEqual, 2016)
 		})
 
