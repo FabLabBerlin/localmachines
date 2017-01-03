@@ -20,8 +20,8 @@ app.controller('DashboardCtrl',
   $scope.activeOnly = true;
   $scope.metrics = [];
   $scope.timeframe = {
-    start: '2015-08-01',
-    end: moment().format('YYYY-MM-DD')
+    from: '2015-08-01',
+    to: moment().format('YYYY-MM-DD')
   };
   var currency = '';
 
@@ -31,19 +31,24 @@ app.controller('DashboardCtrl',
   });
 
   $scope.loadMetricsData = function() {
-    var locId = $cookies.get('location');
+    var locationId = $cookies.get('location');
+    var options = {
+      locationId: locationId,
+      timeframe: $scope.timeframe
+    };
 
-    metricsLoad.main(locId).then(function(metrics) {
+    metricsLoad.main(options).then(function(metrics) {
       $scope.metrics = metrics;
       $scope.renderChartsInit();
-      metricsLoad.machineEarnings(locId).then(function(machineEarnings) {
+      metricsLoad.machineEarnings(options)
+      .then(function(machineEarnings) {
         $scope.machineEarnings = machineEarnings;
         $scope.renderMachineEarnings();
-        metricsLoad.machineCapacities(locId)
+        metricsLoad.machineCapacities(options)
         .then(function(machineCapacities) {
           $scope.machineCapacities = machineCapacities;
           $scope.renderMachineCapacities();
-          metricsLoad.retention(locId)
+          metricsLoad.retention(options)
           .then(function(retention) {
             console.log('retention=', retention);
             $scope.$apply(function() {
@@ -58,6 +63,15 @@ app.controller('DashboardCtrl',
         });
       });
     });
+  };
+
+  $scope.updateTimeframes = function() {
+    $scope.metrics = undefined;
+    $scope.machineCapacities = undefined;
+    $scope.machineEarnings = undefined;
+    $scope.retention = undefined;
+
+    $scope.loadMetricsData();
   };
 
   $scope.renderMonthlyCharts = function() {

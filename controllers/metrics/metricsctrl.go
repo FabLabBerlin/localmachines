@@ -29,9 +29,21 @@ type Controller struct {
 	controllers.Controller
 }
 
-func (c *Controller) FromTo() (from, to day.Day) {
+func (c *Controller) FromTo() (from, to day.Day, err error) {
 	from = day.New(2015, 8, 1)
 	to = day.Now().AddDate(0, 0, -1)
+
+	if fromString := c.GetString("from"); fromString != "" {
+		if from, err = day.NewString(fromString); err != nil {
+			return
+		}
+	}
+
+	if toString := c.GetString("to"); toString != "" {
+		if to, err = day.NewString(toString); err != nil {
+			return
+		}
+	}
 
 	return
 }
@@ -49,7 +61,10 @@ func (c *Controller) GetAll() {
 		c.CustomAbort(401, "Not authorized")
 	}
 
-	from, to := c.FromTo()
+	from, to, err := c.FromTo()
+	if err != nil {
+		c.Fail(400, fmt.Sprintf("from/to:", err))
+	}
 
 	interval := lib.Interval{
 		MonthFrom: int(from.Month().Month()),

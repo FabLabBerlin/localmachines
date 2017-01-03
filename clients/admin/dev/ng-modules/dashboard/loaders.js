@@ -1,35 +1,37 @@
 window.metricsLoad = {
-  main: function(locId) {
+  main: function(options) {
     return $.ajax({
       method: 'GET',
       url: '/api/metrics',
       data: {
-        location: locId
+        location: options.locationId,
+        from: options.timeframe.from,
+        to: options.timeframe.to
       }
     });
   },
 
-  machineEarnings: function(locId) {
+  machineEarnings: function(options) {
     return $.ajax({
       method: 'GET',
       url: '/api/metrics/machine_earnings',
       data: {
-        location: locId
+        location: options.locationId
       }
     });
   },
 
-  machineCapacities: function(locId) {
+  machineCapacities: function(options) {
     return $.ajax({
       method: 'GET',
       url: '/api/metrics/machine_capacities',
       data: {
-        location: locId
+        location: options.locationId
       }
     });
   },
 
-  retention: function(locId) {
+  retention: function(options) {
     var dfd = $.Deferred();
 
     $.when(
@@ -37,14 +39,14 @@ window.metricsLoad = {
         method: 'GET',
         url: '/api/metrics/retention',
         data: {
-          location: locId
+          location: options.locationId
         }
       }),
       $.ajax({
         method: 'GET',
         url: '/api/metrics/retention?excludeNeverActive=true',
         data: {
-          location: locId
+          location: options.locationId
         }
       })
     ).done(function(r, rActive) {

@@ -16,8 +16,9 @@
             <input 
               id="metrics-timeframe-to" 
               class="form-control datepicker" 
-              ng-model="timeframe.start"
-              placeholder="Start Date">
+              ng-change="updateTimeframes()" 
+              ng-model="timeframe.from"
+              placeholder="From">
             <div class="input-group-addon">
               <i class="fa fa-calendar"></i>
             </div>
@@ -30,13 +31,19 @@
             <input 
               id="metrics-timeframe-from" 
               class="form-control datepicker"
-              ng-model="timeframe.end"
-              placeholder="End Date">
+              ng-model="timeframe.to"
+              placeholder="To">
             <div class="input-group-addon">
               <i class="fa fa-calendar"></i>
             </div>
           </div>
         </div>
+      </div>
+      <div class="col-sm-3">
+        <button class="btn btn-primary btn-lg"
+                ng-click="updateTimeframes()">
+          <i class="fa fa-refresh"></i>&nbsp;Refresh
+        </button>
       </div>
     </div>
     <div id="timeframe-from"></div>
