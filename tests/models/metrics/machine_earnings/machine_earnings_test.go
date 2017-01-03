@@ -1,6 +1,7 @@
 package machine_earnings
 
 import (
+	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib/month"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/machine"
@@ -56,7 +57,7 @@ func TestMachineEarnings(t *testing.T) {
 						inv,
 					},
 				)
-
+				fmt.Printf("me.PayAsYouGo()=%v\n", me.PayAsYouGo())
 				So(math.Abs(float64(me.PayAsYouGo())-164.15) < 0.01, ShouldBeTrue)
 			})
 		})
