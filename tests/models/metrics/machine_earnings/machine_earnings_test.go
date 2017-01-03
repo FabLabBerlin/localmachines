@@ -58,7 +58,7 @@ func TestMachineEarnings(t *testing.T) {
 					},
 				)
 				fmt.Printf("me.PayAsYouGo()=%v\n", me.PayAsYouGo())
-				So(math.Abs(float64(me.PayAsYouGo())-164.15) < 0.01, ShouldBeTrue)
+				So(math.Abs(float64(me.PayAsYouGo())-159.15) < 0.01, ShouldBeTrue)
 			})
 		})
 
