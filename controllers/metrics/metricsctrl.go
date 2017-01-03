@@ -14,6 +14,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/metrics"
 	"github.com/FabLabBerlin/localmachines/models/metrics/machine_capacity"
 	"github.com/FabLabBerlin/localmachines/models/metrics/machine_earnings"
+	"github.com/FabLabBerlin/localmachines/models/metrics/memberstats"
 	"github.com/FabLabBerlin/localmachines/models/metrics/retention"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
@@ -264,6 +265,44 @@ func (c *Controller) GetMachineEarnings() {
 	}
 
 	c.Data["json"] = resp
+	c.ServeJSON()
+}
+
+// @Title Get user memberships
+// @Description Get user memberships
+// @Success 200
+// @Failure	500	Failed to get user memberships
+// @Failure	401	Not authorized
+// @router /memberships [get]
+func (c *Controller) GetMemberships() {
+	locId, authorized := c.GetLocIdAdmin()
+	if !authorized {
+		c.CustomAbort(401, "Not authorized")
+	}
+
+	from, to, err := c.FromTo()
+	if err != nil {
+		c.Fail(400, fmt.Sprintf("from/to: %v", err))
+	}
+
+	invs, err := invutil.GetAllAt(locId)
+	if err != nil {
+		c.Fail(500, "Failed to get invoices")
+	}
+	fmt.Printf("1\n")
+	ms := memberstats.New(
+		from.Month(),
+		to.Month(),
+		invs,
+	)
+	fmt.Printf("11\n")
+
+	bins, err := ms.BinsCached()
+	if err != nil {
+		c.Fail(500, err.Error())
+	}
+	fmt.Printf("111\n")
+	c.Data["json"] = bins
 	c.ServeJSON()
 }
 
