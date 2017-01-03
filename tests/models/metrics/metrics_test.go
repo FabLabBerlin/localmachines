@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/lib/day"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
@@ -47,7 +48,14 @@ func TestMetrics(t *testing.T) {
 				pricePerPurchase:  1,
 			})
 
-			data, err := metrics.FetchData(1)
+			interval := lib.Interval{
+				MonthFrom: 8,
+				YearFrom:  2015,
+				MonthTo:   int(time.Now().Month()),
+				YearTo:    time.Now().Year(),
+			}
+
+			data, err := metrics.FetchData(1, interval)
 			if err != nil {
 				panic(err.Error())
 			}
