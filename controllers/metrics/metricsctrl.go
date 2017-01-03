@@ -29,6 +29,13 @@ type Controller struct {
 	controllers.Controller
 }
 
+func (c *Controller) FromTo() (from, to day.Day) {
+	from = day.New(2015, 8, 1)
+	to = day.Now().AddDate(0, 0, -1)
+
+	return
+}
+
 // @Title Get All
 // @Description Get all metrics
 // @Success 200
@@ -42,13 +49,13 @@ func (c *Controller) GetAll() {
 		c.CustomAbort(401, "Not authorized")
 	}
 
-	endTime := time.Now()
+	from, to := c.FromTo()
 
 	interval := lib.Interval{
-		MonthFrom: int(time.August),
-		YearFrom:  2015,
-		MonthTo:   int(endTime.Month()),
-		YearTo:    endTime.Year(),
+		MonthFrom: int(from.Month().Month()),
+		YearFrom:  from.Year(),
+		MonthTo:   int(to.Month().Month()),
+		YearTo:    to.Year(),
 	}
 
 	data, err := metrics.FetchData(locId, interval)
