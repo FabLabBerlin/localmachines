@@ -21,7 +21,7 @@ func New(y int, m time.Month, d int) Day {
 	}
 	return Day{
 		d: d,
-		m: month.New(m, y),
+		m: month.New(y, m),
 	}
 }
 
@@ -48,7 +48,7 @@ func NewString(s string) (d Day, err error) {
 func NewTime(t time.Time) (d Day) {
 	return Day{
 		d: t.Day(),
-		m: month.New(t.Month(), t.Year()),
+		m: month.New(t.Year(), t.Month()),
 	}
 }
 

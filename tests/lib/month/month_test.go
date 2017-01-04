@@ -9,7 +9,7 @@ import (
 
 func TestLibMonth(t *testing.T) {
 	Convey("Construct and Copy", t, func() {
-		m := month.New(time.February, 2014)
+		m := month.New(2014, time.February)
 		var cpy month.Month
 		cpy = m
 		So(cpy.Month(), ShouldEqual, time.February)
@@ -26,16 +26,22 @@ func TestLibMonth(t *testing.T) {
 	})
 
 	Convey("Add", t, func() {
-		m := month.New(time.February, 2014)
+		m := month.New(2014, time.February)
 		So(m.Add(1).String(), ShouldEqual, "2014-03")
 		So(m.Add(13).String(), ShouldEqual, "2015-03")
 		So(m.Add(26).String(), ShouldEqual, "2016-04")
+
+		m = month.New(2015, time.November)
+		So(m.Add(1).String(), ShouldEqual, "2015-12")
+
+		m = month.New(2015, time.December)
+		So(m.Add(1).String(), ShouldEqual, "2016-01")
 	})
 
 	Convey("After", t, func() {
-		m := month.New(time.February, 2014)
-		before := month.New(time.January, 2014)
-		after := month.New(time.January, 2015)
+		m := month.New(2014, time.February)
+		before := month.New(2014, time.January)
+		after := month.New(2015, time.January)
 
 		So(before.Before(m), ShouldBeTrue)
 		So(after.After(m), ShouldBeTrue)
@@ -49,13 +55,13 @@ func TestLibMonth(t *testing.T) {
 		}
 
 		tm := time.Date(2015, 11, 1, 0, 0, 0, 0, loc)
-		m := month.New(time.November, 2015)
+		m := month.New(2015, time.November)
 		So(m.Contains(tm, loc), ShouldBeTrue)
 	})
 
 	Convey("Equal", t, func() {
-		m := month.New(time.November, 2015)
-		n := month.New(time.December, 2015)
+		m := month.New(2015, time.November)
+		n := month.New(2015, time.December)
 		So(m.Equal(n), ShouldBeFalse)
 		So(m.Equal(m), ShouldBeTrue)
 	})
@@ -63,12 +69,12 @@ func TestLibMonth(t *testing.T) {
 	Convey("IsZero", t, func() {
 		m := month.Month{}
 		So(m.IsZero(), ShouldBeTrue)
-		m = month.New(time.December, 1999)
+		m = month.New(1999, time.December)
 		So(m.IsZero(), ShouldBeFalse)
 	})
 
 	Convey("String", t, func() {
-		m := month.New(time.November, 2015)
+		m := month.New(2015, time.November)
 		So(m.String(), ShouldEqual, "2015-11")
 	})
 }

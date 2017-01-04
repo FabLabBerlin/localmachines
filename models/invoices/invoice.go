@@ -228,7 +228,7 @@ func (inv *Invoice) assertDataOk() (err error) {
 }
 
 func (inv *Invoice) GetMonth() month.Month {
-	return month.New(time.Month(inv.Month), inv.Year)
+	return month.New(inv.Year, time.Month(inv.Month))
 }
 
 func (inv *Invoice) Interval() lib.Interval {

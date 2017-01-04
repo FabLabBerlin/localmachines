@@ -44,7 +44,7 @@ func New(
 }
 
 func ContainsInvoice(inv *invutil.Invoice, from, to month.Month) bool {
-	m := month.New(time.Month(inv.Month), inv.Year)
+	m := month.New(inv.Year, time.Month(inv.Month))
 	return from.BeforeOrEqual(m) && to.AfterOrEqual(m)
 }
 

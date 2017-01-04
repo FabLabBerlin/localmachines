@@ -1,6 +1,7 @@
 package month
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"strconv"
@@ -13,7 +14,7 @@ type Month struct {
 	y int
 }
 
-func New(m time.Month, y int) Month {
+func New(y int, m time.Month) Month {
 	return Month{
 		m: m,
 		y: y,
@@ -53,6 +54,10 @@ func (m Month) Add(months int) (added Month) {
 	mmm := int(m.m) + months
 	mm := mmm % 12
 	yy := m.y + (mmm-mm)/12
+	if mm == 0 {
+		mm = 12
+		yy--
+	}
 	added.m = time.Month(mm)
 	added.y = yy
 
@@ -102,6 +107,10 @@ func (m Month) Equal(other Month) bool {
 
 func (m Month) IsZero() bool {
 	return m.m == 0 && m.y == 0
+}
+
+func (m Month) MarshalJSON() ([]byte, error) {
+	return json.Marshal(m.String())
 }
 
 func (m Month) Month() time.Month {

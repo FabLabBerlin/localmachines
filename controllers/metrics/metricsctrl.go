@@ -297,10 +297,10 @@ func (c *Controller) GetMemberships() {
 	)
 	fmt.Printf("11\n")
 
-	bins, err := ms.BinsCached()
-	if err != nil {
+	bins /*, err*/ := ms.Bins /*Cached*/ ()
+	/*if err != nil {
 		c.Fail(500, err.Error())
-	}
+	}*/
 	fmt.Printf("111\n")
 	c.Data["json"] = bins
 	c.ServeJSON()

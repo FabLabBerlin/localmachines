@@ -29,23 +29,24 @@ func New(
 }
 
 type Bin struct {
-	m         month.Month
-	umsByName map[string][]*user_memberships.UserMembership
+	Month     month.Month
+	UmsByName map[string][]*user_memberships.UserMembership
 }
 
 func NewBin(m month.Month) *Bin {
 	return &Bin{
-		m:         m,
-		umsByName: make(map[string][]*user_memberships.UserMembership),
+		Month:     m,
+		UmsByName: make(map[string][]*user_memberships.UserMembership),
 	}
 }
 
 func (b *Bin) Add(um *user_memberships.UserMembership) {
 	k := um.Membership.Title
-	if _, ok := b.umsByName[k]; !ok {
-		b.umsByName[k] = make([]*user_memberships.UserMembership, 0, 40)
+	if _, ok := b.UmsByName[k]; !ok {
+		b.UmsByName[k] = make([]*user_memberships.UserMembership, 0, 40)
 	}
-	b.umsByName[k] = append(b.umsByName[k], um)
+	fmt.Printf("k=%v\n", k)
+	b.UmsByName[k] = append(b.UmsByName[k], um)
 }
 
 func newBins(from, to month.Month) (bins []*Bin) {
@@ -58,8 +59,8 @@ func newBins(from, to month.Month) (bins []*Bin) {
 	return
 }
 
-func mapBin(from, to, m month.Month) (i int, ok bool) {
-	for t := from; !t.After(to); t = t.Add(1) {
+func MapBin(from, to, m month.Month) (i int, ok bool) {
+	for t := from; t.BeforeOrEqual(to); t = t.Add(1) {
 		if t.Equal(m) {
 			return i, true
 		}
@@ -72,12 +73,12 @@ func (s *Stats) Bins() (bins []*Bin) {
 	bins = newBins(s.from, s.to)
 
 	for _, iv := range s.invs {
-		i, ok := mapBin(s.from, s.to, iv.GetMonth())
+		i, ok := MapBin(s.from, s.to, iv.GetMonth())
 		if !ok {
+			fmt.Printf("oh no, couldn't map where s.from=%v and s.to=%v: %v\n", s.from, s.to, iv.GetMonth())
 			continue
 		}
 		for _, ium := range iv.InvUserMemberships {
-			fmt.Printf("i=%v  len(bins)=%v\n", i, len(bins))
 			if bins[i] == nil {
 				bins[i] = NewBin(iv.GetMonth())
 			}
