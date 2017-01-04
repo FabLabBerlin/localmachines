@@ -21,10 +21,18 @@ func New(
 	invs []*invutil.Invoice,
 ) *Stats {
 
+	filteredInvs := make([]*invutil.Invoice, 0, len(invs))
+
+	for _, inv := range invs {
+		if !inv.Canceled {
+			filteredInvs = append(filteredInvs, inv)
+		}
+	}
+
 	return &Stats{
 		from: from,
 		to:   to,
-		invs: invs,
+		invs: filteredInvs,
 	}
 }
 
