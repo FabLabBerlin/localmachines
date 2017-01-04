@@ -213,7 +213,7 @@ func (this *Controller) Update() {
 	this.ServeJSON()
 }
 
-// @Title GetEarnings
+/*// @Title GetEarnings
 // @Description Get earnings by machine ID
 // @Param	mid		path 	int	true		"Machine ID"
 // @Success 200 machine.Machine
@@ -245,8 +245,8 @@ func (this *Controller) GetEarnings() {
 
 	me := machine_earnings.New(
 		machine,
-		month.New(1, 2015),
-		month.New(12, 2017),
+		month.New(2015,1),
+		month.New(2017,12),
 		invs,
 	)
 
@@ -258,7 +258,7 @@ func (this *Controller) GetEarnings() {
 	}
 	this.Data["json"] = resp
 	this.ServeJSON()
-}
+}*/
 
 // @Title SetArchived
 // @Description (Un)archive machine

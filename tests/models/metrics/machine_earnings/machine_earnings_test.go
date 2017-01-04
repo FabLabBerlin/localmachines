@@ -51,8 +51,8 @@ func TestMachineEarnings(t *testing.T) {
 
 				me := machine_earnings.New(
 					m,
-					month.New(1, 2016),
-					month.New(12, 2016),
+					month.New(2016, 1),
+					month.New(2016, 12),
 					[]*invutil.Invoice{
 						inv,
 					},
@@ -72,8 +72,8 @@ func TestMachineEarnings(t *testing.T) {
 
 				me := machine_earnings.New(
 					m,
-					month.New(1, 2016),
-					month.New(12, 2016),
+					month.New(2016, 1),
+					month.New(2016, 12),
 					[]*invutil.Invoice{
 						inv,
 					},
@@ -97,8 +97,8 @@ func TestMachineEarnings(t *testing.T) {
 
 				me83Seconds80CentsPerMinute := machine_earnings.New(
 					m83Seconds80CentsPerMinute,
-					month.New(1, 2016),
-					month.New(12, 2016),
+					month.New(2016, 1),
+					month.New(2016, 12),
 					[]*invutil.Invoice{
 						inv,
 					},
@@ -106,8 +106,8 @@ func TestMachineEarnings(t *testing.T) {
 
 				me160Seconds160CentsPerMinute := machine_earnings.New(
 					m160Seconds160CentsPerMinute,
-					month.New(1, 2016),
-					month.New(12, 2016),
+					month.New(2016, 1),
+					month.New(2016, 12),
 					[]*invutil.Invoice{
 						inv,
 					},

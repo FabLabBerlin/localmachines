@@ -30,8 +30,8 @@ func TestMachineCapacity(t *testing.T) {
 
 			mc := machine_capacity.New(
 				m,
-				month.New(1, 2016),
-				month.New(12, 2016),
+				month.New(2016, 1),
+				month.New(2016, 12),
 				[]*invutil.Invoice{
 					inv,
 				},
@@ -53,8 +53,8 @@ func TestMachineCapacity(t *testing.T) {
 
 			mc := machine_capacity.New(
 				m,
-				month.New(1, 2016),
-				month.New(12, 2016),
+				month.New(2016, 1),
+				month.New(2016, 12),
 				[]*invutil.Invoice{
 					inv,
 				},
@@ -72,8 +72,8 @@ func TestMachineCapacity(t *testing.T) {
 				}
 				mc := machine_capacity.New(
 					m,
-					month.New(1, 2016),
-					month.New(12, 2016),
+					month.New(2016, 1),
+					month.New(2016, 12),
 					[]*invutil.Invoice{},
 				)
 				So(mc.Utilization(), ShouldEqual, 0)
