@@ -297,7 +297,7 @@ func (c *Controller) GetMemberships() {
 	)
 	fmt.Printf("11\n")
 
-	bins, _ /*, err*/ := ms.BinsCached()
+	bins /*, err*/ := ms.Bins /*Cached*/ ()
 	/*if err != nil {
 		c.Fail(500, err.Error())
 	}*/

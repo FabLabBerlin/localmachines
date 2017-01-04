@@ -76,12 +76,12 @@
 
     <h3>Usage by Machine</h3>
     <h4>Total lifetime is the time since its first activation</h4>
-    <div id="chart_machine_capacities">
-      <div class="loader-local">
-        <div class="spinner">
-          <i class="fa fa-cog fa-spin"></i>
-        </div>
+    <div class="loader-local" ng-hide="machineCapacities">
+      <div class="spinner">
+        <i class="fa fa-cog fa-spin"></i>
       </div>
+    </div>
+    <div id="chart_machine_capacities" ng-show="machineCapacities">
     </div>
 
     <h3>Customer Retention</h3>
@@ -175,5 +175,14 @@
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <h3>Memberships</h3>
+    <div class="loader-local" ng-hide="memberships">
+      <div class="spinner">
+        <i class="fa fa-cog fa-spin"></i>
+      </div>
+    </div>
+    <div id="chart_memberships" ng-show="memberships">
     </div>
 </div>

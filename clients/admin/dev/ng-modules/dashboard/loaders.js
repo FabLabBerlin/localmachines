@@ -35,6 +35,18 @@ window.metricsLoad = {
     });
   },
 
+  memberships: function(options) {
+    return $.ajax({
+      method: 'GET',
+      url: '/api/metrics/memberships',
+      data: {
+        location: options.locationId,
+        from: options.timeframe.from,
+        to: options.timeframe.to
+      }
+    });
+  },
+
   retention: function(options) {
     var dfd = $.Deferred();
 

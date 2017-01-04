@@ -1,4 +1,4 @@
-/*global metricsLoad */
+/*global metricsGcharts, metricsLoad */
 
 (function(){
 
@@ -50,7 +50,9 @@ app.controller('DashboardCtrl',
         $scope.renderMachineEarnings();
         metricsLoad.machineCapacities(options)
         .then(function(machineCapacities) {
-          $scope.machineCapacities = machineCapacities;
+          $scope.$apply(function() {
+            $scope.machineCapacities = machineCapacities;
+          });
           $scope.renderMachineCapacities();
           metricsLoad.retention(options)
           .then(function(retention) {
@@ -62,6 +64,19 @@ app.controller('DashboardCtrl',
               };
 
               $('.datepicker').pickadate(pickadateOptions);
+            });
+
+            metricsLoad.memberships(options)
+            .then(function(memberships) {
+              console.log('memberships=', memberships);
+              $scope.$apply(function() {
+                $scope.memberships = memberships;
+              });
+              metricsGcharts.memberships(
+                document.getElementById('chart_memberships'),
+                memberships,
+                currency
+              );
             });
           });
         });
