@@ -73,7 +73,7 @@ func (c *Controller) GetAll() {
 		YearTo:    to.Year(),
 	}
 
-	data, err := metrics.FetchData(locId, interval)
+	data, err := metrics.FetchData(locId, interval /*, binWidth*/)
 	if err != nil {
 		beego.Error("Failed to get metrics data:", err)
 		c.CustomAbort(500, "Failed to get metrics data")

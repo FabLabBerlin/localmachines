@@ -23,6 +23,7 @@ app.controller('DashboardCtrl',
     from: '2015-08-01',
     to: moment().format('YYYY-MM-DD')
   };
+  $scope.binwidth = 'month';
   var currency = '';
 
   api.loadSettings(function(settings) {
@@ -34,7 +35,8 @@ app.controller('DashboardCtrl',
     var locationId = $cookies.get('location');
     var options = {
       locationId: locationId,
-      timeframe: $scope.timeframe
+      timeframe: $scope.timeframe,
+      binwidth: $scope.binwidth
     };
 
     metricsLoad.main(options).then(function(metrics) {

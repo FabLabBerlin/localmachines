@@ -8,6 +8,8 @@ import (
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
+	"github.com/FabLabBerlin/localmachines/models/metrics/bin"
+	"github.com/FabLabBerlin/localmachines/models/metrics/filter"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/user_memberships"
@@ -30,43 +32,43 @@ type Response struct {
 }
 
 func NewResponse(data Data) (resp Response, err error) {
-	resp.MembershipsByDay, err = data.sumMembershipsBy("2006-01-02", false)
+	resp.MembershipsByDay, err = data.sumMembershipsBy(bin.NewWidth(bin.DAY), false)
 	if err != nil {
 		return
 	}
-	resp.MembershipsByMonth, err = data.sumMembershipsBy("2006-01", false)
+	resp.MembershipsByMonth, err = data.sumMembershipsBy(bin.NewWidth(bin.MONTH), false)
 	if err != nil {
 		return
 	}
-	resp.MembershipsByDayRnD, err = data.sumMembershipsBy("2006-01-02", true)
+	resp.MembershipsByDayRnD, err = data.sumMembershipsBy(bin.NewWidth(bin.DAY), true)
 	if err != nil {
 		return
 	}
-	resp.MembershipsByMonthRnD, err = data.sumMembershipsBy("2006-01", true)
+	resp.MembershipsByMonthRnD, err = data.sumMembershipsBy(bin.NewWidth(bin.MONTH), true)
 	if err != nil {
 		return
 	}
-	resp.MembershipCountsByMonth, err = data.sumMembershipCountsBy("2006-01", false)
+	resp.MembershipCountsByMonth, err = data.sumMembershipCountsBy(bin.NewWidth(bin.MONTH), false)
 	if err != nil {
 		return
 	}
-	resp.MembershipCountsByMonthRnD, err = data.sumMembershipCountsBy("2006-01", true)
+	resp.MembershipCountsByMonthRnD, err = data.sumMembershipCountsBy(bin.NewWidth(bin.MONTH), true)
 	if err != nil {
 		return
 	}
-	resp.ActivationsByDay, err = data.sumActivationsBy("2006-01-02")
+	resp.ActivationsByDay, err = data.sumActivationsBy(bin.NewWidth(bin.DAY))
 	if err != nil {
 		return
 	}
-	resp.ActivationsByMonth, err = data.sumActivationsBy("2006-01")
+	resp.ActivationsByMonth, err = data.sumActivationsBy(bin.NewWidth(bin.MONTH))
 	if err != nil {
 		return
 	}
-	resp.MinutesByDay, err = data.sumMinutesBy("2006-01-02")
+	resp.MinutesByDay, err = data.sumMinutesBy(bin.NewWidth(bin.DAY))
 	if err != nil {
 		return
 	}
-	resp.MinutesByMonth, err = data.sumMinutesBy("2006-01")
+	resp.MinutesByMonth, err = data.sumMinutesBy(bin.NewWidth(bin.MONTH))
 	if err != nil {
 		return
 	}
@@ -92,7 +94,7 @@ func FetchData(locationId int64, interval lib.Interval) (data Data, err error) {
 		return data, fmt.Errorf("Failed to get invoice summary: %v", err)
 	}
 
-	data.Invoices = filter(allInvoices, interval)
+	data.Invoices = filter.Invoices(allInvoices, interval.DayFrom(), interval.DayTo())
 
 	ms, err := memberships.GetAllAt(locationId)
 	if err != nil {
@@ -117,54 +119,7 @@ func FetchData(locationId int64, interval lib.Interval) (data Data, err error) {
 	return
 }
 
-func filter(
-	all []*invutil.Invoice,
-	interval lib.Interval,
-) (filtered []*invutil.Invoice) {
-
-	byUserIdYearMonth := make(map[int64]map[int]map[time.Month]*invutil.Invoice)
-	filtered = make([]*invutil.Invoice, 0, len(all))
-
-	for _, iv := range all {
-		uid := iv.UserId
-		m := time.Month(iv.Month)
-		y := iv.Year
-
-		if iv.GetMonth().Before(interval.DayFrom().Month()) {
-			continue
-		}
-
-		if iv.GetMonth().After(interval.DayTo().Month()) {
-			continue
-		}
-
-		if iv.Canceled {
-			continue
-		}
-
-		if _, ok := byUserIdYearMonth[uid]; !ok {
-			byUserIdYearMonth[uid] = make(map[int]map[time.Month]*invutil.Invoice)
-		}
-		if _, ok := byUserIdYearMonth[uid][y]; !ok {
-			byUserIdYearMonth[uid][y] = make(map[time.Month]*invutil.Invoice)
-		}
-		if existing, ok := byUserIdYearMonth[uid][y][m]; !ok || iv.Id > existing.Id {
-			byUserIdYearMonth[uid][y][m] = iv
-		}
-	}
-
-	for _, byUid := range byUserIdYearMonth {
-		for _, byYear := range byUid {
-			for _, iv := range byYear {
-				filtered = append(filtered, iv)
-			}
-		}
-	}
-
-	return
-}
-
-func (this Data) sumActivationsBy(timeFormat string) (sums map[string]float64, err error) {
+func (this Data) sumActivationsBy(w bin.Width) (sums map[string]float64, err error) {
 	sums = make(map[string]float64)
 
 	for _, inv := range this.Invoices {
@@ -175,7 +130,7 @@ func (this Data) sumActivationsBy(timeFormat string) (sums map[string]float64, e
 					return nil, fmt.Errorf("PriceTotalDisc: %v", err)
 				}
 				var key string
-				key = purchase.TimeStart.Format(timeFormat)
+				key = purchase.TimeStart.Format(w.TimeFormat())
 				sums[key] = sums[key] + priceTotalDisc
 			}
 		}
@@ -184,7 +139,7 @@ func (this Data) sumActivationsBy(timeFormat string) (sums map[string]float64, e
 	return
 }
 
-func (this Data) sumMembershipsBy(timeFormat string, rndOnly bool) (sums map[string]float64, err error) {
+func (this Data) sumMembershipsBy(w bin.Width, rndOnly bool) (sums map[string]float64, err error) {
 	sums = make(map[string]float64)
 
 	for _, inv := range this.Invoices {
@@ -196,7 +151,7 @@ func (this Data) sumMembershipsBy(timeFormat string, rndOnly bool) (sums map[str
 
 			if !rndOnly || membership.IsRndCentre() {
 				t := time.Date(inv.Year, time.Month(inv.Month), 1, 12, 12, 12, 0, time.UTC)
-				key := t.Format(timeFormat)
+				key := t.Format(w.TimeFormat())
 				sums[key] = sums[key] + float64(membership.MonthlyPrice)
 			}
 		}
@@ -206,7 +161,7 @@ func (this Data) sumMembershipsBy(timeFormat string, rndOnly bool) (sums map[str
 	// At that time only half of the membership price was charged.
 	if this.LocationId == 1 {
 		d2015 := time.Date(2015, time.December, 1, 13, 0, 0, 0, time.UTC).
-			Format(timeFormat)
+			Format(w.TimeFormat())
 		if _, ok := sums[d2015]; ok {
 			beego.Info("Dividing 12-2015 memberships by 2 @ locId 1")
 			sums[d2015] = sums[d2015] / 2
@@ -216,7 +171,7 @@ func (this Data) sumMembershipsBy(timeFormat string, rndOnly bool) (sums map[str
 	return
 }
 
-func (this Data) sumMembershipCountsBy(timeFormat string, rndOnly bool) (sums map[string]int, err error) {
+func (this Data) sumMembershipCountsBy(w bin.Width, rndOnly bool) (sums map[string]int, err error) {
 	sums = make(map[string]int)
 
 	for _, inv := range this.Invoices {
@@ -227,7 +182,7 @@ func (this Data) sumMembershipCountsBy(timeFormat string, rndOnly bool) (sums ma
 			}
 			if !rndOnly || membership.IsRndCentre() {
 				t := time.Date(inv.Year, time.Month(inv.Month), 1, 12, 12, 12, 0, time.UTC)
-				key := t.Format(timeFormat)
+				key := t.Format(w.TimeFormat())
 				if membership.MonthlyPrice > 0 {
 					sums[key] = sums[key] + 1
 				}
@@ -238,7 +193,7 @@ func (this Data) sumMembershipCountsBy(timeFormat string, rndOnly bool) (sums ma
 	return
 }
 
-func (this Data) sumMinutesBy(timeFormat string) (sums map[string]float64, err error) {
+func (this Data) sumMinutesBy(w bin.Width) (sums map[string]float64, err error) {
 	sums = make(map[string]float64)
 
 	for _, inv := range this.Invoices {
@@ -246,7 +201,7 @@ func (this Data) sumMinutesBy(timeFormat string) (sums map[string]float64, err e
 		if r != user_roles.STAFF && r != user_roles.ADMIN && !inv.User.SuperAdmin {
 			for _, purchase := range inv.Purchases {
 				if purchase.Type == purchases.TYPE_ACTIVATION {
-					key := purchase.TimeStart.Format(timeFormat)
+					key := purchase.TimeStart.Format(w.TimeFormat())
 					sums[key] = sums[key] + float64(purchase.Seconds())/60
 				}
 			}

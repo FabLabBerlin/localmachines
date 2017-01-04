@@ -11,6 +11,17 @@
     </div>
     <div class="row" ng-show="retention">
       <div class="col-sm-3">
+        <label>From</label>
+      </div>
+      <div class="col-sm-3">
+        <label>To</label>
+      </div>
+      <div class="col-sm-3">
+        <label>Bin Width</label>
+      </div>
+    </div>
+    <div class="row" ng-show="retention">
+      <div class="col-sm-3">
         <div class="form-group">
           <div class="input-group">
             <input 
@@ -34,6 +45,14 @@
               <i class="fa fa-calendar"></i>
             </div>
           </div>
+        </div>
+      </div>
+      <div class="col-sm-3">
+        <div class="form-group">
+          <select class="form-control" ng-model="binwidth">
+            <option value="month">Month</option>
+            <option value="day">Day</option>
+          </select>
         </div>
       </div>
       <div class="col-sm-3">
