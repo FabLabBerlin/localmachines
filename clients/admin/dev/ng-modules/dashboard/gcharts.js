@@ -115,7 +115,7 @@ window.metricsGcharts = {
     data = google.visualization.arrayToDataTable(data);
 
     var options = {
-      width: window.innerHeight,
+      width: window.innerWidth,
       height: window.innerHeight,
       legend: { position: 'top', maxLines: 3 },
       bar: { groupWidth: '75%' },
