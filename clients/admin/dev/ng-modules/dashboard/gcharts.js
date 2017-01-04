@@ -32,7 +32,12 @@ function membershipsCompactify(titles, titleByIdx, stats) {
     return -obj.revenue;
   });
 
-  filtered = _.pluck(filtered.slice(0, 10), 'title');
+  var splitAt = 10;
+
+  var others = _.sortBy(_.pluck(filtered.slice(splitAt), 'title'), function(title) {
+    return title;
+  });
+  filtered = _.pluck(filtered.slice(0, splitAt), 'title');
   filtered = _.sortBy(filtered, function(title) {
     return title;
   });
@@ -50,6 +55,8 @@ function membershipsCompactify(titles, titleByIdx, stats) {
   });
 
   titles.push('Other');
+
+  $('#other-memberships').html('Other: ' +  others.join(', '));
 
   return {
     titles: titles,
@@ -102,6 +109,8 @@ window.metricsGcharts = {
 
       data.push(row);
     });
+
+    console.log('data=', data);
 
     data = google.visualization.arrayToDataTable(data);
 
