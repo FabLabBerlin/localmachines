@@ -89,6 +89,7 @@ module.exports = function (grunt) {
 						'dev/ng-modules/api/api.js',
 						'dev/ng-modules/bookings/bookings.js',
 						'dev/ng-modules/coupons/coupons.js',
+						'dev/ng-modules/dashboard/loaders.js',
 						'dev/ng-modules/dashboard/dashboard.js',
 						'dev/ng-modules/login/login.js',
 						'dev/ng-modules/mainmenu/mainmenu.js',
