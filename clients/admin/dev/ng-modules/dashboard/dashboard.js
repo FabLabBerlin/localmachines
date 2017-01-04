@@ -38,11 +38,15 @@ app.controller('DashboardCtrl',
     };
 
     metricsLoad.main(options).then(function(metrics) {
-      $scope.metrics = metrics;
+      $scope.$apply(function() {
+        $scope.metrics = metrics;
+      });
       $scope.renderChartsInit();
       metricsLoad.machineEarnings(options)
       .then(function(machineEarnings) {
-        $scope.machineEarnings = machineEarnings;
+        $scope.$apply(function() {
+          $scope.machineEarnings = machineEarnings;
+        });
         $scope.renderMachineEarnings();
         metricsLoad.machineCapacities(options)
         .then(function(machineCapacities) {
