@@ -3,6 +3,61 @@
 // var materialOptions = google.charts.Bar.convertOptions(classicOptions);
 
 
+function membershipsCompactify(titles, titleByIdx, stats) {
+  var total = 0;
+
+  var revenueByTitle = {};
+  _.each(stats, function(bin) {
+    _.each(bin.UmsByName, function(ums) {
+      _.each(ums, function(um) {
+        if (!revenueByTitle[um.Membership.Title]) {
+          revenueByTitle[um.Membership.Title] = 0;
+        }
+
+        revenueByTitle[um.Membership.Title] += um.Membership.MonthlyPrice;
+        total += um.Membership.MonthlyPrice;
+      });
+    });
+  });
+
+  var filtered = [];
+  _.each(revenueByTitle, function(revenue, title) {
+    filtered.push({
+      title: title,
+      revenue: revenue
+    });
+  });
+
+  filtered = _.sortBy(filtered, function(obj) {
+    return -obj.revenue;
+  });
+
+  filtered = _.pluck(filtered.slice(0, 10), 'title');
+  filtered = _.sortBy(filtered, function(title) {
+    return title;
+  });
+
+  titles = filtered;
+  var filteredTitlesByIdx = {};
+  _.each(titleByIdx, function(idx, title) {
+    var i = _.indexOf(filtered, title);
+
+    if (i >= 0) {
+      filteredTitlesByIdx[title] = i;
+    } else {
+      filteredTitlesByIdx[title] = titles.length;
+    }
+  });
+
+  titles.push('Other');
+
+  return {
+    titles: titles,
+    titleByIdx: filteredTitlesByIdx
+  };
+}
+
+
 window.metricsGcharts = {
   memberships: function(domElement, stats, currency) {
     var titles = _.reduce(stats, function(res, bin) {
@@ -19,8 +74,12 @@ window.metricsGcharts = {
       res[title] = i;
       return res;
     }, {});
-    console.log('membershipTitles=', titles);
-    console.log('titleByIdx=', titleByIdx);
+
+    if (titles.length > 20) {
+      var compact = membershipsCompactify(titles, titleByIdx, stats);
+      titles = compact.titles;
+      titleByIdx = compact.titleByIdx;
+    }
 
     var data = [
       _.cloneDeep(titles)
@@ -31,12 +90,10 @@ window.metricsGcharts = {
 
     _.each(stats, function(bin) {
       var row = new Array(titles.length);
-      console.log('bin.Month=', bin.Month);
       row.unshift(bin.Month);
 
       _.each(bin.UmsByName, function(ums, title) {
         var i = titleByIdx[title];
-        console.log('ums=', ums);
         row[i + 1] = _.reduce(ums, function(sum, um) {
           return sum + um.Membership.MonthlyPrice;
         }, 0);
@@ -46,21 +103,11 @@ window.metricsGcharts = {
       data.push(row);
     });
 
-    console.log('data=', data);
-
-    /*var data = [
-      ['Genre', 'Fantasy & Sci Fi', 'Romance', 'Mystery/Crime', 'General',
-       'Western', 'Literature', { role: 'annotation' } ],
-      ['2010', 10, 24, 20, 32, 18, 5, ''],
-      ['2020', 16, 22, 23, 30, 16, 9, ''],
-      ['2030', 28, 19, 29, 30, 12, 13, '']
-    ];*/
-
     data = google.visualization.arrayToDataTable(data);
 
     var options = {
-      width: 600,
-      height: 900,
+      width: window.innerHeight,
+      height: window.innerHeight,
       legend: { position: 'top', maxLines: 3 },
       bar: { groupWidth: '75%' },
       stacked: true,
