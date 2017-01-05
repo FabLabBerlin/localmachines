@@ -10,7 +10,9 @@ module.exports = function (grunt) {
 			},
 			all: [
 				'Gruntfile.js',
-				'dev/**/*.js', 
+				'dev/*.js', 
+				'dev/ng-components/**/*.js', 
+				'dev/ng-modules/**/*.js', 
 				'!dev/bower_components/**'
 			]
 		}, // jshint
@@ -123,6 +125,9 @@ module.exports = function (grunt) {
 				},
 				files: {
 					'prod/assets/js/modernizr.min.js': 'dev/bower_components/modernizr/modernizr.js',
+					'prod/assets/js/osm/heatcanvas-openlayers.js': 'dev/assets/js/osm/heatcanvas-openlayers.js',
+					'prod/assets/js/osm/heatcanvas-worker.js': 'dev/assets/js/osm/heatcanvas-worker.js',
+					'prod/assets/js/osm/heatcanvas.js': 'dev/assets/js/osm/heatcanvas.js',
 					'prod/assets/js/app.min.js': 'tmp/app.js',
 				}
 			}

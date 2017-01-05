@@ -197,4 +197,14 @@
     <div id="chart_memberships" ng-show="memberships">
     </div>
     <div id="other-memberships" style="margin-top: 15px"></div>
+
+    <h3>Heatmap</h3>
+    <h4>Experimental</h4>
+    <div class="loader-local" ng-hide="coordinates">
+      <div class="spinner">
+        <i class="fa fa-cog fa-spin"></i>
+      </div>
+    </div>
+    <div id="heatmap_container" ng-show="coordinates">
+    </div>
 </div>

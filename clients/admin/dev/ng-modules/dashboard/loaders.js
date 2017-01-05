@@ -1,4 +1,14 @@
 window.metricsLoad = {
+  heatmap: function(options) {
+    return $.ajax({
+      method: 'GET',
+      url: '/api/metrics/heatmap',
+      data: {
+        location: options.locationId
+      }
+    });
+  },
+
   main: function(options) {
     return $.ajax({
       method: 'GET',
