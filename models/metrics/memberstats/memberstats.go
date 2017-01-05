@@ -5,6 +5,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/lib/month"
 	"github.com/FabLabBerlin/localmachines/lib/redis"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
+	"github.com/FabLabBerlin/localmachines/models/metrics/bin"
 	"github.com/FabLabBerlin/localmachines/models/metrics/filter"
 	"github.com/FabLabBerlin/localmachines/models/user_memberships"
 	"time"
@@ -50,40 +51,29 @@ func (b *Bin) Add(um *user_memberships.UserMembership) {
 	b.UmsByName[k] = append(b.UmsByName[k], um)
 }
 
-func newBins(from, to month.Month) (bins []*Bin) {
-	n := 0
-	for t := from; !t.After(to); t = t.Add(1) {
-		n++
+func newBins(from, to month.Month) (bs []*Bin) {
+	last, ok := bin.Map(from, to, to)
+	if !ok {
+		panic(fmt.Sprintf("%v/%v/%v", from, to, to))
 	}
-	bins = make([]*Bin, n)
 
-	return
+	return make([]*Bin, last+1)
 }
 
-func MapBin(from, to, m month.Month) (i int, ok bool) {
-	for t := from; t.BeforeOrEqual(to); t = t.Add(1) {
-		if t.Equal(m) {
-			return i, true
-		}
-		i++
-	}
-	return -1, false
-}
-
-func (s *Stats) Bins() (bins []*Bin) {
-	bins = newBins(s.from, s.to)
+func (s *Stats) Bins() (bs []*Bin) {
+	bs = newBins(s.from, s.to)
 
 	for _, iv := range s.invs {
-		i, ok := MapBin(s.from, s.to, iv.GetMonth())
+		i, ok := bin.Map(s.from, s.to, iv.GetMonth())
 		if !ok {
 			fmt.Printf("oh no, couldn't map where s.from=%v and s.to=%v: %v\n", s.from, s.to, iv.GetMonth())
 			continue
 		}
 		for _, ium := range iv.InvUserMemberships {
-			if bins[i] == nil {
-				bins[i] = NewBin(iv.GetMonth())
+			if bs[i] == nil {
+				bs[i] = NewBin(iv.GetMonth())
 			}
-			bins[i].Add(ium.UserMembership)
+			bs[i].Add(ium.UserMembership)
 		}
 	}
 

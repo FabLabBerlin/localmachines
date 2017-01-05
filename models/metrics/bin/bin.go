@@ -2,6 +2,7 @@ package bin
 
 import (
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/lib/month"
 )
 
 const (
@@ -31,4 +32,14 @@ func (w Width) TimeFormat() string {
 	default:
 		panic(fmt.Sprintf("unknown unit %v", w.u))
 	}
+}
+
+func Map(from, to, m month.Month) (i int, ok bool) {
+	for t := from; t.BeforeOrEqual(to); t = t.Add(1) {
+		if t.Equal(m) {
+			return i, true
+		}
+		i++
+	}
+	return -1, false
 }
