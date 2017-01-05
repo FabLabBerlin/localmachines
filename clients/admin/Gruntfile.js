@@ -10,7 +10,9 @@ module.exports = function (grunt) {
 			},
 			all: [
 				'Gruntfile.js',
-				'dev/**/*.js', 
+				'dev/*.js', 
+				'dev/ng-components/**/*.js', 
+				'dev/ng-modules/**/*.js', 
 				'!dev/bower_components/**'
 			]
 		}, // jshint

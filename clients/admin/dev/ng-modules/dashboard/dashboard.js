@@ -79,6 +79,16 @@ app.controller('DashboardCtrl',
                 memberships,
                 currency
               );
+              metricsLoad.heatmap(options)
+              .then(function(coordinates) {
+                $scope.$apply(function() {
+                  $scope.coordinates = coordinates;
+                });
+                metricsGcharts.heatmap(
+                  document.getElementById('heatmap_container'),
+                  coordinates
+                );
+              });
             });
           });
         });
