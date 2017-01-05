@@ -3,6 +3,7 @@ package retention
 import (
 	"github.com/FabLabBerlin/localmachines/lib/day"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
+	"github.com/FabLabBerlin/localmachines/models/metrics/filter"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"time"
@@ -31,7 +32,7 @@ func New(
 		stepDays:   stepDays,
 		from:       from,
 		to:         to,
-		invs:       invs,
+		invs:       filter.Invoices(invs, from.Month(), to.Month()),
 		us:         us,
 	}
 }
@@ -150,10 +151,6 @@ func (r Retention) Calculate() (triangle []*Row) {
 	}
 
 	for _, inv := range r.invs {
-		if inv.Canceled {
-			continue
-		}
-
 		for _, p := range inv.Purchases {
 			i := r.RowFor(p)
 

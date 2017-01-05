@@ -7,6 +7,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
+	"github.com/FabLabBerlin/localmachines/models/metrics/filter"
 	"github.com/astaxie/beego"
 	"math"
 	"time"
@@ -28,24 +29,12 @@ func New(
 	invs []*invutil.Invoice,
 ) *MachineEarning {
 
-	filteredInvs := make([]*invutil.Invoice, 0, len(invs))
-	for _, inv := range invs {
-		if !inv.Canceled && ContainsInvoice(inv, from, to) {
-			filteredInvs = append(filteredInvs, inv)
-		}
-	}
-
 	return &MachineEarning{
 		m:    m,
 		from: from,
 		to:   to,
-		invs: filteredInvs,
+		invs: filter.Invoices(invs, from, to),
 	}
-}
-
-func ContainsInvoice(inv *invutil.Invoice, from, to month.Month) bool {
-	m := month.New(inv.Year, time.Month(inv.Month))
-	return from.BeforeOrEqual(m) && to.AfterOrEqual(m)
 }
 
 func (me MachineEarning) ContainsTime(t time.Time) bool {

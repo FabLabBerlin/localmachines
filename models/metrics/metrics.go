@@ -94,7 +94,11 @@ func FetchData(locationId int64, interval lib.Interval) (data Data, err error) {
 		return data, fmt.Errorf("Failed to get invoice summary: %v", err)
 	}
 
-	data.Invoices = filter.Invoices(allInvoices, interval.DayFrom(), interval.DayTo())
+	data.Invoices = filter.Invoices(
+		allInvoices,
+		interval.DayFrom().Month(),
+		interval.DayTo().Month(),
+	)
 
 	ms, err := memberships.GetAllAt(locationId)
 	if err != nil {

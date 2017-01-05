@@ -5,6 +5,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/lib/month"
 	"github.com/FabLabBerlin/localmachines/lib/redis"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
+	"github.com/FabLabBerlin/localmachines/models/metrics/filter"
 	"github.com/FabLabBerlin/localmachines/models/user_memberships"
 	"time"
 )
@@ -21,18 +22,10 @@ func New(
 	invs []*invutil.Invoice,
 ) *Stats {
 
-	filteredInvs := make([]*invutil.Invoice, 0, len(invs))
-
-	for _, inv := range invs {
-		if !inv.Canceled {
-			filteredInvs = append(filteredInvs, inv)
-		}
-	}
-
 	return &Stats{
 		from: from,
 		to:   to,
-		invs: filteredInvs,
+		invs: filter.Invoices(invs, from, to),
 	}
 }
 

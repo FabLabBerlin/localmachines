@@ -7,6 +7,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/lib/redis"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/machine"
+	"github.com/FabLabBerlin/localmachines/models/metrics/filter"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"time"
 )
@@ -29,7 +30,7 @@ func New(
 		m:    m,
 		from: from,
 		to:   to,
-		invs: invs,
+		invs: filter.Invoices(invs, from, to),
 	}
 }
 
@@ -85,10 +86,6 @@ func (mc MachineCapacity) Opening() (opening day.Day) {
 
 func (mc MachineCapacity) Usage() (usage time.Duration) {
 	for _, inv := range mc.invs {
-		if inv.Canceled {
-			continue
-		}
-
 		for _, p := range inv.Purchases {
 			if p.MachineId != mc.m.Id {
 				continue
