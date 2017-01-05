@@ -13,7 +13,6 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/user_memberships"
-	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"github.com/astaxie/beego"
 	"time"
 )
@@ -81,7 +80,6 @@ type Data struct {
 	startTime       time.Time
 	endTime         time.Time
 	Invoices        []*invutil.Invoice
-	userLocations   user_locations.UserLocations
 	userMemberships []*user_memberships.UserMembership
 	membershipsById map[int64]*memberships.Membership
 }
@@ -100,6 +98,19 @@ func FetchData(locationId int64, interval lib.Interval) (data Data, err error) {
 		interval.DayTo().Month(),
 	)
 
+	userLocations, err := user_locations.GetAllForLocation(locationId)
+	if err != nil {
+		return data, fmt.Errorf("Failed to get user locations: %v", err)
+	}
+
+	data.Invoices = filter.InvoicesByUsers(
+		data.LocationId,
+		data.Invoices,
+		userLocations,
+		true,
+		false,
+	)
+
 	ms, err := memberships.GetAllAt(locationId)
 	if err != nil {
 		return data, fmt.Errorf("Failed to get memberships: %v", err)
@@ -113,11 +124,6 @@ func FetchData(locationId int64, interval lib.Interval) (data Data, err error) {
 	data.userMemberships, err = user_memberships.GetAllAt(locationId)
 	if err != nil {
 		return data, fmt.Errorf("Failed to get user memberships: %v", err)
-	}
-
-	data.userLocations, err = user_locations.GetAllForLocation(locationId)
-	if err != nil {
-		return data, fmt.Errorf("Failed to get user locations: %v", err)
 	}
 
 	return
@@ -201,13 +207,10 @@ func (this Data) sumMinutesBy(w bin.Width) (sums map[string]float64, err error) 
 	sums = make(map[string]float64)
 
 	for _, inv := range this.Invoices {
-		r, _ := this.userLocations.UserRoleOf(this.LocationId, inv.User.Id)
-		if r != user_roles.STAFF && r != user_roles.ADMIN && !inv.User.SuperAdmin {
-			for _, purchase := range inv.Purchases {
-				if purchase.Type == purchases.TYPE_ACTIVATION {
-					key := purchase.TimeStart.Format(w.TimeFormat())
-					sums[key] = sums[key] + float64(purchase.Seconds())/60
-				}
+		for _, purchase := range inv.Purchases {
+			if purchase.Type == purchases.TYPE_ACTIVATION {
+				key := purchase.TimeStart.Format(w.TimeFormat())
+				sums[key] = sums[key] + float64(purchase.Seconds())/60
 			}
 		}
 	}

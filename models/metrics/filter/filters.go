@@ -1,3 +1,4 @@
+// filter data
 package filter
 
 import (
@@ -67,6 +68,10 @@ func InvoicesByUsers(
 			}
 		}
 		if excludeStaff {
+			if u.SuperAdmin {
+				continue
+			}
+
 			if _, everStaff := everStaffUid[u.Id]; everStaff {
 				continue
 			}
