@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/astaxie/beego"
+	"github.com/garyburd/redigo/redis"
 )
 
 type Seconds int
@@ -51,4 +52,17 @@ uncached:
 		}
 	}
 	return nil
+}
+
+func Exists(key string) (yes bool) {
+	c := GetPoolConn()
+	defer c.Close()
+
+	exists, err := redis.Bool(c.Do("EXISTS", key))
+	if err != nil {
+		beego.Error("exists check:", err)
+	}
+	c.Flush()
+
+	return exists
 }

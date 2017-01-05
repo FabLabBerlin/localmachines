@@ -5,6 +5,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/database/connect"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/machine"
+	"github.com/FabLabBerlin/localmachines/models/metrics/heatmap"
 	"github.com/FabLabBerlin/localmachines/routers"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
@@ -126,10 +127,14 @@ func setupTasks() {
 	pingNetswitches := toolbox.NewTask("Ping Netswitches",
 		" 0 0/10 * * * *",
 		machine.TaskPingNetswitches)
+	geoCodeUsers := toolbox.NewTask("Geocode",
+		" 0 0/2 * * * *",
+		heatmap.TaskGeoCodeUsers)
 
 	toolbox.AddTask("Autoextend User Membership", autoextendUserMembership)
 	toolbox.AddTask("Calculate Invoice Totals", calculateTotals)
 	toolbox.AddTask("Fetch Local IPs", fetchLocalIps)
 	toolbox.AddTask("Sync Fastbill", fastbillSync)
 	toolbox.AddTask("Ping Netswitches", pingNetswitches)
+	toolbox.AddTask("Geocode", geoCodeUsers)
 }
