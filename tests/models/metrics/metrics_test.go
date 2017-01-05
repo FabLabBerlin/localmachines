@@ -12,6 +12,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/metrics"
+	"github.com/FabLabBerlin/localmachines/models/metrics/bin"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/user_memberships"
@@ -24,6 +25,8 @@ import (
 func init() {
 	setup.ConfigDB()
 }
+
+var binWidth = bin.NewWidth(bin.MONTH)
 
 func TestMetrics(t *testing.T) {
 
@@ -55,7 +58,7 @@ func TestMetrics(t *testing.T) {
 				YearTo:    time.Now().Year(),
 			}
 
-			data, err := metrics.FetchData(1, interval)
+			data, err := metrics.FetchData(1, interval, binWidth)
 			if err != nil {
 				panic(err.Error())
 			}
@@ -65,10 +68,10 @@ func TestMetrics(t *testing.T) {
 				panic(err.Error())
 			}
 
-			So(resp.MembershipsByMonth["2016-06"], ShouldEqual, s.nFlatrateUsers*17)
-			So(resp.MembershipCountsByMonth["2016-06"], ShouldEqual, s.nFlatrateUsers)
-			So(resp.ActivationsByMonth["2016-06"], ShouldEqual, float64(s.nNormalUsers*s.nPurchasesPerUser)*s.pricePerPurchase)
-			So(resp.MinutesByMonth["2016-06"], ShouldEqual, float64((s.nNormalUsers+s.nFlatrateUsers)*s.nPurchasesPerUser)*60)
+			So(resp.Memberships["2016-06"], ShouldEqual, s.nFlatrateUsers*17)
+			So(resp.MembershipCounts["2016-06"], ShouldEqual, s.nFlatrateUsers)
+			So(resp.Activations["2016-06"], ShouldEqual, float64(s.nNormalUsers*s.nPurchasesPerUser)*s.pricePerPurchase)
+			So(resp.Minutes["2016-06"], ShouldEqual, float64((s.nNormalUsers+s.nFlatrateUsers)*s.nPurchasesPerUser)*60)
 		})
 	})
 }
