@@ -69,7 +69,7 @@ function membershipsCompactify(titles, titleByIdx, stats) {
 
 window.metricsGcharts = {
   heatmap: function(domElement, coordinates) {
-    var w = window.innerWidth;
+    var w = window.innerWidth * 0.9;
     var h = window.innerHeight;
     $(domElement).html('<div id="map" style="width:' + w + 'px; height:' + h + 'px;"></div>');
     var map, layer;

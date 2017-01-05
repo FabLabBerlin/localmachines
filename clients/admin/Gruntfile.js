@@ -125,6 +125,9 @@ module.exports = function (grunt) {
 				},
 				files: {
 					'prod/assets/js/modernizr.min.js': 'dev/bower_components/modernizr/modernizr.js',
+					'prod/assets/js/osm/heatcanvas-openlayers.js': 'dev/assets/js/osm/heatcanvas-openlayers.js',
+					'prod/assets/js/osm/heatcanvas-worker.js': 'dev/assets/js/osm/heatcanvas-worker.js',
+					'prod/assets/js/osm/heatcanvas.js': 'dev/assets/js/osm/heatcanvas.js',
 					'prod/assets/js/app.min.js': 'tmp/app.js',
 				}
 			}
