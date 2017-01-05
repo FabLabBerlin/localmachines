@@ -7,12 +7,10 @@ import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
-	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/metrics/bin"
 	"github.com/FabLabBerlin/localmachines/models/metrics/filter"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
-	"github.com/FabLabBerlin/localmachines/models/user_memberships"
 	"github.com/astaxie/beego"
 	"time"
 )
@@ -76,12 +74,8 @@ func NewResponse(data Data) (resp Response, err error) {
 }
 
 type Data struct {
-	LocationId      int64
-	startTime       time.Time
-	endTime         time.Time
-	Invoices        []*invutil.Invoice
-	userMemberships []*user_memberships.UserMembership
-	membershipsById map[int64]*memberships.Membership
+	LocationId int64
+	Invoices   []*invutil.Invoice
 }
 
 func FetchData(locationId int64, interval lib.Interval) (data Data, err error) {
@@ -111,21 +105,6 @@ func FetchData(locationId int64, interval lib.Interval) (data Data, err error) {
 		false,
 	)
 
-	ms, err := memberships.GetAllAt(locationId)
-	if err != nil {
-		return data, fmt.Errorf("Failed to get memberships: %v", err)
-	}
-
-	data.membershipsById = make(map[int64]*memberships.Membership)
-	for _, m := range ms {
-		data.membershipsById[m.Id] = m
-	}
-
-	data.userMemberships, err = user_memberships.GetAllAt(locationId)
-	if err != nil {
-		return data, fmt.Errorf("Failed to get user memberships: %v", err)
-	}
-
 	return
 }
 
@@ -153,16 +132,11 @@ func (this Data) sumMembershipsBy(w bin.Width, rndOnly bool) (sums map[string]fl
 	sums = make(map[string]float64)
 
 	for _, inv := range this.Invoices {
-		for _, userMembership := range inv.InvUserMemberships {
-			membership, ok := this.membershipsById[userMembership.MembershipId]
-			if !ok {
-				return nil, fmt.Errorf("User Membership %v links to unknown Membership Id %v", userMembership.Id, userMembership.MembershipId)
-			}
-
-			if !rndOnly || membership.IsRndCentre() {
+		for _, ium := range inv.InvUserMemberships {
+			if !rndOnly || ium.Membership().IsRndCentre() {
 				t := time.Date(inv.Year, time.Month(inv.Month), 1, 12, 12, 12, 0, time.UTC)
 				key := t.Format(w.TimeFormat())
-				sums[key] = sums[key] + float64(membership.MonthlyPrice)
+				sums[key] = sums[key] + float64(ium.Membership().MonthlyPrice)
 			}
 		}
 	}
@@ -185,15 +159,11 @@ func (this Data) sumMembershipCountsBy(w bin.Width, rndOnly bool) (sums map[stri
 	sums = make(map[string]int)
 
 	for _, inv := range this.Invoices {
-		for _, userMembership := range inv.InvUserMemberships {
-			membership, ok := this.membershipsById[userMembership.MembershipId]
-			if !ok {
-				return nil, fmt.Errorf("User Membership %v links to unknown Membership Id %v", userMembership.Id, userMembership.MembershipId)
-			}
-			if !rndOnly || membership.IsRndCentre() {
+		for _, ium := range inv.InvUserMemberships {
+			if !rndOnly || ium.Membership().IsRndCentre() {
 				t := time.Date(inv.Year, time.Month(inv.Month), 1, 12, 12, 12, 0, time.UTC)
 				key := t.Format(w.TimeFormat())
-				if membership.MonthlyPrice > 0 {
+				if ium.Membership().MonthlyPrice > 0 {
 					sums[key] = sums[key] + 1
 				}
 			}
