@@ -40,7 +40,9 @@ func InvoicesByUsers(
 
 	rolesByUid := make(map[int64]user_roles.Role)
 	for _, ul := range userLocations {
-		rolesByUid[ul.UserId] = ul.GetRole()
+		if ul.LocationId == locId {
+			rolesByUid[ul.UserId] = ul.GetRole()
+		}
 	}
 
 	everActiveUid := make(map[int64]struct{})
