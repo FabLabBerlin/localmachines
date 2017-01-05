@@ -10,30 +10,14 @@ import (
 type Seconds int
 
 func Cached(key string, expire Seconds, o interface{}, f ...func() (interface{}, error)) error {
-	var buf []byte
-
-	c := GetPoolConn()
-	defer c.Close()
-
-	c.Send("GET", key)
-	c.Flush()
-
-	v, err := c.Receive()
+	ok, err := Get(key, o)
 	if err != nil {
-		beego.Info("redis cached: receive:", err)
-		goto uncached
+		return fmt.Errorf("get: %v", err)
 	}
-	if v != nil {
-		buf = v.([]byte)
-
-		if err := json.Unmarshal(buf, &o); err != nil {
-			return fmt.Errorf("unmarshal:", err)
-		}
-
+	if ok {
 		return nil
 	}
 
-uncached:
 	if len(f) == 1 {
 		fResult, err := f[0]()
 		if err != nil {
@@ -43,6 +27,8 @@ uncached:
 		if err != nil {
 			return fmt.Errorf("marshal:", err)
 		}
+		c := GetPoolConn()
+		defer c.Close()
 		if err := c.Send("SET", key, buf, "EX", expire); err != nil {
 			return fmt.Errorf("set:", err)
 		}
@@ -65,4 +51,30 @@ func Exists(key string) (yes bool) {
 	c.Flush()
 
 	return exists
+}
+
+func Get(key string, o interface{}) (ok bool, err error) {
+	var buf []byte
+
+	c := GetPoolConn()
+	defer c.Close()
+	c.Send("GET", key)
+	c.Flush()
+
+	v, err := c.Receive()
+	if err != nil {
+		beego.Info("redis cached: receive:", err)
+		return false, nil
+	}
+	if v != nil {
+		buf = v.([]byte)
+
+		if err := json.Unmarshal(buf, &o); err != nil {
+			return false, fmt.Errorf("unmarshal:", err)
+		}
+
+		return true, nil
+	}
+
+	return false, nil
 }

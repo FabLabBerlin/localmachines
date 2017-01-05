@@ -8,12 +8,14 @@ import (
 	"github.com/FabLabBerlin/localmachines/controllers"
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/lib/day"
+	"github.com/FabLabBerlin/localmachines/lib/redis"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/invoices/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/metrics"
 	"github.com/FabLabBerlin/localmachines/models/metrics/bin"
 	"github.com/FabLabBerlin/localmachines/models/metrics/filter"
+	"github.com/FabLabBerlin/localmachines/models/metrics/heatmap"
 	"github.com/FabLabBerlin/localmachines/models/metrics/machine_capacity"
 	"github.com/FabLabBerlin/localmachines/models/metrics/machine_earnings"
 	"github.com/FabLabBerlin/localmachines/models/metrics/memberstats"
@@ -155,6 +157,36 @@ func (c *Controller) GetActivations() {
 	}
 	w.Flush()
 	c.Ctx.WriteString(buf.String())
+	c.ServeJSON()
+}
+
+// @Title Get Heatmap
+// @Description Get some nice Heatmap data
+// @Success 200
+// @Failure	500	Failed to get heat map data
+// @Failure	401	Not authorized
+// @router /heatmap [get]
+func (c *Controller) GetHeatmap() {
+	locId, authorized := c.GetLocIdAdmin()
+	if !authorized {
+		c.CustomAbort(401, "Not authorized")
+	}
+
+	us, err := users.GetAllUsersAt(locId)
+	if err != nil {
+		c.Fail(500, err.Error())
+	}
+
+	cs := make([]heatmap.Coordinate, 0, len(us))
+	for _, u := range us {
+		var c *heatmap.Coordinate
+		redis.Get(fmt.Sprintf("geocode(%v)", u.Id), &c)
+		if c != nil {
+			cs = append(cs, *c)
+		}
+	}
+
+	c.Data["json"] = cs
 	c.ServeJSON()
 }
 
