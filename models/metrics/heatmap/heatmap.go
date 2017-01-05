@@ -22,23 +22,17 @@ func TaskGeoCodeUsers() (err error) {
 	if err != nil {
 		return
 	}
-	beego.Info("TaskGeoCodeUsers() 1")
 	for _, l := range ls {
-		beego.Info("TaskGeoCodeUsers() 2")
 		us, err := users.GetAllUsersAt(l.Id)
 		if err != nil {
 			return err
 		}
-		beego.Info("TaskGeoCodeUsers() 3")
 		i := 0
 		for _, u := range us {
-			beego.Info("TaskGeoCodeUsers() u.Id=", u.Id)
 			k := fmt.Sprintf("geocode(%v)", u.Id)
 			if redis.Exists(k) {
-				beego.Info("TaskGeoCodeUsers() exists already")
 				continue
 			}
-			beego.Info("TaskGeoCodeUsers() not existing")
 			var tmp interface{}
 			err := redis.Cached(k, 2592000, tmp, geoCode(*u))
 			if err != nil {
@@ -61,7 +55,6 @@ type Coordinate struct {
 
 func geoCode(u users.User) func() (coord interface{}, err error) {
 	return func() (coord interface{}, err error) {
-		beego.Info("geoCode()() running")
 		url := "https://nominatim.openstreetmap.org/search/"
 		url += "?format=json"
 		url += "&q=" + fmt.Sprintf("%v, %v %v", u.InvoiceAddr, u.ZipCode, u.City)
