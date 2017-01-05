@@ -3,6 +3,7 @@ package bin
 import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib/month"
+	"time"
 )
 
 const (
@@ -23,12 +24,19 @@ func NewWidth(unit Unit) Width {
 	}
 }
 
-func (w Width) TimeFormat() string {
+func (w Width) IsMonth() bool {
+	return w.u == MONTH
+}
+
+func (w Width) TimeIndex(t time.Time) string {
 	switch w.u {
 	case DAY:
-		return "2006-01-02"
+		return t.Format("2006-01-02")
+	case WEEK:
+		y, w := t.ISOWeek()
+		return fmt.Sprintf("%v/%0.2d", y, w)
 	case MONTH:
-		return "2006-01"
+		return t.Format("2006-01")
 	default:
 		panic(fmt.Sprintf("unknown unit %v", w.u))
 	}

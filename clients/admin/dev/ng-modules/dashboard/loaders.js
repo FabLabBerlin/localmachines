@@ -6,7 +6,8 @@ window.metricsLoad = {
       data: {
         location: options.locationId,
         from: options.timeframe.from,
-        to: options.timeframe.to
+        to: options.timeframe.to,
+        binwidth: options.binwidth
       }
     });
   },
@@ -56,8 +57,9 @@ window.metricsLoad = {
         url: '/api/metrics/retention',
         data: {
           location: options.locationId,
-        from: options.timeframe.from,
-        to: options.timeframe.to
+          from: options.timeframe.from,
+          to: options.timeframe.to,
+          binwidth: options.binwidth
         }
       }),
       $.ajax({

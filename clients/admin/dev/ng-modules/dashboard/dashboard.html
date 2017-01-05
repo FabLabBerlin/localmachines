@@ -10,18 +10,18 @@
       </div>
     </div>
     <div class="row" ng-show="retention">
-      <div class="col-sm-3">
+      <div class="col-xs-3">
         <label>From</label>
       </div>
-      <div class="col-sm-3">
+      <div class="col-xs-3">
         <label>To</label>
       </div>
-      <div class="col-sm-3">
+      <div class="col-xs-3">
         <label>Bin Width</label>
       </div>
     </div>
     <div class="row" ng-show="retention">
-      <div class="col-sm-3">
+      <div class="col-xs-3">
         <div class="form-group">
           <div class="input-group">
             <input 
@@ -34,7 +34,7 @@
           </div>
         </div>
       </div>
-      <div class="col-sm-3">
+      <div class="col-xs-3">
         <div class="form-group">
           <div class="input-group">
             <input 
@@ -47,15 +47,16 @@
           </div>
         </div>
       </div>
-      <div class="col-sm-3">
+      <div class="col-xs-3">
         <div class="form-group">
           <select class="form-control" ng-model="binwidth">
             <option value="month">Month</option>
+            <option value="week">Week</option>
             <option value="day">Day</option>
           </select>
         </div>
       </div>
-      <div class="col-sm-3">
+      <div class="col-xs-3">
         <button class="btn btn-primary btn-lg"
                 ng-click="updateTimeframes()">
           <i class="fa fa-refresh"></i>&nbsp;Refresh
@@ -71,20 +72,11 @@
         <i class="fa fa-cog fa-spin"></i>
       </div>
     </div>
-    <div id="chart_monthly" ng-show="metrics">
-    </div>
-
-    <h3>Daily Revenue through Activations</h3>
-    <div class="loader-local" ng-hide="metrics">
-      <div class="spinner">
-        <i class="fa fa-cog fa-spin"></i>
-      </div>
-    </div>
-    <div id="chart_daily" ng-show="metrics">
+    <div id="main_chart" ng-show="metrics">
     </div>
 
     <h3>Earnings by Machine</h3>
-    <h4>Membership contributions weighted by undiscounted prices, since Aug 2015</h4>
+    <h4>Membership contributions weighted by undiscounted prices</h4>
     <div class="loader-local" ng-hide="machineEarnings">
       <div class="spinner">
         <i class="fa fa-cog fa-spin"></i>

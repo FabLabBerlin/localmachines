@@ -43,7 +43,7 @@ app.controller('DashboardCtrl',
       $scope.$apply(function() {
         $scope.metrics = metrics;
       });
-      $scope.renderChartsInit();
+      $scope.renderMainChart();
       metricsLoad.machineEarnings(options)
       .then(function(machineEarnings) {
         $scope.$apply(function() {
@@ -95,21 +95,22 @@ app.controller('DashboardCtrl',
     $scope.loadMetricsData();
   };
 
-  $scope.renderMonthlyCharts = function() {
-    var months = _.map($scope.metrics.ActivationsByMonth, function(sum, month) {
-      return month;
+  $scope.renderMainChart = function() {
+    console.log('$scope.metrics=', $scope.metrics);
+    var hValues = _.map($scope.metrics.Activations, function(sum, hVal) {
+      return hVal;
     }).sort();
-    var byMonth = months.map(function(month) {
-      var membershipsRnD = $scope.metrics.MembershipCountsByMonthRnD[month];
-      var memberships = $scope.metrics.MembershipCountsByMonth[month] - membershipsRnD;
-      var minutes = Math.round($scope.metrics.MinutesByMonth[month]);
-      var activationsRevenue = Math.round($scope.metrics.ActivationsByMonth[month]);
-      var membershipsRevenueRnd = Math.round($scope.metrics.MembershipsByMonthRnD[month] || 0);
-      var membershipsRevenue = Math.round($scope.metrics.MembershipsByMonth[month]) - membershipsRevenueRnd;
+    var zipped = hValues.map(function(hVal) {
+      var membershipsRnD = $scope.metrics.MembershipCountsRnD[hVal];
+      var memberships = $scope.metrics.MembershipCounts[hVal] - membershipsRnD;
+      var minutes = Math.round($scope.metrics.Minutes[hVal]);
+      var activationsRevenue = Math.round($scope.metrics.Activations[hVal]);
+      var membershipsRevenueRnd = Math.round($scope.metrics.MembershipsRnD[hVal] || 0);
+      var membershipsRevenue = Math.round($scope.metrics.Memberships[hVal]) - membershipsRevenueRnd;
       return [
         {
-          v: month,
-          f: month
+          v: hVal,
+          f: hVal
         },
         membershipsRevenue,
         'Memberships (' + currency + '): <b>' + membershipsRevenue + '</b><br>' + memberships + ' non-free Memberships',
@@ -129,11 +130,11 @@ app.controller('DashboardCtrl',
     data.addColumn({'type': 'string', 'role': 'tooltip', 'p': {'html': true}});
     data.addColumn('number', 'Co-Working (' + currency + ')');
     data.addColumn({'type': 'string', 'role': 'tooltip', 'p': {'html': true}});
-    data.addRows(byMonth);
+    data.addRows(zipped);
 
     var options = {
       hAxis: {
-        title: 'Month',
+        title: $scope.binwidth[0].toUpperCase() + $scope.binwidth.slice(1),
       },
       vAxis: {
         title: 'Revenue / ' + currency
@@ -147,54 +148,9 @@ app.controller('DashboardCtrl',
     };
 
     var chart = new google.visualization.ColumnChart(
-      document.getElementById('chart_monthly'));
+      document.getElementById('main_chart'));
 
     chart.draw(data, options);
-  };
-
-  $scope.renderDailyCharts = function() {
-    var days = _.map($scope.metrics.ActivationsByDay, function(sum, day) {
-      return day;
-    }).sort();
-    var byDay = days.map(function(day) {
-      var minutes = Math.round($scope.metrics.MinutesByDay[day]);
-      var activationsRevenue = Math.round($scope.metrics.ActivationsByDay[day]);
-      return [
-        {
-          v: moment(day).toDate(),
-          f: day
-        },
-        activationsRevenue,
-        moment(day).format('D MMM YYYY') + '<br>Activations (' + currency + '): <b>' + activationsRevenue + '</b><br>' + minutes + ' minutes for non-Admins'
-      ];
-    });
-
-
-    var data = new google.visualization.DataTable();
-    data.addColumn('date', 'Day');
-    data.addColumn('number', 'Activations (' + currency + ')');
-    data.addColumn({'type': 'string', 'role': 'tooltip', 'p': {'html': true}});
-    data.addRows(byDay);
-
-    var options = {
-      hAxis: {
-        title: 'Day',
-      },
-      vAxis: {
-        title: 'Revenue / ' + currency
-      },
-      tooltip: {isHtml: true}
-    };
-
-    var chart = new google.visualization.ColumnChart(
-      document.getElementById('chart_daily'));
-
-    chart.draw(data, options);
-  };
-
-  $scope.renderCharts = function() {
-    $scope.renderMonthlyCharts();
-    $scope.renderDailyCharts();
   };
 
   $scope.renderChartsInit = function() {
@@ -236,7 +192,7 @@ app.controller('DashboardCtrl',
 
     var options = {
       bars: 'horizontal',
-      width: window.innerWidth,
+      width: window.innerWidth * 0.9,
       height: window.innerWidth,
       legend: { position: 'top', maxLines: 3 },
       //bar: { groupWidth: '75%' },
@@ -285,7 +241,7 @@ app.controller('DashboardCtrl',
 
     var options = {
       bars: 'horizontal',
-      width: window.innerWidth,
+      width: window.innerWidth * 0.9,
       height: window.innerWidth,
       legend: { position: 'top', maxLines: 3 },
       //bar: { groupWidth: '75%' },

@@ -12,6 +12,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/invoices/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/metrics"
+	"github.com/FabLabBerlin/localmachines/models/metrics/bin"
 	"github.com/FabLabBerlin/localmachines/models/metrics/filter"
 	"github.com/FabLabBerlin/localmachines/models/metrics/machine_capacity"
 	"github.com/FabLabBerlin/localmachines/models/metrics/machine_earnings"
@@ -73,7 +74,9 @@ func (c *Controller) GetAll() {
 		YearTo:    to.Year(),
 	}
 
-	data, err := metrics.FetchData(locId, interval /*, binWidth*/)
+	binWidth := bin.NewWidth(bin.Unit(c.GetString("binwidth")))
+
+	data, err := metrics.FetchData(locId, interval, binWidth)
 	if err != nil {
 		beego.Error("Failed to get metrics data:", err)
 		c.CustomAbort(500, "Failed to get metrics data")
