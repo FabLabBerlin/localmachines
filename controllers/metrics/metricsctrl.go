@@ -12,13 +12,13 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/invoices/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/metrics"
+	"github.com/FabLabBerlin/localmachines/models/metrics/filter"
 	"github.com/FabLabBerlin/localmachines/models/metrics/machine_capacity"
 	"github.com/FabLabBerlin/localmachines/models/metrics/machine_earnings"
 	"github.com/FabLabBerlin/localmachines/models/metrics/memberstats"
 	"github.com/FabLabBerlin/localmachines/models/metrics/retention"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
-	"github.com/FabLabBerlin/localmachines/models/user_roles"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 	"strings"
@@ -332,45 +332,17 @@ func (c *Controller) GetRetention() {
 		c.Abort("500")
 	}
 
-	rolesByUid := make(map[int64]user_roles.Role)
-	for _, ul := range uls {
-		rolesByUid[ul.UserId] = ul.GetRole()
-	}
-
-	everActiveUid := make(map[int64]struct{})
-
-	everStaffUid := make(map[int64]struct{})
-
-	invs, err := invutil.GetAllAt(locId)
+	allInvs, err := invutil.GetAllAt(locId)
 	if err != nil {
 		c.Fail(500, "Failed to get invoices")
 	}
 
-	for _, inv := range invs {
-		for _, p := range inv.Purchases {
-			everActiveUid[p.UserId] = struct{}{}
-		}
-		for _, ium := range inv.InvUserMemberships {
-			everActiveUid[ium.UserId] = struct{}{}
-			if ium.MembershipId == 3 {
-				everStaffUid[ium.UserId] = struct{}{}
-			}
-		}
-	}
+	invs := filter.InvoicesByUsers(locId, allInvs, uls, true, excludeNeverActive)
 
 	us := make([]*users.User, 0, len(allUsers))
-	for _, u := range allUsers {
-		if excludeNeverActive {
-			if _, everActive := everActiveUid[u.Id]; !everActive {
-				continue
-			}
-		}
-		if _, everStaff := everStaffUid[u.Id]; everStaff {
-			continue
-		}
-		if r, ok := rolesByUid[u.Id]; !ok || r == user_roles.MEMBER {
-			us = append(us, u)
-		}
+
+	for _, inv := range invs {
+		us = append(us, inv.User)
 	}
 
 	from, to, err := c.FromTo()
