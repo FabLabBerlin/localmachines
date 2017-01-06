@@ -51,6 +51,43 @@ var TableCRUD = React.createClass({
     this.props.onAdd();
   },
 
+  handleArchive(i) {
+    if (!this.state.editRow) {
+      return;
+    }
+
+    if (this.state.editRow.index !== i) {
+      toastr.error('Internal Error.  Please try again later.');
+      return;
+    }
+
+    const entity = this.props.entities.get(i).toJS();
+
+    const locationId = reactor.evaluateToJS(Location.getters.getLocationId);
+
+    $.ajax({
+      url: this.props.updateUrl + '/' + entity.Id + '/archive?location=' + locationId,
+      dataType: 'json',
+      type: 'PUT',
+      contentType: 'application/json; charset=utf-8'
+    })
+    .done(() => {
+      toastr.info('Successfully archived.');
+
+      this.setState({
+        editRow: null
+      });
+      if (this.props.onAfterUpdate) {
+        this.props.onAfterUpdate();
+      } else {
+        toastr.error('Please define onAfterUpdate property');
+      }
+    })
+    .fail(() => {
+      toastr.error('Error saving.  Please try again later.');
+    });
+  },
+
   handleClick(i) {
     if (this.state.editRow) {
       if (this.state.editRow.index !== i) {
@@ -181,6 +218,9 @@ var TableCRUD = React.createClass({
                   }).map((tag, j) => <td key={j}>{tag}</td>)}
 
                   <td>
+                    {editRow ? <i className="fa fa-archive"
+                                  onClick={this.handleArchive.bind(this, i)}
+                                  style={{cursor: 'pointer', marginRight: '15px'}}/> : null}
                     {editRow ? <i className="fa fa-floppy-o"
                                   onClick={this.handleSave.bind(this, i)}
                                   style={{cursor: 'pointer'}}/> : null}
