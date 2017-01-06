@@ -57,7 +57,7 @@ var TableCRUD = React.createClass({
     this.props.onAdd();
   },
 
-  handleArchive(i) {
+  handleSetArchived(i, yes) {
     if (!this.state.editRow) {
       return;
     }
@@ -71,15 +71,16 @@ var TableCRUD = React.createClass({
       const entity = this.props.entities.get(i).toJS();
 
       const locationId = reactor.evaluateToJS(Location.getters.getLocationId);
+      const action = yes ? 'archive' : 'unarchive';
 
       $.ajax({
-        url: this.props.updateUrl + '/' + entity.Id + '/archive?location=' + locationId,
+        url: this.props.updateUrl + '/' + entity.Id + '/' + action + '?location=' + locationId,
         dataType: 'json',
         type: 'PUT',
         contentType: 'application/json; charset=utf-8'
       })
       .done(() => {
-        toastr.info('Successfully archived.');
+        toastr.info('Successfully updated.');
 
         this.setState({
           editRow: null
@@ -91,7 +92,7 @@ var TableCRUD = React.createClass({
         }
       })
       .fail(() => {
-        toastr.error('Error saving.  Please try again later.');
+        toastr.error('Error updating.  Please try again later.');
       });
     };
 
@@ -99,7 +100,7 @@ var TableCRUD = React.createClass({
     VexDialog.buttons.NO.text = 'No';
     
     VexDialog.confirm({
-      message: 'Do you really want to archive this purchase?',
+      message: 'Do you really want to update?',
       callback: confirmed => {
         if (confirmed) {
           cb();
@@ -250,12 +251,18 @@ var TableCRUD = React.createClass({
                   }).map((tag, j) => <td key={j}>{tag}</td>)}
 
                   <td>
-                    {editRow ? <i className="fa fa-archive"
-                                  onClick={this.handleArchive.bind(this, i)}
-                                  style={{cursor: 'pointer', marginRight: '15px'}}/> : null}
-                    {editRow ? <i className="fa fa-floppy-o"
+                    {editRow ? <Button.Tiny
+                                  faClassName="fa fa-archive"
+                                  onClick={this.handleSetArchived.bind(this, i, !e.get('Archived'))}
+                                  style={{cursor: 'pointer', marginRight: '15px'}}
+                                  title={e.get('Archived') ? 'Unarchive' : 'Archive'}
+                               /> : null}
+                    {editRow ? <Button.Tiny
+                                  faClassName="fa fa-floppy-o"
                                   onClick={this.handleSave.bind(this, i)}
-                                  style={{cursor: 'pointer'}}/> : null}
+                                  style={{cursor: 'pointer'}}
+                                  title="Save"
+                               /> : null}
                   </td>
                 </tr>
               );

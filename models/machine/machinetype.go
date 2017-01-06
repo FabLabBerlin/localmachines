@@ -58,6 +58,13 @@ func (t *Type) Archive() (err error) {
 	return
 }
 
+func (t *Type) Unarchive() (err error) {
+	o := orm.NewOrm()
+	t.Archived = false
+	_, err = o.Update(t)
+	return
+}
+
 func (t *Type) Update() (err error) {
 	o := orm.NewOrm()
 	_, err = o.Update(t)

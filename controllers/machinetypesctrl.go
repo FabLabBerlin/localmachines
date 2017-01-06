@@ -108,3 +108,37 @@ func (this *MachineTypeController) Archive() {
 
 	this.ServeJSON()
 }
+
+// @Title Unarchive Machine Type
+// @Description Unarchive a machine type
+// @Param	id	query	int	true	"Machine Type ID"
+// @Success 200 string
+// @Failure	400	Bad Request
+// @Failure	401	Unauthorized
+// @Failure 500 Internal Server Error
+// @router /:id/unarchive [put]
+func (this *MachineTypeController) Unarchive() {
+	id, err := this.GetInt64(":id")
+	if err != nil {
+		beego.Error("Failed to get :id variable")
+		this.Fail("400")
+	}
+
+	t, err := machine.GetType(id)
+	if err != nil {
+		beego.Error("Failed to get type")
+		this.Fail("500")
+	}
+
+	if !this.IsSuperAdmin() {
+		beego.Error("Unauthorized attempt to unarchive machine type")
+		this.Fail("401")
+	}
+
+	err = t.Unarchive()
+	if err != nil {
+		this.Fail(500, "Failed to unarchive")
+	}
+
+	this.ServeJSON()
+}
