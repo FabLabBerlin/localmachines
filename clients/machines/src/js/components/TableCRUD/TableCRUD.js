@@ -190,7 +190,16 @@ var TableCRUD = React.createClass({
     });
   },
 
+  handleSetShowArchived(yes) {
+    this.setState({
+      showArchived: yes
+    });
+  },
+
   render() {
+    const showArchived = this.state.showArchived;
+    console.log('this.state.showArchive=', showArchived);
+
     return (
       <div className="container">
         <h1>{this.props.title}</h1>
@@ -206,7 +215,8 @@ var TableCRUD = React.createClass({
           </thead>
 
           <tbody>
-            {this.props.entities.map((e, i) => {
+            {this.props.entities.filter(e => !e.get('Archived') || showArchived)
+                                .map((e, i) => {
               const editRow = this.state.editRow &&
                               this.state.editRow.index === i &&
                               e.get('Id') !== 0;
@@ -253,11 +263,16 @@ var TableCRUD = React.createClass({
           </tbody>
         </table>
 
-        <div style={{ height: '100px' }}>
+        <div style={{ height: '50px' }}>
           <Button.Annotated id="inv-add-purchase"
                             icon="/machines/assets/img/invoicing/add_purchase.svg"
                             label="Add"
                             onClick={this.handleAdd}/>
+        </div>
+        <div style={{ height: '50px' }}>
+          <Button.Annotated label={showArchived ? 'Hide Archived' : 'Show Archived'}
+                            icon="/machines/assets/img/invoicing/add_purchase.svg"
+                            onClick={this.handleSetShowArchived.bind(this, !showArchived)}/>
         </div>
       </div>
     );
