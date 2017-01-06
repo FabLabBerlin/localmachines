@@ -67,7 +67,7 @@ func (this *PushData) loadMachines(isStaff bool, uid, locationId int64) (err err
 		for _, machine := range allMachines {
 			machine.Locked = true
 			for _, permission := range *permissions {
-				if machine.Id == permission.MachineId {
+				if machine.TypeId == permission.CategoryId {
 					machine.Locked = false
 					break
 				}

@@ -33,10 +33,10 @@ func Get(userId int64) (ps *[]Permission, err error) {
 	return &permissions, err
 }
 
-func Create(userId, machineId int64) (err error) {
+func Create(userId, categoryId int64) (err error) {
 	permission := Permission{
-		UserId:    userId,
-		MachineId: machineId,
+		UserId:     userId,
+		CategoryId: categoryId,
 	}
 
 	o := orm.NewOrm()
@@ -45,10 +45,10 @@ func Create(userId, machineId int64) (err error) {
 	return
 }
 
-func Delete(userId, machineId int64) (err error) {
+func Delete(userId, categoryId int64) (err error) {
 	p := Permission{
-		UserId:    userId,
-		MachineId: machineId,
+		UserId:     userId,
+		CategoryId: categoryId,
 	}
 
 	o := orm.NewOrm()

@@ -478,7 +478,7 @@ func (this *UsersController) GetUserMachines() {
 		for _, machine := range allMachines {
 			for _, permission := range *permissions {
 				machine.Locked = true
-				if machine.Id == permission.MachineId {
+				if machine.TypeId == permission.CategoryId {
 					machine.Locked = false
 					break
 				}

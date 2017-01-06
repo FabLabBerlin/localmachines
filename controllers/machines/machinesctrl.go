@@ -109,8 +109,8 @@ func (this *Controller) Get() {
 		}
 
 		permissionFound := false
-		for _, value := range *permissions {
-			if value.MachineId == machineId {
+		for _, p := range *permissions {
+			if p.CategoryId == machine.TypeId {
 				permissionFound = true
 				break
 			}

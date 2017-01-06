@@ -280,6 +280,12 @@ func (this *ActivationsController) Start() {
 		this.CustomAbort(403, "Failed to create activation")
 	}
 
+	machine, err := machine.Get(machineId)
+	if err != nil {
+		beego.Error("Unable to get machine:", err)
+		this.CustomAbort(500, "Unable to get machine")
+	}
+
 	// Admins can activate any machine (except broken ones).
 	// Regular users have to refer to their permissions.
 	if !isStaff {
@@ -292,7 +298,7 @@ func (this *ActivationsController) Start() {
 		}
 		var userPermitted = false
 		for _, permission := range *userPermissions {
-			if int64(permission.MachineId) == machineId {
+			if permission.CategoryId == machine.TypeId {
 				userPermitted = true
 				break
 			}
@@ -301,12 +307,6 @@ func (this *ActivationsController) Start() {
 			beego.Error("User has no permission to activate the machine")
 			this.CustomAbort(401, "Not authorized")
 		}
-	}
-
-	machine, err := machine.Get(machineId)
-	if err != nil {
-		beego.Error("Unable to get machine:", err)
-		this.CustomAbort(500, "Unable to get machine")
 	}
 
 	if err = machine.On(userId); err != nil {
