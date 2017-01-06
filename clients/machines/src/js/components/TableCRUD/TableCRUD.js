@@ -6,6 +6,12 @@ var React = require('react');
 var reactor = require('../../reactor');
 var toastr = require('toastr');
 
+// https://github.com/HubSpot/vex/issues/72
+var vex = require('vex-js'),
+VexDialog = require('vex-js/js/vex.dialog.js');
+
+vex.defaultOptions.className = 'vex-theme-custom';
+
 
 var Input = React.createClass({
   handleEdit(e) {
@@ -61,30 +67,46 @@ var TableCRUD = React.createClass({
       return;
     }
 
-    const entity = this.props.entities.get(i).toJS();
+    var cb = () => {
+      const entity = this.props.entities.get(i).toJS();
 
-    const locationId = reactor.evaluateToJS(Location.getters.getLocationId);
+      const locationId = reactor.evaluateToJS(Location.getters.getLocationId);
 
-    $.ajax({
-      url: this.props.updateUrl + '/' + entity.Id + '/archive?location=' + locationId,
-      dataType: 'json',
-      type: 'PUT',
-      contentType: 'application/json; charset=utf-8'
-    })
-    .done(() => {
-      toastr.info('Successfully archived.');
+      $.ajax({
+        url: this.props.updateUrl + '/' + entity.Id + '/archive?location=' + locationId,
+        dataType: 'json',
+        type: 'PUT',
+        contentType: 'application/json; charset=utf-8'
+      })
+      .done(() => {
+        toastr.info('Successfully archived.');
 
-      this.setState({
-        editRow: null
+        this.setState({
+          editRow: null
+        });
+        if (this.props.onAfterUpdate) {
+          this.props.onAfterUpdate();
+        } else {
+          toastr.error('Please define onAfterUpdate property');
+        }
+      })
+      .fail(() => {
+        toastr.error('Error saving.  Please try again later.');
       });
-      if (this.props.onAfterUpdate) {
-        this.props.onAfterUpdate();
-      } else {
-        toastr.error('Please define onAfterUpdate property');
+    };
+
+    VexDialog.buttons.YES.text = 'Yes';
+    VexDialog.buttons.NO.text = 'No';
+    
+    VexDialog.confirm({
+      message: 'Do you really want to archive this purchase?',
+      callback: confirmed => {
+        if (confirmed) {
+          cb();
+        }
+        $('.vex').remove();
+        $('body').removeClass('vex-open');
       }
-    })
-    .fail(() => {
-      toastr.error('Error saving.  Please try again later.');
     });
   },
 
