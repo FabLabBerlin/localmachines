@@ -6,7 +6,9 @@ const getAll = [
   ['categoriesStore'],
   (categoriesStore) => {
     if (categoriesStore) {
-      return categoriesStore.push(toImmutable({
+      return categoriesStore
+      .sortBy(c => c.get('Name'))
+      .push(toImmutable({
         Id: 0,
         ShortName: 'other',
         Name: 'Other'
