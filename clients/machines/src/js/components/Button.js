@@ -1,3 +1,4 @@
+var $ = require('jquery');
 var React = require('react');
 
 
@@ -48,7 +49,7 @@ var Tiny = React.createClass({
          data-placement="top"
          data-toggle="tooltip"
          onClick={this.handleClick}
-         ref={i => {this.i = i;}}
+         ref={i => { this.i = i; }}
          style={this.props.style}
          title={this.props.title}/>
     );
