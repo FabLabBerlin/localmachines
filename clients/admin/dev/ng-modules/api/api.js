@@ -29,6 +29,23 @@ mod.service('api',
     });
   };
 
+  this.loadCategories = function(cb) {
+    $http({
+      method: 'GET',
+      url: '/api/machine_types',
+      params: {
+        ac: new Date().getTime(),
+        location: $cookies.get('location')
+      }
+    })
+    .success(function(categories) {
+      cb(categories);
+    })
+    .error(function() {
+      toastr.error('Failed to get categories');
+    });
+  };
+
   this.loadMachines = function(cb) {
     $http({
       method: 'GET',

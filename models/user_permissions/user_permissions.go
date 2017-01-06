@@ -10,9 +10,9 @@ import (
 const TABLE_NAME = "permission"
 
 type Permission struct {
-	Id        int64 `orm:"pk"`
-	UserId    int64
-	MachineId int64
+	Id         int64 `orm:"pk"`
+	UserId     int64
+	CategoryId int64
 }
 
 func (this *Permission) TableName() string {

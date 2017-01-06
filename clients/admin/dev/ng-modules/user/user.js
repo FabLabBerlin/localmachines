@@ -124,41 +124,34 @@ app.controller('UserCtrl',
   $scope.loadUserData();
 
   $scope.loadAvailableMachines = function() {
-    api.loadMachines(function(resp) {
-      $scope.availableMachines = resp.machines;
-
-      if ($scope.user.UserRole === 'admin') {
-        _.each($scope.availableMachines, function(machine){
-          machine.Disabled = true;
-          machine.Checked = true;
-        });
-      } else {
-        $scope.loadUserMachinePermissions($scope.getAvailableMemberships);
-      }
+    
+    api.loadCategories(function(categories) {
+      $scope.categories = categories;
+      $scope.loadUserCategoryPermissions($scope.getAvailableMemberships);
     });
   };
 
-  $scope.loadUserMachinePermissions = function(callback) {
+  $scope.loadUserCategoryPermissions = function(callback) {
     $http({
       method: 'GET',
-      url: '/api/users/' + $scope.user.Id + '/machinepermissions',
+      url: '/api/users/' + $scope.user.Id + '/categorypermissions',
       params: {
         ac: new Date().getTime()
       }
     })
-    .success(function(userMachines) {
+    .success(function(userCategories) {
 
-      $scope.userMachines = userMachines;
+      $scope.userCategories = userCategories;
 
       if (callback) {
         callback();
       }
 
-      _.each($scope.availableMachines, function(machine) {
-        machine.Checked = false;
-        _.each(userMachines, function(userMachine) {
-          if (userMachine.Id === machine.Id) {
-            machine.Checked = true;
+      _.each($scope.categories, function(c) {
+        c.Checked = false;
+        _.each(userCategories, function(userCategory) {
+          if (userCategory.Id === c.Id) {
+            c.Checked = true;
           }
         }); // each
       }); // each
@@ -870,5 +863,13 @@ app.controller('UserCtrl',
   };
 
 }]); // app.controller
+
+app.filter('categoriesFilter', function() {
+  return function(categories, scope) {
+    return _.filter(categories, function(c) {
+      return !c.Archived;
+    });
+  };
+});
 
 })(); // closure

@@ -59,18 +59,9 @@ app.controller('MachineCtrl',
     });
   };
 
-  $scope.loadMachineTypes = function() {
-    $http({
-      method: 'GET',
-      url: '/api/machine_types'
-    })
-    .success(function(data) {
-      $scope.machineTypes = data;
-    })
-    .error(function() {
-      toastr.error('Failed to get machine types');
-    });
-  };
+  api.loadCategories(function(categories) {
+    $scope.machineTypes = categories;
+  });
 
   api.loadSettings(function(settings) {
     $scope.settings = settings;
