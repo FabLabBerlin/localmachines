@@ -26,7 +26,7 @@ func (m *PermissionCategoryId_20170106_165735) Up() {
 			PRIMARY KEY (id)
 	)`)
 	m.SQL(`
-INSERT INTO permissions_new
+INSERT INTO permission_new
 SELECT permission.id,
        permission.user_id,
        type_id
