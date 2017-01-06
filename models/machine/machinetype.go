@@ -13,6 +13,7 @@ type Type struct {
 	Id        int64
 	ShortName string `orm:"size(20)"`
 	Name      string `orm:"size(255)"`
+	Archived  bool
 }
 
 func init() {
@@ -37,9 +38,23 @@ func (t *Type) Create() (err error) {
 	return
 }
 
+func GetType(id int64) (t *Type, err error) {
+	o := orm.NewOrm()
+	t = &Type{Id: id}
+	err = o.Read(t)
+	return
+}
+
 func GetAllTypes() (ts []*Type, err error) {
 	o := orm.NewOrm()
 	_, err = o.QueryTable(TYPE_TABLE_NAME).All(&ts)
+	return
+}
+
+func (t *Type) Archive() (err error) {
+	o := orm.NewOrm()
+	t.Archived = true
+	_, err = o.Update(t)
 	return
 }
 

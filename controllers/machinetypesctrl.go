@@ -74,3 +74,37 @@ func (this *MachineTypeController) Put() {
 	this.Data["json"] = "ok"
 	this.ServeJSON()
 }
+
+// @Title Archive Machine Type
+// @Description Archive a machine type
+// @Param	id	query	int	true	"Machine Type ID"
+// @Success 200 string
+// @Failure	400	Bad Request
+// @Failure	401	Unauthorized
+// @Failure 500 Internal Server Error
+// @router /:id/archive [put]
+func (this *MachineTypeController) Archive() {
+	id, err := this.GetInt64(":id")
+	if err != nil {
+		beego.Error("Failed to get :id variable")
+		this.Fail("400")
+	}
+
+	t, err := machine.GetType(id)
+	if err != nil {
+		beego.Error("Failed to get type")
+		this.Fail("500")
+	}
+
+	if !this.IsSuperAdmin() {
+		beego.Error("Unauthorized attempt to archive machine type")
+		this.Fail("401")
+	}
+
+	err = t.Archive()
+	if err != nil {
+		this.Fail(500, "Failed to archive")
+	}
+
+	this.ServeJSON()
+}
