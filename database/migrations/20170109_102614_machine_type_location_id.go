@@ -19,9 +19,10 @@ func init() {
 // Run the migrations
 func (m *MachineTypeLocationId_20170109_102614) Up() {
 	m.SQL("ALTER TABLE machine_types ADD COLUMN location_id int(11) AFTER id")
+	m.SQL("ALTER TABLE machine_types ADD COLUMN old_id int(11)")
 	m.SQL(`
-INSERT INTO machine_types (location_id, short_name, name, archived)
-SELECT l.id, t.short_name, t.name, t.archived
+INSERT INTO machine_types (location_id, short_name, name, archived, old_id)
+SELECT l.id, t.short_name, t.name, t.archived, t.id
 FROM locations AS l,
      machine_types AS t
 `)
@@ -32,4 +33,6 @@ FROM locations AS l,
 func (m *MachineTypeLocationId_20170109_102614) Down() {
 	m.SQL("DELETE FROM machine_types WHERE location_id <> 1")
 	m.SQL("ALTER TABLE machine_types DROP COLUMN location_id")
+	m.SQL("UPDATE machine_types SET id = old_id")
+	m.SQL("ALTER TABLE machine_types DROP COLUMN old_id")
 }
