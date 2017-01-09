@@ -139,11 +139,18 @@ func init() {
 			AllowHTTPMethods: []string{"get"},
 			Params: nil})
 
-	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UserPermissionsController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UserPermissionsController"],
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UsersController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UsersController"],
 		beego.ControllerComments{
-			Method: "GetUserMachinePermissions",
-			Router: `/:uid/machinepermissions`,
-			AllowHTTPMethods: []string{"get"},
+			Method: "GetByNfcId",
+			Router: `/by_nfc_id`,
+			AllowHTTPMethods: []string{"post"},
+			Params: nil})
+
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UsersController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UsersController"],
+		beego.ControllerComments{
+			Method: "PostNfcId",
+			Router: `/:uid/nfc_id`,
+			AllowHTTPMethods: []string{"post"},
 			Params: nil})
 
 	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UsersController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UsersController"],
@@ -227,20 +234,6 @@ func init() {
 		beego.ControllerComments{
 			Method: "PostUserPassword",
 			Router: `/:uid/password`,
-			AllowHTTPMethods: []string{"post"},
-			Params: nil})
-
-	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UsersController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UsersController"],
-		beego.ControllerComments{
-			Method: "GetByNfcId",
-			Router: `/by_nfc_id`,
-			AllowHTTPMethods: []string{"post"},
-			Params: nil})
-
-	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UsersController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UsersController"],
-		beego.ControllerComments{
-			Method: "PostNfcId",
-			Router: `/:uid/nfc_id`,
 			AllowHTTPMethods: []string{"post"},
 			Params: nil})
 

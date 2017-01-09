@@ -69,7 +69,7 @@ func Update(userId, locationId int64, permissions *[]Permission) error {
 	query := `
 	DELETE permission
 	FROM permission
-	JOIN machines ON machines.id = permission.machine_id
+	JOIN machine_types ON machine_types.id = permission.category_id
 	WHERE user_id = ? AND location_id = ?`
 	if _, err := o.Raw(query, userId, locationId).Exec(); err != nil {
 		return fmt.Errorf("Error deleting: %v", err)
