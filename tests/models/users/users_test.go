@@ -362,10 +362,10 @@ func TestUsers(t *testing.T) {
 			Convey("Creating one User and update his permission", func() {
 				uid, _ := users.CreateUser(&u)
 				perms := &[]user_permissions.Permission{
-					{UserId: uid, MachineId: 0},
-					{UserId: uid, MachineId: 1},
-					{UserId: uid, MachineId: 2},
-					{UserId: uid, MachineId: 3},
+					{UserId: uid, CategoryId: 0},
+					{UserId: uid, CategoryId: 1},
+					{UserId: uid, CategoryId: 2},
+					{UserId: uid, CategoryId: 3},
 				}
 				err := user_permissions.Update(uid, 1, perms)
 
