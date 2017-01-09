@@ -17,7 +17,12 @@ type MachineTypeController struct {
 // @Failure	500	Internal Server Error
 // @router / [get]
 func (c *MachineTypeController) GetAll() {
-	ls, err := machine.GetAllTypes()
+	locId, authorized := c.GetLocIdAdmin()
+	if !authorized {
+		c.CustomAbort(401, "Not authorized")
+	}
+
+	ls, err := machine.GetAllTypes(locId)
 	if err != nil {
 		c.CustomAbort(500, "Failed to get all locations")
 	}
@@ -32,8 +37,14 @@ func (c *MachineTypeController) GetAll() {
 // @Failure	500	Internal Server Error
 // @router / [post]
 func (c *MachineTypeController) Create() {
+	locId, authorized := c.GetLocIdAdmin()
+	if !authorized {
+		c.CustomAbort(401, "Not authorized")
+	}
+
 	t := machine.Type{
-		Name: c.GetString("name"),
+		LocationId: locId,
+		Name:       c.GetString("name"),
 	}
 
 	if err := t.Create(); err != nil {
@@ -52,6 +63,10 @@ func (c *MachineTypeController) Create() {
 // @Failure	403	Variable message
 // @router /:id [put]
 func (this *MachineTypeController) Put() {
+	locId, authorized := this.GetLocIdAdmin()
+	if !authorized {
+		this.CustomAbort(401, "Not authorized")
+	}
 
 	dec := json.NewDecoder(this.Ctx.Request.Body)
 	t := machine.Type{}
@@ -62,8 +77,8 @@ func (this *MachineTypeController) Put() {
 		this.Fail(400, "Failed to decode json")
 	}
 
-	if !this.IsSuperAdmin() {
-		beego.Error("Not authorized to update a machine type")
+	if !this.IsAdminAt(locId) || t.LocationId != locId {
+		beego.Error("Not authorized to update this machine type")
 		this.Fail(403)
 	}
 
@@ -84,6 +99,11 @@ func (this *MachineTypeController) Put() {
 // @Failure 500 Internal Server Error
 // @router /:id/archive [put]
 func (this *MachineTypeController) Archive() {
+	locId, authorized := this.GetLocIdAdmin()
+	if !authorized {
+		this.CustomAbort(401, "Not authorized")
+	}
+
 	id, err := this.GetInt64(":id")
 	if err != nil {
 		beego.Error("Failed to get :id variable")
@@ -96,7 +116,7 @@ func (this *MachineTypeController) Archive() {
 		this.Fail("500")
 	}
 
-	if !this.IsSuperAdmin() {
+	if !this.IsAdminAt(locId) || t.LocationId != locId {
 		beego.Error("Unauthorized attempt to archive machine type")
 		this.Fail("401")
 	}
@@ -118,6 +138,11 @@ func (this *MachineTypeController) Archive() {
 // @Failure 500 Internal Server Error
 // @router /:id/unarchive [put]
 func (this *MachineTypeController) Unarchive() {
+	locId, authorized := this.GetLocIdAdmin()
+	if !authorized {
+		this.CustomAbort(401, "Not authorized")
+	}
+
 	id, err := this.GetInt64(":id")
 	if err != nil {
 		beego.Error("Failed to get :id variable")
@@ -130,7 +155,7 @@ func (this *MachineTypeController) Unarchive() {
 		this.Fail("500")
 	}
 
-	if !this.IsSuperAdmin() {
+	if !this.IsAdminAt(locId) || t.LocationId != locId {
 		beego.Error("Unauthorized attempt to unarchive machine type")
 		this.Fail("401")
 	}
