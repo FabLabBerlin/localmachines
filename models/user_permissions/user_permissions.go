@@ -40,7 +40,7 @@ func Create(userId, categoryId int64) (err error) {
 	}
 
 	o := orm.NewOrm()
-	_, _, err = o.ReadOrCreate(&permission, "UserId", "MachineId")
+	_, _, err = o.ReadOrCreate(&permission, "UserId", "CategoryId")
 
 	return
 }
@@ -53,7 +53,7 @@ func Delete(userId, categoryId int64) (err error) {
 
 	o := orm.NewOrm()
 
-	if err = o.Read(&p, "UserId", "MachineId"); err != nil {
+	if err = o.Read(&p, "UserId", "CategoryId"); err != nil {
 		return
 	}
 
