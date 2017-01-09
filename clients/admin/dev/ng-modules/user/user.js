@@ -150,7 +150,7 @@ app.controller('UserCtrl',
       _.each($scope.categories, function(c) {
         c.Checked = false;
         _.each(userCategories, function(userCategory) {
-          if (userCategory.Id === c.Id) {
+          if (userCategory.CategoryId === c.Id) {
             c.Checked = true;
           }
         }); // each
@@ -570,9 +570,9 @@ app.controller('UserCtrl',
     }
 
     var permissions = [];
-    _.each($scope.availableMachines, function(machine) {
-      if (machine.Checked) {
-        var p = {MachineId: machine.Id};
+    _.each($scope.categories, function(c) {
+      if (c.Checked) {
+        var p = {CategoryId: c.Id};
         permissions.push(p);
       }
     });
