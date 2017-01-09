@@ -39,7 +39,9 @@ mod.service('api',
       }
     })
     .success(function(categories) {
-      cb(categories);
+      cb(_.sortBy(categories, function(c) {
+        return c.Name;
+      }));
     })
     .error(function() {
       toastr.error('Failed to get categories');
