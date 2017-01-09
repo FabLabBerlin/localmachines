@@ -10,10 +10,11 @@ const (
 )
 
 type Type struct {
-	Id        int64
-	ShortName string `orm:"size(20)"`
-	Name      string `orm:"size(255)"`
-	Archived  bool
+	Id         int64
+	LocationId int64
+	ShortName  string `orm:"size(20)"`
+	Name       string `orm:"size(255)"`
+	Archived   bool
 }
 
 func init() {
@@ -27,6 +28,9 @@ func (t *Type) TableName() string {
 func (t *Type) Create() (err error) {
 	if t.Name == "" {
 		return fmt.Errorf("No name")
+	}
+	if t.LocationId <= 0 {
+		return fmt.Errorf("No loc id")
 	}
 
 	o := orm.NewOrm()
@@ -45,9 +49,11 @@ func GetType(id int64) (t *Type, err error) {
 	return
 }
 
-func GetAllTypes() (ts []*Type, err error) {
+func GetAllTypes(locId int64) (ts []*Type, err error) {
 	o := orm.NewOrm()
-	_, err = o.QueryTable(TYPE_TABLE_NAME).All(&ts)
+	_, err = o.QueryTable(TYPE_TABLE_NAME).
+		Filter("location_id", locId).
+		All(&ts)
 	return
 }
 
@@ -66,6 +72,9 @@ func (t *Type) Unarchive() (err error) {
 }
 
 func (t *Type) Update() (err error) {
+	if t.LocationId <= 0 {
+		return fmt.Errorf("No loc id")
+	}
 	o := orm.NewOrm()
 	_, err = o.Update(t)
 	return
