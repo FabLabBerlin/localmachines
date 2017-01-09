@@ -67,7 +67,6 @@ app.controller('MachineCtrl',
     $scope.settings = settings;
   });
 
-  $scope.loadMachineTypes();
   $scope.loadMachine();
 
   $scope.setArchived = function(archived) {

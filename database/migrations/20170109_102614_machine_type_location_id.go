@@ -28,10 +28,12 @@ FROM locations AS l,
 `)
 	m.SQL("DELETE FROM machine_types WHERE location_id IS NULL")
 	m.SQL("UPDATE machines JOIN machine_types AS t ON machines.type_id = old_id SET type_id = t.id")
+	m.SQL("UPDATE permission JOIN machine_types AS t ON permission.category_id = old_id SET category_id = t.id")
 }
 
 // Reverse the migrations
 func (m *MachineTypeLocationId_20170109_102614) Down() {
+	m.SQL("UPDATE permission JOIN machine_types AS t ON permission.category_id = t.id SET category_id = old_id")
 	m.SQL("UPDATE machines JOIN machine_types AS t ON machines.type_id = t.id SET type_id = old_id")
 	m.SQL("DELETE FROM machine_types WHERE location_id <> 1")
 	m.SQL("ALTER TABLE machine_types DROP COLUMN location_id")

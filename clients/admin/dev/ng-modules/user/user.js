@@ -134,7 +134,7 @@ app.controller('UserCtrl',
   $scope.loadUserCategoryPermissions = function(callback) {
     $http({
       method: 'GET',
-      url: '/api/users/' + $scope.user.Id + '/categorypermissions',
+      url: '/api/users/' + $scope.user.Id + '/permissions',
       params: {
         ac: new Date().getTime()
       }
@@ -155,6 +155,8 @@ app.controller('UserCtrl',
           }
         }); // each
       }); // each
+      console.log('$scope.userCategories=', $scope.userCategories);
+      console.log('$scope.categories=', $scope.categories);
     }) // success
     .error(function(msg, status) {
       console.log(msg);

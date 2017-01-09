@@ -26,8 +26,9 @@ var CategoriesPage = React.createClass({
   },
 
   add() {
+    const locationId = reactor.evaluateToJS(Location.getters.getLocationId);
     $.ajax({
-      url: '/api/machine_types',
+      url: '/api/machine_types?location=' + locationId,
       dataType: 'json',
       type: 'POST',
       data: {
