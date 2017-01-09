@@ -17,7 +17,7 @@ type MachineTypeController struct {
 // @Failure	500	Internal Server Error
 // @router / [get]
 func (c *MachineTypeController) GetAll() {
-	locId, authorized := c.GetLocIdAdmin()
+	locId, authorized := c.GetLocIdMember()
 	if !authorized {
 		c.CustomAbort(401, "Not authorized")
 	}
