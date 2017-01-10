@@ -34,7 +34,6 @@ mod.service('api',
       method: 'GET',
       url: '/api/machine_types',
       params: {
-        ac: new Date().getTime(),
         location: $cookies.get('location')
       }
     })
