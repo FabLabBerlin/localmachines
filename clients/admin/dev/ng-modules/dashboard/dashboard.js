@@ -26,6 +26,16 @@ app.controller('DashboardCtrl',
   $scope.binwidth = 'month';
   var currency = '';
 
+  $(document).ready(function(){
+    $('[data-toggle=tooltip]').hover(function(){
+      // on mouseenter
+      $(this).tooltip('show');
+    }, function(){
+      // on mouseleave
+      $(this).tooltip('hide');
+    });
+  });
+
   api.loadSettings(function(settings) {
     $scope.settings = settings;
     currency = $scope.settings.Currency.ValueString;
