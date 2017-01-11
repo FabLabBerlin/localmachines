@@ -20,7 +20,7 @@ VERSION=`git describe --abbrev=0 --tags | cut -c 2-`
 
 if [[ $# -eq 0 ]]
 then
-    echo 'Please add architecture (amd64 or arm) as parameter'
+    echo 'Please add architecture (amd64 or arm or mips) as parameter'
     echo
     echo 'Example:'
     echo '          scripts/build_deb amd64'
@@ -53,6 +53,9 @@ function setupDEBIAN {
 	elif [ "$architecture" = "arm" ]
 	then
 		sed "s/ARCHITECTURE/armhf/g" $sourceDir/control > /tmp/lm_tmp_control
+	elif [ "$architecture" = "mips" ]
+	then
+		sed "s/ARCHITECTURE/mips/g" $sourceDir/control > /tmp/lm_tmp_control
 	else
 		echo setupDEBIAN: wrong arg
 		exit 1
@@ -63,7 +66,7 @@ function setupDEBIAN {
 function compile {
 	sourceDir=$1         # e.g. ../$__dir or ../$__dir/gateway
 	targetDir=$2         # e.g. $PKG_ROOT/opt/localmachines
-	architecture=$3      # amd64 or arm
+	architecture=$3      # amd64 or arm or mips
 	binName=$4           # e.g. localmachines or localmachines-gateway
 
 
@@ -79,7 +82,7 @@ function finalize {
 	pkgTmpDir=$1
 	pkgRoot=$2
 	pkgName=$3           # e.g. localmachines_0.10.2.0
-	architecture=$4      # amd64 or arm
+	architecture=$4      # amd64 or arm or mips
 
 
 	sudo chown -R root $pkgRoot
