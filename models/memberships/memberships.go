@@ -44,6 +44,38 @@ func (this *Membership) AffectedMachineIds() ([]int64, error) {
 	return ids, nil
 }
 
+// Get an array of ID's of affected categories by the membership.
+func (this *Membership) AffectedCategoryIds() ([]int64, error) {
+	parseErr := fmt.Errorf("cannot parse AffectedCategories property: '%v'", this.AffectedMachines)
+	l := len(this.AffectedCategories)
+	if l == 0 || this.AffectedCategories == "[]" {
+		return []int64{}, nil
+	}
+	if l < 2 || this.AffectedCategories[0:1] != "[" || this.AffectedCategories[l-1:l] != "]" {
+		return nil, parseErr
+	}
+	idStrings := strings.Split(this.AffectedCategories[1:l-1], ",")
+	ids := make([]int64, 0, len(idStrings))
+	for _, idString := range idStrings {
+		if id, err := strconv.ParseInt(idString, 10, 64); err == nil {
+			ids = append(ids, id)
+		} else {
+			return nil, fmt.Errorf("ParseInt: %v", err)
+		}
+	}
+	return ids, nil
+}
+
+// Set affected categories IDs of the membership.
+func (this *Membership) SetAffectedCategoryIds(categoryIds []int64) error {
+	strIds := make([]string, len(categoryIds))
+	for i, id := range categoryIds {
+		strIds[i] = strconv.FormatInt(id, 10)
+	}
+	this.AffectedCategories = "[" + strings.Join(strIds, ",") + "]"
+	return nil
+}
+
 func (this *Membership) IsRndCentre() bool {
 	return strings.Contains(this.Title, "R&D Centre")
 }
