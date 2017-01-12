@@ -2,7 +2,7 @@
 
     <h1>Dashboard</h1>
     <h2>Metrics</h2>
-    <h3>Timeframe</h3>
+    <h3>Timeframe <i class="fa fa-info-circle" data-html="true" data-toggle="tooltip" title="Timeframe for graphs. In many cases the day is ignored and only the month taken into account. Users with Staff/Admin status are ignored, likewise Archived/Canceled invoices and purchases."></i></h3>
 
     <div class="loader-local" ng-hide="retention">
       <div class="spinner">
@@ -75,7 +75,7 @@
     <div id="main_chart" ng-show="metrics">
     </div>
 
-    <h3>Earnings by Machine</h3>
+    <h3>Earnings by Machine <i class="fa fa-info-circle" data-html="true" data-toggle="tooltip" title="The sum of all membership bars equates to the membership revenue - of memberships that were actually in use. The proportion of a bar to the total membership revenue is linear in a) the price the user would have paid without membership rebate and b) in the duration. More details at the end of the page."></i></h3>
     <h4>Membership contributions weighted by undiscounted prices</h4>
     <div class="loader-local" ng-hide="machineEarnings">
       <div class="spinner">
@@ -198,7 +198,7 @@
     </div>
     <div id="other-memberships" style="margin-top: 15px"></div>
 
-    <h3>Heatmap</h3>
+    <h3>Heatmap <i class="fa fa-info-circle" data-html="true" data-toggle="tooltip" title="Currently contains all users registered in this location."></i></h3>
     <h4>Experimental</h4>
     <div class="loader-local" ng-hide="coordinates">
       <div class="spinner">
@@ -206,5 +206,10 @@
       </div>
     </div>
     <div id="heatmap_container" ng-show="coordinates">
+    </div>
+
+    <h3>More Details</h3>
+    <div>
+    If you want full technical details, you can read <a href="/files/metrics.pdf">this PDF</a>.
     </div>
 </div>
