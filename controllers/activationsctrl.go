@@ -339,6 +339,17 @@ func (this *ActivationsController) Close() {
 		beego.Error("Unable to get machine:", err)
 		this.CustomAbort(500, "Unable to get machine")
 	}
+
+	permitted, err := this.categoryPermissionCheck(locId, userId, machine)
+	if err != nil {
+		beego.Error(err.Error())
+		this.Fail(500)
+	}
+	if !permitted {
+		beego.Error("User has no permission to stop the machine")
+		this.CustomAbort(401, "Not authorized")
+	}
+
 	if err = machine.Off(userId); err != nil {
 		beego.Error("Failed to switch off machine")
 		if !this.IsAdminAt(machine.LocationId) {
