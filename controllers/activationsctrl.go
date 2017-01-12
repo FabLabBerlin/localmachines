@@ -250,8 +250,8 @@ func (this *ActivationsController) GetActive() {
 // @Failure 401 Not authorized
 // @router /start [post]
 func (this *ActivationsController) Start() {
-	locId, isStaff := this.GetLocIdMember()
-	if !isStaff {
+	locId, isMember := this.GetLocIdMember()
+	if !isMember {
 		beego.Error("Not authorized")
 		this.CustomAbort(401, "Not authorized")
 	}
@@ -288,7 +288,7 @@ func (this *ActivationsController) Start() {
 
 	// Admins can activate any machine (except broken ones).
 	// Regular users have to refer to their permissions.
-	if !isStaff {
+	if !this.IsStaffAt(locId) {
 
 		// Check if user has permissions to create activation for the machine.
 		userPermissions, err := user_permissions.Get(userId)
