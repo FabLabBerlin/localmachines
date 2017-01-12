@@ -313,6 +313,12 @@ func (this *ActivationsController) Start() {
 // @Failure 401 Not authorized
 // @router /:aid/close [post]
 func (this *ActivationsController) Close() {
+	locId, isMember := this.GetLocIdMember()
+	if !isMember {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
 	aid, err := this.GetInt64(":aid")
 	if err != nil {
 		beego.Error("Failed to get :aid")

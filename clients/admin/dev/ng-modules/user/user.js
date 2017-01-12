@@ -127,6 +127,13 @@ app.controller('UserCtrl',
     
     api.loadCategories(function(categories) {
       $scope.categories = categories;
+      console.log('$scope.categories=', $scope.categories);
+      $scope.categories.push({
+        Id: 0,
+        LocationId: $scope.locationId,
+        Name: 'Other',
+        ShortName: 'other'
+      });
       $scope.loadUserCategoryPermissions($scope.getAvailableMemberships);
     });
   };
@@ -576,6 +583,8 @@ app.controller('UserCtrl',
         permissions.push(p);
       }
     });
+
+    console.log('sending data permissions=', permissions);
 
     $http({
       method: 'PUT',
