@@ -1,0 +1,38 @@
+\documentclass[12pt]{article}
+\usepackage{lingmacros}
+\usepackage{amsmath}
+\usepackage{tree-dvips}
+\begin{document}
+
+\section*{Metrics}
+
+\subsection*{Data pre-filtering}
+
+Canceled invoices are filered. Invoices are excluded when they are before or after the from/to \emph{month}.
+
+\subsection*{Earnings by Machine}
+
+\begin{eqnarray*}
+\textup{EarningsMemberships(Machine M)} & = & \sum_{\substack{\textup{MB} \in \textup{Memberships} \\ \textup{affecting M}}} w(\textup{M}, \textup{MB}) \times \textup{Revenue}(\textup{MB})
+\end{eqnarray*}
+
+where
+
+\begin{eqnarray*}
+w(M, MB) & = & \frac{\textup{Undiscounted cost for Machine M in Membership MB}}{\textup{Undiscounted cost for \emph{all} Machines M' in Membership MB}} \\
+ & = & \frac{ \sum\limits_{p \in \textup{Purchases}(MB, M)} \textup{PaygPricePerTime(p)} \times \textup{Duration(p)}    }{ \sum\limits_{M' \in MB}  \sum\limits_{p \in \textup{Purchases}(MB, M')} \textup{PaygPricePerTime(p)} \times \textup{Duration(p)}  }  \textup{,}
+\end{eqnarray*}
+
+$M \in MB$ meaning that a machine M gets cheaper through Membership MB, $\textup{Purchases(MB, M)}$ are the Purchases on Machine M that got cheaper through Membership MB (Based on current Membership settings). $\textup{PaygPricePerTime(p)}$ is the historic Pay-As-You-Go Price Per Duration Unit for the Purchase $p$ before applying membership discount, $\textup{Duration(p)}$ the Duration of the Purchase $p$ and $\textup{Revenue(MB)}$ the total revenue made with Membership $\textup{MB}$, assuming the current Membership price.
+
+$\sum\limits_{x \in X} f(x)$ means sum $f(x)$ for all $x$ in $X$. For example when 
+
+\begin{eqnarray*}
+ \textup{Memberships affecting CNC Mill} & = & \{\textup{CNC Flat}, \textup{All Flat}\} \\
+ \Rightarrow  \textup{EarningsMemberships(CNC Mill)} & = & w(\textup{CNC Mill}, \textup{CNC Flat}) \times \textup{Revenue}(\textup{CNC Flat}) \\
+& + & w(\textup{CNC Mill}, \textup{All Flat}) \times \textup{Revenue}(\textup{All Flat}) 
+\end{eqnarray*}
+
+
+
+\end{document}
