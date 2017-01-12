@@ -18,6 +18,7 @@ func init() {
 
 // Run the migrations
 func (m *PermissionCategoryId_20170106_165735) Up() {
+	m.SQL(`SET sql_mode = ''`)
 	m.SQL(`
 		CREATE TABLE permission_new (
 			id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
