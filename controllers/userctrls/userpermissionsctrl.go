@@ -142,8 +142,9 @@ func (this *UserPermissionsController) UpdateUserPermissions() {
 	}
 
 	// Make sure that the user IDs of all the permissions are the same
-	// as the request user ID
+	// as the request user ID and location ID
 	for i := 0; i < len(permissions); i++ {
+		permissions[i].LocationId = locationId
 		permissions[i].UserId = userId
 	}
 

@@ -80,9 +80,10 @@ var MachineActions = {
   },
 
   endActivation(aid, cb) {
+    var locationId = reactor.evaluateToJS(LocationGetters.getLocationId);
     GlobalActions.showGlobalLoader();
     $.ajax({
-      url: '/api/activations/' + aid + '/close',
+      url: '/api/activations/' + aid + '/close?location=' + locationId,
       method: 'POST',
       data: {
         ac: new Date().getTime()

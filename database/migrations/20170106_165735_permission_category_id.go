@@ -21,6 +21,7 @@ func (m *PermissionCategoryId_20170106_165735) Up() {
 	m.SQL(`
 		CREATE TABLE permission_new (
 			id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+			location_id INT(11) UNSIGNED,
 			user_id INT(11) UNSIGNED,
 			category_id INT(11) UNSIGNED,
 			PRIMARY KEY (id)
@@ -28,6 +29,7 @@ func (m *PermissionCategoryId_20170106_165735) Up() {
 	m.SQL(`
 INSERT INTO permission_new
 SELECT permission.id,
+       location_id,
        permission.user_id,
        type_id
 FROM   permission

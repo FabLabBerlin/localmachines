@@ -11,6 +11,7 @@ const TABLE_NAME = "permission"
 
 type Permission struct {
 	Id         int64 `orm:"pk"`
+	LocationId int64
 	UserId     int64
 	CategoryId int64
 }
@@ -69,7 +70,6 @@ func Update(userId, locationId int64, permissions *[]Permission) error {
 	query := `
 	DELETE permission
 	FROM permission
-	JOIN machine_types ON machine_types.id = permission.category_id
 	WHERE user_id = ? AND location_id = ?`
 	if _, err := o.Raw(query, userId, locationId).Exec(); err != nil {
 		return fmt.Errorf("Error deleting: %v", err)
