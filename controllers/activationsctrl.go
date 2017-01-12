@@ -3,6 +3,7 @@ package controllers
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/locations"
@@ -286,27 +287,14 @@ func (this *ActivationsController) Start() {
 		this.CustomAbort(500, "Unable to get machine")
 	}
 
-	// Admins can activate any machine (except broken ones).
-	// Regular users have to refer to their permissions.
-	if !this.IsStaffAt(locId) {
-
-		// Check if user has permissions to create activation for the machine.
-		userPermissions, err := user_permissions.Get(userId)
-		if err != nil {
-			beego.Error("Could not get user permissions")
-			this.CustomAbort(403, "Failed to create activation")
-		}
-		var userPermitted = false
-		for _, permission := range *userPermissions {
-			if permission.CategoryId == machine.TypeId {
-				userPermitted = true
-				break
-			}
-		}
-		if !userPermitted {
-			beego.Error("User has no permission to activate the machine")
-			this.CustomAbort(401, "Not authorized")
-		}
+	permitted, err := this.categoryPermissionCheck(locId, userId, machine)
+	if err != nil {
+		beego.Error(err.Error())
+		this.Fail(500)
+	}
+	if !permitted {
+		beego.Error("User has no permission to activate the machine")
+		this.CustomAbort(401, "Not authorized")
 	}
 
 	if err = machine.On(userId); err != nil {
@@ -359,4 +347,34 @@ func (this *ActivationsController) Close() {
 	}
 
 	this.ServeJSON()
+}
+
+func (this *ActivationsController) categoryPermissionCheck(
+	locId int64,
+	userId int64,
+	m *machine.Machine,
+) (passed bool, err error) {
+
+	// Admins can activate any machine (except broken ones).
+	// Regular users have to refer to their permissions.
+	if !this.IsStaffAt(locId) {
+
+		// Check if user has permissions to create activation for the machine.
+		userPermissions, err := user_permissions.Get(userId)
+		if err != nil {
+			return false, fmt.Errorf("Could not get user permissions: %v", err)
+		}
+		var userPermitted = false
+		for _, permission := range *userPermissions {
+			if permission.CategoryId == m.TypeId {
+				userPermitted = true
+				break
+			}
+		}
+		if !userPermitted {
+			return false, nil
+		}
+	}
+
+	return true, nil
 }
