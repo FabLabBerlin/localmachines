@@ -16,7 +16,6 @@ type Membership struct {
 	MonthlyPrice             float64
 	MachinePriceDeduction    int
 	AffectedMachines         string `orm:"type(text)"`
-	AffectedCategories       string `orm:"type(text)"`
 	AutoExtend               bool
 	AutoExtendDurationMonths int64
 	Archived                 bool
