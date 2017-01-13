@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/lib/fastbill"
-	"github.com/FabLabBerlin/localmachines/models/coupons"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/settings"
@@ -229,23 +228,6 @@ func (inv *Invoice) FastbillCreateDraft(overwriteExisting bool) (fbDraft *fastbi
 			fbDraft.Items = append(fbDraft.Items, item)
 		}
 	}
-
-	// Add Coupons
-	cs, err := coupons.GetAllCouponsOf(inv.LocationId, inv.User.Id)
-	if err != nil {
-		return nil, false, fmt.Errorf("get all coupons: %v", err)
-	}
-	rebateValue := 0.0
-	for _, c := range cs {
-		usage, err := c.UseForInvoice(invoiceValue-rebateValue, time.Month(inv.Interval().MonthFrom), inv.Interval().YearFrom)
-		if err != nil {
-			return nil, false, fmt.Errorf("use for invoice: %v", err)
-		}
-		if usage != nil {
-			rebateValue += usage.Value
-		}
-	}
-	fbDraft.CashDiscountPercent = fmt.Sprintf("%v", rebateValue/invoiceValue*100)
 
 	if _, err := fbDraft.Submit(overwriteExisting); err == fastbill.ErrInvoiceAlreadyExported {
 		return nil, false, fastbill.ErrInvoiceAlreadyExported

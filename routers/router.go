@@ -8,7 +8,6 @@ import (
 	"github.com/FabLabBerlin/localmachines/controllers"
 	"github.com/FabLabBerlin/localmachines/controllers/billing"
 	"github.com/FabLabBerlin/localmachines/controllers/clients"
-	"github.com/FabLabBerlin/localmachines/controllers/coupons"
 	"github.com/FabLabBerlin/localmachines/controllers/custom_url"
 	"github.com/FabLabBerlin/localmachines/controllers/locations"
 	"github.com/FabLabBerlin/localmachines/controllers/machines"
@@ -44,11 +43,6 @@ func Init() {
 		beego.NSNamespace("/billing",
 			beego.NSInclude(
 				&billing.Controller{},
-			),
-		),
-		beego.NSNamespace("/coupons",
-			beego.NSInclude(
-				&coupons.Controller{},
 			),
 		),
 		beego.NSNamespace("/debug",
