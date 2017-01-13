@@ -8,6 +8,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/models/invoices/monthly_earning"
 	"github.com/FabLabBerlin/localmachines/models/locations"
+	//"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/settings"
 	"github.com/FabLabBerlin/localmachines/tests/models/util"
@@ -25,40 +26,12 @@ func init() {
 func TestInvoiceActivation(t *testing.T) {
 	Convey("Testing InvoiceActivation model", t, func() {
 		Reset(setup.ResetDB)
-		Convey("Testing MembershipStr", func() {
-			invAct := util.CreateTestPurchase(22, 0, "Lasercutter",
-				time.Duration(12)*time.Minute, 0.5)
-			membershipStr, err := invAct.MembershipStr()
-			if err != nil {
-				panic(err.Error())
-			}
-			So(membershipStr, ShouldEqual, "HP (50%)")
-		})
 		Convey("Testing PriceTotalExclDisc", func() {
 			invAct := util.CreateTestPurchase(22, 0, "Lasercutter",
 				time.Duration(12)*time.Minute, 0.5)
 			So(purchases.PriceTotalExclDisc(invAct), ShouldEqual, 6)
 		})
-		Convey("Testing PriceTotalDisc", func() {
-			invAct := util.CreateTestPurchase(22, 0, "Lasercutter",
-				time.Duration(12)*time.Minute, 0.5)
-			if priceTotalDisc, err := purchases.PriceTotalDisc(invAct); err == nil {
-				So(priceTotalDisc, ShouldEqual, 3)
-			} else {
-				panic(err.Error())
-			}
-		})
 		Convey("Testing AddRowXlsx", func() {
-			testTable := [][]interface{}{
-				{"", "Machine Name", "Product ID",
-					"Start Time", "Usage", "Usage Unit", "$ per Unit",
-					"Total $", "Memberships", "Discounted $"},
-
-				{"", "Lasercutter", "Undefined",
-					TIME_START.Format(time.RFC1123), "12", "minute",
-					"0.50", "6.00", "HP (50%)", "3.00"},
-			}
-
 			currency := "$"
 			if _, err := settings.Create(&settings.Setting{
 				LocationId:  1,
@@ -86,24 +59,6 @@ func TestInvoiceActivation(t *testing.T) {
 			Convey("Number of rows in xlsx sheed should be correct", func() {
 				So(len(sheet.Rows), ShouldEqual, numRows)
 			})
-
-			Convey("The number and content of cells should be correct", func() {
-				for i := 0; i < numRows; i++ {
-					cells := sheet.Rows[i].Cells
-					numCells := 10
-
-					So(len(cells), ShouldEqual, numCells)
-
-					for j := 0; j < numCells; j++ {
-						val, err := cells[j].String()
-						if err != nil {
-							panic(err.Error())
-						}
-						So(val, ShouldEqual, testTable[i][j])
-					}
-				}
-			})
-
 		})
 	})
 
