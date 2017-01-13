@@ -23,7 +23,7 @@ type Membership struct {
 }
 
 // Get an array of ID's of affected machines by the membership.
-func (this *Membership) AffectedMachineIds() ([]int64, error) {
+func (this *Membership) AffectedMachineIds() (ids []int64, err error) {
 
 	ms, err := machine.GetAllAt(this.LocationId)
 	if err != nil {
@@ -35,7 +35,7 @@ func (this *Membership) AffectedMachineIds() ([]int64, error) {
 		return
 	}
 
-	ids := make([]int64, 0, (len(ms)+len(cids))/2)
+	ids = make([]int64, 0, (len(ms)+len(cids))/2)
 	for _, cid := range cids {
 		for _, m := range ms {
 			if m.TypeId == cid {
@@ -49,7 +49,7 @@ func (this *Membership) AffectedMachineIds() ([]int64, error) {
 
 // Get an array of ID's of affected categories by the membership.
 func (this *Membership) AffectedCategoryIds() ([]int64, error) {
-	parseErr := fmt.Errorf("cannot parse AffectedCategories property: '%v'", this.AffectedMachines)
+	parseErr := fmt.Errorf("cannot parse AffectedCategories property: '%v'", this.AffectedCategories)
 	l := len(this.AffectedCategories)
 	if l == 0 || this.AffectedCategories == "[]" {
 		return []int64{}, nil
