@@ -2,6 +2,7 @@ package memberships
 
 import (
 	"fmt"
+	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/astaxie/beego/orm"
 	"strconv"
 	"strings"
@@ -15,7 +16,6 @@ type Membership struct {
 	DurationMonths           int64
 	MonthlyPrice             float64
 	MachinePriceDeduction    int
-	AffectedMachines         string `orm:"type(text)"`
 	AffectedCategories       string `orm:"type(text)"`
 	AutoExtend               bool
 	AutoExtendDurationMonths int64
@@ -24,23 +24,26 @@ type Membership struct {
 
 // Get an array of ID's of affected machines by the membership.
 func (this *Membership) AffectedMachineIds() ([]int64, error) {
-	parseErr := fmt.Errorf("cannot parse AffectedMachines property: '%v'", this.AffectedMachines)
-	l := len(this.AffectedMachines)
-	if l == 0 || this.AffectedMachines == "[]" {
-		return []int64{}, nil
+
+	ms, err := machine.GetAllAt(this.LocationId)
+	if err != nil {
+		return
 	}
-	if l < 2 || this.AffectedMachines[0:1] != "[" || this.AffectedMachines[l-1:l] != "]" {
-		return nil, parseErr
+
+	cids, err := this.AffectedCategoryIds()
+	if err != nil {
+		return
 	}
-	idStrings := strings.Split(this.AffectedMachines[1:l-1], ",")
-	ids := make([]int64, 0, len(idStrings))
-	for _, idString := range idStrings {
-		if id, err := strconv.ParseInt(idString, 10, 64); err == nil {
-			ids = append(ids, id)
-		} else {
-			return nil, fmt.Errorf("ParseInt: %v", err)
+
+	ids := make([]int64, 0, (len(ms)+len(cids))/2)
+	for _, cid := range cids {
+		for _, m := range ms {
+			if m.TypeId == cid {
+				ids = append(ids, m.Id)
+			}
 		}
 	}
+
 	return ids, nil
 }
 
