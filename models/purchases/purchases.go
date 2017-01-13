@@ -306,6 +306,7 @@ func PriceTotalDisc(p *Purchase) (float64, error) {
 	if err != nil {
 		return 0, fmt.Errorf("affected memberships: %v", err)
 	}
+	fmt.Printf("PriceTotalDisc: affectedMemberships=%v\n", affectedMemberships)
 	for _, membership := range affectedMemberships {
 		machinePriceDeduction := float64(membership.MachinePriceDeduction)
 		// Discount total price
@@ -324,6 +325,8 @@ func AffectedMemberships(p *Purchase) (affected []*memberships.Membership, err e
 			return nil, fmt.Errorf(
 				"check if machine affected by membership %v: %v", membership.Id, err)
 		}
+
+		fmt.Printf("AffectedMemberships: isAffected=%v\n", isAffected)
 
 		if isAffected {
 			affected = append(affected, membership)

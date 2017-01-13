@@ -5,6 +5,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/lib/day"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
+	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/FabLabBerlin/localmachines/models/purchases"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
@@ -492,6 +493,11 @@ func testInvoiceWithMembershipAndTestPurchase(purchaseInsideMembershipInterval b
 		panic(err.Error())
 	}
 
+	m, err := machine.Create(1, "foo bar")
+	if err != nil {
+		panic(err.Error())
+	}
+
 	var timeStart time.Time
 	if purchaseInsideMembershipInterval {
 		timeStart = time.Date(2015, time.June, 18, 14, 10, 0, 0, loc)
@@ -503,7 +509,7 @@ func testInvoiceWithMembershipAndTestPurchase(purchaseInsideMembershipInterval b
 		LocationId:   1,
 		Type:         purchases.TYPE_ACTIVATION,
 		InvoiceId:    iv.Id,
-		MachineId:    1,
+		MachineId:    m.Id,
 		UserId:       user.Id,
 		TimeStart:    timeStart,
 		Quantity:     2,
