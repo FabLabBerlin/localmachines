@@ -94,7 +94,7 @@ func simulate(s Simulation) {
 	if err != nil {
 		panic(err.Error())
 	}
-	mb.AffectedMachines = fmt.Sprintf("[%v]", m.Id)
+	mb.AffectedCategories = fmt.Sprintf("[0]")
 	mb.MachinePriceDeduction = 100
 	mb.DurationMonths = 1
 	mb.MonthlyPrice = 17
