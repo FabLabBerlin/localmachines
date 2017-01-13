@@ -32,7 +32,7 @@ describe('MachineActions', function() {
     it('should POST /api/activations/:aid/close', function() {
       MachineActions.endActivation(2);
       expect($.ajax).toBeCalledWith({
-        url: '/api/activations/2/close',
+        url: '/api/activations/2/close?location=1',
         data: jasmine.any(Object),
         method: 'POST',
         success: jasmine.any(Function),
