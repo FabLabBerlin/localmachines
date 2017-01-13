@@ -71,7 +71,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 			panic(err.Error())
 		}
 
-		p := util.CreateTestPurchase(lasercutter.Id, "Lasercutter", time.Duration(12)*time.Minute, 0.5)
+		p := util.CreateTestPurchase(lasercutter.Id, 0, "Lasercutter", time.Duration(12)*time.Minute, 0.5)
 		p.InvoiceId = inv.Id
 		p.UserId = uid
 		o := orm.NewOrm()
@@ -109,7 +109,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 
 			o := orm.NewOrm()
 
-			p := util.CreateTestPurchase(lasercutter.Id, "Lasercutter", time.Duration(34)*time.Hour, 0.5)
+			p := util.CreateTestPurchase(lasercutter.Id, 0, "Lasercutter", time.Duration(34)*time.Hour, 0.5)
 			p.UserId = uid
 			if _, err := o.Insert(p); err != nil {
 				panic(err.Error())
@@ -125,21 +125,21 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 				panic(err.Error())
 			}
 
-			p = util.CreateTestPurchase(i3.Id, "i3", time.Duration(100)*time.Nanosecond, 0.1)
+			p = util.CreateTestPurchase(i3.Id, 0, "i3", time.Duration(100)*time.Nanosecond, 0.1)
 			p.InvoiceId = inv.Id
 			p.UserId = uid
 			if purchases.Create(p); err != nil {
 				panic(err.Error())
 			}
 
-			p = util.CreateTestPurchase(lasercutter.Id+1, "Tutoring", time.Duration(34)*time.Hour, 0.5)
+			p = util.CreateTestPurchase(lasercutter.Id+1, 0, "Tutoring", time.Duration(34)*time.Hour, 0.5)
 			p.InvoiceId = inv.Id
 			p.Cancelled = true
 			if _, err := o.Insert(p); err != nil {
 				panic(err.Error())
 			}
 
-			p = util.CreateTestPurchase(lasercutter.Id+2, "Prototyping", time.Duration(34)*time.Hour, 0.5)
+			p = util.CreateTestPurchase(lasercutter.Id+2, 0, "Prototyping", time.Duration(34)*time.Hour, 0.5)
 			p.InvoiceId = inv.Id
 			p.Archived = true
 			if _, err := o.Insert(p); err != nil {
@@ -156,7 +156,7 @@ func TestFastbillInvoiceActivation(t *testing.T) {
 			if err = ms.Update(); err != nil {
 				panic(err.Error())
 			}
-			ms.AffectedMachines = fmt.Sprintf("[%v]", lasercutter.Id)
+			ms.AffectedCategories = fmt.Sprintf("[0]")
 			if err = ms.Update(); err != nil {
 				panic(err.Error())
 			}

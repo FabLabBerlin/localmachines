@@ -10,7 +10,7 @@ import (
 
 var TIME_START = time.Now().AddDate(0, -1, -1)
 
-func CreateTestPurchase(machineId int64, machineName string,
+func CreateTestPurchase(machineId, categoryId int64, machineName string,
 	minutes time.Duration, pricePerMinute float64) *purchases.Purchase {
 
 	m := machine.Machine{}
@@ -18,6 +18,7 @@ func CreateTestPurchase(machineId int64, machineName string,
 	m.Name = machineName
 	m.PriceUnit = "minute"
 	m.Price = pricePerMinute
+	m.TypeId = categoryId
 
 	invAct := &purchases.Purchase{
 		LocationId:   1,
@@ -34,7 +35,7 @@ func CreateTestPurchase(machineId int64, machineName string,
 				Title:                 "Half price",
 				ShortName:             "HP",
 				MachinePriceDeduction: 50,
-				AffectedMachines:      fmt.Sprintf("[%v]", machineId),
+				AffectedCategories:    fmt.Sprintf("[%v]", categoryId),
 			},
 		},
 	}

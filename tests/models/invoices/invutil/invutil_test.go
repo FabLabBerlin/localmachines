@@ -485,13 +485,6 @@ func testInvoiceWithMembershipAndTestPurchase(purchaseInsideMembershipInterval b
 		panic(err.Error())
 	}
 
-	//membershipStart := time.Date(2015, time.June, 15, 0, 0, 0, 0, loc)
-	//membershipEnd := time.Date(2015, time.July, 15, 0, 0, 0, 0, loc)
-
-	/*mNow := time.Now().Month()
-	yNow := time.Now().Year()
-	mLast := time.Now().AddDate(0, -1, -1).Month()
-	yLast := time.Now().AddDate(0, -1, -1).Year()*/
 	user, iv, _ := createInvoiceWithMembership(2015, 6, 15)
 	fmt.Printf("staarrrrt @ %v-%v-%v\n", 2015, 6, 15)
 	iv.Invoice.Current = true
@@ -505,20 +498,6 @@ func testInvoiceWithMembershipAndTestPurchase(purchaseInsideMembershipInterval b
 	} else {
 		timeStart = time.Date(2015, time.June, 2, 14, 10, 0, 0, loc)
 	}
-
-	/*iv, err = invutil.GetDraft(1, user.Id, timeStart)
-	if err != nil {
-		panic(err.Error())
-	}*/
-	/*iv = &invutil.Invoice{}
-	iv.LocationId = locId
-	iv.UserId = user.Id
-	iv.Month = 7
-	iv.Year = 2015
-	iv.Status = "draft"
-	if _, err := invoices.Create(&iv.Invoice); err != nil {
-		panic(err.Error())
-	}*/
 
 	purchase := purchases.Purchase{
 		LocationId:   1,
@@ -606,7 +585,7 @@ func createInvoiceWithMembership(year int, month time.Month, dayStart int) (
 	m.MachinePriceDeduction = 100
 	m.AutoExtend = false
 	m.AutoExtendDurationMonths = 30
-	m.AffectedMachines = "[1,2,3]"
+	m.AffectedCategories = "[0]"
 	if err := m.Update(); err != nil {
 		panic(err.Error())
 	}

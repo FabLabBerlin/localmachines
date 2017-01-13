@@ -44,7 +44,7 @@ func TestUserMemberships(t *testing.T) {
 			membership.MachinePriceDeduction = 50
 			membership.AutoExtend = true
 			membership.AutoExtendDurationMonths = 30
-			membership.AffectedMachines = fmt.Sprintf("[%v,%v]", machineOne.Id, machineTwo.Id)
+			membership.AffectedCategories = fmt.Sprintf("[0]")
 			if err := membership.Update(); err != nil {
 				panic(err.Error())
 			}

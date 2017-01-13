@@ -26,7 +26,7 @@ func TestInvoiceActivation(t *testing.T) {
 	Convey("Testing InvoiceActivation model", t, func() {
 		Reset(setup.ResetDB)
 		Convey("Testing MembershipStr", func() {
-			invAct := util.CreateTestPurchase(22, "Lasercutter",
+			invAct := util.CreateTestPurchase(22, 0, "Lasercutter",
 				time.Duration(12)*time.Minute, 0.5)
 			membershipStr, err := invAct.MembershipStr()
 			if err != nil {
@@ -35,12 +35,12 @@ func TestInvoiceActivation(t *testing.T) {
 			So(membershipStr, ShouldEqual, "HP (50%)")
 		})
 		Convey("Testing PriceTotalExclDisc", func() {
-			invAct := util.CreateTestPurchase(22, "Lasercutter",
+			invAct := util.CreateTestPurchase(22, 0, "Lasercutter",
 				time.Duration(12)*time.Minute, 0.5)
 			So(purchases.PriceTotalExclDisc(invAct), ShouldEqual, 6)
 		})
 		Convey("Testing PriceTotalDisc", func() {
-			invAct := util.CreateTestPurchase(22, "Lasercutter",
+			invAct := util.CreateTestPurchase(22, 0, "Lasercutter",
 				time.Duration(12)*time.Minute, 0.5)
 			if priceTotalDisc, err := purchases.PriceTotalDisc(invAct); err == nil {
 				So(priceTotalDisc, ShouldEqual, 3)
@@ -68,7 +68,7 @@ func TestInvoiceActivation(t *testing.T) {
 				panic(err.Error())
 			}
 
-			invAct := util.CreateTestPurchase(22, "Lasercutter",
+			invAct := util.CreateTestPurchase(22, 0, "Lasercutter",
 				time.Duration(12)*time.Minute, 0.5)
 			file := xlsx.NewFile()
 			sheet, _ := file.AddSheet("User Summaries")
