@@ -67,7 +67,8 @@ func TestMachineEarnings(t *testing.T) {
 				inv := mocks.LoadInvoice(5936)
 
 				m := &machine.Machine{
-					Id: 3,
+					Id:     3,
+					TypeId: 13,
 				}
 
 				me := machine_earnings.New(

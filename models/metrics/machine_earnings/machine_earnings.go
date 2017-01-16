@@ -112,7 +112,7 @@ func (me MachineEarning) Memberships() (sum Money) {
 	}
 
 	for membershipId, m := range memberships {
-		affected, err := m.IsMachineAffected(me.m.Id)
+		affected, err := m.IsMachineAffected(me.m)
 		if err != nil {
 			beego.Error(err.Error())
 		}

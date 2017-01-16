@@ -22,7 +22,7 @@ type Membership struct {
 	Archived                 bool
 }
 
-// Get an array of ID's of affected machines by the membership.
+/*// Get an array of ID's of affected machines by the membership.
 func (this *Membership) AffectedMachineIds() (ids []int64, err error) {
 
 	ms, err := machine.GetAllAt(this.LocationId)
@@ -47,7 +47,7 @@ func (this *Membership) AffectedMachineIds() (ids []int64, err error) {
 	}
 
 	return ids, nil
-}
+}*/
 
 // Get an array of ID's of affected categories by the membership.
 func (this *Membership) AffectedCategoryIds() ([]int64, error) {
@@ -87,11 +87,11 @@ func (this *Membership) IsRndCentre() bool {
 
 // Returns whether the membership is affecting a machine
 // with the given machine ID.
-func (this *Membership) IsMachineAffected(machineId int64) (bool, error) {
-	if machineIds, err := this.AffectedMachineIds(); err == nil {
-		fmt.Printf("IsMachineAffected: machineIds=%v\n", machineIds)
-		for _, id := range machineIds {
-			if id == machineId {
+func (this *Membership) IsMachineAffected(m *machine.Machine) (bool, error) {
+	if categoryIds, err := this.AffectedCategoryIds(); err == nil {
+		fmt.Printf("IsMachineAffected: categoryIds=%v\n", categoryIds)
+		for _, id := range categoryIds {
+			if id == m.TypeId {
 				return true, nil
 			}
 		}

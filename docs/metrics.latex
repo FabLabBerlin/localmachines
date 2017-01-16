@@ -1,4 +1,6 @@
 \documentclass[12pt]{article}
+\usepackage{newpxtext}
+\usepackage{euler}
 \usepackage{lingmacros}
 \usepackage{amsmath}
 \usepackage{tree-dvips}
@@ -8,7 +10,7 @@
 
 \subsection*{Data pre-filtering}
 
-Canceled invoices are filered. Invoices are excluded when they are before or after the from/to \emph{month}.
+Canceled invoices are filtered. Invoices are excluded when they are before or after the from/to \emph{month}.
 
 \subsection*{Earnings by Machine}
 
