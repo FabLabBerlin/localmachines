@@ -223,8 +223,6 @@ func (this *UserMembership) DurationModMonths() (months *int, days *float64) {
 func (this *UserMembership) StartDay() (d day.Day) {
 	if d, err := day.NewString(this.StartDate); err == nil {
 		return d
-	} else {
-		fmt.Printf("UserMembership#StartDay: day.NewString\n: %v", err)
 	}
 	return
 }

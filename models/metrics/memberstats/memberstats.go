@@ -47,7 +47,6 @@ func (b *Bin) Add(um *user_memberships.UserMembership) {
 	if _, ok := b.UmsByName[k]; !ok {
 		b.UmsByName[k] = make([]*user_memberships.UserMembership, 0, 40)
 	}
-	fmt.Printf("k=%v\n", k)
 	b.UmsByName[k] = append(b.UmsByName[k], um)
 }
 
@@ -66,7 +65,6 @@ func (s *Stats) Bins() (bs []*Bin) {
 	for _, iv := range s.invs {
 		i, ok := bin.Map(s.from, s.to, iv.GetMonth())
 		if !ok {
-			fmt.Printf("oh no, couldn't map where s.from=%v and s.to=%v: %v\n", s.from, s.to, iv.GetMonth())
 			continue
 		}
 		for _, ium := range iv.InvUserMemberships {

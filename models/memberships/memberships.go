@@ -52,8 +52,6 @@ func (this *Membership) AffectedMachineIds() (ids []int64, err error) {
 		return
 	}
 
-	fmt.Printf("AffectedMachineIds: ms=%v\n", ms)
-
 	cids, err := this.AffectedCategoryIds()
 	if err != nil {
 		return
@@ -111,7 +109,6 @@ func (this *Membership) IsRndCentre() bool {
 // with the given machine ID.
 func (this *Membership) IsMachineAffected(m *machine.Machine) (bool, error) {
 	if categoryIds, err := this.AffectedCategoryIds(); err == nil {
-		fmt.Printf("IsMachineAffected: categoryIds=%v\n", categoryIds)
 		for _, id := range categoryIds {
 			if id == m.TypeId {
 				return true, nil

@@ -21,7 +21,6 @@ type Subscription struct {
 
 func (req Subscription) Submit() (err error) {
 	url := urlPrefix(req.ApiKey) + "/lists/subscribe.json"
-	fmt.Printf("url=%v\n", url)
 	buf := bytes.Buffer{}
 	enc := json.NewEncoder(&buf)
 	if err := enc.Encode(req); err != nil {
