@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/memberships"
 	"github.com/astaxie/beego/migration"
@@ -20,10 +21,12 @@ func init() {
 }
 
 func handleMb(mb *memberships.Membership) (err error) {
-	mIds, err := mb.AffectedMachineIds()
+	mIds, err := mb.AffectedMachineIdsLegacyDontUse()
 	if err != nil {
 		return
 	}
+	fmt.Printf("handleMb:mb.Id=%v\n", mb.Id)
+	fmt.Printf("handleMb:mIds=%v\n", mIds)
 	cIds := make([]int64, 0, 10)
 	for _, mId := range mIds {
 		m, err := machine.Get(mId)

@@ -17,9 +17,31 @@ type Membership struct {
 	MonthlyPrice             float64
 	MachinePriceDeduction    int
 	AffectedCategories       string `orm:"type(text)"`
+	AffectedMachines         string `orm:"type(text)"`
 	AutoExtend               bool
 	AutoExtendDurationMonths int64
 	Archived                 bool
+}
+
+func (this *Membership) AffectedMachineIdsLegacyDontUse() (ids []int64, err error) {
+	parseErr := fmt.Errorf("cannot parse AffectedMachines property: '%v'", this.AffectedMachines)
+	l := len(this.AffectedMachines)
+	if l == 0 || this.AffectedMachines == "[]" {
+		return []int64{}, nil
+	}
+	if l < 2 || this.AffectedMachines[0:1] != "[" || this.AffectedMachines[l-1:l] != "]" {
+		return nil, parseErr
+	}
+	idStrings := strings.Split(this.AffectedMachines[1:l-1], ",")
+	ids = make([]int64, 0, len(idStrings))
+	for _, idString := range idStrings {
+		if id, err := strconv.ParseInt(idString, 10, 64); err == nil {
+			ids = append(ids, id)
+		} else {
+			return nil, fmt.Errorf("ParseInt: %v", err)
+		}
+	}
+	return ids, nil
 }
 
 // Get an array of ID's of affected machines by the membership.
