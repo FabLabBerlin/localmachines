@@ -409,6 +409,7 @@ func toUtilInvoices(locId int64, ivs []*invoices.Invoice) (invs []*Invoice, err 
 
 		inv.VatPercent = vatPercent
 		for _, p := range inv.Purchases {
+			fmt.Printf("p.Id=%v\n", p.Id)
 			p.TotalPrice = purchases.PriceTotalExclDisc(p)
 			fmt.Printf("p.TotalPrice=%v\n", p.TotalPrice)
 			p.DiscountedTotal, err = purchases.PriceTotalDisc(p)

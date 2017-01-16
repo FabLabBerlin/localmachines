@@ -319,6 +319,10 @@ func AffectedMemberships(p *Purchase) (affected []*memberships.Membership, err e
 	fmt.Printf("purchase.go:AffectedMemberships()\n")
 	affected = make([]*memberships.Membership, 0, 2)
 
+	if p.MachineId == 0 {
+		return
+	}
+
 	for _, membership := range p.Memberships {
 
 		isAffected := false /*, err := membership.IsMachineAffected(p.MachineId)
