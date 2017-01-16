@@ -22,7 +22,7 @@ type Membership struct {
 	Archived                 bool
 }
 
-/*// Get an array of ID's of affected machines by the membership.
+// Get an array of ID's of affected machines by the membership.
 func (this *Membership) AffectedMachineIds() (ids []int64, err error) {
 
 	ms, err := machine.GetAllAt(this.LocationId)
@@ -47,7 +47,7 @@ func (this *Membership) AffectedMachineIds() (ids []int64, err error) {
 	}
 
 	return ids, nil
-}*/
+}
 
 // Get an array of ID's of affected categories by the membership.
 func (this *Membership) AffectedCategoryIds() ([]int64, error) {
