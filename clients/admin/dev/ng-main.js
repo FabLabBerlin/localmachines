@@ -8,7 +8,6 @@ var app = angular.module('fabsmith', [
   'fabsmith.admin.login',
   'fabsmith.admin.activations',
   'fabsmith.admin.api',
-  'fabsmith.admin.coupons',
   'fabsmith.admin.dashboard',
   'fabsmith.admin.mainmenu',
   'fabsmith.admin.user',
