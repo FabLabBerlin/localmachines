@@ -81,39 +81,6 @@
     </div>
   </div><!-- /.row -->
 
-  <div class="row">
-
-    <div class="col-sm-3">
-      <div class="form-group">
-        <label>Automatically extend membership</label>
-        <div class="checkbox-inline">
-          <label title="Automatically Extend Membership. Or not.">
-            <input type="checkbox" 
-              id="membership-auto-extend"
-              ng-model="membership.AutoExtend"> 
-              <span ng-show="membership.AutoExtend">Yes</span>
-              <span ng-hide="membership.AutoExtend">No</span>
-          </label>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-sm-3">
-      <div class="form-group">
-        <label for="membership-extend-duration">After the end date membership extends</label>
-        <div class="input-group">
-          <input type="text"
-            id="membership-extend-duration"
-            class="form-control"
-            ng-model="membership.AutoExtendDurationMonths"
-            ng-disabled="!membership.AutoExtend">
-          <div class="input-group-addon">-monthly</div>
-        </div>
-      </div>
-    </div>
-  
-  </div>
-
   <hr>
 
   <div class="pull-right">

@@ -17,9 +17,7 @@ app.controller('MembershipCtrl',
 
   $scope.categories = [];
   $scope.membership = {
-    Id: $routeParams.membershipId,
-    AutoExtend: true,     // default
-    AutoExtendDuration: 1 // values
+    Id: $routeParams.membershipId
   };
 
   api.loadCategories(function(categories) {
