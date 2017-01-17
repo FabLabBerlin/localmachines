@@ -160,6 +160,11 @@ func (c *Controller) GetActivations() {
 	c.ServeJSON()
 }
 
+type HeatmapDataPoint struct {
+	Coordinate heatmap.Coordinate
+	UserId     int64
+}
+
 // @Title Get Heatmap
 // @Description Get some nice Heatmap data
 // @Success 200
@@ -177,16 +182,20 @@ func (c *Controller) GetHeatmap() {
 		c.Fail(500, err.Error())
 	}
 
-	cs := make([]heatmap.Coordinate, 0, len(us))
+	ps := make([]HeatmapDataPoint, 0, len(us))
 	for _, u := range us {
 		var c *heatmap.Coordinate
 		redis.Get(fmt.Sprintf("geocode(%v)", u.Id), &c)
 		if c != nil {
-			cs = append(cs, *c)
+			p := HeatmapDataPoint{
+				Coordinate: *c,
+				UserId:     u.Id,
+			}
+			ps = append(ps, p)
 		}
 	}
 
-	c.Data["json"] = cs
+	c.Data["json"] = ps
 	c.ServeJSON()
 }
 

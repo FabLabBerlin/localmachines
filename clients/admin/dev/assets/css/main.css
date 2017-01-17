@@ -433,3 +433,10 @@ footer {
 .form-control.datepicker {
   cursor: pointer;
 }
+#heatmap_users {
+  max-height: 200px;
+  overflow-y: auto;
+}
+#heatmap_users a {
+  width: 50px;
+}

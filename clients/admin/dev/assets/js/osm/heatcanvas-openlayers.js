@@ -32,13 +32,7 @@ OpenLayers.Layer.HeatCanvas = OpenLayers.Class(OpenLayers.Layer, {
         this.setMap(map);
         this.heatCanvasOptions = heatCanvasOptions;
         this.initHeatCanvas(this.map, this.heatCanvasOptions);
-        map.events.register("moveend", this, function(a, b) {
-            console.log('moveend=', a, b);
-            if (window.moveCanvas) {
-                window.moveCanvas();
-            }
-            this.redraw();
-        });
+        map.events.register("moveend", this, this.redraw);
     },
 
     initHeatCanvas: function(map, options){
@@ -72,8 +66,8 @@ OpenLayers.Layer.HeatCanvas = OpenLayers.Class(OpenLayers.Layer, {
         console.log('onMapResize');
     },
 
-    pushData: function(lat, lon, value) {
-        this.data.push({"lon":lon, "lat":lat, "v":value});
+    pushData: function(lat, lon, value, user) {
+        this.data.push({"lon":lon, "lat":lat, "v":value, "user": user});
     },
     
     _resetCanvasPosition: function() {
@@ -99,7 +93,6 @@ OpenLayers.Layer.HeatCanvas = OpenLayers.Class(OpenLayers.Layer, {
                 if (0 <= localXY.x && localXY.x <= size.w
                     && 0 <= localXY.y && localXY.y <= size.h) {
 
-                    console.log('localXY.x=', localXY.x);
                     visible.push(this.data[i]);
                 }
                 this.heatmap.push(
@@ -107,7 +100,11 @@ OpenLayers.Layer.HeatCanvas = OpenLayers.Class(OpenLayers.Layer, {
                         Math.floor(localXY.y), 
                         this.data[i].v);
             }
-            console.log('visible=', visible);
+
+            $('#heatmap_users').html(visible.map(function(p) {
+                return '<a href="/admin/#/users/' + p.user + '">' + p.user + '</a>';
+            }).join('\n'));
+
             this.heatmap.render(this._step, this._degree, this._colorscheme);
         }
     },

@@ -107,17 +107,13 @@ window.metricsGcharts = {
     }
     
     var heatmap = new OpenLayers.Layer.HeatCanvas("Heat Canvas", map, {},
-            {'step':0.5, 'degree':HeatCanvas.QUAD, 'opacity':0.7});
+            {'step':0.5, 'degree':HeatCanvas.LINEAR, 'opacity':0.7});
     var data = _.map(coordinates, function(c) {
-      return [
-        parseFloat(c.lat),
-        parseFloat(c.lon),
-        10        
-      ];
+      heatmap.pushData(c.Coordinate.lat, c.Coordinate.lon, 10, c.UserId);
     });
 
     for(var i=0,l=data.length; i<l; i++) {
-        heatmap.pushData(data[i][0], data[i][1], data[i][2]);
+        
     }
     map.addLayer(heatmap);
     window.map = map;
