@@ -16,7 +16,7 @@ var Subscribe = React.createClass({
           <input id="prod-subscribe-email"
                  autoCorrect="off"
                  autoCapitalize="off"
-                 ref="email"
+                 ref={el => { this.email = el; }}
                  type="text"/>
         </span>
         <button id="prod-subscribe-button"
@@ -29,7 +29,7 @@ var Subscribe = React.createClass({
   },
 
   subscribe() {
-    const email = this.refs.email.getDOMNode().value;
+    const email = this.email.value;
 
     if (email && email.length > 3) {
       GlobalActions.performSubscribeNewsletter(email);
