@@ -115,12 +115,16 @@ window.metricsGcharts = {
         10        
       ];
     });
-    
+
     for(var i=0,l=data.length; i<l; i++) {
         heatmap.pushData(data[i][0], data[i][1], data[i][2]);
     }
     map.addLayer(heatmap);
     window.map = map;
+    console.log('heatmap=', heatmap);
+    //map.getView().on('change:resolution', function() {
+    //  alert('1');
+    //});
   },
 
   memberships: function(domElement, stats, currency) {

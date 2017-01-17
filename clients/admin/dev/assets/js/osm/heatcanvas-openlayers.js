@@ -32,7 +32,13 @@ OpenLayers.Layer.HeatCanvas = OpenLayers.Class(OpenLayers.Layer, {
         this.setMap(map);
         this.heatCanvasOptions = heatCanvasOptions;
         this.initHeatCanvas(this.map, this.heatCanvasOptions);
-        map.events.register("moveend", this, this.redraw);
+        map.events.register("moveend", this, function(a, b) {
+            console.log('moveend=', a, b);
+            if (window.moveCanvas) {
+                window.moveCanvas();
+            }
+            this.redraw();
+        });
     },
 
     initHeatCanvas: function(map, options){
@@ -63,6 +69,7 @@ OpenLayers.Layer.HeatCanvas = OpenLayers.Class(OpenLayers.Layer, {
     onMapResize: function() {
         var size = this.map.getSize();
         this.heatmap.resize( size.w, size.h );
+        console.log('onMapResize');
     },
 
     pushData: function(lat, lon, value) {
@@ -81,17 +88,26 @@ OpenLayers.Layer.HeatCanvas = OpenLayers.Class(OpenLayers.Layer, {
     redraw: function() {
         this._resetCanvasPosition();
         this.heatmap.clear();
+        var size = this.map.getSize();
         if (this.data.length > 0) {
+            var visible = [];
             for (var i=0, l=this.data.length; i<l; i++) {
                 var lonlat = new OpenLayers.LonLat(this.data[i].lon, this.data[i].lat);
                 lonlat = lonlat.transform(this.map.displayProjection, this.map.getProjectionObject())
                 var localXY = this.map.getViewPortPxFromLonLat(lonlat);
+
+                if (0 <= localXY.x && localXY.x <= size.w
+                    && 0 <= localXY.y && localXY.y <= size.h) {
+
+                    console.log('localXY.x=', localXY.x);
+                    visible.push(this.data[i]);
+                }
                 this.heatmap.push(
                         Math.floor(localXY.x), 
                         Math.floor(localXY.y), 
                         this.data[i].v);
             }
-
+            console.log('visible=', visible);
             this.heatmap.render(this._step, this._degree, this._colorscheme);
         }
     },
