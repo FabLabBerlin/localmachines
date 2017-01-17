@@ -15,16 +15,15 @@ app.controller('MembershipCtrl',
  ['$scope', '$http', '$location', '$filter', '$routeParams', 'randomToken', 'api',
  function($scope, $http, $location, $filter, $routeParams, randomToken, api) {
 
-  $scope.machines = [];
+  $scope.categories = [];
   $scope.membership = {
     Id: $routeParams.membershipId,
     AutoExtend: true,     // default
     AutoExtendDuration: 1 // values
   };
 
-  // Load machines first
-  api.loadMachines(function(resp) {
-    $scope.machines = resp.machines;
+  api.loadCategories(function(categories) {
+    $scope.categories = categories;
     $scope.loadMembership();
   });
 
@@ -40,19 +39,19 @@ app.controller('MembershipCtrl',
     .success(function(membershipModel) {
       $scope.membership = membershipModel;
       
-      if ($scope.membership.AffectedMachines !== '') {
-        // Parse affected machines JSON as it is passed here as string
-        $scope.membership.AffectedMachines = 
-          JSON.parse($scope.membership.AffectedMachines);
+      if ($scope.membership.AffectedCategories) {
+        // Parse affected categories JSON as it is passed here as string
+        $scope.membership.AffectedCategories = 
+          JSON.parse($scope.membership.AffectedCategories);
       }
 
-      // Search for machines with the same IDs as the AffectedMachines
+      // Search for categories with the same IDs as the AffectedCategories
       // and set them as checked
-      for (var i = 0; i < $scope.membership.AffectedMachines.length; i++) {
-        for (var j = 0; j < $scope.machines.length; j++) {
-          if (parseInt($scope.machines[j].Id) === 
-              parseInt($scope.membership.AffectedMachines[i])) {
-            $scope.machines[j].Checked = true;
+      for (var i = 0; i < $scope.membership.AffectedCategories.length; i++) {
+        for (var j = 0; j < $scope.categories.length; j++) {
+          if (parseInt($scope.categories[j].Id) === 
+              parseInt($scope.membership.AffectedCategories[i])) {
+            $scope.categories[j].Checked = true;
           }
         }
       }
@@ -72,19 +71,19 @@ app.controller('MembershipCtrl',
 
   $scope.updateMembership = function() {
 
-    // Add the machine.Checked's into membership.AffectedMachines array
-    var affectedMachines = [];
-    for (var i = 0; i < $scope.machines.length; i++) {
-      if ($scope.machines[i].Checked) {
-        affectedMachines.push($scope.machines[i].Id);
+    // Add the category.Checked's into membership.AffectedCategories array
+    var affectedCategories = [];
+    for (var i = 0; i < $scope.categories.length; i++) {
+      if ($scope.categories[i].Checked) {
+        affectedCategories.push($scope.categories[i].Id);
       }
     }
-    affectedMachines = JSON.stringify(affectedMachines);
+    affectedCategories = JSON.stringify(affectedCategories);
     
     // Make a clone of the model to feel safe
     var membership = _.clone($scope.membership);
 
-    membership.AffectedMachines = affectedMachines;
+    membership.AffectedCategories = affectedCategories;
     membership.MonthlyPrice = parseFloat(membership.MonthlyPrice);
     membership.DurationMonths = parseInt(membership.DurationMonths);
     membership.MachinePriceDeduction = 

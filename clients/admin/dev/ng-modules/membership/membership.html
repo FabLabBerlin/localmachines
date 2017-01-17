@@ -51,12 +51,12 @@
         <label>Machines Affected by Membership</label>
         <div class="row">
 
-          <div class="col-sm-6" ng-repeat="machine in machines | machinesFilter:this">
+          <div class="col-sm-6" ng-repeat="category in categories | categoriesFilter:this">
             <div class="checkbox-inline">
-              <label title="{{machine.Description}}">
+              <label>
                 <input type="checkbox"
-                       ng-model="machine['Checked']">
-                {{machine.Name}}
+                       ng-model="category['Checked']">
+                {{category.Name}}
               </label>
             </div>
           </div>
