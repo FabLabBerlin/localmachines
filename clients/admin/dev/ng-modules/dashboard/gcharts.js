@@ -107,7 +107,7 @@ window.metricsGcharts = {
     }
     
     var heatmap = new OpenLayers.Layer.HeatCanvas("Heat Canvas", map, {},
-            {'step':0.5, 'degree':HeatCanvas.LINEAR, 'opacity':0.7});
+            {'step':0.5, 'degree':HeatCanvas.QUAD, 'opacity':0.7});
     var data = _.map(coordinates, function(c) {
       return [
         parseFloat(c.lat),
