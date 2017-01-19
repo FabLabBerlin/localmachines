@@ -114,6 +114,8 @@ func (inv *Invoice) FastbillComplete() (err error) {
 			return fmt.Errorf("fastbill complete invoice: %v", err)
 		}
 		inv.FastbillNo = fbNumber
+	} else {
+		return
 	}
 	inv.Status = "outgoing"
 	if err := inv.Save(); err != nil {
