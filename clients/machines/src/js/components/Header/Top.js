@@ -1,9 +1,11 @@
 var $ = require('jquery');
 var getters = require('../../getters');
+var GlobalActions = require('../../actions/GlobalActions');
 var LocationGetters = require('../../modules/Location/getters');
 var LoginActions = require('../../actions/LoginActions');
 var React = require('react');
 var reactor = require('../../reactor');
+var toastr = require('toastr');
 
 
 var Right = React.createClass({
@@ -16,6 +18,14 @@ var Right = React.createClass({
       user: getters.getUser,
       userLocation: LocationGetters.getUserLocation
     };
+  },
+
+  handleLogout() {
+    toastr.info('Bye! Don\'t forget to turn off the machines when done!');
+    GlobalActions.showGlobalLoader();
+    window.setTimeout(() => {
+      window.location.href = '/logout';
+    }, 4000);
   },
 
   render() {
@@ -61,7 +71,7 @@ var Right = React.createClass({
                 ) : null}
                 <li><a href="/machines/#/feedback">Feedback</a></li>
                 <li role="separator" className="divider"></li>
-                <li><a href="/logout">Log out</a></li>
+                <li><a onClick={this.handleLogout} href="javscript:void(0);">Log out</a></li>
               </ul>
             </div>
           </div>
