@@ -22,6 +22,12 @@ app.controller('MembershipCtrl',
 
   api.loadCategories(function(categories) {
     $scope.categories = categories;
+    $scope.categories.push({
+      Id: 0,
+      LocationId: $scope.locationId,
+      Name: 'Other',
+      ShortName: 'other'
+    });
     $scope.loadMembership();
   });
 
