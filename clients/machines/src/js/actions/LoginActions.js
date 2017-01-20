@@ -33,7 +33,7 @@ export default {
           hashHistory.push('/register_existing');
           break;
         default:
-          console.log('unknowon status');
+          console.log('unknown status');
           toastr.error('Error.  Please try again later.');
         }
       },
