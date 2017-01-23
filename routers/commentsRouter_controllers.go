@@ -55,6 +55,41 @@ func init() {
 			AllowHTTPMethods: []string{"post"},
 			Params: nil})
 
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:CategoriesController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:CategoriesController"],
+		beego.ControllerComments{
+			Method: "GetAll",
+			Router: `/`,
+			AllowHTTPMethods: []string{"get"},
+			Params: nil})
+
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:CategoriesController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:CategoriesController"],
+		beego.ControllerComments{
+			Method: "Create",
+			Router: `/`,
+			AllowHTTPMethods: []string{"post"},
+			Params: nil})
+
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:CategoriesController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:CategoriesController"],
+		beego.ControllerComments{
+			Method: "Put",
+			Router: `/:id`,
+			AllowHTTPMethods: []string{"put"},
+			Params: nil})
+
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:CategoriesController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:CategoriesController"],
+		beego.ControllerComments{
+			Method: "Archive",
+			Router: `/:id/archive`,
+			AllowHTTPMethods: []string{"put"},
+			Params: nil})
+
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:CategoriesController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:CategoriesController"],
+		beego.ControllerComments{
+			Method: "Unarchive",
+			Router: `/:id/unarchive`,
+			AllowHTTPMethods: []string{"put"},
+			Params: nil})
+
 	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:DebugController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:DebugController"],
 		beego.ControllerComments{
 			Method: "Get",
@@ -95,41 +130,6 @@ func init() {
 			Method: "PostFeedback",
 			Router: `/`,
 			AllowHTTPMethods: []string{"post"},
-			Params: nil})
-
-	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:MachineTypeController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:MachineTypeController"],
-		beego.ControllerComments{
-			Method: "GetAll",
-			Router: `/`,
-			AllowHTTPMethods: []string{"get"},
-			Params: nil})
-
-	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:MachineTypeController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:MachineTypeController"],
-		beego.ControllerComments{
-			Method: "Create",
-			Router: `/`,
-			AllowHTTPMethods: []string{"post"},
-			Params: nil})
-
-	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:MachineTypeController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:MachineTypeController"],
-		beego.ControllerComments{
-			Method: "Put",
-			Router: `/:id`,
-			AllowHTTPMethods: []string{"put"},
-			Params: nil})
-
-	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:MachineTypeController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:MachineTypeController"],
-		beego.ControllerComments{
-			Method: "Archive",
-			Router: `/:id/archive`,
-			AllowHTTPMethods: []string{"put"},
-			Params: nil})
-
-	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:MachineTypeController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:MachineTypeController"],
-		beego.ControllerComments{
-			Method: "Unarchive",
-			Router: `/:id/unarchive`,
-			AllowHTTPMethods: []string{"put"},
 			Params: nil})
 
 	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:MembershipsController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:MembershipsController"],

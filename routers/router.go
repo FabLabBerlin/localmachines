@@ -83,7 +83,7 @@ func Init() {
 		),
 		beego.NSNamespace("/machine_types",
 			beego.NSInclude(
-				&controllers.MachineTypeController{},
+				&controllers.CategoriesController{},
 			),
 		),
 		beego.NSNamespace("/newsletters",
