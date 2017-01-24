@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/FabLabBerlin/localmachines/lib/redis"
+	"github.com/FabLabBerlin/localmachines/models/countries"
 	"github.com/FabLabBerlin/localmachines/models/locations"
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
@@ -57,6 +58,10 @@ func geoCode(u users.User) func() (coord interface{}, err error) {
 	return func() (coord interface{}, err error) {
 		url := "https://nominatim.openstreetmap.org/search/"
 		url += "?format=json"
+		country, ok := countries.GetByCode(u.CountryCode)
+		if ok {
+			url += "&country=" + country.Name
+		}
 		url += "&q=" + fmt.Sprintf("%v, %v %v", u.InvoiceAddr, u.ZipCode, u.City)
 		resp, err := http.Get(url)
 		if err != nil {
