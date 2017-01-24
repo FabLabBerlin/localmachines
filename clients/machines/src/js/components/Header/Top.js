@@ -29,6 +29,9 @@ var Right = React.createClass({
   },
 
   render() {
+    const isSuperAdmin = this.state.user.get('SuperAdmin');
+    const isAdmin = this.state.isAdmin || isSuperAdmin;
+
     if (this.state.user) {
       return (
         <div className="nav-right pull-right">
@@ -48,23 +51,23 @@ var Right = React.createClass({
                 </div>
               </button>
               <ul className="dropdown-menu pull-right" aria-labelledby="dropdownMenu1">
-                {this.state.isAdmin ? (
+                {isAdmin ? (
                   <li>
                     <a href="/machines/#/admin/categories">Categories</a>
                   </li>
                 ) : null}
                 <li><a href="/machines/#/profile">Info</a></li>
-                {this.state.isAdmin ? (
+                {isAdmin ? (
                   <li>
                     <a href="/machines/#/admin/invoices">Invoices</a>
                   </li>
                 ) : null}
-                {this.state.user.get('SuperAdmin') ? (
+                {isSuperAdmin ? (
                   <li>
                     <a href="/machines/#/admin/locations">Locations</a>
                   </li>
                 ) : null}
-                {this.state.isAdmin ? (
+                {isAdmin ? (
                   <li>
                     <a href="/machines/#/admin/settings">Settings</a>
                   </li>
