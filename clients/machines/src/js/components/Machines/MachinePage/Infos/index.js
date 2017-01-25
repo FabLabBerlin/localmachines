@@ -43,7 +43,23 @@ var InfoPage = React.createClass({
     Location.actions.loadUserLocations(uid);
   },
 
-  render() {
+  description() {
+    const m = this.machine();
+
+    if (!m) return undefined;
+
+    const raw = m.get('Description') || '';
+
+    return (
+      <div>
+        {raw.split('\n').map((line, i) => {
+          return <p key={i}>{line}</p>;
+        })}
+      </div>
+    );
+  },
+
+  machine() {
     const machineId = parseInt(this.props.params.machineId);
     var m;
 
@@ -52,6 +68,12 @@ var InfoPage = React.createClass({
         return mm.get('Id') === machineId;
       });
     }
+
+    return m;
+  },
+
+  render() {
+    const m = this.machine();
 
     if (!m) {
       return <LoaderLocal/>;
@@ -65,6 +87,16 @@ var InfoPage = React.createClass({
               <tr>
                 <td>Build volume:</td>
                 <td>{m.get('WorkspaceDimensions')}</td>
+              </tr>
+            </tbody>
+          </table>
+        </Section>
+
+        <Section id="m-info-description" title="Description">
+          <table>
+            <tbody>
+              <tr>
+                <td>{this.description()}</td>
               </tr>
             </tbody>
           </table>
