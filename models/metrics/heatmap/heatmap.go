@@ -9,6 +9,7 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -60,7 +61,9 @@ func geoCode(u users.User) func() (coord interface{}, err error) {
 		url += "?format=json"
 		country, ok := countries.GetByCode(u.CountryCode)
 		if ok {
-			url += "&country=" + country.Name
+			url += "&countrycodes=" + strings.ToLower(country.Code)
+		} else {
+			url += "&countrycodes=de"
 		}
 		url += "&q=" + fmt.Sprintf("%v, %v %v", u.InvoiceAddr, u.ZipCode, u.City)
 		resp, err := http.Get(url)
