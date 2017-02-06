@@ -63,6 +63,15 @@
     </div>
 
     <div class="col-sm-6">
+      <div class="form-group">
+        <label for="machine-safety-guidelines">Safety Guidelines</label>
+        <textarea id="machine-safety-guidelines" class="form-control" rows="5"
+                  placeholder="All parts of the machine could be hot. In case of malfunction or before leaving: switch it off."
+                  ng-model="machine.SafetyGuidelines"></textarea>
+      </div>
+    </div>
+
+    <div class="col-sm-6">
       <label>Image</label>
       <div class="row"> 
         <div class="col-sm-6">
@@ -111,7 +120,7 @@
   <div class="row">
     <div class="col-sm-3">
       <div class="form-group">
-        <label for="machine-type">Machine Type</label>
+        <label for="machine-type">Category</label>
         <select class="form-control" id="machine-type" 
                 ng-model="machine.TypeId">
           <option ng-repeat="machineType in machineTypes"
