@@ -2094,6 +2094,11 @@ http://codepen.io/anon/pen/QEXBEp
 ////                                                  ////
 //////////////////////////////////////////////////////////
 
+.m-info-section {
+  margin: 0 20px 39px;
+  padding: 0px 8px 13px 34px;
+}
+
 .m-info-section-title {
   background-repeat: no-repeat;
   font-size: 22px;
@@ -2103,6 +2108,18 @@ http://codepen.io/anon/pen/QEXBEp
 
 #m-info-specs .m-info-section-title {
   background-image: url(/machines/assets/img/machines/machine/m_info_specs.svg);
+}
+
+#m-info-description .m-info-section-title {
+  background-image: url(/machines/assets/img/machines/machine/m_info_resources.svg);
+  background-position: 6px 13px;
+  height: 56px;
+}
+
+#m-info-safety-guidelines .m-info-section-title {
+  background-image: url(/machines/assets/img/machines/machine/m_info_safety.svg);
+  background-position: 6px 13px;
+  height: 56px;
 }
 
 .m-info-section hr {
@@ -2124,6 +2141,15 @@ http://codepen.io/anon/pen/QEXBEp
 
 .m-info-section-content td:first-child {
   font-weight: bold;
+}
+
+#m-info-safety-guidelines {
+  border: 3px solid red;
+  color: red;
+
+  .m-info-section-content {
+    color: #FF5A5A;
+  }
 }
 
 /*
