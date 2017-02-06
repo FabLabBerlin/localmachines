@@ -48,15 +48,7 @@ var InfoPage = React.createClass({
 
     if (!m) return undefined;
 
-    const raw = m.get('Description') || '';
-
-    return (
-      <div>
-        {raw.split('\n').map((line, i) => {
-          return <p key={i}>{line}</p>;
-        })}
-      </div>
-    );
+    return this.textToHTML(m.get('Description') || '');
   },
 
   machine() {
@@ -80,27 +72,59 @@ var InfoPage = React.createClass({
     }
 
     return (
-      <div id="m-info" className="container-fluid">
-        <Section id="m-info-specs" title="Technical Specifications">
-          <table>
-            <tbody>
-              <tr>
-                <td>Build volume:</td>
-                <td>{m.get('WorkspaceDimensions')}</td>
-              </tr>
-            </tbody>
-          </table>
-        </Section>
+      <div id="m-info" className="row">
+        <div id="m-info-left" className="col-md-6 col-md-push-6">
+          <Section id="m-info-safety-guidelines" title="Safety Guidelines">
+            <table>
+              <tbody>
+                <tr>
+                  <td>{this.safetyGuidelines()}</td>
+                </tr>
+              </tbody>
+            </table>
+          </Section>
+        </div>
 
-        <Section id="m-info-description" title="Description">
-          <table>
-            <tbody>
-              <tr>
-                <td>{this.description()}</td>
-              </tr>
-            </tbody>
-          </table>
-        </Section>
+        <div id="m-info-right" className="col-md-6 col-md-pull-6">
+          <Section id="m-info-specs" title="Technical Specifications">
+            <table>
+              <tbody>
+                <tr>
+                  <td>Build volume:</td>
+                  <td>{m.get('WorkspaceDimensions')}</td>
+                </tr>
+              </tbody>
+            </table>
+          </Section>
+
+          <Section id="m-info-description" title="Description">
+            <table>
+              <tbody>
+                <tr>
+                  <td>{this.description()}</td>
+                </tr>
+              </tbody>
+            </table>
+          </Section>
+        </div>
+      </div>
+    );
+  },
+
+  safetyGuidelines() {
+    const m = this.machine();
+
+    if (!m) return undefined;
+
+    return this.textToHTML(m.get('SafetyGuidelines') || '');
+  },
+
+  textToHTML(text) {
+    return (
+      <div>
+        {text.split('\n').map((line, i) => {
+          return <p key={i}>{line}</p>;
+        })}
       </div>
     );
   }

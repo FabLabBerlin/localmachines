@@ -32,6 +32,7 @@ gateway/gateway
 gateway/state.json
 mfi/mfi
 cert/
+scripts/pkg_tmp_dir
 tests/conf/app.conf
 tests/controllers/conf/app.conf
 tests/controllers/routers/
