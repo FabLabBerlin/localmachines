@@ -27,6 +27,11 @@ func (inv *Invoice) fastbillBeforeCheck() (err error) {
 	if inv.User.NoAutoInvoicing {
 		return fmt.Errorf("no auto invoicing is true for user")
 	}
+	for _, p := range inv.Purchases {
+		if p.Running {
+			return fmt.Errorf("cannot invoice running activation")
+		}
+	}
 	return
 }
 
