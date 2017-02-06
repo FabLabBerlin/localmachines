@@ -24,7 +24,6 @@ import (
 func Init() {
 	// Set main redirect in the MainController
 	beego.Router("/", &controllers.MainController{})
-	beego.Router("/crossdomain.xml", &controllers.CrossdomainController{})
 	beego.Router("/apple-touch-icon.png", &controllers.AppleTouchIconController{})
 	beego.Router("/favicon.png", &controllers.FaviconController{})
 	beego.Router("/admin", &clients.Admin{})
