@@ -46,7 +46,9 @@ var InfoPage = React.createClass({
   description() {
     const m = this.machine();
 
-    if (!m) return undefined;
+    if (!m) {
+      return undefined;
+    }
 
     return this.textToHTML(m.get('Description') || '');
   },
@@ -114,7 +116,9 @@ var InfoPage = React.createClass({
   safetyGuidelines() {
     const m = this.machine();
 
-    if (!m) return undefined;
+    if (!m) {
+      return undefined;
+    }
 
     return this.textToHTML(m.get('SafetyGuidelines') || '');
   },
