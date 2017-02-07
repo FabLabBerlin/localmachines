@@ -127,17 +127,18 @@ app.controller('DashboardCtrl',
       var activationsRevenue = Math.round($scope.metrics.Activations[hVal]);
       var membershipsRevenueRnd = Math.round($scope.metrics.MembershipsRnD[hVal] || 0);
       var membershipsRevenue = Math.round($scope.metrics.Memberships[hVal]) - membershipsRevenueRnd;
+      var title = '' + hVal + '<br><br>';
       return [
         {
           v: hVal,
           f: hVal
         },
         membershipsRevenue,
-        'Memberships (' + currency + '): <b>' + membershipsRevenue + '</b><br>' + memberships + ' non-free Memberships',
+        title + 'Memberships (' + currency + '): <b>' + membershipsRevenue + '</b><br>' + memberships + ' non-free Memberships',
         activationsRevenue,
-        'Activations (' + currency + '): <b>' + activationsRevenue + '</b><br>' + minutes + ' minutes for non-Admins',
+        title + 'Activations (' + currency + '): <b>' + activationsRevenue + '</b><br>' + minutes + ' minutes for non-Admins',
         membershipsRevenueRnd,
-        'R&D Center (' + currency + '): <b>' + membershipsRevenueRnd + '</b><br>' + membershipsRnD + ' R&D Center Tables'
+        title + 'R&D Center (' + currency + '): <b>' + membershipsRevenueRnd + '</b><br>' + membershipsRnD + ' R&D Center Tables'
       ];
     });
 
