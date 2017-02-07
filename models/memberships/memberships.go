@@ -91,10 +91,9 @@ func (this *Membership) AffectedCategoryIds() ([]int64, error) {
 	return ids, nil
 }
 
-// Set affected categories IDs of the membership.
-func (this *Membership) SetAffectedCategoryIds(categoryIds []int64) error {
-	strIds := make([]string, len(categoryIds))
-	for i, id := range categoryIds {
+func (this *Membership) SetAffectedCategoryIds(ids []int64) error {
+	strIds := make([]string, len(ids))
+	for i, id := range ids {
 		strIds[i] = strconv.FormatInt(id, 10)
 	}
 	this.AffectedCategories = "[" + strings.Join(strIds, ",") + "]"
@@ -106,7 +105,6 @@ func (this *Membership) IsRndCentre() bool {
 }
 
 // Returns whether the membership is affecting a machine
-// with the given machine ID.
 func (this *Membership) IsMachineAffected(m *machine.Machine) (bool, error) {
 	if categoryIds, err := this.AffectedCategoryIds(); err == nil {
 		for _, id := range categoryIds {
@@ -120,7 +118,6 @@ func (this *Membership) IsMachineAffected(m *machine.Machine) (bool, error) {
 	}
 }
 
-// Returns the database table name of the Membership model.
 func (this *Membership) TableName() string {
 	return "membership"
 }
@@ -129,20 +126,18 @@ func init() {
 	orm.RegisterModel(new(Membership))
 }
 
-// Gets all base memberships from database.
-func GetAllAt(locationId int64) (memberships []*Membership, err error) {
+func GetAllAt(locationId int64) (ms []*Membership, err error) {
 	m := Membership{} // Used only for the TableName() method
 	o := orm.NewOrm()
 	_, err = o.QueryTable(m.TableName()).
 		Filter("location_id", locationId).
-		All(&memberships)
+		All(&ms)
 	return
 }
 
-// Creates a new membership in the database with the given name.
-func Create(locationId int64, name string) (m *Membership, err error) {
+func Create(locId int64, name string) (m *Membership, err error) {
 	m = &Membership{
-		LocationId:               locationId,
+		LocationId:               locId,
 		Title:                    name,
 		AutoExtend:               true,
 		DurationMonths:           1,
@@ -154,20 +149,17 @@ func Create(locationId int64, name string) (m *Membership, err error) {
 	return
 }
 
-// Gets single membership from database using membership unique ID
-func Get(membershipId int64) (*Membership, error) {
-	membership := Membership{}
+func Get(is int64) (*Membership, error) {
+	m := Membership{}
 	sql := fmt.Sprintf("SELECT * FROM %s WHERE id=?", membership.TableName())
 	o := orm.NewOrm()
-	err := o.Raw(sql, membershipId).QueryRow(&membership)
+	err := o.Raw(sql, is).QueryRow(&m)
 	if err != nil {
 		return nil, fmt.Errorf("Failed to get membership")
 	}
-	return &membership, nil
+	return &m, nil
 }
 
-// Updates membership in the database by using a pointer to
-// an existing membership store.
 func (membership *Membership) Update() (err error) {
 	o := orm.NewOrm()
 	_, err = o.Update(membership)
