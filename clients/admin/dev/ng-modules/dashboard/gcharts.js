@@ -150,7 +150,7 @@ window.metricsGcharts = {
     ];
 
     data[0].unshift('Membership');
-    data[0].push({ role: 'annotation' });
+    data[0].push({'type': 'string', 'role': 'tooltip', 'p': {'html': true}});
 
     _.each(stats, function(bin) {
       var row = new Array(titles.length);
@@ -158,16 +158,24 @@ window.metricsGcharts = {
 
       _.each(bin.UmsByName, function(ums, title) {
         var i = titleByIdx[title];
-        row[i + 1] = _.reduce(ums, function(sum, um) {
-          return sum + um.Membership.MonthlyPrice;
-        }, 0);
+        var tmp = _.reduce(ums, function(res, um) {
+          return {
+            revenue: res.revenue + um.Membership.MonthlyPrice,
+            len: res.len + 1
+          };
+        }, {revenue: 0, len: 0});
+
+        row[i + 1] = {
+          v: tmp.revenue,
+          f: '' + tmp.revenue + ' ' + currency + ' (# = ' + tmp.len + ')'
+        };
       });
       row.push('');
 
       data.push(row);
     });
 
-    console.log('data=', data);
+    console.log('memberships: data=', data);
 
     data = google.visualization.arrayToDataTable(data);
 
@@ -177,6 +185,7 @@ window.metricsGcharts = {
       legend: { position: 'top', maxLines: 3 },
       bar: { groupWidth: '75%' },
       stacked: true,
+      tooltip: {isHtml: true},
       vAxis: {
         title: 'Revenue / ' + currency
       }
