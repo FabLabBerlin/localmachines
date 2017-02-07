@@ -151,7 +151,7 @@ func Create(locId int64, name string) (m *Membership, err error) {
 
 func Get(is int64) (*Membership, error) {
 	m := Membership{}
-	sql := fmt.Sprintf("SELECT * FROM %s WHERE id=?", membership.TableName())
+	sql := fmt.Sprintf("SELECT * FROM %s WHERE id=?", m.TableName())
 	o := orm.NewOrm()
 	err := o.Raw(sql, is).QueryRow(&m)
 	if err != nil {
