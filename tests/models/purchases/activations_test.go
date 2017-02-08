@@ -93,7 +93,7 @@ func TestActivations(t *testing.T) {
 						So(activation.Purchase.Running, ShouldBeFalse)
 					})
 
-					Convey("Starting is idempotent", func() {
+					Convey("Starting cannot be done twice", func() {
 						machine, err := CreateMachine("lel")
 						if err != nil {
 							panic(err.Error())
@@ -106,17 +106,14 @@ func TestActivations(t *testing.T) {
 							panic(err.Error())
 						}
 						activationStartTime := time.Date(2015, 5, 8, 2, 15, 3, 1, time.Local)
-						aid, err := purchases.StartActivation(machine, uid, activationStartTime)
+						_, err = purchases.StartActivation(machine, uid, activationStartTime)
 						if err != nil {
 							panic(err.Error())
 						}
-						_ = aid
-						aid2, err := purchases.StartActivation(machine, uid, activationStartTime)
-						if err != nil {
+						_, err = purchases.StartActivation(machine, uid, activationStartTime)
+						if err == nil {
 							panic(err.Error())
 						}
-						_ = aid2
-						So(aid, ShouldEqual, aid2)
 					})
 				})
 			})
