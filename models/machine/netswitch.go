@@ -293,7 +293,7 @@ func (this *Machine) NetswitchApplyConfig(userId int64) (err error) {
 	return
 }
 
-func FetchLocalIpsTask() error {
+func FetchLocalIpsTask() (err error) {
 	beego.Info("Running FetchLocalIpsTask")
 
 	locs, err := locations.GetAll()
@@ -316,6 +316,5 @@ func FetchLocalIpsTask() error {
 		}
 	}
 
-	// We return always nil.  If things fail, we log them.
-	return nil
+	return
 }

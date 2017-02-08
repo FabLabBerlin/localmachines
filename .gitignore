@@ -37,5 +37,8 @@ tests/conf/app.conf
 tests/controllers/conf/app.conf
 tests/controllers/routers/
 tests/models/conf/app.conf
+
+# Beego uses this for code reloads
 lastupdate.tmp
+
 vendor/
