@@ -159,6 +159,12 @@ func StartActivation(m *machine.Machine, uid int64, start time.Time) (
 		return 0, fmt.Errorf("Failed to insert activation %v", err)
 	}
 
+	if err := redis.PublishMachinesUpdate(redis.MachinesUpdate{
+		LocationId: m.LocationId,
+	}); err != nil {
+		beego.Error("publish machines update:", err)
+	}
+
 	return newActivation.Purchase.Id, nil
 }
 
