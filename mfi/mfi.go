@@ -12,7 +12,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/FabLabBerlin/localmachines/lib/mfi"
+	"github.com/FabLabBerlin/easylab-lib/mfi"
 	"log"
 )
 
@@ -62,7 +62,7 @@ func main() {
 		}
 	}
 
-	if err := c.RunStep1WifiCredentials(); err != nil {
+	if err := c.RunStep1Wifi(); err != nil {
 		log.Fatalf("error obtaining wifi credentials: %v", err)
 	}
 
