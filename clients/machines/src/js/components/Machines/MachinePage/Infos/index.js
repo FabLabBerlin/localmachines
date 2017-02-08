@@ -53,6 +53,39 @@ var InfoPage = React.createClass({
     return this.textToHTML(m.get('Description') || '');
   },
 
+  links() {
+    const m = this.machine();
+
+    if (!m) {
+      return undefined;
+    }
+
+    var ls = m.get('Links') || '';
+    return (
+      <div>
+        {ls.split('\n').map((line, i) => {
+          if (!line.trim()) {
+            return undefined;
+          }
+
+          const tmp = line.split(' ');
+          const href = tmp[0].startsWith('http')
+            ? tmp[0]
+            : 'http://' + tmp[0].trim();
+          const label = tmp.length === 1
+            ? href
+            : tmp.slice(1).join(' ');
+
+          return (
+            <p key={i}>
+              <a href={href}>{label}</a>
+            </p>
+          );
+        })}
+      </div>
+    );
+  },
+
   machine() {
     const machineId = parseInt(this.props.params.machineId);
     var m;
@@ -81,6 +114,16 @@ var InfoPage = React.createClass({
               <tbody>
                 <tr>
                   <td>{this.safetyGuidelines()}</td>
+                </tr>
+              </tbody>
+            </table>
+          </Section>
+
+          <Section id="m-info-links" title="Links">
+            <table>
+              <tbody>
+                <tr>
+                  <td>{this.links()}</td>
                 </tr>
               </tbody>
             </table>

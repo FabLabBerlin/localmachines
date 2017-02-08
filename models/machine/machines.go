@@ -50,6 +50,7 @@ type Machine struct {
 	Shortname              string `orm:"size(100)"`
 	Description            string `orm:"type(text)"`
 	SafetyGuidelines       string `orm:"type(text)"`
+	Links                  string `orm:"type(text)"`
 	Image                  string `orm:"size(255)"` // TODO: media and media type tables
 	ImageSmall             string `orm:"size(255)"`
 	Available              bool
