@@ -122,28 +122,12 @@ func GetActiveActivations() ([]*Activation, error) {
 func StartActivation(m *machine.Machine, uid int64, start time.Time) (
 	activationId int64, err error) {
 
-	o := orm.NewOrm()
-
-	// Check for duplicate activations
-	// TODO: Replace this with a more readable helper function
-	var dupActivations []*Purchase
-	numDuplicates, err := o.QueryTable(TABLE_NAME).
-		Filter("machine_id", m.Id).
-		Filter("user_id", uid).
-		Filter("running", 1).
-		Filter("type", TYPE_ACTIVATION).
-		All(&dupActivations)
+	isAvailable, err := IsAvailable(m.Id)
 	if err != nil {
-		return 0, fmt.Errorf("Could not get duplicate activations: %v", err)
-	}
-	if numDuplicates == 1 {
-		return dupActivations[0].Id, nil
-	} else if numDuplicates > 1 {
-		beego.Error("Duplicate activations found:", numDuplicates)
-		return 0, fmt.Errorf("Duplicate activations found")
+		return 0, fmt.Errorf("IsAvailable: %v", err)
 	}
 
-	if !m.IsAvailable() {
+	if isAvailable {
 		activationId = 0
 		err = fmt.Errorf("Machine with provided ID is not available")
 		return
@@ -173,12 +157,6 @@ func StartActivation(m *machine.Machine, uid int64, start time.Time) (
 	if err = Create(&newActivation.Purchase); err != nil {
 		beego.Error("Failed to insert activation:", err)
 		return 0, fmt.Errorf("Failed to insert activation %v", err)
-	}
-
-	// Update machine as unavailable
-	m.Available = false
-	if m.Update(false); err != nil {
-		beego.Error("Failed to update activated machine")
 	}
 
 	return newActivation.Purchase.Id, nil
@@ -213,11 +191,6 @@ func (a *Activation) Close(endTime time.Time) error {
 		return fmt.Errorf("Failed to update activation: %v", err)
 	}
 
-	m.Available = true
-	if err = m.Update(false); err != nil {
-		return fmt.Errorf("Failed to update machine: %v", err)
-	}
-
 	if err := redis.PublishMachinesUpdate(redis.MachinesUpdate{
 		LocationId: m.LocationId,
 	}); err != nil {
@@ -225,6 +198,25 @@ func (a *Activation) Close(endTime time.Time) error {
 	}
 
 	return nil
+}
+
+func IsAvailable(machineId int64) (yes bool, err error) {
+	o := orm.NewOrm()
+	var dupActivations []*Purchase
+
+	numDuplicates, err := o.QueryTable(TABLE_NAME).
+		Filter("machine_id", machineId).
+		Filter("running", 1).
+		Filter("type", TYPE_ACTIVATION).
+		All(&dupActivations)
+	if err != nil {
+		return false, fmt.Errorf("Could not get duplicate activations: %v", err)
+	}
+	if numDuplicates > 1 {
+		beego.Error("Duplicate activations found:", numDuplicates)
+		return false, fmt.Errorf("Duplicate activations found")
+	}
+	return numDuplicates == 0, nil
 }
 
 func (a *Activation) Update() error {

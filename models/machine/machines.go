@@ -53,7 +53,6 @@ type Machine struct {
 	Links                  string `orm:"type(text)"`
 	Image                  string `orm:"size(255)"` // TODO: media and media type tables
 	ImageSmall             string `orm:"size(255)"`
-	Available              bool
 	Price                  float64
 	PriceUnit              string `orm:"size(100)"`
 	Comments               string `orm:"type(text)"`
@@ -135,7 +134,6 @@ func Create(locationId int64, machineName string) (m *Machine, err error) {
 	m = &Machine{
 		LocationId: locationId,
 		Name:       machineName,
-		Available:  true,
 	}
 	_, err = orm.NewOrm().Insert(m)
 	return
