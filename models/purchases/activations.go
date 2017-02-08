@@ -127,7 +127,7 @@ func StartActivation(m *machine.Machine, uid int64, start time.Time) (
 		return 0, fmt.Errorf("IsAvailable: %v", err)
 	}
 
-	if isAvailable {
+	if !isAvailable {
 		activationId = 0
 		err = fmt.Errorf("Machine with provided ID is not available")
 		return
