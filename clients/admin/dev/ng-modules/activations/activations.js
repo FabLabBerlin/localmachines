@@ -64,6 +64,9 @@ app.controller('ActivationsCtrl',
           activation.MachineName = 'Undefined';
         }
       });
+      activations = _.filter(activations, function(activation) {
+        return !activation.Archived;
+      });
 
       loadUserNames();
 
