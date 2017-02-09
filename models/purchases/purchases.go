@@ -288,6 +288,10 @@ func Update(p *Purchase) (err error) {
 	}
 	p.InvoiceStatus = inv.Status
 
+	if p.Quantity < 0 {
+		p.Quantity = 0
+	}
+
 	_, err = o.Update(p)
 	return
 }
