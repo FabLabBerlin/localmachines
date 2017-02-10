@@ -99,6 +99,26 @@ var InfoPage = React.createClass({
     return m;
   },
 
+  materials() {
+    const m = this.machine();
+
+    if (!m) {
+      return undefined;
+    }
+
+    return this.textToHTML(m.get('Materials') || '');
+  },
+
+  requiredSoftware() {
+    const m = this.machine();
+
+    if (!m) {
+      return undefined;
+    }
+
+    return this.textToHTML(m.get('RequiredSoftware') || '');
+  },
+
   render() {
     const m = this.machine();
 
@@ -109,6 +129,16 @@ var InfoPage = React.createClass({
     return (
       <div id="m-info" className="row">
         <div id="m-info-left" className="col-md-6 col-md-push-6">
+          <Section id="m-info-materials" title="Suitable Materials">
+            <table>
+              <tbody>
+                <tr>
+                  <td>{this.materials()}</td>
+                </tr>
+              </tbody>
+            </table>
+          </Section>
+
           <Section id="m-info-safety-guidelines" title="Safety Guidelines">
             <table>
               <tbody>
@@ -137,6 +167,16 @@ var InfoPage = React.createClass({
                 <tr>
                   <td>Build volume:</td>
                   <td>{m.get('WorkspaceDimensions')}</td>
+                </tr>
+              </tbody>
+            </table>
+          </Section>
+
+          <Section id="m-info-required-software" title="Required Software">
+            <table>
+              <tbody>
+                <tr>
+                  <td>{this.requiredSoftware()}</td>
                 </tr>
               </tbody>
             </table>
