@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var actionTypes = require('../actionTypes');
 var Nuclear = require('nuclear-js');
 var toImmutable = Nuclear.toImmutable;
