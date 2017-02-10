@@ -228,6 +228,8 @@ app.controller('DashboardCtrl',
   };
 
   $scope.renderMachineEarnings = function() {
+    console.log('$scope.machineEarnings=', $scope.machineEarnings);
+
     var ary = [
       ['Source', 'Memberships', 'Pay-As-You-Go', { role: 'annotation' } ]
     ];
@@ -263,6 +265,7 @@ app.controller('DashboardCtrl',
       width: window.innerWidth * 0.9,
       height: window.innerWidth,
       legend: { position: 'top', maxLines: 3 },
+      //bar: { groupWidth: '75%' },
       isStacked: true,
       hAxis: {
         logscale: true
