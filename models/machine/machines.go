@@ -51,6 +51,8 @@ type Machine struct {
 	Description            string `orm:"type(text)"`
 	SafetyGuidelines       string `orm:"type(text)"`
 	Links                  string `orm:"type(text)"`
+	Materials              string `orm:"type(text)"`
+	RequiredSoftware       string `orm:"type(text)"`
 	Image                  string `orm:"size(255)"` // TODO: media and media type tables
 	ImageSmall             string `orm:"size(255)"`
 	Price                  float64
