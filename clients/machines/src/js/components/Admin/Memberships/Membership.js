@@ -1,3 +1,4 @@
+var Categories = require('../../../modules/Categories');
 var getters = require('../../../getters');
 var {hashHistory} = require('react-router');
 var LoaderLocal = require('../../LoaderLocal');
@@ -15,25 +16,31 @@ var MembershipPage = React.createClass({
 
   getDataBindings() {
     return {
+      categories: Categories.getters.getAll,
       currency: Settings.getters.getCurrency,
       memberships: Memberships.getters.getAllMemberships,
       showArchived: Memberships.getters.getShowArchived
     };
   },
 
-  componentDidMount() {
+  componentWillMount() {
     const locationId = reactor.evaluateToJS(Location.getters.getLocationId);
     const uid = reactor.evaluateToJS(getters.getUid);
     UserActions.fetchUser(uid);
     Memberships.actions.fetch({locationId});
     Location.actions.loadUserLocations(uid);
     Settings.actions.loadSettings({locationId});
+    Categories.actions.loadAll(locationId);
   },
 
   render() {
     const id = parseInt(this.props.params.membershipId);
     var mb;
     var machine = {};
+
+    if (this.state.categories) {
+      console.log('categories=', this.state.categories.toJS());
+    }
 
     if (this.state.memberships) {
       mb = this.state.memberships.find(m => m.get('Id') === id);
@@ -92,19 +99,23 @@ var MembershipPage = React.createClass({
         <div className="row">
           <div className="col-sm-6">
             <div className="form-group">
-              <label>Machines Affected by Membership</label>
+              <label>Categories Affected by Membership</label>
               <div className="row">
 
-                <div className="col-sm-6" ng-repeat="machine in machines | machinesFilter:this">
-                  <div className="checkbox-inline">
-                    <label title={machine.Description}>
-                      <input type="checkbox"
-                             ng-model="machine['Checked']"/>
-                      {machine.Name}
-                    </label>
-                  </div>
-                </div>
-                
+                {this.state.categories
+                  ? (this.state.categories.map(c => {
+                    return (
+                      <div className="col-sm-6" key={c.get('Id')}>
+                        <div className="checkbox-inline">
+                          <label title={machine.Description}>
+                            <input type="checkbox"
+                                   ng-model="machine['Checked']"/>
+                            {c.get('Name')}
+                          </label>
+                        </div>
+                      </div>
+                    );
+                  })) : null}
               </div>
             </div>
           </div>
