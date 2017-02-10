@@ -3,9 +3,7 @@ var React = require('react');
 
 var Item = React.createClass({
   render() {
-    const isActive = this.props.href === (window.location.pathname + '#' + this.props.location.pathname) ||
-      /* TODO: remove, just for ongoing works */
-      this.props.href + 's' === (window.location.pathname + '#' + this.props.location.pathname);
+    const isActive = this.props.href === (window.location.pathname + '#' + this.props.location.pathname);
     const activeClass = isActive ? 'active' : '';
 
     return (
