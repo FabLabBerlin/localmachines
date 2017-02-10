@@ -34,6 +34,10 @@ var MembershipPage = React.createClass({
     Categories.actions.loadAll(locationId);
   },
 
+  handleSave() {
+    Memberships.actions.save(this.membership().get('Id'));
+  },
+
   categoryChecked(id) {
     if (!this.membership().get('AffectedCategories')) {
       return false;
@@ -46,6 +50,10 @@ var MembershipPage = React.createClass({
 
   setCategoryChecked(id, yes) {
     Memberships.actions.setMembershipCategory(this.membership().get('Id'), id, yes);
+  },
+
+  setArchive(yes) {
+    Memberships.actions.setMembershipArchive(this.membership().get('Id'), yes);
   },
 
   membership() {
@@ -190,9 +198,29 @@ var MembershipPage = React.createClass({
         
         </div>
 
-        <hr/
+        <hr/>
 
-        >
+  <div class="pull-right">
+
+    {(this.membership() && this.membership().get('Archived')) ? (
+      <button className="btn btn-danger btn-lg"
+              onClick={this.setArchive.bind(this, false)}>
+        <i className="fa fa-archive"></i>&nbsp;Unarchive
+      </button>
+    ) : (
+      <button className="btn btn-danger btn-lg"
+              onClick={this.setArchive.bind(this, true)}>
+        <i className="fa fa-archive"></i>&nbsp;Archive
+      </button>
+    )}
+
+    <button className="btn btn-primary btn-lg"
+            onClick={this.handleSave}>
+      <i className="fa fa-save"></i>&nbsp;Save
+    </button>
+
+  </div>
+
       </div>
     );
   }
