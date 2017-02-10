@@ -33,18 +33,30 @@ var MembershipPage = React.createClass({
     Categories.actions.loadAll(locationId);
   },
 
-  render() {
+  categoryChecked(id) {
+    console.log('#categoryChecked(', id, ')');
+    console.log('mb=', this.membership().toJS());
+  },
+
+  membership() {
     const id = parseInt(this.props.params.membershipId);
-    var mb;
+
+    if (this.state.memberships) {
+      return this.state.memberships.find(m => m.get('Id') === id);
+    } else {
+      return undefined;
+    }
+  },
+
+  render() {
+    const mb = this.membership();
     var machine = {};
 
     if (this.state.categories) {
       console.log('categories=', this.state.categories.toJS());
     }
 
-    if (this.state.memberships) {
-      mb = this.state.memberships.find(m => m.get('Id') === id);
-    } else {
+    if (!mb) {
       return <LoaderLocal/>;
     }
 
@@ -107,8 +119,9 @@ var MembershipPage = React.createClass({
                     return (
                       <div className="col-sm-6" key={c.get('Id')}>
                         <div className="checkbox-inline">
-                          <label title={machine.Description}>
+                          <label>
                             <input type="checkbox"
+                                   value={this.categoryChecked(c.get('Id'))}
                                    ng-model="machine['Checked']"/>
                             {c.get('Name')}
                           </label>
