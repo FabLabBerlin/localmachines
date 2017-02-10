@@ -32,19 +32,17 @@ function setShowArchived(state, yes) {
 }
 
 function setMembershipCategory(state, {membershipId, categoryId, yes}) {
-  return state.set('allMemberships',
-    state.get('allMemberships').map(mb => {
-      if (mb.get('Id') === membershipId) {
-        const ids = JSON.parse(mb.get('AffectedCategories') || '[]');
-        const newIds = yes
-          ? _.union(ids, [categoryId])
-          : _.difference(ids, [categoryId]);
-        
-        return mb.set('AffectedCategories', '[' + newIds.join(',') + ']');
-      } else {
-        return mb;
-      }
-    }));
+  return state.update('allMemberships', mbs =>  mbs.map(mb => {
+    if (mb.get('Id') === membershipId) {
+      const ids = JSON.parse(mb.get('AffectedCategories') || '[]');
+      const op = yes ? _.union : _.difference;
+      const newIds = op(ids, [categoryId]);
+      
+      return mb.set('AffectedCategories', '[' + newIds.join(',') + ']');
+    } else {
+      return mb;
+    }
+  }));
 }
 
 export default MembershipsStore;
