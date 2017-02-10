@@ -48,39 +48,39 @@ var MembershipPage = React.createClass({
 
         <hr/>
 
-        <div class="row">
+        <div className="row">
 
-          <div class="col-sm-3">
-            <div class="form-group">
-              <label for="membership-title">Membership Title</label>
-              <input type="text" id="membership-title" class="form-control"
+          <div className="col-sm-3">
+            <div className="form-group">
+              <label htmlFor="membership-title">Membership Title</label>
+              <input type="text" id="membership-title" className="form-control"
                      placeholder="Membership title" value={mb.get('Title')}/>
             </div>
           </div>
 
-          <div class="col-sm-3">
-            <div class="form-group">
-              <label for="membership-shortname">Shortname</label>
-              <input type="text" id="membership-shortname" class="form-control"
+          <div className="col-sm-3">
+            <div className="form-group">
+              <label htmlFor="membership-shortname">Shortname</label>
+              <input type="text" id="membership-shortname" className="form-control"
                      placeholder="Shortname" value={mb.get('ShortName')}/>
             </div>
           </div>
           
-          <div class="col-sm-3">
-            <div class="form-group">
-              <label for="membership-duration">Duration (months)</label>
-              <input type="text" id="membership-duration" class="form-control"
+          <div className="col-sm-3">
+            <div className="form-group">
+              <label htmlFor="membership-duration">Duration (months)</label>
+              <input type="text" id="membership-duration" className="form-control"
                      placeholder="Duration" value={mb.get('DurationMonths')}/>
             </div>
           </div>
           
-          <div class="col-sm-3">
-            <div class="form-group">
-              <label for="membership-price">Monthly Price</label>
-              <div class="input-group">
-                <input type="text" id="membership-price" class="form-control"
+          <div className="col-sm-3">
+            <div className="form-group">
+              <label htmlFor="membership-price">Monthly Price</label>
+              <div className="input-group">
+                <input type="text" id="membership-price" className="form-control"
                        placeholder="Monthly Price" value={mb.get('MonthlyPrice')}/>
-                <div class="input-group-addon">
+                <div className="input-group-addon">
                   {this.state.currency || '€'}
                 </div>
               </div>
@@ -89,14 +89,14 @@ var MembershipPage = React.createClass({
 
         </div>
 
-        <div class="row">
-          <div class="col-sm-6">
-            <div class="form-group">
+        <div className="row">
+          <div className="col-sm-6">
+            <div className="form-group">
               <label>Machines Affected by Membership</label>
-              <div class="row">
+              <div className="row">
 
-                <div class="col-sm-6" ng-repeat="machine in machines | machinesFilter:this">
-                  <div class="checkbox-inline">
+                <div className="col-sm-6" ng-repeat="machine in machines | machinesFilter:this">
+                  <div className="checkbox-inline">
                     <label title={machine.Description}>
                       <input type="checkbox"
                              ng-model="machine['Checked']"/>
@@ -108,16 +108,16 @@ var MembershipPage = React.createClass({
               </div>
             </div>
           </div>
-          <div class="col-sm-3">
-            <div class="form-group">
-              <label for="membership-price-deduction">Machine price deduction</label>
-              <div class="input-group">
+          <div className="col-sm-3">
+            <div className="form-group">
+              <label htmlFor="membership-price-deduction">Machine price deduction</label>
+              <div className="input-group">
                 <input type="text" 
                   id="membership-price-deduction" 
-                  class="form-control"
+                  className="form-control"
                   placeholder="Percentage" 
                   value={mb.get('MachinePriceDeduction')}/>
-                <div class="input-group-addon">
+                <div className="input-group-addon">
                   <b>%</b>
                 </div>
               </div>
@@ -125,12 +125,12 @@ var MembershipPage = React.createClass({
           </div>
         </div>
 
-        <div class="row">
+        <div className="row">
 
-          <div class="col-sm-3">
-            <div class="form-group">
+          <div className="col-sm-3">
+            <div className="form-group">
               <label>Automatically extend membership</label>
-              <div class="checkbox-inline">
+              <div className="checkbox-inline">
                 <label title="Automatically Extend Membership. Or not.">
                   <input type="checkbox" 
                     id="membership-auto-extend"
@@ -142,16 +142,16 @@ var MembershipPage = React.createClass({
             </div>
           </div>
 
-          <div class="col-sm-3">
-            <div class="form-group">
-              <label for="membership-extend-duration">After the end date membership extends</label>
-              <div class="input-group">
+          <div className="col-sm-3">
+            <div className="form-group">
+              <label htmlFor="membership-extend-duration">After the end date membership extends</label>
+              <div className="input-group">
                 <input type="text"
                   id="membership-extend-duration"
-                  class="form-control"
+                  className="form-control"
                   value={mb.get('AutoExtendDurationMonths')}
                   ng-disabled="!membership.AutoExtend"/>
-                <div class="input-group-addon">-monthly</div>
+                <div className="input-group-addon">-monthly</div>
               </div>
             </div>
           </div>
