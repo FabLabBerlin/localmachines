@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var Categories = require('../../../modules/Categories');
 var getters = require('../../../getters');
 var {hashHistory} = require('react-router');
@@ -34,8 +35,13 @@ var MembershipPage = React.createClass({
   },
 
   categoryChecked(id) {
-    console.log('#categoryChecked(', id, ')');
-    console.log('mb=', this.membership().toJS());
+    if (!this.membership().get('AffectedCategories')) {
+      return false;
+    }
+
+    const ids = JSON.parse(this.membership().get('AffectedCategories'));
+
+    return _.includes(ids, id);
   },
 
   membership() {
@@ -121,7 +127,7 @@ var MembershipPage = React.createClass({
                         <div className="checkbox-inline">
                           <label>
                             <input type="checkbox"
-                                   value={this.categoryChecked(c.get('Id'))}
+                                   checked={this.categoryChecked(c.get('Id'))}
                                    ng-model="machine['Checked']"/>
                             {c.get('Name')}
                           </label>
