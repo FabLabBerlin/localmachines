@@ -22,7 +22,12 @@ function setShowArchived(yes) {
   reactor.dispatch(actionTypes.SET_SHOW_ARCHIVED_MEMBERSHIPS, yes);
 }
 
+function setMembershipCategory(membershipId, categoryId, yes) {
+  reactor.dispatch(actionTypes.SET_MEMBERSHIP_CATEGORY, {membershipId, categoryId, yes});
+}
+
 export default {
   fetch,
-  setShowArchived
+  setShowArchived,
+  setMembershipCategory
 };
