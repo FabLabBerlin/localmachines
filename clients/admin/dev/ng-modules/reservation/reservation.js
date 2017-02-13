@@ -23,18 +23,6 @@ app.controller('ReservationCtrl',
   $scope.users = [];
   $scope.usersById = {};
 
-  function loadMachines() {
-    api.loadMachines(function(resp) {
-      $scope.machines = _.sortBy(resp.machines, function(machine) {
-        return machine.Name;
-      });
-      _.each($scope.machines, function(machine) {
-        $scope.machinesById[machine.Id] = machine;
-      });
-      loadReservation($scope.reservation.Id);
-    });
-  }
-
   function loadReservation(id) {
     $http({
       method: 'GET',
@@ -53,6 +41,18 @@ app.controller('ReservationCtrl',
     })
     .error(function(data, status) {
       toastr.error('Failed to load user data');
+    });
+  }
+
+  function loadMachines() {
+    api.loadMachines(function(resp) {
+      $scope.machines = _.sortBy(resp.machines, function(machine) {
+        return machine.Name;
+      });
+      _.each($scope.machines, function(machine) {
+        $scope.machinesById[machine.Id] = machine;
+      });
+      loadReservation($scope.reservation.Id);
     });
   }
 

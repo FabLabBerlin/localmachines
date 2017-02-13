@@ -27,6 +27,32 @@ app.controller('ActivationsCtrl',
     $scope.pageActivations = $scope.activations.slice(offset, offset + $scope.itemsPerPage);
   };
 
+  function loadUserNames(userId) {
+    $http({
+      method: 'GET',
+      url: '/api/users',
+      params: {
+        ac: new Date().getTime(),
+        location: $cookies.get('location')
+      }
+    })
+    .success(function(users) {
+      var usersById = {};
+      _.each(users, function(user) {
+        $scope.usersById[user.Id] = user;
+      });
+      _.each($scope.activations, function(activation) {
+        var user = $scope.usersById[activation.UserId];
+        if (user) {
+          activation.UserName = user.FirstName + ' ' + user.LastName;
+        }
+      });
+    })
+    .error(function() {
+      toastr.error('Failed to load user name');
+    });
+  }
+
   // Loads and reloads activations according to filter.
   // If user ID is not set - load all users
   $scope.loadActivations = function() {
@@ -79,32 +105,6 @@ app.controller('ActivationsCtrl',
       toastr.error('Failed to load activations');
     });
   };
-
-  function loadUserNames(userId) {
-    $http({
-      method: 'GET',
-      url: '/api/users',
-      params: {
-        ac: new Date().getTime(),
-        location: $cookies.get('location')
-      }
-    })
-    .success(function(users) {
-      var usersById = {};
-      _.each(users, function(user) {
-        $scope.usersById[user.Id] = user;
-      });
-      _.each($scope.activations, function(activation) {
-        var user = $scope.usersById[activation.UserId];
-        if (user) {
-          activation.UserName = user.FirstName + ' ' + user.LastName;
-        }
-      });
-    })
-    .error(function() {
-      toastr.error('Failed to load user name');
-    });
-  }
 
   // This is called whenever start or end date changes
   $scope.onFilterChange = function() {

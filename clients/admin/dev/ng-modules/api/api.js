@@ -4,6 +4,18 @@
 
 var mod = angular.module("fabsmith.admin.api", []);
 
+function generateStartEndDateTimesLocal(purchase) {
+    var start = moment(purchase.TimeStart).tz('Europe/Berlin');
+    var end = moment(purchase.TimeEnd).tz('Europe/Berlin');
+    var endPlanned = moment(purchase.TimeEndPlanned).tz('Europe/Berlin');
+    purchase.DateStartLocal = start.format('YYYY-MM-DD');
+    purchase.DateEndLocal = end.format('YYYY-MM-DD');
+    purchase.DateEndPlannedLocal = endPlanned.format('YYYY-MM-DD');
+    purchase.TimeStartLocal = start.format('HH:mm');
+    purchase.TimeEndLocal = end.format('HH:mm');
+    purchase.TimeEndPlannedLocal = endPlanned.format('HH:mm');
+}
+
 mod.service('api',
  ['$cookies', '$http', 'randomToken',
  function($cookies, $http, randomToken) {
@@ -315,20 +327,6 @@ mod.service('api',
       return moment(goDateTime).tz(tz || 'Europe/Berlin');
     }
   };
-
-  // Private methods
-
-  function generateStartEndDateTimesLocal(purchase) {
-      var start = moment(purchase.TimeStart).tz('Europe/Berlin');
-      var end = moment(purchase.TimeEnd).tz('Europe/Berlin');
-      var endPlanned = moment(purchase.TimeEndPlanned).tz('Europe/Berlin');
-      purchase.DateStartLocal = start.format('YYYY-MM-DD');
-      purchase.DateEndLocal = end.format('YYYY-MM-DD');
-      purchase.DateEndPlannedLocal = endPlanned.format('YYYY-MM-DD');
-      purchase.TimeStartLocal = start.format('HH:mm');
-      purchase.TimeEndLocal = end.format('HH:mm');
-      purchase.TimeEndPlannedLocal = endPlanned.format('HH:mm');
-  }
 
   return this;
 }]);
