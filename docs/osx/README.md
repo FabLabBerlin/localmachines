@@ -160,7 +160,7 @@ Terminal Tab 2:
 
 ```
 cd clients/machines
-npm run-script dev
+npm run dev
 ```
 
 Terminal Tab 3:
@@ -186,7 +186,7 @@ The unit tests should run smoothly with no errors.
 cd $GOPATH/src/github.com/FabLabBerlin/localmachines/clients/admin
 grunt prod
 cd $GOPATH/src/github.com/FabLabBerlin/localmachines/clients/machines
-npm run-script prod
+npm run prod
 cd $GOPATH/src/github.com/FabLabBerlin/localmachines/clients/signup
 grunt prod
 ```

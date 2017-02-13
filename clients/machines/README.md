@@ -5,8 +5,8 @@ NodeJS LTS is recommended.
 ##Quickstart
 
 - `npm test` to run unit tests
-- `npm run-script dev` to build the dev code on demand "watch" (`dev/bundle.js` and other files in `prod/`)
-- `npm run-script prod` to build the production code (`prod/bundle.js` and other files in `prod/`)
+- `npm run dev` to build the dev code on demand "watch" (`dev/bundle.js` and other files in `prod/`)
+- `npm run prod` to build the production code (`prod/bundle.js` and other files in `prod/`)
 
 ##Convention used:
 
