@@ -208,34 +208,5 @@ angular.module('fabsmith.signup.form', ['ngRoute', 'ngCookies'])
     });
   };
 
-  var numberOfSecondsBeforeResting = 30;
-  (function(nbSecToReset){
-    var idleTime = 0;
-    $(document).ready(function () {
-      var idleInterval = setInterval(timerIncrement, 1000);
-
-      $(this).mousemove(function (e) {
-        idleTime = 0;
-      });
-      $(this).keypress(function (e) {
-        idleTime = 0;
-      });
-    });
-
-    function timerIncrement() {
-      idleTime = idleTime + 1;
-      if (idleTime > (nbSecToReset-1)) {
-        $scope.email = "";
-        $scope.company = "";
-        $scope.firstName = "";
-        $scope.lastName = "";
-        $scope.username = "";
-        $scope.password = "";
-        $scope.$apply();
-        idleTime = 0;
-      }
-    }
-  })(numberOfSecondsBeforeResting);
-
 }]);
 })();
