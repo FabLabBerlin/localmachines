@@ -101,6 +101,7 @@ func (this *UsersController) Login() {
 	}
 
 	if resp.UserId, err = this.GetSessionUserId(); err == nil {
+		beego.Info("already logged")
 		sessionLocationId, _ := this.GetSessionLocationId()
 		if sessionLocationId != locId {
 			beego.Error("sessionLocationId=", sessionLocationId, "locId=", locId)

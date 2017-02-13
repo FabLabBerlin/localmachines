@@ -14,51 +14,6 @@ app.config(['$routeProvider', function($routeProvider) {
 app.controller('LoginCtrl',
  ['$rootScope', '$scope', '$http', '$location', '$cookies',
  function($rootScope, $scope, $http, $location, $cookies) {
-  // Local login function - if we do it by entering username and password in the browser
-  if (window.libnfc) {
-    $scope.nfcSupport = true;
-    $scope.locations = [];
-
-    $scope.onNfcError = function(error) {
-      window.libnfc.cardRead.disconnect($scope.loginWithUid);
-      window.libnfc.cardReaderError.disconnect($scope.onNfcError);
-      toastr.error(error);
-      $scope.nfcErrorTimeout = setTimeout($scope.getNfcUid, 2000);
-    };
-
-    $scope.loginWithUid = function(uid) {
-      window.libnfc.cardRead.disconnect($scope.loginWithUid);
-      window.libnfc.cardReaderError.disconnect($scope.onNfcError);
-      $http({
-        method: 'POST',
-        url: '/api/users/loginuid',
-        data: {
-          uid: uid,
-          ac: new Date().getTime()
-        }
-      })
-      .success(function(data) {
-        if (data.UserId) {
-          $cookies.put('location', 1);
-          $scope.getUserData(data.UserId);
-        }
-      })
-      .error(function() {
-        toastr.error('Failed to log in');
-        setTimeout($scope.getNfcUid, 2000);
-      });
-    };
-
-    $scope.getNfcUid = function() {
-      //window.libnfc.nfcReaderError.connect($scope.onNfcError);
-      window.libnfc.cardRead.connect($scope.loginWithUid);
-      window.libnfc.cardReaderError.connect($scope.onNfcError);
-      window.libnfc.asyncScan(); // For infinite amount of time
-    };
-
-    $scope.getNfcUid();
-  } // if window.libnfc
-
   $scope.getUserData = function(userId) {
     $http({
       method: 'GET',
@@ -68,7 +23,6 @@ app.controller('LoginCtrl',
       }
     })
     .success(function(data){
-      //$scope.$emit('user-login', data);
       $rootScope.mainMenu.userFullName = data.FirstName + ' ' + data.LastName;
       $location.path('/machines');
     })
@@ -80,22 +34,6 @@ app.controller('LoginCtrl',
   };
 
   $scope.login = function() {
-    if (window.libnfc) {
-      try {
-        window.libnfc.cardRead.disconnect($scope.loginWithUid);
-      } catch (err) {
-        toastr.error(err.message);
-      }
-
-      try {
-        window.libnfc.cardReaderError.disconnect($scope.onNfcError);
-      } catch (err) {
-        toastr.error(err.message);
-      }
-
-      clearTimeout($scope.nfcErrorTimeout);
-    }
-
     var locationId = $('select[name="location"]').val();
     locationId = parseInt(locationId);
 
@@ -114,7 +52,6 @@ app.controller('LoginCtrl',
     })
     .success(function(data) {
       if (data.UserId) {
-        //$cookies.put('locationId', locationId);
         $scope.getUserData(data.UserId);
       }
     })
