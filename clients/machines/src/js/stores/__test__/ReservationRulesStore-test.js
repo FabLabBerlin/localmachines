@@ -16,6 +16,9 @@ import getters from '../../getters';
 import Machines from '../../modules/Machines';
 import moment from 'moment';
 import reactor from '../../reactor';
+import MachineStore from '../../modules/Machines/stores/store';
+import ReservationRulesStore from '../ReservationRulesStore';
+import ReservationsStore from '../ReservationsStore';
 
 
 function existingReservations() {
@@ -266,10 +269,6 @@ function getMachines() {
 
 
 describe('ReservationRulesStore', function() {
-  import MachineStore from '../../modules/Machines/stores/store';
-  import ReservationRulesStore from '../ReservationRulesStore';
-  import ReservationsStore from '../ReservationsStore';
-
   reactor.registerStores({
     machineStore: MachineStore,
     reservationRulesStore: ReservationRulesStore,

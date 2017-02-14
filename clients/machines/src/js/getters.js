@@ -418,9 +418,6 @@ const getReservationRules = [
   }
 ];
 
-console.log('Machines=', Machines);
-console.log('Machines.getters=', Machines.getters);
-
 const getNewReservationTimes = [
   Machines.getters.getMachinesById,
   ['reservationsStore'],

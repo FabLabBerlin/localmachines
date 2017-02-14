@@ -19,6 +19,7 @@ var BillTables = React.createFactory(require('../BillTables'));
 import Nuclear from 'nuclear-js';
 import reactor from '../../../reactor';
 var toImmutable = Nuclear.toImmutable;
+import UserStore from '../../../stores/UserStore';
 
 
 var state = {
@@ -238,7 +239,6 @@ var state = {
 
 describe('BillTables', function() {
   var $ = require('jquery');
-  import UserStore from '../../../stores/UserStore';
 
   reactor.registerStores({
     userStore: UserStore

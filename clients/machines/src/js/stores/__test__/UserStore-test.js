@@ -11,6 +11,7 @@ jest.dontMock('../UserStore');
 import actionTypes from '../../actionTypes';
 import getters from '../../getters';
 import reactor from '../../reactor';
+import UserStore from '../UserStore';
 
 
 function getUser() {
@@ -23,8 +24,6 @@ function getUser() {
 }
 
 describe('UserStore', function() {
-  import UserStore from '../UserStore';
-
   reactor.registerStores({
     userStore: UserStore
   });

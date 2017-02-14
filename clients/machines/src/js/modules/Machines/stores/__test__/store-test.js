@@ -15,6 +15,9 @@ import actionTypes from '../../actionTypes';
 import getters from '../../../../getters';
 import Machines from '../../../../modules/Machines';
 import reactor from '../../../../reactor';
+import LoginStore from '../../../../stores/LoginStore';
+import MachineStore from '../../../../modules/Machines/stores/store';
+import UserStore from '../../../../stores/UserStore';
 
 
 function getActivations() {
@@ -45,9 +48,6 @@ function getMachines() {
 
 describe('MachineStore', function() {
   var $ = require('jquery');
-  import LoginStore from '../../../../stores/LoginStore';
-  import MachineStore from '../../../../modules/Machines/stores/store';
-  import UserStore from '../../../../stores/UserStore';
 
   reactor.registerStores({
     loginStore: LoginStore,

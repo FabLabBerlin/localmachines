@@ -56,7 +56,6 @@ function failAutoLogin(state) {
  */
 function successLogin(state, { data }) {
   if (data.UserId) {
-    console.log('successLogin: data:', data);
     return putLoginState(state.set('uid', data.UserId));
   } else {
     toastr.error('Failed to log in');

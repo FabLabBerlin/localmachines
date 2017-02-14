@@ -1,4 +1,4 @@
-var $ = require('jquery');
+import $ from 'jquery';
 import actionTypes from './actionTypes';
 import Cookies from 'js-cookie';
 import getters from '../../getters';
