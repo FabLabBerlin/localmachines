@@ -55,7 +55,7 @@ var Location = require('./modules/Location');
 require('bootstrap-less');
 require('../assets/less/main.less');
 require('../assets/less/common.less');
-require('font-awesome-webpack');
+require('font-awesome/css/font-awesome.css');
 require('react-datetime');
 require('toastr/build/toastr.min.css');
 require('vex/css/vex.css');

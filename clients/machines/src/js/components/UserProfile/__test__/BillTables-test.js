@@ -7,6 +7,8 @@ jest.dontMock('../../../getters');
 jest.dontMock('../../../reactor');
 jest.dontMock('../BillTables');
 jest.dontMock('../helpers');
+jest.dontMock('../../../modules/Machines/getters.js');
+jest.dontMock('../../../modules/Machines/index.js');
 jest.dontMock('../../../stores/UserStore.js');
 
 

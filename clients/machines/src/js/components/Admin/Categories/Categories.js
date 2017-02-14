@@ -1,13 +1,13 @@
-var $ = require('jquery');
-var Categories = require('../../../modules/Categories');
-var getters = require('../../../getters');
-var LoaderLocal = require('../../LoaderLocal');
-var Location = require('../../../modules/Location');
-var React = require('react');
-var reactor = require('../../../reactor');
-var TableCRUD = require('../../TableCRUD/TableCRUD');
-var toastr = require('toastr');
-var UserActions = require('../../../actions/UserActions');
+import $ from 'jquery';
+import Categories from '../../../modules/Categories';
+import getters from '../../../getters';
+import LoaderLocal from '../../LoaderLocal';
+import Location from '../../../modules/Location';
+import React from 'react';
+import reactor from '../../../reactor';
+import TableCRUD from '../../TableCRUD/TableCRUD';
+import toastr from 'toastr';
+import UserActions from '../../../actions/UserActions';
 
 
 var CategoriesPage = React.createClass({

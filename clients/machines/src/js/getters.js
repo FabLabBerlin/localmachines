@@ -1,12 +1,12 @@
-var _ = require('lodash');
-var { Day, Time } = require('./components/Reservations/helpers');
-var { toCents, subtractVAT } = require('./components/UserProfile/helpers');
-var Machines = require('./modules/Machines');
-var moment = require('moment');
-var Nuclear = require('nuclear-js');
+import _ from 'lodash';
+import { Day, Time } from './components/Reservations/helpers';
+import { toCents, subtractVAT } from './components/UserProfile/helpers';
+import Machines from './modules/Machines';
+import moment from 'moment';
+import Nuclear from 'nuclear-js';
 var toImmutable = Nuclear.toImmutable;
 
-var helpers = require('./components/UserProfile/helpers');
+import helpers from './components/UserProfile/helpers';
 
 
 /*
@@ -417,6 +417,9 @@ const getReservationRules = [
     return reservationRulesStore.get('reservationRules');
   }
 ];
+
+console.log('Machines=', Machines);
+console.log('Machines.getters=', Machines.getters);
 
 const getNewReservationTimes = [
   Machines.getters.getMachinesById,
