@@ -12,12 +12,12 @@ jest.dontMock('../../../modules/Machines/index.js');
 jest.dontMock('../../../stores/UserStore.js');
 
 
-var React = require('react');
-var actionTypes = require('../../../actionTypes');
-var getters = require('../../../getters');
+import React from 'react';
+import actionTypes from '../../../actionTypes';
+import getters from '../../../getters';
 var BillTables = React.createFactory(require('../BillTables'));
-var Nuclear = require('nuclear-js');
-var reactor = require('../../../reactor');
+import Nuclear from 'nuclear-js';
+import reactor from '../../../reactor';
 var toImmutable = Nuclear.toImmutable;
 
 
@@ -238,7 +238,7 @@ var state = {
 
 describe('BillTables', function() {
   var $ = require('jquery');
-  var UserStore = require('../../../stores/UserStore');
+  import UserStore from '../../../stores/UserStore';
 
   reactor.registerStores({
     userStore: UserStore

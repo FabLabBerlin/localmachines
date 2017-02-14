@@ -1,5 +1,5 @@
-var Item = require('./Item');
-var React = require('react');
+import Item from './Item';
+import React from 'react';
 
 
 var Bottom = React.createClass({

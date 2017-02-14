@@ -6,10 +6,10 @@ jest.mock('jquery');
 jest.mock('toastr');
 
 var $ = require('jquery');
-var actionTypes = require('../../actionTypes');
-var getters = require('../../getters');
-var LoginStore = require('../LoginStore');
-var reactor = require('../../reactor');
+import actionTypes from '../../actionTypes';
+import getters from '../../getters';
+import LoginStore from '../LoginStore';
+import reactor from '../../reactor';
 
 
 describe('LoginStore', function() {

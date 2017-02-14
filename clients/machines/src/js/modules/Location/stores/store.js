@@ -1,6 +1,6 @@
-var actionTypes = require('../actionTypes');
-var Cookies = require('js-cookie');
-var Nuclear = require('nuclear-js');
+import actionTypes from '../actionTypes';
+import Cookies from 'js-cookie';
+import Nuclear from 'nuclear-js';
 var toImmutable = Nuclear.toImmutable;
 
 const initialState = toImmutable({

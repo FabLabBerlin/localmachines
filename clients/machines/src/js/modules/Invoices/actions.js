@@ -1,16 +1,16 @@
-var _ = require('lodash');
+import _ from 'lodash';
 var $ = require('jquery');
-var actionTypes = require('./actionTypes');
-var getters = require('./getters');
-var GlobalActions = require('../../actions/GlobalActions');
-var LocationGetters = require('../../modules/Location/getters');
-var React = require('react');
-var reactor = require('../../reactor');
-var toastr = require('../../toastr');
+import actionTypes from './actionTypes';
+import getters from './getters';
+import GlobalActions from '../../actions/GlobalActions';
+import LocationGetters from '../../modules/Location/getters';
+import React from 'react';
+import reactor from '../../reactor';
+import toastr from '../../toastr';
 
 // https://github.com/HubSpot/vex/issues/72
-var vex = require('vex-js'),
-VexDialog = require('vex-js/js/vex.dialog.js');
+import vex from 'vex-js';
+import VexDialog from 'vex-js/js/vex.dialog.js';
 
 vex.defaultOptions.className = 'vex-theme-custom';
 

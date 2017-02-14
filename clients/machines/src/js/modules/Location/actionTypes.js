@@ -1,4 +1,4 @@
-var keyMirror = require('fbjs/lib/keyMirror');
+import keyMirror from 'fbjs/lib/keyMirror';
 
 export default keyMirror({
   SET_LOCATION_ID: null,

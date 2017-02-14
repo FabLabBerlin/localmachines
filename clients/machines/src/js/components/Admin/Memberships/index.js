@@ -1,13 +1,13 @@
-var Button = require('../../Button');
-var getters = require('../../../getters');
+import Button from '../../Button';
+import getters from '../../../getters';
 var {hashHistory} = require('react-router');
-var LoaderLocal = require('../../LoaderLocal');
-var Location = require('../../../modules/Location');
-var Memberships = require('../../../modules/Memberships');
-var React = require('react');
-var reactor = require('../../../reactor');
-var Settings = require('../../../modules/Settings');
-var UserActions = require('../../../actions/UserActions');
+import LoaderLocal from '../../LoaderLocal';
+import Location from '../../../modules/Location';
+import Memberships from '../../../modules/Memberships';
+import React from 'react';
+import reactor from '../../../reactor';
+import Settings from '../../../modules/Settings';
+import UserActions from '../../../actions/UserActions';
 
 
 var MembershipsPage = React.createClass({

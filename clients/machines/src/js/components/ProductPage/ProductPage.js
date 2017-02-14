@@ -1,8 +1,8 @@
 var $ = require('jquery');
-var GlobalActions = require('../../actions/GlobalActions');
-var Profiles = require('./Profiles');
-var React = require('react');
-var toastr = require('../../toastr');
+import GlobalActions from '../../actions/GlobalActions';
+import Profiles from './Profiles';
+import React from 'react';
+import toastr from '../../toastr';
 
 
 var Subscribe = React.createClass({

@@ -1,11 +1,11 @@
-var _ = require('lodash');
-var getters = require('../../getters');
-var LocationGetters = require('../../modules/Location/getters');
-var moment = require('moment');
+import _ from 'lodash';
+import getters from '../../getters';
+import LocationGetters from '../../modules/Location/getters';
+import moment from 'moment';
 var { Month } = require('./helpers');
-var React = require('react');
-var reactor = require('../../reactor');
-var ReservationActions = require('../../actions/ReservationActions');
+import React from 'react';
+import reactor from '../../reactor';
+import ReservationActions from '../../actions/ReservationActions';
 
 
 var DayView = React.createClass({

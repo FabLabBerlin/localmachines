@@ -1,8 +1,8 @@
-var _ = require('lodash');
-var Item = require('./Item');
-var Machines = require('../../modules/Machines');
-var React = require('react');
-var reactor = require('../../reactor');
+import _ from 'lodash';
+import Item from './Item';
+import Machines from '../../modules/Machines';
+import React from 'react';
+import reactor from '../../reactor';
 
 
 var BottomMachine = React.createClass({

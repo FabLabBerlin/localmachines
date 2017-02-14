@@ -1,9 +1,9 @@
-var FeedbackActions = require('../../actions/FeedbackActions');
-var getters = require('../../getters');
-var Location = require('../../modules/Location');
-var React = require('react');
-var reactor = require('../../reactor');
-var UserActions = require('../../actions/UserActions');
+import FeedbackActions from '../../actions/FeedbackActions';
+import getters from '../../getters';
+import Location from '../../modules/Location';
+import React from 'react';
+import reactor from '../../reactor';
+import UserActions from '../../actions/UserActions';
 
 
 var FeedbackPage = React.createClass({

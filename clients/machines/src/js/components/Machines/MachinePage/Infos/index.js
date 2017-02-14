@@ -1,11 +1,11 @@
-var getters = require('../../../../getters');
-var LoaderLocal = require('../../../LoaderLocal');
-var Location = require('../../../../modules/Location');
-var MachineActions = require('../../../../actions/MachineActions');
-var Machines = require('../../../../modules/Machines');
-var React = require('react');
-var reactor = require('../../../../reactor');
-var UserActions = require('../../../../actions/UserActions');
+import getters from '../../../../getters';
+import LoaderLocal from '../../../LoaderLocal';
+import Location from '../../../../modules/Location';
+import MachineActions from '../../../../actions/MachineActions';
+import Machines from '../../../../modules/Machines';
+import React from 'react';
+import reactor from '../../../../reactor';
+import UserActions from '../../../../actions/UserActions';
 
 
 var Section = React.createClass({

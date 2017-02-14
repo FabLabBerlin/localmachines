@@ -1,8 +1,8 @@
-var getters = require('../../../getters');
-var LoaderLocal = require('../../LoaderLocal');
-var Machines = require('../../../modules/Machines');
-var React = require('react');
-var reactor = require('../../../reactor');
+import getters from '../../../getters';
+import LoaderLocal from '../../LoaderLocal';
+import Machines from '../../../modules/Machines';
+import React from 'react';
+import reactor from '../../../reactor';
 
 
 var OccupiedBy = React.createClass({

@@ -1,9 +1,9 @@
-var _ = require('lodash');
-var BillTable = require('./BillTable');
-var getters = require('../../getters');
-var LoaderLocal = require('../LoaderLocal');
-var React = require('react');
-var reactor = require('../../reactor');
+import _ from 'lodash';
+import BillTable from './BillTable';
+import getters from '../../getters';
+import LoaderLocal from '../LoaderLocal';
+import React from 'react';
+import reactor from '../../reactor';
 
 
 var BillTables = React.createClass({

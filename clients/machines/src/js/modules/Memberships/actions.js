@@ -1,10 +1,10 @@
-var _ = require('lodash');
+import _ from 'lodash';
 var $ = require('jquery');
-var actionTypes = require('./actionTypes');
-var getters = require('./getters');
-var GlobalActions = require('../../actions/GlobalActions');
-var reactor = require('../../reactor');
-var toastr = require('../../toastr');
+import actionTypes from './actionTypes';
+import getters from './getters';
+import GlobalActions from '../../actions/GlobalActions';
+import reactor from '../../reactor';
+import toastr from '../../toastr';
 
 
 function fetch({locationId}) {

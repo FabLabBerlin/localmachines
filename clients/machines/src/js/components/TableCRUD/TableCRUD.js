@@ -1,14 +1,14 @@
-var _ = require('lodash');
+import _ from 'lodash';
 var $ = require('jquery');
-var Button = require('../Button');
-var Location = require('../../modules/Location');
-var React = require('react');
-var reactor = require('../../reactor');
-var toastr = require('toastr');
+import Button from '../Button';
+import Location from '../../modules/Location';
+import React from 'react';
+import reactor from '../../reactor';
+import toastr from 'toastr';
 
 // https://github.com/HubSpot/vex/issues/72
-var vex = require('vex-js'),
-VexDialog = require('vex-js/js/vex.dialog.js');
+import vex from 'vex-js';
+import VexDialog from 'vex-js/js/vex.dialog.js';
 
 vex.defaultOptions.className = 'vex-theme-custom';
 

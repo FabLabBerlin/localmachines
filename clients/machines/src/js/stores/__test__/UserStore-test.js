@@ -8,9 +8,9 @@ jest.dontMock('nuclear-js');
 jest.dontMock('../../reactor');
 jest.dontMock('../UserStore');
 
-var actionTypes = require('../../actionTypes');
-var getters = require('../../getters');
-var reactor = require('../../reactor');
+import actionTypes from '../../actionTypes';
+import getters from '../../getters';
+import reactor from '../../reactor';
 
 
 function getUser() {
@@ -23,7 +23,7 @@ function getUser() {
 }
 
 describe('UserStore', function() {
-  var UserStore = require('../UserStore');
+  import UserStore from '../UserStore';
 
   reactor.registerStores({
     userStore: UserStore

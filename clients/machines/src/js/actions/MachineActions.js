@@ -1,13 +1,13 @@
-var _ = require('lodash');
+import _ from 'lodash';
 var $ = require('jquery');
-var actionTypes = require('../actionTypes');
-var getters = require('../getters');
-var GlobalActions = require('./GlobalActions');
-var LocationGetters = require('../modules/Location/getters');
-var LoginActions = require('../actions/LoginActions');
-var Machines = require('../modules/Machines');
-var reactor = require('../reactor');
-var toastr = require('../toastr');
+import actionTypes from '../actionTypes';
+import getters from '../getters';
+import GlobalActions from './GlobalActions';
+import LocationGetters from '../modules/Location/getters';
+import LoginActions from '../actions/LoginActions';
+import Machines from '../modules/Machines';
+import reactor from '../reactor';
+import toastr from '../toastr';
 
 
 var lpRequest;

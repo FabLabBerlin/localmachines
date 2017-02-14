@@ -1,10 +1,10 @@
-var _ = require('lodash');
-var getters = require('../../../getters');
-var LocationGetters = require('../../../modules/Location/getters');
-var MachineActions = require('../../../actions/MachineActions');
-var Machines = require('../../../modules/Machines');
-var React = require('react');
-var reactor = require('../../../reactor');
+import _ from 'lodash';
+import getters from '../../../getters';
+import LocationGetters from '../../../modules/Location/getters';
+import MachineActions from '../../../actions/MachineActions';
+import Machines from '../../../modules/Machines';
+import React from 'react';
+import reactor from '../../../reactor';
 
 
 var MachinesView = React.createClass({

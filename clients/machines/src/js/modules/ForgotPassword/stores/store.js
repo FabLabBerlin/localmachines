@@ -1,6 +1,6 @@
-var actionTypes = require('../actionTypes');
-var Nuclear = require('nuclear-js');
-var reactor = require('../../../reactor');
+import actionTypes from '../actionTypes';
+import Nuclear from 'nuclear-js';
+import reactor from '../../../reactor';
 var toImmutable = Nuclear.toImmutable;
 
 

@@ -1,8 +1,8 @@
 import {hashHistory} from 'react-router';
-var Machines = require('../../modules/Machines');
-var React = require('react');
-var reactor = require('../../reactor');
-var Settings = require('../../modules/Settings');
+import Machines from '../../modules/Machines';
+import React from 'react';
+import reactor from '../../reactor';
+import Settings from '../../modules/Settings';
 
 
 var MachineType = React.createClass({

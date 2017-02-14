@@ -2,7 +2,7 @@ jest.dontMock('../LoginActions');
 jest.mock('jquery');
 
 var $ = require('jquery');
-var LoginActions = require('../LoginActions');
+import LoginActions from '../LoginActions';
 
 describe('LoginActions', function() {
   describe('submitLoginForm', function() {

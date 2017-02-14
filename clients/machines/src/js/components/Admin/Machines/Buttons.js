@@ -1,10 +1,10 @@
 var $ = require('jquery');
-var getters = require('../../../getters');
-var LocationGetters = require('../../../modules/Location/getters');
-var MachineActions = require('../../../actions/MachineActions');
-var React = require('react');
-var reactor = require('../../../reactor');
-var toastr = require('../../../toastr');
+import getters from '../../../getters';
+import LocationGetters from '../../../modules/Location/getters';
+import MachineActions from '../../../actions/MachineActions';
+import React from 'react';
+import reactor from '../../../reactor';
+import toastr from '../../../toastr';
 
 
 var Buttons = React.createClass({

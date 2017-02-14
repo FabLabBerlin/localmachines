@@ -1,8 +1,8 @@
-var React = require('react');
-var getters = require('../../getters');
-var Machines = require('../../modules/Machines');
-var moment = require('moment');
-var reactor = require('../../reactor');
+import React from 'react';
+import getters from '../../getters';
+import Machines from '../../modules/Machines';
+import moment from 'moment';
+import reactor from '../../reactor';
 
 /*
  * Methode to int to be display in hour format

@@ -1,9 +1,9 @@
 var $ = require('jquery');
-var getters = require('../../getters');
-var LocationGetters = require('../../modules/Location/getters');
-var LoginActions = require('../../actions/LoginActions');
-var React = require('react');
-var reactor = require('../../reactor');
+import getters from '../../getters';
+import LocationGetters from '../../modules/Location/getters';
+import LoginActions from '../../actions/LoginActions';
+import React from 'react';
+import reactor from '../../reactor';
 
 
 var Right = React.createClass({

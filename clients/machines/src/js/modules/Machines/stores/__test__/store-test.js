@@ -11,10 +11,10 @@ jest.dontMock('../../../../stores/UserStore.js');
 jest.dontMock('../../../../reactor');
 jest.mock('jquery');
 
-var actionTypes = require('../../actionTypes');
-var getters = require('../../../../getters');
-var Machines = require('../../../../modules/Machines');
-var reactor = require('../../../../reactor');
+import actionTypes from '../../actionTypes';
+import getters from '../../../../getters';
+import Machines from '../../../../modules/Machines';
+import reactor from '../../../../reactor';
 
 
 function getActivations() {
@@ -45,9 +45,9 @@ function getMachines() {
 
 describe('MachineStore', function() {
   var $ = require('jquery');
-  var LoginStore = require('../../../../stores/LoginStore');
-  var MachineStore = require('../../../../modules/Machines/stores/store');
-  var UserStore = require('../../../../stores/UserStore');
+  import LoginStore from '../../../../stores/LoginStore';
+  import MachineStore from '../../../../modules/Machines/stores/store';
+  import UserStore from '../../../../stores/UserStore';
 
   reactor.registerStores({
     loginStore: LoginStore,

@@ -1,8 +1,8 @@
-var _ = require('lodash');
+import _ from 'lodash';
 var $ = require('jquery');
-var actionTypes = require('../actionTypes');
-var reactor = require('../reactor');
-var toastr = require('../toastr');
+import actionTypes from '../actionTypes';
+import reactor from '../reactor';
+import toastr from '../toastr';
 
 
 if ($(window)) {

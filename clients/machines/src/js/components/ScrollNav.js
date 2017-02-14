@@ -1,9 +1,9 @@
 var $ = require('jquery');
-var getters = require('../getters');
-var LoginActions = require('../actions/LoginActions');
-var React = require('react');
-var reactor = require('../reactor');
-var ScrollNavActions = require('../actions/ScrollNavActions');
+import getters from '../getters';
+import LoginActions from '../actions/LoginActions';
+import React from 'react';
+import reactor from '../reactor';
+import ScrollNavActions from '../actions/ScrollNavActions';
 
 const TOP = 'top';
 const BOTTOM = 'bottom';

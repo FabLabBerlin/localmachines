@@ -1,5 +1,5 @@
-var FeedbackDialogs = require('./FeedbackDialogs');
-var React = require('react');
+import FeedbackDialogs from './FeedbackDialogs';
+import React from 'react';
 
 
 var RepairButton = React.createClass({

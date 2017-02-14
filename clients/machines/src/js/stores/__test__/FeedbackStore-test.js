@@ -3,13 +3,13 @@ jest.dontMock('../../actionTypes');
 jest.dontMock('../../getters');
 jest.dontMock('../../reactor');
 jest.dontMock('../../stores/FeedbackStore');
-var actionTypes = require('../../actionTypes');
-var getters = require('../../getters');
-var reactor = require('../../reactor');
+import actionTypes from '../../actionTypes';
+import getters from '../../getters';
+import reactor from '../../reactor';
 
 
 describe('FeedbackStore', function() {
-  var FeedbackStore = require('../../stores/FeedbackStore');
+  import FeedbackStore from '../../stores/FeedbackStore';
 
   reactor.registerStores({
     feedbackStore: FeedbackStore

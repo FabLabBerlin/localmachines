@@ -1,53 +1,54 @@
 import { render } from 'react-dom';
 import {DefaultRoute, Route, Router, hashHistory, NoRoute} from 'react-router';
 
+import AdminCategories from './components/Admin/Categories/Categories';
+import AdminInvoice from './components/Admin/Invoices/Invoice';
+import AdminInvoices from './components/Admin/Invoices/Invoices';
+import AdminLocations from './components/Admin/Locations/Locations';
+import AdminMachine from './components/Admin/Machines/Machine';
+import AdminMachines from './components/Admin/Machines/Machines';
+import AdminMembership from './components/Admin/Memberships/Membership';
+import AdminMemberships from './components/Admin/Memberships';
+import AdminSettings from './components/Admin/Settings/Settings';
+import AdminUser from './components/Admin/Users/User';
+import AdminUsers from './components/Admin/Users/Users';
+import App from './components/App';
+import CategoriesStore from './modules/Categories/stores/store';
+import FeedbackPage from './components/Feedback/FeedbackPage';
+import FeedbackStore from './stores/FeedbackStore';
+import ForgotPassword from './components/ForgotPassword';
+import ForgotPasswordStore from './modules/ForgotPassword/stores/store';
+import getters from './getters';
+import GlobalStore from './stores/GlobalStore';
+import Invoices from './modules/Invoices';
+import LoaderLocal from './components/LoaderLocal';
+import Login from './components/Login/Login';
+import LoginStore from './stores/LoginStore';
+import MachinePage from './components/Machines/MachinePage';
+import MachineInfosPage from './components/Machines/MachinePage/Infos';
+import MachineReservationPage from './components/Machines/MachinePage/Reservations';
+import Machines from './modules/Machines';
+import MachinesPage from './components/Machines/Machines';
+import Memberships from './modules/Memberships';
+import React from 'react';
+import ProductPage from './components/ProductPage/ProductPage';
+import reactor from './reactor';
+import RegisterExisting from './components/RegisterExisting';
+import ReservationsPage from './components/Reservations/ReservationsPage';
+import ReservationsStore from './stores/ReservationsStore';
+import ReservationRulesStore from './stores/ReservationRulesStore';
+import ScrollNavStore from './stores/ScrollNavStore';
+import Page from './components/UserProfile/SpendingsPage';
+import SettingsStore from './modules/Settings/stores/store';
+import SpendingsPage from './components/UserProfile/SpendingsPage';
+import UserPage from './components/UserProfile/UserPage';
+import Users from './modules/Users';
+import UserStore from './stores/UserStore';
+import Location from './modules/Location';
+
 if (window.location.pathname === '/product' || window.location.pathname === '/product/') {
   window.location.href = '/machines/#/product';
 } else {
-
-var AdminCategories = require('./components/Admin/Categories/Categories');
-var AdminInvoice = require('./components/Admin/Invoices/Invoice');
-var AdminInvoices = require('./components/Admin/Invoices/Invoices');
-var AdminLocations = require('./components/Admin/Locations/Locations');
-var AdminMachine = require('./components/Admin/Machines/Machine');
-var AdminMachines = require('./components/Admin/Machines/Machines');
-var AdminMembership = require('./components/Admin/Memberships/Membership');
-var AdminMemberships = require('./components/Admin/Memberships');
-var AdminSettings = require('./components/Admin/Settings/Settings');
-var AdminUser = require('./components/Admin/Users/User');
-var AdminUsers = require('./components/Admin/Users/Users');
-var App = require('./components/App');
-var CategoriesStore = require('./modules/Categories/stores/store');
-var FeedbackPage = require('./components/Feedback/FeedbackPage');
-var FeedbackStore = require('./stores/FeedbackStore');
-var ForgotPassword = require('./components/ForgotPassword');
-var ForgotPasswordStore = require('./modules/ForgotPassword/stores/store');
-var getters = require('./getters');
-var GlobalStore = require('./stores/GlobalStore');
-var Invoices = require('./modules/Invoices');
-var Login = require('./components/Login/Login');
-var LoginStore = require('./stores/LoginStore');
-var MachinePage = require('./components/Machines/MachinePage');
-var MachineInfosPage = require('./components/Machines/MachinePage/Infos');
-var MachineReservationPage = require('./components/Machines/MachinePage/Reservations');
-var Machines = require('./modules/Machines');
-var MachinesPage = require('./components/Machines/Machines');
-var Memberships = require('./modules/Memberships');
-var React = require('react');
-var ProductPage = require('./components/ProductPage/ProductPage');
-var reactor = require('./reactor');
-var RegisterExisting = require('./components/RegisterExisting');
-var ReservationsPage = require('./components/Reservations/ReservationsPage');
-var ReservationsStore = require('./stores/ReservationsStore');
-var ReservationRulesStore = require('./stores/ReservationRulesStore');
-var ScrollNavStore = require('./stores/ScrollNavStore');
-var Page = require('./components/UserProfile/SpendingsPage');
-var SettingsStore = require('./modules/Settings/stores/store');
-var SpendingsPage = require('./components/UserProfile/SpendingsPage');
-var UserPage = require('./components/UserProfile/UserPage');
-var Users = require('./modules/Users');
-var UserStore = require('./stores/UserStore');
-var Location = require('./modules/Location');
 
 /*
  * Style dependencies for webpack
@@ -63,6 +64,27 @@ require('vex/css/vex.css');
 /*
  * Define the stores
  */
+
+_.each({
+  categoriesStore: CategoriesStore,
+  feedbackStore: FeedbackStore,
+  forgotPasswordStore: ForgotPasswordStore,
+  globalStore: GlobalStore,
+  invoicesStore: Invoices.store,
+  loginStore: LoginStore,
+  machineStore: Machines.store,
+  membershipsStore: Memberships.store,
+  reservationsStore: ReservationsStore,
+  reservationRulesStore: ReservationRulesStore,
+  scrollNavStore: ScrollNavStore,
+  settingsStore: SettingsStore,
+  userStore: UserStore,
+  usersStore: Users.store,
+  locationStore: Location.store,
+  locationEditStore: Location.editStore
+}, (s, k) => {
+  console.log('store[' + k + ']=', s)
+});
 
 reactor.registerStores({
   categoriesStore: CategoriesStore,
@@ -80,11 +102,10 @@ reactor.registerStores({
   userStore: UserStore,
   usersStore: Users.store,
   locationStore: Location.store,
-  locationEditStore: Location.editStore
+  //locationEditStore: Location.editStore
 });
 
 
-var LoaderLocal = require('./components/LoaderLocal');
 /*
  * Render everything in the the body of index.html
  */

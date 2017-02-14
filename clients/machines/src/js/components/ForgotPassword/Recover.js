@@ -1,6 +1,6 @@
-var actions = require('../../modules/ForgotPassword/actions');
-var React = require('react');
-var toastr = require('../../toastr');
+import actions from '../../modules/ForgotPassword/actions';
+import React from 'react';
+import toastr from '../../toastr';
 
 
 var Recover = React.createClass({

@@ -11,12 +11,12 @@ jest.dontMock('../../stores/LoginStore');
 jest.mock('jquery');
 
 var $ = require('jquery');
-var actionTypes = require('../../actionTypes');
-var LocationActions = require('../../modules/Location/actions');
-var MachineActions = require('../MachineActions');
-var reactor = require('../../reactor');
-var LocationStore = require('../../modules/Location/stores/store');
-var LoginStore = require('../../stores/LoginStore');
+import actionTypes from '../../actionTypes';
+import LocationActions from '../../modules/Location/actions';
+import MachineActions from '../MachineActions';
+import reactor from '../../reactor';
+import LocationStore from '../../modules/Location/stores/store';
+import LoginStore from '../../stores/LoginStore';
 
 
 reactor.registerStores({

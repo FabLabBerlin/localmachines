@@ -1,6 +1,6 @@
 var $ = require('jquery');
-var React = require('react');
-var toastr = require('../../toastr');
+import React from 'react';
+import toastr from '../../toastr';
 
 
 var ImageUploader = React.createClass({

@@ -1,13 +1,13 @@
-var _ = require('lodash');
+import _ from 'lodash';
 var $ = require('jquery');
-var DatePicker = require('react-datepicker');
-var getters = require('../../../getters');
-var LoaderLocal = require('../../LoaderLocal');
-var LocationGetters = require('../../../modules/Location/getters');
-var moment = require('moment');
-var React = require('react');
-var reactor = require('../../../reactor');
-var Users = require('../../../modules/Users');
+import DatePicker from 'react-datepicker';
+import getters from '../../../getters';
+import LoaderLocal from '../../LoaderLocal';
+import LocationGetters from '../../../modules/Location/getters';
+import moment from 'moment';
+import React from 'react';
+import reactor from '../../../reactor';
+import Users from '../../../modules/Users';
 
 require('react-datepicker/dist/react-datepicker.css');
 

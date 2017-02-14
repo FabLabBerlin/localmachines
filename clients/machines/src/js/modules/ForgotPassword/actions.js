@@ -1,8 +1,8 @@
 var $ = require('jquery');
-var actionTypes = require('./actionTypes');
-var getters = require('./getters');
-var reactor = require('../../reactor');
-var toastr = require('../../toastr');
+import actionTypes from './actionTypes';
+import getters from './getters';
+import reactor from '../../reactor';
+import toastr from '../../toastr';
 
 import {hashHistory} from 'react-router';
 

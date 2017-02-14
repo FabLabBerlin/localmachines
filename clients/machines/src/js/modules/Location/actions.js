@@ -1,10 +1,10 @@
 var $ = require('jquery');
-var actionTypes = require('./actionTypes');
-var Cookies = require('js-cookie');
-var getters = require('../../getters');
-var LocationGetters = require('./getters');
-var reactor = require('../../reactor');
-var toastr = require('../../toastr');
+import actionTypes from './actionTypes';
+import Cookies from 'js-cookie';
+import getters from '../../getters';
+import LocationGetters from './getters';
+import reactor from '../../reactor';
+import toastr from '../../toastr';
 
 import {hashHistory} from 'react-router';
 

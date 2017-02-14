@@ -9,15 +9,15 @@ jest.dontMock('../../../stores/FeedbackStore');
 jest.dontMock('../../../stores/LoginStore');
 
 
-var actionTypes = require('../../../actionTypes');
-var FeedbackActions = require('../../../actions/FeedbackActions');
-var FeedbackPage = require('../FeedbackPage');
-var FeedbackStore = require('../../../stores/FeedbackStore');
-var getters = require('../../../getters');
-var LoginStore = require('../../../stores/LoginStore');
-var Nuclear = require('nuclear-js');
-var React = require('react');
-var reactor = require('../../../reactor');
+import actionTypes from '../../../actionTypes';
+import FeedbackActions from '../../../actions/FeedbackActions';
+import FeedbackPage from '../FeedbackPage';
+import FeedbackStore from '../../../stores/FeedbackStore';
+import getters from '../../../getters';
+import LoginStore from '../../../stores/LoginStore';
+import Nuclear from 'nuclear-js';
+import React from 'react';
+import reactor from '../../../reactor';
 var toImmutable = Nuclear.toImmutable;
 
 
@@ -30,7 +30,7 @@ reactor.registerStores({
 describe('FeedbackPage', function() {
   describe('render', function() {
     it('can submit Technical feedback', function() {
-      var TestUtils = require('react-addons-test-utils');
+      import TestUtils from 'react-addons-test-utils';
       var feedbackPage = TestUtils.renderIntoDocument(
         <FeedbackPage />
       );

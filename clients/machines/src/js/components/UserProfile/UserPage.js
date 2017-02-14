@@ -1,11 +1,11 @@
-var getters = require('../../getters');
-var Location = require('../../modules/Location');
-var MachineActions = require('../../actions/MachineActions');
-var LoginActions = require('../../actions/LoginActions');
-var React = require('react');
-var reactor = require('../../reactor');
-var UserActions = require('../../actions/UserActions');
-var UserForm = require('./UserForm');
+import getters from '../../getters';
+import Location from '../../modules/Location';
+import MachineActions from '../../actions/MachineActions';
+import LoginActions from '../../actions/LoginActions';
+import React from 'react';
+import reactor from '../../reactor';
+import UserActions from '../../actions/UserActions';
+import UserForm from './UserForm';
 
 
 var UserPage = React.createClass({

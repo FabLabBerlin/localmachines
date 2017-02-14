@@ -1,13 +1,13 @@
-var _ = require('lodash');
-var getters = require('../../../getters');
-var ImageUploader = require('../ImageUploader');
-var LoaderLocal = require('../../LoaderLocal');
-var Location = require('../../../modules/Location');
-var React = require('react');
-var reactor = require('../../../reactor');
-var SettingsActions = require('../../../modules/Settings/actions');
-var SettingsGetters = require('../../../modules/Settings/getters');
-var UserActions = require('../../../actions/UserActions');
+import _ from 'lodash';
+import getters from '../../../getters';
+import ImageUploader from '../ImageUploader';
+import LoaderLocal from '../../LoaderLocal';
+import Location from '../../../modules/Location';
+import React from 'react';
+import reactor from '../../../reactor';
+import SettingsActions from '../../../modules/Settings/actions';
+import SettingsGetters from '../../../modules/Settings/getters';
+import UserActions from '../../../actions/UserActions';
 
 
 var Settings = React.createClass({

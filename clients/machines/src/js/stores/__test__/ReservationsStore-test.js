@@ -13,15 +13,15 @@ jest.dontMock('../ReservationsStore.js');
 jest.mock('jquery');
 jest.mock('toastr');
 
-var _ = require('lodash');
-var actionTypes = require('../../actionTypes');
-var getters = require('../../getters');
-var Machines = require('../../modules/Machines');
-var MachineStore = require('../../modules/Machines/stores/store.js');
-var moment = require('moment');
-var ReservationRulesStore = require('../ReservationRulesStore');
-var ReservationsStore = require('../ReservationsStore');
-var reactor = require('../../reactor');
+import _ from 'lodash';
+import actionTypes from '../../actionTypes';
+import getters from '../../getters';
+import Machines from '../../modules/Machines';
+import MachineStore from '../../modules/Machines/stores/store.js';
+import moment from 'moment';
+import ReservationRulesStore from '../ReservationRulesStore';
+import ReservationsStore from '../ReservationsStore';
+import reactor from '../../reactor';
 
 
 function getMachines() {

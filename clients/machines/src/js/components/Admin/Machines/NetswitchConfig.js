@@ -1,6 +1,6 @@
-var MachineActions = require('../../../actions/MachineActions');
-var React = require('react');
-var toastr = require('../../../toastr');
+import MachineActions from '../../../actions/MachineActions';
+import React from 'react';
+import toastr from '../../../toastr';
 
 
 var NetswitchConfig = React.createClass({

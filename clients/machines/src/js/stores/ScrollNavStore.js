@@ -1,6 +1,6 @@
 var $ = require('jquery');
-var actionTypes = require('../actionTypes');
-var Nuclear = require('nuclear-js');
+import actionTypes from '../actionTypes';
+import Nuclear from 'nuclear-js';
 var toImmutable = Nuclear.toImmutable;
 
 const initialState = toImmutable({

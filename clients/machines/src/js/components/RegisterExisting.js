@@ -1,11 +1,11 @@
 var $ = require('jquery');
-var getters = require('../getters');
-var LoaderLocal = require('./LoaderLocal');
-var Location = require('../modules/Location');
-var LoginActions = require('../actions/LoginActions');
-var React = require('react');
-var reactor = require('../reactor');
-var toastr = require('toastr');
+import getters from '../getters';
+import LoaderLocal from './LoaderLocal';
+import Location from '../modules/Location';
+import LoginActions from '../actions/LoginActions';
+import React from 'react';
+import reactor from '../reactor';
+import toastr from 'toastr';
 
 
 var RegisterExisting = React.createClass({

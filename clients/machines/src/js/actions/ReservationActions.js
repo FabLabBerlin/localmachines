@@ -1,14 +1,14 @@
-var _ = require('lodash');
+import _ from 'lodash';
 var $ = require('jquery');
-var actionTypes = require('../actionTypes');
-var Cookies = require('js-cookie');
-var getters = require('../getters');
-var Machines = require('../modules/Machines');
-var moment = require('moment');
-var reactor = require('../reactor');
-var toastr = require('toastr');
+import actionTypes from '../actionTypes';
+import Cookies from 'js-cookie';
+import getters from '../getters';
+import Machines from '../modules/Machines';
+import moment from 'moment';
+import reactor from '../reactor';
+import toastr from 'toastr';
 
-var helpers = require('../components/UserProfile/helpers');
+import helpers from '../components/UserProfile/helpers';
 
 
 const STEP_SET_MACHINE = 1;

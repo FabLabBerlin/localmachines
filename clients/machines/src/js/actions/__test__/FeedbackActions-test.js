@@ -7,13 +7,13 @@ jest.dontMock('../../modules/Machines/stores/store');
 jest.dontMock('../../stores/UserStore');
 
 var $ = require('jquery');
-var actionTypes = require('../../actionTypes');
-var FeedbackActions = require('../FeedbackActions');
-var FeedbackStore = require('../../stores/FeedbackStore');
-var GlobalActions = require('../GlobalActions');
-var MachineStore = require('../../modules/Machines/stores/store');
-var reactor = require('../../reactor');
-var UserStore = require('../../stores/UserStore');
+import actionTypes from '../../actionTypes';
+import FeedbackActions from '../FeedbackActions';
+import FeedbackStore from '../../stores/FeedbackStore';
+import GlobalActions from '../GlobalActions';
+import MachineStore from '../../modules/Machines/stores/store';
+import reactor from '../../reactor';
+import UserStore from '../../stores/UserStore';
 
 
 reactor.registerStores({

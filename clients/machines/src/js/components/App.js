@@ -1,21 +1,21 @@
 var $ = require('jquery');
-var reactor = require('../reactor');
-var getters = require('../getters');
-var GlobalActions = require('../actions/GlobalActions');
-var HeaderNav = require('./Header/HeaderNav');
-var LoaderLocal = require('./LoaderLocal');
-var Location = require('../modules/Location');
-var LoginActions = require('../actions/LoginActions');
-var LoginStore = require('../stores/LoginStore');
-var MachinesNewPage = require('./Machines/Machines');
-var React = require('react');
-var toastr = require('../toastr');
+import reactor from '../reactor';
+import getters from '../getters';
+import GlobalActions from '../actions/GlobalActions';
+import HeaderNav from './Header/HeaderNav';
+import LoaderLocal from './LoaderLocal';
+import Location from '../modules/Location';
+import LoginActions from '../actions/LoginActions';
+import LoginStore from '../stores/LoginStore';
+import MachinesNewPage from './Machines/Machines';
+import React from 'react';
+import toastr from '../toastr';
 
 import {hashHistory} from 'react-router';
 
 // https://github.com/HubSpot/vex/issues/72
-var vex = require('vex-js'),
-VexDialog = require('vex-js/js/vex.dialog.js');
+import vex from 'vex-js';
+import VexDialog from 'vex-js/js/vex.dialog.js';
 
 vex.defaultOptions.className = 'vex-theme-custom';
 

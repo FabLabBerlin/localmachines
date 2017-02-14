@@ -2,7 +2,7 @@
  * import toastr and set position
  */
 
-var toastr = require('toastr');
+import toastr from 'toastr';
 toastr.options.positionClass = 'toast-bottom-left';
 
 export default toastr;

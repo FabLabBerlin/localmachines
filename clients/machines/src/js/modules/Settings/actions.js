@@ -1,11 +1,11 @@
-var _ = require('lodash');
+import _ from 'lodash';
 var $ = require('jquery');
-var actionTypes = require('./actionTypes');
-var Cookies = require('js-cookie');
-var LocationGetters = require('../../modules/Location/getters');
-var reactor = require('../../reactor');
-var SettingsGetters = require('../../modules/Settings/getters');
-var toastr = require('../../toastr');
+import actionTypes from './actionTypes';
+import Cookies from 'js-cookie';
+import LocationGetters from '../../modules/Location/getters';
+import reactor from '../../reactor';
+import SettingsGetters from '../../modules/Settings/getters';
+import toastr from '../../toastr';
 
 
 var SettingsActions = {

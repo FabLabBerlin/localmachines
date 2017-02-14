@@ -1,18 +1,18 @@
 var $ = require('jquery');
-var ActivationTimer = require('../ActivationTimer');
-var constants = require('../constants');
-var getters = require('../../../getters');
-var LoaderLocal = require('../../LoaderLocal');
-var LoginActions = require('../../../actions/LoginActions');
-var MachineActions = require('../../../actions/MachineActions');
-var React = require('react');
-var reactor = require('../../../reactor');
-var ReservationTimer = require('../ReservationTimer');
+import ActivationTimer from '../ActivationTimer';
+import constants from '../constants';
+import getters from '../../../getters';
+import LoaderLocal from '../../LoaderLocal';
+import LoginActions from '../../../actions/LoginActions';
+import MachineActions from '../../../actions/MachineActions';
+import React from 'react';
+import reactor from '../../../reactor';
+import ReservationTimer from '../ReservationTimer';
 
 
 // https://github.com/HubSpot/vex/issues/72
-var vex = require('vex-js'),
-VexDialog = require('vex-js/js/vex.dialog.js');
+import vex from 'vex-js';
+import VexDialog from 'vex-js/js/vex.dialog.js';
 
 vex.defaultOptions.className = 'vex-theme-custom';
 

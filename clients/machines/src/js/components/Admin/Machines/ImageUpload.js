@@ -1,8 +1,8 @@
-var ImageUploader = require('../ImageUploader');
-var Machines = require('../../../modules/Machines');
-var MachineActions = require('../../../actions/MachineActions');
-var React = require('react');
-var reactor = require('../../../reactor');
+import ImageUploader from '../ImageUploader';
+import Machines from '../../../modules/Machines';
+import MachineActions from '../../../actions/MachineActions';
+import React from 'react';
+import reactor from '../../../reactor';
 
 
 var ImageUpload = React.createClass({

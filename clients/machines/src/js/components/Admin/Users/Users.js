@@ -1,13 +1,13 @@
-var _ = require('lodash');
+import _ from 'lodash';
 var $ = require('jquery');
-var getters = require('../../../getters');
-var LoaderLocal = require('../../LoaderLocal');
-var LocationGetters = require('../../../modules/Location/getters');
-var MachineActions = require('../../../actions/MachineActions');
-var Navigation = require('react-router').Navigation;
-var React = require('react');
-var reactor = require('../../../reactor');
-var Users = require('../../../modules/Users');
+import getters from '../../../getters';
+import LoaderLocal from '../../LoaderLocal';
+import LocationGetters from '../../../modules/Location/getters';
+import MachineActions from '../../../actions/MachineActions';
+import { Navigation } from 'react-router';
+import React from 'react';
+import reactor from '../../../reactor';
+import Users from '../../../modules/Users';
 
 
 var User = React.createClass({

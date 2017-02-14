@@ -1,11 +1,11 @@
-var getters = require('../../../getters');
-var LoaderLocal = require('../../LoaderLocal');
-var Machines = require('../../../modules/Machines');
-var moment = require('moment');
-var React = require('react');
-var reactor = require('../../../reactor');
+import getters from '../../../getters';
+import LoaderLocal from '../../LoaderLocal';
+import Machines from '../../../modules/Machines';
+import moment from 'moment';
+import React from 'react';
+import reactor from '../../../reactor';
 
-var helpers = require('../../UserProfile/helpers');
+import helpers from '../../UserProfile/helpers';
 
 
 var ReservedBy = React.createClass({

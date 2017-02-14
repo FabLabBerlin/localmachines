@@ -1,14 +1,14 @@
-var BillTables = require('./BillTables');
-var getters = require('../../getters');
-var LoaderLocal = require('../LoaderLocal');
-var Location = require('../../modules/Location');
-var LoginActions = require('../../actions/LoginActions');
-var MachineActions = require('../../actions/MachineActions');
-var Machines = require('../../modules/Machines');
-var React = require('react');
-var reactor = require('../../reactor');
-var SettingsActions = require('../../modules/Settings/actions');
-var UserActions = require('../../actions/UserActions');
+import BillTables from './BillTables';
+import getters from '../../getters';
+import LoaderLocal from '../LoaderLocal';
+import Location from '../../modules/Location';
+import LoginActions from '../../actions/LoginActions';
+import MachineActions from '../../actions/MachineActions';
+import Machines from '../../modules/Machines';
+import React from 'react';
+import reactor from '../../reactor';
+import SettingsActions from '../../modules/Settings/actions';
+import UserActions from '../../actions/UserActions';
 
 
 var SpendingsPage = React.createClass({

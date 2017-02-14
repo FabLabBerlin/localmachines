@@ -1,6 +1,6 @@
-var moment = require('moment');
-var reactor = require('../../reactor');
-var SettingsGetters = require('../../modules/Settings/getters');
+import moment from 'moment';
+import reactor from '../../reactor';
+import SettingsGetters from '../../modules/Settings/getters';
 
 
 /*

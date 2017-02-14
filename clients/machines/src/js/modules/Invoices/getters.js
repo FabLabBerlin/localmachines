@@ -1,5 +1,5 @@
-var moment = require('moment');
-var Nuclear = require('nuclear-js');
+import moment from 'moment';
+import Nuclear from 'nuclear-js';
 var toImmutable = Nuclear.toImmutable;
 
 

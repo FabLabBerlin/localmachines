@@ -1,5 +1,5 @@
-var React = require('react');
-var ReservationTimer = require('../ReservationTimer');
+import React from 'react';
+import ReservationTimer from '../ReservationTimer';
 
 
 var UpcomingReservation = React.createClass({

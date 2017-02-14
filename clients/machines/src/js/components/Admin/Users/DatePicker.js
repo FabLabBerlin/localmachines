@@ -1,7 +1,7 @@
 var $ = require('jquery');
-var ReactDatePicker = require('react-datepicker');
-var moment = require('moment');
-var React = require('react');
+import ReactDatePicker from 'react-datepicker';
+import moment from 'moment';
+import React from 'react';
 
 
 var DatePicker = React.createClass({

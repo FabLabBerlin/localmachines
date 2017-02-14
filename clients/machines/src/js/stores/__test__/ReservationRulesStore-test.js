@@ -11,11 +11,11 @@ jest.dontMock('../../modules/Machines/getters');
 jest.dontMock('../../modules/Machines/stores/store');
 jest.dontMock('../ReservationRulesStore');
 jest.dontMock('../ReservationsStore');
-var actionTypes = require('../../actionTypes');
-var getters = require('../../getters');
-var Machines = require('../../modules/Machines');
-var moment = require('moment');
-var reactor = require('../../reactor');
+import actionTypes from '../../actionTypes';
+import getters from '../../getters';
+import Machines from '../../modules/Machines';
+import moment from 'moment';
+import reactor from '../../reactor';
 
 
 function existingReservations() {
@@ -266,9 +266,9 @@ function getMachines() {
 
 
 describe('ReservationRulesStore', function() {
-  var MachineStore = require('../../modules/Machines/stores/store');
-  var ReservationRulesStore = require('../ReservationRulesStore');
-  var ReservationsStore = require('../ReservationsStore');
+  import MachineStore from '../../modules/Machines/stores/store';
+  import ReservationRulesStore from '../ReservationRulesStore';
+  import ReservationsStore from '../ReservationsStore';
 
   reactor.registerStores({
     machineStore: MachineStore,

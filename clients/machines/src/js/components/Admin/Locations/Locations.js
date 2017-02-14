@@ -1,13 +1,13 @@
 var $ = require('jquery');
-var Button = require('../../Button');
-var LoaderLocal = require('../../LoaderLocal');
-var Location = require('../../../modules/Location');
-var React = require('react');
-var getters = require('../../../getters');
-var reactor = require('../../../reactor');
-var TableCRUD = require('../../TableCRUD/TableCRUD');
-var toastr = require('toastr');
-var UserActions = require('../../../actions/UserActions');
+import Button from '../../Button';
+import LoaderLocal from '../../LoaderLocal';
+import Location from '../../../modules/Location';
+import React from 'react';
+import getters from '../../../getters';
+import reactor from '../../../reactor';
+import TableCRUD from '../../TableCRUD/TableCRUD';
+import toastr from 'toastr';
+import UserActions from '../../../actions/UserActions';
 
 
 var Locations = React.createClass({

@@ -1,5 +1,5 @@
-var MachineActions = require('../../../actions/MachineActions');
-var React = require('react');
+import MachineActions from '../../../actions/MachineActions';
+import React from 'react';
 
 
 var MachineProperties = React.createClass({

@@ -1,9 +1,9 @@
-var constants = require('./constants');
+import constants from './constants';
 import {hashHistory} from 'react-router';
-var getters = require('../../getters');
-var MachineMixin = require('./MachineMixin');
-var React = require('react');
-var reactor = require('../../reactor');
+import getters from '../../getters';
+import MachineMixin from './MachineMixin';
+import React from 'react';
+import reactor from '../../reactor';
 
 
 var Machine = React.createClass({

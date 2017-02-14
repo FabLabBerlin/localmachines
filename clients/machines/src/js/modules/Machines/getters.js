@@ -1,5 +1,5 @@
-var LocationGetters = require('../Location/getters');
-var Nuclear = require('nuclear-js');
+import LocationGetters from '../Location/getters';
+import Nuclear from 'nuclear-js';
 var toImmutable = Nuclear.toImmutable;
 
 

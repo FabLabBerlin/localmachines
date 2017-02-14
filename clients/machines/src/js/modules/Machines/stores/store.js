@@ -1,7 +1,7 @@
 var $ = require('jquery');
-var _ = require('lodash');
-var actionTypes = require('../actionTypes');
-var Nuclear = require('nuclear-js');
+import _ from 'lodash';
+import actionTypes from '../actionTypes';
+import Nuclear from 'nuclear-js';
 var toImmutable = Nuclear.toImmutable;
 
 const initialState = toImmutable({

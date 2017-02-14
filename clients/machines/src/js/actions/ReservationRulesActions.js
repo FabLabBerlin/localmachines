@@ -1,6 +1,6 @@
 var $ = require('jquery');
-var actionTypes = require('../actionTypes');
-var reactor = require('../reactor');
+import actionTypes from '../actionTypes';
+import reactor from '../reactor';
 
 var ReservationRulesActions = {
   load(locationId) {

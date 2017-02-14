@@ -1,12 +1,12 @@
-var Bottom = require('./Bottom');
-var BottomMachine = require('./BottomMachine');
-var getters = require('../../getters');
-var LoginActions = require('../../actions/LoginActions');
+import Bottom from './Bottom';
+import BottomMachine from './BottomMachine';
+import getters from '../../getters';
+import LoginActions from '../../actions/LoginActions';
 var {Navigation} = require('react-router');
-var React = require('react');
-var reactor = require('../../reactor');
-var Top = require('./Top');
-var TopMachine = require('./TopMachine');
+import React from 'react';
+import reactor from '../../reactor';
+import Top from './Top';
+import TopMachine from './TopMachine';
 
 
 var HeaderNav = React.createClass({

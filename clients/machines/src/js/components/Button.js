@@ -1,5 +1,5 @@
 var $ = require('jquery');
-var React = require('react');
+import React from 'react';
 
 
 var Annotated = React.createClass({

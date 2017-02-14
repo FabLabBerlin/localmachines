@@ -1,7 +1,7 @@
-var _ = require('lodash');
-var countryCodes = require('./CountryCodes');
-var React = require('react');
-var toastr = require('../../toastr');
+import _ from 'lodash';
+import countryCodes from './CountryCodes';
+import React from 'react';
+import toastr from '../../toastr';
 
 
 var LabelledText = React.createClass({

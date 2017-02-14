@@ -1,7 +1,7 @@
-var constants = require('./constants');
-var React = require('react');
-var ActivationTimer = require('./ActivationTimer');
-var ReservationTimer = require('./ReservationTimer');
+import constants from './constants';
+import React from 'react';
+import ActivationTimer from './ActivationTimer';
+import ReservationTimer from './ReservationTimer';
 
 
 var MachineMixin = {

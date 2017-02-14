@@ -1,15 +1,15 @@
-var Button = require('../../Button');
-var getters = require('../../../getters');
-var Invoices = require('../../../modules/Invoices');
-var List = require('./List');
-var LoaderLocal = require('../../LoaderLocal');
-var Location = require('../../../modules/Location');
-var moment = require('moment');
-var React = require('react');
-var reactor = require('../../../reactor');
-var Settings = require('../../../modules/Settings');
-var SettingsActions = require('../../../modules/Settings/actions');
-var UserActions = require('../../../actions/UserActions');
+import Button from '../../Button';
+import getters from '../../../getters';
+import Invoices from '../../../modules/Invoices';
+import List from './List';
+import LoaderLocal from '../../LoaderLocal';
+import Location from '../../../modules/Location';
+import moment from 'moment';
+import React from 'react';
+import reactor from '../../../reactor';
+import Settings from '../../../modules/Settings';
+import SettingsActions from '../../../modules/Settings/actions';
+import UserActions from '../../../actions/UserActions';
 
 
 var ToggleInactiveUsers = React.createClass({

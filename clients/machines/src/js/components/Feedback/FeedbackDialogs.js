@@ -1,14 +1,14 @@
 var $ = require('jquery');
-var FeedbackActions = require('../../actions/FeedbackActions');
-var getters = require('../../getters');
-var LoginActions = require('../../actions/LoginActions');
-var Machines = require('../../modules/Machines');
-var reactor = require('../../reactor');
-var toastr = require('../../toastr');
+import FeedbackActions from '../../actions/FeedbackActions';
+import getters from '../../getters';
+import LoginActions from '../../actions/LoginActions';
+import Machines from '../../modules/Machines';
+import reactor from '../../reactor';
+import toastr from '../../toastr';
 
 // https://github.com/HubSpot/vex/issues/72
-var vex = require('vex-js'),
-VexDialog = require('vex-js/js/vex.dialog.js');
+import vex from 'vex-js';
+import VexDialog from 'vex-js/js/vex.dialog.js';
 
 vex.defaultOptions.className = 'vex-theme-custom';
 

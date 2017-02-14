@@ -1,9 +1,9 @@
 var $ = require('jquery');
-var actionTypes = require('../actionTypes');
-var Location = require('../modules/Location');
-var Machines = require('../modules/Machines');
-var reactor = require('../reactor');
-var toastr = require('../toastr');
+import actionTypes from '../actionTypes';
+import Location from '../modules/Location';
+import Machines from '../modules/Machines';
+import reactor from '../reactor';
+import toastr from '../toastr';
 
 import {hashHistory} from 'react-router';
 

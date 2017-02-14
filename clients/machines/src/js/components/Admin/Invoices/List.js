@@ -1,12 +1,12 @@
-var _ = require('lodash');
-var Invoices = require('../../../modules/Invoices');
-var LoaderLocal = require('../../LoaderLocal');
-var LocationGetters = require('../../../modules/Location/getters');
-var moment = require('moment');
-var React = require('react');
-var reactor = require('../../../reactor');
-var Settings = require('../../../modules/Settings');
-var util = require('./util');
+import _ from 'lodash';
+import Invoices from '../../../modules/Invoices';
+import LoaderLocal from '../../LoaderLocal';
+import LocationGetters from '../../../modules/Location/getters';
+import moment from 'moment';
+import React from 'react';
+import reactor from '../../../reactor';
+import Settings from '../../../modules/Settings';
+import util from './util';
 
 import {hashHistory} from 'react-router';
 

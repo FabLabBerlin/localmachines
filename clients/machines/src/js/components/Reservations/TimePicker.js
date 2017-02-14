@@ -1,11 +1,11 @@
-var _ = require('lodash');
+import _ from 'lodash';
 var $ = require('jquery');
-var getters = require('../../getters');
-var React = require('react');
-var ReactDOM = require('react-dom');
-var reactor = require('../../reactor');
-var ReservationActions = require('../../actions/ReservationActions');
-var Settings = require('../../modules/Settings');
+import getters from '../../getters';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import reactor from '../../reactor';
+import ReservationActions from '../../actions/ReservationActions';
+import Settings from '../../modules/Settings';
 
 
 var Time = React.createClass({

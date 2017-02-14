@@ -1,9 +1,9 @@
-var _ = require('lodash');
-var actionTypes = require('../actionTypes');
-var getters = require('../getters');
-var moment = require('moment');
-var Nuclear = require('nuclear-js');
-var reactor = require('../../../reactor');
+import _ from 'lodash';
+import actionTypes from '../actionTypes';
+import getters from '../getters';
+import moment from 'moment';
+import Nuclear from 'nuclear-js';
+import reactor from '../../../reactor';
 var toImmutable = Nuclear.toImmutable;
 var {formatDuration, toQuantity} = require('../../../components/UserProfile/helpers');
 

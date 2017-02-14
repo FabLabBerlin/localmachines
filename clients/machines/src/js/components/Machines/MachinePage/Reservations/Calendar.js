@@ -1,20 +1,20 @@
-var _ = require('lodash');
+import _ from 'lodash';
 var $ = require('jquery');
-var getters = require('../../../../getters');
-var LoaderLocal = require('../../../LoaderLocal');
-var MachineActions = require('../../../../actions/MachineActions');
-var Machines = require('../../../../modules/Machines');
-var moment = require('moment');
-var React = require('react');
-var reactor = require('../../../../reactor');
-var ReservationActions = require('../../../../actions/ReservationActions');
+import getters from '../../../../getters';
+import LoaderLocal from '../../../LoaderLocal';
+import MachineActions from '../../../../actions/MachineActions';
+import Machines from '../../../../modules/Machines';
+import moment from 'moment';
+import React from 'react';
+import reactor from '../../../../reactor';
+import ReservationActions from '../../../../actions/ReservationActions';
 
 var { timeEnd } = require('../../../UserProfile/helpers');
 
 
 // https://github.com/HubSpot/vex/issues/72
-var vex = require('vex-js'),
-VexDialog = require('vex-js/js/vex.dialog.js');
+import vex from 'vex-js';
+import VexDialog from 'vex-js/js/vex.dialog.js';
 vex.defaultOptions.className = 'vex-theme-custom';
 
 

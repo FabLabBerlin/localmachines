@@ -1,27 +1,27 @@
-var _ = require('lodash');
+import _ from 'lodash';
 var $ = require('jquery');
-var getters = require('../../getters');
-var LoaderLocal = require('../LoaderLocal');
-var Location = require('../../modules/Location');
-var MachineActions = require('../../actions/MachineActions');
-var Machines = require('../../modules/Machines');
-var moment = require('moment');
-var NewReservation = require('./NewReservation');
-var Nuclear = require('nuclear-js');
-var React = require('react');
-var reactor = require('../../reactor');
-var ReservationRulesActions = require('../../actions/ReservationRulesActions');
-var ReservationActions = require('../../actions/ReservationActions');
-var Settings = require('../../modules/Settings');
+import getters from '../../getters';
+import LoaderLocal from '../LoaderLocal';
+import Location from '../../modules/Location';
+import MachineActions from '../../actions/MachineActions';
+import Machines from '../../modules/Machines';
+import moment from 'moment';
+import NewReservation from './NewReservation';
+import Nuclear from 'nuclear-js';
+import React from 'react';
+import reactor from '../../reactor';
+import ReservationRulesActions from '../../actions/ReservationRulesActions';
+import ReservationActions from '../../actions/ReservationActions';
+import Settings from '../../modules/Settings';
 var toImmutable = Nuclear.toImmutable;
-var UserActions = require('../../actions/UserActions');
+import UserActions from '../../actions/UserActions';
 
 var { timeEnd } = require('../../components/UserProfile/helpers');
 
 
 // https://github.com/HubSpot/vex/issues/72
-var vex = require('vex-js'),
-VexDialog = require('vex-js/js/vex.dialog.js');
+import vex from 'vex-js';
+import VexDialog from 'vex-js/js/vex.dialog.js';
 vex.defaultOptions.className = 'vex-theme-custom';
 
 

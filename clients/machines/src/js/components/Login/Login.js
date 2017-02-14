@@ -1,16 +1,16 @@
 var $ = require('jquery');
 
-var getters = require('../../getters');
-var Location = require('../../modules/Location');
-var LoginStore = require('../../stores/LoginStore');
+import getters from '../../getters';
+import Location from '../../modules/Location';
+import LoginStore from '../../stores/LoginStore';
 
-var LoginActions = require('../../actions/LoginActions');
+import LoginActions from '../../actions/LoginActions';
 
-var React = require('react');
-var ReactDOM = require('react-dom');
-var reactor = require('../../reactor');
+import React from 'react';
+import ReactDOM from 'react-dom';
+import reactor from '../../reactor';
 
-var _ = require('lodash');
+import _ from 'lodash';
 
 import {hashHistory} from 'react-router';
 

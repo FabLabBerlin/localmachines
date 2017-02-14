@@ -1,19 +1,19 @@
-var _ = require('lodash');
+import _ from 'lodash';
 var $ = require('jquery');
-var Button = require('../Button');
-var Edit = require('./PurchaseEditing');
-var Invoices = require('../../modules/Invoices');
-var LocationGetters = require('../../modules/Location/getters');
-var moment = require('moment');
-var React = require('react');
-var reactor = require('../../reactor');
-var SettingsGetters = require('../../modules/Settings/getters');
-var toastr = require('../../toastr');
+import Button from '../Button';
+import Edit from './PurchaseEditing';
+import Invoices from '../../modules/Invoices';
+import LocationGetters from '../../modules/Location/getters';
+import moment from 'moment';
+import React from 'react';
+import reactor from '../../reactor';
+import SettingsGetters from '../../modules/Settings/getters';
+import toastr from '../../toastr';
 var {formatDate, formatDuration, formatPrice, subtractVAT, toEuro, toCents} = require('./helpers');
 
 // https://github.com/HubSpot/vex/issues/72
-var vex = require('vex-js'),
-VexDialog = require('vex-js/js/vex.dialog.js');
+import vex from 'vex-js';
+import VexDialog from 'vex-js/js/vex.dialog.js';
 vex.defaultOptions.className = 'vex-theme-custom';
 
 

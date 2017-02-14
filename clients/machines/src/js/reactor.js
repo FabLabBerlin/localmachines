@@ -1,4 +1,4 @@
-var Nuclear = require('nuclear-js');
+import Nuclear from 'nuclear-js';
 
 
 export default new Nuclear.Reactor({

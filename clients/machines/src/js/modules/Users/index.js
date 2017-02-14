@@ -1,6 +1,12 @@
+import actions from './actions';
+import actionTypes from './actionTypes';
+import getters from './getters';
+import store from './stores/store';
+
+
 export default {
-  actions: require('./actions'),
-  actionTypes: require('./actionTypes'),
-  getters: require('./getters'),
-  store: require('./stores/store')
+  actions,
+  actionTypes,
+  getters,
+  store
 };

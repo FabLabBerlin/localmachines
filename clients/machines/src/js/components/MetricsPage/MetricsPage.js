@@ -1,10 +1,10 @@
-var Categories = require('../../modules/Categories');
-var Invoices = require('../../modules/Invoices');
-var Location = require('../../modules/Location');
-var Machines = require('../../modules/Machines');
-var getters = require('../../../getters');
-var React = require('react');
-var reactor = require('../../../reactor');
+import Categories from '../../modules/Categories';
+import Invoices from '../../modules/Invoices';
+import Location from '../../modules/Location';
+import Machines from '../../modules/Machines';
+import getters from '../../../getters';
+import React from 'react';
+import reactor from '../../../reactor';
 
 
 var MetricsPage = React.createClass({
