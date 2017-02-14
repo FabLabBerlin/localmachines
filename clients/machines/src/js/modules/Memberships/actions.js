@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var $ = require('jquery');
 var actionTypes = require('./actionTypes');
 var getters = require('./getters');
@@ -26,6 +27,11 @@ function setShowArchived(yes) {
 
 function setMembershipArchive(membershipId, yes) {
   reactor.dispatch(actionTypes.SET_MEMBERSHIP_ARCHIVE, {membershipId, yes});
+  save(membershipId);
+}
+
+function setMembershipField(membershipId, key, value) {
+  reactor.dispatch(actionTypes.SET_MEMBERSHIP_FIELD, {membershipId, key, value});
 }
 
 function setMembershipCategory(membershipId, categoryId, yes) {
@@ -59,5 +65,6 @@ export default {
   setShowArchived,
   setMembershipArchive,
   setMembershipCategory,
+  setMembershipField,
   save
 };

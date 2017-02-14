@@ -141,20 +141,6 @@ func init() {
 
 	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UsersController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UsersController"],
 		beego.ControllerComments{
-			Method: "GetByNfcId",
-			Router: `/by_nfc_id`,
-			AllowHTTPMethods: []string{"post"},
-			Params: nil})
-
-	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UsersController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UsersController"],
-		beego.ControllerComments{
-			Method: "PostNfcId",
-			Router: `/:uid/nfc_id`,
-			AllowHTTPMethods: []string{"post"},
-			Params: nil})
-
-	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UsersController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UsersController"],
-		beego.ControllerComments{
 			Method: "Login",
 			Router: `/login`,
 			AllowHTTPMethods: []string{"post"},
@@ -234,6 +220,20 @@ func init() {
 		beego.ControllerComments{
 			Method: "PostUserPassword",
 			Router: `/:uid/password`,
+			AllowHTTPMethods: []string{"post"},
+			Params: nil})
+
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UsersController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UsersController"],
+		beego.ControllerComments{
+			Method: "GetByNfcId",
+			Router: `/by_nfc_id`,
+			AllowHTTPMethods: []string{"post"},
+			Params: nil})
+
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UsersController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/userctrls:UsersController"],
+		beego.ControllerComments{
+			Method: "PostNfcId",
+			Router: `/:uid/nfc_id`,
 			AllowHTTPMethods: []string{"post"},
 			Params: nil})
 

@@ -34,6 +34,16 @@ var MembershipPage = React.createClass({
     Categories.actions.loadAll(locationId);
   },
 
+  handleChange(key, typeConverter, e) {
+    const value = typeConverter(e.target.value);
+    console.log('value=', value);
+    Memberships.actions.setMembershipField(
+      this.membership().get('Id'),
+      key, 
+      _.isNaN(value) ? e.target.value : value
+    );
+  },
+
   handleSave() {
     Memberships.actions.save(this.membership().get('Id'));
   },
@@ -86,24 +96,36 @@ var MembershipPage = React.createClass({
           <div className="col-sm-3">
             <div className="form-group">
               <label htmlFor="membership-title">Membership Title</label>
-              <input type="text" id="membership-title" className="form-control"
-                     placeholder="Membership title" value={mb.get('Title')}/>
+              <input type="text"
+                     id="membership-title"
+                     className="form-control"
+                     onChange={this.handleChange.bind(this, 'Title', String)}
+                     placeholder="Membership title"
+                     value={mb.get('Title')}/>
             </div>
           </div>
 
           <div className="col-sm-3">
             <div className="form-group">
               <label htmlFor="membership-shortname">Shortname</label>
-              <input type="text" id="membership-shortname" className="form-control"
-                     placeholder="Shortname" value={mb.get('ShortName')}/>
+              <input type="text" 
+                     id="membership-shortname" 
+                     className="form-control"
+                     onChange={this.handleChange.bind(this, 'ShortName', String)}
+                     placeholder="Shortname" 
+                     value={mb.get('ShortName')}/>
             </div>
           </div>
           
           <div className="col-sm-3">
             <div className="form-group">
               <label htmlFor="membership-duration">Duration (months)</label>
-              <input type="text" id="membership-duration" className="form-control"
-                     placeholder="Duration" value={mb.get('DurationMonths')}/>
+              <input type="text" 
+                     id="membership-duration" 
+                     className="form-control"
+                     onChange={this.handleChange.bind(this, 'DurationMonths', parseInt)}
+                     placeholder="Duration" 
+                     value={mb.get('DurationMonths')}/>
             </div>
           </div>
           
@@ -111,8 +133,12 @@ var MembershipPage = React.createClass({
             <div className="form-group">
               <label htmlFor="membership-price">Monthly Price</label>
               <div className="input-group">
-                <input type="text" id="membership-price" className="form-control"
-                       placeholder="Monthly Price" value={mb.get('MonthlyPrice')}/>
+                <input type="text" 
+                       id="membership-price" 
+                       className="form-control"
+                       onChange={this.handleChange.bind(this, 'MonthlyPrice', parseFloat)}
+                       placeholder="Monthly Price" 
+                       value={mb.get('MonthlyPrice')}/>
                 <div className="input-group-addon">
                   {this.state.currency || '€'}
                 </div>
@@ -155,6 +181,7 @@ var MembershipPage = React.createClass({
                 <input type="text" 
                   id="membership-price-deduction" 
                   className="form-control"
+                  onChange={this.handleChange.bind(this, 'MachinePriceDeduction', parseFloat)}
                   placeholder="Percentage" 
                   value={mb.get('MachinePriceDeduction')}/>
                 <div className="input-group-addon">
@@ -165,42 +192,9 @@ var MembershipPage = React.createClass({
           </div>
         </div>
 
-        <div className="row">
-
-          <div className="col-sm-3">
-            <div className="form-group">
-              <label>Automatically extend membership</label>
-              <div className="checkbox-inline">
-                <label title="Automatically Extend Membership. Or not.">
-                  <input type="checkbox" 
-                    id="membership-auto-extend"
-                    value={mb.get('AutoExtend')}/> 
-                    <span ng-show="membership.AutoExtend">Yes</span>
-                    <span ng-hide="membership.AutoExtend">No</span>
-                </label>
-              </div>
-            </div>
-          </div>
-
-          <div className="col-sm-3">
-            <div className="form-group">
-              <label htmlFor="membership-extend-duration">After the end date membership extends</label>
-              <div className="input-group">
-                <input type="text"
-                  id="membership-extend-duration"
-                  className="form-control"
-                  value={mb.get('AutoExtendDurationMonths')}
-                  ng-disabled="!membership.AutoExtend"/>
-                <div className="input-group-addon">-monthly</div>
-              </div>
-            </div>
-          </div>
-        
-        </div>
-
         <hr/>
 
-  <div class="pull-right">
+  <div className="pull-right">
 
     {(this.membership() && this.membership().get('Archived')) ? (
       <button className="btn btn-danger btn-lg"
