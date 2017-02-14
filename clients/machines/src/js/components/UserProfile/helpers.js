@@ -134,7 +134,7 @@ function toQuantity(p, duration) {
   }
 }
 
-export default {
+module.exports = {
   addVAT, subtractVAT, toCents, toEuro,
   formatDate, formatDuration, formatPrice, timeEnd, toDuration, toQuantity
 };

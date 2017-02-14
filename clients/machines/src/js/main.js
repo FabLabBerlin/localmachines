@@ -102,7 +102,7 @@ reactor.registerStores({
   userStore: UserStore,
   usersStore: Users.store,
   locationStore: Location.store,
-  //locationEditStore: Location.editStore
+  locationEditStore: Location.editStore
 });
 
 

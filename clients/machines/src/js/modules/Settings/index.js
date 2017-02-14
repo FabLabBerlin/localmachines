@@ -1,4 +1,8 @@
+import actions from './actions';
+import getters from './getters';
+
+
 export default {
-	actions: require('./actions'),
-	getters: require('./getters')
+	actions,
+	getters
 };

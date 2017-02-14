@@ -9,7 +9,7 @@ import React from 'react';
 import reactor from '../../../../reactor';
 import ReservationActions from '../../../../actions/ReservationActions';
 
-var { timeEnd } = require('../../../UserProfile/helpers');
+import helpers from '../../../UserProfile/helpers';
 
 
 // https://github.com/HubSpot/vex/issues/72
@@ -137,7 +137,7 @@ var Event = React.createClass({
     const user = users.get(uid) || {};
     const r = this.props.reservation;
     const i = toInt(r.get('TimeStart'));
-    const j = toInt(r.get('TimeEnd') ? r.get('TimeEnd') : timeEnd(r));
+    const j = toInt(r.get('TimeEnd') ? r.get('TimeEnd') : helpers.timeEnd(r));
     const style = {
       height: (j - i) * 31
     };
@@ -177,7 +177,7 @@ var Event = React.createClass({
           </div>
 
           <div className="text-center visible-xs-block visible-sm-block">
-            {moment(r.get('TimeStart')).format('HH:mm')} - {timeEnd(r).format('HH:mm')}
+            {moment(r.get('TimeStart')).format('HH:mm')} - {helpers.timeEnd(r).format('HH:mm')}
           </div>
         </div>
       );
@@ -245,8 +245,9 @@ var Day = React.createClass({
 
     for (var i = toInt(this.props.start); i < toInt(this.props.end); i++) {
       if (res) {
+        console.log('helpers.timeEnd=', helpers.timeEnd);
         const j = toInt(res.get('TimeStart'));
-        const k = toInt(res.get('TimeEnd') ? res.get('TimeEnd') : timeEnd(res));
+        const k = toInt(res.get('TimeEnd') ? res.get('TimeEnd') : helpers.timeEnd(res));
 
         if (i < j || k <= i) {
           res = null;

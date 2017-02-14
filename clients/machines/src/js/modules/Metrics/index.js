@@ -1,5 +1,10 @@
+import actions from './actions';
+import getters from './getters';
+import store from './stores/store'
+
+
 export default {
-  actions: require('./actions'),
-  getters: require('./getters'),
-  store: require('./stores/store')
+  actions,
+  getters,
+  store
 };

@@ -31,7 +31,7 @@ function dashboardDispatch(data) {
         activations: data.Activations
       });
       if (data.Activations) {
-        userIds = _.pluck(data.Activations, 'UserId');
+        userIds = _.map(data.Activations, 'UserId');
       }
       reactor.dispatch(Machines.actionTypes.SET_MACHINES, {
         machines: data.Machines

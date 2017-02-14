@@ -1,7 +1,13 @@
+import EmailSent from './EmailSent';
+import Start from './Start';
+import Recover from './Recover';
+import Reset from './Reset';
+import Done from './Done';
+
 export default {
-  EmailSent: require('./EmailSent'),
-  Start: require('./Start'),
-  Recover: require('./Recover'),
-  Reset: require('./Reset'),
-  Done: require('./Done')
+  EmailSent,
+  Start,
+  Recover,
+  Reset,
+  Done,
 };

@@ -2,7 +2,7 @@ import _ from 'lodash';
 import getters from '../../getters';
 import LocationGetters from '../../modules/Location/getters';
 import moment from 'moment';
-var { Month } = require('./helpers');
+import helpers from './helpers';
 import React from 'react';
 import reactor from '../../reactor';
 import ReservationActions from '../../actions/ReservationActions';
@@ -135,7 +135,7 @@ var DatePicker = React.createClass({
   },
 
   render() {
-    var currentMonth = Month.getCurrentMonth();
+    var currentMonth = helpers.Month.getCurrentMonth();
     var nextMonth = currentMonth.getNextMonth();
     return (
       <div className={this.props.className}>

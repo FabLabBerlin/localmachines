@@ -95,4 +95,4 @@ class Time {
   }
 }
 
-export default { Day, Month, Time };
+module.exports = { Day, Month, Time };
