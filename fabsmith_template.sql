@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 5.6.23, for osx10.8 (x86_64)
 --
--- Host: localhost    Database: fabsmith_test
+-- Host: localhost    Database: fabsmith
 -- ------------------------------------------------------
 -- Server version	5.6.23
 
@@ -14,69 +14,6 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-
---
--- Table structure for table `activation_feedback`
---
-
-DROP TABLE IF EXISTS `activation_feedback`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `activation_feedback` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `activation_id` int(11) NOT NULL,
-  `satisfaction` varchar(100) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `activation_feedback`
---
-
-LOCK TABLES `activation_feedback` WRITE;
-/*!40000 ALTER TABLE `activation_feedback` DISABLE KEYS */;
-/*!40000 ALTER TABLE `activation_feedback` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `activations`
---
-
-DROP TABLE IF EXISTS `activations`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `activations` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `invoice_id` int(11) DEFAULT NULL,
-  `user_id` int(11) NOT NULL,
-  `machine_id` int(11) NOT NULL,
-  `active` tinyint(1) NOT NULL,
-  `time_start` datetime NOT NULL,
-  `time_end` datetime DEFAULT NULL,
-  `time_total` int(11) NOT NULL,
-  `used_kwh` float NOT NULL,
-  `discount_percents` float NOT NULL,
-  `discount_fixed` float NOT NULL,
-  `vat_rate` float NOT NULL,
-  `comment_ref` varchar(255) NOT NULL DEFAULT '',
-  `invoiced` tinyint(1) NOT NULL,
-  `changed` tinyint(1) NOT NULL,
-  `current_machine_price` double unsigned DEFAULT NULL,
-  `current_machine_price_currency` varchar(10) DEFAULT NULL,
-  `current_machine_price_unit` varchar(100) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5481 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `activations`
---
-
-LOCK TABLES `activations` WRITE;
-/*!40000 ALTER TABLE `activations` DISABLE KEYS */;
-/*!40000 ALTER TABLE `activations` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `auth`
@@ -101,59 +38,36 @@ CREATE TABLE `auth` (
 
 LOCK TABLES `auth` WRITE;
 /*!40000 ALTER TABLE `auth` DISABLE KEYS */;
+INSERT INTO `auth` VALUES (19,'FFEF8A8E','f7c19341b9c14c27136b4653514f1b7d7ad16b1c2306181481956fb93b749c74c0337dcb2622d86644d83406e98d45b782c4588a3f94d25ce79547d26f7a11ae','53d2ab2f6759bf41bff8a4bbb93975fb31cd4a914a6750f3d021ba3be5ea8fd4','','2016-12-07 15:00:10');
 /*!40000 ALTER TABLE `auth` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `coupon_usages`
+-- Table structure for table `categories`
 --
 
-DROP TABLE IF EXISTS `coupon_usages`;
+DROP TABLE IF EXISTS `categories`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `coupon_usages` (
+CREATE TABLE `categories` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `coupon_id` int(11) unsigned DEFAULT NULL,
-  `value` double DEFAULT NULL,
-  `month` tinyint(4) DEFAULT NULL,
-  `year` smallint(6) DEFAULT NULL,
+  `location_id` int(11) DEFAULT NULL,
+  `short_name` varchar(20) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `archived` tinyint(1) DEFAULT '0',
+  `old_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=137 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `coupon_usages`
+-- Dumping data for table `categories`
 --
 
-LOCK TABLES `coupon_usages` WRITE;
-/*!40000 ALTER TABLE `coupon_usages` DISABLE KEYS */;
-/*!40000 ALTER TABLE `coupon_usages` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `coupons`
---
-
-DROP TABLE IF EXISTS `coupons`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `coupons` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `location_id` int(11) unsigned DEFAULT NULL,
-  `code` varchar(100) DEFAULT NULL,
-  `user_id` int(11) unsigned DEFAULT NULL,
-  `value` double DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `coupons`
---
-
-LOCK TABLES `coupons` WRITE;
-/*!40000 ALTER TABLE `coupons` DISABLE KEYS */;
-/*!40000 ALTER TABLE `coupons` ENABLE KEYS */;
+LOCK TABLES `categories` WRITE;
+/*!40000 ALTER TABLE `categories` DISABLE KEYS */;
+INSERT INTO `categories` VALUES (9,1,'3dprinter','3D Printer',0,1),(10,1,'cnc','CNC Mill',0,2),(11,1,'heatpress','Heatpress',0,3),(12,1,'knitting','Knitting Machine',0,4),(13,1,'lasercutter','Lasercutter',0,5),(14,1,'vinylcutter','Vinylcutter',0,6),(15,1,'lasercutter-advanced','Lasercutter (Advanced)',0,7),(16,1,'cnc-pcb','CNC Mill (PCB)',0,8),(136,1,'T-Shirt-Printer','T-Shirt-Printer',0,NULL);
+/*!40000 ALTER TABLE `categories` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -177,7 +91,7 @@ CREATE TABLE `invoice_user_memberships` (
   `invoice_id` int(11) DEFAULT NULL,
   `invoice_status` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4104 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3333 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -219,7 +133,7 @@ CREATE TABLE `invoices` (
   `due_date` datetime DEFAULT NULL,
   `current` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10030 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=10084 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -228,6 +142,7 @@ CREATE TABLE `invoices` (
 
 LOCK TABLES `invoices` WRITE;
 /*!40000 ALTER TABLE `invoices` DISABLE KEYS */;
+INSERT INTO `invoices` VALUES (10083,1,0,'',0,'',2,2017,0,0,19,'draft',0,0,0,0,0,NULL,NULL,NULL,1);
 /*!40000 ALTER TABLE `invoices` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -260,7 +175,7 @@ CREATE TABLE `locations` (
   `logo` varchar(255) DEFAULT NULL,
   `university` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -269,6 +184,7 @@ CREATE TABLE `locations` (
 
 LOCK TABLES `locations` WRITE;
 /*!40000 ALTER TABLE `locations` DISABLE KEYS */;
+INSERT INTO `locations` VALUES (1,'Test Lab','','','','Berlin','','','',1,'','',1,1,1,1,0,'Europe/Berlin','location-logo-1.svg',NULL);
 /*!40000 ALTER TABLE `locations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -285,7 +201,7 @@ CREATE TABLE `machine_maintenances` (
   `start` datetime DEFAULT NULL,
   `end` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -295,33 +211,6 @@ CREATE TABLE `machine_maintenances` (
 LOCK TABLES `machine_maintenances` WRITE;
 /*!40000 ALTER TABLE `machine_maintenances` DISABLE KEYS */;
 /*!40000 ALTER TABLE `machine_maintenances` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `machine_types`
---
-
-DROP TABLE IF EXISTS `machine_types`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `machine_types` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `location_id` int(11) DEFAULT NULL,
-  `short_name` varchar(20) DEFAULT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `archived` tinyint(1) DEFAULT '0',
-  `old_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=136 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `machine_types`
---
-
-LOCK TABLES `machine_types` WRITE;
-/*!40000 ALTER TABLE `machine_types` DISABLE KEYS */;
-/*!40000 ALTER TABLE `machine_types` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -337,9 +226,13 @@ CREATE TABLE `machines` (
   `name` varchar(255) NOT NULL DEFAULT '',
   `shortname` varchar(100) DEFAULT NULL,
   `description` text NOT NULL,
+  `safety_guidelines` text,
+  `links` text,
+  `materials` text,
+  `required_software` text,
   `image` varchar(255) DEFAULT NULL,
   `image_small` varchar(255) DEFAULT NULL,
-  `available` tinyint(1) NOT NULL,
+  `available` tinyint(1) DEFAULT NULL,
   `unavail_msg` text,
   `unavail_till` datetime DEFAULT NULL,
   `price` double unsigned NOT NULL,
@@ -365,7 +258,7 @@ CREATE TABLE `machines` (
   `archived` tinyint(1) DEFAULT NULL,
   `netswitch_last_ping` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=149 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -374,6 +267,7 @@ CREATE TABLE `machines` (
 
 LOCK TABLES `machines` WRITE;
 /*!40000 ALTER TABLE `machines` DISABLE KEYS */;
+INSERT INTO `machines` VALUES (2,1,'01 Vincent','1-Mara','MakerBot Replicator 2 3D printer\n\nTechnical Specifications\nPrint Technology: 	\nFused Filament Fabrication \nBuild Volume: 	9.7”W x 6.4”L x 6.1”H\n[24.6 cm x 16.3 cm x 15.5 cm] \nLayer Height Settings: 	High 100 microns [0.0039 in] \nMedium 200 microns [0.0079 in] \nLow 300 microns [0.0118 in] \nPositioning Precision: 	XY: 11 microns [0.0004 in]; Z: 2.5 microns [0.0001 in] \nFilament Diameter: 	1.75 mm [0.069 in] 0.4 mm [0.015 in] \nNozzle Diameter: 	\nSoftware Bundle: 	MakerBot MakerWareTM\nFile Types: 	STL, OBJ, Thing\nSupports:	 Windows [7+], Ubuntu [11.10+], \nMac OS X [10.6+] \nDIMENSIONS Without Spools:	 19.1 x 12.8 x 14.7 in [49 x 32 x 38 cm] \nDIMENSIONS With Spools:	19.1 x 16.5 x 14.7 in [49 x 42 x 38 cm] \nShipping Box: \n22.75 x 22.75 x 16.75 in [57.8 x 57.8 x 42.5 cm] \nWeight: 	27.8 lbs [12.6 kg] \nShipping Weight: 	39.0 lbs [79.7 kg] [All packages] \nTEMPERATURE Ambient Operation: 	15°–32° C [60°–90° F] \nStorage Temperature: 	 0°–32° C [32°–90° F]\nELECTRICAL AC Input: 	100–240V, ~4 amps, 50–60 Hz \nPower Requirements: 	24V DC @ 9.2 amps\nConnectivity: 	SD card [FAT16, max 2 GB] \nChassis:	Powder-coated steel \nBody:	PVC Panels \nBuild Platform:	356 aluminum \n XYZ Bearings: 	Wear-resistant, oil-infused bronze \nStepper Motors: 	1.8° step angle with 1/16 micro-stepping.','Watch out','https://www.google.de Google Search\n\n\nwww.makerbot.com','PLA','Makerbot Desktop','machine-2.jpg','machine-2-small.jpg',0,'',NULL,0.1,'minute','',1,'[]',0,1,NULL,NULL,0,9,'Replicator 2','','28.5 cm x 15.3 cm x 15.5 cm','','','',1,'mfi',1,0,'2017-02-08 11:50:17'),(3,1,'Epilog 6030','ZLC','Tech Specification\n\nEngraving Area	610 x 305 mm (24\" x 12\")\nMaximum Material Thickness	 197 mm (7.75\")\nLaser Wattage	40 watts\nLaser Source	State-of-the-art, digitally controlled, air-cooled CO2 laser tubes are fully modular, permanently aligned and field replaceable.\nIntelligent Memory Capacity	Multiple file storage up to 64 MB. Rolling buffer allows files of any size to be engraved.\nAir Assist	Attached air compressor to remove heat and combustible gases from the cutting surface by directing a constant stream of compressed air across the cutting surface. \nLaser Dashboard	The Laser Dashboard™ controls your Epilog Laser\'s settings from a wide range of software packages - from design programs to spreadsheet applications to CAD drawing packages. \nRed Dot Pointer	Since the laser beam is invisible, the Red Dot Pointer on Epilog\'s Zing Laser allows you to have a visual reference for locating where the laser will fire. \nRelocatable Home	When engraving items that are not easily placed at the top corner of the laser, you can set a new home position by hand with the convenient Movable Home Position feature on the Zing Laser. \nOperating Modes	Optimized raster, vector or combined modes. \nMotion Control System	High-speed micro stepper motors. \nX-Axis Bearings	Shielded Roller Bearing Assembly on a Ceramic Coated Aluminum Guide Rail. \nBelts	Advanced B-style Kevlar Belts. \nResolution	User controlled from 100 to 1000 dpi. \nSpeed and Power Control	Computer or manually control speed and power in 1% increments to 100%. Vector color mapping links speed, power and focus to any RGB color. \nPrint Interface	10 Base-T Ethernet or USB Connection. Compatible with Windows® XP/Vista/7/8. \nSize (W x D x H)	965 x 692 x 381 mm (38\" x 27.25\" x 15\")\nWeight	64 kg (140 lbs)\nElectrical Requirements	Auto-switching power supply accommodates 110 to 240 volts, 50 or 60 Hz, single phase, 15 amp AC.\nMaximum Table Weight	The Zing 16 and 24 have a static table weight of 22.7 kg (50 lbs) and a lifting table weight of 11.5 kg (25 lbs). \nVentilation System	350 - 400 CFM (595-680 m3/hr) external exhaust to the outside or internal filtration system is required. There is one output port, 4\" in diameter.','',NULL,NULL,NULL,'machine-3.jpg','machine-3-small.jpg',1,'',NULL,0.8,'minute','asd',1,'',0,0,NULL,5,0,13,'Laser cutter','','600mm x 300mm x 114mm','','','',1,'mfi',1,0,'2017-02-08 11:50:15'),(4,1,'02 Yoda','2-Messi','Craft Bot Plus printer for your medium-sized prints\n\nUse Craftware software you must.','',NULL,NULL,NULL,'machine-4.jpg','machine-4-small.jpg',0,'',NULL,0.1,'minute','Use Craftware software you must',1,'[]',0,0,NULL,NULL,0,9,'Craft Bot Plus','','252 mm x 199 mm x 150 mm','','','',1,'mfi',1,0,'2017-02-08 11:50:12'),(6,1,'07 Fabienne','I3B2','i3Berlin 3D Printer.\n\nTech Specs:\n\nTechnology	 FDM (Fused Deposition Modeling)\nCategory 	Assembled\nPrint volume	 200x200x200mm [LxWxH]\nPrinter dimensions 	400x440x380mm [LxWxH]\nPrintable materials	 Thermoplastics (PLA, ABS, Nylon, PC, PP, PET, Wood Filaments, ...)\nHotend E3D	\nFilament diameter Default 	1.75mm.\nNozzle diameter Default	0.4mm ( 0,25mm/0,6mm/1mm available )\nLayer height	 0.02mm – 0.3mm (Default 0.4 nozzle)\nMax. power consumption 	110/220V 350W\nSoftware 	Cura/Kisslicer (opensource) Simplify3D (proprietary)\nFirmware	 Arduino/Marlin\nLicence 	GPL\nSource files	 https://github.com/open3dengineering/i3_Berlin',NULL,NULL,NULL,NULL,'machine-6.jpg','machine-6-small.jpg',0,'',NULL,0.1,'minute','',1,'',0,1,NULL,NULL,0,9,'i3 Berlin','','','','','',1,'mfi',1,0,'2017-02-08 11:50:16'),(7,1,'04 Mia','MBR','MakerBot Replicator generation 5. For your medium-sized prints.\n\nTechnical Specsifications\n\nPrint Technology: Fused Filament Fabrication\nBuild Volume: 252 X x 199 Y x 150 Z mm [9.9 L x 7.8 W x 5.9 H in]\nLayer Height Settings: \nHigh 100 microns [0.0039 in]\nMedium 200 microns [0.0079 in]\nLow 300 microns [0.0118 in]\nPositioning Precision: XY: 11 microns [0.0004 in]; Z: 2.5 microns [0.0001 in]\nFilament Diameter: 1.75 mm [0.069 in]\nNozzle Diameter: 0.4 mm [0.015 in]\nSoftware Bundle: MakerBot Desktop\nFile Types: STL, OBJ, Thing\nSupports: Windows [7+], Ubuntu [11.10+], Mac OS X [10.6+]\nConnectivity: USB Stick',NULL,NULL,NULL,NULL,'machine-7.jpg','machine-7-small.jpg',0,'',NULL,0.1,'minute','',1,'',0,0,NULL,NULL,0,9,'Replicator 5 gen','','252 mm x 199 mm x 150 mm','','','',1,'mfi',1,0,'2017-02-08 11:50:19'),(8,1,'05 Pumpkin','I3B1','i3Berlin 3D Printer with dual extruder\n\nTech specs:\nTechnology	 FDM (Fused Deposition Modeling)\nCategory 	Assembled\nPrint volume	 200x200x200mm [LxWxH]\nPrinter dimensions 	400x440x380mm [LxWxH]\nPrintable materials	 Thermoplastics (PLA, ABS, Nylon, PC, PP, PET, Wood Filaments, ...)\nHotend E3D	\nFilament diameter Default 	1.75mm.\nNozzle diameter Default	0.4mm ( 0,25mm/0,6mm/1mm available )\nLayer height	 0.02mm – 0.3mm (Default 0.4 nozzle)\nMax. power consumption 	110/220V 350W\nSoftware 	Cura/Kisslicer (opensource) Simplify3D (proprietary)\nFirmware	 Arduino/Marlin\nLicence 	GPL\nSource files	 https://github.com/open3dengineering/i3_Berlin','',NULL,NULL,NULL,'machine-8.png','machine-8-small.png',0,'',NULL,0.1,'minute','',1,'',1,0,NULL,NULL,0,9,'i3 Berlin','','','','','',1,'mfi',1,0,'2017-02-08 11:50:18'),(9,1,'Electronic Station 1','ES1','Electronic Station 1 - all the soldering irons, the main multi plug basically.','',NULL,NULL,NULL,'machine-9.JPG','machine-9-small.JPG',1,'',NULL,0.1,'minute','',1,'',0,0,NULL,NULL,0,0,'','','','','','',1,'mfi',0,0,'2017-02-08 11:50:12'),(10,1,'06 Honey Bunny','I3B2','i3Berlin 3D Printer.\n\nTech Specs:\n\nTechnology	 FDM (Fused Deposition Modeling)\nCategory 	Assembled\nPrint volume	 200x200x200mm [LxWxH]\nPrinter dimensions 	400x440x380mm [LxWxH]\nPrintable materials	 Thermoplastics (PLA, ABS, Nylon, PC, PP, PET, Wood Filaments, ...)\nHotend E3D	\nFilament diameter Default 	1.75mm.\nNozzle diameter Default	0.4mm ( 0,25mm/0,6mm/1mm available )\nLayer height	 0.02mm – 0.3mm (Default 0.4 nozzle)\nMax. power consumption 	110/220V 350W\nSoftware 	Cura/Kisslicer (opensource) Simplify3D (proprietary)\nFirmware	 Arduino/Marlin\nLicence 	GPL\nSource files	 https://github.com/open3dengineering/i3_Berlin','',NULL,NULL,NULL,'machine-10.jpg','machine-10-small.jpg',0,'',NULL,0.1,'minute','',1,'',1,0,NULL,NULL,0,9,'i3 Berlin','','','','','',1,'mfi',1,0,'2017-02-08 11:50:03');
 /*!40000 ALTER TABLE `machines` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -398,7 +292,7 @@ CREATE TABLE `membership` (
   `archived` tinyint(1) DEFAULT NULL,
   `affected_categories` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10608 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=10058 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -407,6 +301,7 @@ CREATE TABLE `membership` (
 
 LOCK TABLES `membership` WRITE;
 /*!40000 ALTER TABLE `membership` DISABLE KEYS */;
+INSERT INTO `membership` VALUES (3,1,'Staff Membership','FLS',12,0,100,'[2,97,4,12,7,8,10,6,13,40,74,98,29,11,77,43,9,48,23,3,28,15,20,34,44,18,31,17,14,37,42,35,38,32,33,16,39,24,21,26,19,25,27,41]',1,1,0,'[15,9,10,0,13,11,16,14,12]');
 /*!40000 ALTER TABLE `membership` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -425,7 +320,7 @@ CREATE TABLE `migrations` (
   `rollback_statements` longtext COMMENT 'SQL statment for rolling back migration',
   `status` enum('update','rollback') DEFAULT NULL COMMENT 'update indicates it is a normal migration while rollback means this migration is rolled back',
   PRIMARY KEY (`id_migration`)
-) ENGINE=InnoDB AUTO_INCREMENT=88 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=96 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -434,7 +329,7 @@ CREATE TABLE `migrations` (
 
 LOCK TABLES `migrations` WRITE;
 /*!40000 ALTER TABLE `migrations` DISABLE KEYS */;
-INSERT INTO `migrations` VALUES (1,'Billingingaddress_20150728_120222','2015-08-05 09:59:57','ALTER TABLE user MODIFY invoice_addr TEXT; ALTER TABLE user MODIFY ship_addr TEXT',NULL,'update'),(2,'Userphone_20150728_152059','2015-08-05 09:59:58','ALTER TABLE user ADD COLUMN phone VARCHAR(50)',NULL,'update'),(3,'Fastbilluseradd_20150805_170318','2015-08-07 13:12:43','ALTER TABLE user ADD COLUMN zip_code VARCHAR(100); ALTER TABLE user ADD COLUMN city VARCHAR(100); ALTER TABLE user ADD COLUMN country_code VARCHAR(2)',NULL,'update'),(4,'PricePerMonth_20150901_110810','2015-09-02 18:02:01','ALTER TABLE membership ADD monthly_price double unsigned NOT NULL AFTER price; UPDATE membership SET monthly_price = price WHERE duration = 30 AND unit = \'days\'; UPDATE membership SET monthly_price = price / 3 WHERE duration = 90 AND unit = \'days\'; UPDATE membership SET monthly_price = price / 12 WHERE duration = 365 AND unit = \'days\'; UPDATE membership SET monthly_price = price / duration * 30 WHERE duration <> 30 AND duration <> 90 AND duration <> 365 AND unit = \'days\'; UPDATE membership SET monthly_price = price WHERE unit <> \'days\'; ALTER TABLE membership DROP COLUMN price',NULL,'update'),(5,'Activationfeedback_20150908_145935','2015-09-18 08:12:25','\n		CREATE TABLE activation_feedback (\n			id bigint(20) unsigned NOT NULL AUTO_INCREMENT,\n			activation_id int(11) NOT NULL,\n			satisfaction varchar(100) DEFAULT NULL,\n			PRIMARY KEY (id)\n	)',NULL,'update'),(6,'Undermaintenance_20150909_113436','2015-09-18 08:12:26','ALTER TABLE machines ADD under_maintenance tinyint(1)',NULL,'update'),(7,'Usermembershipautoextend_20150910_110015','2015-09-25 07:44:06','ALTER TABLE user_membership ADD COLUMN auto_extend TINYINT(1)',NULL,'update'),(8,'Autoextendmemberships_20150910_172301','2015-09-25 07:44:07','ALTER TABLE membership ADD COLUMN auto_extend TINYINT(1); ALTER TABLE membership ADD COLUMN auto_extend_duration INT(11)',NULL,'update'),(9,'Usermembershipterminate_20150918_115716','2015-09-25 07:44:07','ALTER TABLE user_membership ADD COLUMN is_terminated TINYINT(1)',NULL,'update'),(10,'Autoextendmembershipmonths_20150921_115503','2015-09-25 07:44:08','ALTER TABLE membership CHANGE COLUMN auto_extend_duration auto_extend_duration_months INT(11)',NULL,'update'),(11,'Rmmembershipunitcol_20150921_123926','2015-09-25 07:44:09','ALTER TABLE membership CHANGE COLUMN duration duration_months INT(11); UPDATE membership SET duration_months=ROUND(duration_months / 30) WHERE unit=\'days\'; ALTER TABLE membership DROP COLUMN unit',NULL,'update'),(12,'Usermembershipenddate_20150924_114628','2015-09-25 07:44:09','\nUPDATE user_membership\nSET end_date = DATE_ADD(start_date, INTERVAL\n                          (SELECT duration_months\n                           FROM membership\n                           WHERE membership.id = user_membership.membership_id) MONTH)\n	',NULL,'update'),(13,'Autoextenddefaulttrue_20150924_120425','2015-09-25 07:44:09','UPDATE membership SET auto_extend = TRUE, auto_extend_duration_months = 1; UPDATE user_membership SET auto_extend = TRUE',NULL,'update'),(14,'Reservations_20150928_181415','2015-10-16 06:27:24','CREATE TABLE reservations (\n		id int(11) unsigned NOT NULL AUTO_INCREMENT,\n		machine_id int(11) NOT NULL,\n		user_id int(11) NOT NULL,\n		time_start datetime NOT NULL,\n		time_end datetime NOT NULL,\n		created datetime NOT NULL,\n		PRIMARY KEY (id)\n	)',NULL,'update'),(15,'Reservationrules_20151001_173125','2015-10-16 06:27:24','CREATE TABLE reservation_rules (\n		id int(11) unsigned NOT NULL AUTO_INCREMENT,\n		name varchar(100),\n		machine_id int(11),\n		available tinyint(1),\n		unavailable tinyint(1),\n		date_start char(10),\n		date_end char(10),\n		time_start char(5),\n		time_end char(5),\n		time_zone varchar(100),\n		monday tinyint(1),\n		tuesday tinyint(1),\n		wednesday tinyint(1),\n		thursday tinyint(1),\n		friday tinyint(1),\n		saturday tinyint(1),\n		sunday tinyint(1),\n		created datetime NOT NULL,\n		PRIMARY KEY (id)\n	)',NULL,'update'),(16,'Reservationprices_20151008_142149','2015-10-16 06:27:25','ALTER TABLE machines ADD COLUMN reservation_price_start double unsigned; ALTER TABLE machines ADD COLUMN reservation_price_hourly double unsigned',NULL,'update'),(17,'Activationcurrentprice_20151023_094534','2015-10-28 15:13:18','ALTER TABLE activations ADD COLUMN current_machine_price double unsigned; ALTER TABLE activations ADD COLUMN current_machine_price_currency varchar(10); ALTER TABLE activations ADD COLUMN current_machine_price_unit varchar(100); UPDATE activations a JOIN machines m ON a.machine_id = m.id SET a.current_machine_price=m.price, a.current_machine_price_currency=\'€\', a.current_machine_price_unit=m.price_unit',NULL,'update'),(18,'Reservationcurrentprice_20151026_120719','2015-10-28 15:13:19','ALTER TABLE reservations ADD COLUMN current_price double unsigned; ALTER TABLE reservations ADD COLUMN current_price_currency varchar(10); ALTER TABLE reservations ADD COLUMN current_price_unit varchar(100); UPDATE reservations r JOIN machines m ON r.machine_id = m.id SET r.current_price=m.reservation_price_hourly, r.current_price_currency=\'€\', r.current_price_unit=\'30 minutes\'',NULL,'update'),(19,'Globalconfig_20151117_095700','2015-12-06 18:33:16','CREATE TABLE settings (\n		id int(11) unsigned NOT NULL AUTO_INCREMENT,\n		name varchar(100) NOT NULL,\n		value_int int(11),\n		value_string text,\n		value_float double,\n		PRIMARY KEY (id)\n	)',NULL,'update'),(20,'Reservationdisabled_20151118_133537','2015-12-06 18:33:16','ALTER TABLE reservations ADD COLUMN disabled tinyint(1)',NULL,'update'),(21,'Products_20151118_141721','2015-12-06 18:33:16','CREATE TABLE products (\n		id int(11) unsigned NOT NULL AUTO_INCREMENT,\n		type varchar(100),\n		name varchar(100),\n		price double unsigned,\n		price_unit varchar(100),\n		PRIMARY KEY (id)\n	)',NULL,'update'),(22,'Purchases_20151119_115310','2015-12-06 18:33:17','CREATE TABLE purchases (\n		id int(11) unsigned NOT NULL AUTO_INCREMENT,\n		type varchar(100) NOT NULL,\n		product_id int(11) unsigned,\n		created datetime,\n		user_id int(11) unsigned NOT NULL,\n		time_start datetime DEFAULT NULL,\n		time_end datetime DEFAULT NULL,\n		quantity double NOT NULL,\n		price_per_unit double,\n		price_unit varchar(100),\n		vat double,\n		activation_running tinyint(1),\n		reservation_disabled tinyint(1),\n		machine_id int(11) unsigned,\n		PRIMARY KEY (id)\n	); \n		INSERT INTO purchases ( TYPE, product_id, created, user_id, time_start, time_end, quantity, price_per_unit, price_unit, vat, activation_running, reservation_disabled, machine_id )\n		SELECT \'activation\',\n		       NULL,\n		       time_start,\n		       user_id,\n		       time_start,\n		       time_end,\n		       time_total / 60,\n		       current_machine_price,\n		       current_machine_price_unit,\n		       vat_rate,\n		       active,\n		       NULL,\n		       machine_id\n		FROM activations\n		WHERE current_machine_price_unit = \"minute\"\n		UNION\n		SELECT \'activation\',\n		       NULL,\n		       time_start,\n		       user_id,\n		       time_start,\n		       time_end,\n		       time_total / 3600,\n		       current_machine_price,\n		       current_machine_price_unit,\n		       vat_rate,\n		       active,\n		       NULL,\n		       machine_id\n		FROM activations\n		WHERE current_machine_price_unit = \"hour\"\n	; \n		INSERT INTO purchases ( TYPE, product_id, created, user_id, time_start, time_end, quantity, price_per_unit, price_unit, vat, activation_running, reservation_disabled, machine_id )\n		SELECT \'reservation\',\n		       NULL,\n		       created,\n		       user_id,\n		       time_start,\n		       time_end,\n		       TIME_TO_SEC(TIMEDIFF(time_end, time_start)) / 1800,\n		       current_price / 2,\n		       current_price_unit,\n		       NULL,\n		       NULL,\n		       disabled,\n		       machine_id\n		FROM reservations\n	',NULL,'update'),(23,'PurchaseCancelledFlag_20151124_153407','2015-12-06 18:33:17','ALTER TABLE purchases ADD COLUMN cancelled tinyint(1)',NULL,'update'),(24,'Tutorproduct_20151126_120015','2015-12-06 18:33:18','ALTER TABLE products ADD COLUMN user_id int(11); ALTER TABLE products ADD COLUMN machine_skills varchar(255)',NULL,'update'),(25,'Productcomments_20151126_170242','2015-12-06 18:33:18','ALTER TABLE products ADD COLUMN comments TEXT',NULL,'update'),(26,'PurchaseTimeEndActual_20151202_102231','2015-12-06 18:33:19','ALTER TABLE purchases ADD COLUMN time_end_actual datetime AFTER time_end; ALTER TABLE purchases CHANGE COLUMN activation_running running tinyint(1)',NULL,'update'),(27,'Productarchived_20151202_172646','2015-12-06 18:33:20','ALTER TABLE products ADD COLUMN archived TINYINT(1) DEFAULT 0',NULL,'update'),(28,'PurchaseTimeEndPlanned_20151203_134204','2015-12-06 18:33:20','ALTER TABLE purchases CHANGE COLUMN time_end_actual time_end_planned datetime',NULL,'update'),(29,'Purchasearchived_20151203_142543','2015-12-06 18:33:21','ALTER TABLE purchases ADD COLUMN archived TINYINT(1) DEFAULT 0',NULL,'update'),(30,'Purchasecomments_20151203_160933','2015-12-06 18:33:21','ALTER TABLE purchases ADD COLUMN comments TEXT',NULL,'update'),(31,'Tutorpurchasetimer_20151208_143302','2015-12-17 19:35:58','ALTER TABLE purchases ADD COLUMN timer_time_start DATETIME',NULL,'update'),(32,'MachineXmpp_20160108_113817','2016-01-11 18:48:01','ALTER TABLE netswitch ADD COLUMN xmpp tinyint(1)',NULL,'update'),(33,'Locations_20160119_152047','2016-01-26 18:14:29','CREATE TABLE locations (\n		id int(11) unsigned NOT NULL AUTO_INCREMENT,\n		name varchar(100),\n		PRIMARY KEY (id)\n	); INSERT INTO locations VALUES (1, \"Fab Lab Berlin\"); ALTER TABLE machines ADD COLUMN location_id int(11) unsigned AFTER id; ALTER TABLE netswitch ADD COLUMN location_id int(11) unsigned AFTER id; UPDATE machines SET location_id = 1',NULL,'update'),(34,'Hostyourmachines_20160120_131417','2016-01-26 18:14:29','\n        CREATE TABLE hosts (\n            id bigint(20) unsigned NOT NULL AUTO_INCREMENT,\n            first_name varchar(100) NOT NULL,\n            last_name varchar(100) NOT NULL,\n            email varchar(100) NOT NULL,\n            location varchar(100) NOT NULL,\n            organization varchar(100) NOT NULL,\n            phone varchar(100) NOT NULL,\n            comments text NOT NULL,\n            PRIMARY KEY (id)\n    )',NULL,'update'),(35,'MergeHostsAndLocations_20160120_163019','2016-01-26 18:14:33','DROP TABLE hosts; ALTER TABLE locations CHANGE name title varchar(100); ALTER TABLE locations ADD COLUMN first_name varchar(100); ALTER TABLE locations ADD COLUMN last_name varchar(100); ALTER TABLE locations ADD COLUMN email varchar(100); ALTER TABLE locations ADD COLUMN city varchar(100); ALTER TABLE locations ADD COLUMN organization varchar(100); ALTER TABLE locations ADD COLUMN phone varchar(100); ALTER TABLE locations ADD COLUMN comments varchar(100); ALTER TABLE locations ADD COLUMN approved tinyint(1); UPDATE locations SET approved = 1 WHERE id = 1',NULL,'update'),(36,'NetswitchMfi_20160120_174425','2016-01-26 18:14:34','ALTER TABLE netswitch ADD COLUMN host varchar(255) AFTER url_off; ALTER TABLE netswitch ADD COLUMN sensor_port int(5) AFTER url_off; UPDATE netswitch SET sensor_port = 1',NULL,'update'),(37,'MachineType_20160126_151613','2016-01-26 18:14:35','ALTER TABLE machines ADD COLUMN type varchar(255); ALTER TABLE machines ADD COLUMN brand varchar(255); ALTER TABLE machines ADD COLUMN dimensions varchar(255); ALTER TABLE machines ADD COLUMN workspace_dimensions varchar(255)',NULL,'update'),(38,'MachineTypes_20160127_155843','2016-01-28 18:43:40','\n		CREATE TABLE machine_types (\n			id int(11) unsigned NOT NULL AUTO_INCREMENT,\n			short_name varchar(20),\n			name varchar(255),\n			PRIMARY KEY (id)\n	); INSERT INTO machine_types VALUES (1, \"3dprinter\", \"3D Printer\"); INSERT INTO machine_types VALUES (2, \"cnc\", \"CNC Mill\"); INSERT INTO machine_types VALUES (3, \"heatpress\", \"Heatpress\"); INSERT INTO machine_types VALUES (4, \"knitting\", \"Knitting Machine\"); INSERT INTO machine_types VALUES (5, \"lasercutter\", \"Lasercutter\"); INSERT INTO machine_types VALUES (6, \"vinylcutter\", \"Vinylcutter\"); ALTER TABLE machines ADD COLUMN type_id int(11) unsigned AFTER type; ALTER TABLE machines DROP COLUMN type',NULL,'update'),(39,'UserLocations_20160201_155547','2016-02-16 18:48:38','\n		CREATE TABLE user_locations (\n			id int(11) unsigned NOT NULL AUTO_INCREMENT,\n			location_id int(11) unsigned,\n			user_id int(11) unsigned,\n			user_role varchar(100),\n			archived tinyint(1) DEFAULT 0,\n			PRIMARY KEY (id)\n	)',NULL,'update'),(40,'UserLocationsAdminRoles_20160210_121712','2016-02-16 18:48:38','\n		INSERT INTO user_locations\n		            (location_id,\n		             user_id,\n		             user_role,\n		             archived)\n		SELECT 1,\n		       id,\n		       \"admin\",\n		       0\n		FROM   user\n		WHERE  user_role = \"admin\"\n	',NULL,'update'),(41,'ProductLocationId_20160210_145725','2016-02-16 18:48:38','\n	    ALTER TABLE products \n	      ADD COLUMN location_id INT(11) after id\n	; UPDATE products SET location_id = 1',NULL,'update'),(42,'PurchaseLocationId_20160210_182928','2016-02-16 18:48:39','\n	    ALTER TABLE purchases \n	      ADD COLUMN location_id INT(11) after id\n	; UPDATE purchases SET location_id = 1',NULL,'update'),(43,'MembershipLocationId_20160215_135752','2016-02-16 18:48:40','\n	    ALTER TABLE membership\n	      ADD COLUMN location_id int(11) AFTER id\n	; UPDATE membership SET location_id = 1',NULL,'update'),(44,'ReservationRulesLocationId_20160215_191406','2016-02-16 18:48:40','\n	    ALTER TABLE reservation_rules\n	      ADD COLUMN location_id int(11) AFTER id\n	; UPDATE reservation_rules SET location_id = 1',NULL,'update'),(45,'UserLocationsMemberRoles_20160216_131116','2016-02-16 18:48:40','UPDATE user SET user_role = \"member\" WHERE user_role <> \"admin\"; \n		INSERT INTO user_locations\n		            (location_id,\n		             user_id,\n		             user_role,\n		             archived)\n		SELECT 1,\n		       id,\n		       \"member\",\n		       0\n		FROM   user\n		WHERE  user_role <> \"admin\"\n	',NULL,'update'),(46,'LocationsXmppId_20160219_124354','2016-02-20 12:06:12','ALTER TABLE locations ADD COLUMN xmpp_id VARCHAR(255)',NULL,'update'),(47,'MergeMachinesAndNetswitches_20160219_133411','2016-02-20 12:06:13','\n		ALTER TABLE machines \n		  ADD COLUMN netswitch_url_on VARCHAR(255),\n		  ADD COLUMN netswitch_url_off VARCHAR(255),\n		  ADD COLUMN netswitch_host VARCHAR(255),\n		  ADD COLUMN netswitch_sensor_port INT(5),\n		  ADD COLUMN netswitch_xmpp TINYINT(1)\n	; \n		UPDATE machines\n		       JOIN netswitch\n		         ON machines.id = netswitch.machine_id\n		SET    netswitch_url_on = netswitch.url_on,\n		       netswitch_url_off = netswitch.url_off,\n		       netswitch_host = netswitch.host,\n		       netswitch_sensor_port = netswitch.sensor_port,\n		       netswitch_xmpp = netswitch.xmpp\n	; DROP TABLE netswitch',NULL,'update'),(48,'MachineGracePeriod_20160225_141536','2016-02-25 19:27:04','ALTER TABLE machines ADD COLUMN grace_period int(11) AFTER reservation_price_hourly',NULL,'update'),(49,'SettingsLocationId_20160225_163048','2016-02-25 19:27:04','\n	    ALTER TABLE settings \n	      ADD COLUMN location_id INT(11) after id\n	; UPDATE settings SET location_id = 1',NULL,'update'),(50,'MachineNetswitchType_20160226_165758','2016-03-02 08:14:25','ALTER TABLE machines\n	  ADD COLUMN netswitch_type VARCHAR(255) AFTER netswitch_sensor_port',NULL,'update'),(51,'LocationsLocalIp_20160303_195458','2016-03-08 18:33:33','ALTER TABLE locations ADD COLUMN local_ip VARCHAR(255); UPDATE locations SET local_ip = \'37.44.7.170\' WHERE id = 1',NULL,'update'),(52,'MonthlyEarnings_20160304_113146','2016-03-08 18:33:35','RENAME TABLE invoices TO monthly_earnings; ALTER TABLE monthly_earnings ADD COLUMN month_from TINYINT UNSIGNED AFTER id; ALTER TABLE monthly_earnings ADD COLUMN year_from SMALLINT UNSIGNED AFTER month_from; ALTER TABLE monthly_earnings ADD COLUMN month_to TINYINT UNSIGNED AFTER year_from; ALTER TABLE monthly_earnings ADD COLUMN year_to SMALLINT UNSIGNED AFTER month_to; UPDATE monthly_earnings SET month_from = MONTH(period_from); UPDATE monthly_earnings SET year_from = YEAR(period_from); UPDATE monthly_earnings SET month_to = MONTH(period_to); UPDATE monthly_earnings SET year_to = YEAR(period_to)',NULL,'update'),(53,'NetswitchTypeDefault_20160307_110139','2016-03-08 18:33:35','UPDATE machines SET netswitch_type = \'mfi\' WHERE netswitch_xmpp = 1',NULL,'update'),(54,'AuthPwReset_20160307_134938','2016-03-08 18:33:36','ALTER TABLE auth ADD COLUMN pw_reset_key VARCHAR(255); ALTER TABLE auth ADD COLUMN pw_reset_time DATETIME',NULL,'update'),(55,'LocationsFeatureToggles_20160314_204905','2016-03-16 13:08:48','ALTER TABLE locations ADD COLUMN feature_coworking TINYINT(1); ALTER TABLE locations ADD COLUMN feature_setup_time TINYINT(1); ALTER TABLE locations ADD COLUMN feature_spaces TINYINT(1); ALTER TABLE locations ADD COLUMN feature_tutoring TINYINT(1); UPDATE locations SET feature_coworking = 1 WHERE id = 1; UPDATE locations SET feature_setup_time = 1 WHERE id = 1; UPDATE locations SET feature_spaces = 1 WHERE id = 1; UPDATE locations SET feature_tutoring = 1 WHERE id = 1',NULL,'update'),(56,'MonthlyEarningLocationId_20160318_170010','2016-03-20 18:11:15','\n	    ALTER TABLE monthly_earnings \n	      ADD COLUMN location_id INT(11) after id\n	; UPDATE monthly_earnings SET location_id = 1',NULL,'update'),(57,'UserTestuser_20160321_142446','2016-03-21 13:27:47','ALTER TABLE user ADD COLUMN test_user TINYINT(1)',NULL,'update'),(58,'UserNoAutoInvoicing_20160413_141041','2016-04-13 20:32:28','ALTER TABLE user ADD COLUMN no_auto_invoicing TINYINT(1)',NULL,'update'),(59,'MachineArchived_20160419_155227','2016-04-20 17:48:50','ALTER TABLE machines ADD COLUMN archived TINYINT(1)',NULL,'update'),(60,'MembershipsArchived_20160419_180659','2016-04-20 17:48:50','ALTER TABLE membership ADD COLUMN archived TINYINT(1)',NULL,'update'),(61,'Coupons_20160421_144423','2016-04-26 09:43:42','\n		CREATE TABLE coupons (\n			id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,\n			location_id INT(11) UNSIGNED,\n			code VARCHAR(100),\n			user_id INT(11) UNSIGNED,\n			value DOUBLE,\n			PRIMARY KEY (id)\n	); \n		CREATE TABLE coupon_usages (\n			id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,\n			coupon_id INT(11) UNSIGNED,\n			value DOUBLE,\n			month TINYINT,\n			year SMALLINT,\n			PRIMARY KEY (id)\n	)',NULL,'update'),(62,'LocationsFeatureToggleCoupons_20160422_150028','2016-04-26 09:43:42','ALTER TABLE locations ADD COLUMN feature_coupons TINYINT(1); UPDATE locations SET feature_coupons = 1 WHERE id = 1',NULL,'update'),(63,'PurchasesInvoiceIdAndStatus_20160527_170456','2016-05-30 12:36:12','ALTER TABLE purchases ADD COLUMN invoice_id int(11) unsigned; ALTER TABLE purchases ADD COLUMN invoice_status varchar(20); ALTER TABLE user_membership ADD COLUMN invoice_id int(11) unsigned; ALTER TABLE user_membership ADD COLUMN invoice_status varchar(20)',NULL,'update'),(64,'InvoicesTable_20160531_154603','2016-08-26 07:20:53','\n		CREATE TABLE invoices (\n			id int(11) unsigned NOT NULL AUTO_INCREMENT,\n			location_id int(11) unsigned,\n			fastbill_id int(11) unsigned,\n			fastbill_no varchar(100),\n			canceled_fastbill_id int(11) unsigned,\n			canceled_fastbill_no varchar(100),\n			month tinyint unsigned,\n			year smallint unsigned,\n			customer_id int(11) unsigned,\n			customer_no int(11) unsigned,\n			user_id int(11) unsigned,\n			status varchar(20),\n			canceled tinyint(1) DEFAULT 0,\n			sent tinyint(1) DEFAULT 0,\n			canceled_sent tinyint(1) DEFAULT 0,\n			total real,\n			vat_percent real,\n			invoice_date DATETIME,\n			paid_date DATETIME,\n			due_date DATETIME,\n			current TINYINT(1),\n			PRIMARY KEY (id)\n	)',NULL,'update'),(65,'PurchasesInvoiceStatusNotNull_20160601_153246','2016-08-26 07:20:54','ALTER TABLE purchases DROP COLUMN invoice_status; ALTER TABLE user_membership DROP COLUMN invoice_status; ALTER TABLE purchases ADD COLUMN invoice_status varchar(20) NOT NULL DEFAULT \'\'; ALTER TABLE user_membership ADD COLUMN invoice_status varchar(20) NOT NULL DEFAULT \'\'',NULL,'update'),(66,'PurchasesInvoiceIdNotNull_20160602_140525','2016-08-26 07:23:05','ALTER TABLE purchases CHANGE invoice_id invoice_id int(11) unsigned NOT NULL; ALTER TABLE user_membership CHANGE invoice_id invoice_id int(11) unsigned NOT NULL',NULL,'update'),(67,'LocationsTimezone_20160826_131359','2016-08-26 11:42:05','ALTER TABLE locations ADD COLUMN timezone varchar(100)',NULL,'update'),(68,'UserVatFbTemplateId_20160826_183558','2016-08-29 11:55:42','ALTER TABLE user ADD COLUMN fastbill_template_id int(11) unsigned; ALTER TABLE user ADD COLUMN eu_delivery tinyint(1)',NULL,'update'),(69,'MachineLastPing_20160909_163523','2016-09-09 16:17:16','ALTER TABLE machines ADD COLUMN netswitch_last_ping DATETIME',NULL,'update'),(70,'LocationsLogo_20160926_111453','2016-09-26 12:07:53','ALTER TABLE locations ADD COLUMN logo varchar(255)',NULL,'update'),(71,'UserLocationsUnique_20160926_150303','2016-09-26 13:20:07','ALTER TABLE user_locations ADD UNIQUE unique_user_locations (user_id, location_id)',NULL,'update'),(72,'MachineImageSmall_20160927_152202','2016-09-27 13:59:21','ALTER TABLE machines ADD COLUMN image_small varchar(255) AFTER image; UPDATE machines SET image_small = image',NULL,'update'),(73,'PurchaseCustomName_20161017_135651','2016-10-19 12:55:41','ALTER TABLE purchases ADD COLUMN custom_name varchar(255) AFTER machine_id',NULL,'update'),(74,'PurchaseRemoveTimeEnd_20161018_174831','2016-10-21 11:27:10','ALTER TABLE purchases DROP COLUMN time_end',NULL,'update'),(75,'InvoiceUserMemberships_20161025_190752','2016-11-15 17:47:01','\nCREATE TABLE user_memberships (\n	id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,\n	location_id INT(11) UNSIGNED,\n	user_id INT(11) UNSIGNED,\n	membership_id INT(11) UNSIGNED,\n	start_date DATETIME,\n	termination_date DATETIME,\n	initial_duration_months INT(11),\n	auto_extend TINYINT(1),\n	created DATETIME,\n	updated DATETIME,\n	PRIMARY KEY (id)\n)\n	; \nCREATE TABLE invoice_user_memberships (\n	id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,\n	location_id INT(11) UNSIGNED,\n	user_id INT(11) UNSIGNED,\n	membership_id INT(11) UNSIGNED,\n	user_membership_id INT(11) UNSIGNED,\n	start_date DATETIME,\n	termination_date DATETIME,\n	initial_duration_months INT(11),\n	created DATETIME,\n	updated DATETIME,\n	invoice_id INT(11),\n	invoice_status VARCHAR(100),\n	PRIMARY KEY (id)\n)\n	',NULL,'update'),(76,'PopulateInvoiceUserMemberships_20161028_134609','2016-11-15 17:47:06','',NULL,'update'),(77,'UserMembershipsRemoveAutoExtend_20161104_175233','2016-11-15 17:47:06','ALTER TABLE user_memberships DROP COLUMN auto_extend',NULL,'update'),(78,'UserMembershipsStringDates_20161115_193212','2016-11-22 15:49:09','ALTER TABLE user_memberships CHANGE start_date start_date VARCHAR(255); UPDATE user_memberships SET start_date = SUBSTR(start_date, 1, 10); ALTER TABLE user_memberships CHANGE termination_date termination_date VARCHAR(255); UPDATE user_memberships SET termination_date = SUBSTR(termination_date, 1, 10); ALTER TABLE invoice_user_memberships CHANGE start_date start_date VARCHAR(255); UPDATE invoice_user_memberships SET start_date = SUBSTR(start_date, 1, 10); ALTER TABLE invoice_user_memberships CHANGE termination_date termination_date VARCHAR(255); UPDATE invoice_user_memberships SET termination_date = SUBSTR(termination_date, 1, 10)',NULL,'update'),(79,'MachineMaintenances_20161130_115623','2016-12-05 12:32:32','\nCREATE TABLE machine_maintenances (\n	id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,\n	machine_id INT(11) UNSIGNED,\n	start DATETIME,\n	end DATETIME,\n	PRIMARY KEY (id)\n)\n	',NULL,'update'),(80,'LocationsUniversity_20161207_154447','2016-12-07 15:52:44','ALTER TABLE locations ADD COLUMN university TINYINT(1)',NULL,'update'),(81,'UserUniversity_20161208_132309','2016-12-08 13:47:09','ALTER TABLE user ADD COLUMN student_id varchar(50); ALTER TABLE user ADD COLUMN security_briefing varchar(255)',NULL,'update'),(82,'UserRoleRefactoring_20161212_112724','2016-12-13 16:46:43','ALTER TABLE user ADD COLUMN super_admin TINYINT(1) AFTER user_role; ALTER TABLE user DROP COLUMN user_role',NULL,'update'),(83,'MachineTypeArchived_20170106_145406','2017-01-06 15:11:24','ALTER TABLE machine_types ADD COLUMN archived TINYINT(1) DEFAULT 0',NULL,'update'),(84,'PermissionCategoryId_20170106_165735','2017-01-16 13:45:01','SET sql_mode = \'\'; \n		CREATE TABLE permission_new (\n			id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,\n			location_id INT(11) UNSIGNED,\n			user_id INT(11) UNSIGNED,\n			category_id INT(11) UNSIGNED,\n			PRIMARY KEY (id)\n	); \nINSERT INTO permission_new\nSELECT permission.id,\n       location_id,\n       permission.user_id,\n       type_id\nFROM   permission\n       JOIN machines\n         ON machines.id = permission.machine_id\nGROUP  BY permission.user_id,\n          type_id \n	; RENAME TABLE permission TO permission_old; RENAME TABLE permission_new TO permission',NULL,'update'),(85,'MachineTypeLocationId_20170109_102614','2017-01-16 13:45:02','ALTER TABLE machine_types ADD COLUMN location_id int(11) AFTER id; ALTER TABLE machine_types ADD COLUMN old_id int(11); \nINSERT INTO machine_types (location_id, short_name, name, archived, old_id)\nSELECT l.id, t.short_name, t.name, t.archived, t.id\nFROM locations AS l,\n     machine_types AS t\n; DELETE FROM machine_types WHERE location_id IS NULL; UPDATE machines JOIN machine_types AS t ON machines.type_id = old_id SET type_id = t.id; UPDATE permission JOIN machine_types AS t ON permission.category_id = old_id SET category_id = t.id',NULL,'update'),(86,'MembershipsPopulateCategoryIds_20170112_140000','2017-01-16 13:45:02','ALTER TABLE membership ADD COLUMN affected_categories text',NULL,'update'),(87,'MembershipsPopulateCategoryIds_20170112_143836','2017-01-16 13:45:02','',NULL,'update');
+INSERT INTO `migrations` VALUES (94,'MachineMaterialsSoftware_20170210_123506','2017-02-10 11:37:07','ALTER TABLE machines ADD COLUMN materials text AFTER links; ALTER TABLE machines ADD COLUMN required_software text AFTER materials','ALTER TABLE machines DROP COLUMN materials; ALTER TABLE machines DROP COLUMN required_software','rollback'),(95,'MachineMaterialsSoftware_20170210_123506','2017-02-10 11:37:38','ALTER TABLE machines ADD COLUMN materials text AFTER links; ALTER TABLE machines ADD COLUMN required_software text AFTER materials',NULL,'update');
 /*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -458,7 +353,7 @@ CREATE TABLE `monthly_earnings` (
   `period_from` datetime DEFAULT NULL,
   `period_to` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=179 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=174 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -483,7 +378,7 @@ CREATE TABLE `permission` (
   `user_id` int(11) unsigned DEFAULT NULL,
   `category_id` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=31569 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=32322 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -493,30 +388,6 @@ CREATE TABLE `permission` (
 LOCK TABLES `permission` WRITE;
 /*!40000 ALTER TABLE `permission` DISABLE KEYS */;
 /*!40000 ALTER TABLE `permission` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `permission_old`
---
-
-DROP TABLE IF EXISTS `permission_old`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `permission_old` (
-  `id` bigint(11) NOT NULL AUTO_INCREMENT,
-  `user_id` bigint(11) NOT NULL,
-  `machine_id` bigint(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=31547 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `permission_old`
---
-
-LOCK TABLES `permission_old` WRITE;
-/*!40000 ALTER TABLE `permission_old` DISABLE KEYS */;
-/*!40000 ALTER TABLE `permission_old` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -538,7 +409,7 @@ CREATE TABLE `products` (
   `comments` text,
   `archived` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -581,7 +452,7 @@ CREATE TABLE `purchases` (
   `invoice_id` int(11) unsigned NOT NULL,
   `invoice_status` varchar(20) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=40610 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=39243 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -621,7 +492,7 @@ CREATE TABLE `reservation_rules` (
   `sunday` tinyint(1) DEFAULT NULL,
   `created` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -679,7 +550,7 @@ CREATE TABLE `settings` (
   `value_string` text,
   `value_float` double DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=118 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=116 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -688,6 +559,7 @@ CREATE TABLE `settings` (
 
 LOCK TABLES `settings` WRITE;
 /*!40000 ALTER TABLE `settings` DISABLE KEYS */;
+INSERT INTO `settings` VALUES (109,1,'TermsUrl',NULL,'https://fablab.berlin/de/content/18-agb-fab-lab',NULL),(110,1,'Currency',NULL,'€',NULL),(111,1,'FastbillTemplateId',946226,NULL,NULL),(112,1,'VAT',NULL,NULL,19),(113,1,'ReservationNotificationEmail',NULL,'',NULL),(114,1,'MailchimpApiKey',NULL,'8ce59590d15a8adbcb437ed46369e4f9-us6',NULL),(115,1,'MailchimpListId',NULL,'7a8cb19a0d',NULL);
 /*!40000 ALTER TABLE `settings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -725,7 +597,7 @@ CREATE TABLE `user` (
   `student_id` varchar(50) DEFAULT NULL,
   `security_briefing` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14006 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=11252 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -734,6 +606,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
+INSERT INTO `user` VALUES (19,'Test','User','testuser','testuser@example.com','There is one','0',696,0,'','',0,1,'2015-06-04 06:34:51','Fastbill Kd-Nr. 696','123456','','','DE',NULL,1,0,0,NULL,NULL);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -752,7 +625,7 @@ CREATE TABLE `user_locations` (
   `archived` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_user_locations` (`user_id`,`location_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4116 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1393 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -761,37 +634,8 @@ CREATE TABLE `user_locations` (
 
 LOCK TABLES `user_locations` WRITE;
 /*!40000 ALTER TABLE `user_locations` DISABLE KEYS */;
+INSERT INTO `user_locations` VALUES (8,1,19,'admin',0);
 /*!40000 ALTER TABLE `user_locations` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `user_membership`
---
-
-DROP TABLE IF EXISTS `user_membership`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `user_membership` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
-  `membership_id` int(11) NOT NULL,
-  `start_date` datetime NOT NULL,
-  `end_date` datetime DEFAULT NULL,
-  `auto_extend` tinyint(1) DEFAULT NULL,
-  `is_terminated` tinyint(1) DEFAULT NULL,
-  `invoice_id` int(11) unsigned NOT NULL,
-  `invoice_status` varchar(20) NOT NULL DEFAULT '',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2975 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `user_membership`
---
-
-LOCK TABLES `user_membership` WRITE;
-/*!40000 ALTER TABLE `user_membership` DISABLE KEYS */;
-/*!40000 ALTER TABLE `user_membership` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -812,7 +656,7 @@ CREATE TABLE `user_memberships` (
   `created` datetime DEFAULT NULL,
   `updated` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=971 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=471 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -822,30 +666,6 @@ CREATE TABLE `user_memberships` (
 LOCK TABLES `user_memberships` WRITE;
 /*!40000 ALTER TABLE `user_memberships` DISABLE KEYS */;
 /*!40000 ALTER TABLE `user_memberships` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `user_roles`
---
-
-DROP TABLE IF EXISTS `user_roles`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `user_roles` (
-  `user_id` int(11) NOT NULL,
-  `admin` tinyint(1) NOT NULL,
-  `staff` tinyint(1) NOT NULL,
-  `member` tinyint(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `user_roles`
---
-
-LOCK TABLES `user_roles` WRITE;
-/*!40000 ALTER TABLE `user_roles` DISABLE KEYS */;
-/*!40000 ALTER TABLE `user_roles` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -857,4 +677,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-01-16 15:16:09
+-- Dump completed on 2017-02-16 14:45:57
