@@ -54,7 +54,7 @@ Quickly install Localmachines to get it running on Linux or OS X. For more
 
 5. Initialize database
    ```
-   mysql -u user -p fabsmith < fabsmith.sql
+   mysql -u user -p fabsmith < fabsmith_template.sql
    bee migrate -conn="root:@tcp(127.0.0.1:3306)/fabsmith"
    ```
 

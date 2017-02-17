@@ -84,7 +84,7 @@ GRANT ALL PRIVILEGES ON fabsmith.* TO 'user'@'%' WITH GRANT OPTION;
 Now fill it with data:
 
 ```
-mysql -u user -p fabsmith < fabsmith.sql
+mysql -u user -p fabsmith < fabsmith_template.sql
 bee migrate -conn="user:pass@tcp(127.0.0.1:3306)/fabsmith"
 ```
 

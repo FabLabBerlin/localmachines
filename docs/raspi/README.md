@@ -136,17 +136,15 @@ SET PASSWORD FOR 'fabsmith'@'localhost' =  PASSWORD('fabsmith');
 
 Restore a database from a dump:
 ```
-mysql -u user -p -d database < fabsmith.sql
+mysql -u user -p -d database < fabsmith-dump.sql
 ```
-
-In future the Beego application should take care of this on it's own.
 
 Dump database:
 ```
-mysqldump -u user -p fabsmith > fabsmith.sql
+mysqldump -u user -p fabsmith > fabsmith-dump.sql
 ```
 
-Create a safe MySQL user: 
+Create a safe MySQL user with limited privileges: 
 ```
 GRANT ALL PRIVILEGES ON fabsmith.* To 'fabsmith'@'localhost' IDENTIFIED BY 'fabsmith';
 ```
