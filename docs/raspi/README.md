@@ -13,10 +13,10 @@ This section will show you how to get it working as fast as possible.
 
 If you have [GoLang](https://golang.org), [Bee](https://github.com/beego/bee) and [Beego](http://beego.me), use the follwing to clone the repo:  
 ```
-go get github.com/kr15h/fabsmith
+go get github.com/FabLabBerlin/localmachines
 ```
 
-You can find the project in `$GOPATH/src/github.com/kr15h/fabsmith` once cloned. Navigate to it using `cd $GOPATH/src/github.com/kr15h/fabsmith`.
+You can find the project in `$GOPATH/src/github.com/FabLabBerlin/localmachines` once cloned. Navigate to it using `cd $GOPATH/src/github.com/FabLabBerlin/localmachines`.
 
 Run `go get` to install all GoLang dependencies.
 
@@ -28,7 +28,7 @@ cp conf/app.example.conf conf/app.conf
 
 Edit the `conf/app.conf` file to match your environment.
 
-Compile FabSmith with `bee run` from the `github.com/kr15h/fabsmith` direcotry. It will compile and run the project. To use just the binary afterwards, use the following:  
+Compile FabSmith with `bee run` from the `github.com/FabLabBerlin/localmachines` direcotry. It will compile and run the project. To use just the binary afterwards, use the following:  
 ```
 sudo ./fabsmith
 ```
