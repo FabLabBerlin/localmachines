@@ -4,7 +4,7 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-LOC_GO=`find controllers/ gateway/ lib/ mfi/ models/ netswitch/ routers/ -type f | grep "go$" | xargs cat | wc -l`
+LOC_GO=`find controllers/ lib/ mfi/ models/ routers/ -type f | grep "go$" | xargs cat | wc -l`
 LOC_GO_TESTS=`find tests/ -type f | grep "go$" | xargs cat | wc -l`
 LOC_NG=`find clients/admin/dev/ng-main.js clients/admin/dev/ng-modules/ clients/admin/dev/ng-components/ -type f | grep -v DS_Store | xargs cat | wc -l`
 LOC_NG_LESS=`find clients/admin/dev/assets/less -type f | grep -v DS_Store | xargs cat | wc -l`

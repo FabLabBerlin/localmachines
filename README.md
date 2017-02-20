@@ -25,7 +25,8 @@ Quickly install Localmachines to get it running on Linux or OS X. For more
   .pkg file. On Ubuntu you can just enter `sudo apt-get install golang-go`.
 2. Set Go environment variables:
    `export GOROOT=/usr/local/go` and
-   `export GOPATH=$HOME/go` (you may need `mkdir $HOME/go` beforehands)
+   `export GOPATH=$HOME/go` (you may need `mkdir $HOME/go` beforehands) and
+   `export PATH=$PATH:$HOME/go/bin`
 
    Most users add both lines to their `$HOME/.bash_profile` file.
 3. Clone the repository:
