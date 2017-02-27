@@ -62,4 +62,18 @@ func init() {
 			AllowHTTPMethods: []string{"get"},
 			Params: nil})
 
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/locations:Controller"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/locations:Controller"],
+		beego.ControllerComments{
+			Method: "Archive",
+			Router: `/:id/archive`,
+			AllowHTTPMethods: []string{"put"},
+			Params: nil})
+
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/locations:Controller"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers/locations:Controller"],
+		beego.ControllerComments{
+			Method: "Unarchive",
+			Router: `/:id/unarchive`,
+			AllowHTTPMethods: []string{"put"},
+			Params: nil})
+
 }

@@ -215,4 +215,73 @@ func (c *Controller) JabberConnect() {
 	beego.Info("Requesting Server Jabber ID: location=", c.GetString("location"))
 	c.Ctx.WriteString(beego.AppConfig.String("XmppUser"))
 	c.Finish()
+
+}
+
+// @Title Archive Location
+// @Description Archive a location
+// @Param	id	query	int	true	"Location ID"
+// @Success 200 string
+// @Failure	400	Bad Request
+// @Failure	401	Unauthorized
+// @Failure 500 Internal Server Error
+// @router /:id/archive [put]
+func (c *Controller) Archive() {
+	if !c.IsSuperAdmin() {
+		c.Fail(401, "Not authorized")
+	}
+
+	id, err := c.GetInt64(":id")
+	if err != nil {
+		beego.Error("Failed to get :id variable")
+		c.Fail("400")
+	}
+
+	l, err := locations.Get(id)
+	if err != nil {
+		beego.Error("Failed to get location")
+		c.Fail("500")
+	}
+
+	l.Archived = true
+	err = l.Update()
+	if err != nil {
+		c.Fail(500, "Failed to archive")
+	}
+
+	c.ServeJSON()
+}
+
+// @Title Unarchive location
+// @Description Unarchive a location
+// @Param	id	query	int	true	"Location ID"
+// @Sucess 200 string
+// @Failure	400	Bad Request
+// @Failure	401	Unauthorized
+// @Failure 500 Internal Server Error
+// @router /:id/unarchive [put]
+func (c *Controller) Unarchive() {
+	if !c.IsSuperAdmin() {
+		c.Fail(401, "Not authorized")
+	}
+
+	id, err := c.GetInt64(":id")
+	if err != nil {
+		beego.Error("Failed to get :id variable")
+		c.Fail("400")
+	}
+
+	l, err := locations.Get(id)
+	if err != nil {
+		beego.Error("Failed to get location")
+		c.Fail("500")
+	}
+
+	l.Archived = false
+	err = l.Update()
+	if err != nil {
+		c.Fail(500, "Failed to unarchive")
+	}
+
+	c.ServeJSON()
 }

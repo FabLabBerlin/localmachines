@@ -69,7 +69,9 @@ app.controller('LoginCtrl',
       }
     })
     .success(function(locations) {
-      $scope.locations = locations;
+      $scope.locations = _.filter(locations, function(l) {
+        return !l.Archived;
+      });
     })
     .error(function() {
       toastr.error('Failed to load locations');
