@@ -143,7 +143,6 @@ var TableCRUD = React.createClass({
     }
 
     editRow.changes[key] = value;
-
     this.setState({
       editRow: editRow
     });
@@ -229,7 +228,7 @@ var TableCRUD = React.createClass({
 
                     if (editRow && f.key !== 'Id') {
                       if (this.state.editRow.changes &&
-                          this.state.editRow.changes[f.key]) {
+                          !_.isUndefined(this.state.editRow.changes[f.key])) {
 
                         value = this.state.editRow.changes[f.key];
                       }
