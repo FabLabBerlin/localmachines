@@ -46,7 +46,7 @@ var Tiny = React.createClass({
       <i className={cls}
          aria-hidden="true"
          data-toggle="tooltip"
-         data-placement="top"
+         data-placement="left"
          data-toggle="tooltip"
          onClick={this.handleClick}
          ref={i => { this.i = i; }}
