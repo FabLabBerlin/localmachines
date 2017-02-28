@@ -57,18 +57,13 @@ var TableCRUD = React.createClass({
     this.props.onAdd();
   },
 
-  handleSetArchived(i, yes) {
+  handleSetArchived(id, yes) {
     if (!this.state.editRow) {
       return;
     }
 
-    if (this.state.editRow.index !== i) {
-      toastr.error('Internal Error.  Please try again later.');
-      return;
-    }
-
     var cb = () => {
-      const entity = this.props.entities.get(i).toJS();
+      const entity = this.props.entities.find(e => e.get('Id') === id).toJS();
 
       const locationId = reactor.evaluateToJS(Location.getters.getLocationId);
       const action = yes ? 'archive' : 'unarchive';
@@ -148,17 +143,13 @@ var TableCRUD = React.createClass({
     });
   },
 
-  handleSave(i) {
+  handleSave(id) {
+    console.log('handleSave(', id , ')');
     if (!this.state.editRow) {
       return;
     }
 
-    if (this.state.editRow.index !== i) {
-      toastr.error('Internal Error.  Please try again later.');
-      return;
-    }
-
-    const entity = this.props.entities.get(i).toJS();
+    const entity = this.props.entities.find(e => e.get('Id') === id).toJS();
 
     _.each(this.state.editRow.changes, (v, k) => {
       entity[k] = v;
@@ -252,13 +243,13 @@ var TableCRUD = React.createClass({
                   <td>
                     {editRow ? <Button.Tiny
                                   faClassName="fa fa-archive"
-                                  onClick={this.handleSetArchived.bind(this, i, !e.get('Archived'))}
+                                  onClick={this.handleSetArchived.bind(this, e.get('Id'), !e.get('Archived'))}
                                   style={{cursor: 'pointer', marginRight: '15px'}}
                                   title={e.get('Archived') ? 'Unarchive' : 'Archive'}
                                /> : null}
                     {editRow ? <Button.Tiny
                                   faClassName="fa fa-floppy-o"
-                                  onClick={this.handleSave.bind(this, i)}
+                                  onClick={this.handleSave.bind(this, e.get('Id'))}
                                   style={{cursor: 'pointer'}}
                                   title="Save"
                                /> : null}
