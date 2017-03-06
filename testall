@@ -20,7 +20,7 @@ NUM_CPUS=$(nproc)
 
 mysqluser=`grep -A 100 "\[test\]" tests/conf/app.conf | grep mysqluser | sed -e "s/ //g" | cut -c 11-`
 mysqlpass=`grep -A 100 "\[test\]" tests/conf/app.conf | grep mysqlpass | sed -e "s/ //g" | cut -c 11-`
-mysqlhost=`grep -A 100 "\[test\]" tests/conf/app.conf | grep mysqlpass | sed -e "s/ //g" | cut -c 11-`
+mysqlhost=`grep -A 100 "\[test\]" tests/conf/app.conf | grep mysqlhost | sed -e "s/ //g" | cut -c 11-`
 mysqldb=`grep -A 100 "\[test\]" tests/conf/app.conf | grep mysqldb | sed -e "s/ //g" | cut -c 9-`
 
 # Perform migrations
