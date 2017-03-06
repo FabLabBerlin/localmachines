@@ -50,6 +50,7 @@ test:
     paths:
       - ./*.deb
   script:
+    - export GOPATH=$CI_PROJECT_DIR/gopath/
     - /prepare-env.sh
     - cd $GOPATH/src/github.com/FabLabBerlin/localmachines
     - ./testall
@@ -77,6 +78,7 @@ release-arm:
     paths:
       - ./*.deb
   script:
+    - export GOPATH=$CI_PROJECT_DIR/gopath/
     - /prepare-env.sh
     - cd $GOPATH/src/github.com/FabLabBerlin/localmachines
     - ./scripts/build_deb arm
