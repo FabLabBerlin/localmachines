@@ -111,7 +111,7 @@ deploy:
     - cp conf/app.example.conf conf/app.conf
     - sed -e "s/mysqlhost = localhost/mysqlhost = mysql/g" /opt/localmachines/conf/app.example.conf > /opt/localmachines/conf/app.conf
     - mysql --user=root --host=mysql --password="$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE" < fabsmith_template.sql
-    - bee migrate -conn="$MYSQL_USER:$MYSQL_PASS@tcp(mysql:3306)/$MYSQL_DATABASE"
+    - bee migrate -conn="$MYSQL_USER:$MYSQL_PASSWORD@tcp(mysql:3306)/$MYSQL_DATABASE"
     - svc -d /etc/service/localmachines
     - svc -u /etc/service/localmachines
     - ps uwax|grep localmachines
