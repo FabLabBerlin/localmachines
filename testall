@@ -13,43 +13,40 @@ __base="$(basename ${__file} .sh)"
 
 arg1="${1:-}"
 
+# Number or parallel tests depends now on amount of cores
+NUM_CPUS=$(nproc)
 
 # Read config
 
 mysqluser=`grep -A 100 "\[test\]" tests/conf/app.conf | grep mysqluser | sed -e "s/ //g" | cut -c 11-`
 mysqlpass=`grep -A 100 "\[test\]" tests/conf/app.conf | grep mysqlpass | sed -e "s/ //g" | cut -c 11-`
-
-
+mysqlhost=`grep -A 100 "\[test\]" tests/conf/app.conf | grep mysqlpass | sed -e "s/ //g" | cut -c 11-`
+mysqldb=`grep -A 100 "\[test\]" tests/conf/app.conf | grep mysqlpass | sed -e "s/ //g" | cut -c 9-`
 
 # Perform migrations
 
 rm -f database/migrations/m.go
-bee migrate -conn="$mysqluser:$mysqlpass@tcp(127.0.0.1:3306)/fabsmith_test"
-
-
+bee migrate -conn="$mysqluser:$mysqlpass@tcp($mysqlhost:3306)/$mysqldb"
 
 # Backend tests
 
 cd $__dir/tests
-go test
+go test -parallel $NUM_CPUS
 
 cd $__dir/tests/controllers
-go test
+go test -parallel $NUM_CPUS
 
 for testDir in `find $__dir/tests/gateway $__dir/tests/lib $__dir/tests/models -type d | grep -v mocks`
 do
 	echo Testing $testDir...
 	cd $testDir
-	go test -v
+	go test -v -parallel $NUM_CPUS
 done
-
-
 
 # Frontend tests
 
 cd $__dir/clients/machines
 npm test
-
 
 # Go vet
 
