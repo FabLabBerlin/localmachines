@@ -1,0 +1,119 @@
+# Source it from https://hub.docker.com/r/syso/easylab-env/
+image: syso/easylab-env
+
+stages:
+ - build
+ - test
+ - release
+ - staging
+
+cache:
+  paths:
+    - gopath/
+    - node_modules/
+    - .glide/
+    - .npm/
+
+build:
+  stage: build
+  before_script:
+    - echo Build reference is $CI_BUILD_REF
+    - echo CI entry directory is $CI_PROJECT_DIR
+  script:
+    - export GOPATH=$CI_PROJECT_DIR/gopath/
+    - export GOROOT=/goroot
+    - npm config set cache $/.npm --global
+    - mkdir -p $GOPATH/src/github.com/FabLabBerlin/
+    - ln -sfn $PWD $GOPATH/src/github.com/FabLabBerlin/localmachines
+    - cd $GOPATH/src/github.com/FabLabBerlin/localmachines
+    - glide install
+    - cd clients/machines
+    - npm install
+    - cd $GOPATH/src/github.com/FabLabBerlin/localmachines
+    - cd clients/admin
+    - npm install
+    - bower install --allow-root
+  artifacts:
+    paths:
+      - gopath/
+
+test:
+  stage: test
+  variables:
+    MYSQL_DATABASE: fabsmith_test
+    MYSQL_USER: user
+    MYSQL_PASSWORD: pass
+    MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+  services:
+    - mysql:latest
+  artifacts:
+    paths:
+      - ./*.deb
+  script:
+    - export GOPATH=$CI_PROJECT_DIR/gopath/
+    - /prepare-env.sh
+    - cd $GOPATH/src/github.com/FabLabBerlin/localmachines
+    - ./testall
+
+release-amd64:
+  stage: release
+  cache:
+    paths:
+      - gopath/
+      - node_modules/
+      - .glide/
+      - .npm/
+  artifacts:
+    paths:
+      - ./*.deb
+  script:
+    - export GOPATH=$CI_PROJECT_DIR/gopath/
+    - /prepare-env.sh
+    - cd $GOPATH/src/github.com/FabLabBerlin/localmachines
+    - ./scripts/build_deb amd64
+
+release-arm:
+  stage: release
+  artifacts:
+    paths:
+      - ./*.deb
+  script:
+    - export GOPATH=$CI_PROJECT_DIR/gopath/
+    - /prepare-env.sh
+    - cd $GOPATH/src/github.com/FabLabBerlin/localmachines
+    - ./scripts/build_deb arm
+
+release-mips:
+  stage: release
+  artifacts:
+    paths:
+      - ./*.deb
+  script:
+    - export GOPATH=$CI_PROJECT_DIR/gopath/
+    - /prepare-env.sh
+    - ./scripts/build_deb mips
+
+deploy:
+  stage: staging
+  image: ubuntu:14.04
+  variables:
+    MYSQL_DATABASE: fabsmith
+    MYSQL_USER: user
+    MYSQL_PASSWORD: pass
+    MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+  services:
+    - mysql:latest
+  script:
+    - export GOPATH=$CI_PROJECT_DIR/gopath/
+    - apt-get update && apt-get install -y daemontools daemontools-run mysql-client
+    - su -c 'exec /usr/bin/svscanboot &'
+    - dpkg -i localmachines_*.amd64.deb
+    - cp conf/app.example.conf conf/app.conf
+    - sed -e "s/mysqlhost = localhost/mysqlhost = mysql/g" /opt/localmachines/conf/app.example.conf > /opt/localmachines/conf/app.conf
+    - mysql --user=root --host=mysql --password="$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE" < fabsmith_template.sql
+    - bee migrate -conn="$MYSQL_USER:$MYSQL_PASS@tcp(mysql:3306)/$MYSQL_DATABASE"
+    - svc -d /etc/service/localmachines
+    - svc -u /etc/service/localmachines
+    - ps uwax|grep localmachines
+    - tail -n 100 /opt/localmachines/server.log
+  when: manual
