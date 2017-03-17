@@ -12,6 +12,7 @@ Resource management software for Fab Labs. REST API built with the [BeeGo](http:
   - [Clients Development](#clients-development)
 - [API Documentation](#api-documentation)
 - [Deployment](#deployment)
+- [Deployment using Docker](#docker-deployment)
 - [Troubleshooting](#troubleshooting)
 - [TODO](#TODO)
 
@@ -574,6 +575,18 @@ We use [Automated API Document](http://beego.me/docs/advantage/docs.md) feature 
   http://localhost:8080/swagger/
   ```
 
+## Docker Deployment
+
+We're providing an early-stage Docker base image for developing and running EasyLab server.
+This image can be found at [Docker Hub](https://hub.docker.com/r/syso/easylab-env/).
+
+To use this file in a CI setup, check out the '.gitlab-ci.yml' in this repository.
+
+To use it manually with an interactive bash shell, use:
+ ```
+ docker run -it syso/easylab-env /bin/bash
+ ```
+ 
 ## Troubleshooting
 
 ### Too many open files
