@@ -120,23 +120,13 @@ func AuthSetNfcId(userId int64, nfcId string) (err error) {
 }
 
 //AuthSetPassword sets the password of the passed user.
-//However this function seems to be capable to create a new User...
 func AuthSetPassword(userId int64, password string) error {
 	o := orm.NewOrm()
 	auth := Auth{UserId: userId} //initializes(?) a new Auth Struct, which gets filled just with userId
 
-	err := o.Read(&auth)                      // Queries the DB
-	authRecordMissing := err == orm.ErrNoRows // true if no row was returned, else false
-	if err != nil && !authRecordMissing {     // if we have an error other than "NoRows"
+	err := o.Read(&auth) // Queries the DB
+	if err != nil {      // if we have an error other than "NoRows"
 		return fmt.Errorf("Read: %v", err)
-	}
-
-	//For Debugging. I want to know why the hell this function can create Users...
-	//if this block gets removed, you may should remove the import "runtime/debug"
-	if authRecordMissing {
-		debug.PrintStack()
-		return fmt.Errorf("AuthSetPassword(userId=%v, password=<ommitted>) tried to create a new User. This is Bad behaivor for a function named like this.",
-			userId)
 	}
 
 	salt, err := createSalt()
@@ -151,11 +141,7 @@ func AuthSetPassword(userId int64, password string) error {
 	}
 	auth.Hash = hex.EncodeToString(hash)
 	auth.PwResetKey = ""
-	if authRecordMissing {
-		_, err = o.Insert(&auth)
-	} else {
-		_, err = o.Update(&auth)
-	}
+	_, err = o.Update(&auth) // Update DB
 	return err
 }
 
