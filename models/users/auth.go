@@ -13,6 +13,8 @@ import (
 	"time"
 )
 
+import "runtime/debug" //For Debugging of the AuthSetPassword Function
+
 // cf. http://stackoverflow.com/a/23039768/485185
 const (
 	PW_SALT_BYTES      = 32
@@ -95,33 +97,48 @@ func AuthGetByNfcId(nfcId string) (userId int64, err error) {
 
 	o := orm.NewOrm()
 	var auth Auth
-	err = o.QueryTable("auth").
-		Filter("nfc_key", nfcId).
-		One(&auth)
+	err = o.QueryTable("auth").Filter("nfc_key", nfcId).One(&auth)
 	userId = auth.UserId
 
 	return
 }
 
+//AuthSetNfcId sets the NFC ID of the specified User
 func AuthSetNfcId(userId int64, nfcId string) (err error) {
-	o := orm.NewOrm()
-	auth := Auth{UserId: userId}
+	o := orm.NewOrm()            //creates newOrmer
+	auth := Auth{UserId: userId} //initializes(?) a new Auth Struct, which gets filled just with userId
+
+	//This somehow manages to Select the correct Row in th DB
+	//This seems to work, because UserId is `orm:"pk"`, so the ORM Stuff undestands that.
 	if err = o.Read(&auth); err != nil {
+
 		return
 	}
-	auth.NfcKey = nfcId
-	_, err = o.Update(&auth)
+	auth.NfcKey = nfcId      // Set the nfcId to the passed nfcId by the caller
+	_, err = o.Update(&auth) //updates the DB with the new nfcId
 	return
 }
 
+//AuthSetPassword sets the password of the passed user.
+//However this function seems to be capable to create a new User...
 func AuthSetPassword(userId int64, password string) error {
 	o := orm.NewOrm()
-	auth := Auth{UserId: userId}
-	err := o.Read(&auth)
-	authRecordMissing := err == orm.ErrNoRows
-	if err != nil && !authRecordMissing {
+	auth := Auth{UserId: userId} //initializes(?) a new Auth Struct, which gets filled just with userId
+
+	err := o.Read(&auth)                      // Queries the DB
+	authRecordMissing := err == orm.ErrNoRows // true if no row was returned, else false
+	if err != nil && !authRecordMissing {     // if we have an error other than "NoRows"
 		return fmt.Errorf("Read: %v", err)
 	}
+
+	//For Debugging. I want to know why the hell this function can create Users...
+	//if this block gets removed, you may should remove the import "runtime/debug"
+	if authRecordMissing {
+		debug.PrintStack()
+		return fmt.Errorf("AuthSetPassword(userId=%v, password=<ommitted>) tried to create a new User. This is Bad behaivor for a function named like this.",
+			userId)
+	}
+
 	salt, err := createSalt()
 	if err != nil {
 		return fmt.Errorf("createSalt: %v", err)
