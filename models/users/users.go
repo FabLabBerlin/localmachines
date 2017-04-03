@@ -54,7 +54,7 @@ func init() {
 var ErrEmailExists = errors.New("User with the same email exists")
 var ErrUsernameExists = errors.New("User with the same username exists")
 
-// Attempt to create user, do not complain if it already exists
+// Attempt to create user, returns an Error if Username or Mail already exists.
 func CreateUser(user *User) (userId int64, er error) {
 
 	var err error
