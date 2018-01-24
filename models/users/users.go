@@ -3,12 +3,13 @@ package users
 import (
 	"errors"
 	"fmt"
-	"github.com/FabLabBerlin/localmachines/models/user_locations"
-	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/orm"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/FabLabBerlin/localmachines/models/user_locations"
+	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/orm"
 )
 
 // Regular expression for email spec : RFC 5322
@@ -54,7 +55,7 @@ func init() {
 var ErrEmailExists = errors.New("User with the same email exists")
 var ErrUsernameExists = errors.New("User with the same username exists")
 
-// Attempt to create user, returns an Error if Username or Mail already exists.
+// Attempt to create user, do not complain if it already exists
 func CreateUser(user *User) (userId int64, er error) {
 
 	var err error
@@ -204,6 +205,17 @@ func GetUser(userId int64) (*User, error) {
 	} else {
 		return &user, nil
 	}
+}
+
+func GetUserByClientId(clientId int64) (*User, error) {
+	var user User
+
+	err := orm.NewOrm().
+		QueryTable("user").
+		Filter("client_id", clientId).
+		One(&user)
+
+	return &user, err
 }
 
 // Returns an array with all users in the system

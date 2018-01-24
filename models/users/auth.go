@@ -5,16 +5,13 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"io"
-	"strings"
-	"time"
-
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"golang.org/x/crypto/scrypt"
+	"io"
+	"strings"
+	"time"
 )
-
-//For Debugging of the AuthSetPassword Function
 
 // cf. http://stackoverflow.com/a/23039768/485185
 const (
@@ -98,38 +95,33 @@ func AuthGetByNfcId(nfcId string) (userId int64, err error) {
 
 	o := orm.NewOrm()
 	var auth Auth
-	err = o.QueryTable("auth").Filter("nfc_key", nfcId).One(&auth)
+	err = o.QueryTable("auth").
+		Filter("nfc_key", nfcId).
+		One(&auth)
 	userId = auth.UserId
 
 	return
 }
 
-//AuthSetNfcId sets the NFC ID of the specified User
 func AuthSetNfcId(userId int64, nfcId string) (err error) {
-	o := orm.NewOrm()            //creates newOrmer
-	auth := Auth{UserId: userId} //initializes(?) a new Auth Struct, which gets filled just with userId
-
-	//This somehow manages to Select the correct Row in th DB
-	//This seems to work, because UserId is `orm:"pk"`, so the ORM Stuff undestands that.
+	o := orm.NewOrm()
+	auth := Auth{UserId: userId}
 	if err = o.Read(&auth); err != nil {
-
 		return
 	}
-	auth.NfcKey = nfcId      // Set the nfcId to the passed nfcId by the caller
-	_, err = o.Update(&auth) //updates the DB with the new nfcId
+	auth.NfcKey = nfcId
+	_, err = o.Update(&auth)
 	return
 }
 
-//AuthSetPassword sets the password of the passed user.
 func AuthSetPassword(userId int64, password string) error {
 	o := orm.NewOrm()
-	auth := Auth{UserId: userId} //initializes(?) a new Auth Struct, which gets filled just with userId
-
-	err := o.Read(&auth) // Queries the DB
-	if err != nil {      // if we have an error other than "NoRows"
+	auth := Auth{UserId: userId}
+	err := o.Read(&auth)
+	authRecordMissing := err == orm.ErrNoRows
+	if err != nil && !authRecordMissing {
 		return fmt.Errorf("Read: %v", err)
 	}
-
 	salt, err := createSalt()
 	if err != nil {
 		return fmt.Errorf("createSalt: %v", err)
@@ -142,7 +134,11 @@ func AuthSetPassword(userId int64, password string) error {
 	}
 	auth.Hash = hex.EncodeToString(hash)
 	auth.PwResetKey = ""
-	_, err = o.Update(&auth) // Update DB
+	if authRecordMissing {
+		_, err = o.Insert(&auth)
+	} else {
+		_, err = o.Update(&auth)
+	}
 	return err
 }
 
