@@ -3,6 +3,9 @@ package userctrls
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"time"
+
 	"github.com/FabLabBerlin/localmachines/lib/redis"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	"github.com/FabLabBerlin/localmachines/models/products"
@@ -11,8 +14,6 @@ import (
 	"github.com/astaxie/beego"
 	redigo "github.com/garyburd/redigo/redis"
 	"github.com/gorilla/websocket"
-	"net/http"
-	"time"
 )
 
 const WS_PING_INTERVAL_SECONDS = 29
@@ -216,6 +217,11 @@ func (this *UserDashboardController) LP() {
 func (this *UserDashboardController) WS() {
 	// cf. https://github.com/beego/samples/tree/master/WebIM
 	locId, isStaff := this.GetLocIdStaff()
+
+	// header := this.Ctx.Request.Header
+	// for key, value := range header {
+	// 	beego.Info("WS: Header - ", key, value)
+	// }
 
 	uid, authorized := this.GetRouteUid()
 	if !authorized {

@@ -4,6 +4,11 @@ package controllers
 import (
 	"errors"
 	"fmt"
+	"net/http"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/FabLabBerlin/localmachines/lib/redis"
 	"github.com/FabLabBerlin/localmachines/models/user_locations"
 	"github.com/FabLabBerlin/localmachines/models/user_roles"
@@ -11,10 +16,6 @@ import (
 	"github.com/astaxie/beego"
 	_ "github.com/astaxie/beego/session/memcache"
 	"github.com/boj/redistore"
-	"net/http"
-	"strconv"
-	"strings"
-	"time"
 )
 
 const COOKIE_LIFETIME_SECONDS = 86400
@@ -182,7 +183,7 @@ func (this *Controller) GetSessionUserId() (int64, error) {
 	if sid, ok := tmp.(int64); ok {
 		ip := this.GetSession(SESSION_IP)
 		if ip != this.ClientIp() {
-			beego.Error("GetSessionUserId: wrong IP")
+			beego.Error("GetSessionUserId: wrong IP, no match:", ip, this.ClientIp())
 			return 0, errors.New("user not correctly logged in")
 		}
 		browser := this.GetSession(SESSION_BROWSER)
@@ -393,7 +394,10 @@ func (this *Controller) GetLocIdMember() (locId int64, authorized bool) {
 }
 
 func (this *Controller) ClientIp() (ip string) {
-	ip = this.Ctx.Request.Header.Get("X-Forwarded-For")
+	ip = this.Ctx.Request.Header.Get("X-Real-Ip")
+	if ip == "" {
+		ip = this.Ctx.Request.Header.Get("X-Forwarded-For")
+	}
 	if ip == "" {
 		ip = this.Ctx.Input.IP()
 	}
