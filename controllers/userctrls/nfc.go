@@ -21,10 +21,10 @@ func (this *UsersController) GetByNfcId() {
 		this.Fail(400)
 	}
 
-	if locId != 15 {
+	/*if locId != 15 {
 		beego.Error("only allowed for location 15 to test")
 		this.Fail(400)
-	}
+	}*/
 
 	nfcId := this.GetString("nfcId")
 
