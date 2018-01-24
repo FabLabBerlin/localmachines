@@ -207,7 +207,7 @@ var MachineActions = {
 
     const uid = reactor.evaluateToJS(getters.getUid);
     const host = window.location.host;
-    const protocol = host === 'easylab.io' ? 'wss' : 'ws';
+    const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
     socket = new WebSocket(protocol + '://' + host + '/api/users/' + uid + '/dashboard/ws?location=' + locationId);
     socket.onmessage = function(e) {
       dashboardDispatch(JSON.parse(e.data));
