@@ -5,15 +5,16 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/orm"
-	"golang.org/x/crypto/scrypt"
 	"io"
 	"strings"
 	"time"
+
+	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/orm"
+	"golang.org/x/crypto/scrypt"
 )
 
-import "runtime/debug" //For Debugging of the AuthSetPassword Function
+//For Debugging of the AuthSetPassword Function
 
 // cf. http://stackoverflow.com/a/23039768/485185
 const (
