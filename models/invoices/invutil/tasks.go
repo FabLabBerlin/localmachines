@@ -2,8 +2,8 @@ package invutil
 
 import (
 	"fmt"
+
 	"github.com/FabLabBerlin/localmachines/models/locations"
-	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 )
 
@@ -12,19 +12,10 @@ func TaskFastbillSync() (err error) {
 
 	var locId int64 = 1
 
-	us, err := users.GetAllUsersAt(locId)
+	err = FastbillSyncAll(locId)
+
 	if err != nil {
-		return fmt.Errorf("get all users at: %v", err)
-	}
-
-	for _, u := range us {
-		if u.ClientId == 0 {
-			continue
-		}
-
-		if err := FastbillSync(locId, u); err != nil {
-			beego.Error("sync invoice of user %v: %v", u.Id, err)
-		}
+		return fmt.Errorf("sync with fastbill: %v", err)
 	}
 
 	return

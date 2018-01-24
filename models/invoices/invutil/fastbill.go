@@ -2,6 +2,9 @@ package invutil
 
 import (
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/lib/fastbill"
 	"github.com/FabLabBerlin/localmachines/models/invoices"
@@ -11,8 +14,6 @@ import (
 	"github.com/FabLabBerlin/localmachines/models/users"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	"strings"
-	"time"
 )
 
 const (
@@ -293,6 +294,61 @@ func (inv *Invoice) FastbillSendCanceled() (err error) {
 
 	if err := inv.Save(); err != nil {
 		return fmt.Errorf("save: %v", err)
+	}
+
+	return
+}
+
+func FastbillSyncAll(locId int64) (err error) {
+	fbInvs, err := fastbill.ListInvoices(0)
+	beego.Info("FastbillSyncLastAll got ", len(fbInvs), " Invoices from Fastbill")
+	if err != nil {
+		return fmt.Errorf("failed to get recent invoices: %v", err)
+	}
+
+	for _, fbInv := range fbInvs {
+
+		if fbInv.Type != "credit" {
+
+			// Find invoice where iv.FastbillId == fbInv.Id
+			inv, err := invoices.GetByFastbillId(fbInv.Id)
+			if err != nil {
+				return fmt.Errorf("failed to get invoice by fastbill id: %v", err)
+			}
+			if inv == nil {
+				continue
+			}
+
+			//No need to sync the invoice totals because are so different in
+			//Fastbill, e.g. because material prices are not included.
+			//inv.Total = fbInv.Total
+			inv.VatPercent = fbInv.VatPercent
+			inv.Canceled = fbInv.Canceled()
+			inv.DueDate = fbInv.DueDate()
+			inv.InvoiceDate = fbInv.InvoiceDate()
+			inv.PaidDate = fbInv.PaidDate()
+			if fbInv.Type == "draft" || fbInv.Type == "outgoing" {
+				inv.Status = fbInv.Type
+			}
+
+			if err = inv.Save(); err != nil {
+				return fmt.Errorf("save invoice: %v", err)
+			}
+
+		} else { // fbInv.Type == "credit"
+
+			// Find invoice that matches (strings.Contains(fbInv.InvoiceNumber, iv.FastbillNo) AND len(iv.FasbillNo) > 2)
+
+			// inv.CanceledFastbillId = fbInv.Id
+			// inv.CanceledFastbillNo = fbInv.InvoiceNumber
+
+			// if err = inv.Save(); err != nil {
+			// 	return fmt.Errorf("save invoice: %v", err)
+			// }
+
+			beego.Warn("I dont know what to do with credits: ", fbInv)
+		}
+
 	}
 
 	return

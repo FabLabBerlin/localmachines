@@ -3,11 +3,12 @@ package fastbill
 import (
 	"errors"
 	"fmt"
-	"github.com/FabLabBerlin/localmachines/models/users"
-	"github.com/astaxie/beego"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/FabLabBerlin/localmachines/models/users"
+	"github.com/astaxie/beego"
 )
 
 const (
@@ -80,6 +81,7 @@ type InvoiceGetResponseInvoice struct {
 	IsCanceled        string  `json:"IS_CANCELED,omitempty"`
 	Total             float64 `json:"TOTAL,omitempty"`
 	CustomerId        int64   `json:"CUSTOMER_ID,string,omitempty"`
+	CustomerNumber    int64   `json:"CUSTOMER_NUMBER,string,omitempty"`
 	InvoiceNumber     string  `json:"INVOICE_NUMBER,omitempty"`
 	InvoiceTitle      string  `json:"INVOICE_TITLE,omitempty"`
 	VatPercent        float64 `json:"VAT_PERCENT,omitempty,string"`
@@ -496,9 +498,16 @@ func ListInvoices(customerId int64) ([]InvoiceGetResponseInvoice, error) {
 func listInvoices(customerId int64, offset, limit int) ([]InvoiceGetResponseInvoice, error) {
 	var err error
 	fb := New()
-	filter := InvoiceFilter{
-		CustomerId: customerId,
+
+	var filter InvoiceFilter
+	if customerId != 0 {
+		filter = InvoiceFilter{
+			CustomerId: customerId,
+		}
+	} else {
+		filter = InvoiceFilter{}
 	}
+
 	request := Request{
 		SERVICE: SERVICE_INVOICE_GET,
 		FILTER:  filter,
