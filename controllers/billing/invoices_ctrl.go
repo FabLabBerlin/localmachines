@@ -2,6 +2,7 @@ package billing
 
 import (
 	"fmt"
+
 	"github.com/FabLabBerlin/localmachines/models/invoices"
 	"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/users"
@@ -369,7 +370,12 @@ func (this *Controller) assertFinanceUser() {
 	}
 
 	switch uid {
-	case 6, 19, 28, 336:
+	case
+		6,   // Wolf
+		17,  // Nicolai
+		19,  // Philip
+		28,  // Goekcen
+		336: // Theo
 		return
 	default:
 		this.Abort("403")
