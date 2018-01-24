@@ -189,6 +189,12 @@ var BillTable = React.createClass({
       case 'tutor':
         category = 'Tutoring';
         break;
+      case 'form2':
+        category = 'Form 2';
+        break;
+      case 'dimension':
+        category = 'Dimension Elite';
+        break;
       default:
         console.log('unhandled purchase type ', purchase.Type);
       }
@@ -209,7 +215,7 @@ var BillTable = React.createClass({
             {editable ? (
               <Edit.Name invoice={this.props.invoice} purchase={purchase}/>
             ) : (
-              purchase.Type !== 'other' ?
+              purchase.Type !== 'other' && purchase.Type !== 'form2' && purchase.Type !== 'dimension' ?
               (purchase.Machine && purchase.Machine.Name) :
               purchase.CustomName
             )}
@@ -225,7 +231,7 @@ var BillTable = React.createClass({
             {editable ?
               <Edit.Amount invoice={this.props.invoice} purchase={purchase}/> :
               (purchase.editedDuration ? purchase.editedDuration : (
-              purchase.PriceUnit !== 'gram' ? formatDuration(purchase) :
+              purchase.PriceUnit !== 'gram' && purchase.PriceUnit !== 'ml' && purchase.PriceUnit !== 'cm3' ? formatDuration(purchase) :
               purchase.Quantity))
             }
           </td>

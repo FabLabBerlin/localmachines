@@ -413,6 +413,10 @@ function save(locId, {invoice}) {
   var promises = _.map(mutated, (p) => {
     var url;
 
+    if (p.Type === 'form2' || p.Type === 'dimension') {
+      p.Type = 'other';
+    }
+
     switch (p.Type) {
     case 'activation':
       url = '/api/activations/' + p.Id + '?location=' + locId;

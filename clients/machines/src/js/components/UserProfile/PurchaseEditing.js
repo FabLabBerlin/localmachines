@@ -17,7 +17,7 @@ var Amount = React.createClass({
   render() {
     const p = this.props.purchase;
 
-    if (p.PriceUnit === 'gram') {
+    if (p.PriceUnit === 'gram' || p.PriceUnit === 'ml' || p.PriceUnit === 'cm3') {
       return (
       <input type="number"
              onChange={this.update}
@@ -53,6 +53,9 @@ var Category = React.createClass({
         <option value="activation">Activation</option>
         <option value="reservation">Reservation</option>
         <option value="other">Other</option>
+        <option disabled>----------</option>
+        <option value="form2">Form 2</option>
+        <option value="dimension">Dimension Elite</option>
       </select>
     );
   },
@@ -63,6 +66,45 @@ var Category = React.createClass({
       field: 'Type',
       value: e.target.value
     });
+
+    // Handle hardcoded templates
+    switch (e.target.value) {
+      case 'form2':
+        Invoices.actions.editPurchaseField({
+          invoice: this.props.invoice,
+          field: 'CustomName',
+          value: 'Form 2 Resin'
+        });
+        Invoices.actions.editPurchaseField({
+          invoice: this.props.invoice,
+          field: 'PriceUnit',
+          value: 'ml'
+        });
+        Invoices.actions.editPurchaseField({
+          invoice: this.props.invoice,
+          field: 'PricePerUnit',
+          value: '0.55'
+        });
+        break;
+
+      case 'dimension':
+        Invoices.actions.editPurchaseField({
+          invoice: this.props.invoice,
+          field: 'CustomName',
+          value: 'Dimension Elite ABS/Support'
+        });
+        Invoices.actions.editPurchaseField({
+          invoice: this.props.invoice,
+          field: 'PriceUnit',
+          value: 'cm3'
+        });
+        Invoices.actions.editPurchaseField({
+          invoice: this.props.invoice,
+          field: 'PricePerUnit',
+          value: '0.35'
+        });
+        break;
+    }
   }
 });
 
@@ -109,7 +151,7 @@ var Name = React.createClass({
   render() {
     const p = this.props.purchase;
 
-    if (p.Type === 'other') {
+    if (p.Type === 'other' || p.Type === 'form2' || p.Type === 'dimension') {
       return (
         <input type="text"
                onChange={this.update}
@@ -142,7 +184,7 @@ var Name = React.createClass({
   update(e) {
     const p = this.props.purchase;
 
-    if (p.Type === 'other') {
+    if (p.Type === 'other' || p.Type === 'form2' || p.Type === 'dimension') {
       Invoices.actions.editPurchaseField({
         invoice: this.props.invoice,
         field: 'CustomName',
@@ -221,7 +263,9 @@ var Unit = React.createClass({
         <option value="30 minutes">30 Minutes</option>
         <option value="hour">Hour</option>
         <option value="day">Day</option>
-        <option value="gram">gram</option>
+        <option value="gram">Gram</option>
+        <option value="ml">Milliliters</option>
+        <option value="cm3">cm&sup3;</option>
       </select>
     );
   },
