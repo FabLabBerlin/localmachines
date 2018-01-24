@@ -593,8 +593,17 @@ To use it manually with an interactive bash shell, use:
 
 Beego watches a lot of files to automatically re-compile the code. On OS X the maximum number of open files is quite low by default. See here how to solve this: http://unix.stackexchange.com/a/221988
 
+### Reservation Rules Unit tests fail
+
+You need to set the timezone
+
+  ```
+  export TZ=Europe/Berlin
+  ```
+
 ## TODO
 
 - Merge functionality of clients/admin to clients/machines
 - Merge functionality of clients/signup to clients/machines
 - Flatten directory structure in clients
+
