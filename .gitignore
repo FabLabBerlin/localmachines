@@ -19,6 +19,7 @@ localmachines.amd64.bin
 localmachines.arm.bin
 npm-debug.log
 conf/app.conf
+conf/app.docker.conf
 database/migrations/m.go
 views/prod/*
 excel_exports/*
@@ -42,3 +43,10 @@ tests/models/conf/app.conf
 lastupdate.tmp
 
 vendor/
+
+.vagrant
+vagrant
+Vagrantfile
+
+dist/**
+!dist/*example*
