@@ -9,10 +9,11 @@ package invoices
 import (
 	"errors"
 	"fmt"
+	"time"
+
 	"github.com/FabLabBerlin/localmachines/lib"
 	"github.com/FabLabBerlin/localmachines/lib/month"
 	"github.com/astaxie/beego/orm"
-	"time"
 )
 
 const TABLE_NAME = "invoices"
@@ -131,6 +132,21 @@ func GetDraft(locId, uid int64, t time.Time) (*Invoice, error) {
 
 func Get(id int64) (*Invoice, error) {
 	return GetOrm(orm.NewOrm(), id)
+}
+
+func GetByFastbillId(fbId int64) (*Invoice, error) {
+	var inv Invoice
+
+	err := orm.NewOrm().
+		QueryTable(TABLE_NAME).
+		Filter("fastbill_id", fbId).
+		One(&inv)
+
+	if err == orm.ErrNoRows {
+		return nil, nil
+	}
+
+	return &inv, err
 }
 
 func GetOrm(o orm.Ormer, id int64) (*Invoice, error) {
