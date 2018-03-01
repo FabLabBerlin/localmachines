@@ -306,6 +306,8 @@ func FastbillSyncAll(locId int64) (err error) {
 		return fmt.Errorf("failed to get recent invoices: %v", err)
 	}
 
+	skipedCount := 0
+
 	for _, fbInv := range fbInvs {
 
 		if fbInv.Type != "credit" {
@@ -346,10 +348,12 @@ func FastbillSyncAll(locId int64) (err error) {
 			// 	return fmt.Errorf("save invoice: %v", err)
 			// }
 
-			beego.Warn("I dont know what to do with credits: ", fbInv)
+			skipedCount++
 		}
 
 	}
+
+	beego.Warn("Skipped", skipedCount, "invoices")
 
 	return
 }
