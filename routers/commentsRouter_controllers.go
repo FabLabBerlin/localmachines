@@ -49,6 +49,14 @@ func init() {
 
 	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:ActivationsController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:ActivationsController"],
 		beego.ControllerComments{
+			Method: "GetLast",
+			Router: `/:uid/last`,
+			AllowHTTPMethods: []string{"get"},
+			MethodParams: param.Make(),
+			Params: nil})
+
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:ActivationsController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:ActivationsController"],
+		beego.ControllerComments{
 			Method: "GetActive",
 			Router: `/active`,
 			AllowHTTPMethods: []string{"get"},

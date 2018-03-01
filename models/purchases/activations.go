@@ -118,6 +118,33 @@ func GetActiveActivations() ([]*Activation, error) {
 	return activations, nil
 }
 
+// Gets the most recent activations to a user
+func GetLastActivations(locationId int64, uid int64, count int64) ([]*Activation, error)  {
+	var purchases []*Purchase
+	o := orm.NewOrm()
+	act := Activation{}
+	_, err := o.QueryTable(act.Purchase.TableName()).
+		Filter("type", TYPE_ACTIVATION).
+		Filter("location_id", locationId).
+		Filter("user_id", uid).
+		OrderBy("-created").
+		Limit(count).
+		All(&purchases)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to get last activations: %v", err)
+	}
+
+	activations := make([]*Activation, 0, len(purchases))
+	for _, purchase := range purchases {
+		a := &Activation{
+			Purchase: *purchase,
+		}
+		activations = append(activations, a)
+	}
+
+	return activations, nil
+}
+
 // Creates activation and returns activation ID.
 func StartActivation(m *machine.Machine, uid int64, start time.Time) (
 	activationId int64, err error) {

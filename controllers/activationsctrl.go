@@ -70,6 +70,43 @@ func (this *ActivationsController) GetAll() {
 	this.ServeJSON()
 }
 
+// @Title Get Last
+// @Description Get the last activations for a user
+// @Param uid      path  int true  "User ID"
+// @Param count    query int false "How many to return"
+// @Success 200 {object}
+// @Failure	400	Bad request
+// @Failure	401	Not authorized
+// @Failure	500	Internal Server Error
+// @router /:uid/last [get]
+func (this *ActivationsController) GetLast() {
+	locId, isAdmin := this.GetLocIdAdmin()
+	if !isAdmin {
+		beego.Error("Not authorized")
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	uid, err := this.GetInt64(":uid")
+	if err != nil {
+		beego.Error("No uid provided")
+		this.CustomAbort(400, "No uid provided")
+	}
+
+	count, err := this.GetInt64("count")
+	if err != nil {
+		count = 10
+	}
+
+	activations, err := purchases.GetLastActivations(locId, uid, count)
+	if err != nil {
+		beego.Error("Failed to get activations:", err)
+		this.CustomAbort(500, "Failed to get activations")
+	}
+
+	this.Data["json"] = activations
+	this.ServeJSON()
+}
+
 // @Title Create
 // @Description Create activation manually
 // @Param	location_id	query	int	true	"Location ID"

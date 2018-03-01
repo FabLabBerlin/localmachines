@@ -31,6 +31,7 @@ app.controller('UserCtrl',
   $scope.user = { Id: $routeParams.userId };
   $scope.userMachines = [];
   $scope.userMemberships = [];
+  $scope.userActivations = [];
 
   $scope.loadFastbillTemplates = function() {
     $http({
@@ -104,6 +105,11 @@ app.controller('UserCtrl',
       $scope.user = user;
       $scope.loadAvailableMachines();
       $scope.getUserMemberships(); // This part can happen assync
+
+      api.loadMachines(function(resp) {
+        $scope.machines = resp.machines;
+        $scope.getUserActivations(); // This part can happen assync
+      });
     })
     .error(function(data, status) {
       toastr.error('Failed to load user data');
@@ -208,6 +214,50 @@ app.controller('UserCtrl',
     })
     .error(function(data, status) {
       console.log('Could not get memberships');
+      console.log('Data: ' + data);
+      console.log('Status code: ' + status);
+    });
+  };
+
+  function resolveMachineName(mid) {
+    if (!$scope.machines) {
+      console.error('machines not loaded');
+      return '';
+    }
+
+    for (var i=0; i<$scope.machines.length; i++) {
+      if ($scope.machines[i].Id === mid) {
+        return $scope.machines[i].Name;
+      }
+    }
+
+    return '(' + mid + ')';
+  }
+
+  $scope.getUserActivations = function() {
+    $http({
+      method: 'GET',
+      url: '/api/activations/' + $scope.user.Id + '/last',
+      params: {
+        location: $cookies.get('location'),
+        count: 10 // get the last 10 activations
+      }
+    })
+    .success(function(data) {
+      $scope.userActivations = _.map(data, function(ac) {
+        ac.Machine = resolveMachineName(ac.MachineId);
+        var dur = moment.duration(ac.Quantity, 'minutes');
+        var durH = Math.floor(dur.asHours());
+        ac.Quantity = (durH < 1 ? '' : durH + 'h ') + dur.minutes() + 'm ' + dur.seconds() + 's';
+        return ac;
+      });
+
+      $scope.userActivations = _.sortBy($scope.userActivations, function(ac) {
+        return -moment(ac.Created).unix();
+      });
+    })
+    .error(function(data, status) {
+      console.log('Could not get user activations');
       console.log('Data: ' + data);
       console.log('Status code: ' + status);
     });
