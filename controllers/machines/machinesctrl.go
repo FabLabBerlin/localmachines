@@ -2,19 +2,24 @@
 package machines
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
+	"os"
+
 	"github.com/FabLabBerlin/localmachines/controllers"
 	//"github.com/FabLabBerlin/localmachines/lib/month"
 	"github.com/FabLabBerlin/localmachines/models"
 	//"github.com/FabLabBerlin/localmachines/models/invoices/invutil"
 	"github.com/FabLabBerlin/localmachines/models/machine"
 	//"github.com/FabLabBerlin/localmachines/models/metrics/machine_earnings"
-	"github.com/FabLabBerlin/localmachines/models/user_permissions"
-	"github.com/FabLabBerlin/localmachines/models/users"
-	"github.com/astaxie/beego"
 	"os/exec"
 	"strings"
 	"time"
+
+	"github.com/FabLabBerlin/localmachines/models/user_permissions"
+	"github.com/FabLabBerlin/localmachines/models/users"
+	"github.com/astaxie/beego"
 )
 
 type Controller struct {
@@ -324,7 +329,15 @@ func (this *Controller) PostImage() {
 	} else {
 		this.CustomAbort(500, "File name has no proper extension")
 	}
-	fn, fnSmall := imageFilename(this.GetString(":mid"), fileExt)
+
+	n := 8
+	bytes := make([]byte, n)
+	if _, err := rand.Read(bytes); err != nil {
+		this.CustomAbort(500, "Generating random hash failed")
+	}
+	hash := hex.EncodeToString(bytes)
+
+	fn, fnSmall := imageFilename(this.GetString(":mid"), fileExt, hash)
 	if err = models.UploadImage(fn, dataUri); err != nil {
 		this.CustomAbort(500, "Internal Server Error")
 	}
@@ -333,6 +346,20 @@ func (this *Controller) PostImage() {
 	if err != nil {
 		beego.Error("Failed to get machine:", err)
 		this.CustomAbort(500, "Failed to get machine")
+	}
+
+	// Delete old image
+	if len(m.Image) > 0 {
+		err := os.Remove("files/" + m.Image)
+		if err != nil {
+			beego.Error("Failed deleting old Image:", err)
+		}
+	}
+	if len(m.ImageSmall) > 0 {
+		err := os.Remove("files/" + m.ImageSmall)
+		if err != nil {
+			beego.Error("Failed deleting old ImageSmall:", err)
+		}
 	}
 
 	if ext := strings.ToLower(fileExt); ext != ".svg" {
@@ -380,9 +407,9 @@ func (this *Controller) PostImage() {
 	}
 }
 
-func imageFilename(machineId string, fileExt string) (normal, small string) {
-	normal = "machine-" + machineId + fileExt
-	small = "machine-" + machineId + "-small" + fileExt
+func imageFilename(machineId string, fileExt string, hash string) (normal, small string) {
+	normal = "machine-" + machineId + "-" + hash + fileExt
+	small = "machine-" + machineId + "-small-" + hash + fileExt
 	return
 }
 
