@@ -83,7 +83,7 @@ var Category = React.createClass({
         Invoices.actions.editPurchaseField({
           invoice: this.props.invoice,
           field: 'PricePerUnit',
-          value: '0.55'
+          value: '0.48'
         });
         break;
 
