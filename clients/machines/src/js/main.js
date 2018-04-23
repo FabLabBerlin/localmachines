@@ -1,6 +1,8 @@
 import { render } from 'react-dom';
 import {DefaultRoute, Route, Router, hashHistory, NoRoute} from 'react-router';
 
+import registerServiceWorker from './registerServiceWorker'
+
 import AdminCategories from './components/Admin/Categories/Categories';
 import AdminInvoice from './components/Admin/Invoices/Invoice';
 import AdminInvoices from './components/Admin/Invoices/Invoices';
@@ -150,3 +152,5 @@ render((
 ), document.getElementById('app-container'));
 
 } // if ( ... /product ... )
+
+registerServiceWorker();
