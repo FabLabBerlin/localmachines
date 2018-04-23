@@ -17,7 +17,7 @@ var Amount = React.createClass({
   render() {
     const p = this.props.purchase;
 
-    if (p.PriceUnit === 'gram' || p.PriceUnit === 'ml' || p.PriceUnit === 'cm3') {
+    if (p.PriceUnit === 'gram' || p.PriceUnit === 'ml' || p.PriceUnit === 'cm3' || p.PriceUnit === 'cm' || p.PriceUnit === 'pcs') {
       return (
       <input type="number"
              onChange={this.update}
@@ -266,6 +266,8 @@ var Unit = React.createClass({
         <option value="gram">Gram</option>
         <option value="ml">Milliliters</option>
         <option value="cm3">cm&sup3;</option>
+        <option value="cm">Centimeter</option>
+        <option value="pcs">Pieces</option>
       </select>
     );
   },

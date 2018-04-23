@@ -231,7 +231,7 @@ var BillTable = React.createClass({
             {editable ?
               <Edit.Amount invoice={this.props.invoice} purchase={purchase}/> :
               (purchase.editedDuration ? purchase.editedDuration : (
-              purchase.PriceUnit !== 'gram' && purchase.PriceUnit !== 'ml' && purchase.PriceUnit !== 'cm3' ? formatDuration(purchase) :
+              purchase.PriceUnit !== 'gram' && purchase.PriceUnit !== 'ml' && purchase.PriceUnit !== 'cm3' && purchase.PriceUnit !== 'cm' && purchase.PriceUnit !== 'pcs' ? formatDuration(purchase) :
               purchase.Quantity))
             }
           </td>
