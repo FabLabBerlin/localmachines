@@ -151,13 +151,7 @@ var Name = React.createClass({
   render() {
     const p = this.props.purchase;
 
-    if (p.Type === 'other' || p.Type === 'form2' || p.Type === 'dimension') {
-      return (
-        <input type="text"
-               onChange={this.update}
-               value={p.CustomName}/>
-      );
-    } else {
+    if (p.Type === 'activation' || p.Type === 'reservation') {
       if (!this.state.machines) {
         return <LoaderLocal/>;
       }
@@ -178,25 +172,31 @@ var Name = React.createClass({
           })}
         </select>
       );
+    } else {
+      return (
+        <input type="text"
+               onChange={this.update}
+               value={p.CustomName}/>
+      );
     }
   },
 
   update(e) {
     const p = this.props.purchase;
 
-    if (p.Type === 'other' || p.Type === 'form2' || p.Type === 'dimension') {
-      Invoices.actions.editPurchaseField({
-        invoice: this.props.invoice,
-        field: 'CustomName',
-        value: e.target.value
-      });
-    } else {
+    if (p.Type === 'activation' || p.Type === 'reservation') {
       Invoices.actions.editPurchaseField({
         invoice: this.props.invoice,
         field: 'MachineId',
         value: e.target.value
       });
-    }
+    } else {
+      Invoices.actions.editPurchaseField({
+        invoice: this.props.invoice,
+        field: 'CustomName',
+        value: e.target.value
+      });
+    } 
   }
 });
 

@@ -215,7 +215,7 @@ var BillTable = React.createClass({
             {editable ? (
               <Edit.Name invoice={this.props.invoice} purchase={purchase}/>
             ) : (
-              purchase.Type !== 'other' && purchase.Type !== 'form2' && purchase.Type !== 'dimension' ?
+              purchase.Type === 'activation' || purchase.Type === 'reservation' ?
               (purchase.Machine && purchase.Machine.Name) :
               purchase.CustomName
             )}
