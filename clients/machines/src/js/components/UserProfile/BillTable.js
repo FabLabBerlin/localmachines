@@ -195,6 +195,24 @@ var BillTable = React.createClass({
       case 'dimension':
         category = 'Dimension Elite';
         break;
+      case 'loom':
+        category = 'Loom';
+        break;
+      case 'storage_s':
+        category = 'Storage S';
+        break;
+      case 'storage_m':
+        category = 'Storage M';
+        break;
+      case 'storage_l':
+        category = 'Storage L';
+        break;
+      case 'pass_10day':
+        category = '10 Day Pass';
+        break;
+      case 'pass_10day_plus':
+        category = '10 Day Pass+';
+        break;
       default:
         console.log('unhandled purchase type ', purchase.Type);
       }

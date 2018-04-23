@@ -56,6 +56,14 @@ var Category = React.createClass({
         <option disabled>----------</option>
         <option value="form2">Form 2</option>
         <option value="dimension">Dimension Elite</option>
+        <option value="loom">Loom</option>
+        <option disabled>----------</option>
+        <option value="storage_s">Storage S</option>
+        <option value="storage_m">Storage M</option>
+        <option value="storage_l">Storage L</option>
+        <option disabled>----------</option>
+        <option value="pass_10day">10 Day Pass</option>
+        <option value="pass_10day_plus">10 Day Pass+</option>
       </select>
     );
   },
@@ -102,6 +110,79 @@ var Category = React.createClass({
           invoice: this.props.invoice,
           field: 'PricePerUnit',
           value: '0.35'
+        });
+        break;
+      
+      case 'loom':
+        Invoices.actions.editPurchaseField({
+          invoice: this.props.invoice,
+          field: 'CustomName',
+          value: 'Loom Setup'
+        });
+        Invoices.actions.editPurchaseField({
+          invoice: this.props.invoice,
+          field: 'PriceUnit',
+          value: 'cm'
+        });
+        Invoices.actions.editPurchaseField({
+          invoice: this.props.invoice,
+          field: 'PricePerUnit',
+          value: '0.5'
+        });
+        break;
+      
+      case 'storage_s':
+      case 'storage_m':
+      case 'storage_l':
+        Invoices.actions.editPurchaseField({
+          invoice: this.props.invoice,
+          field: 'CustomName',
+          value: 'Storage ' + e.target.value.slice(-1).toUpperCase()
+        });
+        Invoices.actions.editPurchaseField({
+          invoice: this.props.invoice,
+          field: 'PriceUnit',
+          value: 'pcs'
+        });
+        Invoices.actions.editPurchaseField({
+          invoice: this.props.invoice,
+          field: 'PricePerUnit',
+          value: e.target.value === 'storage_s' ? '10' : e.target.value === 'storage_m' ? '20' : '40'
+        });
+        break;
+
+      case 'pass_10day':
+        Invoices.actions.editPurchaseField({
+          invoice: this.props.invoice,
+          field: 'CustomName',
+          value: '10 Day Pass'
+        });
+        Invoices.actions.editPurchaseField({
+          invoice: this.props.invoice,
+          field: 'PriceUnit',
+          value: 'pcs'
+        });
+        Invoices.actions.editPurchaseField({
+          invoice: this.props.invoice,
+          field: 'PricePerUnit',
+          value: '89'
+        });
+        break;
+      case 'pass_10day_plus':
+        Invoices.actions.editPurchaseField({
+          invoice: this.props.invoice,
+          field: 'CustomName',
+          value: '10 Day Pass+'
+        });
+        Invoices.actions.editPurchaseField({
+          invoice: this.props.invoice,
+          field: 'PriceUnit',
+          value: 'pcs'
+        });
+        Invoices.actions.editPurchaseField({
+          invoice: this.props.invoice,
+          field: 'PricePerUnit',
+          value: '169'
         });
         break;
     }

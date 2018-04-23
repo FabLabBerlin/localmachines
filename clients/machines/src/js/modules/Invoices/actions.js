@@ -413,7 +413,16 @@ function save(locId, {invoice}) {
   var promises = _.map(mutated, (p) => {
     var url;
 
-    if (p.Type === 'form2' || p.Type === 'dimension') {
+    if (
+      p.Type === 'form2' ||
+      p.Type === 'dimension' ||
+      p.Type === 'loom' ||
+      p.Type === 'storage_s' ||
+      p.Type === 'storage_m' ||
+      p.Type === 'storage_l' ||
+      p.Type === 'pass_10day' ||
+      p.Type === 'pass_10day_plus'
+    ) {
       p.Type = 'other';
     }
 
