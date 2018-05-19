@@ -67,7 +67,7 @@ var Footer = React.createClass({
           Easy Lab is a product of Makea Industries GmbH. © 2016
         </div>
         <div className="col-md-6 text-md-right text-xs-center">
-          <a href="https://fablab.berlin/de/content/2-Impressum">
+          <a href="https://www.fablab.berlin/imprint">
             Imprint
           </a>
         </div>

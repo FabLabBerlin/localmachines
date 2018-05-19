@@ -101,7 +101,7 @@ vex.defaultOptions.className = 'vex-theme-custom';
                 Lab, <a href="/machines/#/product">visit the Product Page</a>.
               </div>
               <div className="col-md-4 text-center">
-                <a href="https://fablab.berlin/en/content/2-Imprint">Imprint</a>
+                <a href="https://www.fablab.berlin/imprint">Imprint</a>
               </div>
             </div>
           </footer>
