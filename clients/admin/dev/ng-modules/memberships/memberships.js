@@ -77,6 +77,34 @@ app.controller('MembershipsCtrl',
     $scope.showArchived = show;
   };
 
+  $scope.showAllRunning = function() {
+    $scope.allRunning = true; // hides the button
+
+
+    // Load all running memberships
+    $http({
+      method: 'GET',
+      url: '/api/memberships/all_running',
+      params: {
+        location: $cookies.get('location'),
+        ac: new Date().getTime()
+      }
+    })
+    .success(function(data) {
+      $scope.running_memberships = data;
+      if (data == null) {
+        toastr.error('Failed to load memberships');
+      }
+    })
+    .error(function() {
+      toastr.error('Failed to load memberships');
+    });
+  };
+
+  $scope.showUser = function(userId) {
+    $location.path('/users/' + userId);
+  };
+
 }]); // app.controller
 
 app.filter('membershipsFilter', function() {

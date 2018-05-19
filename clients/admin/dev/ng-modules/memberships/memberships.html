@@ -35,6 +35,11 @@
 
   <div class="pull-right">
     <button class="btn btn-primary btn-lg"
+            ng-click="showAllRunning()"
+            ng-hide="allRunning">
+      Show all running Memberships
+    </button>
+    <button class="btn btn-primary btn-lg"
             ng-click="setShowArchived(true)"
             ng-hide="showArchived">
       <i class="fa fa-archive"></i>&nbsp;Show archived
@@ -50,5 +55,38 @@
       <span class="fa fa-plus"></span>&nbsp;Add Membership
     </button>
   </div>
+
+  <hr style="clear:both; margin-top: 10rem;" ng-show="allRunning">
+
+  <table class="table table-striped table-hover" ng-show="allRunning">
+    <thead>
+      <tr>
+        <th>Membership Title</th>
+        <th>Start Date</th>
+        <th>Termination Date</th>
+        <th>Last Name</th>
+        <th>First Name</th>
+        <th>Username</th>
+        <th>&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="membership in running_memberships">
+        <td>{{membership.Title}}</td>
+        <td>{{membership.StartDate}}</td>
+        <td>{{membership.TerminationDate}}</td>
+        <td>{{membership.UserLastName}}</td>
+        <td>{{membership.UserFirstName}}</td>
+        <td>{{membership.UserUsername}}</td>
+        <td>
+          <button type="button" class="btn btn-primary btn-ico pull-right"
+                  ng-click="showUser(membership.UserId)">
+            <span class="fa fa-edit"></span>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+    
+  </table>
 
 </div> <!-- /container -->
