@@ -23,6 +23,20 @@ type Membership struct {
 	Archived                 bool
 }
 
+type RunningMembership struct {
+	Id               int64
+	Title            string
+	StartDate        string
+	TerminationDate  string
+	UserId           int64
+	UserLastName     string
+	UserFirstName    string
+	UserUsername     string
+	UserEmail        string
+	UserPhone        string
+	UserCompany      string
+}
+
 func (this *Membership) AffectedMachineIdsLegacyDontUse() (ids []int64, err error) {
 	parseErr := fmt.Errorf("cannot parse AffectedMachines property: '%v'", this.AffectedMachines)
 	l := len(this.AffectedMachines)
@@ -132,6 +146,23 @@ func GetAllAt(locationId int64) (ms []*Membership, err error) {
 	_, err = o.QueryTable(m.TableName()).
 		Filter("location_id", locationId).
 		All(&ms)
+	return
+}
+
+func GetAllRunningAt(locationId int64) (ms []*RunningMembership, err error) {
+	// ms = []RunningMembership{}
+	o := orm.NewOrm()
+
+	query := "SELECT um.id, m.title, um.start_date, um.termination_date, "+
+		"u.id AS user_id, u.last_name AS user_last_name, u.first_name AS user_first_name, u.username AS user_username, "+
+		"u.email AS user_email, u.phone AS user_phone, u.company AS user_company "+
+		"FROM user_memberships AS um "+
+		"LEFT JOIN membership AS m ON um.membership_id = m.id "+
+		"LEFT JOIN user AS u ON um.user_id = u.id "+
+		"WHERE um.location_id=? AND (CAST(um.termination_date as date) >= NOW() OR um.termination_date IS NULL) "+
+		"ORDER BY m.title, u.last_name"
+
+	_, err = o.Raw(query, locationId).QueryRows(&ms)
 	return
 }
 

@@ -199,6 +199,14 @@ func init() {
 			MethodParams: param.Make(),
 			Params: nil})
 
+	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:MembershipsController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:MembershipsController"],
+		beego.ControllerComments{
+			Method: "GetAllRunning",
+			Router: `/all_running`,
+			AllowHTTPMethods: []string{"get"},
+			MethodParams: param.Make(),
+			Params: nil})
+
 	beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:ProductsController"] = append(beego.GlobalControllerRouter["github.com/FabLabBerlin/localmachines/controllers:ProductsController"],
 		beego.ControllerComments{
 			Method: "Create",

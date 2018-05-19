@@ -35,6 +35,26 @@ func (this *MembershipsController) GetAll() {
 	this.ServeJSON()
 }
 
+// @Title GetAllRunning
+// @Description Returns all running memberships
+// @Success 200 json
+// @Failure	401	Not authorized
+// @Failure	403	Failed
+// @router /all_running [get]
+func (this *MembershipsController) GetAllRunning() {
+	locId, authorized := this.GetLocIdAdmin()
+	if !authorized {
+		this.CustomAbort(401, "Not authorized")
+	}
+
+	ms, err := memberships.GetAllRunningAt(locId)
+	if err != nil {
+		this.CustomAbort(403, "Failed to get all memberships")
+	}
+	this.Data["json"] = ms
+	this.ServeJSON()
+}
+
 // @Title Create
 // @Description Create new membership
 // @Param	mname	query	string	true	"Membership Name"
