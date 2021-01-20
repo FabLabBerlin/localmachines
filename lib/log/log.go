@@ -4,7 +4,7 @@ log adapter between beego and logrus.
 package log
 
 import (
-	"github.com/Sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/logs"
 )
