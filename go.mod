@@ -15,6 +15,7 @@ require (
 	github.com/garyburd/go-oauth v0.0.0-20180319155456-bca2e7f09a17 // indirect
 	github.com/garyburd/redigo v1.6.2
 	github.com/go-sql-driver/mysql v1.5.0
+	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/gorilla/websocket v1.4.2
 	github.com/mattn/go-xmpp v0.0.0-20200309091041-899ef71e80d2 // indirect
 	github.com/sirupsen/logrus v1.7.0
