@@ -21,5 +21,5 @@ require (
 	github.com/sirupsen/logrus v1.7.0
 	github.com/smartystreets/goconvey v1.6.4
 	github.com/tealeg/xlsx v1.0.5
-	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad
+	golang.org/x/crypto v0.1.0
 )
